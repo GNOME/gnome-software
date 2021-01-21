@@ -75,6 +75,8 @@ struct _GsShell
 	GtkStack		*stack_main;
 	GsPage			*page;
 
+	GBinding		*application_details_header_binding;
+
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
 	gboolean		 scheduler_held;
@@ -420,8 +422,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	/* hide all mode specific header widgets here, they will be shown in the
 	 * refresh functions
 	 */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "application_details_header"));
-	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "buttonbox_main"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "menu_button"));
@@ -430,6 +430,8 @@ stack_notify_visible_child_cb (GObject    *object,
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "origin_box"));
 	gtk_widget_hide (widget);
+
+	gtk_widget_set_visible (shell->application_details_header, !buttonbox_visible);
 
 	/* only show the search button in overview and search pages */
 	search_button = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_button"));
@@ -492,6 +494,12 @@ stack_notify_visible_child_cb (GObject    *object,
 
 	widget = gs_page_get_header_end_widget (page);
 	gs_shell_set_header_end_widget (shell, widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "application_details_header"));
+	g_clear_object (&shell->application_details_header_binding);
+	shell->application_details_header_binding = g_object_bind_property (page, "title",
+									    widget, "label",
+									    G_BINDING_SYNC_CREATE);
 
 	/* refresh the updates bar when moving out of the loading mode, but only
 	 * if the Mogwai scheduler state is already known, to avoid spuriously
@@ -2423,6 +2431,8 @@ static void
 gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
+
+	g_clear_object (&shell->application_details_header_binding);
 
 	if (shell->back_entry_stack != NULL) {
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);

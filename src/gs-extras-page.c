@@ -194,7 +194,6 @@ build_title (GsExtrasPage *self)
 static void
 gs_extras_page_update_ui_state (GsExtrasPage *self)
 {
-	GtkWidget *widget;
 	g_autofree gchar *title = NULL;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS)
@@ -214,10 +213,6 @@ gs_extras_page_update_ui_state (GsExtrasPage *self)
 		g_assert_not_reached ();
 		break;
 	}
-
-	/* headerbar title */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (GS_PAGE (self)));
 
 	/* stack */
 	switch (self->state) {
@@ -1092,16 +1087,12 @@ static void
 gs_extras_page_switch_to (GsPage *page)
 {
 	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
-	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS) {
 		g_warning ("Called switch_to(codecs) when in mode %s",
 			   gs_shell_get_mode_string (self->shell));
 		return;
 	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_widget_show (widget);
 
 	gs_extras_page_update_ui_state (self);
 }

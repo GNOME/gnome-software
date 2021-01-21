@@ -293,16 +293,6 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
-gs_details_page_update_header_label (GsDetailsPage *self)
-{
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (GS_PAGE (self)));
-	gtk_widget_set_visible (widget, gtk_label_get_label (GTK_LABEL (widget)) != NULL);
-}
-
-static void
 gs_details_page_switch_to (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
@@ -317,8 +307,6 @@ gs_details_page_switch_to (GsPage *page)
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
 		return;
-
-	gs_details_page_update_header_label (self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -1222,7 +1210,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
-	gs_details_page_update_header_label (self);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
@@ -2117,7 +2104,6 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_update_header_label (self);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2152,7 +2138,6 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_update_header_label (self);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |

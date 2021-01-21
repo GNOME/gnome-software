@@ -62,17 +62,6 @@ typedef enum {
 } GsCategoryPageProperty;
 
 static void
-gs_category_page_switch_to (GsPage *page)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_widget_show (widget);
-	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (page));
-}
-
-static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
@@ -590,7 +579,6 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	object_class->get_property = gs_category_page_get_property;
 	object_class->dispose = gs_category_page_dispose;
 
-	page_class->switch_to = gs_category_page_switch_to;
 	page_class->reload = gs_category_page_reload;
 	page_class->setup = gs_category_page_setup;
 
