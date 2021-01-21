@@ -2488,7 +2488,5 @@ gs_shell_init (GsShell *shell)
 GsShell *
 gs_shell_new (void)
 {
-	GsShell *shell;
-	shell = g_object_new (GS_TYPE_SHELL, NULL);
-	return GS_SHELL (shell);
+	return GS_SHELL (g_object_new (GS_TYPE_SHELL, NULL));
 }
