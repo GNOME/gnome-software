@@ -30,7 +30,6 @@ struct _GsCategoryPage
 	GsPage		 parent_instance;
 
 	GsPluginLoader	*plugin_loader;
-	GtkBuilder	*builder;
 	GCancellable	*cancellable;
 	GsShell		*shell;
 	GsCategory	*category;
@@ -531,7 +530,6 @@ gs_category_page_dispose (GObject *object)
 		self->sort_name_handler_id = 0;
 	}
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->category);
 	g_clear_object (&self->subcategory);
 	g_clear_object (&self->plugin_loader);
@@ -543,14 +541,12 @@ static gboolean
 gs_category_page_setup (GsPage *page,
                         GsShell *shell,
                         GsPluginLoader *plugin_loader,
-                        GtkBuilder *builder,
                         GCancellable *cancellable,
                         GError **error)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->shell = shell;
 	self->sort_type = SUBCATEGORY_SORT_TYPE_RATING;
 	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->category_detail_box),

@@ -264,7 +264,6 @@ static gboolean
 gs_moderate_page_setup (GsPage *page,
                         GsShell *shell,
                         GsPluginLoader *plugin_loader,
-                        GtkBuilder *builder,
                         GCancellable *cancellable,
                         GError **error)
 {

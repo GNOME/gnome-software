@@ -31,7 +31,6 @@ struct _GsPageClass
 	gboolean	(*setup)		(GsPage		 *page,
 						 GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
-						 GtkBuilder	*builder,
 						 GCancellable	*cancellable,
 						 GError		**error);
 };
@@ -70,7 +69,6 @@ void		 gs_page_reload				(GsPage		*page);
 gboolean	 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,
-							 GtkBuilder	*builder,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_page_is_active			(GsPage		*page);

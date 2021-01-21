@@ -24,7 +24,6 @@ struct _GsInstalledPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
@@ -569,7 +568,6 @@ static gboolean
 gs_installed_page_setup (GsPage *page,
                          GsShell *shell,
                          GsPluginLoader *plugin_loader,
-                         GtkBuilder *builder,
                          GCancellable *cancellable,
                          GError **error)
 {
@@ -583,7 +581,6 @@ gs_installed_page_setup (GsPage *page,
 			  G_CALLBACK (gs_installed_page_pending_apps_changed_cb),
 			  self);
 
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* setup installed */
@@ -671,7 +668,6 @@ gs_installed_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);

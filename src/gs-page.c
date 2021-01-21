@@ -718,7 +718,6 @@ gboolean
 gs_page_setup (GsPage *page,
                GsShell *shell,
                GsPluginLoader *plugin_loader,
-               GtkBuilder *builder,
                GCancellable *cancellable,
                GError **error)
 {
@@ -733,7 +732,7 @@ gs_page_setup (GsPage *page,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->shell = shell;
 
-	return klass->setup (page, shell, plugin_loader, builder, cancellable, error);
+	return klass->setup (page, shell, plugin_loader, cancellable, error);
 }
 
 static void

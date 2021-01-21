@@ -45,7 +45,6 @@ struct _GsUpdatesPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*cancellable_refresh;
 	GCancellable		*cancellable_upgrade_download;
@@ -1182,7 +1181,6 @@ static gboolean
 gs_updates_page_setup (GsPage *page,
                        GsShell *shell,
                        GsPluginLoader *plugin_loader,
-                       GtkBuilder *builder,
                        GCancellable *cancellable,
                        GError **error)
 {
@@ -1221,7 +1219,6 @@ gs_updates_page_setup (GsPage *page,
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_updates_page_network_available_notify_cb),
 				 self, 0);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* setup system upgrades */
@@ -1365,7 +1362,6 @@ gs_updates_page_dispose (GObject *object)
 		}
 	}
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);

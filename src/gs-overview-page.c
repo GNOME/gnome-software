@@ -29,7 +29,6 @@ struct _GsOverviewPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
 	GsShell			*shell;
@@ -797,7 +796,6 @@ static gboolean
 gs_overview_page_setup (GsPage *page,
                         GsShell *shell,
                         GsPluginLoader *plugin_loader,
-                        GtkBuilder *builder,
                         GCancellable *cancellable,
                         GError **error)
 {
@@ -810,7 +808,6 @@ gs_overview_page_setup (GsPage *page,
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 	self->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);
@@ -945,7 +942,6 @@ gs_overview_page_dispose (GObject *object)
 {
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (object);
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);

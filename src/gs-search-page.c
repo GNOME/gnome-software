@@ -24,7 +24,6 @@ struct _GsSearchPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*search_cancellable;
 	GtkSizeGroup		*sizegroup_image;
@@ -416,7 +415,6 @@ static gboolean
 gs_search_page_setup (GsPage *page,
                       GsShell *shell,
                       GsPluginLoader *plugin_loader,
-                      GtkBuilder *builder,
                       GCancellable *cancellable,
                       GError **error)
 {
@@ -425,7 +423,6 @@ gs_search_page_setup (GsPage *page,
 	g_return_val_if_fail (GS_IS_SEARCH_PAGE (self), TRUE);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 	self->shell = shell;
 
@@ -508,7 +505,6 @@ gs_search_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->search_cancellable);

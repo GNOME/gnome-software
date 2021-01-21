@@ -42,7 +42,6 @@ struct _GsExtrasPage
 	GsPage			  parent_instance;
 
 	GsPluginLoader		 *plugin_loader;
-	GtkBuilder		 *builder;
 	GCancellable		 *search_cancellable;
 	GsShell			 *shell;
 	GsExtrasPageState	  state;
@@ -1183,7 +1182,6 @@ static gboolean
 gs_extras_page_setup (GsPage *page,
                       GsShell *shell,
                       GsPluginLoader *plugin_loader,
-                      GtkBuilder *builder,
                       GCancellable *cancellable,
                       GError **error)
 {
@@ -1194,7 +1192,6 @@ gs_extras_page_setup (GsPage *page,
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 
 	g_signal_connect (self->list_box_results, "row-activated",
 			  G_CALLBACK (row_activated_cb), self);
@@ -1295,7 +1292,6 @@ gs_extras_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_button);
 	g_clear_object (&self->language);
 	g_clear_object (&self->vendor);
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 
 	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);

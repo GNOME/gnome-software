@@ -47,7 +47,6 @@ struct _GsDetailsPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
 	GsApp			*app;
@@ -2816,7 +2815,6 @@ static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
                        GsPluginLoader *plugin_loader,
-                       GtkBuilder *builder,
                        GCancellable *cancellable,
                        GError **error)
 {
@@ -2828,7 +2826,6 @@ gs_details_page_setup (GsPage *page,
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* show review widgets if we have plugins that provide them */
@@ -2957,7 +2954,6 @@ gs_details_page_dispose (GObject *object)
 		g_clear_object (&self->app);
 	}
 	g_clear_object (&self->app_local_file);
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);

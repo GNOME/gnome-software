@@ -2061,7 +2061,6 @@ gs_shell_setup_pages (GsShell *shell)
 		GsPage *page = GS_PAGE (g_hash_table_lookup (shell->pages, l->data));
 		if (!gs_page_setup (page, shell,
 				    shell->plugin_loader,
-				    shell->builder,
 				    shell->cancellable,
 				    &error)) {
 			g_warning ("Failed to setup panel: %s", error->message);
