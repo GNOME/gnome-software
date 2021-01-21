@@ -3120,7 +3120,5 @@ gs_details_page_init (GsDetailsPage *self)
 GsDetailsPage *
 gs_details_page_new (void)
 {
-	GsDetailsPage *self;
-	self = g_object_new (GS_TYPE_DETAILS_PAGE, NULL);
-	return GS_DETAILS_PAGE (self);
+	return GS_DETAILS_PAGE (g_object_new (GS_TYPE_DETAILS_PAGE, NULL));
 }

@@ -601,7 +601,5 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 GsCategoryPage *
 gs_category_page_new (void)
 {
-	GsCategoryPage *self;
-	self = g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
-	return self;
+	return g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
 }

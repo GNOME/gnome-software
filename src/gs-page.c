@@ -814,7 +814,5 @@ gs_page_class_init (GsPageClass *klass)
 GsPage *
 gs_page_new (void)
 {
-	GsPage *page;
-	page = g_object_new (GS_TYPE_PAGE, NULL);
-	return GS_PAGE (page);
+	return GS_PAGE (g_object_new (GS_TYPE_PAGE, NULL));
 }
