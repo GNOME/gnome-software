@@ -64,6 +64,7 @@ struct _GsUpdatesPage
 	GtkWidget		*header_end_box;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
+	guint			 updates_counter;
 
 	GtkWidget		*updates_box;
 	GtkWidget		*button_updates_mobile;
@@ -104,6 +105,7 @@ typedef enum {
 	PROP_HSCROLL_POLICY,
 	PROP_VSCROLL_POLICY,
 	PROP_TITLE,
+	PROP_COUNTER,
 } GsUpdatesPageProperty;
 
 static void
@@ -201,29 +203,18 @@ gs_updates_page_get_state_string (GsPluginStatus status)
 static void
 refresh_headerbar_updates_counter (GsUpdatesPage *self)
 {
-	GtkWidget *widget;
-	guint num_updates;
+	guint new_updates_counter;
 
-	num_updates = _get_num_updates (self);
+	new_updates_counter = _get_num_updates (self);
+	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader) ||
+	    self->state == GS_UPDATES_PAGE_STATE_FAILED)
+		new_updates_counter = 0;
 
-	/* update the counter */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
-	if (num_updates > 0 &&
-	    gs_plugin_loader_get_allow_updates (self->plugin_loader)) {
-		g_autofree gchar *text = NULL;
-		text = g_strdup_printf ("%u", num_updates);
-		gtk_label_set_label (GTK_LABEL (widget), text);
-		gtk_widget_show (widget);
-	} else {
-		gtk_widget_hide (widget);
-	}
+	if (new_updates_counter == self->updates_counter)
+		return;
 
-	/* update the tab style */
-	if (num_updates > 0 &&
-	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
-		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
-	else
-		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
+	self->updates_counter = new_updates_counter;
+	g_object_notify (G_OBJECT (self), "counter");
 }
 
 static void
@@ -430,7 +421,6 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
                                 GAsyncResult *res,
                                 GsUpdatesPage *self)
 {
-	GtkWidget *widget;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -445,9 +435,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
-							     "button_updates_counter"));
-		gtk_widget_hide (widget);
+		refresh_headerbar_updates_counter (self);
 		return;
 	}
 
@@ -1318,6 +1306,9 @@ gs_updates_page_get_property (GObject    *object,
 	case PROP_TITLE:
 		g_value_set_string (value, _("Updates"));
 		break;
+	case PROP_COUNTER:
+		g_value_set_uint (value, self->updates_counter);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1347,6 +1338,7 @@ gs_updates_page_set_property (GObject      *object,
 		g_assert_not_reached ();
 		break;
 	case PROP_TITLE:
+	case PROP_COUNTER:
 		/* Read only */
 		g_assert_not_reached ();
 		break;
@@ -1408,6 +1400,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
 	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
+	g_object_class_override_property (object_class, PROP_COUNTER, "counter");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-page.ui");
 

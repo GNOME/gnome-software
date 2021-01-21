@@ -34,6 +34,7 @@ struct _GsInstalledPage
 	gboolean		 waiting;
 	GsShell			*shell;
 	GSettings		*settings;
+	guint			 pending_apps_counter;
 
 	GtkWidget		*list_box_install;
 	GtkWidget		*scrolledwindow_install;
@@ -535,7 +536,6 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                            GsInstalledPage *self)
 {
 	GsApp *app;
-	GtkWidget *widget;
 	guint i;
 	guint cnt = 0;
 	g_autoptr(GsAppList) pending = NULL;
@@ -558,16 +558,10 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		cnt++;
 	}
 
-	/* show a label with the number of on-going operations */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
-						     "button_installed_counter"));
-	if (cnt == 0) {
-		gtk_widget_hide (widget);
-	} else {
-		g_autofree gchar *label = NULL;
-		label = g_strdup_printf ("%u", cnt);
-		gtk_label_set_label (GTK_LABEL (widget), label);
-		gtk_widget_show (widget);
+	/* update the number of on-going operations */
+	if (cnt != self->pending_apps_counter) {
+		self->pending_apps_counter = cnt;
+		g_object_notify (G_OBJECT (self), "counter");
 	}
 }
 

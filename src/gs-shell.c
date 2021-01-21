@@ -76,6 +76,8 @@ struct _GsShell
 	GsPage			*page;
 
 	GBinding		*application_details_header_binding;
+	GBinding		*button_installed_counter_binding;
+	GBinding		*button_updates_counter_binding;
 
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
@@ -2093,6 +2095,29 @@ gs_shell_close_window_accel_cb (GtkAccelGroup *accel_group,
 	return TRUE;
 }
 
+static void
+counter_notify_label_cb (GObject    *obj,
+                         GParamSpec *pspec,
+                         gpointer    user_data)
+{
+	GtkLabel *label = GTK_LABEL (obj);
+	GsShell *shell = GS_SHELL (user_data);
+	gboolean is_interesting;
+
+	/* hide the label if its value is not useful to the user */
+	is_interesting = (g_strcmp0 (gtk_label_get_label (label), "") != 0 &&
+			  g_strcmp0 (gtk_label_get_label (label), "0") != 0);
+
+	gtk_widget_set_visible (GTK_WIDGET (label), is_interesting);
+
+	/* update the tab style */
+	if (is_interesting &&
+	    gs_shell_get_mode (shell) != GS_SHELL_MODE_UPDATES)
+		gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (label)), "needs-attention");
+	else
+		gtk_style_context_remove_class (gtk_widget_get_style_context (GTK_WIDGET (label)), "needs-attention");
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -2252,6 +2277,21 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	shell->search_changed_id =
 		g_signal_connect (widget, "search-changed",
 				  G_CALLBACK (search_changed_handler), shell);
+
+	/* bind the counters */
+	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_installed_counter"));
+	page = g_hash_table_lookup (shell->pages, "installed");
+	shell->button_installed_counter_binding = g_object_bind_property (page, "counter",
+									  widget, "label",
+									  G_BINDING_SYNC_CREATE);
+	g_signal_connect (widget, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates_counter"));
+	page = g_hash_table_lookup (shell->pages, "updates");
+	shell->button_updates_counter_binding = g_object_bind_property (page, "counter",
+									widget, "label",
+									G_BINDING_SYNC_CREATE);
+	g_signal_connect (widget, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
 
 	/* load content */
 	page = GS_PAGE (gtk_builder_get_object (shell->builder, "loading_page"));
@@ -2438,6 +2478,8 @@ gs_shell_dispose (GObject *object)
 	GsShell *shell = GS_SHELL (object);
 
 	g_clear_object (&shell->application_details_header_binding);
+	g_clear_object (&shell->button_installed_counter_binding);
+	g_clear_object (&shell->button_updates_counter_binding);
 
 	if (shell->back_entry_stack != NULL) {
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);

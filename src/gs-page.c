@@ -30,9 +30,10 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 
 typedef enum {
 	PROP_TITLE = 1,
+	PROP_COUNTER,
 } GsPageProperty;
 
-static GParamSpec *obj_props[PROP_TITLE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_COUNTER + 1] = { NULL, };
 
 GsShell *
 gs_page_get_shell (GsPage *page)
@@ -625,6 +626,31 @@ gs_page_get_title (GsPage *page)
 }
 
 /**
+ * gs_page_get_counter:
+ * @page: a #GsPage
+ *
+ * Get the value of #GsPage:counter.
+ *
+ * Returns: a counter of the number of available updates, installed packages,
+ *     etc. on this page
+ *
+ * Since: 40
+ */
+guint
+gs_page_get_counter (GsPage *page)
+{
+	g_auto(GValue) value = G_VALUE_INIT;
+
+	g_return_val_if_fail (GS_IS_PAGE (page), 0);
+
+	/* The property is typically overridden by subclasses; the
+	 * implementation in #GsPage itself is just a placeholder. */
+	g_object_get_property (G_OBJECT (page), "counter", &value);
+
+	return g_value_get_uint (&value);
+}
+
+/**
  * gs_page_switch_to:
  *
  * Pure virtual method that subclasses have to override to show page specific
@@ -721,6 +747,10 @@ gs_page_get_property (GObject    *object,
 		/* Should be overridden by subclasses. */
 		g_value_set_string (value, NULL);
 		break;
+	case PROP_COUNTER:
+		/* Should be overridden by subclasses. */
+		g_value_set_uint (value, 0);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -765,6 +795,19 @@ gs_page_class_init (GsPageClass *klass)
 		g_param_spec_string ("title", NULL, NULL,
 				     NULL,
 				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsPage:counter:
+	 *
+	 * A counter indicating the number of installed packages, available
+	 * updates, etc. on this page.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_COUNTER] =
+		g_param_spec_uint ("counter", NULL, NULL,
+				   0, G_MAXUINT, 0,
+				   G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
