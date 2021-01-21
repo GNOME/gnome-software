@@ -995,6 +995,8 @@ gs_plugin_download_app (GsPlugin *plugin,
 #endif
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
+	gpointer schedule_entry_handle = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -1019,11 +1021,11 @@ gs_plugin_download_app (GsPlugin *plugin,
 #if FWUPD_CHECK_VERSION(1,5,2)
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
 #endif
+		gboolean download_success;
+		g_autoptr(GError) error_local = NULL;
 
 		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-			g_autoptr(GError) error_local = NULL;
-
-			if (!gs_metered_block_app_on_download_scheduler (app, cancellable, &error_local)) {
+			if (!gs_metered_block_app_on_download_scheduler (app, &schedule_entry_handle, cancellable, &error_local)) {
 				g_warning ("Failed to block on download scheduler: %s",
 					   error_local->message);
 				g_clear_error (&error_local);
@@ -1031,19 +1033,23 @@ gs_plugin_download_app (GsPlugin *plugin,
 		}
 
 #if FWUPD_CHECK_VERSION(1,5,2)
-		if (!fwupd_client_download_file (priv->client,
-						 uri, file,
-						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
-						 cancellable,
-						 error)) {
+		download_success = fwupd_client_download_file (priv->client,
+							       uri, file,
+							       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
+							       cancellable,
+							       error);
+		if (!download_success)
 			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
 #else
-		if (!gs_plugin_download_file (plugin, app, uri, filename,
-					      cancellable, error))
-			return FALSE;
+		download_success = gs_plugin_download_file (plugin, app, uri, filename,
+							    cancellable, error);
 #endif
+
+		if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
+			g_warning ("Failed to remove schedule entry: %s", error_local->message);
+
+		if (!download_success)
+			return FALSE;
 	}
 	gs_app_set_size_download (app, 0);
 	return TRUE;

@@ -27,7 +27,7 @@
  * be blocking. libmogwai-schedule-client was designed to be asynchronous; so
  * these helpers make it synchronous.
  *
- * Since: 2.34
+ * Since: 3.34
  */
 
 #include "config.h"
@@ -82,6 +82,8 @@ invalidated_cb (MwscScheduleEntry *entry,
  * gs_metered_block_on_download_scheduler:
  * @parameters: (nullable): a #GVariant of type `a{sv}` specifying parameters
  *    for the schedule entry, or %NULL to pass no parameters
+ * @schedule_entry_handle_out: (out) (not optional): return location for a
+ *    handle to the resulting schedule entry
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
@@ -90,6 +92,10 @@ invalidated_cb (MwscScheduleEntry *entry,
  *
  * FIXME: This will currently ignore later revocations of that download
  * permission, and does not support creating a schedule entry per app.
+ * The schedule entry must later be removed from the schedule by passing
+ * the handle from @schedule_entry_handle_out to
+ * gs_metered_remove_from_download_scheduler(), otherwise resources will leak.
+ * This is an opaque handle and should not be inspected.
  *
  * If a schedule entry cannot be created, or if @cancellable is cancelled,
  * an error will be set and %FALSE returned.
@@ -100,10 +106,11 @@ invalidated_cb (MwscScheduleEntry *entry,
  * This function will likely be called from a #GsPluginLoader worker thread.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 2.34
+ * Since: 3.38
  */
 gboolean
 gs_metered_block_on_download_scheduler (GVariant      *parameters,
+                                        gpointer      *schedule_entry_handle_out,
                                         GCancellable  *cancellable,
                                         GError       **error)
 {
@@ -113,6 +120,11 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 	g_autofree gchar *parameters_str = NULL;
 	g_autoptr(GMainContext) context = NULL;
 	g_autoptr(GsMainContextPusher) pusher = NULL;
+
+	g_return_val_if_fail (schedule_entry_handle_out != NULL, FALSE);
+
+	/* set this in case of error */
+	*schedule_entry_handle_out = NULL;
 
 	parameters_str = (parameters != NULL) ? g_variant_print (parameters, TRUE) : g_strdup ("(none)");
 	g_debug ("%s: Waiting with parameters: %s", G_STRFUNC, parameters_str);
@@ -160,14 +172,20 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 		g_signal_handler_disconnect (schedule_entry, notify_id);
 
 		if (!download_now && invalidated_error != NULL) {
+			/* no need to remove the schedule entry as it’s been
+			 * invalidated */
 			g_propagate_error (error, g_steal_pointer (&invalidated_error));
 			return FALSE;
 		} else if (!download_now && g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			/* remove the schedule entry and fail */
+			gs_metered_remove_from_download_scheduler (schedule_entry, NULL, NULL);
 			return FALSE;
 		}
 
 		g_assert (download_now);
 	}
+
+	*schedule_entry_handle_out = g_object_ref (schedule_entry);
 
 	g_debug ("%s: Allowed to download", G_STRFUNC);
 #else  /* if !HAVE_MOGWAI */
@@ -178,8 +196,50 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 }
 
 /**
+ * gs_metered_remove_from_download_scheduler:
+ * @schedule_entry_handle: (transfer full) (nullable): schedule entry handle as
+ *    returned by gs_metered_block_on_download_scheduler()
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @error: return location for a #GError, or %NULL
+ *
+ * Remove a schedule entry previously created by
+ * gs_metered_block_on_download_scheduler(). This must be called after
+ * gs_metered_block_on_download_scheduler() has successfully returned, or
+ * resources will leak. It should be called once the corresponding download is
+ * complete.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 3.38
+ */
+gboolean
+gs_metered_remove_from_download_scheduler (gpointer       schedule_entry_handle,
+                                           GCancellable  *cancellable,
+                                           GError       **error)
+{
+#ifdef HAVE_MOGWAI
+	g_autoptr(MwscScheduleEntry) schedule_entry = schedule_entry_handle;
+#endif
+
+	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	g_debug ("Removing schedule entry handle %p", schedule_entry_handle);
+
+	if (schedule_entry_handle == NULL)
+		return TRUE;
+
+#ifdef HAVE_MOGWAI
+	return mwsc_schedule_entry_remove (schedule_entry, cancellable, error);
+#else
+	return TRUE;
+#endif
+}
+
+/**
  * gs_metered_block_app_on_download_scheduler:
  * @app: a #GsApp to get the scheduler parameters from
+ * @schedule_entry_handle_out: (out) (not optional): return location for a
+ *    handle to the resulting schedule entry
  * @cancellable: a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
@@ -187,10 +247,11 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
  * download parameters from the given @app.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 2.34
+ * Since: 3.38
  */
 gboolean
 gs_metered_block_app_on_download_scheduler (GsApp         *app,
+                                            gpointer      *schedule_entry_handle_out,
                                             GCancellable  *cancellable,
                                             GError       **error)
 {
@@ -209,12 +270,14 @@ gs_metered_block_app_on_download_scheduler (GsApp         *app,
 
 	parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
 
-	return gs_metered_block_on_download_scheduler (parameters, cancellable, error);
+	return gs_metered_block_on_download_scheduler (parameters, schedule_entry_handle_out, cancellable, error);
 }
 
 /**
  * gs_metered_block_app_list_on_download_scheduler:
  * @app_list: a #GsAppList to get the scheduler parameters from
+ * @schedule_entry_handle_out: (out) (not optional): return location for a
+ *    handle to the resulting schedule entry
  * @cancellable: a #GCancellable, or %NULL
  * @error: return location for a #GError, or %NULL
  *
@@ -222,10 +285,11 @@ gs_metered_block_app_on_download_scheduler (GsApp         *app,
  * download parameters from the apps in the given @app_list.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 2.34
+ * Since: 3.38
  */
 gboolean
 gs_metered_block_app_list_on_download_scheduler (GsAppList     *app_list,
+                                                 gpointer      *schedule_entry_handle_out,
                                                  GCancellable  *cancellable,
                                                  GError       **error)
 {
@@ -244,5 +308,5 @@ gs_metered_block_app_list_on_download_scheduler (GsAppList     *app_list,
 	 * prioritisation, so go with this simple implementation for now. */
 	parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
 
-	return gs_metered_block_on_download_scheduler (parameters, cancellable, error);
+	return gs_metered_block_on_download_scheduler (parameters, schedule_entry_handle_out, cancellable, error);
 }

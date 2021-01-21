@@ -633,6 +633,15 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	return g_steal_pointer (&transaction);
 }
 
+static void
+remove_schedule_entry (gpointer schedule_entry_handle)
+{
+	g_autoptr(GError) error_local = NULL;
+
+	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
+		g_warning ("Failed to remove schedule entry: %s", error_local->message);
+}
+
 gboolean
 gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		    GCancellable *cancellable, GError **error)
@@ -648,6 +657,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		GsFlatpak *flatpak = GS_FLATPAK (key);
 		GsAppList *list_tmp = GS_APP_LIST (value);
 		g_autoptr(FlatpakTransaction) transaction = NULL;
+		gpointer schedule_entry_handle = NULL;
 
 		g_assert (GS_IS_FLATPAK (flatpak));
 		g_assert (list_tmp != NULL);
@@ -656,7 +666,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
 			g_autoptr(GError) error_local = NULL;
 
-			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
+			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
 				g_warning ("Failed to block on download scheduler: %s",
 					   error_local->message);
 				g_clear_error (&error_local);
@@ -701,10 +711,14 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 				return FALSE;
 			}
 		}
+
 		if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 			gs_flatpak_error_convert (error);
+			remove_schedule_entry (schedule_entry_handle);
 			return FALSE;
 		}
+
+		remove_schedule_entry (schedule_entry_handle);
 
 		/* Traverse over the GsAppList again and set that the update has been already downloaded
 		 * for the apps. */
@@ -800,6 +814,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(GError) error_local = NULL;
+	gpointer schedule_entry_handle = NULL;
 
 	/* queue for install if installation needs the network */
 	if (!app_has_local_source (app) &&
@@ -833,19 +849,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* is a source */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
-
-	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-		g_autoptr(GError) error_local = NULL;
-
-		/* FIXME: Add additional details here, especially the download
-		 * size bounds (using `size-minimum` and `size-maximum`, both
-		 * type `t`). */
-		if (!gs_metered_block_app_on_download_scheduler (app, cancellable, &error_local)) {
-			g_warning ("Failed to block on download scheduler: %s",
-				   error_local->message);
-			g_clear_error (&error_local);
-		}
-	}
 
 	/* build */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -908,13 +911,27 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 	}
 
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		/* FIXME: Add additional details here, especially the download
+		 * size bounds (using `size-minimum` and `size-maximum`, both
+		 * type `t`). */
+		if (!gs_metered_block_app_on_download_scheduler (app, &schedule_entry_handle, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+
 	/* run transaction */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
+		remove_schedule_entry (schedule_entry_handle);
 		return FALSE;
 	}
+
+	remove_schedule_entry (schedule_entry_handle);
 
 	/* get any new state */
 	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
@@ -941,6 +958,17 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 {
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 	gboolean is_update_downloaded = TRUE;
+	gpointer schedule_entry_handle = NULL;
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(GError) error_local = NULL;
+
+		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
 
 	/* build and run transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -993,8 +1021,9 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 		is_update_downloaded &= gs_app_get_is_update_downloaded (app);
 	}
 
-	if (is_update_downloaded)
+	if (is_update_downloaded) {
 		flatpak_transaction_set_no_pull (transaction, TRUE);
+	}
 
 #if FLATPAK_CHECK_VERSION(1, 9, 1)
 	/* automatically clean up unused EOL runtimes when updating */
@@ -1007,8 +1036,11 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 			gs_app_set_state_recover (app);
 		}
 		gs_flatpak_error_convert (error);
+		remove_schedule_entry (schedule_entry_handle);
 		return FALSE;
 	}
+
+	remove_schedule_entry (schedule_entry_handle);
 	gs_plugin_updates_changed (plugin);
 
 	/* get any new state */
