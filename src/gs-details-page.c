@@ -1569,7 +1569,7 @@ version_history_list_row_activated_cb (GtkListBox *list_box,
 	if (GS_IS_APP_VERSION_HISTORY_ROW (row))
 		return;
 
-	dialog = gs_app_version_history_dialog_new (gs_shell_get_window (self->shell),
+	dialog = gs_app_version_history_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW)),
 						    self->app);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 

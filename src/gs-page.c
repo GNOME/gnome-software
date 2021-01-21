@@ -75,7 +75,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 	GtkWidget *dialog;
 	g_autofree gchar *escaped = NULL;
 
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_USE_HEADER_BAR,
 					 GTK_MESSAGE_INFO,
@@ -248,7 +248,7 @@ gs_page_install_app (GsPage *page,
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		GtkResponseType response;
 
-		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
+		response = gs_app_notify_unavailable (app, GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)));
 		if (response != GTK_RESPONSE_OK)
 			return;
 	}
@@ -318,7 +318,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_USE_HEADER_BAR,
 					 GTK_MESSAGE_INFO,
@@ -483,7 +483,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	}
 
 	/* ask for confirmation */
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)),
 	                                 GTK_DIALOG_MODAL,
 	                                 GTK_MESSAGE_QUESTION,
 	                                 GTK_BUTTONS_CANCEL,

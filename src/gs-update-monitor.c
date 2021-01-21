@@ -1122,7 +1122,7 @@ cleanup_notifications_cb (gpointer user_data)
 }
 
 void
-gs_update_monitor_show_error (GsUpdateMonitor *monitor, GsShell *shell)
+gs_update_monitor_show_error (GsUpdateMonitor *monitor, GtkWindow *window)
 {
 	const gchar *title;
 	const gchar *msg;
@@ -1174,7 +1174,7 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GsShell *shell)
 		break;
 	}
 
-	gs_utils_show_error_dialog (gs_shell_get_window (shell),
+	gs_utils_show_error_dialog (window,
 	                            title,
 	                            msg,
 	                            show_detailed_error ? monitor->last_offline_error->message : NULL);

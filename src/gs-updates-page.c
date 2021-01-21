@@ -781,6 +781,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
                                    GsUpdatesPage *self)
 {
 	GtkWidget *dialog;
+	GtkWindow *parent_window = GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (self), GTK_TYPE_WINDOW));
 
 	/* cancel existing action? */
 	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH) {
@@ -801,7 +802,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 			gs_updates_page_get_new_updates (self);
 			return;
 		}
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
+		dialog = gtk_message_dialog_new (parent_window,
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -825,7 +826,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 
 	/* no network connection */
 	} else {
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
+		dialog = gtk_message_dialog_new (parent_window,
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
