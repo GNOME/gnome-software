@@ -82,7 +82,6 @@ void		 gs_shell_show_uri		(GsShell	*shell,
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
-gboolean	 gs_shell_is_active		(GsShell	*shell);
 GtkWindow	*gs_shell_get_window		(GsShell	*shell);
 void		 gs_shell_show_notification	(GsShell	*shell,
 						 const gchar	*title);

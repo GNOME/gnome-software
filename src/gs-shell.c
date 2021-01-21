@@ -125,12 +125,6 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
-gboolean
-gs_shell_is_active (GsShell *shell)
-{
-	return gtk_window_is_active (shell->main_window);
-}
-
 GtkWindow *
 gs_shell_get_window (GsShell *shell)
 {

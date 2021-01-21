@@ -121,7 +121,6 @@ gs_page_app_installed_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsPage *page = helper->page;
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 
@@ -162,7 +161,7 @@ gs_page_app_installed_cb (GObject *source,
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
 	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
-	    !gs_shell_is_active (priv->shell) &&
+	    !gtk_window_is_active (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW))) &&
 	    ((helper->interaction) & GS_SHELL_INTERACTION_NOTIFY) != 0)
 		gs_app_notify_installed (helper->app);
 
