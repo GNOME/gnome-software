@@ -1456,4 +1456,81 @@
       </object>
     </child>
   </object>
+
+  <object class="GtkBox" id="origin_box">
+    <property name="visible">True</property>
+    <property name="orientation">horizontal</property>
+    <property name="halign">fill</property>
+    <property name="spacing">9</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="label" translatable="yes" comments="Translators: This is a label in the header bar, followed by a drop down to choose between different source repos">Source</property>
+        <property name="valign">GTK_ALIGN_CENTER</property>
+        <property name="visible">1</property>
+        <style>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuButton" id="origin_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="sensitive">True</property>
+        <property name="popover">origin_popover</property>
+        <child>
+          <object class="GtkGrid">
+            <property name="column-spacing">12</property>
+            <property name="visible">1</property>
+            <property name="valign">GTK_ALIGN_CENTER</property>
+            <child>
+              <object class="GtkLabel" id="origin_button_label">
+                <property name="label"></property>
+                <property name="valign">GTK_ALIGN_CENTER</property>
+                <property name="visible">1</property>
+                <property name="xalign">0</property>
+                <property name="width_chars">10</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pan-down-symbolic</property>
+                <property name="pixel-size">16</property>
+                <property name="valign">GTK_ALIGN_CENTER</property>
+                <property name="visible">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkPopover" id="origin_popover">
+    <property name="visible">False</property>
+    <child>
+      <object class="GtkBox" id="origin_popover_box">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="propagate-natural-height">true</property>
+            <property name="propagate-natural-width">true</property>
+            <property name="max-content-height">600</property>
+            <property name="visible">true</property>
+            <child>
+              <object class="GtkListBox" id="origin_popover_list_box">
+                <property name="selection-mode">none</property>
+                <property name="visible">true</property>
+                <style>
+                  <class name="content"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
 </interface>

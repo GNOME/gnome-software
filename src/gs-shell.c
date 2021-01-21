@@ -435,8 +435,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	gtk_widget_set_visible (widget, buttonbox_visible);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "origin_box"));
-	gtk_widget_hide (widget);
 
 	gtk_widget_set_visible (shell->application_details_header, !buttonbox_visible);
 
