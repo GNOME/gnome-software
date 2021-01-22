@@ -35,6 +35,12 @@
     <property name="default-height">800</property>
     <property name="title" translatable="yes">Software</property>
     <property name="icon_name">org.gnome.Software</property>
+    <signal name="map" handler="gs_shell_main_window_mapped_cb"/>
+    <signal name="realize" handler="gs_shell_main_window_realized_cb"/>
+    <signal name="delete-event" handler="main_window_closed_cb"/>
+    <signal name="key-press-event" handler="window_key_press_event" after="yes"/>
+    <signal name="key-press-event" handler="window_keypress_handler"/>
+    <signal name="button-press-event" handler="window_button_press_event" after="yes"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -47,6 +53,7 @@
               <object class="GtkButton" id="button_back">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <signal name="clicked" handler="gs_shell_back_button_cb"/>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="button_back_accessible">
                     <property name="accessible-name" translatable="yes">Go back</property>
@@ -82,6 +89,7 @@
                         <property name="receives_default">True</property>
                         <property name="use_underline">True</property>
                         <property name="label" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
@@ -92,6 +100,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <child>
                           <object class="GtkBox" id="button_installed_box">
                             <property name="visible">True</property>
@@ -115,6 +124,8 @@
                               <object class="GtkLabel" id="button_installed_counter">
                                 <property name="visible">False</property>
                                 <property name="width-chars">2</property>
+                                <property name="label" bind-source="installed_page" bind-property="counter" bind-flags="sync-create"/>
+                                <signal name="notify::label" handler="counter_notify_label_cb"/>
                                 <style>
                                   <class name="counter-label"/>
                                 </style>
@@ -132,6 +143,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <child>
                           <object class="GtkBox" id="button_updates_box">
                             <property name="visible">True</property>
@@ -155,6 +167,8 @@
                               <object class="GtkLabel" id="button_updates_counter">
                                 <property name="visible">False</property>
                                 <property name="width-chars">2</property>
+                                <property name="label" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
+                                <signal name="notify::label" handler="counter_notify_label_cb"/>
                                 <style>
                                   <class name="counter-label"/>
                                 </style>
@@ -212,6 +226,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
+                <signal name="clicked" handler="search_button_clicked_cb"/>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="search_button_accessible">
                     <property name="accessible-name" translatable="yes">Search</property>
@@ -264,6 +279,7 @@
                 <property name="max_length">100</property>
                 <property name="hexpand">True</property>
                 <property name="halign">center</property>
+                <signal name="search-changed" handler="search_changed_handler"/>
               </object>
             </child>
           </object>
@@ -313,6 +329,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
                           </object>
                         </child>
                         <child>
@@ -321,6 +338,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
                           </object>
                         </child>
                         <child>
@@ -329,6 +347,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
                           </object>
                         </child>
                         <child>
@@ -337,6 +356,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Restart Now</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
                           </object>
                         </child>
                         <child>
@@ -345,6 +365,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
                           </object>
                         </child>
                       </object>
@@ -353,6 +374,7 @@
                       <object class="GtkButton" id="button_events_dismiss">
                         <property name="visible">True</property>
                         <property name="valign">start</property>
+                        <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
                         <style>
                           <class name="flat"/>
                         </style>
@@ -382,6 +404,7 @@
                     <property name="message-type">GTK_MESSAGE_INFO</property>
                     <property name="show-close-button">False</property>
                     <property name="revealed">False</property>
+                    <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
                     <child internal-child="content_area">
                       <object class="GtkBox">
                         <property name="visible">True</property>
@@ -429,6 +452,7 @@
                     <property name="visible">True</property>
                     <property name="homogeneous">False</property>
                     <property name="transition-type">crossfade</property>
+                    <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                     <child>
                       <object class="GsOverviewPage" id="overview_page">
                         <property name="visible">True</property>
@@ -456,6 +480,7 @@
                     <child>
                       <object class="GsLoadingPage" id="loading_page">
                         <property name="visible">True</property>
+                        <signal name="refreshed" handler="initial_refresh_done"/>
                       </object>
                       <packing>
                         <property name="name">loading</property>

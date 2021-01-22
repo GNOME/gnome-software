@@ -67,14 +67,11 @@ struct _GsShell
 	GtkWidget		*header_end_widget;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
-	gulong			 search_changed_id;
 	gchar			*events_info_uri;
 	GtkStack		*stack_main;
 	GsPage			*page;
 
 	GBinding		*application_details_header_binding;
-	GBinding		*button_installed_counter_binding;
-	GBinding		*button_updates_counter_binding;
 
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
@@ -103,8 +100,6 @@ struct _GsShell
 	GtkWidget		*button_events_dismiss;
 	GtkWidget		*label_events;
 	GtkWidget		*primary_menu;
-	GtkWidget		*button_installed_counter;
-	GtkWidget		*button_updates_counter;
 	GtkWidget		*application_details_header;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
@@ -2105,14 +2100,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	shell->settings = g_settings_new ("org.gnome.software");
 
 	/* get UI */
-	g_signal_connect (shell, "map",
-			  G_CALLBACK (gs_shell_main_window_mapped_cb), shell);
-	g_signal_connect (shell, "realize",
-			  G_CALLBACK (gs_shell_main_window_realized_cb), shell);
-
-	g_signal_connect (shell, "delete-event",
-			  G_CALLBACK (main_window_closed_cb), shell);
-
 	accel_group = gtk_accel_group_new ();
 	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
 	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
@@ -2131,90 +2118,23 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		g_object_unref (shell->header);
 	}
 
-	/* global keynav */
-	g_signal_connect_after (shell, "key_press_event",
-				G_CALLBACK (window_key_press_event), shell);
-	/* mouse hardware back button */
-	g_signal_connect_after (shell, "button_press_event",
-				G_CALLBACK (window_button_press_event), shell);
-
-	g_signal_connect (shell->stack_main, "notify::visible-child", G_CALLBACK (stack_notify_visible_child_cb), shell);
-
-	/* show the search bar when clicking on the search button */
-	g_signal_connect (shell->search_button, "clicked",
-	                  G_CALLBACK (search_button_clicked_cb),
-	                  shell);
-
-	/* show the account popover when clicking on the account button */
-	/*
-	g_signal_connect (shell->menu_button, "clicked",
-	                  G_CALLBACK (menu_button_clicked_cb),
-	                  shell); */
-
 	/* setup buttons */
-	g_signal_connect (shell->button_back, "clicked",
-			  G_CALLBACK (gs_shell_back_button_cb), shell);
 	g_object_set_data (G_OBJECT (shell->button_explore),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_OVERVIEW));
-	g_signal_connect (shell->button_explore, "clicked",
-			  G_CALLBACK (gs_overview_page_button_cb), shell);
 	g_object_set_data (G_OBJECT (shell->button_installed),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_INSTALLED));
-	g_signal_connect (shell->button_installed, "clicked",
-			  G_CALLBACK (gs_overview_page_button_cb), shell);
 	g_object_set_data (G_OBJECT (shell->button_updates),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
-	g_signal_connect (shell->button_updates, "clicked",
-			  G_CALLBACK (gs_overview_page_button_cb), shell);
-
-	/* set up in-app notification controls */
-	g_signal_connect (shell->button_events_dismiss, "clicked",
-			  G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell);
-	g_signal_connect (shell->button_events_sources, "clicked",
-			  G_CALLBACK (gs_shell_plugin_events_sources_cb), shell);
-	g_signal_connect (shell->button_events_no_space, "clicked",
-			  G_CALLBACK (gs_shell_plugin_events_no_space_cb), shell);
-	g_signal_connect (shell->button_events_network_settings, "clicked",
-			  G_CALLBACK (gs_shell_plugin_events_network_settings_cb), shell);
-	g_signal_connect (shell->button_events_more_info, "clicked",
-			  G_CALLBACK (gs_shell_plugin_events_more_info_cb), shell);
-	g_signal_connect (shell->button_events_restart_required, "clicked",
-			  G_CALLBACK (gs_shell_plugin_events_restart_required_cb), shell);
 
 	/* set up pages */
 	gs_shell_setup_pages (shell);
 
 	/* set up the metered data info bar and mogwai */
-	g_signal_connect (shell->metered_updates_bar, "response",
-			  (GCallback) gs_shell_metered_updates_bar_response_cb, shell);
-
 	g_signal_connect (shell->settings, "changed::download-updates",
 			  (GCallback) gs_shell_download_updates_changed_cb, shell);
-
-	/* set up search */
-	g_signal_connect (shell, "key-press-event",
-			  G_CALLBACK (window_keypress_handler), shell);
-	shell->search_changed_id =
-		g_signal_connect (shell->entry_search, "search-changed",
-				  G_CALLBACK (search_changed_handler), shell);
-
-	/* bind the counters */
-	shell->button_installed_counter_binding = g_object_bind_property (shell->pages[GS_SHELL_MODE_INSTALLED], "counter",
-									  shell->button_installed_counter, "label",
-									  G_BINDING_SYNC_CREATE);
-	g_signal_connect (shell->button_installed_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
-
-	shell->button_updates_counter_binding = g_object_bind_property (shell->pages[GS_SHELL_MODE_UPDATES], "counter",
-									shell->button_updates_counter, "label",
-									G_BINDING_SYNC_CREATE);
-	g_signal_connect (shell->button_updates_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
-
-	/* load content */
-	g_signal_connect (shell->pages[GS_SHELL_MODE_LOADING], "refreshed",
-			  G_CALLBACK (initial_refresh_done), shell);
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
@@ -2386,8 +2306,6 @@ gs_shell_dispose (GObject *object)
 	GsShell *shell = GS_SHELL (object);
 
 	g_clear_object (&shell->application_details_header_binding);
-	g_clear_object (&shell->button_installed_counter_binding);
-	g_clear_object (&shell->button_updates_counter_binding);
 
 	if (shell->back_entry_stack != NULL) {
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);
@@ -2459,8 +2377,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_installed_counter);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_updates_counter);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, application_details_header);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
@@ -2472,6 +2388,27 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child_full (widget_class, "details_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_DETAILS]));
 	gtk_widget_class_bind_template_child_full (widget_class, "category_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_CATEGORY]));
 	gtk_widget_class_bind_template_child_full (widget_class, "extras_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_EXTRAS]));
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_mapped_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_realized_cb);
+	gtk_widget_class_bind_template_callback (widget_class, main_window_closed_cb);
+	gtk_widget_class_bind_template_callback (widget_class, window_key_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
+	gtk_widget_class_bind_template_callback (widget_class, window_button_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, counter_notify_label_cb);
+	gtk_widget_class_bind_template_callback (widget_class, search_button_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_no_space_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_network_settings_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_restart_required_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_more_info_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_event_dismissed_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
+	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
+	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 }
 
 static void
