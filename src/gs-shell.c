@@ -107,15 +107,7 @@ struct _GsShell
 	GtkWidget		*button_updates_counter;
 	GtkWidget		*application_details_header;
 
-	GsPage			*overview_page;
-	GsPage			*updates_page;
-	GsPage			*installed_page;
-	GsPage			*moderate_page;
-	GsPage			*loading_page;
-	GsPage			*search_page;
-	GsPage			*details_page;
-	GsPage			*category_page;
-	GsPage			*extras_page;
+	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, GTK_TYPE_APPLICATION_WINDOW)
@@ -413,37 +405,6 @@ gs_shell_clean_back_entry_stack (GsShell *shell)
 	}
 }
 
-static GsPage *
-gs_shell_get_page_for_mode (GsShell     *shell,
-                            GsShellMode  mode)
-{
-	switch (mode) {
-	case GS_SHELL_MODE_OVERVIEW:
-		return shell->overview_page;
-	case GS_SHELL_MODE_INSTALLED:
-		return shell->installed_page;
-	case GS_SHELL_MODE_SEARCH:
-		return shell->search_page;
-	case GS_SHELL_MODE_UPDATES:
-		return shell->updates_page;
-	case GS_SHELL_MODE_DETAILS:
-		return shell->details_page;
-	case GS_SHELL_MODE_CATEGORY:
-		return shell->category_page;
-	case GS_SHELL_MODE_EXTRAS:
-		return shell->extras_page;
-	case GS_SHELL_MODE_MODERATE:
-		return shell->moderate_page;
-	case GS_SHELL_MODE_LOADING:
-		return shell->loading_page;
-	case GS_SHELL_MODE_UNKNOWN:
-		return NULL;
-	case GS_SHELL_MODE_LAST:
-	default:
-		g_assert_not_reached ();
-	}
-}
-
 static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell);
 static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
 
@@ -518,7 +479,7 @@ stack_notify_visible_child_cb (GObject    *object,
 				mode == GS_SHELL_MODE_UPDATES);
 
 	/* do action for mode */
-	page = gs_shell_get_page_for_mode (shell, mode);
+	page = shell->pages[mode];
 
 	if (mode == GS_SHELL_MODE_OVERVIEW ||
 	    mode == GS_SHELL_MODE_INSTALLED ||
@@ -586,7 +547,7 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_stack_set_visible_child_name (GTK_STACK (shell->stack_main), page_name[mode]);
 
 	/* do any mode-specific actions */
-	page = gs_shell_get_page_for_mode (shell, mode);
+	page = shell->pages[mode];
 
 	if (mode == GS_SHELL_MODE_SEARCH) {
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
@@ -636,14 +597,14 @@ save_back_entry (GsShell *shell)
 
 	switch (entry->mode) {
 	case GS_SHELL_MODE_CATEGORY:
-		entry->category = gs_category_page_get_category (GS_CATEGORY_PAGE (shell->category_page));
+		entry->category = gs_category_page_get_category (GS_CATEGORY_PAGE (shell->pages[GS_SHELL_MODE_CATEGORY]));
 		g_object_ref (entry->category);
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode],
 			 gs_category_get_id (entry->category));
 		break;
 	case GS_SHELL_MODE_SEARCH:
-		entry->search = g_strdup (gs_search_page_get_text (GS_SEARCH_PAGE (shell->search_page)));
+		entry->search = g_strdup (gs_search_page_get_text (GS_SEARCH_PAGE (shell->pages[GS_SHELL_MODE_SEARCH])));
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode], entry->search);
 		break;
@@ -781,8 +742,8 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 static void
 gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
-	for (guint i = 0; i < GS_SHELL_MODE_LAST; i++) {
-		GsPage *page = gs_shell_get_page_for_mode (shell, (GsShellMode) i);
+	for (gsize i = 0; i < G_N_ELEMENTS (shell->pages); i++) {
+		GsPage *page = shell->pages[i];
 		if (page != NULL)
 			gs_page_reload (page);
 	}
@@ -793,8 +754,8 @@ change_mode_idle (gpointer user_data)
 {
 	GsShell *shell = user_data;
 
-	gs_page_reload (GS_PAGE (shell->updates_page));
-	gs_page_reload (GS_PAGE (shell->installed_page));
+	gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_UPDATES]));
+	gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_INSTALLED]));
 
 	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 
@@ -830,9 +791,9 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING) {
-		g_signal_connect (shell->overview_page, "refreshed",
+		g_signal_connect (shell->pages[GS_SHELL_MODE_OVERVIEW], "refreshed",
 		                  G_CALLBACK (overview_page_refresh_done), shell);
-		gs_page_reload (GS_PAGE (shell->overview_page));
+		gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_OVERVIEW]));
 		return;
 	}
 
@@ -875,9 +836,9 @@ search_changed_handler (GObject *entry, GsShell *shell)
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
 					      (gpointer) text, TRUE);
 		} else {
-			gs_search_page_set_text (GS_SEARCH_PAGE (shell->search_page), text);
-			gs_page_switch_to (shell->search_page);
-			gs_page_scroll_up (shell->search_page);
+			gs_search_page_set_text (GS_SEARCH_PAGE (shell->pages[GS_SHELL_MODE_SEARCH]), text);
+			gs_page_switch_to (shell->pages[GS_SHELL_MODE_SEARCH]);
+			gs_page_scroll_up (shell->pages[GS_SHELL_MODE_SEARCH]);
 		}
 	}
 }
@@ -2060,9 +2021,9 @@ gs_shell_plugin_event_dismissed_cb (GtkButton *button, GsShell *shell)
 static void
 gs_shell_setup_pages (GsShell *shell)
 {
-	for (guint i = 0; i < GS_SHELL_MODE_LAST; i++) {
+	for (gsize i = 0; i < G_N_ELEMENTS (shell->pages); i++) {
 		g_autoptr(GError) error = NULL;
-		GsPage *page = gs_shell_get_page_for_mode (shell, (GsShellMode) i);
+		GsPage *page = shell->pages[i];
 		if (page != NULL &&
 		    !gs_page_setup (page, shell,
 				    shell->plugin_loader,
@@ -2241,18 +2202,18 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  G_CALLBACK (search_changed_handler), shell);
 
 	/* bind the counters */
-	shell->button_installed_counter_binding = g_object_bind_property (shell->installed_page, "counter",
+	shell->button_installed_counter_binding = g_object_bind_property (shell->pages[GS_SHELL_MODE_INSTALLED], "counter",
 									  shell->button_installed_counter, "label",
 									  G_BINDING_SYNC_CREATE);
 	g_signal_connect (shell->button_installed_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
 
-	shell->button_updates_counter_binding = g_object_bind_property (shell->updates_page, "counter",
+	shell->button_updates_counter_binding = g_object_bind_property (shell->pages[GS_SHELL_MODE_UPDATES], "counter",
 									shell->button_updates_counter, "label",
 									G_BINDING_SYNC_CREATE);
 	g_signal_connect (shell->button_updates_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
 
 	/* load content */
-	g_signal_connect (shell->loading_page, "refreshed",
+	g_signal_connect (shell->pages[GS_SHELL_MODE_LOADING], "refreshed",
 			  G_CALLBACK (initial_refresh_done), shell);
 
 	/* coldplug */
@@ -2266,7 +2227,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
 	} else {
 		g_debug ("Skipped refresh of the repositories due to 'download-updates' disabled");
-		initial_refresh_done (GS_LOADING_PAGE (shell->loading_page), shell);
+		initial_refresh_done (GS_LOADING_PAGE (shell->pages[GS_SHELL_MODE_LOADING]), shell);
 	}
 }
 
@@ -2310,7 +2271,7 @@ gs_shell_install (GsShell *shell, GsApp *app, GsShellInteraction interaction)
 	save_back_entry (shell);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
 			      (gpointer) app, TRUE);
-	gs_page_install_app (shell->details_page, app, interaction, shell->cancellable);
+	gs_page_install_app (shell->pages[GS_SHELL_MODE_DETAILS], app, interaction, shell->cancellable);
 }
 
 void
@@ -2372,7 +2333,7 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources, const gchar *desktop_id, const gchar *ident)
 {
 	save_back_entry (shell);
-	gs_extras_page_search (GS_EXTRAS_PAGE (shell->extras_page), mode, resources, desktop_id, ident);
+	gs_extras_page_search (GS_EXTRAS_PAGE (shell->pages[GS_SHELL_MODE_EXTRAS]), mode, resources, desktop_id, ident);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
 }
@@ -2400,7 +2361,7 @@ void
 gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *search)
 {
 	save_back_entry (shell);
-	gs_search_page_set_appid_to_show (GS_SEARCH_PAGE (shell->search_page), id);
+	gs_search_page_set_appid_to_show (GS_SEARCH_PAGE (shell->pages[GS_SHELL_MODE_SEARCH]), id);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
 			      (gpointer) search, TRUE);
 }
@@ -2501,15 +2462,16 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_installed_counter);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_updates_counter);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, application_details_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, overview_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, updates_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, installed_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, moderate_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, loading_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, details_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, category_page);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, extras_page);
+
+	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
+	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
+	gtk_widget_class_bind_template_child_full (widget_class, "installed_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_INSTALLED]));
+	gtk_widget_class_bind_template_child_full (widget_class, "moderate_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_MODERATE]));
+	gtk_widget_class_bind_template_child_full (widget_class, "loading_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_LOADING]));
+	gtk_widget_class_bind_template_child_full (widget_class, "search_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_SEARCH]));
+	gtk_widget_class_bind_template_child_full (widget_class, "details_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_DETAILS]));
+	gtk_widget_class_bind_template_child_full (widget_class, "category_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_CATEGORY]));
+	gtk_widget_class_bind_template_child_full (widget_class, "extras_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_EXTRAS]));
 }
 
 static void
