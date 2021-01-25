@@ -140,8 +140,6 @@ gs_plugin_download (GsPlugin *plugin,
 		return TRUE;
 
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-		g_autoptr(GError) error_local = NULL;
-
 		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
 			g_warning ("Failed to block on download scheduler: %s",
 				   error_local->message);
