@@ -45,7 +45,7 @@ get_proxy_http (GsPlugin *plugin)
 		return NULL;
 
 	host = g_settings_get_string (priv->settings_http, "host");
-	if (host == NULL)
+	if (host == NULL || host[0] == '\0')
 		return NULL;
 
 	port = g_settings_get_int (priv->settings_http, "port");
@@ -88,7 +88,7 @@ get_proxy_https (GsPlugin *plugin)
 		return NULL;
 
 	host = g_settings_get_string (priv->settings_https, "host");
-	if (host == NULL)
+	if (host == NULL || host[0] == '\0')
 		return NULL;
 	port = g_settings_get_int (priv->settings_https, "port");
 	if (port == 0)
@@ -115,7 +115,7 @@ get_proxy_ftp (GsPlugin *plugin)
 		return NULL;
 
 	host = g_settings_get_string (priv->settings_ftp, "host");
-	if (host == NULL)
+	if (host == NULL || host[0] == '\0')
 		return NULL;
 	port = g_settings_get_int (priv->settings_ftp, "port");
 	if (port == 0)
@@ -142,7 +142,7 @@ get_proxy_socks (GsPlugin *plugin)
 		return NULL;
 
 	host = g_settings_get_string (priv->settings_socks, "host");
-	if (host == NULL)
+	if (host == NULL || host[0] == '\0')
 		return NULL;
 	port = g_settings_get_int (priv->settings_socks, "port");
 	if (port == 0)
