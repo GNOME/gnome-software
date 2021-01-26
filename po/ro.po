@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-01-16 11:46+0000\n"
-"PO-Revision-Date: 2021-01-18 15:06+0200\n"
+"POT-Creation-Date: 2021-01-26 11:29+0000\n"
+"PO-Revision-Date: 2021-01-26 16:53+0100\n"
 "Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
@@ -518,15 +518,15 @@ msgstr "Arată numărul de versiune"
 #: src/gs-application.c:336
 msgid "translator-credits"
 msgstr ""
-"Bogdan Mințoi <mintoi [dot ] bogdan [at] gmail [dot] com> 2014\n"
-"Adrian Gabor <raziel_theripper [at] yahoo [dot] com> 2015\n"
-"Daniel Șerbănescu <daniel [at] serbanescu [dot] dk> 2016-2021\n"
+"Bogdan Mințoi <mintoi [dot ] bogdan [at] gmail [dot] com>, 2014\n"
+"Adrian Gabor <raziel_theripper [at] yahoo [dot] com>, 2015\n"
+"Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2016-2021\n"
 "Florentina Mușat <florentina [dot] musat [dot] 28 [at] gmail [dot] com>, "
 "2020-2021"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:341 src/gs-shell.c:2126
+#: src/gs-application.c:341 src/gs-shell.c:2136
 msgid "About Software"
 msgstr "Despre Aplicații"
 
@@ -592,7 +592,7 @@ msgstr "Se dezinstalează"
 msgid "Device cannot be used during update."
 msgstr "Dispozitivul nu poate fi folosit în timpul actualizării."
 
-#: src/gs-app-row.c:475 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:475 src/gs-update-dialog.ui:185
 msgid "Requires additional permissions"
 msgstr "Necesită permisiuni adiționale"
 
@@ -2815,7 +2815,7 @@ msgstr "Captură de ecran"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:143
+#: src/gs-search-page.c:144
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -2839,33 +2839,33 @@ msgstr "Nu a fost găsită nicio aplicație"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1127 src/gs-shell.c:1132 src/gs-shell.c:1147
-#: src/gs-shell.c:1151
+#: src/gs-shell.c:1137 src/gs-shell.c:1142 src/gs-shell.c:1157
+#: src/gs-shell.c:1161
 #, c-format
 msgid "“%s”"
 msgstr "„%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1198
+#: src/gs-shell.c:1208
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nu s-au putut descărca actualizări de firmware de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1204
+#: src/gs-shell.c:1214
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nu s-au putut descărca actualizări de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1211 src/gs-shell.c:1256
+#: src/gs-shell.c:1221 src/gs-shell.c:1266
 msgid "Unable to download updates"
 msgstr "Nu s-au putut descărca actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1217
+#: src/gs-shell.c:1227
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2874,29 +2874,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1226
+#: src/gs-shell.c:1236
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Nu s-au putut descărca actualizări de la %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1231
+#: src/gs-shell.c:1241
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nu s-au putut descărca actualizări: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1238
+#: src/gs-shell.c:1248
 msgid "Unable to download updates: authentication was required"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243
+#: src/gs-shell.c:1253
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1248
+#: src/gs-shell.c:1258
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2904,21 +2904,21 @@ msgstr ""
 "aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1259
+#: src/gs-shell.c:1269
 msgid "Unable to get list of updates"
 msgstr "Nu s-a putut obține lista de actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1302
+#: src/gs-shell.c:1312
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nu s-a putut instala %s pentru că descărcarea de la %s a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1318
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
@@ -2927,74 +2927,74 @@ msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1321
+#: src/gs-shell.c:1331
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Nu s-a putut instala %s pentru că executantul %s nu este disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1337
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nu s-a putut instala %s pentru că nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1334
+#: src/gs-shell.c:1344
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut instala: accesul la internet a fost necesar dar nu a fost "
 "disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1350
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nu s-a putut instala: aplicația are un format nevalid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1345
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nu s-a putut instala %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1352
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nu s-a putut instala %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1359
+#: src/gs-shell.c:1369
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nu s-a putut instala %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1366
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nu s-a putut instal %s: nu aveți permisiunea de a instala aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1384
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nu s-a putut instala %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1381
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Nu s-a putut instala %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1390
+#: src/gs-shell.c:1400
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nu s-a putut instala %s"
@@ -3003,14 +3003,14 @@ msgstr "Nu s-a putut instala %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1437
+#: src/gs-shell.c:1447
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Nu s-a putut actualiza %s din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1444
+#: src/gs-shell.c:1454
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
@@ -3018,19 +3018,19 @@ msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1451
+#: src/gs-shell.c:1461
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Nu s-a putut instala actualizări din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1465
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Nu s-au putut instala actualizările pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1461
+#: src/gs-shell.c:1471
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut actualiza: accesul la internet a fost necesar dar nu a fost "
@@ -3038,53 +3038,53 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1471
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nu s-a putut actualiza %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1476
+#: src/gs-shell.c:1486
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Nu s-au putut instala actualizările: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1486
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nu s-a putut actualiza: %s autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1491
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1500
+#: src/gs-shell.c:1510
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nu s-a putut actualiza %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1505
+#: src/gs-shell.c:1515
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1524
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Nu s-a putut actualiza %s: nu aveți pemisiunea de a actualiza aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1530
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3094,41 +3094,41 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1530
+#: src/gs-shell.c:1540
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nu s-a putut actualiza %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1536
+#: src/gs-shell.c:1546
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Nu s-au putut instala actualizările: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1545
+#: src/gs-shell.c:1555
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Nu s-a putut actualiza %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1551
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Nu s-au putut instala actualizările: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1562
+#: src/gs-shell.c:1572
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nu s-a putut actualiza %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1565
+#: src/gs-shell.c:1575
 #, c-format
 msgid "Unable to install updates"
 msgstr "Nu s-au putut instala actualizări"
@@ -3136,21 +3136,21 @@ msgstr "Nu s-au putut instala actualizări"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1608
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nu s-a putut înnoi la %s de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1613
+#: src/gs-shell.c:1623
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nu s-a putut înnoi la %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1622
+#: src/gs-shell.c:1632
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3160,91 +3160,91 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1631
+#: src/gs-shell.c:1641
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nu s-a putut înnoi la %s: spațiu pe disc insuficient"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1639
+#: src/gs-shell.c:1649
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1646
+#: src/gs-shell.c:1656
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1653
+#: src/gs-shell.c:1663
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nu s-a putut înnoi la %s: nu aveți permisiunea de a înnoi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1660
+#: src/gs-shell.c:1670
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nu s-a putut înnoi la %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1667
+#: src/gs-shell.c:1677
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Nu s-a putut înnoi la %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1676
+#: src/gs-shell.c:1686
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nu s-a putut înnoi la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1714
+#: src/gs-shell.c:1724
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1720
+#: src/gs-shell.c:1730
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1726
+#: src/gs-shell.c:1736
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nu s-a putut elimina %s: nu aveți pemisiunea de a elimina aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1733
+#: src/gs-shell.c:1743
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Nu s-a putut elimina %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1740
+#: src/gs-shell.c:1750
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Nu s-a putut elimina %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1752
+#: src/gs-shell.c:1762
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nu s-a putut elimina %s"
@@ -3253,64 +3253,64 @@ msgstr "Nu s-a putut elimina %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1795
+#: src/gs-shell.c:1805
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nu s-a putut lansa %s: %s nu este instalat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1802 src/gs-shell.c:1853 src/gs-shell.c:1894
-#: src/gs-shell.c:1940
+#: src/gs-shell.c:1812 src/gs-shell.c:1863 src/gs-shell.c:1904
+#: src/gs-shell.c:1950
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Insuficient spațiu disponibil pe disc — eliberați spațiu și încercați din nou"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1813 src/gs-shell.c:1864 src/gs-shell.c:1905
-#: src/gs-shell.c:1964
+#: src/gs-shell.c:1823 src/gs-shell.c:1874 src/gs-shell.c:1915
+#: src/gs-shell.c:1974
 msgid "Sorry, something went wrong"
 msgstr "Ne pare rău, ceva nu a funcționat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1845
+#: src/gs-shell.c:1855
 msgid "Failed to install file: not supported"
 msgstr "Nu s-a putut instala fișierul: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1849
+#: src/gs-shell.c:1859
 msgid "Failed to install file: authentication failed"
 msgstr "Eșec la instalarea fișierului: autentificare necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1886
+#: src/gs-shell.c:1896
 msgid "Failed to install: not supported"
 msgstr "Nu s-a putut instala: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1890
+#: src/gs-shell.c:1900
 msgid "Failed to install: authentication failed"
 msgstr "Nu s-a putut instala: autentificarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1934
+#: src/gs-shell.c:1944
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nu s-a putut contacta %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1946
+#: src/gs-shell.c:1956
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Programul trebuie repornit pentru a utiliza modulele noi."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1951
+#: src/gs-shell.c:1961
 msgid "AC power is required"
 msgstr "Energia electrică este necesară"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1955
+#: src/gs-shell.c:1965
 msgid "The battery level is too low"
 msgstr "Nivelul bateriei este prea scăzut"
 
@@ -4356,6 +4356,21 @@ msgstr "Flatpak este o platformă pentru aplicații desktop în Linux"
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Se obține metadatele pentru flatpak pentru %s…"
+
+#: plugins/flatpak/gs-flatpak.c:2766
+#, c-format
+msgid "Failed to refine addon ‘%s’: %s"
+msgstr "Eșec la rafinarea extensiei „%s”: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:766
+#, c-format
+msgid "Failed to add to install for addon ‘%s’: %s"
+msgstr "Eșec la adăugarea la instalare pentru extensia „%s”: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:780
+#, c-format
+msgid "Failed to add to uninstall for addon ‘%s’: %s"
+msgstr "Eșec la adăugarea la dezinstalare pentru extensia „%s”: %s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
