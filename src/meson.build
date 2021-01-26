@@ -80,10 +80,10 @@ gnome_software_dependencies = [
   gtk,
   json_glib,
   libgnomesoftware_dep,
+  libhandy,
   libm,
   libsoup,
   libxmlb,
-  libhandy,
 ]
 
 if get_option('packagekit')
