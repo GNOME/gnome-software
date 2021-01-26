@@ -45,6 +45,10 @@ if get_option('polkit')
   librarydeps += polkit
 endif
 
+libgnomesoftware_include_directories = [
+  include_directories('..'),
+]
+
 libgnomesoftware = static_library(
   'gnomesoftware',
   sources : [
@@ -64,12 +68,14 @@ libgnomesoftware = static_library(
     'gs-test.c',
     'gs-utils.c',
   ],
-  include_directories : [
-    include_directories('..'),
-  ],
+  include_directories : libgnomesoftware_include_directories,
   dependencies : librarydeps,
   c_args : cargs,
   install: true,
+)
+
+libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
+  include_directories : libgnomesoftware_include_directories
 )
 
 pkg = import('pkgconfig')
