@@ -30,8 +30,7 @@ typedef enum {
 	GS_UTILS_CACHE_FLAG_WRITEABLE		= 1 << 0,
 	GS_UTILS_CACHE_FLAG_USE_HASH		= 1 << 1,
 	GS_UTILS_CACHE_FLAG_ENSURE_EMPTY	= 1 << 2,
-	/*< private >*/
-	GS_UTILS_CACHE_FLAG_LAST
+	GS_UTILS_CACHE_FLAG_LAST  /*< skip >*/
 } GsUtilsCacheFlags;
 
 guint		 gs_utils_get_file_age		(GFile		*file);

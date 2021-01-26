@@ -55,8 +55,7 @@ typedef enum {
 	GS_CONTENT_RATING_SYSTEM_GRAC,
 	GS_CONTENT_RATING_SYSTEM_ESRB,
 	GS_CONTENT_RATING_SYSTEM_IARC,
-	/*< private >*/
-	GS_CONTENT_RATING_SYSTEM_LAST
+	GS_CONTENT_RATING_SYSTEM_LAST  /*< skip >*/
 } GsContentRatingSystem;
 
 gchar *gs_utils_content_rating_age_to_str (GsContentRatingSystem system,

@@ -30,8 +30,7 @@ typedef enum {
 	GS_APP_LIST_FLAG_WATCH_APPS		= 1 << 2,
 	GS_APP_LIST_FLAG_WATCH_APPS_RELATED	= 1 << 3,
 	GS_APP_LIST_FLAG_WATCH_APPS_ADDONS	= 1 << 4,
-	/*< private >*/
-	GS_APP_LIST_FLAG_LAST
+	GS_APP_LIST_FLAG_LAST  /*< skip >*/
 } GsAppListFlags;
 
 GsAppList	*gs_app_list_copy		(GsAppList	*list);

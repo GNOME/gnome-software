@@ -35,8 +35,7 @@ typedef enum {
 	GS_PLUGIN_EVENT_FLAG_VISIBLE		= 1 << 1,	/* Since: 3.22 */
 	GS_PLUGIN_EVENT_FLAG_WARNING		= 1 << 2,	/* Since: 3.22 */
 	GS_PLUGIN_EVENT_FLAG_INTERACTIVE	= 1 << 3,	/* Since: 3.30 */
-	/*< private >*/
-	GS_PLUGIN_EVENT_FLAG_LAST
+	GS_PLUGIN_EVENT_FLAG_LAST  /*< skip >*/
 } GsPluginEventFlag;
 
 GsPluginEvent		*gs_plugin_event_new		(void);
