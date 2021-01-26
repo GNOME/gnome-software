@@ -41,6 +41,7 @@
 #endif
 
 #include "gs-app-list-private.h"
+#include "gs-enums.h"
 #include "gs-os-release.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin.h"
@@ -1948,7 +1949,7 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	switch (prop_id) {
 	case PROP_FLAGS:
-		priv->flags = g_value_get_uint64 (value);
+		priv->flags = g_value_get_flags (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1963,7 +1964,7 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	switch (prop_id) {
 	case PROP_FLAGS:
-		g_value_set_uint64 (value, priv->flags);
+		g_value_set_flags (value, priv->flags);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1981,8 +1982,9 @@ gs_plugin_class_init (GsPluginClass *klass)
 	object_class->get_property = gs_plugin_get_property;
 	object_class->finalize = gs_plugin_finalize;
 
-	pspec = g_param_spec_uint64 ("flags", NULL, NULL,
-				     0, G_MAXUINT64, 0, G_PARAM_READWRITE);
+	pspec = g_param_spec_flags ("flags", NULL, NULL,
+				    GS_TYPE_PLUGIN_FLAGS, GS_PLUGIN_FLAGS_NONE,
+				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
 
 	signals [SIGNAL_UPDATES_CHANGED] =
