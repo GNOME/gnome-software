@@ -3188,7 +3188,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* get extra AppStream data if available */
 	if (!gs_flatpak_refine_appstream (self, app, silo,
-					  G_MAXUINT64,
+					  GS_PLUGIN_REFINE_FLAGS_MASK,
 					  cancellable,
 					  error))
 		return NULL;
