@@ -62,11 +62,20 @@ static void
 _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 {
 	GtkWidget *list;
+	GsUpdatesSection *self;
 
 	list = gtk_widget_get_parent (GTK_WIDGET (row));
 	if (list == NULL)
 		return;
+
+	self = GS_UPDATES_SECTION (list);
+
+	gs_app_list_remove (self->list, gs_app_row_get_app (GS_APP_ROW (row)));
+
 	gtk_widget_destroy (GTK_WIDGET (row));
+
+	if (!gs_app_list_length (self->list))
+		gtk_widget_hide (list);
 }
 
 static void
