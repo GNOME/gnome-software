@@ -58,6 +58,11 @@ gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsPluginRefineFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
+void		gs_flatpak_refine_addons	(GsFlatpak *self,
+						 GsApp *parent_app,
+						 GsPluginRefineFlags flags,
+						 GsAppState state,
+						 GCancellable *cancellable);
 gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,

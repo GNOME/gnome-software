@@ -19,6 +19,7 @@
 
 #include <flatpak.h>
 #include <gnome-software.h>
+#include <glib/gi18n-lib.h>
 
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
@@ -731,6 +732,69 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 	return TRUE;
 }
 
+static void
+gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
+					FlatpakTransaction *transaction,
+					GsApp *parent_app,
+					GsAppState state)
+{
+	GsAppList *addons;
+	g_autoptr(GString) errors = NULL;
+	guint ii, sz;
+
+	g_return_if_fail (transaction != NULL);
+	g_return_if_fail (GS_IS_APP (parent_app));
+
+	addons = gs_app_get_addons (parent_app);
+	sz = addons ? gs_app_list_length (addons) : 0;
+
+	for (ii = 0; ii < sz; ii++) {
+		GsApp *addon = gs_app_list_index (addons, ii);
+		g_autoptr(GError) local_error = NULL;
+
+		if (state == GS_APP_STATE_INSTALLING && gs_app_get_to_be_installed (addon)) {
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (addon);
+			if (flatpak_transaction_add_install (transaction, gs_app_get_origin (addon), ref, NULL, &local_error)) {
+				gs_app_set_state (addon, state);
+			} else {
+				if (errors)
+					g_string_append_c (errors, '\n');
+				else
+					errors = g_string_new (NULL);
+				g_string_append_printf (errors, _("Failed to add to install for addon ‘%s’: %s"),
+					gs_app_get_name (addon), local_error->message);
+			}
+		} else if (state == GS_APP_STATE_REMOVING && gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (addon);
+			if (flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
+				gs_app_set_state (addon, state);
+			} else {
+				if (errors)
+					g_string_append_c (errors, '\n');
+				else
+					errors = g_string_new (NULL);
+				g_string_append_printf (errors, _("Failed to add to uninstall for addon ‘%s’: %s"),
+					gs_app_get_name (addon), local_error->message);
+			}
+		}
+	}
+
+	if (errors) {
+		g_autoptr(GsPluginEvent) event = NULL;
+		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+			errors->str);
+
+		event = gs_plugin_event_new ();
+		gs_plugin_event_set_error (event, error_local);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (plugin, event);
+	}
+}
+
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -767,6 +831,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_REMOVING);
+
 	/* run transaction */
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
@@ -787,6 +853,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, GS_APP_STATE_REMOVING, cancellable);
+
 	return TRUE;
 }
 
@@ -920,6 +989,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 	}
 
+	gs_flatpak_cover_addons_in_transaction (plugin, transaction, app, GS_APP_STATE_INSTALLING);
+
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
 		/* FIXME: Add additional details here, especially the download
 		 * size bounds (using `size-minimum` and `size-maximum`, both
@@ -971,6 +1042,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, GS_APP_STATE_INSTALLING, cancellable);
+
 	return TRUE;
 }
 

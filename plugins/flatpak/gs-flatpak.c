@@ -2734,6 +2734,52 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	return TRUE;
 }
 
+void
+gs_flatpak_refine_addons (GsFlatpak *self,
+			  GsApp *parent_app,
+			  GsPluginRefineFlags flags,
+			  GsAppState state,
+			  GCancellable *cancellable)
+{
+	GsAppList *addons;
+	g_autoptr(GString) errors = NULL;
+	guint ii, sz;
+
+	addons = gs_app_get_addons (parent_app);
+	sz = addons ? gs_app_list_length (addons) : 0;
+
+	for (ii = 0; ii < sz; ii++) {
+		GsApp *addon = gs_app_list_index (addons, ii);
+		g_autoptr(GError) local_error = NULL;
+
+		if (state != gs_app_get_state (addon))
+			continue;
+
+		/* To have refined also the state  */
+		gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
+
+		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, cancellable, &local_error)) {
+			if (errors)
+				g_string_append_c (errors, '\n');
+			else
+				errors = g_string_new (NULL);
+			g_string_append_printf (errors, _("Failed to refine addon ‘%s’: %s"),
+				gs_app_get_name (addon), local_error->message);
+		}
+	}
+
+	if (errors) {
+		g_autoptr(GsPluginEvent) event = NULL;
+		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+			errors->str);
+
+		event = gs_plugin_event_new ();
+		gs_plugin_event_set_error (event, error_local);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (self->plugin, event);
+	}
+}
+
 gboolean
 gs_flatpak_refine_app (GsFlatpak *self,
 		       GsApp *app,
