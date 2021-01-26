@@ -115,9 +115,12 @@ gs_installed_page_invalidate_sort_idle (gpointer user_data)
 
 	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
 
-	/* if the app has been uninstalled (which can happen from another view)
-	 * we should removed it from the installed view */
-	if (state == GS_APP_STATE_AVAILABLE || state == GS_APP_STATE_UNKNOWN)
+	/* Filter which applications can be shown in the installed page */
+	if (state != GS_APP_STATE_INSTALLING &&
+	    state != GS_APP_STATE_INSTALLED &&
+	    state != GS_APP_STATE_REMOVING &&
+	    state != GS_APP_STATE_UPDATABLE &&
+	    state != GS_APP_STATE_UPDATABLE_LIVE)
 		gs_installed_page_unreveal_row (app_row);
 
 	g_object_unref (app_row);
