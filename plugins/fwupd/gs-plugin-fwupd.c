@@ -1022,7 +1022,6 @@ gs_plugin_download_app (GsPlugin *plugin,
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
 #endif
 		gboolean download_success;
-		g_autoptr(GError) error_local = NULL;
 
 		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
 			if (!gs_metered_block_app_on_download_scheduler (app, &schedule_entry_handle, cancellable, &error_local)) {
