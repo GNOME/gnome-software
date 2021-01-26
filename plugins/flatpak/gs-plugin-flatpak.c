@@ -20,7 +20,6 @@
 #include <flatpak.h>
 #include <glib/gi18n.h>
 #include <gnome-software.h>
-#include <glib/gi18n-lib.h>
 
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
