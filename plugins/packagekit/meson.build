@@ -24,9 +24,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : deps,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -44,9 +41,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : deps,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -65,9 +59,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -85,9 +76,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -105,9 +93,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -125,9 +110,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -144,9 +126,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -164,9 +143,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -183,9 +159,6 @@ sources : [
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -199,9 +172,6 @@ sources : 'gs-plugin-packagekit-proxy.c',
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -219,9 +189,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, packagekit ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 if get_option('tests')
@@ -239,9 +206,6 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs,
   )

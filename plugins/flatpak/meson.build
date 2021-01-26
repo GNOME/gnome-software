@@ -28,9 +28,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : deps,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 metainfo = 'org.gnome.Software.Plugin.Flatpak.metainfo.xml'
 
@@ -61,9 +58,6 @@ if get_option('tests')
       include_directories('../../lib'),
     ],
     dependencies : deps,
-    link_with : [
-      libgnomesoftware
-    ],
     c_args : cargs,
   )
   test('gs-self-test-flatpak', e, suite: ['plugins', 'flatpak'], env: test_env, timeout : 120)

@@ -79,6 +79,7 @@ gnome_software_dependencies = [
   goa,
   gtk,
   json_glib,
+  libgnomesoftware_dep,
   libm,
   libsoup,
   libxmlb,
@@ -126,9 +127,6 @@ executable(
     include_directories('../lib'),
   ],
   dependencies : gnome_software_dependencies,
-  link_with : [
-    libgnomesoftware
-  ],
   c_args : cargs,
   install : true,
   install_dir : get_option('bindir')
@@ -247,11 +245,9 @@ if get_option('tests')
       goa,
       gtk,
       json_glib,
+      libgnomesoftware_dep,
       libm,
       libsoup,
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs
   )

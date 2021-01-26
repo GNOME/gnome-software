@@ -22,7 +22,4 @@ shared_module(
     plugin_libs,
     ostree,
   ],
-  link_with : [
-    libgnomesoftware,
-  ],
 )

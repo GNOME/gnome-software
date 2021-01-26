@@ -105,12 +105,10 @@ executable(
     goa,
     gtk,
     json_glib,
+    libgnomesoftware_dep,
     libm,
     libsoup,
     valgrind,
-  ],
-  link_with : [
-    libgnomesoftware
   ],
   c_args : cargs,
   install : true,
@@ -136,11 +134,9 @@ if get_option('tests')
       goa,
       gtk,
       json_glib,
+      libgnomesoftware_dep,
       libm,
       libsoup
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs
   )

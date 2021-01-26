@@ -14,9 +14,6 @@ sources : 'gs-plugin-modalias.c',
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, gudev ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 if get_option('tests')
@@ -32,9 +29,6 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs,
   )
