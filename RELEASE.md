@@ -1,6 +1,13 @@
 GNOME Software Release Notes
 ===
 
+Release schedule
+---
+
+GNOME Software releases are done on the timetable set by the [GNOME release schedule](https://wiki.gnome.org/Schedule).
+
+Maintainers take it in turns to make releases so that the load is spread out evenly.
+
 Making a release
 ---
 
