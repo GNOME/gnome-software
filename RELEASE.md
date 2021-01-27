@@ -37,8 +37,7 @@ Tag the release:
 ```
 git add -p
 git commit -m "Release version 3.38.1"
-git tag -s 3.38.1 -m "==== Version 3.38.1 ===="
-<enter password>
+git evtag sign 3.38.1
 ```
 
 Build the release tarball:
