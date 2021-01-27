@@ -13,6 +13,14 @@ Making a release
 
 Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorner/Releasing).
 
+Make sure your repository is up to date and doesn’t contain local changes:
+```
+git pull
+git status
+```
+
+Check the version in `meson.build` is correct for this release.
+
 Write release entries:
 ```
 git log --format="%s" --cherry-pick --right-only 3.37.92... | grep -i -v trivial | grep -v Merge | sort | uniq
