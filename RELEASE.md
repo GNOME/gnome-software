@@ -47,8 +47,7 @@ ninja dist
 Tag, sign and push the release:
 ```
 git evtag sign 3.38.1
-git push --tags
-git push
+git push --atomic origin master 3.38.1
 ```
 
 Upload the release tarball:
