@@ -1467,6 +1467,7 @@ list_sort_func (GtkListBoxRow *a,
 }
 
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
+static void gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data);
 
 static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
@@ -1493,6 +1494,9 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 
 		g_signal_connect (row, "notify::selected",
 				  G_CALLBACK (gs_details_page_addon_selected_cb),
+				  self);
+		g_signal_connect (row, "remove-button-clicked",
+				  G_CALLBACK (gs_details_page_addon_remove_cb),
 				  self);
 	}
 }
@@ -2240,6 +2244,16 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 	default:
 		break;
 	}
+}
+
+static void
+gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data)
+{
+	GsApp *addon;
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+
+	addon = gs_app_addon_row_get_addon (row);
+	gs_page_remove_app (GS_PAGE (self), addon, NULL);
 }
 
 static void
