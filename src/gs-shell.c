@@ -441,7 +441,8 @@ stack_notify_visible_child_cb (GObject    *object,
 	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
 	gtk_widget_set_visible (shell->search_button,
 				mode == GS_SHELL_MODE_OVERVIEW ||
-				mode == GS_SHELL_MODE_SEARCH);
+				mode == GS_SHELL_MODE_SEARCH ||
+				mode == GS_SHELL_MODE_INSTALLED);
 	/* hide unless we're going to search */
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
