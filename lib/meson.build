@@ -68,7 +68,7 @@ libgnomesoftware_include_directories = [
   include_directories('..'),
 ]
 
-libgnomesoftware = static_library(
+libgnomesoftware = library(
   'gnomesoftware',
   sources : [
     'gs-app.c',
@@ -96,6 +96,7 @@ libgnomesoftware = static_library(
   dependencies : librarydeps,
   c_args : cargs,
   install: true,
+  install_dir: gs_private_libdir,
 )
 
 libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
@@ -112,6 +113,7 @@ pkg.generate(
     name : 'gnome-software',
     subdirs : 'gnome-software',
     variables : 'plugindir=${libdir}/gs-plugins-' + gs_plugin_api_version,
+    install_dir : join_paths(get_option('prefix'), get_option('libdir'), 'pkgconfig'),  # or it defaults to gs_private_libdir, which is wrong
 )
 
 executable(
@@ -137,7 +139,8 @@ executable(
   ],
   c_args : cargs,
   install : true,
-  install_dir : get_option('libexecdir')
+  install_dir : get_option('libexecdir'),
+  install_rpath : gs_private_libdir,
 )
 
 if get_option('tests')

@@ -132,7 +132,8 @@ executable(
   dependencies : gnome_software_dependencies,
   c_args : cargs,
   install : true,
-  install_dir : get_option('bindir')
+  install_dir : get_option('bindir'),
+  install_rpath : gs_private_libdir,
 )
 
 executable(
