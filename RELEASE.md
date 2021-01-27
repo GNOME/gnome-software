@@ -35,7 +35,8 @@ appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in
 
 Tag the release:
 ```
-git commit -a -m "Release version 3.38.1"
+git add -p
+git commit -m "Release version 3.38.1"
 git tag -s 3.38.1 -m "==== Version 3.38.1 ===="
 <enter password>
 ```
