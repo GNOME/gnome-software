@@ -1,3 +1,163 @@
+Version 40.alpha
+~~~~~~~~~~~~~~~~
+Released: 2021-01-27
+
+This is the first unstable release for GNOME 40.
+ * Drop libgnome-desktop-3 dependency in favour of gsettings-desktop-schemas
+ * Small updates to how app descriptions and addons are presented on the details
+   page
+ * Fix handling of pending app installations when going online
+ * Better support for dark themes (particularly Adwaita-Dark)
+ * Improvements to how app screenshots are loaded and presented
+ * Hide ‘Launch’ button if an application (for example, Wine) cannot be
+   launched
+ * Make the UI clearer when loading information from flatpakref files
+ * Don’t update app metadata on start when download-updates is disabled
+ * Fix opening the updates list when clicking on an updates notification
+ * Fix state updates when installing flatpak apps or repos which are already
+   installed
+ * Add Ctrl+Q as a keyboard shortcut for closing the window
+ * Rework timing and content of software update notifications
+ * Prevent uninstalled local apps from appearing in the installed apps list
+ * Support installation/uninstallation of addons for flatpak apps
+ * Improve presentation of age ratings for apps
+ * Fix a crash in the updates page
+ * Fix presentation of app permissions for fully sandboxed flatpak apps
+ * Fix deadlock on rpm-ostree systems
+ * Fix presentation of version number changes in right-to-left locales
+ * Error handling improvements for fwupd
+ * Performance improvements for ODRS on startup
+ * Improve presentation of firmware warning messages
+ * XML parsing performance improvements
+ * Automatically remove end-of-life flatpak runtimes
+ * Support updating flatpaks to their new name when they are renamed
+ * Update the GNOME Software icon
+ * Support more search results in the snap store
+
+This release also updates translations:
+ * Basque
+ * Bokmål, Norwegian
+ * Catalan
+ * Chinese (Taiwan)
+ * Czech
+ * Friulian
+ * Galician
+ * German
+ * Greek, Modern (1453-)
+ * Hebrew
+ * Indonesian
+ * Italian
+ * Kabyle
+ * Kazakh
+ * Latvian
+ * Lithuanian
+ * Persian
+ * Portuguese
+ * Portuguese (Brazil)
+ * Romanian
+ * Slovak
+ * Spanish
+ * Turkish
+ * Ukrainian
+ * Vietnamese
+
+Version 3.37.92
+~~~~~~~~~~~~~~~
+Released: 2020-09-01
+
+This is an unstable stable release with the following changes:
+ * Add sysprof support for profiling jobs
+ * Add webflow and basic auth support to flatpak plugin
+ * Coalesce refresh operations where possible
+ * Correctly mark layered rpm-ostree local packages as removable
+ * Fix flatpak bundle installation
+ * Handle invalid snap auth data
+ * Improve flatpak progress reporting for transactions
+ * Improve the heuristic for detecting old-style AppStream override files
+ * Many performance improvements in many areas of the code
+ * Only delete the firmware archive if we downloaded it to the cache
+ * Show a pulsing progress bar if progress is unknown
+ * Support loading appstream files from custom install prefix
+ * Use the runtime fwupd version for the user agent
+
+This release also updates existing translations.
+
+Version 3.36.0
+~~~~~~~~~~~~~~
+Released: 2020-03-11
+
+This is the first stable release for GNOME 3.36.
+
+Version 3.35.92
+~~~~~~~~~~~~~~~
+Released: 2020-03-04
+
+This is an unstable stable release with the following changes:
+ * Fix crash when viewing application details
+ * Fix “thrice daily” check running every 3 days
+ * Improve the appearance of the front page banners
+ * Show the correct upgrade banner contents when a reboot is requried
+
+This release also updates existing translations.
+
+Version 3.35.91
+~~~~~~~~~~~~~~~
+Released: 2020-02-19
+
+This is an unstable stable release with the following changes:
+ * Add an info bar about automatic updates
+ * Avoid rpm-ostree downgrade error when doing distro upgrade
+ * Click on stars to open review dialog in the details view
+ * Fix loading of icons from AppStream YAML
+ * Fix weird font sizes in the batter
+ * Hide any in-app notifications when closing the main window
+ * Integrate better with snapd
+ * Only ignore flatpak estimated progress if >10%
+ * Remove color stripes on categories in the Explore page
+ * Remove support for Shell extensions
+ * Remove webapp support
+ * Reset star rating when loading an unrated app
+ * Sort applications using locale based algorithms
+ * Stop snaps from being automatically updated
+
+This release also adds and updates existing translations.
+
+Version 3.35.2
+~~~~~~~~~~~~~~
+Released: 2019-11-25
+
+This is an unstable stable release with the following changes:
+ * Add missing OARS content rating descriptions
+ * Add new plugin for restricting access to apps
+ * Avoid a UI crash when switching modes
+ * Build libmalcontent dependency on Fedora CI
+ * Correctly distinguish empty content ratings from missing ones
+ * Correctly set the application state if autoupdate is in progress
+ * Do not show a crazy error when installing packages
+ * Do not show non-applications in the installed panel
+ * Download Flatpak updates in the correct installation
+ * Expose snap channels as app alternates
+ * Fix a crash on 32-bit systems
+ * Fix langpacks autoinstall on Fedora SilverBlue
+ * Fix manual detach when updating removable device firmware
+ * Fix third party repo enabling not working
+ * Hide add/remove shortcut buttons for parentally filtered apps
+ * Improve some front page banners
+ * Invalidate caches when adding or removing remotes
+ * Make flatpak more thread-safe to fix some crashes
+ * Match the exact ID when refining a wildcard
+ * Only set the app row's buttons as destructive when they remove an app
+ * Remove hardcoded-featured plugin
+ * Remove the app folder functionality as this is now built-in to the shell
+ * Remove the banner editor as this is now an app on it's own
+ * Rework age ratings handling to avoid hard-coded list
+ * Set the shell extension origin correctly in all cases
+ * Show the channel for snaps
+ * Speed up the flatpak plugin in some situations
+ * Use plugin API to launch apps from install notification.
+
+This release also adds and updates existing translations.
+
 Version 3.34.0
 ~~~~~~~~~~~~~~
 Released: 2019-09-09
