@@ -42,7 +42,7 @@ git evtag sign 3.38.1
 
 Build the release tarball:
 ```
-ninja-build dist
+ninja dist
 git push --tags
 git push
 ```
