@@ -11,6 +11,8 @@ Maintainers take it in turns to make releases so that the load is spread out eve
 Making a release
 ---
 
+Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorner/Releasing).
+
 Write release entries:
 ```
 git log --format="%s" --cherry-pick --right-only 3.37.92... | grep -i -v trivial | grep -v Merge | sort | uniq
