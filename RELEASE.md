@@ -33,16 +33,20 @@ Generate `NEWS` file:
 appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in > NEWS
 ```
 
-Tag the release:
+Commit the release:
 ```
 git add -p
 git commit -m "Release version 3.38.1"
-git evtag sign 3.38.1
 ```
 
 Build the release tarball:
 ```
 ninja dist
+```
+
+Tag, sign and push the release:
+```
+git evtag sign 3.38.1
 git push --tags
 git push
 ```
