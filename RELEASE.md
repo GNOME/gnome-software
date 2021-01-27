@@ -52,9 +52,8 @@ git push --atomic origin master 3.38.1
 
 Upload the release tarball:
 ```
-scp meson-dist/*.tar.xz rhughes@master.gnome.org:
-ssh rhughes@master.gnome.org
-ftpadmin install gnome-software-*.tar.xz
+scp meson-dist/*.tar.xz master.gnome.org:
+ssh master.gnome.org ftpadmin install gnome-software-*.tar.xz
 ```
 
 Post release version bump in `meson.build`
