@@ -558,6 +558,17 @@
                 </child>
 
                 <child>
+                  <object class="GtkSeparator">
+                    <property name="visible" bind-source="sidebar_switcher" bind-property="visible" bind-flags="sync-create" />
+                    <property name="can-focus">False</property>
+                    <property name="orientation">horizontal</property>
+                    <style>
+                      <class name="sidebar"/>
+                    </style>
+                  </object>
+                </child>
+
+                <child>
                   <object class="HdyViewSwitcher" id="sidebar_switcher">
                     <property name="visible" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
                     <property name="can-focus">True</property>
