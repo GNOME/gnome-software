@@ -1223,6 +1223,42 @@ gs_utils_set_online_updates_timestamp (GSettings *settings)
 	g_settings_set (settings, "update-notification-timestamp", "x", g_date_time_to_unix (now));
 }
 
+/**
+ * gs_utils_unique_id_compat_convert:
+ * @data_id: (nullable): A string that may be a unique component ID
+ *
+ * Converts the unique ID string from its legacy 6-part form into
+ * a new-style 5-part AppStream data-id.
+ * Does nothing if the string is already valid.
+ *
+ * See !583 for the history of this conversion.
+ *
+ * Returns: (nullable): A newly allocated string with the new-style data-id, or %NULL if input was no valid ID.
+ *
+ * Since: 40
+ **/
+gchar*
+gs_utils_unique_id_compat_convert (const gchar *data_id)
+{
+	g_auto(GStrv) parts = NULL;
+	if (data_id == NULL)
+		return NULL;
+
+	/* check for the most common case first: data-id is already valid */
+	if (as_utils_data_id_valid (data_id))
+		return g_strdup (data_id);
+
+	parts = g_strsplit (data_id, "/", -1);
+	if (g_strv_length (parts) != 6)
+		return NULL;
+	return g_strdup_printf ("%s/%s/%s/%s/%s",
+				parts[0],
+				parts[1],
+				parts[2],
+				parts[4],
+				parts[5]);
+}
+
 static void
 gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *div_kernel_size)
 {
