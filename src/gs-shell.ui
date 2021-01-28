@@ -51,24 +51,24 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="orientation">horizontal</property>
-            <property name="visible-child">sidebar_header</property>
+            <property name="visible-child">main_header</property>
             <property name="mode-transition-duration" bind-source="main_leaflet" bind-property="mode-transition-duration" bind-flags="bidirectional|sync-create"/>
             <property name="child-transition-duration" bind-source="main_leaflet" bind-property="child-transition-duration" bind-flags="bidirectional|sync-create"/>
             <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
             <child>
               <object class="GtkHeaderBar" id="sidebar_header">
-                <property name="visible">True</property>
+                <property name="visible" bind-source="sidebar_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                 <property name="can-focus">False</property>
                 <property name="show-close-button">True</property>
                 <property name="title" translatable="yes">Software</property>
                 <child>
-                  <object class="GtkToggleButton" id="search_button">
+                  <object class="GtkToggleButton" id="search_button_sidebar">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
                     <signal name="clicked" handler="search_button_clicked_cb"/>
                     <child internal-child="accessible">
-                      <object class="AtkObject" id="search_button_accessible">
+                      <object class="AtkObject" id="search_button_accessible_sidebar">
                         <property name="accessible-name" translatable="yes">Search</property>
                       </object>
                     </child>
@@ -76,7 +76,7 @@
                       <class name="image-button"/>
                     </style>
                     <child>
-                      <object class="GtkImage" id="search_image">
+                      <object class="GtkImage" id="search_image_sidebar">
                         <property name="visible">True</property>
                         <property name="icon_name">edit-find-symbolic</property>
                         <property name="icon_size">1</property>
@@ -91,7 +91,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkMenuButton" id="menu_button">
+                  <object class="GtkMenuButton" id="menu_button_sidebar">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="sensitive">True</property>
@@ -168,6 +168,35 @@
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkToggleButton" id="search_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
+                    <signal name="clicked" handler="search_button_clicked_cb"/>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="search_button_accessible">
+                        <property name="accessible-name" translatable="yes">Search</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="image-button"/>
+                    </style>
+                    <child>
+                      <object class="GtkImage" id="search_image">
+                        <property name="visible">True</property>
+                        <property name="icon_name">edit-find-symbolic</property>
+                        <property name="icon_size">1</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="pack-type">start</property>
+                  </packing>
+                </child>
                 <child type="title">
                   <object class="GtkLabel" id="application_details_header">
                     <property name="visible">True</property>
@@ -177,6 +206,32 @@
                       <class name="title"/>
                     </style>
                   </object>
+                </child>
+                <child>
+                  <object class="GtkMenuButton" id="menu_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="sensitive">True</property>
+                    <property name="menu_model">primary_menu</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject">
+                        <property name="accessible-name" translatable="yes">Primary Menu</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="icon_name">open-menu-symbolic</property>
+                        <property name="icon_size">1</property>
+                      </object>
+                    </child>
+                    <style>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="pack-type">end</property>
+                  </packing>
                 </child>
                 <child>
                   <object class="GtkMenuButton" id="header_selection_menu_button">
