@@ -2,21 +2,6 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <requires lib="handy" version="1.0"/>
-  <object class="GtkMenu" id="header_selection_menu">
-    <property name="visible">True</property>
-    <child>
-      <object class="GtkMenuItem" id="select_all_menuitem">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">Select All</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="select_none_menuitem">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">Select None</property>
-      </object>
-    </child>
-  </object>
   <menu id="primary_menu">
     <item>
       <attribute name="label" translatable="yes">_Software Repositories</attribute>
@@ -228,35 +213,6 @@
                     <style>
                       <class name="image-button"/>
                     </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">end</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="header_selection_menu_button">
-                    <property name="visible">False</property>
-                    <property name="popup">header_selection_menu</property>
-                    <style>
-                      <class name="selection-menu"/>
-                    </style>
-                    <child>
-                      <object class="GtkBox" id="header_selection_box">
-                        <property name="visible">True</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="header_selection_label">
-                            <property name="visible">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkArrow" id="header_selection_arrow">
-                            <property name="visible">True</property>
-                            <property name="arrow_type">down</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
                   </object>
                   <packing>
                     <property name="pack-type">end</property>

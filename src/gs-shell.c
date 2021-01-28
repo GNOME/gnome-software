@@ -84,7 +84,6 @@ struct _GsShell
 	GtkWidget		*main_header;
 	GtkWidget		*metered_updates_bar;
 	GtkWidget		*menu_button;
-	GtkWidget		*header_selection_menu_button;
 	GtkWidget		*search_button;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
@@ -433,7 +432,6 @@ stack_notify_visible_child_cb (GObject    *object,
 			     mode == GS_SHELL_MODE_SEARCH);
 
 	gtk_widget_set_visible (shell->menu_button, buttonbox_visible);
-	gtk_widget_hide (shell->header_selection_menu_button);
 
 	gtk_widget_set_visible (shell->application_details_header, !buttonbox_visible);
 
@@ -2310,7 +2308,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, header_selection_menu_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
