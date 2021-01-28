@@ -11,6 +11,7 @@
 
 #include <glib.h>
 
+#include "gs-enums.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-job-private.h"
 
@@ -407,19 +408,19 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 
 	switch (prop_id) {
 	case PROP_ACTION:
-		g_value_set_uint (value, self->action);
+		g_value_set_enum (value, self->action);
 		break;
 	case PROP_AGE:
 		g_value_set_uint64 (value, self->age);
 		break;
 	case PROP_REFINE_FLAGS:
-		g_value_set_uint64 (value, self->refine_flags);
+		g_value_set_flags (value, self->refine_flags);
 		break;
 	case PROP_FILTER_FLAGS:
-		g_value_set_uint64 (value, self->filter_flags);
+		g_value_set_flags (value, self->filter_flags);
 		break;
 	case PROP_DEDUPE_FLAGS:
-		g_value_set_uint64 (value, self->dedupe_flags);
+		g_value_set_flags (value, self->dedupe_flags);
 		break;
 	case PROP_INTERACTIVE:
 		g_value_set_boolean (value, self->interactive);
@@ -461,19 +462,19 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 
 	switch (prop_id) {
 	case PROP_ACTION:
-		gs_plugin_job_set_action (self, g_value_get_uint (value));
+		gs_plugin_job_set_action (self, g_value_get_enum (value));
 		break;
 	case PROP_AGE:
 		gs_plugin_job_set_age (self, g_value_get_uint64 (value));
 		break;
 	case PROP_REFINE_FLAGS:
-		gs_plugin_job_set_refine_flags (self, g_value_get_uint64 (value));
+		gs_plugin_job_set_refine_flags (self, g_value_get_flags (value));
 		break;
 	case PROP_FILTER_FLAGS:
-		gs_plugin_job_set_filter_flags (self, g_value_get_uint64 (value));
+		gs_plugin_job_set_filter_flags (self, g_value_get_flags (value));
 		break;
 	case PROP_DEDUPE_FLAGS:
-		gs_plugin_job_set_dedupe_flags (self, g_value_get_uint64 (value));
+		gs_plugin_job_set_dedupe_flags (self, g_value_get_flags (value));
 		break;
 	case PROP_INTERACTIVE:
 		gs_plugin_job_set_interactive (self, g_value_get_boolean (value));
@@ -531,10 +532,8 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 	object_class->get_property = gs_plugin_job_get_property;
 	object_class->set_property = gs_plugin_job_set_property;
 
-	pspec = g_param_spec_uint ("action", NULL, NULL,
-				   GS_PLUGIN_ACTION_UNKNOWN,
-				   GS_PLUGIN_ACTION_LAST,
-				   GS_PLUGIN_ACTION_UNKNOWN,
+	pspec = g_param_spec_enum ("action", NULL, NULL,
+				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ACTION, pspec);
 
@@ -543,19 +542,19 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_AGE, pspec);
 
-	pspec = g_param_spec_uint64 ("refine-flags", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
+	pspec = g_param_spec_flags ("refine-flags", NULL, NULL,
+				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFINE_FLAGS, pspec);
 
-	pspec = g_param_spec_uint64 ("filter-flags", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
+	pspec = g_param_spec_flags ("filter-flags", NULL, NULL,
+				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILTER_FLAGS, pspec);
 
-	pspec = g_param_spec_uint64 ("dedupe-flags", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
+	pspec = g_param_spec_flags ("dedupe-flags", NULL, NULL,
+				    GS_TYPE_APP_LIST_FILTER_FLAGS, GS_APP_LIST_FILTER_FLAG_NONE,
+				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_DEDUPE_FLAGS, pspec);
 
 	pspec = g_param_spec_boolean ("interactive", NULL, NULL,

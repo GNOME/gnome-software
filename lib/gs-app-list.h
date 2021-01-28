@@ -14,6 +14,34 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsAppListFilterFlags:
+ * @GS_APP_LIST_FILTER_FLAG_NONE:		No flags set
+ * @GS_APP_LIST_FILTER_FLAG_KEY_ID:		Filter by ID
+ * @GS_APP_LIST_FILTER_FLAG_KEY_SOURCE:		Filter by default source
+ * @GS_APP_LIST_FILTER_FLAG_KEY_VERSION:	Filter by version
+ * @GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED:	Prefer installed applications
+ * @GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES:	Filter using the provides ID
+ *
+ * Flags to use when filtering. The priority of each #GsApp is used to choose
+ * which application object to keep.
+ *
+ * Since: 40
+ **/
+typedef enum {
+	GS_APP_LIST_FILTER_FLAG_NONE		= 0,
+	GS_APP_LIST_FILTER_FLAG_KEY_ID		= 1 << 0,
+	GS_APP_LIST_FILTER_FLAG_KEY_SOURCE	= 1 << 1,
+	GS_APP_LIST_FILTER_FLAG_KEY_VERSION	= 1 << 2,
+	GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED= 1 << 3,
+	GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES	= 1 << 4,
+	GS_APP_LIST_FILTER_FLAG_LAST,  /*< skip >*/
+	GS_APP_LIST_FILTER_FLAG_MASK		= G_MAXUINT64
+} GsAppListFilterFlags;
+
+/* All the properties which use #GsAppListFilterFlags are guint64s. */
+G_STATIC_ASSERT (sizeof (GsAppListFilterFlags) == sizeof (guint64));
+
 #define GS_TYPE_APP_LIST (gs_app_list_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppList, gs_app_list, GS, APP_LIST, GObject)

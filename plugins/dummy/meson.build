@@ -12,10 +12,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [appstream_glib, gio_unix, goa, gtk, libsoup],
-  link_with : [
-    libgnomesoftware
-  ]
+  dependencies : [plugin_libs],
 )
 
 if get_option('tests')
@@ -31,9 +28,6 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs,
   )

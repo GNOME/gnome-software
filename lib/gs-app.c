@@ -40,6 +40,7 @@
 
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
+#include "gs-enums.h"
 #include "gs-os-release.h"
 #include "gs-plugin.h"
 #include "gs-utils.h"
@@ -4275,7 +4276,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_uint (value, priv->kind);
 		break;
 	case PROP_STATE:
-		g_value_set_uint (value, priv->state);
+		g_value_set_enum (value, priv->state);
 		break;
 	case PROP_PROGRESS:
 		g_value_set_uint (value, priv->progress);
@@ -4290,7 +4291,10 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_uint64 (value, priv->release_date);
 		break;
 	case PROP_QUIRK:
-		g_value_set_uint64 (value, priv->quirk);
+		g_value_set_flags (value, priv->quirk);
+		break;
+	case PROP_PENDING_ACTION:
+		g_value_set_enum (value, priv->pending_action);
 		break;
 	case PROP_KEY_COLORS:
 		g_value_set_boxed (value, priv->key_colors);
@@ -4339,7 +4343,7 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_kind (app, g_value_get_uint (value));
 		break;
 	case PROP_STATE:
-		gs_app_set_state_internal (app, g_value_get_uint (value));
+		gs_app_set_state_internal (app, g_value_get_enum (value));
 		break;
 	case PROP_PROGRESS:
 		gs_app_set_progress (app, g_value_get_uint (value));
@@ -4354,7 +4358,11 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_release_date (app, g_value_get_uint64 (value));
 		break;
 	case PROP_QUIRK:
-		priv->quirk = g_value_get_uint64 (value);
+		priv->quirk = g_value_get_flags (value);
+		break;
+	case PROP_PENDING_ACTION:
+		/* Read only */
+		g_assert_not_reached ();
 		break;
 	case PROP_KEY_COLORS:
 		gs_app_set_key_colors (app, g_value_get_boxed (value));
@@ -4492,6 +4500,7 @@ gs_app_class_init (GsAppClass *klass)
 	/**
 	 * GsApp:kind:
 	 */
+	/* FIXME: Should use AS_TYPE_APP_KIND when it’s available */
 	obj_props[PROP_KIND] = g_param_spec_uint ("kind", NULL, NULL,
 				   AS_APP_KIND_UNKNOWN,
 				   AS_APP_KIND_LAST,
@@ -4501,9 +4510,8 @@ gs_app_class_init (GsAppClass *klass)
 	/**
 	 * GsApp:state:
 	 */
-	obj_props[PROP_STATE] = g_param_spec_uint ("state", NULL, NULL,
-				   GS_APP_STATE_UNKNOWN,
-				   GS_APP_STATE_LAST,
+	obj_props[PROP_STATE] = g_param_spec_enum ("state", NULL, NULL,
+				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
@@ -4548,15 +4556,15 @@ gs_app_class_init (GsAppClass *klass)
 	/**
 	 * GsApp:quirk:
 	 */
-	obj_props[PROP_QUIRK] = g_param_spec_uint64 ("quirk", NULL, NULL,
-				     0, G_MAXUINT64, 0,
+	obj_props[PROP_QUIRK] = g_param_spec_flags ("quirk", NULL, NULL,
+				     GS_TYPE_APP_QUIRK, GS_APP_QUIRK_NONE,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	/**
 	 * GsApp:pending-action:
 	 */
-	obj_props[PROP_PENDING_ACTION] = g_param_spec_uint64 ("pending-action", NULL, NULL,
-				     0, G_MAXUINT64, 0,
+	obj_props[PROP_PENDING_ACTION] = g_param_spec_enum ("pending-action", NULL, NULL,
+				     GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
 				     G_PARAM_READABLE);
 
 	/**

@@ -5,7 +5,8 @@ plugin_libs = [
   goa,
   gtk,
   json_glib,
-  libsoup
+  libsoup,
+  libgnomesoftware_dep,
 ]
 
 subdir('core')

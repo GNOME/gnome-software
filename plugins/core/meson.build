@@ -11,9 +11,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -27,9 +24,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -43,9 +37,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -59,9 +50,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -75,9 +63,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 
@@ -92,9 +77,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -114,9 +96,6 @@ shared_module(
     plugin_libs,
     libxmlb,
   ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -133,9 +112,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -152,9 +128,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -168,9 +141,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 if get_option('hardcoded_popular')
@@ -185,9 +155,6 @@ if get_option('hardcoded_popular')
     install_dir: plugin_dir,
     c_args : cargs,
     dependencies : plugin_libs,
-    link_with : [
-      libgnomesoftware
-    ]
   )
 endif
 
@@ -202,9 +169,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 shared_module(
@@ -218,9 +182,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
 )
 
 if get_option('tests')
@@ -240,9 +201,6 @@ if get_option('tests')
     dependencies : [
       plugin_libs,
       libxmlb,
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs,
   )

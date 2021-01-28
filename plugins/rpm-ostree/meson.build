@@ -20,7 +20,4 @@ shared_module(
   install_rpath: join_paths(rpm_ostree.get_pkgconfig_variable('libdir'), 'rpm-ostree'),
   c_args : cargs,
   dependencies : [ plugin_libs, libdnf, ostree, rpm, rpm_ostree ],
-  link_with : [
-    libgnomesoftware
-  ]
 )

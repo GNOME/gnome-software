@@ -32,7 +32,4 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [gio_unix, appstream_glib, libsoup, plugin_libs],
-  link_with : [
-    libgnomesoftware
-  ]
 )

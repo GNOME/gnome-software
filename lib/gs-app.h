@@ -58,8 +58,7 @@ typedef enum {
 	GS_APP_STATE_UPDATABLE_LIVE,			/* Since: 0.5.4 */
 	GS_APP_STATE_PURCHASABLE,			/* Since: 0.5.17 */
 	GS_APP_STATE_PURCHASING,			/* Since: 0.5.17 */
-	/*< private >*/
-	GS_APP_STATE_LAST
+	GS_APP_STATE_LAST  /*< skip >*/
 } GsAppState;
 
 /**
@@ -96,8 +95,7 @@ typedef enum {
 	GS_APP_KUDO_HI_DPI_ICON			= 1 << 14,
 	GS_APP_KUDO_SANDBOXED			= 1 << 15,
 	GS_APP_KUDO_SANDBOXED_SECURE		= 1 << 16,
-	/*< private >*/
-	GS_APP_KUDO_LAST
+	GS_APP_KUDO_LAST  /*< skip >*/
 } GsAppKudo;
 
 /**
@@ -144,8 +142,7 @@ typedef enum {
 	GS_APP_QUIRK_HIDE_FROM_SEARCH	= 1 << 15,	/* Since: 3.32 */
 	GS_APP_QUIRK_HIDE_EVERYWHERE	= 1 << 16,	/* Since: 3.36 */
 	GS_APP_QUIRK_DO_NOT_AUTO_UPDATE	= 1 << 17,	/* Since: 3.36 */
-	/*< private >*/
-	GS_APP_QUIRK_LAST
+	GS_APP_QUIRK_LAST  /*< skip >*/
 } GsAppQuirk;
 
 #define	GS_APP_INSTALL_DATE_UNSET		0
@@ -166,8 +163,7 @@ typedef enum {
 	GS_APP_QUALITY_LOWEST,
 	GS_APP_QUALITY_NORMAL,
 	GS_APP_QUALITY_HIGHEST,
-	/*< private >*/
-	GS_APP_QUALITY_LAST
+	GS_APP_QUALITY_LAST  /*< skip >*/
 } GsAppQuality;
 
 typedef enum {
@@ -186,8 +182,7 @@ typedef enum {
 	GS_APP_PERMISSIONS_SETTINGS		= 1 << 11,
 	GS_APP_PERMISSIONS_X11			= 1 << 12,
 	GS_APP_PERMISSIONS_ESCAPE_SANDBOX	= 1 << 13,
-	/*< private >*/
-	GS_APP_PERMISSIONS_LAST
+	GS_APP_PERMISSIONS_LAST  /*< skip >*/
 } GsAppPermissions;
 
 #define LIMITED_PERMISSIONS (GS_APP_PERMISSIONS_SETTINGS | \

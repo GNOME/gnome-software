@@ -11,7 +11,4 @@ shared_module(
   install_dir: plugin_dir,
   c_args : c_args,
   dependencies : [ plugin_libs, malcontent ],
-  link_with : [
-    libgnomesoftware,
-  ],
 )

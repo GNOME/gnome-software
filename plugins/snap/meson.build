@@ -13,9 +13,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : [ plugin_libs, snap ],
-  link_with : [
-    libgnomesoftware
-  ]
 )
 metainfo = 'org.gnome.Software.Plugin.Snap.metainfo.xml'
 
@@ -44,9 +41,6 @@ if get_option('tests')
     dependencies : [
       plugin_libs,
       snap
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs,
   )

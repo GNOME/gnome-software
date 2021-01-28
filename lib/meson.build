@@ -1,25 +1,27 @@
 cargs = ['-DG_LOG_DOMAIN="Gs"']
 cargs += ['-DLOCALPLUGINDIR=""']
 
-install_headers([
-    'gnome-software.h',
-    'gs-app.h',
-    'gs-app-collation.h',
-    'gs-app-list.h',
-    'gs-autocleanups.h',
-    'gs-category.h',
-    'gs-ioprio.h',
-    'gs-metered.h',
-    'gs-os-release.h',
-    'gs-plugin.h',
-    'gs-plugin-event.h',
-    'gs-plugin-job.h',
-    'gs-plugin-loader.h',
-    'gs-plugin-loader-sync.h',
-    'gs-plugin-types.h',
-    'gs-plugin-vfuncs.h',
-    'gs-utils.h'
-  ],
+libgnomesoftware_public_headers = [
+  'gnome-software.h',
+  'gs-app.h',
+  'gs-app-collation.h',
+  'gs-app-list.h',
+  'gs-autocleanups.h',
+  'gs-category.h',
+  'gs-ioprio.h',
+  'gs-metered.h',
+  'gs-os-release.h',
+  'gs-plugin.h',
+  'gs-plugin-event.h',
+  'gs-plugin-job.h',
+  'gs-plugin-loader.h',
+  'gs-plugin-loader-sync.h',
+  'gs-plugin-types.h',
+  'gs-plugin-vfuncs.h',
+  'gs-utils.h'
+]
+
+install_headers(libgnomesoftware_public_headers,
   subdir : 'gnome-software'
 )
 
@@ -45,6 +47,16 @@ if get_option('polkit')
   librarydeps += polkit
 endif
 
+libgnomesoftware_enums = gnome.mkenums_simple('gs-enums',
+  sources : libgnomesoftware_public_headers,
+  install_header : true,
+  install_dir : 'gnome-software',
+)
+
+libgnomesoftware_include_directories = [
+  include_directories('..'),
+]
+
 libgnomesoftware = static_library(
   'gnomesoftware',
   sources : [
@@ -63,13 +75,16 @@ libgnomesoftware = static_library(
     'gs-plugin-loader-sync.c',
     'gs-test.c',
     'gs-utils.c',
-  ],
-  include_directories : [
-    include_directories('..'),
-  ],
+  ] + libgnomesoftware_enums,
+  include_directories : libgnomesoftware_include_directories,
   dependencies : librarydeps,
   c_args : cargs,
   install: true,
+)
+
+libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
+  sources : libgnomesoftware_enums,
+  include_directories : libgnomesoftware_include_directories
 )
 
 pkg = import('pkgconfig')
@@ -99,12 +114,10 @@ executable(
     goa,
     gtk,
     json_glib,
+    libgnomesoftware_dep,
     libm,
     libsoup,
     valgrind,
-  ],
-  link_with : [
-    libgnomesoftware
   ],
   c_args : cargs,
   install : true,
@@ -130,11 +143,9 @@ if get_option('tests')
       goa,
       gtk,
       json_glib,
+      libgnomesoftware_dep,
       libm,
       libsoup
-    ],
-    link_with : [
-      libgnomesoftware
     ],
     c_args : cargs
   )

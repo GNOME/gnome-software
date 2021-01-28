@@ -24,6 +24,7 @@
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
 #include "gs-app-collation.h"
+#include "gs-enums.h"
 
 struct _GsAppList
 {
@@ -884,7 +885,7 @@ gs_app_list_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 	GsAppList *self = GS_APP_LIST (object);
 	switch (prop_id) {
 	case PROP_STATE:
-		g_value_set_uint (value, self->state);
+		g_value_set_enum (value, self->state);
 		break;
 	case PROP_PROGRESS:
 		g_value_set_uint (value, self->progress);
@@ -926,9 +927,8 @@ gs_app_list_class_init (GsAppListClass *klass)
 	/**
 	 * GsAppList:state:
 	 */
-	pspec = g_param_spec_uint ("state", NULL, NULL,
-				   GS_APP_STATE_UNKNOWN,
-				   GS_APP_STATE_LAST,
+	pspec = g_param_spec_enum ("state", NULL, NULL,
+				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_STATE, pspec);
