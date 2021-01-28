@@ -2586,6 +2586,9 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
 
+	/* Ensure the gs_flatpak_app_get_ref_*() metadata are set */
+	gs_refine_item_metadata (self, app, NULL, NULL);
+
 	/* If the app was renamed, use the appstream data from the new name;
 	 * usually it will not exist under the old name */
 	if (component == NULL && gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_APP)
