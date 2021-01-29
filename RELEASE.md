@@ -23,10 +23,15 @@ Check the version in `meson.build` is correct for this release.
 
 Write release entries:
 ```
-git log --format="%s" --cherry-pick --right-only 3.37.92... | grep -i -v trivial | grep -v Merge | sort | uniq
+gitlab-changelog GNOME/gnome-software 3.38.0..
 ```
 
-Add any user visible changes into `data/appdata/org.gnome.Software.appdata.xml.in`.
+Edit this down to just the user visible changes, and list them in
+`data/appdata/org.gnome.Software.appdata.xml.in`. User visible changes are ones
+which the average user might be interested to know about, such as a fix for an
+impactful bug, a UI change, or a feature change.
+
+You can get review of your appdata changes from other co-maintainers if you wish.
 
 Generate `NEWS` file:
 ```
