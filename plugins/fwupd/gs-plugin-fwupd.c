@@ -214,18 +214,18 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autoptr(SoupSession) soup_session = NULL;
 
 #if FWUPD_CHECK_VERSION(1,4,5)
+	g_autoptr(GError) error_local = NULL;
 	/* send our implemented feature set */
 	if (!fwupd_client_set_feature_flags (priv->client,
 					     FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
-					     cancellable, error)) {
-		g_prefix_error (error, "Failed to set front-end features: ");
-		return FALSE;
-	}
+					     cancellable, &error_local))
+		g_debug ("Failed to set front-end features: %s", error_local->message);
 
 	/* we know the runtime daemon version now */
 	fwupd_client_set_user_agent_for_package (priv->client, PACKAGE_NAME, PACKAGE_VERSION);
 	if (!fwupd_client_ensure_networking (priv->client, error)) {
+		gs_plugin_fwupd_error_convert (error);
 		g_prefix_error (error, "Failed to setup networking: ");
 		return FALSE;
 	}
@@ -546,10 +546,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* get current list of updates */
 	devices = fwupd_client_get_devices (priv->client, cancellable, &error_local);
 	if (devices == NULL) {
-		if (g_error_matches (error_local,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_NOTHING_TO_DO)) {
-			g_debug ("no devices");
+		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND)) {
+			g_debug ("no devices (%s)", error_local->message);
 			return TRUE;
 		}
 		g_propagate_error (error, g_steal_pointer (&error_local));
@@ -757,12 +757,21 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) remotes = NULL;
 
 	/* get the list of enabled remotes */
-	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
-	if (remotes == NULL)
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, &error_local);
+	if (remotes == NULL) {
+		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
+		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
+	}
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (!fwupd_remote_get_enabled (remote))
