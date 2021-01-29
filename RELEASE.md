@@ -49,7 +49,7 @@ Build the release tarball:
 ninja dist
 ```
 
-Tag, sign and push the release:
+Tag, sign and push the release (see below for information about `git evtag`):
 ```
 git evtag sign 3.38.1
 git push --atomic origin master 3.38.1
@@ -66,3 +66,16 @@ Post release version bump in `meson.build`
 git commit -a -m "trivial: Post release version bump"
 git push
 ```
+
+`git-evtag`
+---
+
+Releases should be done with `git evtag` rather than `git tag`, as it provides
+stronger security guarantees. See
+[its documentation](https://github.com/cgwalters/git-evtag) for more details.
+In particular, it calculates its checksum over all blobs reachable from the tag,
+including submodules; and uses a stronger checksum than SHA-1.
+
+You will need a GPG key for this, ideally which has been signed by others so
+that it can be verified as being yours. However, even if your GPG key is
+unsigned, using `git evtag` is still beneficial over using `git tag`.
