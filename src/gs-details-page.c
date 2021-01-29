@@ -1489,15 +1489,16 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 
 		row = gs_app_addon_row_new (addon);
 
-		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
-		gtk_widget_show (row);
-
 		g_signal_connect (row, "notify::selected",
 				  G_CALLBACK (gs_details_page_addon_selected_cb),
 				  self);
 		g_signal_connect (row, "remove-button-clicked",
 				  G_CALLBACK (gs_details_page_addon_remove_cb),
 				  self);
+
+		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
+		gtk_widget_show (row);
+
 	}
 }
 
