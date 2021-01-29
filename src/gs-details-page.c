@@ -2349,13 +2349,26 @@ gs_details_page_write_review_cb (GtkButton *button,
 static void
 gs_details_page_app_installed (GsPage *page, GsApp *app)
 {
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
+	GsAppList *addons;
+	guint i;
+
+	/* if the app is just an addon, no need for a full refresh */
+	addons = gs_app_get_addons (self->app);
+	for (i = 0; i < gs_app_list_length (addons); i++) {
+		GsApp *addon;
+		addon = gs_app_list_index (addons, i);
+		if (addon == app)
+			return;
+	}
+
 	gs_details_page_reload (page);
 }
 
 static void
 gs_details_page_app_removed (GsPage *page, GsApp *app)
 {
-	gs_details_page_reload (page);
+	gs_details_page_app_installed (page, app);
 }
 
 static void

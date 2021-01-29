@@ -125,6 +125,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
+		gtk_widget_set_visible (row->checkbox, TRUE);
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		gtk_widget_set_visible (row->button_remove, FALSE);
