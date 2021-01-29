@@ -1467,6 +1467,7 @@ list_sort_func (GtkListBoxRow *a,
 }
 
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
+static void gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data);
 
 static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
@@ -1488,12 +1489,16 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 
 		row = gs_app_addon_row_new (addon);
 
-		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
-		gtk_widget_show (row);
-
 		g_signal_connect (row, "notify::selected",
 				  G_CALLBACK (gs_details_page_addon_selected_cb),
 				  self);
+		g_signal_connect (row, "remove-button-clicked",
+				  G_CALLBACK (gs_details_page_addon_remove_cb),
+				  self);
+
+		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
+		gtk_widget_show (row);
+
 	}
 }
 
@@ -2243,6 +2248,16 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 }
 
 static void
+gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data)
+{
+	GsApp *addon;
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+
+	addon = gs_app_addon_row_get_addon (row);
+	gs_page_remove_app (GS_PAGE (self), addon, NULL);
+}
+
+static void
 gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
@@ -2334,13 +2349,26 @@ gs_details_page_write_review_cb (GtkButton *button,
 static void
 gs_details_page_app_installed (GsPage *page, GsApp *app)
 {
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
+	GsAppList *addons;
+	guint i;
+
+	/* if the app is just an addon, no need for a full refresh */
+	addons = gs_app_get_addons (self->app);
+	for (i = 0; i < gs_app_list_length (addons); i++) {
+		GsApp *addon;
+		addon = gs_app_list_index (addons, i);
+		if (addon == app)
+			return;
+	}
+
 	gs_details_page_reload (page);
 }
 
 static void
 gs_details_page_app_removed (GsPage *page, GsApp *app)
 {
-	gs_details_page_reload (page);
+	gs_details_page_app_installed (page, app);
 }
 
 static void

@@ -389,6 +389,62 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkBox" id="box_addons">
+                            <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
+                            <property name="margin_bottom">26</property>
+
+                            <child>
+                              <object class="GtkBox" id="box_addons_title">
+                                <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
+                                <property name="margin_bottom">18</property>
+                                <child>
+                                  <object class="GtkLabel" id="label_addons_title">
+                                    <property name="visible">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">start</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Add-ons</property>
+                                    <style>
+                                      <class name="application-details-title"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label_addons_uninstalled_app">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">True</property>
+                                    <property name="max-width-chars">40</property>
+                                    <property name="label" translatable="yes">Selected add-ons will be installed with the application.</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+
+                            <child>
+                              <object class="GtkFrame" id="box_addons_frame">
+                                <property name="visible">True</property>
+                                <property name="shadow_type">in</property>
+                                <property name="halign">fill</property>
+                                <property name="valign">start</property>
+                                <style>
+                                  <class name="view"/>
+                                </style>
+                                <child>
+                                  <object class="GtkListBox" id="list_box_addons">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="selection_mode">none</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkLabel" id="label_webapp_warning">
                             <property name="visible">False</property>
                             <property name="halign">center</property>
@@ -1075,62 +1131,6 @@
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">5</property>
                                   </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="box_addons">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="margin_bottom">26</property>
-
-                            <child>
-                              <object class="GtkBox" id="box_addons_title">
-                                <property name="visible">True</property>
-                                <property name="orientation">vertical</property>
-                                <property name="margin_bottom">18</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_addons_title">
-                                    <property name="visible">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Add-ons</property>
-                                    <style>
-                                      <class name="application-details-title"/>
-                                    </style>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_addons_uninstalled_app">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="wrap">True</property>
-                                    <property name="max-width-chars">40</property>
-                                    <property name="label" translatable="yes">Selected add-ons will be installed with the application.</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-
-                            <child>
-                              <object class="GtkFrame" id="box_addons_frame">
-                                <property name="visible">True</property>
-                                <property name="shadow_type">in</property>
-                                <property name="halign">fill</property>
-                                <property name="valign">start</property>
-                                <style>
-                                  <class name="view"/>
-                                </style>
-                                <child>
-                                  <object class="GtkListBox" id="list_box_addons">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="selection_mode">none</property>
-                                  </object>
                                 </child>
                               </object>
                             </child>
