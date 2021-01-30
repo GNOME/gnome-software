@@ -2507,7 +2507,12 @@ get_renamed_component (GsFlatpak *self,
 	const gchar *origin = gs_app_get_origin (app);
 	const gchar *renamed_to;
 	g_autofree gchar *xpath = NULL;
+#if LIBXMLB_CHECK_VERSION(0, 3, 0)
+	g_autoptr(XbQuery) query = NULL;
+	g_auto(XbQueryContext) context = XB_QUERY_CONTEXT_INIT ();
+#else
 	g_autofree gchar *source_safe = NULL;
+#endif
 	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
 	g_autoptr(XbNode) component = NULL;
 
@@ -2525,13 +2530,17 @@ get_renamed_component (GsFlatpak *self,
 	if (renamed_to == NULL)
 		return NULL;
 
-	/* FIXME: This libxmlb query will need reworking after this PR lands:
-	 * https://github.com/hughsie/libxmlb/pull/67
-	 */
+#if LIBXMLB_CHECK_VERSION(0, 3, 0)
+	query = xb_silo_lookup_query (silo, "components[@origin=?/component/bundle[@type='flatpak'][text()=?]/..");
+	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 0, origin, NULL);
+	xb_value_bindings_bind_str (xb_query_context_get_bindings (&context), 1, renamed_to, NULL);
+	component = xb_silo_query_first_with_context (silo, query, &context, NULL);
+#else
 	source_safe = xb_string_escape (renamed_to);
 	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, NULL);
+#endif
 
 	/* Get the previous name so it can be displayed in the UI */
 	if (component != NULL) {
@@ -2576,6 +2585,9 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
+
+	/* Ensure the gs_flatpak_app_get_ref_*() metadata are set */
+	gs_refine_item_metadata (self, app, NULL, NULL);
 
 	/* If the app was renamed, use the appstream data from the new name;
 	 * usually it will not exist under the old name */
