@@ -48,7 +48,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	GsFeatureTile *tile = GS_FEATURE_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
 	AtkObject *accessible;
-	const gchar *markup;
+	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
 
 	if (app == NULL)
@@ -61,8 +61,14 @@ gs_feature_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
 	/* perhaps set custom css; cache it so that images don’t get reloaded
-	 * unnecessarily */
-	markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
+	 * unnecessarily. The custom CSS is direction-dependent, and will be
+	 * reloaded when the direction changes. If RTL CSS isn’t set, fall back
+	 * to the LTR CSS. */
+	if (gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL)
+		markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css-rtl");
+	if (markup == NULL)
+		markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
+
 	if (tile->markup_cache != markup) {
 		g_autoptr(GsCss) css = gs_css_new ();
 		if (markup != NULL)
@@ -101,6 +107,14 @@ gs_feature_tile_refresh (GsAppTile *self)
 }
 
 static void
+gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_direction)
+{
+	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
+
+	gs_feature_tile_refresh (GS_APP_TILE (tile));
+}
+
+static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
@@ -115,6 +129,8 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	GsAppTileClass *app_tile_class = GS_APP_TILE_CLASS (klass);
 
 	object_class->dispose = gs_feature_tile_dispose;
+
+	widget_class->direction_changed = gs_feature_tile_direction_changed;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;
 
