@@ -65,8 +65,19 @@ scp meson-dist/*.tar.xz master.gnome.org:
 ssh master.gnome.org ftpadmin install gnome-software-*.tar.xz
 ```
 
-Post release version bump in `meson.build`
+Add the release notes to GitLab and close the milestone:
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/tags/${new_version}/release/edit
+   and upload the release notes for the new release from the `NEWS` file
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/${new_version}/edit
+   and link the milestone to it, then list the new release tarball and
+   `sha256sum` file in the ‘Release Assets’ section
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/${new_version}
+   and close it, as all issues and merge requests tagged for this release should
+   now be complete
+
+Post release version bump in `meson.build`:
 ```
+# edit meson.build, then
 git commit -a -m "trivial: Post release version bump"
 git push
 ```
