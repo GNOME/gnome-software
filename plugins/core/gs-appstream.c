@@ -369,9 +369,47 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 		return FALSE;
 	}
 	for (guint i = 0; i < provides->len; i++) {
+		AsProvidedKind kind;
+		const gchar *element_name;
 		XbNode *provide = g_ptr_array_index (provides, i);
+		element_name = xb_node_get_element (provide);
+
+		/* try the simple case */
+		kind = as_provided_kind_from_string (element_name);
+		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+			/* try the complex cases */
+
+			if (g_strcmp0 (element_name, "library") == 0) {
+				kind = AS_PROVIDED_KIND_LIBRARY;
+			} else if (g_strcmp0 (element_name, "binary") == 0) {
+				kind = AS_PROVIDED_KIND_BINARY;
+			} else if (g_strcmp0 (element_name, "firmware") == 0) {
+				const gchar *fw_type = xb_node_get_attr (provide, "type");
+				if (g_strcmp0 (fw_type, "runtime") == 0)
+					kind = AS_PROVIDED_KIND_FIRMWARE_RUNTIME;
+				else if (g_strcmp0 (fw_type, "flashed") == 0)
+					kind = AS_PROVIDED_KIND_FIRMWARE_FLASHED;
+			} else if (g_strcmp0 (element_name, "python2") == 0) {
+				kind = AS_PROVIDED_KIND_PYTHON_2;
+			} else if (g_strcmp0 (element_name, "python3") == 0) {
+				kind = AS_PROVIDED_KIND_PYTHON;
+			} else if (g_strcmp0 (element_name, "dbus") == 0) {
+				const gchar *dbus_type = xb_node_get_attr (provide, "type");
+				if (g_strcmp0 (dbus_type, "system") == 0)
+					kind = AS_PROVIDED_KIND_DBUS_SYSTEM;
+				else if ((g_strcmp0 (dbus_type, "user") == 0) || (g_strcmp0 (dbus_type, "session") == 0))
+					kind = AS_PROVIDED_KIND_DBUS_USER;
+			}
+		}
+
+		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+			/* give up */
+			g_warning ("ignoring unknown provided item type: %s", element_name);
+			continue;
+		}
+
 		gs_app_add_provided_item (app,
-					  as_provided_kind_from_string (xb_node_get_element (provide)),
+					  kind,
 					  xb_node_get_text (provide));
 	}
 
