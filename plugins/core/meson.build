@@ -99,19 +99,6 @@ shared_module(
 )
 
 shared_module(
-  'gs_plugin_desktop-menu-path',
-  sources : 'gs-plugin-desktop-menu-path.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-)
-
-shared_module(
   'gs_plugin_hardcoded-blocklist',
   sources : 'gs-plugin-hardcoded-blocklist.c',
   include_directories : [

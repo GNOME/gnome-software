@@ -724,7 +724,6 @@ main (int argc, char **argv)
 		"dummy",
 		"generic-updates",
 		"hardcoded-blocklist",
-		"desktop-menu-path",
 		"icons",
 		"key-colors",
 		"provenance",
