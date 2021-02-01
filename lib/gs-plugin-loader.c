@@ -1582,10 +1582,18 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GsMainContextPusher) pusher = gs_main_context_pusher_new (context);
+	GsCategory * const *categories = NULL;
+	gsize n_categories;
 #ifdef HAVE_SYSPROF
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+
+	/* get the categories */
+	categories = gs_category_manager_get_categories (priv->category_manager, &n_categories);
+
+	for (gsize i = 0; i < n_categories; i++)
+		g_ptr_array_add (helper->catlist, g_object_ref (categories[i]));
 
 	/* run each plugin */
 	if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
