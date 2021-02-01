@@ -38,6 +38,17 @@ struct _GsCategory
 
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
 
+typedef enum {
+	PROP_ID = 1,
+	PROP_NAME,
+	PROP_ICON_NAME,
+	PROP_SCORE,
+	PROP_PARENT,
+	PROP_SIZE,
+} GsCategoryProperty;
+
+static GParamSpec *obj_props[PROP_SIZE + 1] = { NULL, };
+
 /**
  * gs_category_to_string:
  * @category: a #GsCategory
@@ -121,7 +132,12 @@ void
 gs_category_set_size (GsCategory *category, guint size)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
+
+	if (size == category->size)
+		return;
+
 	category->size = size;
+	g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
 }
 
 /**
@@ -136,7 +152,9 @@ void
 gs_category_increment_size (GsCategory *category)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
+
 	category->size++;
+	g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
 }
 
 /**
@@ -477,6 +495,59 @@ gs_category_sort_children (GsCategory *category)
 }
 
 static void
+gs_category_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsCategory *self = GS_CATEGORY (object);
+
+	switch ((GsCategoryProperty) prop_id) {
+	case PROP_ID:
+		g_value_set_string (value, self->id);
+		break;
+	case PROP_NAME:
+		g_value_set_string (value, self->name);
+		break;
+	case PROP_ICON_NAME:
+		g_value_set_string (value, self->icon_name);
+		break;
+	case PROP_SCORE:
+		g_value_set_int (value, self->score);
+		break;
+	case PROP_PARENT:
+		g_value_set_object (value, self->parent);
+		break;
+	case PROP_SIZE:
+		g_value_set_uint (value, self->size);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_category_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsCategory *self = GS_CATEGORY (object);
+
+	switch ((GsCategoryProperty) prop_id) {
+	case PROP_ID:
+	case PROP_NAME:
+	case PROP_ICON_NAME:
+	case PROP_SCORE:
+	case PROP_PARENT:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	case PROP_SIZE:
+		gs_category_set_size (self, g_value_get_uint (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_category_finalize (GObject *object)
 {
 	GsCategory *category = GS_CATEGORY (object);
@@ -497,7 +568,91 @@ static void
 gs_category_class_init (GsCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->get_property = gs_category_get_property;
+	object_class->set_property = gs_category_set_property;
 	object_class->finalize = gs_category_finalize;
+
+	/**
+	 * GsCategory:id:
+	 *
+	 * A machine readable identifier for the category. Must be non-empty
+	 * and in a valid format to be a
+	 * [desktop category ID](https://specifications.freedesktop.org/menu-spec/latest/).
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_ID] =
+		g_param_spec_string ("id", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsCategory:name:
+	 *
+	 * Human readable name for the category.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_NAME] =
+		g_param_spec_string ("name", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsCategory:icon-name: (nullable)
+	 *
+	 * Name of the icon to use for the category, or %NULL if none is set.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_ICON_NAME] =
+		g_param_spec_string ("icon-name", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsCategory:score:
+	 *
+	 * Score for sorting the category. Lower numeric values indicate more
+	 * important categories.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_SCORE] =
+		g_param_spec_int ("score", NULL, NULL,
+				  G_MININT, G_MAXINT, 0,
+				  G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsCategory:parent: (nullable)
+	 *
+	 * The parent #GsCategory, or %NULL if this category is at the top
+	 * level.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_PARENT] =
+		g_param_spec_object ("parent", NULL, NULL,
+				     GS_TYPE_CATEGORY,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsCategory:size:
+	 *
+	 * Number of apps in this category, including apps in its subcategories.
+	 *
+	 * This has to be initialised externally to the #GsCategory by calling
+	 * gs_category_increment_size().
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_SIZE] =
+		g_param_spec_uint ("size", NULL, NULL,
+				   0, G_MAXUINT, 0,
+				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 static void
