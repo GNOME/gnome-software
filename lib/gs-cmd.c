@@ -106,7 +106,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 	if (g_strcmp0 (flag, "related") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 	if (g_strcmp0 (flag, "menu-path") == 0)
-		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH;
+		/* no longer supported by itself; categories are largely equivalent */
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES;
 	if (g_strcmp0 (flag, "upgrade-removed") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 	if (g_strcmp0 (flag, "provenance") == 0)

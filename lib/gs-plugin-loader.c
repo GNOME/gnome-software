@@ -3715,11 +3715,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
 	}
 	if (gs_plugin_job_has_refine_flags (plugin_job,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH)) {
-		gs_plugin_job_add_refine_flags (plugin_job,
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES);
-	}
-	if (gs_plugin_job_has_refine_flags (plugin_job,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
