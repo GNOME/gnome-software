@@ -26,9 +26,9 @@ GsCategory	*gs_category_get_parent		(GsCategory	*category);
 const gchar	*gs_category_get_name		(GsCategory	*category);
 void		 gs_category_set_name		(GsCategory	*category,
 						 const gchar	*name);
-const gchar	*gs_category_get_icon		(GsCategory	*category);
-void		 gs_category_set_icon		(GsCategory	*category,
-						 const gchar	*icon);
+const gchar	*gs_category_get_icon_name	(GsCategory	*category);
+void		 gs_category_set_icon_name	(GsCategory	*category,
+						 const gchar	*icon_name);
 gint		 gs_category_get_score		(GsCategory	*category);
 void		 gs_category_set_score		(GsCategory	*category,
 						 gint		 score);

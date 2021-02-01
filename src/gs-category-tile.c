@@ -37,7 +37,7 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 	gtk_label_set_label (GTK_LABEL (tile->label),
 			     gs_category_get_name (tile->cat));
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				      gs_category_get_icon (tile->cat),
+				      gs_category_get_icon_name (tile->cat),
 				      GTK_ICON_SIZE_MENU);
 }
 

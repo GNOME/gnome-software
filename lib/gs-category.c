@@ -28,7 +28,7 @@ struct _GsCategory
 
 	gchar		*id;
 	gchar		*name;
-	gchar		*icon;
+	gchar		*icon_name;
 	gint		 score;
 	GPtrArray	*desktop_groups;
 	GsCategory	*parent;
@@ -60,9 +60,9 @@ gs_category_to_string (GsCategory *category)
 		g_string_append_printf (str, "  name: %s\n",
 					category->name);
 	}
-	if (category->icon != NULL) {
-		g_string_append_printf (str, "  icon: %s\n",
-					category->icon);
+	if (category->icon_name != NULL) {
+		g_string_append_printf (str, "  icon-name: %s\n",
+					category->icon_name);
 	}
 	g_string_append_printf (str, "  size: %u\n",
 				category->size);
@@ -208,17 +208,17 @@ gs_category_set_name (GsCategory *category, const gchar *name)
 }
 
 /**
- * gs_category_get_icon:
+ * gs_category_get_icon_name:
  * @category: a #GsCategory
  *
- * Gets the category icon.
+ * Gets the category icon name.
  *
  * Returns: the string, or %NULL
  *
  * Since: 3.22
  **/
 const gchar *
-gs_category_get_icon (GsCategory *category)
+gs_category_get_icon_name (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
 
@@ -230,24 +230,24 @@ gs_category_get_icon (GsCategory *category)
 	if (g_strcmp0 (category->id, "featured") == 0)
 		return "emblem-favorite-symbolic";
 
-	return category->icon;
+	return category->icon_name;
 }
 
 /**
- * gs_category_set_icon:
+ * gs_category_set_icon_name:
  * @category: a #GsCategory
- * @icon: a category icon, or %NULL
+ * @icon_name: a category icon name, or %NULL
  *
- * Sets the category icon.
+ * Sets the category icon name.
  *
  * Since: 3.22
  **/
 void
-gs_category_set_icon (GsCategory *category, const gchar *icon)
+gs_category_set_icon_name (GsCategory *category, const gchar *icon_name)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-	g_free (category->icon);
-	category->icon = g_strdup (icon);
+	g_free (category->icon_name);
+	category->icon_name = g_strdup (icon_name);
 }
 
 /**
@@ -488,7 +488,7 @@ gs_category_finalize (GObject *object)
 	g_ptr_array_unref (category->desktop_groups);
 	g_free (category->id);
 	g_free (category->name);
-	g_free (category->icon);
+	g_free (category->icon_name);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }
