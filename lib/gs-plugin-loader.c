@@ -21,6 +21,7 @@
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
+#include "gs-category-manager.h"
 #include "gs-category-private.h"
 #include "gs-ioprio.h"
 #include "gs-plugin-loader.h"
@@ -66,6 +67,8 @@ typedef struct
 	gulong			 network_changed_handler;
 	gulong			 network_available_notify_handler;
 	gulong			 network_metered_notify_handler;
+
+	GsCategoryManager	*category_manager;
 
 #ifdef HAVE_SYSPROF
 	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
@@ -2771,6 +2774,8 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
+	g_clear_object (&priv->category_manager);
+
 #ifdef HAVE_SYSPROF
 	g_clear_pointer (&priv->sysprof_writer, sysprof_capture_writer_unref);
 #endif
@@ -2937,6 +2942,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	} else {
 		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
 	}
+
+	/* get the category manager */
+	priv->category_manager = gs_category_manager_new ();
 
 	/* the settings key sets the initial override */
 	priv->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -3983,4 +3991,23 @@ gs_plugin_loader_get_locale (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	return priv->locale;
+}
+
+/**
+ * gs_plugin_loader_get_category_manager:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the category manager singleton.
+ *
+ * Returns: (transfer none): a category manager
+ * Since: 40
+ */
+GsCategoryManager *
+gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return priv->category_manager;
 }

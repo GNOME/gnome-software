@@ -13,6 +13,7 @@
 
 #include "gs-app.h"
 #include "gs-category.h"
+#include "gs-category-manager.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-job.h"
@@ -96,5 +97,7 @@ void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_l
                                                         guint           max_ops);
 
 const gchar	*gs_plugin_loader_get_locale		(GsPluginLoader *plugin_loader);
+
+GsCategoryManager *gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader);
 
 G_END_DECLS
