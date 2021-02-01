@@ -12,8 +12,6 @@
 #include <gnome-software.h>
 #include <glib/gi18n.h>
 
-#include "gs-desktop-common.h"
-
 /*
  * SECTION:
  * Adds categories from a hardcoded list based on the the desktop menu

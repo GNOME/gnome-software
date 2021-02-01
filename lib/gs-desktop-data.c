@@ -10,7 +10,7 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-desktop-common.h"
+#include "gs-desktop-data.h"
 
 /* AudioVideo */
 static const GsDesktopMap map_audiovisual[] = {

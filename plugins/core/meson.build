@@ -100,10 +100,7 @@ shared_module(
 
 shared_module(
   'gs_plugin_desktop-categories',
-  sources : [
-    'gs-plugin-desktop-categories.c',
-    'gs-desktop-common.c',
-  ],
+  sources : 'gs-plugin-desktop-categories.c',
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
@@ -116,10 +113,7 @@ shared_module(
 
 shared_module(
   'gs_plugin_desktop-menu-path',
-  sources : [
-    'gs-plugin-desktop-menu-path.c',
-    'gs-desktop-common.c',
-  ],
+  sources : 'gs-plugin-desktop-menu-path.c',
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
