@@ -13,6 +13,10 @@ Making a release
 
 Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorner/Releasing).
 
+These instructions use the following variables:
+ - `new_version`: the version number of the release you are making, for example 3.38.1
+ - `previous_version`: the version number of the most-recently released version in the same release series, for example 3.38.0
+
 Make sure your repository is up to date and doesn’t contain local changes:
 ```
 git pull
@@ -23,7 +27,7 @@ Check the version in `meson.build` is correct for this release.
 
 Write release entries:
 ```
-gitlab-changelog GNOME/gnome-software 3.38.0..
+gitlab-changelog GNOME/gnome-software ${previous_version}..
 ```
 
 Edit this down to just the user visible changes, and list them in
@@ -41,7 +45,7 @@ appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in
 Commit the release:
 ```
 git add -p
-git commit -m "Release version 3.38.1"
+git commit -m "Release version ${new_version}"
 ```
 
 Build the release tarball:
@@ -51,8 +55,8 @@ ninja dist
 
 Tag, sign and push the release (see below for information about `git evtag`):
 ```
-git evtag sign 3.38.1
-git push --atomic origin master 3.38.1
+git evtag sign ${new_version}
+git push --atomic origin master ${new_version}
 ```
 
 Upload the release tarball:
@@ -61,8 +65,19 @@ scp meson-dist/*.tar.xz master.gnome.org:
 ssh master.gnome.org ftpadmin install gnome-software-*.tar.xz
 ```
 
-Post release version bump in `meson.build`
+Add the release notes to GitLab and close the milestone:
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/tags/${new_version}/release/edit
+   and upload the release notes for the new release from the `NEWS` file
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/${new_version}/edit
+   and link the milestone to it, then list the new release tarball and
+   `sha256sum` file in the ‘Release Assets’ section
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/${new_version}
+   and close it, as all issues and merge requests tagged for this release should
+   now be complete
+
+Post release version bump in `meson.build`:
 ```
+# edit meson.build, then
 git commit -a -m "trivial: Post release version bump"
 git push
 ```
