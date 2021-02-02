@@ -27,10 +27,9 @@ struct _GsCategory
 {
 	GObject		 parent_instance;
 
-	gchar		*id;
-	gchar		*name;
-	gchar		*icon_name;
-	gint		 score;
+	const GsDesktopData	*desktop_data;  /* NULL for subcategories */
+	const GsDesktopMap	*desktop_map;  /* NULL for parent categories */
+
 	GPtrArray	*desktop_groups;
 	GsCategory	*parent;
 	guint		 size;
@@ -67,14 +66,14 @@ gs_category_to_string (GsCategory *category)
 	GString *str = g_string_new (NULL);
 	g_string_append_printf (str, "GsCategory[%p]:\n", category);
 	g_string_append_printf (str, "  id: %s\n",
-				category->id);
-	if (category->name != NULL) {
+				gs_category_get_id (category));
+	if (gs_category_get_name (category) != NULL) {
 		g_string_append_printf (str, "  name: %s\n",
-					category->name);
+					gs_category_get_name (category));
 	}
-	if (category->icon_name != NULL) {
+	if (gs_category_get_icon_name (category) != NULL) {
 		g_string_append_printf (str, "  icon-name: %s\n",
-					category->icon_name);
+					gs_category_get_icon_name (category));
 	}
 	g_string_append_printf (str, "  size: %u\n",
 				gs_category_get_size (category));
@@ -84,7 +83,7 @@ gs_category_to_string (GsCategory *category)
 		g_string_append_printf (str, "  parent: %s\n",
 					gs_category_get_id (category->parent));
 	}
-	g_string_append_printf (str, "  score: %i\n", category->score);
+	g_string_append_printf (str, "  score: %i\n", gs_category_get_score (category));
 	if (category->children->len == 0) {
 		g_string_append_printf (str, "  children: %u\n",
 					category->children->len);
@@ -118,7 +117,7 @@ gs_category_get_size (GsCategory *category)
 	g_return_val_if_fail (GS_IS_CATEGORY (category), 0);
 
 	/* The ‘all’ subcategory is a bit special. */
-	if (category->parent != NULL && g_str_equal (category->id, "all"))
+	if (category->parent != NULL && g_str_equal (gs_category_get_id (category), "all"))
 		return gs_category_get_size (category->parent);
 
 	return category->size;
@@ -177,7 +176,12 @@ const gchar *
 gs_category_get_id (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
-	return category->id;
+
+	if (category->desktop_data != NULL)
+		return category->desktop_data->id;
+	else if (category->desktop_map != NULL)
+		return category->desktop_map->id;
+	g_assert_not_reached ();
 }
 
 /**
@@ -193,25 +197,37 @@ gs_category_get_id (GsCategory *category)
 const gchar *
 gs_category_get_name (GsCategory *category)
 {
+	const gchar *category_id;
+
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
 
+	category_id = gs_category_get_id (category);
+
 	/* special case, we don't want translations in the plugins */
-	if (g_strcmp0 (category->id, "other") == 0) {
+	if (g_strcmp0 (category_id, "other") == 0) {
 		/* TRANSLATORS: this is where all applications that don't
 		 * fit in other groups are put */
 		return _("Other");
 	}
-	if (g_strcmp0 (category->id, "all") == 0) {
+	if (g_strcmp0 (category_id, "all") == 0) {
 		/* TRANSLATORS: this is a subcategory matching all the
 		 * different apps in the parent category, e.g. "Games" */
 		return _("All");
 	}
-	if (g_strcmp0 (category->id, "featured") == 0) {
+	if (g_strcmp0 (category_id, "featured") == 0) {
 		/* TRANSLATORS: this is a subcategory of featured apps */
 		return _("Featured");
 	}
 
-	return category->name;
+	/* normal case */
+	if (category->desktop_data != NULL) {
+		return gettext (category->desktop_data->name);
+	} else if (category->desktop_map != NULL) {
+		g_autofree gchar *msgctxt = g_strdup_printf ("Menu of %s", category->parent->desktop_data->name);
+		return g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, category->desktop_map->name);
+	}
+
+	g_assert_not_reached ();
 }
 
 /**
@@ -227,17 +243,24 @@ gs_category_get_name (GsCategory *category)
 const gchar *
 gs_category_get_icon_name (GsCategory *category)
 {
+	const gchar *category_id;
+
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
 
+	category_id = gs_category_get_id (category);
+
 	/* special case */
-	if (g_strcmp0 (category->id, "other") == 0)
+	if (g_strcmp0 (category_id, "other") == 0)
 		return "emblem-system-symbolic";
-	if (g_strcmp0 (category->id, "all") == 0)
+	if (g_strcmp0 (category_id, "all") == 0)
 		return "emblem-default-symbolic";
-	if (g_strcmp0 (category->id, "featured") == 0)
+	if (g_strcmp0 (category_id, "featured") == 0)
 		return "emblem-favorite-symbolic";
 
-	return category->icon_name;
+	if (category->desktop_data != NULL)
+		return category->desktop_data->icon;
+	else
+		return NULL;
 }
 
 /**
@@ -256,7 +279,11 @@ gint
 gs_category_get_score (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
-	return category->score;
+
+	if (category->desktop_data != NULL)
+		return category->desktop_data->score;
+	else
+		return 0;
 }
 
 /**
@@ -456,16 +483,16 @@ gs_category_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 
 	switch ((GsCategoryProperty) prop_id) {
 	case PROP_ID:
-		g_value_set_string (value, self->id);
+		g_value_set_string (value, gs_category_get_id (self));
 		break;
 	case PROP_NAME:
-		g_value_set_string (value, self->name);
+		g_value_set_string (value, gs_category_get_name (self));
 		break;
 	case PROP_ICON_NAME:
-		g_value_set_string (value, self->icon_name);
+		g_value_set_string (value, gs_category_get_icon_name (self));
 		break;
 	case PROP_SCORE:
-		g_value_set_int (value, self->score);
+		g_value_set_int (value, gs_category_get_score (self));
 		break;
 	case PROP_PARENT:
 		g_value_set_object (value, self->parent);
@@ -512,9 +539,6 @@ gs_category_finalize (GObject *object)
 		                              (gpointer *) &category->parent);
 	g_ptr_array_unref (category->children);
 	g_ptr_array_unref (category->desktop_groups);
-	g_free (category->id);
-	g_free (category->name);
-	g_free (category->icon_name);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }
@@ -631,27 +655,20 @@ gs_category_init (GsCategory *category)
 GsCategory *
 gs_category_new_for_desktop_data (const GsDesktopData *data)
 {
-	g_autofree gchar *msgctxt = NULL;
 	g_autoptr(GsCategory) category = NULL;
 	GsCategory *subcategory_all = NULL;
 
 	/* parent category */
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
-
-	category->icon_name = g_strdup (data->icon);
-	category->name = g_strdup (gettext (data->name));
-	category->score = data->score;
+	category->desktop_data = data;
 
 	/* add subcategories */
-	msgctxt = g_strdup_printf ("Menu of %s", data->name);
-
 	for (gsize j = 0; data->mapping[j].id != NULL; j++) {
 		const GsDesktopMap *map = &data->mapping[j];
 		g_autoptr(GsCategory) sub = g_object_new (GS_TYPE_CATEGORY, NULL);
-		sub->id = g_strdup (map->id);
+		sub->desktop_map = map;
 		for (gsize k = 0; map->fdo_cats[k] != NULL; k++)
 			gs_category_add_desktop_group (sub, map->fdo_cats[k]);
-		sub->name = g_strdup (g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, map->name));
 		gs_category_add_child (category, sub);
 
 		if (g_str_equal (map->id, "all"))
