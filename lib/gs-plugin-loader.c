@@ -1546,11 +1546,9 @@ gs_plugin_loader_fix_category_all (GsCategory *category)
 	GsCategory *cat_all;
 	guint i, j;
 
-	/* set correct size */
 	cat_all = gs_category_find_child (category, "all");
 	if (cat_all == NULL)
 		return;
-	gs_category_set_size (cat_all, gs_category_get_size (category));
 
 	/* add the desktop groups from all children */
 	children = gs_category_get_children (category);

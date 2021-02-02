@@ -77,7 +77,7 @@ gs_category_to_string (GsCategory *category)
 					category->icon_name);
 	}
 	g_string_append_printf (str, "  size: %u\n",
-				category->size);
+				gs_category_get_size (category));
 	g_string_append_printf (str, "  desktop-groups: %u\n",
 				category->desktop_groups->len);
 	if (category->parent != NULL) {
@@ -116,6 +116,11 @@ guint
 gs_category_get_size (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), 0);
+
+	/* The ‘all’ subcategory is a bit special. */
+	if (category->parent != NULL && g_str_equal (category->id, "all"))
+		return gs_category_get_size (category->parent);
+
 	return category->size;
 }
 
@@ -517,7 +522,7 @@ gs_category_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 		g_value_set_object (value, self->parent);
 		break;
 	case PROP_SIZE:
-		g_value_set_uint (value, self->size);
+		g_value_set_uint (value, gs_category_get_size (self));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
