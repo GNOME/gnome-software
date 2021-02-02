@@ -703,6 +703,7 @@ gs_category_new_for_desktop_data (const GsDesktopData *data)
 {
 	g_autofree gchar *msgctxt = NULL;
 	g_autoptr(GsCategory) category = NULL;
+	GsCategory *subcategory_all = NULL;
 
 	/* parent category */
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
@@ -723,6 +724,30 @@ gs_category_new_for_desktop_data (const GsDesktopData *data)
 							 msgctxt,
 							 map->name));
 		gs_category_add_child (category, sub);
+
+		if (g_str_equal (map->id, "all"))
+			subcategory_all = sub;
+	}
+
+	/* set up the ‘all’ subcategory specially, adding all the desktop groups
+	 * from all other child categories to it */
+	if (subcategory_all != NULL) {
+		for (guint i = 0; i < category->children->len; i++) {
+			GPtrArray *desktop_groups;
+			GsCategory *child;
+
+			/* ignore the all category */
+			child = g_ptr_array_index (category->children, i);
+			if (child == subcategory_all)
+				continue;
+
+			/* add all desktop groups */
+			desktop_groups = gs_category_get_desktop_groups (child);
+			for (guint j = 0; j < desktop_groups->len; j++) {
+				const gchar *tmp = g_ptr_array_index (desktop_groups, j);
+				gs_category_add_desktop_group (subcategory_all, tmp);
+			}
+		}
 	}
 
 	return g_steal_pointer (&category);
