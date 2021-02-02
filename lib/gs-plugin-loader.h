@@ -27,17 +27,6 @@ G_DECLARE_DERIVABLE_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, G
 struct _GsPluginLoaderClass
 {
 	GObjectClass		 parent_class;
-	void			(*status_changed)	(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GsPluginStatus	 status);
-	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
-	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
-	void			(*reload)		(GsPluginLoader	*plugin_loader);
-	void			(*basic_auth_start)	(GsPluginLoader	*plugin_loader,
-							 const gchar	*remote,
-							 const gchar	*realm,
-							 GCallback	 callback,
-							 gpointer	 user_data);
 };
 
 GsPluginLoader	*gs_plugin_loader_new			(void);

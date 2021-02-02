@@ -2806,32 +2806,27 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, status_changed),
-			      NULL, NULL, g_cclosure_marshal_generic,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 	signals [SIGNAL_PENDING_APPS_CHANGED] =
 		g_signal_new ("pending-apps-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, pending_apps_changed),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_UPDATES_CHANGED] =
 		g_signal_new ("updates-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, updates_changed),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_RELOAD] =
 		g_signal_new ("reload",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, reload),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_BASIC_AUTH_START] =
 		g_signal_new ("basic-auth-start",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, basic_auth_start),
-			      NULL, NULL, g_cclosure_marshal_generic,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 }
 
