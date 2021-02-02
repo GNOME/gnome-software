@@ -70,30 +70,8 @@ gs_category_manager_init (GsCategoryManager *self)
 	 * of gs_desktop_get_data() match reality. */
 	msdata = gs_desktop_get_data ();
 	for (gsize i = 0; msdata[i].id != NULL; i++) {
-		g_autoptr(GsCategory) category = NULL;
-		g_autofree gchar *msgctxt = NULL;
-
-		/* add parent category */
-		category = gs_category_new (msdata[i].id);
-		gs_category_set_icon (category, msdata[i].icon);
-		gs_category_set_name (category, gettext (msdata[i].name));
-		gs_category_set_score (category, msdata[i].score);
-		msgctxt = g_strdup_printf ("Menu of %s", msdata[i].name);
-
-		/* add subcategories */
-		for (gsize j = 0; msdata[i].mapping[j].id != NULL; j++) {
-			const GsDesktopMap *map = &msdata[i].mapping[j];
-			g_autoptr(GsCategory) sub = gs_category_new (map->id);
-			for (gsize k = 0; map->fdo_cats[k] != NULL; k++)
-				gs_category_add_desktop_group (sub, map->fdo_cats[k]);
-			gs_category_set_name (sub, g_dpgettext2 (GETTEXT_PACKAGE,
-								 msgctxt,
-								 map->name));
-			gs_category_add_child (category, sub);
-		}
-
 		g_assert (i < G_N_ELEMENTS (self->categories) - 1);
-		self->categories[i] = g_steal_pointer (&category));
+		self->categories[i] = gs_category_new_for_desktop_data (&msdata[i]);
 	}
 
 	g_assert (self->categories[G_N_ELEMENTS (self->categories) - 2] != NULL);

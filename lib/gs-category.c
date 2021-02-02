@@ -21,6 +21,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-category-private.h"
+#include "gs-desktop-data.h"
 
 struct _GsCategory
 {
@@ -679,4 +680,45 @@ gs_category_new (const gchar *id)
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
 	category->id = g_strdup (id);
 	return GS_CATEGORY (category);
+}
+
+/**
+ * gs_category_new_for_desktop_data:
+ * @data: data for the category, which must be static and constant
+ *
+ * Create a new #GsCategory instance which wraps the desktop category
+ * information in @data. Where possible, the static data will be reused, so
+ * @data must be static and constant across the lifetime of the process.
+ *
+ * Returns: (transfer full): a new #GsCategory wrapping @data
+ * Since: 40
+ */
+GsCategory *
+gs_category_new_for_desktop_data (const GsDesktopData *data)
+{
+	g_autofree gchar *msgctxt = NULL;
+	g_autoptr(GsCategory) category = NULL;
+
+	/* parent category */
+	category = g_object_new (GS_TYPE_CATEGORY, NULL);
+
+	gs_category_set_icon_name (category, data->icon);
+	gs_category_set_name (category, gettext (data->name));
+	gs_category_set_score (category, data->score);
+
+	/* add subcategories */
+	msgctxt = g_strdup_printf ("Menu of %s", data->name);
+
+	for (gsize j = 0; data->mapping[j].id != NULL; j++) {
+		const GsDesktopMap *map = &data->mapping[j];
+		g_autoptr(GsCategory) sub = gs_category_new (map->id);
+		for (gsize k = 0; map->fdo_cats[k] != NULL; k++)
+			gs_category_add_desktop_group (sub, map->fdo_cats[k]);
+		gs_category_set_name (sub, g_dpgettext2 (GETTEXT_PACKAGE,
+							 msgctxt,
+							 map->name));
+		gs_category_add_child (category, sub);
+	}
+
+	return g_steal_pointer (&category);
 }

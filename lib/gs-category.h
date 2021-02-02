@@ -13,11 +13,15 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "gs-desktop-data.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_CATEGORY (gs_category_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
+
+GsCategory	*gs_category_new_for_desktop_data	(const GsDesktopData	*data);
 
 GsCategory	*gs_category_new		(const gchar	*id);
 const gchar	*gs_category_get_id		(GsCategory	*category);
