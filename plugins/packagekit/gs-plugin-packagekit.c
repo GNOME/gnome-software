@@ -181,6 +181,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GsApp) repo_app = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(PkError) error_code = NULL;
 	const gchar *repo_id;
@@ -218,6 +219,11 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	/* now that the repo is enabled, the app (not the repo!) moves from
 	 * UNAVAILABLE state to AVAILABLE */
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+
+	/* Construct a simple fake GsApp for the repository, used only by the signal handler */
+	repo_app = gs_app_new (repo_id);
+	gs_app_set_state (repo_app, GS_APP_STATE_INSTALLED);
+	gs_plugin_repository_changed (plugin, repo_app);
 
 	return TRUE;
 }
@@ -259,6 +265,8 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 
 	/* state is known */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+	gs_plugin_repository_changed (plugin, app);
 
 	return TRUE;
 }
@@ -498,6 +506,8 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 
 	/* state is known */
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+
+	gs_plugin_repository_changed (plugin, app);
 
 	return TRUE;
 }

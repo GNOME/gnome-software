@@ -68,6 +68,7 @@ static GParamSpec *obj_props[PROP_DEBUG + 1] = { NULL, };
 
 enum {
 	INSTALL_RESOURCES_DONE,
+	REPOSITORY_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -1285,6 +1286,24 @@ gs_application_class_init (GsApplicationClass *klass)
 		NULL,
 		G_TYPE_NONE, 2,
 		G_TYPE_STRING, G_TYPE_ERROR);
+
+	/**
+	 * GsApplication::repository-changed:
+	 * @repository: a #GsApp of the repository
+	 *
+	 * Emitted when the repository changed, usually when it is enabled or disabled.
+	 *
+	 * Since: 40
+	 */
+	signals[REPOSITORY_CHANGED] = g_signal_new (
+		"repository-changed",
+		G_TYPE_FROM_CLASS (klass),
+		G_SIGNAL_ACTION | G_SIGNAL_NO_RECURSE,
+		0,
+		NULL, NULL,
+		NULL,
+		G_TYPE_NONE, 1,
+		GS_TYPE_APP);
 }
 
 /**

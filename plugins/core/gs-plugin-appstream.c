@@ -36,6 +36,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GApplication *application = g_application_get_default ();
 
 	/* XbSilo needs external locking as we destroy the silo and build a new
 	 * one when something changes */
@@ -46,6 +47,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* require settings */
 	priv->settings = g_settings_new ("org.gnome.software");
+
+	/* Can be NULL when running the self tests */
+	if (application) {
+		g_signal_connect_object (application, "repository-changed",
+			G_CALLBACK (gs_plugin_update_cache_state_for_repository), plugin, G_CONNECT_SWAPPED);
+	}
 }
 
 void

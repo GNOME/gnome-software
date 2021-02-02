@@ -90,6 +90,7 @@ enum {
 	SIGNAL_REPORT_EVENT,
 	SIGNAL_ALLOW_UPDATES,
 	SIGNAL_BASIC_AUTH_START,
+	SIGNAL_REPOSITORY_CHANGED,
 	SIGNAL_LAST
 };
 
@@ -2066,6 +2067,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, basic_auth_start),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
+
+	signals [SIGNAL_REPOSITORY_CHANGED] =
+		g_signal_new ("repository-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, repository_changed),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
 }
 
 static void
@@ -2106,4 +2114,95 @@ gs_plugin_new (void)
 	GsPlugin *plugin;
 	plugin = g_object_new (GS_TYPE_PLUGIN, NULL);
 	return plugin;
+}
+
+typedef struct {
+	GsPlugin *plugin;
+	GsApp	 *repository;
+} GsPluginRepositoryChangedHelper;
+
+static gboolean
+gs_plugin_repository_changed_cb (gpointer user_data)
+{
+	GsPluginRepositoryChangedHelper *helper = user_data;
+	g_signal_emit (helper->plugin,
+		       signals[SIGNAL_REPOSITORY_CHANGED], 0,
+		       helper->repository);
+	g_clear_object (&helper->repository);
+	g_clear_object (&helper->plugin);
+	g_slice_free (GsPluginRepositoryChangedHelper, helper);
+	return FALSE;
+}
+
+/**
+ * gs_plugin_repository_changed:
+ * @plugin: a #GsPlugin
+ * @repository: a #GsApp representing the repository
+ *
+ * Emit the "repository-changed" signal in the main thread.
+ *
+ * Since: 40
+ **/
+void
+gs_plugin_repository_changed (GsPlugin *plugin,
+			      GsApp *repository)
+{
+	GsPluginRepositoryChangedHelper *helper;
+	g_autoptr(GSource) idle_source = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (repository));
+
+	helper = g_slice_new0 (GsPluginRepositoryChangedHelper);
+	helper->plugin = g_object_ref (plugin);
+	helper->repository = g_object_ref (repository);
+
+	idle_source = g_idle_source_new ();
+	g_source_set_callback (idle_source, gs_plugin_repository_changed_cb, helper, NULL);
+	g_source_attach (idle_source, NULL);
+}
+
+/**
+ * gs_plugin_update_cache_state_for_repository:
+ * @plugin: a #GsPlugin
+ * @repository: a #GsApp representing a repository, which changed
+ *
+ * Update state of the all cached #GsApp instances related
+ * to the @repository.
+ *
+ * Since: 40
+ **/
+void
+gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
+					     GsApp *repository)
+{
+	GsPluginPrivate *priv;
+	GHashTableIter iter;
+	g_autoptr(GMutexLocker) locker = NULL;
+	gpointer value;
+	const gchar *repo_id;
+	GsAppState repo_state;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP (repository));
+
+	priv = gs_plugin_get_instance_private (plugin);
+	repo_id = gs_app_get_id (repository);
+	repo_state = gs_app_get_state (repository);
+
+	locker = g_mutex_locker_new (&priv->cache_mutex);
+
+	g_hash_table_iter_init (&iter, priv->cache);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		GsApp *app = value;
+		GsAppState app_state = gs_app_get_state (app);
+
+		if (((app_state == GS_APP_STATE_AVAILABLE &&
+		    repo_state != GS_APP_STATE_INSTALLED) ||
+		    (app_state == GS_APP_STATE_UNAVAILABLE &&
+		    repo_state == GS_APP_STATE_INSTALLED)) &&
+		    g_strcmp0 (gs_app_get_origin (app), repo_id) == 0) {
+			gs_app_set_state (app, repo_state == GS_APP_STATE_INSTALLED ? GS_APP_STATE_AVAILABLE : GS_APP_STATE_UNAVAILABLE);
+		}
+	}
 }

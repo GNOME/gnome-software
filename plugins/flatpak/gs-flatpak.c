@@ -1527,6 +1527,9 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 
 	/* success */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+	gs_plugin_repository_changed (self->plugin, app);
+
 	return TRUE;
 }
 
@@ -3112,6 +3115,9 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
 	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+
+	gs_plugin_repository_changed (self->plugin, app);
+
 	return TRUE;
 }
 

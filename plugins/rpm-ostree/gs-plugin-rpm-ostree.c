@@ -1112,6 +1112,8 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	else
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
+	gs_plugin_repository_changed (plugin, app);
+
 	return TRUE;
 }
 
