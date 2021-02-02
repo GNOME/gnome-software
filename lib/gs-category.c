@@ -30,7 +30,7 @@ struct _GsCategory
 	const GsDesktopData	*desktop_data;  /* NULL for subcategories */
 	const GsDesktopMap	*desktop_map;  /* NULL for parent categories */
 
-	GPtrArray	*desktop_groups;
+	GPtrArray	*desktop_groups;  /* potentially NULL if empty */
 	GsCategory	*parent;
 	guint		 size;
 	GPtrArray	*children;
@@ -78,7 +78,7 @@ gs_category_to_string (GsCategory *category)
 	g_string_append_printf (str, "  size: %u\n",
 				gs_category_get_size (category));
 	g_string_append_printf (str, "  desktop-groups: %u\n",
-				category->desktop_groups->len);
+				(category->desktop_groups != NULL) ? category->desktop_groups->len : 0);
 	if (category->parent != NULL) {
 		g_string_append_printf (str, "  parent: %s\n",
 					gs_category_get_id (category->parent));
@@ -300,6 +300,10 @@ GPtrArray *
 gs_category_get_desktop_groups (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
+
+	if (category->desktop_groups == NULL)
+		category->desktop_groups = g_ptr_array_new_with_free_func (g_free);
+
 	return category->desktop_groups;
 }
 
@@ -321,6 +325,9 @@ gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
 
 	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
 	g_return_val_if_fail (desktop_group != NULL, FALSE);
+
+	if (category->desktop_groups == NULL)
+		return FALSE;
 
 	for (i = 0; i < category->desktop_groups->len; i++) {
 		const gchar *tmp = g_ptr_array_index (category->desktop_groups, i);
@@ -346,9 +353,12 @@ gs_category_add_desktop_group (GsCategory *category, const gchar *desktop_group)
 	g_return_if_fail (GS_IS_CATEGORY (category));
 	g_return_if_fail (desktop_group != NULL);
 
-	/* add if not already found */
+	/* add if not already found, and lazily create the groups array
+	 * (since it’s only needed in child categories) */
 	if (gs_category_has_desktop_group (category, desktop_group))
 		return;
+	if (category->desktop_groups == NULL)
+		category->desktop_groups = g_ptr_array_new_with_free_func (g_free);
 	g_ptr_array_add (category->desktop_groups, g_strdup (desktop_group));
 }
 
@@ -538,7 +548,7 @@ gs_category_finalize (GObject *object)
 		g_object_remove_weak_pointer (G_OBJECT (category->parent),
 		                              (gpointer *) &category->parent);
 	g_ptr_array_unref (category->children);
-	g_ptr_array_unref (category->desktop_groups);
+	g_clear_pointer (&category->desktop_groups, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }
@@ -638,7 +648,6 @@ static void
 gs_category_init (GsCategory *category)
 {
 	category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	category->desktop_groups = g_ptr_array_new_with_free_func (g_free);
 }
 
 /**
