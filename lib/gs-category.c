@@ -33,7 +33,7 @@ struct _GsCategory
 	GPtrArray	*desktop_groups;  /* potentially NULL if empty */
 	GsCategory	*parent;
 	guint		 size;
-	GPtrArray	*children;
+	GPtrArray	*children;  /* potentially NULL if empty */
 };
 
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
@@ -84,11 +84,10 @@ gs_category_to_string (GsCategory *category)
 					gs_category_get_id (category->parent));
 	}
 	g_string_append_printf (str, "  score: %i\n", gs_category_get_score (category));
-	if (category->children->len == 0) {
-		g_string_append_printf (str, "  children: %u\n",
-					category->children->len);
+	if (category->children == NULL || category->children->len == 0) {
+		g_string_append_printf (str, "  children: %u\n", 0u);
 	} else {
-		g_string_append (str, "  children:\n");
+		g_string_append_printf (str, "  children: %u\n", category->children->len);
 		for (i = 0; i < category->children->len; i++) {
 			GsCategory *child = g_ptr_array_index (category->children, i);
 			g_string_append_printf (str, "  - %s\n",
@@ -379,6 +378,9 @@ gs_category_find_child (GsCategory *category, const gchar *id)
 	GsCategory *tmp;
 	guint i;
 
+	if (category->children == NULL)
+		return NULL;
+
 	/* find the subcategory */
 	for (i = 0; i < category->children->len; i++) {
 		tmp = GS_CATEGORY (g_ptr_array_index (category->children, i));
@@ -419,6 +421,10 @@ GPtrArray *
 gs_category_get_children (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
+
+	if (category->children == NULL)
+		category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+
 	return category->children;
 }
 
@@ -436,6 +442,11 @@ gs_category_add_child (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
 	g_return_if_fail (GS_IS_CATEGORY (subcategory));
+
+	/* lazily create the array to save memory in subcategories, which don’t
+	 * recursively have children */
+	if (category->children == NULL)
+		category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 
 	/* FIXME: do we need this? */
 	subcategory->parent = category;
@@ -482,6 +493,9 @@ gs_category_sort_children_cb (gconstpointer a, gconstpointer b)
 void
 gs_category_sort_children (GsCategory *category)
 {
+	if (category->children == NULL)
+		return;
+
 	g_ptr_array_sort (category->children,
 			  gs_category_sort_children_cb);
 }
@@ -547,7 +561,7 @@ gs_category_finalize (GObject *object)
 	if (category->parent != NULL)
 		g_object_remove_weak_pointer (G_OBJECT (category->parent),
 		                              (gpointer *) &category->parent);
-	g_ptr_array_unref (category->children);
+	g_clear_pointer (&category->children, g_ptr_array_unref);
 	g_clear_pointer (&category->desktop_groups, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
@@ -647,7 +661,6 @@ gs_category_class_init (GsCategoryClass *klass)
 static void
 gs_category_init (GsCategory *category)
 {
-	category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -687,6 +700,8 @@ gs_category_new_for_desktop_data (const GsDesktopData *data)
 	/* set up the ‘all’ subcategory specially, adding all the desktop groups
 	 * from all other child categories to it */
 	if (subcategory_all != NULL) {
+		g_assert (category->children != NULL);
+
 		for (guint i = 0; i < category->children->len; i++) {
 			GPtrArray *desktop_groups;
 			GsCategory *child;
