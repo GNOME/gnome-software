@@ -23,31 +23,20 @@ G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
 
 GsCategory	*gs_category_new_for_desktop_data	(const GsDesktopData	*data);
 
-GsCategory	*gs_category_new		(const gchar	*id);
 const gchar	*gs_category_get_id		(GsCategory	*category);
 GsCategory	*gs_category_get_parent		(GsCategory	*category);
 
 const gchar	*gs_category_get_name		(GsCategory	*category);
-void		 gs_category_set_name		(GsCategory	*category,
-						 const gchar	*name);
 const gchar	*gs_category_get_icon_name	(GsCategory	*category);
-void		 gs_category_set_icon_name	(GsCategory	*category,
-						 const gchar	*icon_name);
 gint		 gs_category_get_score		(GsCategory	*category);
-void		 gs_category_set_score		(GsCategory	*category,
-						 gint		 score);
 
 GPtrArray	*gs_category_get_desktop_groups	(GsCategory	*category);
 gboolean	 gs_category_has_desktop_group	(GsCategory	*category,
-						 const gchar	*desktop_group);
-void		 gs_category_add_desktop_group	(GsCategory	*category,
 						 const gchar	*desktop_group);
 
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);
 GPtrArray	*gs_category_get_children	(GsCategory	*category);
-void		 gs_category_add_child		(GsCategory	*category,
-						 GsCategory	*subcategory);
 
 guint		 gs_category_get_size		(GsCategory	*category);
 void		 gs_category_increment_size	(GsCategory	*category);

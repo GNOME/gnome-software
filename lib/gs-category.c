@@ -215,23 +215,6 @@ gs_category_get_name (GsCategory *category)
 }
 
 /**
- * gs_category_set_name:
- * @category: a #GsCategory
- * @name: a category name, or %NULL
- *
- * Sets the category name.
- *
- * Since: 3.22
- **/
-void
-gs_category_set_name (GsCategory *category, const gchar *name)
-{
-	g_return_if_fail (GS_IS_CATEGORY (category));
-	g_free (category->name);
-	category->name = g_strdup (name);
-}
-
-/**
  * gs_category_get_icon_name:
  * @category: a #GsCategory
  *
@@ -258,23 +241,6 @@ gs_category_get_icon_name (GsCategory *category)
 }
 
 /**
- * gs_category_set_icon_name:
- * @category: a #GsCategory
- * @icon_name: a category icon name, or %NULL
- *
- * Sets the category icon name.
- *
- * Since: 3.22
- **/
-void
-gs_category_set_icon_name (GsCategory *category, const gchar *icon_name)
-{
-	g_return_if_fail (GS_IS_CATEGORY (category));
-	g_free (category->icon_name);
-	category->icon_name = g_strdup (icon_name);
-}
-
-/**
  * gs_category_get_score:
  * @category: a #GsCategory
  *
@@ -291,23 +257,6 @@ gs_category_get_score (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
 	return category->score;
-}
-
-/**
- * gs_category_set_score:
- * @category: a #GsCategory
- * @score: a category score, or %NULL
- *
- * Sets the category score, where larger numbers get sorted before lower
- * numbers.
- *
- * Since: 3.22
- **/
-void
-gs_category_set_score (GsCategory *category, gint score)
-{
-	g_return_if_fail (GS_IS_CATEGORY (category));
-	category->score = score;
 }
 
 /**
@@ -354,7 +303,7 @@ gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
 	return FALSE;
 }
 
-/**
+/*
  * gs_category_add_desktop_group:
  * @category: a #GsCategory
  * @desktop_group: a group of categories found in AppStream, e.g. "AudioVisual::Player"
@@ -363,8 +312,8 @@ gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
  * A desktop group is a set of category strings that all must exist.
  *
  * Since: 3.22
- **/
-void
+ */
+static void
 gs_category_add_desktop_group (GsCategory *category, const gchar *desktop_group)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
@@ -436,7 +385,7 @@ gs_category_get_children (GsCategory *category)
 	return category->children;
 }
 
-/**
+/*
  * gs_category_add_child:
  * @category: a #GsCategory
  * @subcategory: a #GsCategory
@@ -444,8 +393,8 @@ gs_category_get_children (GsCategory *category)
  * Adds a child category to a parent category.
  *
  * Since: 3.22
- **/
-void
+ */
+static void
 gs_category_add_child (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
@@ -669,25 +618,6 @@ gs_category_init (GsCategory *category)
 }
 
 /**
- * gs_category_new:
- * @id: an ID, e.g. "all"
- *
- * Creates a new category object.
- *
- * Returns: the new #GsCategory
- *
- * Since: 3.22
- **/
-GsCategory *
-gs_category_new (const gchar *id)
-{
-	GsCategory *category;
-	category = g_object_new (GS_TYPE_CATEGORY, NULL);
-	category->id = g_strdup (id);
-	return GS_CATEGORY (category);
-}
-
-/**
  * gs_category_new_for_desktop_data:
  * @data: data for the category, which must be static and constant
  *
@@ -708,21 +638,20 @@ gs_category_new_for_desktop_data (const GsDesktopData *data)
 	/* parent category */
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
 
-	gs_category_set_icon_name (category, data->icon);
-	gs_category_set_name (category, gettext (data->name));
-	gs_category_set_score (category, data->score);
+	category->icon_name = g_strdup (data->icon);
+	category->name = g_strdup (gettext (data->name));
+	category->score = data->score;
 
 	/* add subcategories */
 	msgctxt = g_strdup_printf ("Menu of %s", data->name);
 
 	for (gsize j = 0; data->mapping[j].id != NULL; j++) {
 		const GsDesktopMap *map = &data->mapping[j];
-		g_autoptr(GsCategory) sub = gs_category_new (map->id);
+		g_autoptr(GsCategory) sub = g_object_new (GS_TYPE_CATEGORY, NULL);
+		sub->id = g_strdup (map->id);
 		for (gsize k = 0; map->fdo_cats[k] != NULL; k++)
 			gs_category_add_desktop_group (sub, map->fdo_cats[k]);
-		gs_category_set_name (sub, g_dpgettext2 (GETTEXT_PACKAGE,
-							 msgctxt,
-							 map->name));
+		sub->name = g_strdup (g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, map->name));
 		gs_category_add_child (category, sub);
 
 		if (g_str_equal (map->id, "all"))
