@@ -599,7 +599,7 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
-	switch (prop_id) {
+	switch ((GsAppRowProperty) prop_id) {
 	case PROP_APP:
 		g_value_set_object (value, priv->app);
 		break;
@@ -623,7 +623,7 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 
-	switch (prop_id) {
+	switch ((GsAppRowProperty) prop_id) {
 	case PROP_APP:
 		gs_app_row_set_app (app_row, g_value_get_object (value));
 		break;
