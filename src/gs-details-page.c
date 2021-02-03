@@ -19,6 +19,8 @@
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
+#include "gs-app-version-history-row.h"
+#include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
 #include "gs-history-dialog.h"
 #include "gs-origin-popover-row.h"
@@ -111,16 +113,16 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_size_download_value;
 	GtkWidget		*label_details_updated_title;
 	GtkWidget		*label_details_updated_value;
-	GtkWidget		*label_details_version_title;
-	GtkWidget		*label_details_version_value;
-	GtkWidget		*label_details_released_title;
-	GtkWidget		*label_details_released_value;
 	GtkWidget		*label_details_permissions_title;
 	GtkWidget		*button_details_permissions_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
+	GtkWidget		*list_box_version_history;
+	GtkWidget		*box_version_history_frame;
+	GtkWidget		*row_latest_version;
+	GtkWidget		*version_history_button;
 	GtkWidget		*box_reviews;
 	GtkWidget		*box_details_screenshot_fallback;
 	GtkWidget		*histogram;
@@ -1109,6 +1111,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 user_integration_bf;
 	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
+	GPtrArray *version_history;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -1200,33 +1203,25 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_details_channel_value, FALSE);
 	}
 
-	/* set version */
-	tmp = gs_app_get_version (self->app);
-	if (tmp != NULL){
-		gtk_label_set_label (GTK_LABEL (self->label_details_version_value), tmp);
+	/* set version history */
+	version_history = gs_app_get_version_history (self->app);
+	if (version_history == NULL) {
+		const char *version = gs_app_get_version (self->app);
+		if (version == NULL || *version == '\0')
+			gtk_widget_set_visible (self->box_version_history_frame, FALSE);
+		else
+			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
+							     version, gs_app_get_release_date (self->app), NULL);
 	} else {
-		/* TRANSLATORS: this is where the version is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_version_value), C_("version", "Unknown"));
+		AsRelease *latest_version = g_ptr_array_index (version_history, 0);
+		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
+						     as_release_get_version (latest_version),
+						     as_release_get_timestamp (latest_version),
+						     as_release_get_description (latest_version));
 	}
 
 	/* refresh size information */
 	gs_details_page_refresh_size (self);
-
-	/* set the released date */
-	if (gs_app_get_release_date (self->app)) {
-		g_autoptr(GDateTime) dt = NULL;
-		g_autofree gchar *released_str = NULL;
-
-		dt = g_date_time_new_from_unix_utc ((gint64) gs_app_get_release_date (self->app));
-		released_str = g_date_time_format (dt, "%x");
-
-		gtk_label_set_label (GTK_LABEL (self->label_details_released_value), released_str);
-		gtk_widget_set_visible (self->label_details_released_title, TRUE);
-		gtk_widget_set_visible (self->label_details_released_value, TRUE);
-	} else {
-		gtk_widget_set_visible (self->label_details_released_title, FALSE);
-		gtk_widget_set_visible (self->label_details_released_value, FALSE);
-	}
 
 	/* set the updated date */
 	updated = gs_app_get_install_date (self->app);
@@ -1421,14 +1416,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	case AS_COMPONENT_KIND_REPOSITORY:
 		gtk_widget_set_visible (self->label_details_license_title, FALSE);
 		gtk_widget_set_visible (self->box_details_license_value, FALSE);
-		gtk_widget_set_visible (self->label_details_version_title, FALSE);
-		gtk_widget_set_visible (self->label_details_version_value, FALSE);
 		break;
 	default:
 		gtk_widget_set_visible (self->label_details_license_title, TRUE);
 		gtk_widget_set_visible (self->box_details_license_value, TRUE);
-		gtk_widget_set_visible (self->label_details_version_title, TRUE);
-		gtk_widget_set_visible (self->label_details_version_value, TRUE);
 		break;
 	}
 
@@ -1463,6 +1454,26 @@ list_sort_func (GtkListBoxRow *a,
 
 	return gs_utils_sort_strcmp (gs_app_get_name (a1),
 				     gs_app_get_name (a2));
+}
+
+static void
+version_history_list_row_activated_cb (GtkListBox *list_box,
+				       GtkListBoxRow *row,
+				       GsDetailsPage *self)
+{
+	GtkWidget *dialog;
+
+	/* Only the row with the arrow is clickable */
+	if (GS_IS_APP_VERSION_HISTORY_ROW (row))
+		return;
+
+	dialog = gs_app_version_history_dialog_new (gs_shell_get_window (self->shell),
+						    self->app);
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
@@ -2882,14 +2893,14 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_released_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_released_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_permissions_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_version_history_frame);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_fallback);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
@@ -2947,6 +2958,12 @@ gs_details_page_init (GsDetailsPage *self)
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_addons),
 				    list_sort_func,
 				    self, NULL);
+
+	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_version_history),
+				      list_header_func,
+				      self, NULL);
+	g_signal_connect (self->list_box_version_history, "row-activated",
+			  G_CALLBACK (version_history_list_row_activated_cb), self);
 
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_details_permissions_value), "content-rating-permissions");
 }

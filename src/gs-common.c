@@ -681,6 +681,7 @@ gs_utils_time_to_string (gint64 unix_time_seconds)
 
 	if (unix_time_seconds <= 0)
 		return NULL;
+
 	date_time = g_date_time_new_from_unix_local (unix_time_seconds);
 	now = g_date_time_new_now_local ();
 	timespan = g_date_time_difference (now, date_time);

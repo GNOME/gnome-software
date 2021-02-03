@@ -608,16 +608,19 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 	version_history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	for (guint i = 0; i < releases->len; i++) {
 		XbNode *release_node = g_ptr_array_index (releases, i);
-		const gchar *version = xb_node_get_attr (release, "version");
+		const gchar *version = xb_node_get_attr (release_node, "version");
 		g_autoptr(XbNode) description_node = NULL;
 		g_autofree gchar *description = NULL;
 		guint64 timestamp;
+		g_autoptr(AsRelease) release = NULL;
+		g_autofree char *timestamp_xpath = NULL;
 
 		/* ignore releases with no version */
 		if (version == NULL)
 			continue;
 
-		timestamp = xb_node_query_attr_as_uint (release_node, "timestamp", NULL);
+		timestamp_xpath = g_strdup_printf ("releases/release[%u]", i+1);
+		timestamp = xb_node_query_attr_as_uint (component, timestamp_xpath, "timestamp", NULL);
 
 		/* include updates with or without a description */
 		description_node = xb_node_query_first (release_node, "description", NULL);
@@ -626,7 +629,8 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 
 		release = as_release_new ();
 		as_release_set_version (release, version);
-		as_release_set_timestamp (release, timestamp);
+		if (timestamp != G_MAXUINT64)
+			as_release_set_timestamp (release, timestamp);
 		if (description != NULL)
 			as_release_set_description (release, description, NULL);
 
