@@ -21,6 +21,7 @@
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
+#include "gs-category-manager.h"
 #include "gs-category-private.h"
 #include "gs-ioprio.h"
 #include "gs-plugin-loader.h"
@@ -33,8 +34,10 @@
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 #define GS_PLUGIN_LOADER_RELOAD_DELAY		5	/* s */
 
-typedef struct
+struct _GsPluginLoader
 {
+	GObject			 parent;
+
 	GPtrArray		*plugins;
 	GPtrArray		*locations;
 	gchar			*locale;
@@ -67,16 +70,18 @@ typedef struct
 	gulong			 network_available_notify_handler;
 	gulong			 network_metered_notify_handler;
 
+	GsCategoryManager	*category_manager;
+
 #ifdef HAVE_SYSPROF
 	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
 #endif
-} GsPluginLoaderPrivate;
+};
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 static void add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
 static void gs_plugin_loader_process_in_thread_pool_cb (gpointer data, gpointer user_data);
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
+G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
 enum {
 	SIGNAL_STATUS_CHANGED,
@@ -294,10 +299,8 @@ GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (g_strcmp0 (gs_plugin_get_name (plugin), plugin_name) == 0)
 			return plugin;
 	}
@@ -315,8 +318,7 @@ gs_plugin_loader_notify_idle_cb (gpointer user_data)
 static void
 gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
 
 	/* events should always have a unique ID, either constructed from the
 	 * app they are processing or preferably from the GError message */
@@ -326,7 +328,7 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 		return;
 	}
 
-	g_hash_table_insert (priv->events_by_id,
+	g_hash_table_insert (plugin_loader->events_by_id,
 			     g_strdup (gs_plugin_event_get_unique_id (event)),
 			     g_object_ref (event));
 	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
@@ -454,14 +456,13 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 static void
 gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	guint i;
 	guint j;
 
 	/* go through each plugin in order */
-	for (i = 0; i < priv->plugins->len; i++) {
+	for (i = 0; i < plugin_loader->plugins->len; i++) {
 		GsPluginAdoptAppFunc adopt_app_func = NULL;
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		adopt_app_func = gs_plugin_get_symbol (plugin, "gs_plugin_adopt_app");
 		if (adopt_app_func == NULL)
 			continue;
@@ -510,9 +511,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-#ifdef HAVE_SYSPROF
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
-#endif
+	GsPluginLoader *plugin_loader = helper->plugin_loader;
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
@@ -759,13 +758,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	}
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
+	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = NULL;
 		g_autofree gchar *sysprof_message = NULL;
 
 		sysprof_name = g_strconcat ("vfunc:", gs_plugin_action_to_string (action), NULL);
 		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -819,11 +818,11 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 				    GCancellable *cancellable,
 				    GError **error)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+	GsPluginLoader *plugin_loader = helper->plugin_loader;
 
 	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		g_autoptr(GsAppList) app_list = NULL;
 
 		/* run the batched plugin symbol then refine wildcards per-app */
@@ -1110,14 +1109,14 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+	GsPluginLoader *plugin_loader = helper->plugin_loader;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
 
 	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
 			return FALSE;
@@ -1131,7 +1130,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 	}
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
+	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = NULL;
 		g_autofree gchar *sysprof_message = NULL;
 
@@ -1139,7 +1138,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 					    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)),
 					    NULL);
 		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -1382,7 +1381,6 @@ static gboolean
 gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
 	guint i;
 
@@ -1390,8 +1388,8 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 	tmp = gs_app_get_project_group (app);
 	if (tmp == NULL)
 		return TRUE;
-	for (i = 0; priv->compatible_projects[i] != NULL; i++) {
-		if (g_strcmp0 (tmp,  priv->compatible_projects[i]) == 0)
+	for (i = 0; plugin_loader->compatible_projects[i] != NULL; i++) {
+		if (g_strcmp0 (tmp,  plugin_loader->compatible_projects[i]) == 0)
 			return TRUE;
 	}
 	g_debug ("removing incompatible %s from project group %s",
@@ -1537,63 +1535,32 @@ gs_plugin_loader_category_sort_cb (gconstpointer a, gconstpointer b)
 }
 
 static void
-gs_plugin_loader_fix_category_all (GsCategory *category)
-{
-	GPtrArray *children;
-	GsCategory *cat_all;
-	guint i, j;
-
-	/* set correct size */
-	cat_all = gs_category_find_child (category, "all");
-	if (cat_all == NULL)
-		return;
-	gs_category_set_size (cat_all, gs_category_get_size (category));
-
-	/* add the desktop groups from all children */
-	children = gs_category_get_children (category);
-	for (i = 0; i < children->len; i++) {
-		GPtrArray *desktop_groups;
-		GsCategory *child;
-
-		/* ignore the all category */
-		child = g_ptr_array_index (children, i);
-		if (g_strcmp0 (gs_category_get_id (child), "all") == 0)
-			continue;
-
-		/* add all desktop groups */
-		desktop_groups = gs_category_get_desktop_groups (child);
-		for (j = 0; j < desktop_groups->len; j++) {
-			const gchar *tmp = g_ptr_array_index (desktop_groups, j);
-			gs_category_add_desktop_group (cat_all, tmp);
-		}
-	}
-}
-
-static void
 gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 					      gpointer object,
 					      gpointer task_data,
 					      GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GsMainContextPusher) pusher = gs_main_context_pusher_new (context);
+	GsCategory * const *categories = NULL;
+	gsize n_categories;
 #ifdef HAVE_SYSPROF
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+
+	/* get the categories */
+	categories = gs_category_manager_get_categories (plugin_loader->category_manager, &n_categories);
+
+	for (gsize i = 0; i < n_categories; i++)
+		g_ptr_array_add (helper->catlist, g_object_ref (categories[i]));
 
 	/* run each plugin */
 	if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
 		g_task_return_error (task, error);
 		return;
-	}
-
-	/* make sure 'All' has the right categories */
-	for (guint i = 0; i < helper->catlist->len; i++) {
-		GsCategory *cat = g_ptr_array_index (helper->catlist, i);
-		gs_plugin_loader_fix_category_all (cat);
 	}
 
 	/* sort by name */
@@ -1604,9 +1571,9 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 	}
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
+	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -1707,13 +1674,12 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 				   GsPluginLoaderHelper *helper)
 {
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->pending_apps_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->pending_apps_mutex);
 
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_ptr_array_add (priv->pending_apps, g_object_ref (app));
+		g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
 		/* make sure the progress is properly initialized */
 		gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 	}
@@ -1725,13 +1691,12 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 				      GsPluginLoaderHelper *helper)
 {
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->pending_apps_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->pending_apps_mutex);
 
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_ptr_array_remove (priv->pending_apps, app);
+		g_ptr_array_remove (plugin_loader->pending_apps, app);
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
@@ -1753,7 +1718,6 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 static gboolean
 load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autofree gchar *contents = NULL;
 	g_autofree gchar *file = NULL;
 	g_auto(GStrv) names = NULL;
@@ -1783,13 +1747,13 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	}
 
 	/* add to pending list */
-	g_mutex_lock (&priv->pending_apps_mutex);
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		g_debug ("adding pending app %s", gs_app_get_unique_id (app));
-		g_ptr_array_add (priv->pending_apps, g_object_ref (app));
+		g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
 	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	/* refine */
 	if (gs_app_list_length (list) > 0) {
@@ -1806,7 +1770,6 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 static void
 save_install_queue (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *pending_apps;
 	gboolean ret;
 	gint i;
@@ -1815,8 +1778,8 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	g_autofree gchar *file = NULL;
 
 	s = g_string_new ("");
-	pending_apps = priv->pending_apps;
-	g_mutex_lock (&priv->pending_apps_mutex);
+	pending_apps = plugin_loader->pending_apps;
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
 	for (i = (gint) pending_apps->len - 1; i >= 0; i--) {
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
@@ -1825,7 +1788,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 			g_string_append_c (s, '\n');
 		}
 	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	/* save file */
 	file = g_build_filename (g_get_user_data_dir (),
@@ -1846,15 +1809,14 @@ save_install_queue (GsPluginLoader *plugin_loader)
 static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsAppList *addons;
 	guint i;
 	guint id;
 
 	/* queue the app itself */
-	g_mutex_lock (&priv->pending_apps_mutex);
-	g_ptr_array_add (priv->pending_apps, g_object_ref (app));
-	g_mutex_unlock (&priv->pending_apps_mutex);
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
+	g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
@@ -1873,15 +1835,14 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsAppList *addons;
 	gboolean ret;
 	guint i;
 	guint id;
 
-	g_mutex_lock (&priv->pending_apps_mutex);
-	ret = g_ptr_array_remove (priv->pending_apps, app);
-	g_mutex_unlock (&priv->pending_apps_mutex);
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
+	ret = g_ptr_array_remove (plugin_loader->pending_apps, app);
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
@@ -1905,16 +1866,15 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 gboolean
 gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GHashTableIter iter;
 	gpointer value;
 
 	/* nothing */
-	if (g_hash_table_size (priv->disallow_updates) == 0)
+	if (g_hash_table_size (plugin_loader->disallow_updates) == 0)
 		return TRUE;
 
 	/* list */
-	g_hash_table_iter_init (&iter, priv->disallow_updates);
+	g_hash_table_iter_init (&iter, plugin_loader->disallow_updates);
 	while (g_hash_table_iter_next (&iter, NULL, &value)) {
 		const gchar *reason = value;
 		g_debug ("managed updates inhibited by %s", reason);
@@ -1925,17 +1885,16 @@ gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
 GsAppList *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsAppList *array;
 	guint i;
 
 	array = gs_app_list_new ();
-	g_mutex_lock (&priv->pending_apps_mutex);
-	for (i = 0; i < priv->pending_apps->len; i++) {
-		GsApp *app = g_ptr_array_index (priv->pending_apps, i);
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
+	for (i = 0; i < plugin_loader->pending_apps->len; i++) {
+		GsApp *app = g_ptr_array_index (plugin_loader->pending_apps, i);
 		gs_app_list_add (array, app);
 	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	return array;
 }
@@ -1962,14 +1921,13 @@ gs_plugin_loader_get_enabled (GsPluginLoader *plugin_loader,
 GPtrArray *
 gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *events = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
 	GHashTableIter iter;
 	gpointer key, value;
 
 	/* just add everything */
-	g_hash_table_iter_init (&iter, priv->events_by_id);
+	g_hash_table_iter_init (&iter, plugin_loader->events_by_id);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		const gchar *id = key;
 		GsPluginEvent *event = value;
@@ -1994,13 +1952,12 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 GsPluginEvent *
 gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
 	GHashTableIter iter;
 	gpointer key, value;
 
 	/* just add everything */
-	g_hash_table_iter_init (&iter, priv->events_by_id);
+	g_hash_table_iter_init (&iter, plugin_loader->events_by_id);
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		const gchar *id = key;
 		GsPluginEvent *event = value;
@@ -2024,9 +1981,8 @@ gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 void
 gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
-	g_hash_table_remove_all (priv->events_by_id);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
+	g_hash_table_remove_all (plugin_loader->events_by_id);
 }
 
 static void
@@ -2044,12 +2000,11 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 				   gboolean allow_updates,
 				   GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean changed = FALSE;
 
 	/* plugin now allowing gnome-software to show updates panel */
 	if (allow_updates) {
-		if (g_hash_table_remove (priv->disallow_updates, plugin)) {
+		if (g_hash_table_remove (plugin_loader->disallow_updates, plugin)) {
 			g_debug ("plugin %s no longer inhibited managed updates",
 				 gs_plugin_get_name (plugin));
 			changed = TRUE;
@@ -2057,7 +2012,7 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 
 	/* plugin preventing the updates panel from being shown */
 	} else {
-		if (g_hash_table_replace (priv->disallow_updates,
+		if (g_hash_table_replace (plugin_loader->disallow_updates,
 					  (gpointer) plugin,
 					  (gpointer) gs_plugin_get_name (plugin))) {
 			g_debug ("plugin %s inhibited managed updates",
@@ -2077,17 +2032,15 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsPluginStatus status,
 				    GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
 	/* nothing specific */
 	if (app == NULL || gs_app_get_id (app) == NULL) {
-		if (priv->global_status_last != status) {
+		if (plugin_loader->global_status_last != status) {
 			g_debug ("emitting global %s",
 				 gs_plugin_status_to_string (status));
 			g_signal_emit (plugin_loader,
 				       signals[SIGNAL_STATUS_CHANGED],
 				       0, app, status);
-			priv->global_status_last = status;
+			plugin_loader->global_status_last = status;
 		}
 		return;
 	}
@@ -2122,13 +2075,12 @@ static gboolean
 gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	/* notify shells */
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
-	priv->updates_changed_id = 0;
-	priv->updates_changed_cnt = 0;
+	plugin_loader->updates_changed_id = 0;
+	plugin_loader->updates_changed_cnt = 0;
 
 	g_object_unref (plugin_loader);
 	return FALSE;
@@ -2137,17 +2089,15 @@ gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 static void
 gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin, GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	priv->updates_changed_cnt++;
+	plugin_loader->updates_changed_cnt++;
 }
 
 static void
 gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	if (priv->updates_changed_id != 0)
+	if (plugin_loader->updates_changed_id != 0)
 		return;
-	priv->updates_changed_id =
+	plugin_loader->updates_changed_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
 				       gs_plugin_loader_job_actions_changed_delay_cb,
 				       g_object_ref (plugin_loader));
@@ -2157,12 +2107,11 @@ static gboolean
 gs_plugin_loader_reload_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	/* notify shells */
 	g_debug ("emitting ::reload");
 	g_signal_emit (plugin_loader, signals[SIGNAL_RELOAD], 0);
-	priv->reload_id = 0;
+	plugin_loader->reload_id = 0;
 
 	g_object_unref (plugin_loader);
 	return FALSE;
@@ -2172,10 +2121,9 @@ static void
 gs_plugin_loader_reload_cb (GsPlugin *plugin,
 			    GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	if (priv->reload_id != 0)
+	if (plugin_loader->reload_id != 0)
 		return;
-	priv->reload_id =
+	plugin_loader->reload_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_RELOAD_DELAY,
 				       gs_plugin_loader_reload_delay_cb,
 				       g_object_ref (plugin_loader));
@@ -2185,7 +2133,6 @@ static void
 gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *filename)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
 	g_autoptr(GError) error = NULL;
 
@@ -2213,26 +2160,24 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_signal_connect (plugin, "allow-updates",
 			  G_CALLBACK (gs_plugin_loader_allow_updates_cb),
 			  plugin_loader);
-	gs_plugin_set_soup_session (plugin, priv->soup_session);
-	gs_plugin_set_locale (plugin, priv->locale);
-	gs_plugin_set_language (plugin, priv->language);
+	gs_plugin_set_soup_session (plugin, plugin_loader->soup_session);
+	gs_plugin_set_locale (plugin, plugin_loader->locale);
+	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
-	gs_plugin_set_network_monitor (plugin, priv->network_monitor);
+	gs_plugin_set_network_monitor (plugin, plugin_loader->network_monitor);
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
 	/* add to array */
-	g_ptr_array_add (priv->plugins, plugin);
+	g_ptr_array_add (plugin_loader->plugins, plugin);
 }
 
 void
 gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, guint scale)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
 	/* save globally, and update each plugin */
-	priv->scale = scale;
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	plugin_loader->scale = scale;
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		gs_plugin_set_scale (plugin, scale);
 	}
 }
@@ -2240,21 +2185,19 @@ gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, guint scale)
 guint
 gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	return priv->scale;
+	return plugin_loader->scale;
 }
 
 void
 gs_plugin_loader_add_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	for (guint i = 0; i < priv->locations->len; i++) {
-		const gchar *location_tmp = g_ptr_array_index (priv->locations, i);
+	for (guint i = 0; i < plugin_loader->locations->len; i++) {
+		const gchar *location_tmp = g_ptr_array_index (plugin_loader->locations, i);
 		if (g_strcmp0 (location_tmp, location) == 0)
 			return;
 	}
 	g_info ("adding plugin location %s", location);
-	g_ptr_array_add (priv->locations, g_strdup (location));
+	g_ptr_array_add (plugin_loader->locations, g_strdup (location));
 }
 
 static gint
@@ -2276,13 +2219,12 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 					GFileMonitorEvent event_type,
 					GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 	g_autoptr(GError) error = NULL;
 
 	/* already triggered */
-	if (priv->plugin_dir_dirty)
+	if (plugin_loader->plugin_dir_dirty)
 		return;
 
 	/* add app */
@@ -2299,15 +2241,14 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 			     "A restart is required");
 	gs_plugin_event_set_error (event, error);
 	gs_plugin_loader_add_event (plugin_loader, event);
-	priv->plugin_dir_dirty = TRUE;
+	plugin_loader->plugin_dir_dirty = TRUE;
 }
 
 void
 gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		gs_plugin_cache_invalidate (plugin);
 	}
 }
@@ -2322,7 +2263,6 @@ gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
 void
 gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginAction actions[] = {
 		GS_PLUGIN_ACTION_DESTROY,
 		GS_PLUGIN_ACTION_INITIALIZE,
@@ -2340,11 +2280,11 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 
 	/* call in order */
 	for (guint j = 0; actions[j] != GS_PLUGIN_ACTION_UNKNOWN; j++) {
-		for (guint i = 0; i < priv->plugins->len; i++) {
+		for (guint i = 0; i < plugin_loader->plugins->len; i++) {
 			g_autoptr(GError) error_local = NULL;
 			g_autoptr(GsPluginLoaderHelper) helper = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+			GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
 
@@ -2364,8 +2304,8 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	}
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+	if (plugin_loader->sysprof_writer != NULL) {
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -2421,7 +2361,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			GCancellable *cancellable,
 			GError **error)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *plugin_name;
 	gboolean changes;
 	GPtrArray *deps;
@@ -2437,15 +2376,15 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 #endif
 
 	/* use the default, but this requires a 'make install' */
-	if (priv->locations->len == 0) {
+	if (plugin_loader->locations->len == 0) {
 		g_autofree gchar *filename = NULL;
 		filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
-		g_ptr_array_add (priv->locations, g_build_filename (LIBDIR, filename, NULL));
+		g_ptr_array_add (plugin_loader->locations, g_build_filename (LIBDIR, filename, NULL));
 	}
 
-	for (i = 0; i < priv->locations->len; i++) {
+	for (i = 0; i < plugin_loader->locations->len; i++) {
 		GFileMonitor *monitor;
-		const gchar *location = g_ptr_array_index (priv->locations, i);
+		const gchar *location = g_ptr_array_index (plugin_loader->locations, i);
 		g_autoptr(GFile) plugin_dir = g_file_new_for_path (location);
 		monitor = g_file_monitor_directory (plugin_dir,
 						    G_FILE_MONITOR_NONE,
@@ -2455,12 +2394,12 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			return FALSE;
 		g_signal_connect (monitor, "changed",
 				  G_CALLBACK (gs_plugin_loader_plugin_dir_changed_cb), plugin_loader);
-		g_ptr_array_add (priv->file_monitors, monitor);
+		g_ptr_array_add (plugin_loader->file_monitors, monitor);
 	}
 
 	/* search for plugins */
-	for (i = 0; i < priv->locations->len; i++) {
-		const gchar *location = g_ptr_array_index (priv->locations, i);
+	for (i = 0; i < plugin_loader->locations->len; i++) {
+		const gchar *location = g_ptr_array_index (plugin_loader->locations, i);
 		g_autoptr(GPtrArray) fns = NULL;
 
 		/* search in the plugin directory for plugins */
@@ -2476,9 +2415,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 
 	/* optional allowlist */
 	if (allowlist != NULL) {
-		for (i = 0; i < priv->plugins->len; i++) {
+		for (i = 0; i < plugin_loader->plugins->len; i++) {
 			gboolean ret;
-			plugin = g_ptr_array_index (priv->plugins, i);
+			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
 			ret = g_strv_contains ((const gchar * const *) allowlist,
@@ -2493,9 +2432,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 
 	/* optional blocklist */
 	if (blocklist != NULL) {
-		for (i = 0; i < priv->plugins->len; i++) {
+		for (i = 0; i < plugin_loader->plugins->len; i++) {
 			gboolean ret;
-			plugin = g_ptr_array_index (priv->plugins, i);
+			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
 			ret = g_strv_contains ((const gchar * const *) blocklist,
@@ -2514,8 +2453,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	/* order by deps */
 	do {
 		changes = FALSE;
-		for (i = 0; i < priv->plugins->len; i++) {
-			plugin = g_ptr_array_index (priv->plugins, i);
+		for (i = 0; i < plugin_loader->plugins->len; i++) {
+			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_RUN_AFTER);
 			for (j = 0; j < deps->len && !changes; j++) {
 				plugin_name = g_ptr_array_index (deps, j);
@@ -2536,8 +2475,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				}
 			}
 		}
-		for (i = 0; i < priv->plugins->len; i++) {
-			plugin = g_ptr_array_index (priv->plugins, i);
+		for (i = 0; i < plugin_loader->plugins->len; i++) {
+			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_RUN_BEFORE);
 			for (j = 0; j < deps->len && !changes; j++) {
 				plugin_name = g_ptr_array_index (deps, j);
@@ -2570,8 +2509,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	} while (changes);
 
 	/* check for conflicts */
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
+	for (i = 0; i < plugin_loader->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_CONFLICTS);
@@ -2591,14 +2530,14 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	}
 
 	/* sort by order */
-	g_ptr_array_sort (priv->plugins,
+	g_ptr_array_sort (plugin_loader->plugins,
 			  gs_plugin_loader_plugin_sort_fn);
 
 	/* assign priority values */
 	do {
 		changes = FALSE;
-		for (i = 0; i < priv->plugins->len; i++) {
-			plugin = g_ptr_array_index (priv->plugins, i);
+		for (i = 0; i < plugin_loader->plugins->len; i++) {
+			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_BETTER_THAN);
 			for (j = 0; j < deps->len && !changes; j++) {
 				plugin_name = g_ptr_array_index (deps, j);
@@ -2633,9 +2572,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	/* run setup */
 	gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_SETUP);
 	helper->function_name = "gs_plugin_setup";
-	for (i = 0; i < priv->plugins->len; i++) {
+	for (i = 0; i < plugin_loader->plugins->len; i++) {
 		g_autoptr(GError) error_local = NULL;
-		plugin = g_ptr_array_index (priv->plugins, i);
+		plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
 						  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						  cancellable, &error_local)) {
@@ -2651,8 +2590,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		return FALSE;
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+	if (plugin_loader->sysprof_writer != NULL) {
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -2669,13 +2608,12 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 void
 gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GString) str_enabled = g_string_new (NULL);
 	g_autoptr(GString) str_disabled = g_string_new (NULL);
 
 	/* print what the priorities are if verbose */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		GString *str = gs_plugin_get_enabled (plugin) ? str_enabled : str_disabled;
 		g_string_append_printf (str, "%s, ", gs_plugin_get_name (plugin));
 		g_debug ("[%s]\t%u\t->\t%s",
@@ -2696,11 +2634,10 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 			       GValue *value, GParamSpec *pspec)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	switch (prop_id) {
 	case PROP_EVENTS:
-		g_value_set_pointer (value, priv->events_by_id);
+		g_value_set_pointer (value, plugin_loader->events_by_id);
 		break;
 	case PROP_ALLOW_UPDATES:
 		g_value_set_boolean (value, gs_plugin_loader_get_allow_updates (plugin_loader));
@@ -2732,47 +2669,48 @@ static void
 gs_plugin_loader_dispose (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
-	if (priv->plugins != NULL) {
+	if (plugin_loader->plugins != NULL) {
 		g_autoptr(GsPluginLoaderHelper) helper = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DESTROY, NULL);
 		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 		gs_plugin_loader_run_results (helper, NULL, NULL);
-		g_clear_pointer (&priv->plugins, g_ptr_array_unref);
+		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
-	if (priv->updates_changed_id != 0) {
-		g_source_remove (priv->updates_changed_id);
-		priv->updates_changed_id = 0;
+	if (plugin_loader->updates_changed_id != 0) {
+		g_source_remove (plugin_loader->updates_changed_id);
+		plugin_loader->updates_changed_id = 0;
 	}
-	if (priv->network_changed_handler != 0) {
-		g_signal_handler_disconnect (priv->network_monitor,
-					     priv->network_changed_handler);
-		priv->network_changed_handler = 0;
+	if (plugin_loader->network_changed_handler != 0) {
+		g_signal_handler_disconnect (plugin_loader->network_monitor,
+					     plugin_loader->network_changed_handler);
+		plugin_loader->network_changed_handler = 0;
 	}
-	if (priv->network_available_notify_handler != 0) {
-		g_signal_handler_disconnect (priv->network_monitor,
-					     priv->network_available_notify_handler);
-		priv->network_available_notify_handler = 0;
+	if (plugin_loader->network_available_notify_handler != 0) {
+		g_signal_handler_disconnect (plugin_loader->network_monitor,
+					     plugin_loader->network_available_notify_handler);
+		plugin_loader->network_available_notify_handler = 0;
 	}
-	if (priv->network_metered_notify_handler != 0) {
-		g_signal_handler_disconnect (priv->network_monitor,
-					     priv->network_metered_notify_handler);
-		priv->network_metered_notify_handler = 0;
+	if (plugin_loader->network_metered_notify_handler != 0) {
+		g_signal_handler_disconnect (plugin_loader->network_monitor,
+					     plugin_loader->network_metered_notify_handler);
+		plugin_loader->network_metered_notify_handler = 0;
 	}
-	if (priv->queued_ops_pool != NULL) {
+	if (plugin_loader->queued_ops_pool != NULL) {
 		/* stop accepting more requests and wait until any currently
 		 * running ones are finished */
-		g_thread_pool_free (priv->queued_ops_pool, TRUE, TRUE);
-		priv->queued_ops_pool = NULL;
+		g_thread_pool_free (plugin_loader->queued_ops_pool, TRUE, TRUE);
+		plugin_loader->queued_ops_pool = NULL;
 	}
-	g_clear_object (&priv->network_monitor);
-	g_clear_object (&priv->soup_session);
-	g_clear_object (&priv->settings);
-	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
+	g_clear_object (&plugin_loader->network_monitor);
+	g_clear_object (&plugin_loader->soup_session);
+	g_clear_object (&plugin_loader->settings);
+	g_clear_pointer (&plugin_loader->pending_apps, g_ptr_array_unref);
+	g_clear_object (&plugin_loader->category_manager);
+
 #ifdef HAVE_SYSPROF
-	g_clear_pointer (&priv->sysprof_writer, sysprof_capture_writer_unref);
+	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
 #endif
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
@@ -2782,18 +2720,17 @@ static void
 gs_plugin_loader_finalize (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
-	g_strfreev (priv->compatible_projects);
-	g_ptr_array_unref (priv->locations);
-	g_free (priv->locale);
-	g_free (priv->language);
-	g_ptr_array_unref (priv->file_monitors);
-	g_hash_table_unref (priv->events_by_id);
-	g_hash_table_unref (priv->disallow_updates);
+	g_strfreev (plugin_loader->compatible_projects);
+	g_ptr_array_unref (plugin_loader->locations);
+	g_free (plugin_loader->locale);
+	g_free (plugin_loader->language);
+	g_ptr_array_unref (plugin_loader->file_monitors);
+	g_hash_table_unref (plugin_loader->events_by_id);
+	g_hash_table_unref (plugin_loader->disallow_updates);
 
-	g_mutex_clear (&priv->pending_apps_mutex);
-	g_mutex_clear (&priv->events_by_id_mutex);
+	g_mutex_clear (&plugin_loader->pending_apps_mutex);
+	g_mutex_clear (&plugin_loader->events_by_id_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
@@ -2832,43 +2769,37 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, status_changed),
-			      NULL, NULL, g_cclosure_marshal_generic,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 	signals [SIGNAL_PENDING_APPS_CHANGED] =
 		g_signal_new ("pending-apps-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, pending_apps_changed),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_UPDATES_CHANGED] =
 		g_signal_new ("updates-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, updates_changed),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_RELOAD] =
 		g_signal_new ("reload",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, reload),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 	signals [SIGNAL_BASIC_AUTH_START] =
 		g_signal_new ("basic-auth-start",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPluginLoaderClass, basic_auth_start),
-			      NULL, NULL, g_cclosure_marshal_generic,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 }
 
 static void
 gs_plugin_loader_allow_updates_recheck (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	if (g_settings_get_boolean (priv->settings, "allow-updates")) {
-		g_hash_table_remove (priv->disallow_updates, plugin_loader);
+	if (g_settings_get_boolean (plugin_loader->settings, "allow-updates")) {
+		g_hash_table_remove (plugin_loader->disallow_updates, plugin_loader);
 	} else {
-		g_hash_table_insert (priv->disallow_updates,
+		g_hash_table_insert (plugin_loader->disallow_updates,
 				     (gpointer) plugin_loader,
 				     (gpointer) "GSettings");
 	}
@@ -2896,36 +2827,35 @@ get_max_parallel_ops (void)
 static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
 	gchar *match;
 	gchar **projects;
 	guint i;
 
 #ifdef HAVE_SYSPROF
-	priv->sysprof_writer = sysprof_capture_writer_new_from_env (0);
+	plugin_loader->sysprof_writer = sysprof_capture_writer_new_from_env (0);
 #endif  /* HAVE_SYSPROF */
 
-	priv->scale = 1;
-	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
-	priv->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
+	plugin_loader->scale = 1;
+	plugin_loader->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	plugin_loader->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
 						   NULL,
 						   get_max_parallel_ops (),
 						   FALSE,
 						   NULL);
-	priv->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
-	priv->locations = g_ptr_array_new_with_free_func (g_free);
-	priv->settings = g_settings_new ("org.gnome.software");
-	g_signal_connect (priv->settings, "changed",
+	plugin_loader->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->locations = g_ptr_array_new_with_free_func (g_free);
+	plugin_loader->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (plugin_loader->settings, "changed",
 			  G_CALLBACK (gs_plugin_loader_settings_changed_cb), plugin_loader);
-	priv->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
+	plugin_loader->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
 					            (GEqualFunc) as_utils_unique_id_equal,
 						    g_free,
 						    (GDestroyNotify) g_object_unref);
 
 	/* share a soup session (also disable the double-compression) */
-	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
+	plugin_loader->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
 
@@ -2933,26 +2863,29 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	tmp = g_getenv ("GS_SELF_TEST_LOCALE");
 	if (tmp != NULL) {
 		g_debug ("using self test locale of %s", tmp);
-		priv->locale = g_strdup (tmp);
+		plugin_loader->locale = g_strdup (tmp);
 	} else {
-		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
+		plugin_loader->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
 	}
 
+	/* get the category manager */
+	plugin_loader->category_manager = gs_category_manager_new ();
+
 	/* the settings key sets the initial override */
-	priv->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
+	plugin_loader->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
 	gs_plugin_loader_allow_updates_recheck (plugin_loader);
 
 	/* get the language from the locale (i.e. strip the territory, codeset
 	 * and modifier) */
-	priv->language = g_strdup (priv->locale);
-	match = strpbrk (priv->language, "._@");
+	plugin_loader->language = g_strdup (plugin_loader->locale);
+	match = strpbrk (plugin_loader->language, "._@");
 	if (match != NULL)
 		*match = '\0';
 
-	g_debug ("Using locale = %s, language = %s", priv->locale, priv->language);
+	g_debug ("Using locale = %s, language = %s", plugin_loader->locale, plugin_loader->language);
 
-	g_mutex_init (&priv->pending_apps_mutex);
-	g_mutex_init (&priv->events_by_id_mutex);
+	g_mutex_init (&plugin_loader->pending_apps_mutex);
+	g_mutex_init (&plugin_loader->events_by_id_mutex);
 
 	/* monitor the network as the many UI operations need the network */
 	gs_plugin_loader_monitor_network (plugin_loader);
@@ -2960,14 +2893,14 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
 	if (tmp == NULL) {
-		projects = g_settings_get_strv (priv->settings,
+		projects = g_settings_get_strv (plugin_loader->settings,
 						"compatible-projects");
 	} else {
 		projects = g_strsplit (tmp, ",", -1);
 	}
 	for (i = 0; projects[i] != NULL; i++)
 		g_debug ("compatible-project: %s", projects[i]);
-	priv->compatible_projects = projects;
+	plugin_loader->compatible_projects = projects;
 }
 
 /**
@@ -3006,23 +2939,21 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 gboolean
 gs_plugin_loader_get_network_available (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	if (priv->network_monitor == NULL) {
+	if (plugin_loader->network_monitor == NULL) {
 		g_debug ("no network monitor, so returning network-available=TRUE");
 		return TRUE;
 	}
-	return g_network_monitor_get_network_available (priv->network_monitor);
+	return g_network_monitor_get_network_available (plugin_loader->network_monitor);
 }
 
 gboolean
 gs_plugin_loader_get_network_metered (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	if (priv->network_monitor == NULL) {
+	if (plugin_loader->network_monitor == NULL) {
 		g_debug ("no network monitor, so returning network-metered=FALSE");
 		return FALSE;
 	}
-	return g_network_monitor_get_network_metered (priv->network_monitor);
+	return g_network_monitor_get_network_metered (plugin_loader->network_monitor);
 }
 
 static void
@@ -3030,8 +2961,7 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 				     gboolean available,
 				     GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean metered = g_network_monitor_get_network_metered (priv->network_monitor);
+	gboolean metered = g_network_monitor_get_network_metered (plugin_loader->network_monitor);
 
 	g_debug ("network status change: %s [%s]",
 		 available ? "online" : "offline",
@@ -3042,16 +2972,16 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 
 	if (available && !metered) {
 		g_autoptr(GsAppList) queue = NULL;
-		g_mutex_lock (&priv->pending_apps_mutex);
+		g_mutex_lock (&plugin_loader->pending_apps_mutex);
 		queue = gs_app_list_new ();
-		for (guint i = 0; i < priv->pending_apps->len; i++) {
-			GsApp *app = g_ptr_array_index (priv->pending_apps, i);
+		for (guint i = 0; i < plugin_loader->pending_apps->len; i++) {
+			GsApp *app = g_ptr_array_index (plugin_loader->pending_apps, i);
 			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 				gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 				gs_app_list_add (queue, app);
 			}
 		}
-		g_mutex_unlock (&priv->pending_apps_mutex);
+		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 		for (guint i = 0; i < gs_app_list_length (queue); i++) {
 			GsApp *app = gs_app_list_index (queue, i);
 			g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -3091,26 +3021,25 @@ gs_plugin_loader_network_metered_notify_cb (GObject    *obj,
 static void
 gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GNetworkMonitor *network_monitor;
 
 	network_monitor = g_network_monitor_get_default ();
-	if (network_monitor == NULL || priv->network_changed_handler != 0)
+	if (network_monitor == NULL || plugin_loader->network_changed_handler != 0)
 		return;
-	priv->network_monitor = g_object_ref (network_monitor);
+	plugin_loader->network_monitor = g_object_ref (network_monitor);
 
-	priv->network_changed_handler =
-		g_signal_connect (priv->network_monitor, "network-changed",
+	plugin_loader->network_changed_handler =
+		g_signal_connect (plugin_loader->network_monitor, "network-changed",
 				  G_CALLBACK (gs_plugin_loader_network_changed_cb), plugin_loader);
-	priv->network_available_notify_handler =
-		g_signal_connect (priv->network_monitor, "notify::network-available",
+	plugin_loader->network_available_notify_handler =
+		g_signal_connect (plugin_loader->network_monitor, "notify::network-available",
 				  G_CALLBACK (gs_plugin_loader_network_available_notify_cb), plugin_loader);
-	priv->network_metered_notify_handler =
-		g_signal_connect (priv->network_monitor, "notify::network-metered",
+	plugin_loader->network_metered_notify_handler =
+		g_signal_connect (plugin_loader->network_monitor, "notify::network-metered",
 				  G_CALLBACK (gs_plugin_loader_network_metered_notify_cb), plugin_loader);
 
-	gs_plugin_loader_network_changed_cb (priv->network_monitor,
-			    g_network_monitor_get_network_available (priv->network_monitor),
+	gs_plugin_loader_network_changed_cb (plugin_loader->network_monitor,
+			    g_network_monitor_get_network_available (plugin_loader->network_monitor),
 			    plugin_loader);
 }
 
@@ -3142,15 +3071,14 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 				 GCancellable *cancellable,
 				 GError **error)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	guint cancel_handler_id = 0;
 	GsAppList *list;
 
 	/* run each plugin, per-app version */
 	list = gs_plugin_job_get_list (helper->plugin_job);
-	for (guint i = 0; i < priv->plugins->len; i++) {
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
 		GsPluginActionFunc plugin_app_func = NULL;
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
 			return FALSE;
@@ -3198,7 +3126,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-	gs_utils_set_online_updates_timestamp (priv->settings);
+	gs_utils_set_online_updates_timestamp (plugin_loader->settings);
 	return TRUE;
 }
 
@@ -3214,7 +3142,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFlags filter_flags;
 	GsPluginRefineFlags refine_flags;
 	gboolean add_to_pending_array = FALSE;
@@ -3273,7 +3200,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	}
 
 	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
-		gs_utils_set_online_updates_timestamp (priv->settings);
+		gs_utils_set_online_updates_timestamp (plugin_loader->settings);
 
 	/* remove from pending list */
 	if (add_to_pending_array)
@@ -3517,14 +3444,14 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	gs_plugin_loader_job_sorted_truncation_again (helper);
 
 	/* if the plugin used updates-changed actually schedule it now */
-	if (priv->updates_changed_cnt > 0)
+	if (plugin_loader->updates_changed_cnt > 0)
 		gs_plugin_loader_updates_changed (plugin_loader);
 
 #ifdef HAVE_SYSPROF
-	if (priv->sysprof_writer != NULL) {
+	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
 		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
 						 begin_time_nsec,
 						 sched_getcpu (),
 						 getpid (),
@@ -3595,7 +3522,6 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 				GTask *task)
 {
 	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
 
 	if (app != NULL) {
@@ -3603,7 +3529,7 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		gs_app_set_pending_action (app, action);
 	}
-	g_thread_pool_push (priv->queued_ops_pool, g_object_ref (task), NULL);
+	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);
 }
 
 /**
@@ -3625,7 +3551,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 {
 	GsPluginAction action;
 	GsPluginLoaderHelper *helper;
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GCancellable) cancellable_job = g_cancellable_new ();
 #if GLIB_CHECK_VERSION(2, 60, 0)
@@ -3674,7 +3599,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
 			apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
 		} else {
-			apps = g_settings_get_strv (priv->settings, "popular-overrides");
+			apps = g_settings_get_strv (plugin_loader->settings, "popular-overrides");
 		}
 		if (apps != NULL && g_strv_length (apps) > 0) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
@@ -3697,11 +3622,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
-	}
-	if (gs_plugin_job_has_refine_flags (plugin_job,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH)) {
-		gs_plugin_job_add_refine_flags (plugin_job,
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES);
 	}
 	if (gs_plugin_job_has_refine_flags (plugin_job,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)) {
@@ -3882,9 +3802,8 @@ gboolean
 gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 				       const gchar *function_name)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
 		if (gs_plugin_get_symbol (plugin, function_name) != NULL)
 			return TRUE;
 	}
@@ -3970,10 +3889,9 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 				       guint max_ops)
 {
 	g_autoptr(GError) error = NULL;
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	if (max_ops == 0)
 		max_ops = get_max_parallel_ops ();
-	if (!g_thread_pool_set_max_threads (priv->queued_ops_pool, max_ops, &error))
+	if (!g_thread_pool_set_max_threads (plugin_loader->queued_ops_pool, max_ops, &error))
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
 }
@@ -3981,6 +3899,22 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 const gchar *
 gs_plugin_loader_get_locale (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	return priv->locale;
+	return plugin_loader->locale;
+}
+
+/**
+ * gs_plugin_loader_get_category_manager:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the category manager singleton.
+ *
+ * Returns: (transfer none): a category manager
+ * Since: 40
+ */
+GsCategoryManager *
+gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->category_manager;
 }

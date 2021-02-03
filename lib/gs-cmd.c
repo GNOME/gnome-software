@@ -106,7 +106,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 	if (g_strcmp0 (flag, "related") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 	if (g_strcmp0 (flag, "menu-path") == 0)
-		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH;
+		/* no longer supported by itself; categories are largely equivalent */
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES;
 	if (g_strcmp0 (flag, "upgrade-removed") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 	if (g_strcmp0 (flag, "provenance") == 0)
@@ -632,17 +633,26 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
-		g_autoptr(GsCategory) category = NULL;
-		g_autoptr(GsCategory) parent = NULL;
+		g_autoptr(GsCategory) category_owned = NULL;
+		GsCategory *category = NULL;
 		g_auto(GStrv) split = NULL;
+		GsCategoryManager *manager = gs_plugin_loader_get_category_manager (self->plugin_loader);
+
 		split = g_strsplit (argv[2], "/", 2);
 		if (g_strv_length (split) == 1) {
-			category = gs_category_new (split[0]);
+			category_owned = gs_category_manager_lookup (manager, split[0]);
+			category = category_owned;
 		} else {
-			parent = gs_category_new (split[0]);
-			category = gs_category_new (split[1]);
-			gs_category_add_child (parent, category);
+			g_autoptr(GsCategory) parent = gs_category_manager_lookup (manager, split[0]);
+			if (parent != NULL)
+				category = gs_category_find_child (parent, split[1]);
 		}
+
+		if (category == NULL) {
+			g_printerr ("Error: Could not find category ‘%s’\n", argv[2]);
+			return EXIT_FAILURE;
+		}
+
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			if (list != NULL)

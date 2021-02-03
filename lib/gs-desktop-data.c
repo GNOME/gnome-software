@@ -10,7 +10,7 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-desktop-common.h"
+#include "gs-desktop-data.h"
 
 /* AudioVideo */
 static const GsDesktopMap map_audiovisual[] = {
@@ -325,6 +325,9 @@ static const GsDesktopData msdata[] = {
 				"applications-utilities-symbolic", 10 },
 	{ NULL }
 };
+
+/* the -1 is for the NULL terminator */
+G_STATIC_ASSERT (G_N_ELEMENTS (msdata) - 1 == GS_DESKTOP_DATA_N_ENTRIES);
 
 const GsDesktopData *
 gs_desktop_get_data (void)

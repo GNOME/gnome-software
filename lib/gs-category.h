@@ -10,8 +10,10 @@
 
 #pragma once
 
+#include <glib.h>
 #include <glib-object.h>
-#include <gdk/gdk.h>
+
+#include "gs-desktop-data.h"
 
 G_BEGIN_DECLS
 
@@ -19,31 +21,22 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
 
-GsCategory	*gs_category_new		(const gchar	*id);
+GsCategory	*gs_category_new_for_desktop_data	(const GsDesktopData	*data);
+
 const gchar	*gs_category_get_id		(GsCategory	*category);
 GsCategory	*gs_category_get_parent		(GsCategory	*category);
 
 const gchar	*gs_category_get_name		(GsCategory	*category);
-void		 gs_category_set_name		(GsCategory	*category,
-						 const gchar	*name);
-const gchar	*gs_category_get_icon		(GsCategory	*category);
-void		 gs_category_set_icon		(GsCategory	*category,
-						 const gchar	*icon);
+const gchar	*gs_category_get_icon_name	(GsCategory	*category);
 gint		 gs_category_get_score		(GsCategory	*category);
-void		 gs_category_set_score		(GsCategory	*category,
-						 gint		 score);
 
 GPtrArray	*gs_category_get_desktop_groups	(GsCategory	*category);
 gboolean	 gs_category_has_desktop_group	(GsCategory	*category,
-						 const gchar	*desktop_group);
-void		 gs_category_add_desktop_group	(GsCategory	*category,
 						 const gchar	*desktop_group);
 
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);
 GPtrArray	*gs_category_get_children	(GsCategory	*category);
-void		 gs_category_add_child		(GsCategory	*category,
-						 GsCategory	*subcategory);
 
 guint		 gs_category_get_size		(GsCategory	*category);
 void		 gs_category_increment_size	(GsCategory	*category);

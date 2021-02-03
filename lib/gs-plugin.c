@@ -1896,8 +1896,6 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 		g_ptr_array_add (cstrs, "require-origin");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)
 		g_ptr_array_add (cstrs, "require-related");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH)
-		g_ptr_array_add (cstrs, "require-menu-path");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)
 		g_ptr_array_add (cstrs, "require-addons");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES)

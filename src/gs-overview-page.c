@@ -785,7 +785,7 @@ gs_overview_page_load (GsOverviewPage *self)
 			LoadData *load_data;
 			const gchar *cat_id;
 			g_autoptr(GsCategory) category = NULL;
-			g_autoptr(GsCategory) featured_category = NULL;
+			GsCategory *featured_category = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 
 			cat_id = g_ptr_array_index (cats_random, i);
@@ -793,12 +793,11 @@ gs_overview_page_load (GsOverviewPage *self)
 				g_free (priv->category_of_day);
 				priv->category_of_day = g_strdup (cat_id);
 			}
-			category = gs_category_new (cat_id);
-			featured_category = gs_category_new ("featured");
-			gs_category_add_child (category, featured_category);
+			category = gs_category_manager_lookup (gs_plugin_loader_get_category_manager (priv->plugin_loader), cat_id);
+			featured_category = gs_category_find_child (category, "featured");
 
 			load_data = g_slice_new0 (LoadData);
-			load_data->category = g_object_ref (category);
+			load_data->category = g_steal_pointer (&category);
 			load_data->self = g_object_ref (self);
 			load_data->title = gs_overview_page_get_category_label (cat_id);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
