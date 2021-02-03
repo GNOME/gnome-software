@@ -50,7 +50,7 @@ endif
 libgnomesoftware_enums = gnome.mkenums_simple('gs-enums',
   sources : libgnomesoftware_public_headers,
   install_header : true,
-  install_dir : 'gnome-software',
+  install_dir : join_paths(get_option('includedir'), 'gnome-software'),
 )
 
 libgnomesoftware_include_directories = [
