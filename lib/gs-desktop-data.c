@@ -326,6 +326,9 @@ static const GsDesktopData msdata[] = {
 	{ NULL }
 };
 
+/* the -1 is for the NULL terminator */
+G_STATIC_ASSERT (G_N_ELEMENTS (msdata) - 1 == GS_DESKTOP_DATA_N_ENTRIES);
+
 const GsDesktopData *
 gs_desktop_get_data (void)
 {

@@ -28,4 +28,16 @@ typedef struct {
 
 const GsDesktopData	*gs_desktop_get_data		(void);
 
+/**
+ * GS_DESKTOP_DATA_N_ENTRIES:
+ *
+ * Number of entries in the array returned by gs_desktop_get_data(). This is
+ * static and guaranteed to be up to date. It’s intended to be used when
+ * defining static arrays which need to be the same size as the array returned
+ * by gs_desktop_get_data().
+ *
+ * Since: 40
+ */
+#define GS_DESKTOP_DATA_N_ENTRIES 10
+
 G_END_DECLS
