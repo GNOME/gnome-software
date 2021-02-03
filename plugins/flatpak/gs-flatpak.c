@@ -337,13 +337,14 @@ gs_flatpak_create_app (GsFlatpak *self,
 	/* create a temp GsApp */
 	app = gs_app_new (flatpak_ref_get_name (xref));
 	gs_flatpak_set_metadata (self, app, xref);
-	if (origin != NULL)
+	if (origin != NULL) {
 		gs_flatpak_set_app_origin (self, app, origin, xremote, cancellable);
 
-	/* return the ref'd cached copy */
-	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
-	if (app_cached != NULL)
-		return app_cached;
+		/* return the ref'd cached copy, only if the origin is known */
+		app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+		if (app_cached != NULL)
+			return app_cached;
+	}
 
 	/* fallback values */
 	if (gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
