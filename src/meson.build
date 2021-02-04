@@ -241,6 +241,7 @@ if get_option('tests')
       glib,
       gmodule,
       goa,
+      gsettings_desktop_schemas,
       gtk,
       json_glib,
       libgnomesoftware_dep,
