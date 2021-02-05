@@ -1486,6 +1486,9 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 		    gs_app_get_state (addon) == GS_APP_STATE_UNAVAILABLE)
 			continue;
 
+		if (gs_app_has_quirk (addon, GS_APP_QUIRK_HIDE_EVERYWHERE))
+			continue;
+
 		row = gs_app_addon_row_new (addon);
 
 		g_signal_connect (row, "notify::selected",
@@ -1711,6 +1714,7 @@ gs_details_page_app_refine_cb (GObject *source,
 	}
 	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
+	gs_details_page_refresh_addons (self);
 }
 
 static void
