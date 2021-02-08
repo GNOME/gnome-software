@@ -14,9 +14,6 @@
         <property name="spacing">48</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
-        <style>
-          <class name="dim-label"/>
-        </style>
         <child type="center">
           <object class="GtkBox" id="centerbox">
             <property name="visible">True</property>
@@ -25,8 +22,11 @@
             <child>
               <object class="GtkImage" id="image">
                 <property name="visible">True</property>
-                <property name="pixel_size">256</property>
-                <property name="icon_name">org.gnome.Software-symbolic</property>
+                <property name="pixel_size">192</property>
+                <property name="icon_name">org.gnome.Software</property>
+                <style>
+                  <class name="icon-dropshadow"/>
+                </style>
               </object>
             </child>
             <child>
@@ -35,7 +35,8 @@
                 <property name="width_request">480</property>
                 <property name="halign">center</property>
                 <property name="fraction">0.0</property>
-                <property name="margin_top">8</property>
+                <property name="margin_top">20</property>
+                <property name="margin_bottom">12</property>
                 <style>
                   <class name="upgrade-progressbar"/>
                 </style>
