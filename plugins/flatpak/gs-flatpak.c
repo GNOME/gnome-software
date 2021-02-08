@@ -2400,7 +2400,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(XbNode) component = NULL;
 
-	if (origin == NULL || source == NULL)
+	if (origin == NULL || source == NULL || gs_flatpak_app_get_ref_name (app) == NULL)
 		return TRUE;
 
 	/* find using source and origin */
