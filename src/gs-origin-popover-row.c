@@ -65,12 +65,12 @@ refresh_ui (GsOriginPopoverRow *row)
 	}
 
 	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_FLATPAK &&
-	    gs_app_get_scope (priv->app) != AS_APP_SCOPE_UNKNOWN) {
-		AsAppScope scope = gs_app_get_scope (priv->app);
-		if (scope == AS_APP_SCOPE_SYSTEM) {
+	    gs_app_get_scope (priv->app) != AS_COMPONENT_SCOPE_UNKNOWN) {
+		AsComponentScope scope = gs_app_get_scope (priv->app);
+		if (scope == AS_COMPONENT_SCOPE_SYSTEM) {
 			/* TRANSLATORS: the installation location for flatpaks */
 			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("system"));
-		} else if (scope == AS_APP_SCOPE_USER) {
+		} else if (scope == AS_COMPONENT_SCOPE_USER) {
 			/* TRANSLATORS: the installation location for flatpaks */
 			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("user"));
 		}

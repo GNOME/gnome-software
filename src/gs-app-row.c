@@ -269,7 +269,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* join the description lines */
 	str = gs_app_row_get_description (app_row);
 	if (str != NULL) {
-		as_utils_string_replace (str, "\n", " ");
+		as_gstring_replace (str, "\n", " ");
 		gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
 		g_string_free (str, TRUE);
 	} else {

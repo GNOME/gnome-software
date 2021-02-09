@@ -448,7 +448,7 @@ create_missing_app (SearchData *search_data)
 	}
 	gs_app_set_summary_missing (app, g_string_free (summary_missing, FALSE));
 
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 	gs_app_set_url (app, AS_URL_KIND_MISSING, search_data->url_not_found);
 

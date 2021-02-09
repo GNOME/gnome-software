@@ -1329,7 +1329,7 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
 	/* replace datadir */
-	as_utils_string_replace (resource_str, "@datadir@", DATADIR);
+	as_gstring_replace (resource_str, "@datadir@", DATADIR);
 	resource = resource_str->str;
 
 	/* look in string for any url() links */
@@ -2039,8 +2039,8 @@ gs_plugin_init (GsPlugin *plugin)
 
 	priv->enabled = TRUE;
 	priv->scale = 1;
-	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
-					     (GEqualFunc) as_utils_unique_id_equal,
+	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash,
+					     (GEqualFunc) as_utils_data_id_equal,
 					     g_free,
 					     (GDestroyNotify) g_object_unref);
 	priv->vfuncs = g_hash_table_new_full (g_str_hash, g_str_equal,

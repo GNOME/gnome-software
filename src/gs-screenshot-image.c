@@ -118,21 +118,108 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	gs_screenshot_image_stop_spinner (ssimg);
 }
 
+static GdkPixbuf *
+gs_pixbuf_resample (GdkPixbuf *original,
+		    guint width,
+		    guint height,
+		    gboolean blurred)
+{
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	guint tmp_height;
+	guint tmp_width;
+	guint pixbuf_height;
+	guint pixbuf_width;
+	g_autoptr(GdkPixbuf) pixbuf_tmp = NULL;
+
+	/* never set */
+	if (original == NULL)
+		return NULL;
+
+	/* 0 means 'default' */
+	if (width == 0)
+		width = (guint) gdk_pixbuf_get_width (original);
+	if (height == 0)
+		height = (guint) gdk_pixbuf_get_height (original);
+
+	/* don't do anything to an image with the correct size */
+	pixbuf_width = (guint) gdk_pixbuf_get_width (original);
+	pixbuf_height = (guint) gdk_pixbuf_get_height (original);
+	if (width == pixbuf_width && height == pixbuf_height)
+		return g_object_ref (original);
+
+	/* is the aspect ratio of the source perfectly 16:9 */
+	if ((pixbuf_width / 16) * 9 == pixbuf_height) {
+		pixbuf = gdk_pixbuf_scale_simple (original,
+						  (gint) width, (gint) height,
+						  GDK_INTERP_HYPER);
+		if (blurred)
+			gs_utils_pixbuf_blur (pixbuf, 5, 3);
+		return g_steal_pointer (&pixbuf);
+	}
+
+	/* create new 16:9 pixbuf with alpha padding */
+	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB,
+				 TRUE, 8,
+				 (gint) width,
+				 (gint) height);
+	gdk_pixbuf_fill (pixbuf, 0x00000000);
+	/* check the ratio to see which property needs to be fitted and which needs
+	 * to be reduced */
+	if (pixbuf_width * 9 > pixbuf_height * 16) {
+		tmp_width = width;
+		tmp_height = width * pixbuf_height / pixbuf_width;
+	} else {
+		tmp_width = height * pixbuf_width / pixbuf_height;
+		tmp_height = height;
+	}
+	pixbuf_tmp = gdk_pixbuf_scale_simple (original,
+					      (gint) tmp_width,
+					      (gint) tmp_height,
+					      GDK_INTERP_HYPER);
+	if (blurred)
+		gs_utils_pixbuf_blur (pixbuf_tmp, 5, 3);
+	gdk_pixbuf_copy_area (pixbuf_tmp,
+			      0, 0, /* of src */
+			      (gint) tmp_width,
+			      (gint) tmp_height,
+			      pixbuf,
+			      (gint) (width - tmp_width) / 2,
+			      (gint) (height - tmp_height) / 2);
+	return g_steal_pointer (&pixbuf);
+}
+
+static gboolean
+gs_pixbuf_save_filename (GdkPixbuf *pixbuf,
+			 const gchar *filename,
+			 guint width,
+			 guint height,
+			 GError **error)
+{
+	g_autoptr(GdkPixbuf) pb = NULL;
+
+	/* resample & save pixbuf */
+	pb = gs_pixbuf_resample (pixbuf, width, height, FALSE);
+	return gdk_pixbuf_save (pb,
+				filename,
+				"png",
+				error,
+				NULL);
+}
+
 static void
 gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
 {
-	g_autoptr(AsImage) im = NULL;
+	g_autoptr(GdkPixbuf) pb_src = NULL;
 	g_autoptr(GdkPixbuf) pb = NULL;
 
-	/* create an helper which can do the blurring for us */
-	im = as_image_new ();
-	if (!as_image_load_filename (im, filename_thumb, NULL))
+	pb_src = gdk_pixbuf_new_from_file (filename_thumb, NULL);
+	if (pb_src == NULL)
 		return;
-	pb = as_image_save_pixbuf (im,
-				   ssimg->width * ssimg->scale,
-				   ssimg->height * ssimg->scale,
-				   AS_IMAGE_SAVE_FLAG_BLUR);
+	pb = gs_pixbuf_resample (pb_src,
+				 ssimg->width * ssimg->scale,
+				 ssimg->height * ssimg->scale,
+				 TRUE /* blurred */);
 	if (pb == NULL)
 		return;
 
@@ -150,7 +237,6 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 					 GdkPixbuf *pixbuf,
 					 GError **error)
 {
-	g_autoptr(AsImage) im = NULL;
 	gboolean ret;
 	const GPtrArray *images;
 	g_autoptr(GError) error_local = NULL;
@@ -161,14 +247,9 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 	guint width = ssimg->width;
 	guint height = ssimg->height;
 
-	/* save to file, using the same code as the AppStream builder
-	 * so the preview looks the same */
-	im = as_image_new ();
-	as_image_set_pixbuf (im, pixbuf);
-	ret = as_image_save_filename (im, ssimg->filename,
+	ret = gs_pixbuf_save_filename (pixbuf, ssimg->filename,
 				      ssimg->width * ssimg->scale,
 				      ssimg->height * ssimg->scale,
-				      AS_IMAGE_SAVE_FLAG_PAD_16_9,
 				      error);
 
 	if (!ret)
@@ -209,9 +290,9 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
                 return TRUE;
         }
 
-	ret = as_image_save_filename (im, filename, width, height,
-				      AS_IMAGE_SAVE_FLAG_PAD_16_9,
-				      &error_local);
+	ret = gs_pixbuf_save_filename (pixbuf, filename,
+					width, height,
+					&error_local);
 
 	if (!ret) {
 		/* if we cannot save this screenshot, warn about that but do not

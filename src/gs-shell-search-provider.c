@@ -117,7 +117,7 @@ gs_shell_search_provider_get_app_sort_key (GsApp *app)
 
 	/* sort apps before runtimes and extensions */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		g_string_append (key, "9:");
 		break;
 	default:
@@ -252,7 +252,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		if (pixbuf != NULL)
 			g_variant_builder_add (&meta, "{sv}", "icon", g_icon_serialize (G_ICON (pixbuf)));
 
-		if (gs_utils_list_has_app_fuzzy (self->search_results, app) &&
+		if (gs_utils_list_has_component_fuzzy (self->search_results, app) &&
 		    gs_app_get_origin_hostname (app) != NULL) {
 			/* TRANSLATORS: this refers to where the app came from */
 			g_autofree gchar *source_text = g_strdup_printf (_("Source: %s"),
@@ -361,8 +361,8 @@ search_provider_dispose (GObject *obj)
 static void
 gs_shell_search_provider_init (GsShellSearchProvider *self)
 {
-	self->metas_cache = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
-						   (GEqualFunc) as_utils_unique_id_equal,
+	self->metas_cache = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash,
+						   (GEqualFunc) as_utils_data_id_equal,
 						   g_free,
 						   (GDestroyNotify) g_variant_unref);
 

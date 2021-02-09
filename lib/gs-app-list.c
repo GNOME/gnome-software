@@ -249,7 +249,7 @@ gs_app_list_lookup_safe (GsAppList *list, const gchar *unique_id)
 {
 	for (guint i = 0; i < list->array->len; i++) {
 		GsApp *app = g_ptr_array_index (list->array, i);
-		if (as_utils_unique_id_equal (gs_app_get_unique_id (app), unique_id))
+		if (as_utils_data_id_equal (gs_app_get_unique_id (app), unique_id))
 			return app;
 	}
 	return NULL;
@@ -739,15 +739,18 @@ gs_app_list_filter_app_get_keys (GsApp *app, GsAppListFilterFlags flags)
 		return keys;
 	}
 
-	/* use the ID and any provides */
+	/* use the ID and any provided items */
 	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES) {
-		GPtrArray *provides = gs_app_get_provides (app);
+		GPtrArray *provided = gs_app_get_provided (app);
 		g_ptr_array_add (keys, g_strdup (gs_app_get_id (app)));
-		for (guint i = 0; i < provides->len; i++) {
-			AsProvide *prov = g_ptr_array_index (provides, i);
-			if (as_provide_get_kind (prov) != AS_PROVIDE_KIND_ID)
+		for (guint i = 0; i < provided->len; i++) {
+			AsProvided *prov = g_ptr_array_index (provided, i);
+			GPtrArray *items;
+			if (as_provided_get_kind (prov) != AS_PROVIDED_KIND_ID)
 				continue;
-			g_ptr_array_add (keys, g_strdup (as_provide_get_value (prov)));
+			items = as_provided_get_items (prov);
+			for (guint j = 0; j < items->len; j++)
+				g_ptr_array_add (keys, g_strdup (g_ptr_array_index (items, j)));
 		}
 		return keys;
 	}

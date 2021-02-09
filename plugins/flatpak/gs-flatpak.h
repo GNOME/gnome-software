@@ -31,7 +31,7 @@ FlatpakInstallation *gs_flatpak_get_installation (GsFlatpak		*self);
 
 GsApp	*gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref, GCancellable *cancellable, GError **error);
 
-AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
+AsComponentScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GCancellable		*cancellable,

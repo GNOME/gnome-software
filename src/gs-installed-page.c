@@ -162,7 +162,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	app_row = g_object_new (GS_TYPE_APP_ROW,
 				"app", app,
 				"show-buttons", TRUE,
-				"show-source", gs_utils_list_has_app_fuzzy (list, app),
+				"show-source", gs_utils_list_has_component_fuzzy (list, app),
 				"show-installed-size", !gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY) && should_show_installed_size (self),
 				NULL);
 
@@ -339,31 +339,31 @@ gs_installed_page_get_app_sort_key (GsApp *app)
 
 	/* sort apps by kind */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_OS_UPDATE:
+	case AS_COMPONENT_KIND_OS_UPDATE:
 		g_string_append (key, "1:");
 		break;
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		g_string_append (key, "2:");
 		break;
-	case AS_APP_KIND_WEB_APP:
+	case AS_COMPONENT_KIND_WEB_APP:
 		g_string_append (key, "3:");
 		break;
-	case AS_APP_KIND_RUNTIME:
+	case AS_COMPONENT_KIND_RUNTIME:
 		g_string_append (key, "4:");
 		break;
-	case AS_APP_KIND_ADDON:
+	case AS_COMPONENT_KIND_ADDON:
 		g_string_append (key, "5:");
 		break;
-	case AS_APP_KIND_CODEC:
+	case AS_COMPONENT_KIND_CODEC:
 		g_string_append (key, "6:");
 		break;
-	case AS_APP_KIND_FONT:
+	case AS_COMPONENT_KIND_FONT:
 		g_string_append (key, "6:");
 		break;
-	case AS_APP_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
 		g_string_append (key, "7:");
 		break;
-	case AS_APP_KIND_SHELL_EXTENSION:
+	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 		g_string_append (key, "8:");
 		break;
 	default:
@@ -420,8 +420,8 @@ typedef enum {
 static GsInstalledPageSection
 gs_installed_page_get_app_section (GsApp *app)
 {
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP ||
-	    gs_app_get_kind (app) == AS_APP_KIND_WEB_APP) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP ||
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
 			return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
 		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
@@ -518,7 +518,7 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 
 		/* never show OS upgrades, we handle the scheduling and
 		 * cancellation in GsUpgradeBanner */
-		if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE)
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM)
 			continue;
 
 		/* do not to add pending apps more than once. */

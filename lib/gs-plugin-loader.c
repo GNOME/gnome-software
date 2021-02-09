@@ -11,7 +11,7 @@
 
 #include <locale.h>
 #include <glib/gi18n.h>
-#include <appstream-glib.h>
+#include <appstream.h>
 #include <math.h>
 
 #ifdef HAVE_SYSPROF
@@ -46,6 +46,7 @@ struct _GsPluginLoader
 	SoupSession		*soup_session;
 	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
+	AsPool			*as_pool;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -429,7 +430,7 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local_copy);
 
 	/* set the app and origin IDs if we managed to scrape them from the error above */
-	if (as_utils_unique_id_valid (app_id)) {
+	if (as_utils_data_id_valid (app_id)) {
 		g_autoptr(GsApp) app = gs_plugin_cache_lookup (plugin, app_id);
 		if (app != NULL) {
 			g_debug ("found app %s in error", origin_id);
@@ -438,7 +439,7 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 			g_debug ("no unique ID found for app %s", app_id);
 		}
 	}
-	if (as_utils_unique_id_valid (origin_id)) {
+	if (as_utils_data_id_valid (origin_id)) {
 		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
 		if (origin != NULL) {
 			g_debug ("found origin %s in error", origin_id);
@@ -1208,11 +1209,11 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 	}
 
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_OS_UPGRADE:
-	case AS_APP_KIND_CODEC:
-	case AS_APP_KIND_FONT:
+	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
+	case AS_COMPONENT_KIND_CODEC:
+	case AS_COMPONENT_KIND_FONT:
 		g_debug ("app invalid as %s: %s",
-			 as_app_kind_to_string (gs_app_get_kind (app)),
+			 as_component_kind_to_string (gs_app_get_kind (app)),
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 		break;
@@ -1236,14 +1237,14 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
 
 	/* never show addons */
-	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
 		g_debug ("app invalid as addon %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
 	/* never show CLI apps */
-	if (gs_app_get_kind (app) == AS_APP_KIND_CONSOLE) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_CONSOLE_APP) {
 		g_debug ("app invalid as console %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -1257,7 +1258,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted unavailables */
-	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN &&
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN &&
 		gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		g_debug ("app invalid as unconverted unavailable %s",
 			 gs_plugin_loader_get_app_str (app));
@@ -1289,14 +1290,14 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show sources */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
 		g_debug ("app invalid as source %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
 	/* don't show unknown kind */
-	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN) {
 		g_debug ("app invalid as kind unknown %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -1305,9 +1306,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	/* don't show unconverted packages in the application view */
 	if (!gs_plugin_job_has_refine_flags (helper->plugin_job,
 						 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
-	    (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)) {
+	    (gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC)) {
 		g_debug ("app invalid as only a %s: %s",
-			 as_app_kind_to_string (gs_app_get_kind (app)),
+			 as_component_kind_to_string (gs_app_get_kind (app)),
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
@@ -1411,9 +1412,9 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 static gint
 gs_plugin_loader_app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	if (gs_app_get_kind (app1) == AS_APP_KIND_DESKTOP)
+	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
 		return -1;
-	if (gs_app_get_kind (app2) == AS_APP_KIND_DESKTOP)
+	if (gs_app_get_kind (app2) == AS_COMPONENT_KIND_DESKTOP_APP)
 		return 1;
 	return 0;
 }
@@ -1437,14 +1438,8 @@ gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 static gint
 gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-#if AS_CHECK_VERSION(0,7,15)
-	return as_utils_vercmp_full (gs_app_get_version (app1),
-	                             gs_app_get_version (app2),
-	                             AS_VERSION_COMPARE_FLAG_NONE);
-#else
-	return as_utils_vercmp (gs_app_get_version (app1),
-	                        gs_app_get_version (app2));
-#endif
+	return as_vercmp_simple (gs_app_get_version (app1),
+				 gs_app_get_version (app2));
 }
 
 /******************************************************************************/
@@ -2386,6 +2381,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		GFileMonitor *monitor;
 		const gchar *location = g_ptr_array_index (plugin_loader->locations, i);
 		g_autoptr(GFile) plugin_dir = g_file_new_for_path (location);
+		g_debug ("monitoring plugin location %s", location);
 		monitor = g_file_monitor_directory (plugin_dir,
 						    G_FILE_MONITOR_NONE,
 						    cancellable,
@@ -2728,6 +2724,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_ptr_array_unref (plugin_loader->file_monitors);
 	g_hash_table_unref (plugin_loader->events_by_id);
 	g_hash_table_unref (plugin_loader->disallow_updates);
+	g_clear_object (&plugin_loader->as_pool);
 
 	g_mutex_clear (&plugin_loader->pending_apps_mutex);
 	g_mutex_clear (&plugin_loader->events_by_id_mutex);
@@ -2849,10 +2846,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (plugin_loader->settings, "changed",
 			  G_CALLBACK (gs_plugin_loader_settings_changed_cb), plugin_loader);
-	plugin_loader->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
-					            (GEqualFunc) as_utils_unique_id_equal,
-						    g_free,
-						    (GDestroyNotify) g_object_unref);
+	plugin_loader->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash,
+							     (GEqualFunc) as_utils_data_id_equal,
+							     g_free,
+							     (GDestroyNotify) g_object_unref);
 
 	/* share a soup session (also disable the double-compression) */
 	plugin_loader->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
@@ -3729,10 +3726,14 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_task_set_check_cancellable (task, FALSE);
 	g_task_set_return_on_cancel (task, FALSE);
 
+	/* AppStream metadata pool, we only need it to create good search tokens */
+	if (plugin_loader->as_pool == NULL)
+		plugin_loader->as_pool = as_pool_new ();
+
 	/* pre-tokenize search */
 	if (action == GS_PLUGIN_ACTION_SEARCH) {
 		const gchar *search = gs_plugin_job_get_search (plugin_job);
-		helper->tokens = as_utils_search_tokenize (search);
+		helper->tokens = as_pool_build_search_tokens (plugin_loader->as_pool, search);
 		if (helper->tokens == NULL) {
 			g_task_return_new_error (task,
 						 GS_PLUGIN_ERROR,

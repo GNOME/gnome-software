@@ -556,8 +556,8 @@ gs_plugin_setup (GsPlugin *plugin,
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");
 	gs_app_add_icon (app, ic);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	/* TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/ */
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, _("Endless OS"));
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,

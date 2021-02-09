@@ -38,7 +38,7 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_FIRMWARE);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_FIRMWARE);
 	g_assert (gs_app_get_license (app) != NULL);
 	g_assert (gs_app_has_category (app, "System"));
 	g_assert_cmpstr (gs_app_get_id (app), ==, "com.test.chiron.firmware");

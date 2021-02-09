@@ -267,7 +267,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE_LIVE);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Do not crash when using libvirt.");
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_HIGH);
@@ -277,7 +277,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_OS_UPDATE);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE);
 	g_assert_cmpint (gs_app_list_length (gs_app_get_related (app)), ==, 2);
 
@@ -309,7 +309,7 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.release-rawhide.upgrade");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPGRADE);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 
 	/* this should be set with a higher priority by AppStream */
@@ -368,7 +368,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
@@ -395,7 +395,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (addons), ==, 1);
 	addon = gs_app_list_index (addons, 0);
 	g_assert_cmpstr (gs_app_get_id (addon), ==, "zeus-spell.addon");
-	g_assert_cmpint (gs_app_get_kind (addon), ==, AS_APP_KIND_ADDON);
+	g_assert_cmpint (gs_app_get_kind (addon), ==, AS_COMPONENT_KIND_ADDON);
 	g_assert_cmpint (gs_app_get_state (addon), ==, GS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_name (addon), ==, "Spell Check");
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
@@ -426,7 +426,7 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 }
 
 static void
@@ -453,10 +453,10 @@ gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 2);
 	app_tmp = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "chiron.desktop");
-	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 	app_tmp = gs_app_list_index (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "zeus.desktop");
-	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 }
 
 static void
@@ -515,7 +515,7 @@ gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 }
 
 static void
@@ -632,7 +632,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app1 = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app1), ==, "org.fedoraproject.release-rawhide.upgrade");
-	g_assert_cmpint (gs_app_get_kind (app1), ==, AS_APP_KIND_OS_UPGRADE);
+	g_assert_cmpint (gs_app_get_kind (app1), ==, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	g_assert_cmpint (gs_app_get_state (app1), ==, GS_APP_STATE_AVAILABLE);
 
 	/* allow only one operation at a time */

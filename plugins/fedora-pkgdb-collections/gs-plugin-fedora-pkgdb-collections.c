@@ -153,7 +153,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_origin_hostname (priv->cached_origin,
 				    FEDORA_PKGDB_COLLECTIONS_API_URI);
 
@@ -275,7 +275,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	/* create */
 	app = gs_app_new (app_id);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
@@ -514,7 +514,7 @@ refine_app_locked (GsPlugin             *plugin,
 	const gchar *cpe_name;
 
 	/* not for us */
-	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
 	/* not enough metadata */

@@ -595,7 +595,7 @@ details_activated (GSimpleAction *action,
 		gs_shell_show_search_result (app->shell, id, search);
 	} else {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		if (as_utils_unique_id_valid (id)) {
+		if (as_utils_data_id_valid (id)) {
 			g_autoptr(GsApp) a = gs_plugin_loader_app_create (app->plugin_loader, id);
 			gs_shell_reset_state (app->shell);
 			gs_shell_show_app (app->shell, a);
@@ -669,7 +669,7 @@ install_activated (GSimpleAction *action,
 	g_autoptr (GsApp) a = NULL;
 
 	g_variant_get (parameter, "(&su)", &id, &interaction);
-	if (!as_utils_unique_id_valid (id)) {
+	if (!as_utils_data_id_valid (id)) {
 		g_warning ("Need to use a valid unique-id: %s", id);
 		return;
 	}

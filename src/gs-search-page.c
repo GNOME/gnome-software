@@ -161,7 +161,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 
 	if (self->appid_to_show != NULL) {
 		g_autoptr (GsApp) a = NULL;
-		if (as_utils_unique_id_valid (self->appid_to_show)) {
+		if (as_utils_data_id_valid (self->appid_to_show)) {
 			a = gs_plugin_loader_app_create (self->plugin_loader,
 							 self->appid_to_show);
 		} else {
@@ -194,8 +194,8 @@ gs_search_page_get_app_sort_key (GsApp *app)
 
 	/* sort apps before runtimes and extensions */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_DESKTOP:
-	case AS_APP_KIND_SHELL_EXTENSION:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
+	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 		g_string_append (key, "9:");
 		break;
 	default:

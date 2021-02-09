@@ -72,11 +72,11 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 static gboolean
-_as_app_scope_is_compatible (AsAppScope scope1, AsAppScope scope2)
+_as_component_scope_is_compatible (AsComponentScope scope1, AsComponentScope scope2)
 {
-	if (scope1 == AS_APP_SCOPE_UNKNOWN)
+	if (scope1 == AS_COMPONENT_SCOPE_UNKNOWN)
 		return TRUE;
-	if (scope2 == AS_APP_SCOPE_UNKNOWN)
+	if (scope2 == AS_COMPONENT_SCOPE_UNKNOWN)
 		return TRUE;
 	return scope1 == scope2;
 }
@@ -300,7 +300,7 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	/* find a scope that matches */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (_as_app_scope_is_compatible (gs_flatpak_get_scope (flatpak),
+		if (_as_component_scope_is_compatible (gs_flatpak_get_scope (flatpak),
 						 gs_app_get_scope (app)))
 			return flatpak;
 	}
@@ -324,7 +324,7 @@ gs_plugin_flatpak_refine_app (GsPlugin *plugin,
 	}
 
 	/* we have to look for the app in all GsFlatpak stores */
-	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
 			g_autoptr(GError) error_local = NULL;
@@ -848,7 +848,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return TRUE;
 
 	/* is a source */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_flatpak_app_remove_source (flatpak, app, cancellable, error);
 
 	/* build and run transaction */
@@ -932,19 +932,19 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* set the app scope */
-	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
 		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
 
 		/* get the new GsFlatpak for handling of local files */
 		gs_app_set_scope (app, g_settings_get_boolean (settings, "install-bundles-system-wide") ?
-					AS_APP_SCOPE_SYSTEM : AS_APP_SCOPE_USER);
+					AS_COMPONENT_SCOPE_SYSTEM : AS_COMPONENT_SCOPE_USER);
 		if (!priv->has_system_helper) {
 			g_info ("no flatpak system helper is available, using user");
-			gs_app_set_scope (app, AS_APP_SCOPE_USER);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 		}
 		if (priv->destdir_for_tests != NULL) {
 			g_debug ("in self tests, using user");
-			gs_app_set_scope (app, AS_APP_SCOPE_USER);
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 		}
 	}
 
@@ -954,7 +954,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* is a source */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
 
 	/* build */
@@ -1316,7 +1316,7 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 		return g_steal_pointer (&app_tmp);
 
 	/* force this to be 'any' scope for installation */
-	gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
 
 	/* this is new */
 	return g_steal_pointer (&app);
@@ -1351,7 +1351,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 		return g_steal_pointer (&app_tmp);
 
 	/* force this to be 'any' scope for installation */
-	gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
 
 	/* do we have a system runtime available */
 	runtime = gs_app_get_runtime (app);

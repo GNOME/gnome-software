@@ -151,7 +151,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
-		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
@@ -286,7 +286,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* enable repo */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_plugin_repo_enable (plugin, app, cancellable, error);
 
 	/* queue for install if installation needs the network */
@@ -524,7 +524,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return TRUE;
 
 	/* disable repo */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_plugin_repo_disable (plugin, app, cancellable, error);
 
 	/* get the list of available package ids to install */
@@ -594,8 +594,8 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 			     gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_update_version (app, pk_package_get_version (package));
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	gs_plugin_cache_add (plugin, pk_package_get_id (package), app);

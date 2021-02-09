@@ -31,5 +31,5 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [gio_unix, appstream, libsoup, plugin_libs]
+  dependencies : [gio_unix, appstream, libsoup, plugin_libs],
 )

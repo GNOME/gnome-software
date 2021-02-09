@@ -156,13 +156,13 @@ populate_permissions_section (GsUpdateDialog *dialog, GsAppPermissions permissio
 static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
-	AsAppKind kind;
+	AsComponentKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
-	if (kind == AS_APP_KIND_OS_UPDATE) {
+	if (kind == AS_COMPONENT_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL &&
 		   gs_app_get_update_version (app) != NULL) {
@@ -180,7 +180,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	}
 
 	/* set update header */
-	gtk_widget_set_visible (dialog->box_header, kind == AS_APP_KIND_DESKTOP);
+	gtk_widget_set_visible (dialog->box_header, kind == AS_COMPONENT_KIND_DESKTOP_APP);
 	update_details = gs_app_get_update_details (app);
 	if (update_details == NULL) {
 		/* TRANSLATORS: this is where the packager did not write
@@ -457,22 +457,12 @@ is_downgrade (const gchar *evr1,
 	 * part of the semantic version */
 
 	/* check version */
-#if AS_CHECK_VERSION(0,7,15)
-	rc = as_utils_vercmp_full (version1, version2,
-	                           AS_VERSION_COMPARE_FLAG_NONE);
-#else
-	rc = as_utils_vercmp (version1, version2);
-#endif
+	rc = as_vercmp_simple (version1, version2);
 	if (rc != 0)
 		return rc > 0;
 
 	/* check release */
-#if AS_CHECK_VERSION(0,7,15)
-	rc = as_utils_vercmp_full (release1, release2,
-	                           AS_VERSION_COMPARE_FLAG_NONE);
-#else
-	rc = as_utils_vercmp (release1, release2);
-#endif
+	rc = as_vercmp_simple (release1, release2);
 	if (rc != 0)
 		return rc > 0;
 
@@ -630,7 +620,7 @@ create_section (GsUpdateDialog *dialog, GsUpdateDialogSection section)
 void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
-	AsAppKind kind;
+	AsComponentKind kind;
 	g_autofree gchar *str = NULL;
 
 	/* debug */
@@ -646,7 +636,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update description */
 	kind = gs_app_get_kind (app);
-	if (kind == AS_APP_KIND_OS_UPDATE) {
+	if (kind == AS_COMPONENT_KIND_OS_UPDATE) {
 		GsAppList *related;
 		GsApp *app_related;
 		GsUpdateDialogSection section;

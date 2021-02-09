@@ -455,7 +455,7 @@ main (int argc, char **argv)
 	} else if (argc == 3 && g_strcmp0 (argv[1], "action-upgrade-download") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		app = gs_app_new (argv[2]);
-		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 						 "app", app,
 						 NULL);

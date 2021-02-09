@@ -112,7 +112,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
@@ -246,7 +246,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -285,12 +285,11 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 		return NULL;
 
 	/* get from cache */
-	id = as_utils_unique_id_build (AS_APP_SCOPE_SYSTEM,
-				       AS_BUNDLE_KIND_UNKNOWN,
-				       NULL, /* origin */
-				       AS_APP_KIND_FIRMWARE,
-				       fwupd_release_get_appstream_id (rel),
-				       NULL);
+	id = as_utils_build_data_id (AS_COMPONENT_SCOPE_SYSTEM,
+				     AS_BUNDLE_KIND_UNKNOWN,
+				     NULL, /* origin */
+				     fwupd_release_get_appstream_id (rel),
+				     NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
 		app = gs_app_new (id);
@@ -298,7 +297,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	}
 
 	/* default stuff */
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_FIRMWARE);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_CABINET);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
@@ -344,8 +343,8 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	/* create a GsApp based on the device, not the release */
 	id = gs_plugin_fwupd_build_device_id (device);
 	app = gs_app_new (id);
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_FIRMWARE);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
@@ -616,9 +615,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				g_autofree gchar *desc = NULL;
 				if (fwupd_release_get_description (rel) == NULL)
 					continue;
-				desc = as_markup_convert (fwupd_release_get_description (rel),
-							  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
-							  NULL);
+				desc = as_markup_convert_simple (fwupd_release_get_description (rel), NULL);
 				if (desc == NULL)
 					continue;
 				g_string_append_printf (update_desc,
@@ -962,7 +959,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* source -> remote */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
 		return gs_plugin_fwupd_modify_source (plugin, app, TRUE,
 						      cancellable, error);
 	}
@@ -1166,8 +1163,8 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		/* create something that we can use to enable/disable */
 		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
 		app = gs_app_new (id);
-		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
 				  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);

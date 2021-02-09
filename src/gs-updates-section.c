@@ -151,31 +151,31 @@ _get_app_sort_key (GsApp *app)
 
 	/* sort apps by kind */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_OS_UPDATE:
+	case AS_COMPONENT_KIND_OS_UPDATE:
 		g_string_append (key, "1:");
 		break;
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		g_string_append (key, "2:");
 		break;
-	case AS_APP_KIND_WEB_APP:
+	case AS_COMPONENT_KIND_WEB_APP:
 		g_string_append (key, "3:");
 		break;
-	case AS_APP_KIND_RUNTIME:
+	case AS_COMPONENT_KIND_RUNTIME:
 		g_string_append (key, "4:");
 		break;
-	case AS_APP_KIND_ADDON:
+	case AS_COMPONENT_KIND_ADDON:
 		g_string_append (key, "5:");
 		break;
-	case AS_APP_KIND_CODEC:
+	case AS_COMPONENT_KIND_CODEC:
 		g_string_append (key, "6:");
 		break;
-	case AS_APP_KIND_FONT:
+	case AS_COMPONENT_KIND_FONT:
 		g_string_append (key, "6:");
 		break;
-	case AS_APP_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
 		g_string_append (key, "7:");
 		break;
-	case AS_APP_KIND_SHELL_EXTENSION:
+	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 		g_string_append (key, "8:");
 		break;
 	default:

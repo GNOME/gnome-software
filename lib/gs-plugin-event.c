@@ -173,12 +173,11 @@ gs_plugin_event_get_unique_id (GsPluginEvent *event)
 			g_autofree gchar *id = NULL;
 			id = g_strdup_printf ("%s.error",
 					      gs_plugin_error_to_string (event->error->code));
-			event->unique_id = as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
-								     AS_BUNDLE_KIND_UNKNOWN,
-								     NULL,
-								     AS_APP_KIND_UNKNOWN,
-								     id,
-								     NULL);
+			event->unique_id = as_utils_build_data_id (AS_COMPONENT_SCOPE_UNKNOWN,
+								   AS_BUNDLE_KIND_UNKNOWN,
+								   NULL,
+								   id,
+								   NULL);
 		}
 		return event->unique_id;
 	}

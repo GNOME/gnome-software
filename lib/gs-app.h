@@ -12,7 +12,7 @@
 #include <glib-object.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <appstream-glib.h>
+#include <appstream.h>
 
 G_BEGIN_DECLS
 
@@ -209,7 +209,8 @@ GsApp		*gs_app_new			(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 void		 gs_app_set_from_unique_id	(GsApp		*app,
-						 const gchar	*unique_id);
+						 const gchar	*unique_id,
+						 AsComponentKind kind);
 gchar		*gs_app_to_string		(GsApp		*app);
 void		 gs_app_to_string_append	(GsApp		*app,
 						 GString	*str);
@@ -217,15 +218,15 @@ void		 gs_app_to_string_append	(GsApp		*app,
 const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
-AsAppKind	 gs_app_get_kind		(GsApp		*app);
+AsComponentKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
-						 AsAppKind	 kind);
+						 AsComponentKind kind);
 GsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 GsAppState	 state);
-AsAppScope	 gs_app_get_scope		(GsApp		*app);
+AsComponentScope gs_app_get_scope		(GsApp		*app);
 void		 gs_app_set_scope		(GsApp		*app,
-						 AsAppScope	 scope);
+						 AsComponentScope scope);
 AsBundleKind	 gs_app_get_bundle_kind		(GsApp		*app);
 void		 gs_app_set_bundle_kind		(GsApp		*app,
 						 AsBundleKind	 bundle_kind);
@@ -367,9 +368,12 @@ void		 gs_app_add_review		(GsApp		*app,
 						 AsReview	*review);
 void		 gs_app_remove_review		(GsApp		*app,
 						 AsReview	*review);
-GPtrArray	*gs_app_get_provides		(GsApp		*app);
-void		 gs_app_add_provide		(GsApp		*app,
-						 AsProvide	*provide);
+GPtrArray	*gs_app_get_provided		(GsApp		*app);
+AsProvided	*gs_app_get_provided_for_kind	(GsApp		*app,
+						 AsProvidedKind kind);
+void		 gs_app_add_provided_item	(GsApp		*app,
+						 AsProvidedKind kind,
+						 const gchar	*item);
 guint64		 gs_app_get_size_installed	(GsApp		*app);
 void		 gs_app_set_size_installed	(GsApp		*app,
 						 guint64	 size_installed);
