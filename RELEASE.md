@@ -39,7 +39,7 @@ You can get review of your appdata changes from other co-maintainers if you wish
 
 Generate `NEWS` file:
 ```
-appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in > NEWS
+appstreamcli metainfo-to-news ../data/appdata/org.gnome.Software.appdata.xml.in ../NEWS
 ```
 
 Commit the release:
