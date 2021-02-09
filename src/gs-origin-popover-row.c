@@ -19,9 +19,6 @@ typedef struct
 	GtkWidget	*url_box;
 	GtkWidget	*url_title;
 	GtkWidget	*url_label;
-	GtkWidget	*format_box;
-	GtkWidget	*format_title;
-	GtkWidget	*format_label;
 	GtkWidget	*installation_box;
 	GtkWidget	*installation_title;
 	GtkWidget	*installation_label;
@@ -41,7 +38,6 @@ refresh_ui (GsOriginPopoverRow *row)
 {
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 	g_autofree gchar *origin_ui = NULL;
-	g_autofree gchar *packaging_format = NULL;
 	g_autofree gchar *url = NULL;
 
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
@@ -66,14 +62,6 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_widget_show (priv->url_box);
 	} else {
 		gtk_widget_hide (priv->url_box);
-	}
-
-	packaging_format = gs_app_get_packaging_format (priv->app);
-	if (packaging_format != NULL) {
-		gtk_label_set_text (GTK_LABEL (priv->format_label), packaging_format);
-		gtk_widget_show (priv->format_box);
-	} else {
-		gtk_widget_hide (priv->format_box);
 	}
 
 	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_FLATPAK &&
@@ -142,7 +130,6 @@ gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *siz
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 
 	gtk_size_group_add_widget (size_group, priv->url_title);
-	gtk_size_group_add_widget (size_group, priv->format_title);
 	gtk_size_group_add_widget (size_group, priv->installation_title);
 	gtk_size_group_add_widget (size_group, priv->branch_title);
 	gtk_size_group_add_widget (size_group, priv->version_title);
@@ -178,9 +165,6 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_label);
