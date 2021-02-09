@@ -2,7 +2,7 @@
 %global gtk3_version 3.22.4
 %global json_glib_version 1.2.0
 %global packagekit_version 1.1.1
-%global appstream_glib_version 0.7.15
+%global appstream_version 0.14.0
 %global libsoup_version 2.52.0
 %global gsettings_desktop_schemas_version 3.12.0
 %global fwupd_version 1.2.10
@@ -33,7 +33,7 @@ BuildRequires: gspell-devel
 BuildRequires: gtk3-devel >= %{gtk3_version}
 BuildRequires: gtk-doc
 BuildRequires: json-glib-devel >= %{json_glib_version}
-BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
+BuildRequires: libappstream-devel >= %{appstream_version}
 BuildRequires: libdnf-devel
 BuildRequires: libsoup-devel
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
@@ -58,7 +58,7 @@ Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_versi
 Requires: gtk3%{?_isa} >= %{gtk3_version}
 Requires: json-glib%{?_isa} >= %{json_glib_version}
 Requires: iso-codes
-Requires: libappstream-glib%{?_isa} >= %{appstream_glib_version}
+Requires: libappstream%{?_isa} >= %{appstream_version}
 # librsvg2 is needed for gdk-pixbuf svg loader
 Requires: librsvg2%{?_isa}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
