@@ -417,10 +417,16 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 
 	/* nothing */
 	if (data == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "server returned no data");
+		if (!gs_plugin_get_network_available (plugin))
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_NETWORK,
+					     "server couldn't be reached");
+		else
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     "server returned no data");
 		return NULL;
 	}
 
@@ -494,7 +500,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error)
+gs_plugin_odrs_parse_success (GsPlugin *plugin, const gchar *data, gssize data_len, GError **error)
 {
 	JsonNode *json_root;
 	JsonObject *json_item;
@@ -503,10 +509,16 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 
 	/* nothing */
 	if (data == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "server returned no data");
+		if (!gs_plugin_get_network_available (plugin))
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_NETWORK,
+					     "server couldn't be reached");
+		else
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     "server returned no data");
 		return FALSE;
 	}
 
@@ -558,7 +570,8 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 }
 
 static gboolean
-gs_plugin_odrs_json_post (SoupSession *session,
+gs_plugin_odrs_json_post (GsPlugin *plugin,
+			  SoupSession *session,
 			  const gchar *uri,
 			  const gchar *data,
 			  GError **error)
@@ -586,7 +599,8 @@ gs_plugin_odrs_json_post (SoupSession *session,
 	}
 
 	/* process returned JSON */
-	return gs_plugin_odrs_parse_success (msg->response_body->data,
+	return gs_plugin_odrs_parse_success (plugin,
+					     msg->response_body->data,
 					     msg->response_body->length,
 					     error);
 }
@@ -803,7 +817,8 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 				  SOUP_MEMORY_COPY, data, strlen (data));
 	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
+		if (!gs_plugin_odrs_parse_success (plugin,
+						   msg->response_body->data,
 						   msg->response_body->length,
 						   error))
 			return NULL;
@@ -921,8 +936,17 @@ gs_plugin_refine (GsPlugin             *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (plugin, app, flags, cancellable, error))
-			return FALSE;
+		g_autoptr(GError) local_error = NULL;
+		if (!refine_app (plugin, app, flags, cancellable, &local_error)) {
+			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
+				g_debug ("failed to refine app %s: %s",
+					 gs_app_get_unique_id (app), local_error->message);
+			} else {
+				g_prefix_error (&local_error, "failed to refine app: ");
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				return FALSE;
+			}
+		}
 	}
 
 	return TRUE;
@@ -1040,7 +1064,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", priv->review_server);
-	return gs_plugin_odrs_json_post (gs_plugin_get_soup_session (plugin),
+	return gs_plugin_odrs_json_post (plugin, gs_plugin_get_soup_session (plugin),
 						    uri, data, error);
 }
 
@@ -1090,7 +1114,7 @@ gs_plugin_odrs_vote (GsPlugin *plugin, AsReview *review,
 		return FALSE;
 
 	/* send to server */
-	if (!gs_plugin_odrs_json_post (gs_plugin_get_soup_session (plugin),
+	if (!gs_plugin_odrs_json_post (plugin, gs_plugin_get_soup_session (plugin),
 						  uri, data, error))
 		return FALSE;
 
@@ -1203,7 +1227,8 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
+		if (!gs_plugin_odrs_parse_success (plugin,
+						   msg->response_body->data,
 						   msg->response_body->length,
 						   error))
 			return FALSE;
