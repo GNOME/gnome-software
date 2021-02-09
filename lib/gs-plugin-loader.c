@@ -1305,8 +1305,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unconverted packages in the application view */
 	if (!gs_plugin_job_has_refine_flags (helper->plugin_job,
-						 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
-	    (gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC)) {
+					     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC &&
+	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_NONE) {
 		g_debug ("app invalid as only a %s: %s",
 			 as_component_kind_to_string (gs_app_get_kind (app)),
 			 gs_plugin_loader_get_app_str (app));
@@ -2225,7 +2226,7 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 	/* add app */
 	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_SETUP);
 	app = gs_plugin_loader_app_create (plugin_loader,
-		"system/*/*/*/org.gnome.Software.desktop/*");
+		"system/*/*/org.gnome.Software.desktop/*");
 	if (app != NULL)
 		gs_plugin_event_set_app (event, app);
 
@@ -3832,7 +3833,7 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	/* use the plugin loader to convert a wildcard app*/
 	app = gs_app_new (NULL);
 	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
-	gs_app_set_from_unique_id (app, unique_id);
+	gs_app_set_from_unique_id (app, unique_id, AS_COMPONENT_KIND_UNKNOWN);
 	gs_app_list_add (list, app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
@@ -3874,7 +3875,7 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 GsApp *
 gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
 {
-	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/*/system/*");
+	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/system/*");
 }
 
 /**

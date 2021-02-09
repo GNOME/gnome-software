@@ -118,14 +118,6 @@ gs_app_notify_installed (GsApp *app)
 	g_autoptr(GNotification) n = NULL;
 
 	switch (gs_app_get_kind (app)) {
-	case AS_COMPONENT_KIND_OS_UPDATE:
-		/* TRANSLATORS: this is the summary of a notification that OS updates
-		 * have been successfully installed */
-		summary = g_strdup (_("OS updates are now installed"));
-		/* TRANSLATORS: this is the body of a notification that OS updates
-		 * have been successfully installed */
-		body = _("Recently installed updates are available to review");
-		break;
 	case AS_COMPONENT_KIND_DESKTOP_APP:
 		/* TRANSLATORS: this is the summary of a notification that an application
 		 * has been successfully installed */
@@ -141,13 +133,23 @@ gs_app_notify_installed (GsApp *app)
 		}
 		break;
 	default:
-		/* TRANSLATORS: this is the summary of a notification that a component
-		 * has been successfully installed */
-		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
-			/* TRANSLATORS: an application has been installed, but
-			 * needs a reboot to complete the installation */
-			body = _("A restart is required for the changes to take effect.");
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC &&
+		    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
+			/* TRANSLATORS: this is the summary of a notification that OS updates
+			* have been successfully installed */
+			summary = g_strdup (_("OS updates are now installed"));
+			/* TRANSLATORS: this is the body of a notification that OS updates
+			* have been successfully installed */
+			body = _("Recently installed updates are available to review");
+		} else {
+			/* TRANSLATORS: this is the summary of a notification that a component
+			* has been successfully installed */
+			summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+				/* TRANSLATORS: an application has been installed, but
+				* needs a reboot to complete the installation */
+				body = _("A restart is required for the changes to take effect.");
+			}
 		}
 		break;
 	}

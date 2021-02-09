@@ -100,6 +100,7 @@ typedef struct
 	guint64			 size_installed;
 	guint64			 size_download;
 	AsComponentKind		 kind;
+	GsAppSpecialKind	 special_kind;
 	GsAppState		 state;
 	GsAppState		 state_recover;
 	AsComponentScope	 scope;
@@ -136,6 +137,7 @@ enum {
 	PROP_DESCRIPTION,
 	PROP_RATING,
 	PROP_KIND,
+	PROP_SPECIAL_KIND,
 	PROP_STATE,
 	PROP_PROGRESS,
 	PROP_CAN_CANCEL_INSTALLATION,
@@ -877,6 +879,48 @@ gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
 
 	/* no longer valid */
 	priv->unique_id_valid = FALSE;
+}
+
+/**
+ * gs_app_get_special_kind:
+ * @app: a #GsApp
+ *
+ * Gets the special occupation of the application.
+ *
+ * Returns: the #GsAppSpecialKind, e.g. %GS_APP_SPECIAL_KIND_OS_UPDATE
+ *
+ * Since: 40
+ **/
+GsAppSpecialKind
+gs_app_get_special_kind (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_SPECIAL_KIND_NONE);
+	return priv->special_kind;
+}
+
+/**
+ * gs_app_set_special_kind:
+ * @app: a #GsApp
+ * @kind: a #GsAppSpecialKind, e.g. %GS_APP_SPECIAL_KIND_OS_UPDATE
+ *
+ * This sets the special occupation of the application (making
+ * the #AsComponentKind of this application %AS_COMPONENT_KIND_GENERIC
+ * per definition).
+ *
+ * Since: 40
+ **/
+void
+gs_app_set_special_kind	(GsApp *app, GsAppSpecialKind kind)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+
+	if (priv->special_kind == kind)
+		return;
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+	priv->special_kind = kind;
+	gs_app_queue_notify (app, obj_props[PROP_SPECIAL_KIND]);
 }
 
 /**
@@ -4363,6 +4407,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_KIND:
 		g_value_set_uint (value, priv->kind);
 		break;
+	case PROP_SPECIAL_KIND:
+		g_value_set_enum (value, priv->special_kind);
+		break;
 	case PROP_STATE:
 		g_value_set_enum (value, priv->state);
 		break;
@@ -4429,6 +4476,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_KIND:
 		gs_app_set_kind (app, g_value_get_uint (value));
+		break;
+	case PROP_SPECIAL_KIND:
+		gs_app_set_special_kind (app, g_value_get_enum (value));
 		break;
 	case PROP_STATE:
 		gs_app_set_state_internal (app, g_value_get_enum (value));
@@ -4594,6 +4644,19 @@ gs_app_class_init (GsAppClass *klass)
 				   AS_COMPONENT_KIND_LAST,
 				   AS_COMPONENT_KIND_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+	/**
+	 * GsApp:special-kind:
+	 *
+	 * GNOME Software specific occupation of the #GsApp entity
+	 * that does not reflect a software type defined by AppStream.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_SPECIAL_KIND] = g_param_spec_enum ("special-kind", NULL, NULL,
+					GS_TYPE_APP_SPECIAL_KIND,
+					GS_APP_SPECIAL_KIND_NONE,
+					G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:state:

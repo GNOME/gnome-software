@@ -151,9 +151,6 @@ _get_app_sort_key (GsApp *app)
 
 	/* sort apps by kind */
 	switch (gs_app_get_kind (app)) {
-	case AS_COMPONENT_KIND_OS_UPDATE:
-		g_string_append (key, "1:");
-		break;
 	case AS_COMPONENT_KIND_DESKTOP_APP:
 		g_string_append (key, "2:");
 		break;
@@ -176,7 +173,10 @@ _get_app_sort_key (GsApp *app)
 		g_string_append (key, "7:");
 		break;
 	default:
-		g_string_append (key, "8:");
+		if (gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE)
+			g_string_append (key, "1:");
+		else
+			g_string_append (key, "8:");
 		break;
 	}
 

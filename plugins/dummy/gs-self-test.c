@@ -277,7 +277,8 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_OS_UPDATE);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_GENERIC);
+	g_assert_cmpint (gs_app_get_special_kind (app), ==, GS_APP_SPECIAL_KIND_OS_UPDATE);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE);
 	g_assert_cmpint (gs_app_list_length (gs_app_get_related (app)), ==, 2);
 

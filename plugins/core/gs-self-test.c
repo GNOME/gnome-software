@@ -146,7 +146,8 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 
 	/* make sure the os update is valid */
 	g_assert_cmpstr (gs_app_get_id (os_update), ==, "org.gnome.Software.OsUpdate");
-	g_assert_cmpint (gs_app_get_kind (os_update), ==, AS_COMPONENT_KIND_OS_UPDATE);
+	g_assert_cmpint (gs_app_get_kind (os_update), ==, AS_COMPONENT_KIND_GENERIC);
+	g_assert_cmpint (gs_app_get_special_kind (os_update), ==, GS_APP_SPECIAL_KIND_OS_UPDATE);
 	g_assert (gs_app_has_quirk (os_update, GS_APP_QUIRK_IS_PROXY));
 
 	/* must have two related apps, the ones we added earlier */
@@ -171,7 +172,8 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	/* no OsUpdate item created */
 	for (guint i = 0; i < gs_app_list_length (list_wildcard); i++) {
 		GsApp *app_tmp = gs_app_list_index (list_wildcard, i);
-		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_COMPONENT_KIND_OS_UPDATE);
+		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_COMPONENT_KIND_GENERIC);
+		g_assert_cmpint (gs_app_get_special_kind (app_tmp), !=, GS_APP_SPECIAL_KIND_OS_UPDATE);
 		g_assert (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_PROXY));
 	}
 }

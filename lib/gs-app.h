@@ -62,6 +62,22 @@ typedef enum {
 } GsAppState;
 
 /**
+ * GsAppSpecialKind:
+ * @GS_APP_SPECIAL_KIND_NONE:			No special occupation
+ * @GS_APP_SPECIAL_KIND_OS_UPDATE:		Application represents an OS update
+ *
+ * A special occupation for #GsApp. #AsComponentKind can not represent certain
+ * GNOME Software specific features, like representing a #GsApp as OS updates
+ * which have no associated AppStream entry.
+ * They are represented by a #GsApp of kind %AS_COMPONENT_KIND_GENERIC and a value
+ * from #GsAppSpecialKind. which does not match any AppStream component type.
+ **/
+typedef enum {
+	GS_APP_SPECIAL_KIND_NONE,		/* Since: 40 */
+	GS_APP_SPECIAL_KIND_OS_UPDATE,		/* Since: 40 */
+} GsAppSpecialKind;
+
+/**
  * GsAppKudo:
  * @GS_APP_KUDO_MY_LANGUAGE:		Localised in my language
  * @GS_APP_KUDO_RECENT_RELEASE:		Released recently
@@ -230,6 +246,9 @@ void		 gs_app_set_scope		(GsApp		*app,
 AsBundleKind	 gs_app_get_bundle_kind		(GsApp		*app);
 void		 gs_app_set_bundle_kind		(GsApp		*app,
 						 AsBundleKind	 bundle_kind);
+GsAppSpecialKind gs_app_get_special_kind	(GsApp		*app);
+void		 gs_app_set_special_kind	(GsApp		*app,
+						 GsAppSpecialKind kind);
 void		 gs_app_set_state_recover	(GsApp		*app);
 guint		 gs_app_get_progress		(GsApp		*app);
 void		 gs_app_set_progress		(GsApp		*app,

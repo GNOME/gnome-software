@@ -162,7 +162,8 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
-	if (kind == AS_COMPONENT_KIND_OS_UPDATE) {
+	if (kind == AS_COMPONENT_KIND_GENERIC &&
+	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL &&
 		   gs_app_get_update_version (app) != NULL) {
@@ -636,7 +637,8 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update description */
 	kind = gs_app_get_kind (app);
-	if (kind == AS_COMPONENT_KIND_OS_UPDATE) {
+	if (kind == AS_COMPONENT_KIND_GENERIC &&
+	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
 		GsAppList *related;
 		GsApp *app_related;
 		GsUpdateDialogSection section;
