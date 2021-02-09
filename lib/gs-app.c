@@ -4774,15 +4774,10 @@ gs_app_get_origin_ui (GsApp *app)
 {
 	GsAppPrivate *priv;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autofree gchar *packaging_format = NULL;
+	const gchar *origin_str;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	priv = gs_app_get_instance_private (app);
-	locker = g_mutex_locker_new (&priv->mutex);
-	if (priv->origin_ui && *priv->origin_ui)
-		return g_strdup (priv->origin_ui);
-
-	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* use the distro name for official packages */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
@@ -4791,21 +4786,33 @@ gs_app_get_origin_ui (GsApp *app)
 			return g_strdup (gs_os_release_get_name (os_release));
 	}
 
-	/* use "Local file" rather than the filename for local files */
-	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL) {
-		/* TRANSLATORS: this is a locally downloaded package */
-		return g_strdup (_("Local file"));
+	priv = gs_app_get_instance_private (app);
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	origin_str = priv->origin_ui;
+
+	if (origin_str == NULL || origin_str[0] == '\0') {
+		/* use "Local file" rather than the filename for local files */
+		if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
+			origin_str = _("Local file");
+		else if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0)
+			origin_str = "Flathub";
+		else if (g_strcmp0 (gs_app_get_origin (app), "flathub-beta") == 0)
+			origin_str = "Flathub Beta";
+		else
+			origin_str = gs_app_get_origin (app);
 	}
 
-	/* capitalize "Flathub" and "Flathub Beta" */
-	if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0) {
-		return g_strdup ("Flathub");
-	} else if (g_strcmp0 (gs_app_get_origin (app), "flathub-beta") == 0) {
-		return g_strdup ("Flathub Beta");
+	packaging_format = gs_app_get_packaging_format (app);
+
+	if (packaging_format) {
+		/* TRANSLATORS: the first %s is replaced with an origin name;
+		   the second %s is replaced with the packaging format.
+		   Example string: "Local file (RPM)" */
+		return g_strdup_printf (_("%s (%s)"), origin_str, packaging_format);
 	}
 
-	/* fall back to origin */
-	return g_strdup (gs_app_get_origin (app));
+	return g_strdup (origin_str);
 }
 
 void
