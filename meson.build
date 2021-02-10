@@ -191,7 +191,7 @@ if get_option('flatpak')
 endif
 
 if get_option('malcontent')
-  malcontent = dependency('malcontent-0', version: '>= 0.3.0', fallback: ['malcontent', 'libmalcontent_dep'],)
+  malcontent = dependency('malcontent-0', version: '>= 0.3.0', fallback: ['malcontent', 'libmalcontent_dep'], default_options: ['ui=disabled'])
 endif
 
 if get_option('rpm_ostree')
