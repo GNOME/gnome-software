@@ -18,6 +18,7 @@ RUN dnf -y install \
     gnome-online-accounts-devel \
     gobject-introspection \
     gobject-introspection-devel \
+    gperf \
     gsettings-desktop-schemas-devel \
     gspell-devel \
     gtk-doc \
@@ -26,14 +27,17 @@ RUN dnf -y install \
     itstool \
     lcov \
     libappstream-glib-devel \
+    lmdb-devel \
     appstream-devel \
     libdnf-devel \
     libgudev-devel \
     liboauth-devel \
     libsecret-devel \
     libsoup-devel \
+    libstemmer-devel \
     libxmlb-devel \
     libxslt \
+    libyaml-devel \
     NetworkManager-libnm-devel \
     ninja-build \
     ostree-devel \
