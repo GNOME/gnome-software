@@ -47,7 +47,7 @@ typedef struct
   GDestroyNotify clear_func;
 } GRealArray;
 
-gboolean
+static gboolean
 g_array_binary_search (GArray        *array,
                        gconstpointer  target,
                        GCompareFunc   compare_func,
