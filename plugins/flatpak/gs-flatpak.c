@@ -2133,6 +2133,7 @@ gs_flatpak_fetch_remote_metadata (GsFlatpak *self,
 {
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(FlatpakRef) xref = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* no origin */
 	if (gs_app_get_origin (app) == NULL) {
@@ -2152,9 +2153,20 @@ gs_flatpak_fetch_remote_metadata (GsFlatpak *self,
 								gs_app_get_origin (app),
 								xref,
 								cancellable,
-								error);
+								&local_error);
 	if (data == NULL) {
-		gs_flatpak_error_convert (error);
+#if FLATPAK_CHECK_VERSION(1,4,0)
+		if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REF_NOT_FOUND) &&
+#else
+		if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_INVALID_DATA) &&
+#endif
+		    !gs_plugin_get_network_available (self->plugin)) {
+			local_error->code = GS_PLUGIN_ERROR_NO_NETWORK;
+			local_error->domain = GS_PLUGIN_ERROR;
+		} else {
+			gs_flatpak_error_convert (&local_error);
+		}
+		g_propagate_error (error, g_steal_pointer (&local_error));
 		return NULL;
 	}
 	return g_steal_pointer (&data);
@@ -2704,8 +2716,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 		g_autoptr(GError) error_local = NULL;
 		if (!gs_plugin_refine_item_size (self, app,
 						 cancellable, &error_local)) {
-			if (!gs_plugin_get_network_available (self->plugin) &&
-			    g_error_matches (error_local, GS_PLUGIN_ERROR,
+			if (g_error_matches (error_local, GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NO_NETWORK)) {
 				g_debug ("failed to get size while "
 					 "refining app %s: %s",
