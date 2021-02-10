@@ -85,7 +85,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 
 	/* join the lines */
 	str = gs_app_addon_row_get_summary (row);
-	as_utils_string_replace (str, "\n", " ");
+	as_gstring_replace (str, "\n", " ");
 	gtk_label_set_markup (GTK_LABEL (row->description_label), str->str);
 	gtk_label_set_label (GTK_LABEL (row->name_label),
 			     gs_app_get_name (row->app));

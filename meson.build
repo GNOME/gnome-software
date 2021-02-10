@@ -1,7 +1,7 @@
 project('gnome-software', 'c',
   version : '40.beta',
   license : 'GPL-2.0+',
-  default_options : ['warning_level=1', 'c_std=c99'],
+  default_options : ['warning_level=1', 'c_std=c11'],
   meson_version : '>=0.47.0'
 )
 
@@ -98,7 +98,7 @@ add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 conf.set('HAVE_LINUX_UNISTD_H', cc.has_header('linux/unistd.h'))
 
-appstream_glib = dependency('appstream-glib', version : '>= 0.7.14')
+appstream = dependency('appstream', version : '>= 0.14.0', fallback : ['appstream', 'appstream_dep'])
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
@@ -191,7 +191,7 @@ if get_option('flatpak')
 endif
 
 if get_option('malcontent')
-  malcontent = dependency('malcontent-0', version: '>= 0.3.0', fallback: ['malcontent', 'libmalcontent_dep'],)
+  malcontent = dependency('malcontent-0', version: '>= 0.3.0', fallback: ['malcontent', 'libmalcontent_dep'], default_options: ['ui=disabled'])
 endif
 
 if get_option('rpm_ostree')

@@ -33,7 +33,7 @@ struct _GsFlatpak {
 	GHashTable		*broken_remotes;
 	GMutex			 broken_remotes_mutex;
 	GFileMonitor		*monitor;
-	AsAppScope		 scope;
+	AsComponentScope	 scope;
 	GsPlugin		*plugin;
 	XbSilo			*silo;
 	GRWLock			 silo_lock;
@@ -54,9 +54,9 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 static void
 gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 {
-	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
 		gboolean is_user = flatpak_installation_get_is_user (self->installation);
-		gs_app_set_scope (app, is_user ? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM);
+		gs_app_set_scope (app, is_user ? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM);
 	}
 }
 
@@ -173,20 +173,20 @@ static void
 gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 {
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
 		const gchar *id = gs_app_get_id (app);
 		/* this is anything that's not an app, including locales
 		 * sources and debuginfo */
 		if (g_str_has_suffix (id, ".Locale")) {
-			gs_app_set_kind (app, AS_APP_KIND_LOCALIZATION);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_LOCALIZATION);
 		} else if (g_str_has_suffix (id, ".Debug") ||
 			   g_str_has_suffix (id, ".Sources") ||
 			   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
 			   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
-			gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		} else {
-			gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
 		}
 	}
 }
@@ -318,8 +318,8 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
 
 	/* map the flatpak kind to the gnome-software kind */
-	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
-	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
 		gs_flatpak_set_kind_from_flatpak (app, xref);
 	}
 }
@@ -362,8 +362,8 @@ gs_flatpak_create_app (GsFlatpak *self,
 
 	/* Don't add NULL origin apps to the cache. If the app is later set to
 	 * origin x the cache may return it as a match for origin y since the cache
-	 * hash table uses as_utils_unique_id_equal() as the equal func and a NULL
-	 * origin becomes a "*" in as_utils_unique_id_build().
+	 * hash table uses as_utils_data_id_equal() as the equal func and a NULL
+	 * origin becomes a "*" in as_utils_build_data_id().
 	 */
 	if (origin != NULL)
 		gs_plugin_cache_add (self->plugin, NULL, app);
@@ -671,7 +671,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	/* add metadata */
 	icon_prefix = g_build_filename (appstream_dir_fn, "icons", NULL);
 	info = xb_builder_node_insert (NULL, "info", NULL);
-	xb_builder_node_insert_text (info, "scope", as_app_scope_to_string (self->scope), NULL);
+	xb_builder_node_insert_text (info, "scope", as_component_scope_to_string (self->scope), NULL);
 	xb_builder_node_insert_text (info, "icon-prefix", icon_prefix, NULL);
 	xb_builder_source_set_info (source, info);
 
@@ -725,20 +725,29 @@ gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	GString *xml;
-	g_autoptr(AsApp) app = as_app_new ();
+	g_autofree gchar *xml = NULL;
+	g_autoptr(AsComponent) cpt = as_component_new ();
+	g_autoptr(AsContext) actx = as_context_new ();
 	g_autoptr(GBytes) bytes = NULL;
+	gboolean ret;
+
 	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
 	if (bytes == NULL)
 		return NULL;
-	as_app_set_id (app, xb_builder_source_ctx_get_filename (ctx));
-	if (!as_app_parse_data (app, bytes, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
+
+	as_component_set_id (cpt, xb_builder_source_ctx_get_filename (ctx));
+	ret = as_component_load_from_bytes (cpt,
+					    actx,
+					    AS_FORMAT_KIND_DESKTOP_ENTRY,
+					    bytes,
+					    error);
+	if (!ret)
 		return NULL;
-	xml = as_app_to_xml (app, error);
+	xml = as_component_to_xml_data (cpt, actx, error);
 	if (xml == NULL)
 		return NULL;
-	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
+
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
 static gboolean
@@ -767,7 +776,7 @@ gs_flatpak_load_desktop_fn (GsFlatpak *self,
 
 	/* set the component metadata */
 	info = xb_builder_node_insert (NULL, "info", NULL);
-	xb_builder_node_insert_text (info, "scope", as_app_scope_to_string (self->scope), NULL);
+	xb_builder_node_insert_text (info, "scope", as_component_scope_to_string (self->scope), NULL);
 	xb_builder_node_insert_text (info, "icon-prefix", icon_prefix, NULL);
 	xb_builder_source_set_info (source, info);
 
@@ -1159,8 +1168,8 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self,
 	}
 
 	/* If it's a runtime, check if the main-app info should be set. Note that
-	 * checking the app for AS_APP_KIND_RUNTIME is not good enough because it
-	 * could be e.g. AS_APP_KIND_LOCALIZATION and still be a runtime from
+	 * checking the app for AS_COMPONENT_KIND_RUNTIME is not good enough because it
+	 * could be e.g. AS_COMPONENT_KIND_LOCALIZATION and still be a runtime from
 	 * Flatpak's perspective.
 	 */
 	if (gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_RUNTIME &&
@@ -1764,7 +1773,7 @@ gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 		return TRUE;
 
 	/* not a valid type */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return TRUE;
 
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
@@ -2014,7 +2023,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_flatpak_claim_app (self, app);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
-	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
 	gs_app_set_branch (app, split[2]);
 
 	/* search in the cache */
@@ -2029,8 +2038,8 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	}
 
 	/* if the app is per-user we can also use the installed system runtime */
-	if (gs_app_get_scope (parent) == AS_APP_SCOPE_USER) {
-		gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
+	if (gs_app_get_scope (parent) == AS_COMPONENT_SCOPE_USER) {
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
 		app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
 		if (app_cache != NULL)
 			return g_steal_pointer (&app_cache);
@@ -2166,7 +2175,7 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	g_autoptr(GFile) installation_path = NULL;
 
 	/* not applicable */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return TRUE;
 	if (gs_flatpak_app_get_ref_kind (app) != FLATPAK_REF_KIND_APP)
 		return TRUE;
@@ -2236,7 +2245,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	/* not applicable */
 	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
 		return TRUE;
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return TRUE;
 
 	/* already set */
@@ -2433,7 +2442,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 		g_autofree char *icon_prefix = NULL;
 
 		info = xb_builder_node_insert (NULL, "info", NULL);
-		xb_builder_node_insert_text (info, "scope", as_app_scope_to_string (self->scope), NULL);
+		xb_builder_node_insert_text (info, "scope", as_component_scope_to_string (self->scope), NULL);
 		icon_prefix = g_build_filename (flatpak_installed_ref_get_deploy_dir (installed_ref),
 						"files", "share", "app-info", "icons", "flatpak", NULL);
 		xb_builder_node_insert_text (info, "icon-prefix", icon_prefix, NULL);
@@ -3410,7 +3419,7 @@ gs_flatpak_get_id (GsFlatpak *self)
 	if (self->id == NULL) {
 		GString *str = g_string_new ("flatpak");
 		g_string_append_printf (str, "-%s",
-					as_app_scope_to_string (self->scope));
+					as_component_scope_to_string (self->scope));
 		if (flatpak_installation_get_id (self->installation) != NULL) {
 			g_string_append_printf (str, "-%s",
 						flatpak_installation_get_id (self->installation));
@@ -3422,7 +3431,7 @@ gs_flatpak_get_id (GsFlatpak *self)
 	return self->id;
 }
 
-AsAppScope
+AsComponentScope
 gs_flatpak_get_scope (GsFlatpak *self)
 {
 	return self->scope;
@@ -3496,7 +3505,7 @@ gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation, GsFlatpakFl
 	self = g_object_new (GS_TYPE_FLATPAK, NULL);
 	self->installation = g_object_ref (installation);
 	self->scope = flatpak_installation_get_is_user (installation)
-				? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM;
+				? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM;
 	self->plugin = g_object_ref (plugin);
 	self->flags = flags;
 	return GS_FLATPAK (self);

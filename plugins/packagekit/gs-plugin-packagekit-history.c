@@ -55,7 +55,7 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 
 	/* create new history item with same ID as parent */
 	history = gs_app_new (gs_app_get_id (app));
-	gs_app_set_kind (history, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (history, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (history, GS_APP_QUALITY_NORMAL, gs_app_get_name (app));
 
@@ -201,7 +201,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 				gs_app_set_metadata (app_dummy, "GnomeSoftware::Creator",
 						     gs_plugin_get_name (plugin));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
-				gs_app_set_kind (app_dummy, AS_APP_KIND_GENERIC);
+				gs_app_set_kind (app_dummy, AS_COMPONENT_KIND_GENERIC);
 				gs_app_set_state (app_dummy, GS_APP_STATE_INSTALLED);
 				gs_app_set_version (app_dummy, gs_app_get_version (app));
 				gs_app_add_history (app, app_dummy);

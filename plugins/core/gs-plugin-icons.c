@@ -218,6 +218,7 @@ gs_plugin_icons_add_theme_path (GsPlugin *plugin, const gchar *path)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (path == NULL)
 		return;
+
 	if (!g_hash_table_contains (priv->icon_theme_paths, path)) {
 		gtk_icon_theme_prepend_search_path (priv->icon_theme, path);
 		g_hash_table_add (priv->icon_theme_paths, g_strdup (path));
@@ -240,7 +241,8 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 				     "icon has no name");
 		return NULL;
 	}
-	gs_plugin_icons_add_theme_path (plugin, as_icon_get_prefix (icon));
+
+	gs_plugin_icons_add_theme_path (plugin, as_icon_get_filename (icon));
 	size = (gint) (64 * gs_plugin_get_scale (plugin));
 	pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
 					   as_icon_get_name (icon),
@@ -258,12 +260,43 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 static GdkPixbuf *
 gs_plugin_icons_load_cached (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
-	if (!as_icon_load (icon, AS_ICON_LOAD_FLAG_SEARCH_SIZE, error)) {
-		gs_utils_error_convert_gdk_pixbuf (error);
-		gs_utils_error_convert_appstream (error);
+	const gchar *fname = as_icon_get_filename (icon);
+	const gchar *icon_fname = as_icon_get_name (icon);
+
+	if (fname == NULL || icon_fname == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Icon %s has no full filename - can not load pixbuf.",
+			     icon_fname);
 		return NULL;
 	}
-	return g_object_ref (as_icon_get_pixbuf (icon));
+
+	if (!g_str_has_suffix (fname, icon_fname)) {
+		g_autofree gchar *full_fname = NULL;
+		if (as_icon_get_scale (icon) <= 1) {
+			full_fname = g_strdup_printf ("%s/%ux%u/%s",
+							fname,
+							as_icon_get_width (icon),
+							as_icon_get_height (icon),
+							icon_fname);
+		} else {
+			full_fname = g_strdup_printf ("%s/%ux%u@%u/%s",
+							fname,
+							as_icon_get_width (icon),
+							as_icon_get_height (icon),
+							as_icon_get_scale (icon),
+							icon_fname);
+		}
+		/* cache new filename, overriding the incomplete one */
+		as_icon_set_filename (icon, full_fname);
+		fname = as_icon_get_filename (icon);
+	}
+
+	return gdk_pixbuf_new_from_file_at_size (fname,
+						 (gint) as_icon_get_width (icon),
+						 (gint) as_icon_get_height (icon),
+						 error);
 }
 
 static gboolean

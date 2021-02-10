@@ -25,7 +25,6 @@ gnome_software_sources = [
   'gs-category-tile.c',
   'gs-common.c',
   'gs-css.c',
-  'gs-content-rating.c',
   'gs-description-box.c',
   'gs-details-page.c',
   'gs-extras-page.c',
@@ -72,7 +71,7 @@ gnome_software_sources = [
 ]
 
 gnome_software_dependencies = [
-  appstream_glib,
+  appstream,
   gio_unix,
   glib,
   gmodule,
@@ -230,7 +229,6 @@ if get_option('tests')
     sources : [
       'gs-css.c',
       'gs-common.c',
-      'gs-content-rating.c',
       'gs-self-test.c',
     ],
     include_directories : [
@@ -238,7 +236,7 @@ if get_option('tests')
       include_directories('../lib'),
     ],
     dependencies : [
-      appstream_glib,
+      appstream,
       gio_unix,
       glib,
       gmodule,

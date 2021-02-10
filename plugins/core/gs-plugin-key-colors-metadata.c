@@ -58,7 +58,7 @@ refine_app (GsPlugin             *plugin,
 						 color->red * 255.f,
 						 color->green * 255.f,
 						 color->blue * 255.f);
-			as_utils_string_replace (css_new, key, value);
+			as_gstring_replace (css_new, key, value);
 		}
 
 		/* only replace if it's different */

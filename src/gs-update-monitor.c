@@ -273,7 +273,7 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 static gboolean
 _filter_by_app_kind (GsApp *app, gpointer user_data)
 {
-	AsAppKind kind = GPOINTER_TO_UINT (user_data);
+	AsComponentKind kind = GPOINTER_TO_UINT (user_data);
 	return gs_app_get_kind (app) == kind;
 }
 
@@ -300,7 +300,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	list_apps = gs_app_list_copy (list);
 	gs_app_list_filter (list_apps,
 			    _filter_by_app_kind,
-			    GUINT_TO_POINTER(AS_APP_KIND_DESKTOP));
+			    GUINT_TO_POINTER(AS_COMPONENT_KIND_DESKTOP_APP));
 	gs_app_list_sort (list_apps, _sort_by_rating_cb, NULL);
 	/* FIXME: add the applications that are currently active that use one
 	 * of the updated runtimes */
@@ -1056,7 +1056,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	if (time_last_notified >= gs_app_get_install_date (app))
 		return;
 
-	if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
 		/* TRANSLATORS: Notification title when we've done a distro upgrade */
 		notification = g_notification_new (_("System Upgrade Complete"));
 

@@ -31,15 +31,6 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD))
 		return g_steal_pointer (&app_new);
 
-	/* no longer supported */
-	if (gs_app_get_kind (app_new) == AS_APP_KIND_SHELL_EXTENSION) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "shell extensions no longer supported");
-		return NULL;
-	}
-
 	/* look for existing object */
 	app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_new));
 	if (app != NULL)
@@ -149,6 +140,9 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 	g_autofree gchar *icon_path = NULL;
 	as_icon_set_kind (icon, icon_kind);
 	switch (icon_kind) {
+	case AS_ICON_KIND_LOCAL:
+		as_icon_set_filename (icon, xb_node_get_text (n));
+		break;
 	case AS_ICON_KIND_REMOTE:
 		as_icon_set_url (icon, xb_node_get_text (n));
 		break;
@@ -161,9 +155,12 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 		as_icon_set_width (icon, sz);
 		as_icon_set_height (icon, sz);
 	}
-	icon_path = gs_appstream_build_icon_prefix (component);
-	if (icon_path != NULL)
-		as_icon_set_prefix (icon, icon_path);
+
+	if (icon_kind != AS_ICON_KIND_LOCAL && icon_kind != AS_ICON_KIND_REMOTE) {
+		/* add partial filename for now, we will compose the full one later */
+		icon_path = gs_appstream_build_icon_prefix (component);
+		as_icon_set_filename (icon, icon_path);
+	}
 	return icon;
 }
 
@@ -372,11 +369,48 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 		return FALSE;
 	}
 	for (guint i = 0; i < provides->len; i++) {
+		AsProvidedKind kind;
+		const gchar *element_name;
 		XbNode *provide = g_ptr_array_index (provides, i);
-		g_autoptr(AsProvide) pr = as_provide_new ();
-		as_provide_set_kind (pr, as_provide_kind_from_string (xb_node_get_element (provide)));
-		as_provide_set_value (pr, xb_node_get_text (provide));
-		gs_app_add_provide (app, pr);
+		element_name = xb_node_get_element (provide);
+
+		/* try the simple case */
+		kind = as_provided_kind_from_string (element_name);
+		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+			/* try the complex cases */
+
+			if (g_strcmp0 (element_name, "library") == 0) {
+				kind = AS_PROVIDED_KIND_LIBRARY;
+			} else if (g_strcmp0 (element_name, "binary") == 0) {
+				kind = AS_PROVIDED_KIND_BINARY;
+			} else if (g_strcmp0 (element_name, "firmware") == 0) {
+				const gchar *fw_type = xb_node_get_attr (provide, "type");
+				if (g_strcmp0 (fw_type, "runtime") == 0)
+					kind = AS_PROVIDED_KIND_FIRMWARE_RUNTIME;
+				else if (g_strcmp0 (fw_type, "flashed") == 0)
+					kind = AS_PROVIDED_KIND_FIRMWARE_FLASHED;
+			} else if (g_strcmp0 (element_name, "python2") == 0) {
+				kind = AS_PROVIDED_KIND_PYTHON_2;
+			} else if (g_strcmp0 (element_name, "python3") == 0) {
+				kind = AS_PROVIDED_KIND_PYTHON;
+			} else if (g_strcmp0 (element_name, "dbus") == 0) {
+				const gchar *dbus_type = xb_node_get_attr (provide, "type");
+				if (g_strcmp0 (dbus_type, "system") == 0)
+					kind = AS_PROVIDED_KIND_DBUS_SYSTEM;
+				else if ((g_strcmp0 (dbus_type, "user") == 0) || (g_strcmp0 (dbus_type, "session") == 0))
+					kind = AS_PROVIDED_KIND_DBUS_USER;
+			}
+		}
+
+		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+			/* give up */
+			g_warning ("ignoring unknown provided item type: %s", element_name);
+			continue;
+		}
+
+		gs_app_add_provided_item (app,
+					  kind,
+					  xb_node_get_text (provide));
 	}
 
 	/* success */
@@ -596,7 +630,7 @@ gs_appstream_is_valid_project_group (const gchar *project_group)
 {
 	if (project_group == NULL)
 		return FALSE;
-	return as_utils_is_environment_id (project_group);
+	return as_utils_is_desktop_environment (project_group);
 }
 
 static gboolean
@@ -694,14 +728,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				   "requires/id[@type='id']"
 				   "[text()='org.gnome.Software.desktop']", NULL);
 	if (req != NULL) {
-#if AS_CHECK_VERSION(0,7,15)
-		gint rc = as_utils_vercmp_full (xb_node_get_attr (req, "version"),
-		                                PACKAGE_VERSION,
-		                                AS_VERSION_COMPARE_FLAG_NONE);
-#else
-		gint rc = as_utils_vercmp (xb_node_get_attr (req, "version"),
-		                           PACKAGE_VERSION);
-#endif
+		gint rc = as_vercmp_simple (xb_node_get_attr (req, "version"),
+					    PACKAGE_VERSION);
 		if (rc > 0) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
@@ -713,18 +741,17 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* types we can never launch */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_ADDON:
-	case AS_APP_KIND_CODEC:
-	case AS_APP_KIND_DRIVER:
-	case AS_APP_KIND_FIRMWARE:
-	case AS_APP_KIND_FONT:
-	case AS_APP_KIND_GENERIC:
-	case AS_APP_KIND_INPUT_METHOD:
-	case AS_APP_KIND_LOCALIZATION:
-	case AS_APP_KIND_OS_UPDATE:
-	case AS_APP_KIND_OS_UPGRADE:
-	case AS_APP_KIND_RUNTIME:
-	case AS_APP_KIND_SOURCE:
+	case AS_COMPONENT_KIND_ADDON:
+	case AS_COMPONENT_KIND_CODEC:
+	case AS_COMPONENT_KIND_DRIVER:
+	case AS_COMPONENT_KIND_FIRMWARE:
+	case AS_COMPONENT_KIND_FONT:
+	case AS_COMPONENT_KIND_GENERIC:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_LOCALIZATION:
+	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
+	case AS_COMPONENT_KIND_RUNTIME:
+	case AS_COMPONENT_KIND_REPOSITORY:
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		break;
 	default:
@@ -769,7 +796,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set scope */
 	tmp = xb_node_query_text (component, "../info/scope", NULL);
 	if (tmp != NULL)
-		gs_app_set_scope (app, as_app_scope_from_string (tmp));
+		gs_app_set_scope (app, as_component_scope_from_string (tmp));
 
 	/* set content rating */
 	if (TRUE) {
@@ -885,10 +912,10 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set id kind */
-	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
-	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
 		tmp = xb_node_get_attr (component, "type");
-		gs_app_set_kind (app, as_app_kind_from_string (tmp));
+		gs_app_set_kind (app, as_component_kind_from_string (tmp));
 	}
 
 	/* set the release date */
@@ -1010,34 +1037,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
 		if (xb_node_query_text (component, "categories/category[text()='Featured']", NULL) != NULL)
 			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
-
-		/* add new-style kudos */
-		kudos = xb_node_query (component, "kudos/kudo", 0, NULL);
-		for (guint i = 0; kudos != NULL && i < kudos->len; i++) {
-			XbNode *kudo = g_ptr_array_index (kudos, i);
-			switch (as_kudo_kind_from_string (xb_node_get_text (kudo))) {
-			case AS_KUDO_KIND_SEARCH_PROVIDER:
-				gs_app_add_kudo (app, GS_APP_KUDO_SEARCH_PROVIDER);
-				break;
-			case AS_KUDO_KIND_USER_DOCS:
-				gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
-				break;
-			case AS_KUDO_KIND_MODERN_TOOLKIT:
-				gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
-				break;
-			case AS_KUDO_KIND_NOTIFICATIONS:
-				gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
-				break;
-			case AS_KUDO_KIND_HIGH_CONTRAST:
-				gs_app_add_kudo (app, GS_APP_KUDO_HIGH_CONTRAST);
-				break;
-			case AS_KUDO_KIND_HI_DPI_ICON:
-				gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
-				break;
-			default:
-				break;
-			}
-		}
 	}
 
 	/* we have an origin in the XML */
@@ -1065,7 +1064,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 }
 
 typedef struct {
-	AsAppSearchMatch	 match_value;
+	AsSearchTokenMatch	 match_value;
 	XbQuery			*query;
 } GsAppstreamSearchHelper;
 
@@ -1127,18 +1126,18 @@ gs_appstream_search (GsPlugin *plugin,
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
 	const struct {
-		AsAppSearchMatch	 match_value;
+		AsSearchTokenMatch	match_value;
 		const gchar		*xpath;
 	} queries[] = {
-		{ AS_APP_SEARCH_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_COMMENT,	"summary[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_NAME,	"name[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_ID,	"id[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_ID,	"launchable[text()~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
-		{ AS_APP_SEARCH_MATCH_NONE,	NULL }
+		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NAME,	"name[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ID,	"id[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ID,	"launchable[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NONE,	NULL }
 	};
 
 	/* add some weighted queries */
@@ -1560,36 +1559,36 @@ gs_appstream_component_add_extra_info (GsPlugin *plugin, XbBuilderNode *componen
 
 	/* add the gnome-software-specific 'Addon' group and ensure they
 	 * all have an icon set */
-	switch (as_app_kind_from_string (kind)) {
-	case AS_APP_KIND_WEB_APP:
+	switch (as_component_kind_from_string (kind)) {
+	case AS_COMPONENT_KIND_WEB_APP:
 		gs_appstream_component_add_keyword (component, kind);
 		break;
-	case AS_APP_KIND_FONT:
+	case AS_COMPONENT_KIND_FONT:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Font");
 		break;
-	case AS_APP_KIND_DRIVER:
+	case AS_COMPONENT_KIND_DRIVER:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Driver");
 		gs_appstream_component_add_icon (component, "application-x-firmware-symbolic");
 		break;
-	case AS_APP_KIND_LOCALIZATION:
+	case AS_COMPONENT_KIND_LOCALIZATION:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Localization");
 		gs_appstream_component_add_icon (component, "accessories-dictionary-symbolic");
 		break;
-	case AS_APP_KIND_CODEC:
+	case AS_COMPONENT_KIND_CODEC:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Codec");
 		gs_appstream_component_add_icon (component, "application-x-addon");
 		break;
-	case AS_APP_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
 		gs_appstream_component_add_keyword (component, kind);
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "InputSource");
 		gs_appstream_component_add_icon (component, "system-run-symbolic");
 		break;
-	case AS_APP_KIND_FIRMWARE:
+	case AS_COMPONENT_KIND_FIRMWARE:
 		gs_appstream_component_add_icon (component, "system-run-symbolic");
 		break;
 	default:

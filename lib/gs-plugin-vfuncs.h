@@ -16,7 +16,7 @@
  * @short_description: Vfuncs that plugins can implement
  */
 
-#include <appstream-glib.h>
+#include <appstream.h>
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
@@ -222,7 +222,7 @@ gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
  * should not be downloaded until the user has explicitly opted-in.
  *
  * Plugins are expected to add new apps using gs_app_list_add() of type
- * %AS_APP_KIND_OS_UPGRADE.
+ * %AS_COMPONENT_KIND_OPERATING_SYSTEM.
  *
  * Returns: %TRUE for success or if not relevant
  **/
@@ -242,7 +242,7 @@ gboolean	 gs_plugin_add_distro_upgrades		(GsPlugin	*plugin,
  * or the remotes configured in flatpak.
  *
  * Plugins are expected to add new apps using gs_app_list_add() of type
- * %AS_APP_KIND_SOURCE.
+ * %AS_COMPONENT_KIND_REPOSITORY.
  *
  * Returns: %TRUE for success or if not relevant
  **/
@@ -684,7 +684,7 @@ gboolean	 gs_plugin_download			(GsPlugin	*plugin,
 /**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
- * @app: a #GsApp, with kind %AS_APP_KIND_OS_UPGRADE
+ * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -704,7 +704,7 @@ gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
 /**
  * gs_plugin_app_upgrade_trigger:
  * @plugin: a #GsPlugin
- * @app: a #GsApp, with kind %AS_APP_KIND_OS_UPGRADE
+ * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -867,8 +867,8 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
  * list. If no plugins can handle the file, the list will be empty.
  *
  * For example, the PackageKit plugin can turn a .rpm file into a application
- * of kind %AS_APP_KIND_UNKNOWN but that in some cases it will be further refined
- * into a %AS_APP_KIND_DESKTOP (with all the extra metadata) by the appstream
+ * of kind %AS_COMPONENT_KIND_UNKNOWN but that in some cases it will be further refined
+ * into a %AS_COMPONENT_KIND_DESKTOP_APP (with all the extra metadata) by the appstream
  * plugin.
  *
  * Plugins are expected to add new apps using gs_app_list_add().

@@ -28,7 +28,7 @@ install_headers(libgnomesoftware_public_headers,
 )
 
 librarydeps = [
-  appstream_glib,
+  appstream,
   gio_unix,
   glib,
   gmodule,
@@ -111,7 +111,7 @@ executable(
     include_directories('..'),
   ],
   dependencies : [
-    appstream_glib,
+    appstream,
     gio_unix,
     glib,
     gmodule,
@@ -140,7 +140,7 @@ if get_option('tests')
       include_directories('..'),
     ],
     dependencies : [
-      appstream_glib,
+      appstream,
       gio_unix,
       glib,
       gmodule,

@@ -74,14 +74,14 @@ get_repo_installed_text (GsApp *repo)
 	for (guint i = 0; i < gs_app_list_length (related); i++) {
 		GsApp *app_tmp = gs_app_list_index (related, i);
 		switch (gs_app_get_kind (app_tmp)) {
-		case AS_APP_KIND_WEB_APP:
-		case AS_APP_KIND_DESKTOP:
+		case AS_COMPONENT_KIND_WEB_APP:
+		case AS_COMPONENT_KIND_DESKTOP_APP:
 			cnt_apps++;
 			break;
-		case AS_APP_KIND_FONT:
-		case AS_APP_KIND_CODEC:
-		case AS_APP_KIND_INPUT_METHOD:
-		case AS_APP_KIND_ADDON:
+		case AS_COMPONENT_KIND_FONT:
+		case AS_COMPONENT_KIND_CODEC:
+		case AS_COMPONENT_KIND_INPUT_METHOD:
+		case AS_COMPONENT_KIND_ADDON:
 			cnt_addon++;
 			break;
 		default:

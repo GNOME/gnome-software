@@ -15,7 +15,6 @@
 #include <glib/gi18n.h>
 
 #include "gs-common.h"
-#include "gs-content-rating.h"
 #include "gs-utils.h"
 
 #include "gs-details-page.h"
@@ -208,7 +207,7 @@ gs_details_page_update_shortcut_button (GsDetailsPage *self)
 	gtk_widget_set_visible (self->button_details_remove_shortcut,
 				FALSE);
 
-	if (gs_app_get_kind (self->app) != AS_APP_KIND_DESKTOP)
+	if (gs_app_get_kind (self->app) != AS_COMPONENT_KIND_DESKTOP_APP)
 		return;
 
 	/* Leave the button hidden if the app can’t be launched by the current
@@ -564,7 +563,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 	gtk_widget_show (self->box_details_screenshot);
 
 	/* treat screenshots differently */
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_FONT) {
+	if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FONT) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
 		screenshots = gs_app_get_screenshots (self->app);
@@ -572,7 +571,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 			ss = g_ptr_array_index (screenshots, i);
 
 			/* set caption */
-			label = gtk_label_new (as_screenshot_get_caption (ss, NULL));
+			label = gtk_label_new (as_screenshot_get_caption (ss));
 			g_object_set (label,
 				      "xalign", 0.0,
 				      "max-width-chars", 10,
@@ -601,15 +600,15 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 	/* fallback warning */
 	screenshots = gs_app_get_screenshots (self->app);
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_GENERIC:
-	case AS_APP_KIND_CODEC:
-	case AS_APP_KIND_ADDON:
-	case AS_APP_KIND_SOURCE:
-	case AS_APP_KIND_FIRMWARE:
-	case AS_APP_KIND_DRIVER:
-	case AS_APP_KIND_INPUT_METHOD:
-	case AS_APP_KIND_LOCALIZATION:
-	case AS_APP_KIND_RUNTIME:
+	case AS_COMPONENT_KIND_GENERIC:
+	case AS_COMPONENT_KIND_CODEC:
+	case AS_COMPONENT_KIND_ADDON:
+	case AS_COMPONENT_KIND_REPOSITORY:
+	case AS_COMPONENT_KIND_FIRMWARE:
+	case AS_COMPONENT_KIND_DRIVER:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_LOCALIZATION:
+	case AS_COMPONENT_KIND_RUNTIME:
 		gtk_widget_set_visible (self->box_details_screenshot_fallback, FALSE);
 		break;
 	default:
@@ -720,7 +719,7 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 {
 	gs_description_box_set_text (GS_DESCRIPTION_BOX (self->box_details_description), tmp);
 	gs_description_box_set_collapsed (GS_DESCRIPTION_BOX (self->box_details_description), TRUE);
-	gtk_widget_set_visible (self->label_webapp_warning, gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP);
+	gtk_widget_set_visible (self->label_webapp_warning, gs_app_get_kind (self->app) == AS_COMPONENT_KIND_WEB_APP);
 }
 
 static void
@@ -915,7 +914,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case GS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+		if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->button_install, TRUE);
 			/* TRANSLATORS: button text in the header when firmware
 			 * can be live-installed */
@@ -925,7 +924,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		}
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
-		if (gs_app_get_url (self->app, AS_URL_KIND_MISSING) != NULL) {
+		if (gs_app_get_url_missing (self->app) != NULL) {
 			gtk_widget_set_visible (self->button_install, FALSE);
 		} else {
 			gtk_widget_set_visible (self->button_install, TRUE);
@@ -945,7 +944,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	/* update button */
 	switch (state) {
 	case GS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+		if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->button_update, FALSE);
 		} else {
 			gtk_widget_set_visible (self->button_update, TRUE);
@@ -970,7 +969,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 
 	/* remove button */
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_COMPULSORY) ||
-	    gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+	    gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	} else {
 		switch (state) {
@@ -1325,7 +1324,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		gtk_widget_set_visible (self->grid_details_kudo, TRUE);
 		break;
 	default:
@@ -1335,7 +1334,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* only show permissions for flatpak apps */
 	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_FLATPAK &&
-	    gs_app_get_kind (self->app) == AS_APP_KIND_DESKTOP) {
+	    gs_app_get_kind (self->app) == AS_COMPONENT_KIND_DESKTOP_APP) {
 		GsAppPermissions permissions = gs_app_get_permissions (self->app);
 
 		populate_permission_details (self, permissions);
@@ -1366,7 +1365,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 				gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		/* installing an app with a repo file */
 		gtk_widget_set_visible (self->infobar_details_app_repo,
 					gs_app_has_quirk (self->app,
@@ -1374,7 +1373,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		gtk_widget_set_visible (self->infobar_details_repo, FALSE);
 		break;
-	case AS_APP_KIND_GENERIC:
+	case AS_COMPONENT_KIND_GENERIC:
 		/* installing a repo-release package */
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
 		gtk_widget_set_visible (self->infobar_details_repo,
@@ -1390,8 +1389,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* installing a app without a repo file */
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_DESKTOP:
-		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+	case AS_COMPONENT_KIND_DESKTOP_APP:
+		if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->infobar_details_app_norepo, FALSE);
 		} else {
 			gtk_widget_set_visible (self->infobar_details_app_norepo,
@@ -1419,7 +1418,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* hide fields that don't make sense for sources */
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_SOURCE:
+	case AS_COMPONENT_KIND_REPOSITORY:
 		gtk_widget_set_visible (self->label_details_license_title, FALSE);
 		gtk_widget_set_visible (self->box_details_license_value, FALSE);
 		gtk_widget_set_visible (self->label_details_version_title, FALSE);
@@ -1590,11 +1589,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* show or hide the entire reviews section */
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_DESKTOP:
-	case AS_APP_KIND_FONT:
-	case AS_APP_KIND_INPUT_METHOD:
-	case AS_APP_KIND_WEB_APP:
-	case AS_APP_KIND_SHELL_EXTENSION:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
+	case AS_COMPONENT_KIND_FONT:
+	case AS_COMPONENT_KIND_INPUT_METHOD:
+	case AS_COMPONENT_KIND_WEB_APP:
 		/* don't show a missing rating on a local file */
 		if (gs_app_get_state (self->app) != GS_APP_STATE_AVAILABLE_LOCAL &&
 		    self->enable_reviews)
@@ -1754,23 +1752,23 @@ static void
 gs_details_page_refresh_content_rating (GsDetailsPage *self)
 {
 	AsContentRating *content_rating;
-	GsContentRatingSystem system;
+	AsContentRatingSystem system;
 	guint age = 0;
 	g_autofree gchar *display = NULL;
 	const gchar *locale;
 
 	/* get the content rating system from the locale */
 	locale = setlocale (LC_MESSAGES, NULL);
-	system = gs_utils_content_rating_system_from_locale (locale);
+	system = as_content_rating_system_from_locale (locale);
 	g_debug ("content rating system is guessed as %s from %s",
-		 gs_content_rating_system_to_str (system),
+		 as_content_rating_system_to_string (system),
 		 locale);
 
 	/* only show the button if a game and has a content rating */
 	content_rating = gs_app_get_content_rating (self->app);
 	if (content_rating != NULL) {
 		age = as_content_rating_get_minimum_age (content_rating);
-		display = gs_utils_content_rating_age_to_str (system, age);
+		display = as_content_rating_system_format_age (system, age);
 	}
 	if (display != NULL) {
 		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
@@ -1888,7 +1886,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 			   gs_app_get_id (self->app),
 			   error->message);
 	}
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
+	if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_UNKNOWN ||
 	    gs_app_get_state (self->app) == GS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
@@ -2390,12 +2388,7 @@ static guint
 content_rating_get_age (AsContentRating *content_rating, const gchar *id)
 {
 	AsContentRatingValue value = as_content_rating_get_value (content_rating, id);
-#if AS_CHECK_VERSION (0, 7, 15)
 	return as_content_rating_attribute_to_csm_age (id, value);
-#else
-	/* Hackily treat the value as an age; it should compare the same */
-	return (guint) value;
-#endif
 }
 
 static void
@@ -2433,7 +2426,7 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 	if (cr == NULL)
 		return;
 
-	ids = gs_content_rating_get_all_rating_ids ();
+	ids = as_content_rating_get_all_rating_ids ();
 
 	/* get the worst thing */
 	for (gsize i = 0; ids[i] != NULL; i++) {
@@ -2482,7 +2475,7 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 			    content_rating_get_age (cr, coalesce_groups[0]) == age)
 				continue;
 
-			tmp = gs_content_rating_key_value_to_str (ids[i], as_content_rating_get_value (cr, ids[i]));
+			tmp = as_content_rating_attribute_get_description (ids[i], as_content_rating_get_value (cr, ids[i]));
 			g_string_append_printf (str, "• %s\n", tmp);
 		}
 	}
@@ -2492,7 +2485,7 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 		age = content_rating_get_age (cr, violence_group[i]);
 		if (age < age_bad)
 			continue;
-		tmp = gs_content_rating_key_value_to_str (violence_group[i], as_content_rating_get_value (cr, violence_group[i]));
+		tmp = as_content_rating_attribute_get_description (violence_group[i], as_content_rating_get_value (cr, violence_group[i]));
 		g_string_append_printf (str, "• %s\n", tmp);
 		break;
 	}
@@ -2502,7 +2495,7 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 		age = content_rating_get_age (cr, social_group[i]);
 		if (age < age_bad)
 			continue;
-		tmp = gs_content_rating_key_value_to_str (social_group[i], as_content_rating_get_value (cr, social_group[i]));
+		tmp = as_content_rating_attribute_get_description (social_group[i], as_content_rating_get_value (cr, social_group[i]));
 		g_string_append_printf (str, "• %s\n", tmp);
 		break;
 	}
@@ -2593,7 +2586,7 @@ gs_details_page_license_widget_for_token (GsDetailsPage *self, const gchar *toke
 	}
 
 	/* new SPDX value the extractor didn't know about */
-	if (as_utils_is_spdx_license_id (token)) {
+	if (as_is_spdx_license_id (token)) {
 		g_autofree gchar *uri = NULL;
 		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
 				       token);
@@ -2613,7 +2606,7 @@ gs_details_page_license_free_cb (GtkWidget *widget, GsDetailsPage *self)
 
 	/* URLify any SPDX IDs */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_license_list));
-	tokens = as_utils_spdx_license_tokenize (gs_app_get_license (self->app));
+	tokens = as_spdx_license_tokenize (gs_app_get_license (self->app));
 	for (i = 0; tokens[i] != NULL; i++) {
 		GtkWidget *w = NULL;
 
@@ -2654,7 +2647,7 @@ gs_details_page_license_nonfree_cb (GtkWidget *widget, GsDetailsPage *self)
 	g_auto(GStrv) tokens = NULL;
 
 	/* license specified as a link */
-	tokens = as_utils_spdx_license_tokenize (gs_app_get_license (self->app));
+	tokens = as_spdx_license_tokenize (gs_app_get_license (self->app));
 	for (guint i = 0; tokens[i] != NULL; i++) {
 		if (g_str_has_prefix (tokens[i], "@LicenseRef-proprietary=")) {
 			uri = g_strdup (tokens[i] + 24);

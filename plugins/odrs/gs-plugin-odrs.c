@@ -159,7 +159,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_origin_hostname (priv->cached_origin, priv->review_server);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -595,17 +595,24 @@ static GPtrArray *
 _gs_app_get_reviewable_ids (GsApp *app)
 {
 	GPtrArray *ids = g_ptr_array_new_with_free_func (g_free);
-	GPtrArray *provides = gs_app_get_provides (app);
+	GPtrArray *provided = gs_app_get_provided (app);
 
 	/* add the main component id */
 	g_ptr_array_add (ids, g_strdup (gs_app_get_id (app)));
 
 	/* add any ID provides */
-	for (guint i = 0; i < provides->len; i++) {
-		AsProvide *provide = g_ptr_array_index (provides, i);
-		if (as_provide_get_kind (provide) == AS_PROVIDE_KIND_ID &&
-		    as_provide_get_value (provide) != NULL) {
-			g_ptr_array_add (ids, g_strdup (as_provide_get_value (provide)));
+	for (guint i = 0; i < provided->len; i++) {
+		GPtrArray *items;
+		AsProvided *prov = g_ptr_array_index (provided, i);
+		if (as_provided_get_kind (prov) != AS_PROVIDED_KIND_ID)
+			continue;
+
+		items = as_provided_get_items (prov);
+		for (guint j = 0; j < items->len; j++) {
+			const gchar *value = (const gchar *) g_ptr_array_index (items, j);
+			if (value == NULL)
+				continue;
+			g_ptr_array_add (ids, g_strdup (value));
 		}
 	}
 	return ids;
@@ -695,22 +702,30 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 static JsonNode *
 gs_plugin_odrs_get_compat_ids (GsApp *app)
 {
-	GPtrArray *provides = gs_app_get_provides (app);
+	GPtrArray *provided = gs_app_get_provided (app);
 	g_autoptr(GHashTable) ids = NULL;
 	g_autoptr(JsonArray) json_array = json_array_new ();
 	g_autoptr(JsonNode) json_node = json_node_new (JSON_NODE_ARRAY);
 
 	ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	for (guint i = 0; i < provides->len; i++) {
-		AsProvide *provide = g_ptr_array_index (provides, i);
-		if (as_provide_get_kind (provide) != AS_PROVIDE_KIND_ID)
+	for (guint i = 0; i < provided->len; i++) {
+		GPtrArray *items;
+		AsProvided *prov = g_ptr_array_index (provided, i);
+
+		if (as_provided_get_kind (prov) != AS_PROVIDED_KIND_ID)
 			continue;
-		if (as_provide_get_value (provide) == NULL)
-			continue;
-		if (g_hash_table_lookup (ids, as_provide_get_value (provide)) != NULL)
-			continue;
-		g_hash_table_add (ids, g_strdup (as_provide_get_value (provide)));
-		json_array_add_string_element (json_array, as_provide_get_value (provide));
+
+		items = as_provided_get_items (prov);
+		for (guint j = 0; j < items->len; j++) {
+			const gchar *value = g_ptr_array_index (items, j);
+			if (value == NULL)
+				continue;
+
+			if (g_hash_table_lookup (ids, value) != NULL)
+				continue;
+			g_hash_table_add (ids, g_strdup (value));
+			json_array_add_string_element (json_array, value);
+		}
 	}
 	if (json_array_get_length (json_array) == 0)
 		return NULL;
@@ -879,7 +894,7 @@ refine_app (GsPlugin             *plugin,
 	    GError              **error)
 {
 	/* not valid */
-	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
 		return TRUE;
 	if (gs_app_get_id (app) == NULL)
 		return TRUE;
@@ -1172,7 +1187,7 @@ gs_plugin_create_app_dummy (const gchar *id)
 	GsApp *app = gs_app_new (id);
 	g_autoptr(GString) str = NULL;
 	str = g_string_new (id);
-	as_utils_string_replace (str, ".desktop", "");
+	as_gstring_replace (str, ".desktop", "");
 	g_string_prepend (str, "No description is available for ");
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown Application");
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "Application not found");

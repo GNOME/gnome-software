@@ -102,7 +102,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		const gchar *fn;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (gs_app_get_kind (app) != AS_APP_KIND_SOURCE)
+		if (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 			continue;

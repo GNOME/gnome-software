@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <appstream-glib.h>
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>

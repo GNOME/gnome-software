@@ -222,13 +222,13 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
-	    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM) {
+	    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM) {
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 		app_set_rpm_ostree_packaging_format (app);
 	}
 
-	if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE) {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	}
@@ -454,9 +454,9 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 
 	/* update or downgrade */
 	gs_app_add_source (app, name);
@@ -493,9 +493,9 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 
 	if (addition) {
 		/* addition */
@@ -1011,7 +1011,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 		return TRUE;
 
 	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
 	/* construct new refspec based on the distro version we're upgrading to */
@@ -1133,7 +1133,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* enable repo */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_plugin_repo_enable (plugin, app, TRUE, cancellable, error);
 
 	switch (gs_app_get_state (app)) {
@@ -1233,7 +1233,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return TRUE;
 
 	/* disable repo */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
 		return gs_plugin_repo_enable (plugin, app, FALSE, cancellable, error);
 
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
@@ -1370,9 +1370,9 @@ resolve_available_packages_app (GsPlugin *plugin,
 		/* set hide-from-search quirk for available apps we don't want to show */
 		if (!gs_app_is_installed (app)) {
 			switch (gs_app_get_kind (app)) {
-			case AS_APP_KIND_DESKTOP:
-			case AS_APP_KIND_WEB_APP:
-			case AS_APP_KIND_CONSOLE:
+			case AS_COMPONENT_KIND_DESKTOP_APP:
+			case AS_COMPONENT_KIND_WEB_APP:
+			case AS_COMPONENT_KIND_CONSOLE_APP:
 				gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
 				break;
 			default:
@@ -1491,7 +1491,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* set management plugin for apps where appstream just added the source package name in refine() */
 		if (gs_app_get_management_plugin (app) == NULL &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
-		    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM &&
+		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) != NULL) {
 			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
@@ -1500,7 +1500,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* resolve the source package name based on installed appdata/desktop file name */
 		if (gs_app_get_management_plugin (app) == NULL &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
-		    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM &&
+		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) == NULL) {
 			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
 				return FALSE;
@@ -1544,7 +1544,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		return TRUE;
 
 	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
 	/* construct new refspec based on the distro version we're upgrading to */
@@ -1608,10 +1608,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 	               gs_plugin_get_name (plugin)) != 0)
-		return TRUE;
-
-	/* these are handled by the shell extensions plugin */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SHELL_EXTENSION)
 		return TRUE;
 
 	return gs_plugin_app_launch (plugin, app, error);
@@ -1694,9 +1690,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* add default source */
@@ -1726,7 +1722,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	license = headerGetString (h, RPMTAG_LICENSE);
 	if (license != NULL) {
 		g_autofree gchar *license_spdx = NULL;
-		license_spdx = as_utils_license_to_spdx (license);
+		license_spdx = as_license_to_spdx_id (license);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, license_spdx);
 		g_debug ("rpm: setting license to %s", license_spdx);
 	}
@@ -1797,9 +1793,9 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 		app_set_rpm_ostree_packaging_format (app);
-		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_add_source (app, dnf_package_get_name (pkg));
 
 		gs_plugin_cache_add (plugin, dnf_package_get_nevra (pkg), app);
@@ -1840,7 +1836,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		app = gs_app_new (dnf_repo_get_id (repo));
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
-		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 

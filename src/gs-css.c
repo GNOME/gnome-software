@@ -16,7 +16,7 @@
 #include "config.h"
 
 #include <gtk/gtk.h>
-#include <appstream-glib.h>
+#include <appstream.h>
 
 #include "gs-css.h"
 
@@ -64,7 +64,7 @@ gs_css_parse (GsCss *self, const gchar *markup, GError **error)
 
 	/* old style, no IDs */
 	markup_str = g_string_new (markup);
-	as_utils_string_replace (markup_str, "@datadir@", DATADIR);
+	as_gstring_replace (markup_str, "@datadir@", DATADIR);
 	if (!g_str_has_prefix (markup_str->str, "#")) {
 		g_hash_table_insert (self->ids,
 				     g_strdup ("tile"),

@@ -214,20 +214,28 @@ gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	GString *xml;
-	g_autoptr(AsApp) app = as_app_new ();
+	g_autofree gchar *xml = NULL;
+	g_autoptr(AsComponent) cpt = as_component_new ();
+	g_autoptr(AsContext) actx = as_context_new ();
 	g_autoptr(GBytes) bytes = NULL;
+	gboolean ret;
+
 	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
 	if (bytes == NULL)
 		return NULL;
-	as_app_set_id (app, xb_builder_source_ctx_get_filename (ctx));
-	if (!as_app_parse_data (app, bytes, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
+
+	as_component_set_id (cpt, xb_builder_source_ctx_get_filename (ctx));
+	ret = as_component_load_from_bytes (cpt,
+					   actx,
+					   AS_FORMAT_KIND_DESKTOP_ENTRY,
+					   bytes,
+					   error);
+	if (!ret)
 		return NULL;
-	xml = as_app_to_xml (app, error);
+	xml = as_component_to_xml_data (cpt, actx, error);
 	if (xml == NULL)
 		return NULL;
-	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
 static gboolean
@@ -312,19 +320,29 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	GString *xml;
-	g_autoptr(AsStore) store = as_store_new ();
+	g_autoptr(AsMetadata) mdata = as_metadata_new ();
 	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GError) tmp_error = NULL;
+	g_autofree gchar *xml = NULL;
+
 	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
 	if (bytes == NULL)
 		return NULL;
-	if (!as_store_from_bytes (store, bytes, cancellable, error))
-		return FALSE;
-	xml = as_store_to_xml (store, AS_NODE_INSERT_FLAG_NONE);
+
+	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_COLLECTION);
+	as_metadata_parse_bytes (mdata,
+				 bytes,
+				 AS_FORMAT_KIND_YAML,
+				 &tmp_error);
+	if (tmp_error != NULL) {
+		g_propagate_error (error, g_steal_pointer (&tmp_error));
+		return NULL;
+	}
+
+	xml = as_metadata_components_to_collection (mdata, AS_FORMAT_KIND_XML, error);
 	if (xml == NULL)
 		return NULL;
-	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
 static gboolean
@@ -655,7 +673,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	app = gs_appstream_create_app (plugin, priv->silo, component, error);
 	if (app == NULL)
 		return FALSE;
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 	gs_app_list_add (list, app);
 	return TRUE;
 }
@@ -908,7 +926,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		new = gs_appstream_create_app (plugin, priv->silo, component, error);
 		if (new == NULL)
 			return FALSE;
-		gs_app_set_scope (new, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_scope (new, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_subsume_metadata (new, app);
 		if (!gs_appstream_refine_app (plugin, new, priv->silo, component,
 					      refine_flags, error))
@@ -990,7 +1008,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		if (app == NULL)
 			return FALSE;
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

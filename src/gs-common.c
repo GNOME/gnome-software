@@ -118,15 +118,7 @@ gs_app_notify_installed (GsApp *app)
 	g_autoptr(GNotification) n = NULL;
 
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_OS_UPDATE:
-		/* TRANSLATORS: this is the summary of a notification that OS updates
-		 * have been successfully installed */
-		summary = g_strdup (_("OS updates are now installed"));
-		/* TRANSLATORS: this is the body of a notification that OS updates
-		 * have been successfully installed */
-		body = _("Recently installed updates are available to review");
-		break;
-	case AS_APP_KIND_DESKTOP:
+	case AS_COMPONENT_KIND_DESKTOP_APP:
 		/* TRANSLATORS: this is the summary of a notification that an application
 		 * has been successfully installed */
 		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
@@ -141,13 +133,23 @@ gs_app_notify_installed (GsApp *app)
 		}
 		break;
 	default:
-		/* TRANSLATORS: this is the summary of a notification that a component
-		 * has been successfully installed */
-		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
-			/* TRANSLATORS: an application has been installed, but
-			 * needs a reboot to complete the installation */
-			body = _("A restart is required for the changes to take effect.");
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC &&
+		    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
+			/* TRANSLATORS: this is the summary of a notification that OS updates
+			* have been successfully installed */
+			summary = g_strdup (_("OS updates are now installed"));
+			/* TRANSLATORS: this is the body of a notification that OS updates
+			* have been successfully installed */
+			body = _("Recently installed updates are available to review");
+		} else {
+			/* TRANSLATORS: this is the summary of a notification that a component
+			* has been successfully installed */
+			summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+				/* TRANSLATORS: an application has been installed, but
+				* needs a reboot to complete the installation */
+				body = _("A restart is required for the changes to take effect.");
+			}
 		}
 		break;
 	}
@@ -159,7 +161,7 @@ gs_app_notify_installed (GsApp *app)
 		/* TRANSLATORS: button text */
 		g_notification_add_button_with_target (n, _("Restart"),
 						       "app.reboot", NULL);
-	} else if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
+	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
 		g_notification_add_button_with_target (n, _("Launch"),
 						       "app.launch", "(ss)",
@@ -266,7 +268,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	/* be aware of patent clauses */
 	if (hint & GS_APP_LICENSE_PATENT_CONCERN) {
 		g_string_append (body, "\n\n");
-		if (gs_app_get_kind (app) != AS_APP_KIND_CODEC) {
+		if (gs_app_get_kind (app) != AS_COMPONENT_KIND_CODEC) {
 			g_string_append_printf (body,
 						/* TRANSLATORS: Laws are geographical, urgh... */
 						_("It may be illegal to install "
@@ -557,7 +559,7 @@ gs_utils_get_error_value (const GError *error)
 
 /**
  * gs_utils_build_unique_id_kind:
- * @kind: A #AsAppKind
+ * @kind: A #AsComponentKind
  * @id: An application ID
  *
  * Converts the ID valid into a wildcard unique ID of a specific kind.
@@ -566,20 +568,19 @@ gs_utils_get_error_value (const GError *error)
  * Returns: (transfer full): a unique ID, or %NULL
  */
 gchar *
-gs_utils_build_unique_id_kind (AsAppKind kind, const gchar *id)
+gs_utils_build_unique_id_kind (AsComponentKind kind, const gchar *id)
 {
-	if (as_utils_unique_id_valid (id))
+	if (as_utils_data_id_valid (id))
 		return g_strdup (id);
-	return as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
-					 AS_BUNDLE_KIND_UNKNOWN,
-					 NULL,
-					 kind,
-					 id,
-					 NULL);
+	return as_utils_build_data_id (AS_COMPONENT_SCOPE_UNKNOWN,
+				       AS_BUNDLE_KIND_UNKNOWN,
+				       NULL,
+				       id,
+				       NULL);
 }
 
 /**
- * gs_utils_list_has_app_fuzzy:
+ * gs_utils_list_has_component_fuzzy:
  * @list: A #GsAppList
  * @app: A #GsApp
  *
@@ -593,7 +594,7 @@ gs_utils_build_unique_id_kind (AsAppKind kind, const gchar *id)
  * Returns: %TRUE if the app is visually the "same"
  */
 gboolean
-gs_utils_list_has_app_fuzzy (GsAppList *list, GsApp *app)
+gs_utils_list_has_component_fuzzy (GsAppList *list, GsApp *app)
 {
 	guint i;
 	GsApp *tmp;

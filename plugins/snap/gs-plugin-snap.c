@@ -309,6 +309,22 @@ get_appstream_id (SnapdSnap *snap)
 		return g_strdup_printf ("io.snapcraft.%s-%s", snapd_snap_get_name (snap), snapd_snap_get_id (snap));
 }
 
+static AsComponentKind
+snap_guess_component_kind (SnapdSnap *snap)
+{
+	switch (snapd_snap_get_snap_type (snap)) {
+	case SNAPD_SNAP_TYPE_APP:
+		return AS_COMPONENT_KIND_DESKTOP_APP;
+	case SNAPD_SNAP_TYPE_KERNEL:
+	case SNAPD_SNAP_TYPE_GADGET:
+	case SNAPD_SNAP_TYPE_OS:
+		return AS_COMPONENT_KIND_RUNTIME;
+	default:
+	case SNAPD_SNAP_TYPE_UNKNOWN:
+		return AS_COMPONENT_KIND_UNKNOWN;
+	}
+}
+
 static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
@@ -317,25 +333,12 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	g_autoptr(GsApp) app = NULL;
 
 	appstream_id = get_appstream_id (snap);
-	switch (snapd_snap_get_snap_type (snap)) {
-	case SNAPD_SNAP_TYPE_APP:
-		unique_id = g_strdup_printf ("system/snap/*/desktop/%s/*", appstream_id);
-		break;
-	case SNAPD_SNAP_TYPE_KERNEL:
-	case SNAPD_SNAP_TYPE_GADGET:
-	case SNAPD_SNAP_TYPE_OS:
-		unique_id = g_strdup_printf ("system/snap/*/runtime/%s/*", appstream_id);
-		break;
-        default:
-	case SNAPD_SNAP_TYPE_UNKNOWN:
-		unique_id = g_strdup_printf ("system/snap/*/*/%s/*", appstream_id);
-		break;
-	}
+	unique_id = g_strdup_printf ("system/snap/*/%s/*", appstream_id);
 
 	app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (app == NULL) {
 		app = gs_app_new (appstream_id);
-		gs_app_set_from_unique_id (app, unique_id);
+		gs_app_set_from_unique_id (app, unique_id, snap_guess_component_kind (snap));
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
 		gs_plugin_cache_add (plugin, unique_id, app);
@@ -343,7 +346,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
-	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
@@ -869,8 +872,8 @@ static gchar *
 gs_plugin_snap_get_description_safe (SnapdSnap *snap)
 {
 	GString *str = g_string_new (snapd_snap_get_description (snap));
-	as_utils_string_replace (str, "\r", "");
-	as_utils_string_replace (str, "  ", " ");
+	as_gstring_replace (str, "\r", "");
+	as_gstring_replace (str, "  ", " ");
 	return g_string_free (str, FALSE);
 }
 
@@ -1037,20 +1040,7 @@ refine_app_with_client (GsPlugin             *plugin,
 	    confinement == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
-	switch (snapd_snap_get_snap_type (snap)) {
-	case SNAPD_SNAP_TYPE_APP:
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		break;
-	case SNAPD_SNAP_TYPE_KERNEL:
-	case SNAPD_SNAP_TYPE_GADGET:
-	case SNAPD_SNAP_TYPE_OS:
-		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-		break;
-	default:
-	case SNAPD_SNAP_TYPE_UNKNOWN:
-		gs_app_set_kind (app, AS_APP_KIND_UNKNOWN);
-		break;
-	}
+	gs_app_set_kind (app, snap_guess_component_kind (snap));
 
 	/* add information specific to installed snaps */
 	if (local_snap != NULL) {

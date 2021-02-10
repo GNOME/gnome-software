@@ -973,26 +973,21 @@ gs_utils_error_convert_appstream (GError **perror)
 		return TRUE;
 
 	/* custom to this plugin */
-	if (error->domain == AS_UTILS_ERROR) {
+	if (error->domain == AS_METADATA_ERROR) {
 		switch (error->code) {
-		case AS_UTILS_ERROR_INVALID_TYPE:
+		case AS_METADATA_ERROR_PARSE:
+		case AS_METADATA_ERROR_FORMAT_UNEXPECTED:
+		case AS_METADATA_ERROR_NO_COMPONENT:
 			error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 			break;
-		case AS_UTILS_ERROR_FAILED:
+		case AS_METADATA_ERROR_FAILED:
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
 		}
-	} else if (error->domain == AS_STORE_ERROR) {
+	} else if (error->domain == AS_POOL_ERROR) {
 		switch (error->code) {
-		case AS_UTILS_ERROR_FAILED:
-		default:
-			error->code = GS_PLUGIN_ERROR_FAILED;
-			break;
-		}
-	} else if (error->domain == AS_ICON_ERROR) {
-		switch (error->code) {
-		case AS_ICON_ERROR_FAILED:
+		case AS_POOL_ERROR_FAILED:
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
@@ -1226,6 +1221,182 @@ gs_utils_set_online_updates_timestamp (GSettings *settings)
 	g_settings_set (settings, "online-updates-timestamp", "x", g_date_time_to_unix (now));
 
 	g_settings_set (settings, "update-notification-timestamp", "x", g_date_time_to_unix (now));
+}
+
+/**
+ * gs_utils_unique_id_compat_convert:
+ * @data_id: (nullable): A string that may be a unique component ID
+ *
+ * Converts the unique ID string from its legacy 6-part form into
+ * a new-style 5-part AppStream data-id.
+ * Does nothing if the string is already valid.
+ *
+ * See !583 for the history of this conversion.
+ *
+ * Returns: (nullable): A newly allocated string with the new-style data-id, or %NULL if input was no valid ID.
+ *
+ * Since: 40
+ **/
+gchar*
+gs_utils_unique_id_compat_convert (const gchar *data_id)
+{
+	g_auto(GStrv) parts = NULL;
+	if (data_id == NULL)
+		return NULL;
+
+	/* check for the most common case first: data-id is already valid */
+	if (as_utils_data_id_valid (data_id))
+		return g_strdup (data_id);
+
+	parts = g_strsplit (data_id, "/", -1);
+	if (g_strv_length (parts) != 6)
+		return NULL;
+	return g_strdup_printf ("%s/%s/%s/%s/%s",
+				parts[0],
+				parts[1],
+				parts[2],
+				parts[4],
+				parts[5]);
+}
+
+static void
+gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *div_kernel_size)
+{
+	gint width, height, src_rowstride, dest_rowstride, n_channels;
+	guchar *p_src, *p_dest, *c1, *c2;
+	gint x, y, i, i1, i2, width_minus_1, height_minus_1, radius_plus_1;
+	gint r, g, b, a;
+	guchar *p_dest_row, *p_dest_col;
+
+	width = gdk_pixbuf_get_width (src);
+	height = gdk_pixbuf_get_height (src);
+	n_channels = gdk_pixbuf_get_n_channels (src);
+	radius_plus_1 = radius + 1;
+
+	/* horizontal blur */
+	p_src = gdk_pixbuf_get_pixels (src);
+	p_dest = gdk_pixbuf_get_pixels (dest);
+	src_rowstride = gdk_pixbuf_get_rowstride (src);
+	dest_rowstride = gdk_pixbuf_get_rowstride (dest);
+	width_minus_1 = width - 1;
+	for (y = 0; y < height; y++) {
+
+		/* calc the initial sums of the kernel */
+		r = g = b = a = 0;
+		for (i = -radius; i <= (gint) radius; i++) {
+			c1 = p_src + (CLAMP (i, 0, width_minus_1) * n_channels);
+			r += c1[0];
+			g += c1[1];
+			b += c1[2];
+		}
+
+		p_dest_row = p_dest;
+		for (x = 0; x < width; x++) {
+			/* set as the mean of the kernel */
+			p_dest_row[0] = div_kernel_size[r];
+			p_dest_row[1] = div_kernel_size[g];
+			p_dest_row[2] = div_kernel_size[b];
+			p_dest_row += n_channels;
+
+			/* the pixel to add to the kernel */
+			i1 = x + radius_plus_1;
+			if (i1 > width_minus_1)
+				i1 = width_minus_1;
+			c1 = p_src + (i1 * n_channels);
+
+			/* the pixel to remove from the kernel */
+			i2 = x - radius;
+			if (i2 < 0)
+				i2 = 0;
+			c2 = p_src + (i2 * n_channels);
+
+			/* calc the new sums of the kernel */
+			r += c1[0] - c2[0];
+			g += c1[1] - c2[1];
+			b += c1[2] - c2[2];
+		}
+
+		p_src += src_rowstride;
+		p_dest += dest_rowstride;
+	}
+
+	/* vertical blur */
+	p_src = gdk_pixbuf_get_pixels (dest);
+	p_dest = gdk_pixbuf_get_pixels (src);
+	src_rowstride = gdk_pixbuf_get_rowstride (dest);
+	dest_rowstride = gdk_pixbuf_get_rowstride (src);
+	height_minus_1 = height - 1;
+	for (x = 0; x < width; x++) {
+
+		/* calc the initial sums of the kernel */
+		r = g = b = a = 0;
+		for (i = -radius; i <= (gint) radius; i++) {
+			c1 = p_src + (CLAMP (i, 0, height_minus_1) * src_rowstride);
+			r += c1[0];
+			g += c1[1];
+			b += c1[2];
+		}
+
+		p_dest_col = p_dest;
+		for (y = 0; y < height; y++) {
+			/* set as the mean of the kernel */
+
+			p_dest_col[0] = div_kernel_size[r];
+			p_dest_col[1] = div_kernel_size[g];
+			p_dest_col[2] = div_kernel_size[b];
+			p_dest_col += dest_rowstride;
+
+			/* the pixel to add to the kernel */
+			i1 = y + radius_plus_1;
+			if (i1 > height_minus_1)
+				i1 = height_minus_1;
+			c1 = p_src + (i1 * src_rowstride);
+
+			/* the pixel to remove from the kernel */
+			i2 = y - radius;
+			if (i2 < 0)
+				i2 = 0;
+			c2 = p_src + (i2 * src_rowstride);
+
+			/* calc the new sums of the kernel */
+			r += c1[0] - c2[0];
+			g += c1[1] - c2[1];
+			b += c1[2] - c2[2];
+		}
+
+		p_src += n_channels;
+		p_dest += n_channels;
+	}
+}
+
+/**
+ * gs_utils_pixbuf_blur:
+ * @src: the GdkPixbuf.
+ * @radius: the pixel radius for the gaussian blur, typical values are 1..3
+ * @iterations: Amount to blur the image, typical values are 1..5
+ *
+ * Blurs an image. Warning, this method is s..l..o..w... for large images.
+ **/
+void
+gs_utils_pixbuf_blur (GdkPixbuf *src, guint radius, guint iterations)
+{
+	gint kernel_size;
+	gint i;
+	g_autofree guchar *div_kernel_size = NULL;
+	g_autoptr(GdkPixbuf) tmp = NULL;
+
+	tmp = gdk_pixbuf_new (gdk_pixbuf_get_colorspace (src),
+			      gdk_pixbuf_get_has_alpha (src),
+			      gdk_pixbuf_get_bits_per_sample (src),
+			      gdk_pixbuf_get_width (src),
+			      gdk_pixbuf_get_height (src));
+	kernel_size = 2 * radius + 1;
+	div_kernel_size = g_new (guchar, 256 * kernel_size);
+	for (i = 0; i < 256 * kernel_size; i++)
+		div_kernel_size[i] = (guchar) (i / kernel_size);
+
+	while (iterations-- > 0)
+		gs_pixbuf_blur_private (src, tmp, radius, div_kernel_size);
 }
 
 /* vim: set noexpandtab: */

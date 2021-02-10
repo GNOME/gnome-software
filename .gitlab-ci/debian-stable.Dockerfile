@@ -2,7 +2,6 @@ FROM debian:buster
 
 RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     appstream \
-    appstream-util \
     clang \
     clang-tools-7 \
     dbus \
@@ -14,11 +13,13 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     git \
     gnome-pkg-tools \
     gobject-introspection \
+    gperf \
     gsettings-desktop-schemas-dev \
     gtk-doc-tools \
     itstool \
     lcov \
     libaccountsservice-dev \
+    libappstream-dev \
     libappstream-glib-dev \
     libflatpak-dev \
     libfwupd-dev \
@@ -29,12 +30,15 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     libgtk-3-dev \
     libgudev-1.0-dev \
     libjson-glib-dev \
+    liblmdb-dev \
     libpackagekit-glib2-dev \
     libpam0g-dev \
     libpolkit-gobject-1-dev \
     libsoup2.4-dev \
+    libstemmer-dev \
     libxmlb-dev \
     libxml2-utils \
+    libyaml-dev \
     ninja-build \
     packagekit \
     pkg-config \

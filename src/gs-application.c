@@ -594,9 +594,11 @@ details_activated (GSimpleAction *action,
 		gs_shell_reset_state (app->shell);
 		gs_shell_show_search_result (app->shell, id, search);
 	} else {
+		g_autofree gchar *data_id = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		if (as_utils_unique_id_valid (id)) {
-			g_autoptr(GsApp) a = gs_plugin_loader_app_create (app->plugin_loader, id);
+		data_id = gs_utils_unique_id_compat_convert (id);
+		if (data_id != NULL) {
+			g_autoptr(GsApp) a = gs_plugin_loader_app_create (app->plugin_loader, data_id);
 			gs_shell_reset_state (app->shell);
 			gs_shell_show_app (app->shell, a);
 			return;
@@ -667,9 +669,11 @@ install_activated (GSimpleAction *action,
 	const gchar *id;
 	GsShellInteraction interaction;
 	g_autoptr (GsApp) a = NULL;
+	g_autofree gchar *data_id = NULL;
 
 	g_variant_get (parameter, "(&su)", &id, &interaction);
-	if (!as_utils_unique_id_valid (id)) {
+	data_id = gs_utils_unique_id_compat_convert (id);
+	if (data_id == NULL) {
 		g_warning ("Need to use a valid unique-id: %s", id);
 		return;
 	}
@@ -677,9 +681,9 @@ install_activated (GSimpleAction *action,
 	if (interaction == GS_SHELL_INTERACTION_FULL)
 		gs_application_present_window (app, NULL);
 
-	a = gs_plugin_loader_app_create (app->plugin_loader, id);
+	a = gs_plugin_loader_app_create (app->plugin_loader, data_id);
 	if (a == NULL) {
-		g_warning ("Could not create app from unique-id: %s", id);
+		g_warning ("Could not create app from data-id: %s", data_id);
 		return;
 	}
 

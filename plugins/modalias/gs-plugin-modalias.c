@@ -106,29 +106,33 @@ refine_app (GsPlugin             *plugin,
 	    GCancellable         *cancellable,
 	    GError              **error)
 {
-	GPtrArray *provides;
+	GPtrArray *provided;
 	guint i;
 
 	/* not required */
 	if (gs_app_get_icons(app)->len > 0)
 		return TRUE;
-	if (gs_app_get_kind (app) != AS_APP_KIND_DRIVER)
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DRIVER)
 		return TRUE;
 
 	/* do any of the modaliases match any installed hardware */
-	provides = gs_app_get_provides (app);
-	for (i = 0 ; i < provides->len; i++) {
-		AsProvide *prov = g_ptr_array_index (provides, i);
-		if (as_provide_get_kind (prov) != AS_PROVIDE_KIND_MODALIAS)
+	provided = gs_app_get_provided (app);
+	for (i = 0 ; i < provided->len; i++) {
+		GPtrArray *items;
+		AsProvided *prov = g_ptr_array_index (provided, i);
+		if (as_provided_get_kind (prov) != AS_PROVIDED_KIND_MODALIAS)
 			continue;
-		if (gs_plugin_modalias_matches (plugin, as_provide_get_value (prov))) {
-			g_autoptr(AsIcon) ic = NULL;
-			ic = as_icon_new ();
-			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-			as_icon_set_name (ic, "emblem-system-symbolic");
-			gs_app_add_icon (app, ic);
-			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-			break;
+		items = as_provided_get_items (prov);
+		for (guint j = 0; j < items->len; j++) {
+			if (gs_plugin_modalias_matches (plugin, (const gchar*) g_ptr_array_index (items, j))) {
+				g_autoptr(AsIcon) ic = NULL;
+				ic = as_icon_new ();
+				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+				as_icon_set_name (ic, "emblem-system-symbolic");
+				gs_app_add_icon (app, ic);
+				gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+				break;
+			}
 		}
 	}
 	return TRUE;

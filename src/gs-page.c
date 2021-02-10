@@ -81,7 +81,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 					 GTK_MESSAGE_INFO,
 					 GTK_BUTTONS_OK,
 					 "%s", gs_app_get_name (helper->app));
-	escaped = g_markup_escape_text (as_screenshot_get_caption (ss, NULL), -1);
+	escaped = g_markup_escape_text (as_screenshot_get_caption (ss), -1);
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 						  "%s", escaped);
 
@@ -152,10 +152,10 @@ gs_page_app_installed_cb (GObject *source,
 	}
 
 	/* tell the user what they have to do */
-	if (gs_app_get_kind (helper->app) == AS_APP_KIND_FIRMWARE &&
+	if (gs_app_get_kind (helper->app) == AS_COMPONENT_KIND_FIRMWARE &&
 	    gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
 		AsScreenshot *ss = gs_app_get_action_screenshot (helper->app);
-		if (ss != NULL && as_screenshot_get_caption (ss, NULL) != NULL)
+		if (ss != NULL && as_screenshot_get_caption (ss) != NULL)
 			gs_page_show_update_message (helper, ss);
 	}
 
@@ -328,7 +328,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 					  * '%s' is an application summary, e.g. 'GNOME Clocks' */
 					 _("Prepare %s"),
 					 gs_app_get_name (helper->app));
-	escaped = g_markup_escape_text (as_screenshot_get_caption (ss, NULL), -1);
+	escaped = g_markup_escape_text (as_screenshot_get_caption (ss), -1);
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
 						    "%s", escaped);
 
@@ -378,10 +378,10 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->cancellable = g_object_ref (cancellable);
 
 	/* tell the user what they have to do */
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE &&
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE &&
 	    gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
 		AsScreenshot *ss = gs_app_get_action_screenshot (app);
-		if (ss != NULL && as_screenshot_get_caption (ss, NULL) != NULL) {
+		if (ss != NULL && as_screenshot_get_caption (ss) != NULL) {
 			gs_page_needs_user_action (helper, ss);
 			return;
 		}
@@ -459,7 +459,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	/* use different name and summary */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_SOURCE:
+	case AS_COMPONENT_KIND_REPOSITORY:
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
 		 * repository name, e.g. 'GNOME Nightly' */
 		title = g_strdup_printf (_("Are you sure you want to remove "

@@ -76,7 +76,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
-	    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM) {
+	    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM) {
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		return;
@@ -698,10 +698,10 @@ gs_plugin_packagekit_refine_filename_to_id (GsPlugin *plugin,
 		if (tmp == NULL)
 			continue;
 		switch (gs_app_get_kind (app)) {
-		case AS_APP_KIND_DESKTOP:
+		case AS_COMPONENT_KIND_DESKTOP_APP:
 			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
 			break;
-		case AS_APP_KIND_ADDON:
+		case AS_COMPONENT_KIND_ADDON:
 			fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
 			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
 				g_free (fn);
@@ -773,7 +773,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
-			if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+			if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 				continue;
 			if (!gs_plugin_packagekit_refine_distro_upgrade (plugin,
 									 app,
@@ -811,8 +811,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 
 		/* the scope is always system-wide */
-		if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN)
-			gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN)
+			gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	}

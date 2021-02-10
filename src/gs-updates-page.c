@@ -141,11 +141,11 @@ static GsUpdatesSectionKind
 _get_app_section (GsApp *app)
 {
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
-		if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 			return GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE;
 		return GS_UPDATES_SECTION_KIND_ONLINE;
 	}
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 		return GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE;
 	return GS_UPDATES_SECTION_KIND_OFFLINE;
 }
@@ -1238,7 +1238,7 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
 	case GS_PLUGIN_STATUS_INSTALLING:
 	case GS_PLUGIN_STATUS_REMOVING:
 		if (app == NULL ||
-		    (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
+		    (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM &&
 		     gs_app_get_id (app) != NULL)) {
 			/* if we do a install or remove then make sure all new
 			 * packages are downloaded */

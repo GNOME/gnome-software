@@ -280,7 +280,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 			g_warning ("unknown info state of %s",
 				   pk_info_enum_to_string (pk_package_get_info (package)));
 		}
-		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_list_add (list, app);
 	}
@@ -491,7 +491,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 
 		if (gs_app_get_license (app) == NULL) {
 			g_autofree gchar *license_spdx = NULL;
-			license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
+			license_spdx = as_license_to_spdx_id (pk_details_get_license (details));
 			if (license_spdx != NULL) {
 				gs_app_set_license (app,
 						    GS_APP_QUALITY_LOWEST,

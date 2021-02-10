@@ -92,6 +92,12 @@ gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
 						 gchar		**out_release);
 void		 gs_utils_set_online_updates_timestamp (GSettings *settings);
 
+gchar		*gs_utils_unique_id_compat_convert	(const gchar	*data_id);
+
+void		 gs_utils_pixbuf_blur		(GdkPixbuf	*src,
+						 guint		radius,
+						 guint		iterations);
+
 #if !GLIB_CHECK_VERSION(2, 64, 0)
 typedef void GsMainContextPusher;
 

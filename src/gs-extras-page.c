@@ -282,9 +282,9 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 	GsApp *app = gs_app_row_get_app (app_row);
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE &&
-	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
+	    gs_app_get_url_missing (app) != NULL) {
 		gs_shell_show_uri (self->shell,
-	                           gs_app_get_url (app, AS_URL_KIND_MISSING));
+	                           gs_app_get_url_missing (app));
 	} else if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE ||
 	           gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
 	           gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
@@ -448,9 +448,9 @@ create_missing_app (SearchData *search_data)
 	}
 	gs_app_set_summary_missing (app, g_string_free (summary_missing, FALSE));
 
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
-	gs_app_set_url (app, AS_URL_KIND_MISSING, search_data->url_not_found);
+	gs_app_set_url_missing (app, search_data->url_not_found);
 
 	return app;
 }
@@ -479,7 +479,7 @@ build_no_results_label (GsExtrasPage *self)
 	g_ptr_array_add (array, NULL);
 
 	url = g_strdup_printf ("<a href=\"%s\">%s</a>",
-	                       gs_app_get_url (app, AS_URL_KIND_MISSING),
+	                       gs_app_get_url_missing (app),
                                /* TRANSLATORS: hyperlink title */
                                _("the documentation"));
 
@@ -1110,9 +1110,9 @@ row_activated_cb (GtkListBox *list_box,
 	app = gs_app_row_get_app (GS_APP_ROW (row));
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE &&
-	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
+	    gs_app_get_url_missing (app) != NULL) {
 		gs_shell_show_uri (self->shell,
-		                   gs_app_get_url (app, AS_URL_KIND_MISSING));
+		                   gs_app_get_url_missing (app));
 	} else {
 		gs_shell_show_app (self->shell, app);
 	}

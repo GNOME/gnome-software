@@ -139,11 +139,11 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		app = gs_app_new (NULL);
-		gs_app_set_from_unique_id (app, "*/*/*/*/system/*");
+		gs_app_set_from_unique_id (app, "*/*/*/system/*", AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_install_date (app, mtime);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
@@ -170,7 +170,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_source_id (app, package_id);
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_install_date (app, mtime);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",

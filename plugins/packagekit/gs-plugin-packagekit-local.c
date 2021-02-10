@@ -97,7 +97,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 		}
 	}
 	if (basename_best->len > 0) {
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 		gs_app_set_id (app, basename_best->str);
 	}
 
@@ -233,7 +233,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_management_plugin (app, "packagekit");
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
@@ -247,7 +247,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size_installed (app, pk_details_get_size (item));
 	gs_app_set_size_download (app, 0);
-	license_spdx = as_utils_license_to_spdx (pk_details_get_license (item));
+	license_spdx = as_license_to_spdx_id (pk_details_get_license (item));
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 	add_quirks_from_package_name (app, split[PK_PACKAGE_ID_NAME]);
 

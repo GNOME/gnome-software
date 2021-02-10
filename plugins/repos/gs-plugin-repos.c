@@ -191,7 +191,7 @@ refine_app_locked (GsPlugin             *plugin,
 
 	/* find hostname */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_SOURCE:
+	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
 		tmp = g_hash_table_lookup (priv->urls, gs_app_get_id (app));
@@ -209,7 +209,7 @@ refine_app_locked (GsPlugin             *plugin,
 
 	/* find filename */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_SOURCE:
+	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
 		tmp = g_hash_table_lookup (priv->fns, gs_app_get_id (app));

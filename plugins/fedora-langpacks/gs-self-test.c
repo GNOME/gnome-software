@@ -52,7 +52,7 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 	/* check app's source and kind */
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "langpacks-ja");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_LOCALIZATION);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_LOCALIZATION);
 }
 
 int
