@@ -755,7 +755,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	/* add app to the pending installation queue if necessary */
 	if (action == GS_PLUGIN_ACTION_INSTALL &&
 	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-	        add_app_to_install_queue (helper->plugin_loader, app);
+	        add_app_to_install_queue (plugin_loader, app);
 	}
 
 #ifdef HAVE_SYSPROF
