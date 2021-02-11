@@ -81,68 +81,10 @@
                             <property name="border_width">12</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkOverlay" id="overlay">
+                              <object class="GsFeaturedCarousel" id="featured_carousel">
                                 <property name="visible">True</property>
-                                <property name="halign">fill</property>
-                                <property name="valign">fill</property>
                                 <property name="height-request">150</property>
-                                <child type="overlay">
-                                  <object class="GtkStack" id="stack_featured">
-                                    <property name="visible">True</property>
-                                    <property name="halign">fill</property>
-                                    <property name="transition-type">crossfade</property>
-                                  </object>
-                                </child>
-                                <child type="overlay">
-                                  <object class="GtkButton" id="button_featured_back">
-                                    <property name="visible">True</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject" id="button_featured_back_accessible">
-                                        <property name="accessible-name" translatable="yes">Previous</property>
-                                      </object>
-                                    </child>
-                                    <style>
-                                      <class name="osd"/>
-                                      <class name="featured-button-left"/>
-                                    </style>
-                                    <child>
-                                      <object class="GtkImage" id="back_image">
-                                        <property name="visible">True</property>
-                                        <property name="icon_name">go-previous-symbolic</property>
-                                        <property name="icon_size">1</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child type="overlay">
-                                  <object class="GtkButton" id="button_featured_forwards">
-                                    <property name="visible">True</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">end</property>
-                                    <property name="valign">center</property>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject" id="button_featured_forwards_accessible">
-                                        <property name="accessible-name" translatable="yes">Next</property>
-                                      </object>
-                                    </child>
-                                    <style>
-                                      <class name="osd"/>
-                                      <class name="featured-button-right"/>
-                                    </style>
-                                    <child>
-                                      <object class="GtkImage" id="forwards_image">
-                                        <property name="visible">True</property>
-                                        <property name="icon_name">go-next-symbolic</property>
-                                        <property name="icon_size">1</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
+                                <signal name="app-clicked" handler="featured_carousel_app_clicked_cb"/>
                               </object>
                             </child>
 
