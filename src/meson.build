@@ -31,6 +31,7 @@ gnome_software_sources = [
   'gs-details-page.c',
   'gs-extras-page.c',
   'gs-feature-tile.c',
+  'gs-featured-carousel.c',
   'gs-first-run-dialog.c',
   'gs-fixed-size-bin.c',
   'gs-folders.c',

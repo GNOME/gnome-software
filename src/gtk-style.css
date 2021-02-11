@@ -547,10 +547,38 @@ flowboxchild {
 	opacity: 0.5;
 }
 
+.featured-carousel rounded-bin {
+	border-radius: 8px;
+}
+
 .featured-button-left,
 .featured-button-right {
 	padding: 2px 5px;
-	margin: 6px;
+	border-radius: 50%;
+	-gtk-outline-radius: 50%;
+	color: @theme_fg_color;
+}
+
+.featured-carousel button.osd {
+	-gtk-icon-shadow: none;
+}
+
+.featured-carousel button.osd:focus {
+	/* this is @theme_fg_color at 10% opacity, but we can’t use the variable
+	 * directly as rgba() requires 4 components */
+	background: rgba(46, 52, 54, 0.1);
+}
+
+.featured-carousel button.osd:hover {
+	/* this is @theme_fg_color at 20% opacity, but we can’t use the variable
+	 * directly as rgba() requires 4 components */
+	background: rgba(46, 52, 54, 0.2);
+}
+
+.featured-carousel button.osd:active {
+	/* this is @theme_fg_color at 35% opacity, but we can’t use the variable
+	 * directly as rgba() requires 4 components */
+	background: rgba(46, 52, 54, 0.35);
 }
 
 .featured-button-left:not(:hover),
