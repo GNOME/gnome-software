@@ -98,7 +98,15 @@ add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 conf.set('HAVE_LINUX_UNISTD_H', cc.has_header('linux/unistd.h'))
 
-appstream = dependency('appstream', version : '>= 0.14.0', fallback : ['appstream', 'appstream_dep'])
+appstream = dependency('appstream',
+  version : '>= 0.14.0',
+  fallback : ['appstream', 'appstream_dep'],
+  default_options : [
+    'docs=false',
+    'apidocs=false',
+    'install-docs=false'
+  ]
+)
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
