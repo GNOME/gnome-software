@@ -266,16 +266,21 @@
 .featured-tile {
 	all: unset;
 	padding: 0;
-	border-radius: 5px; /* match button tiles */
-	border-width: 1px;
-	border-image: none;
-	border-color:@theme_bg_color;
 	box-shadow: none;
-	/* box-shadow: inset 0 0 0 1px alpha(@theme_fg_color,0.3), 0 0 1px alpha(black,0.4); */
+	color: @theme_fg_color;
 }
 .featured-tile:backdrop label {
-    color: inherit;
-    text-shadow: none;
+	color: inherit;
+	text-shadow: none;
+}
+
+.featured-tile label.title-1 {
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+.featured-tile.narrow label.title-1 {
+	font-size: 16pt;  /* 80% of .title-1 */
 }
 
 .application-details-infobar.info {

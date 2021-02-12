@@ -20,12 +20,15 @@ struct _GsFeatureTile
 {
 	GsAppTile	 parent_instance;
 	GtkWidget	*stack;
+	GtkWidget	*image;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
 	const gchar	*markup_cache;  /* (unowned) (nullable) */
 	GtkCssProvider	*tile_provider;  /* (owned) (nullable) */
 	GtkCssProvider	*title_provider;  /* (owned) (nullable) */
 	GtkCssProvider	*subtitle_provider;  /* (owned) (nullable) */
+	GPtrArray	*key_colors_cache;  /* (unowned) (nullable) */
+	gboolean	 narrow_mode;
 };
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -50,15 +53,39 @@ gs_feature_tile_refresh (GsAppTile *self)
 	AtkObject *accessible;
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
+	GtkStyleContext *context;
 
 	if (app == NULL)
 		return;
 
 	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 
-	/* update text */
+	/* Set the narrow mode. */
+	context = gtk_widget_get_style_context (GTK_WIDGET (self));
+	if (tile->narrow_mode)
+		gtk_style_context_add_class (context, "narrow");
+	else
+		gtk_style_context_remove_class (context, "narrow");
+
+	/* Update the icon. */
+	if (gs_app_get_pixbuf (app) != NULL) {
+		guint desired_width = tile->narrow_mode ? 128 : 160;
+		GdkPixbuf *pixbuf = gs_app_get_pixbuf (app);
+		guint pixbuf_width = (guint) gdk_pixbuf_get_width (pixbuf);
+		guint scale = (desired_width <= pixbuf_width) ? pixbuf_width / desired_width : 1;
+
+		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (tile->image), pixbuf, scale);
+		gtk_widget_show (tile->image);
+	} else {
+		gtk_widget_hide (tile->image);
+	}
+
+	/* Update text and let it wrap if the widget is narrow. */
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
+
+	gtk_label_set_line_wrap (GTK_LABEL (tile->subtitle), tile->narrow_mode);
+	gtk_label_set_lines (GTK_LABEL (tile->subtitle), tile->narrow_mode ? 2 : 1);
 
 	/* perhaps set custom css; cache it so that images don’t get reloaded
 	 * unnecessarily. The custom CSS is direction-dependent, and will be
@@ -69,7 +96,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	if (markup == NULL)
 		markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
 
-	if (tile->markup_cache != markup) {
+	if (tile->markup_cache != markup && markup != NULL) {
 		g_autoptr(GsCss) css = gs_css_new ();
 		g_autofree gchar *modified_markup = gs_utils_set_key_colors_in_css (markup, app);
 		if (modified_markup != NULL)
@@ -81,6 +108,36 @@ gs_feature_tile_refresh (GsAppTile *self)
 		gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle",
 					 gs_css_get_markup_for_id (css, "summary"));
 		tile->markup_cache = markup;
+	} else if (markup == NULL) {
+		GPtrArray *key_colors = gs_app_get_key_colors (app);
+		g_autofree gchar *css = NULL;
+
+		if (key_colors != tile->key_colors_cache) {
+			/* If there is no override CSS for the app, default to a solid
+			 * background colour based on the app’s key colors.
+			 *
+			 * Choose an arbitrary key color from the app’s key colors, and
+			 * hope that it’s:
+			 *  - a light, not too saturated version of the dominant color
+			 *    of the icon
+			 *  - always light enough that grey text is visible on it
+			 */
+			if (key_colors != NULL && key_colors->len > 0) {
+				GdkRGBA *color = key_colors->pdata[key_colors->len - 1];
+
+				css = g_strdup_printf (
+					"background-color: rgb(%.0f,%.0f,%.0f);",
+					color->red * 255.f,
+					color->green * 255.f,
+					color->blue * 255.f);
+			}
+
+			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile", css);
+			gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name", NULL);
+			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle", NULL);
+
+			tile->key_colors_cache = key_colors;
+		}
 	}
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
@@ -116,6 +173,25 @@ gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_
 }
 
 static void
+gs_feature_tile_size_allocate (GtkWidget     *widget,
+                               GtkAllocation *allocation)
+{
+	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
+	gboolean narrow_mode;
+
+	/* Chain up. */
+	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget, allocation);
+
+	/* Engage ‘narrow mode’ if the allocation becomes too narrow. The exact
+	 * choice of width is arbitrary here. */
+	narrow_mode = (allocation->width < 600);
+	if (tile->narrow_mode != narrow_mode) {
+		tile->narrow_mode = narrow_mode;
+		gs_feature_tile_refresh (GS_APP_TILE (tile));
+	}
+}
+
+static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
@@ -132,12 +208,14 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	object_class->dispose = gs_feature_tile_dispose;
 
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
+	widget_class->size_allocate = gs_feature_tile_size_allocate;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-feature-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, image);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, title);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, subtitle);
 }

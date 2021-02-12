@@ -32,13 +32,22 @@
             <property name="orientation">vertical</property>
             <property name="margin">50</property>
             <child>
+              <object class="GtkImage" id="image">
+                <property name="visible">True</property>
+                <style>
+                  <class name="icon-dropshadow"/>
+                </style>
+              </object>
+            </child>
+            <child>
               <object class="GtkLabel" id="title">
                 <property name="visible">True</property>
-                <property name="xalign">0</property>
+                <property name="xalign">0.5</property>
                 <property name="halign">center</property>
                 <property name="valign">end</property>
                 <property name="vexpand">True</property>
                 <property name="ellipsize">end</property>
+                <property name="width-request">300</property>
                 <style>
                   <class name="title-1"/>
                 </style>
@@ -48,9 +57,13 @@
               <object class="GtkLabel" id="subtitle">
                 <property name="visible">True</property>
                 <property name="ellipsize">end</property>
-                <property name="xalign">0</property>
+                <property name="xalign">0.5</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
+                <property name="width-request">300</property>
+                <property name="lines">1</property>
+                <property name="max-width-chars">40</property>
+                <property name="justify">center</property>
                 <style>
                   <class name="caption"/>
                 </style>
