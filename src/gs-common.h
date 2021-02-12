@@ -33,6 +33,8 @@ void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
 
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
+gchar		*gs_utils_set_key_colors_in_css	(const gchar	*css,
+						 GsApp		*app);
 void		 gs_utils_widget_set_css	(GtkWidget	*widget,
 						 GtkCssProvider	**provider,
 						 const gchar	*class_name,

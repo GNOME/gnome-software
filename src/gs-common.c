@@ -355,6 +355,58 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 }
 
 /**
+ * gs_utils_set_key_colors_in_css:
+ * @css: some CSS
+ * @app: a #GsApp to get the key colors from
+ *
+ * Replace placeholders in @css with the key colors from @app, returning a copy
+ * of the CSS with the key colors inlined as `rgb()` literals.
+ *
+ * The key color placeholders are of the form `@keycolor-XX@`, where `XX` is a
+ * two digit counter. The first counter (`00`) will be replaced with the first
+ * key color in @app, the second counter (`01`) with the second, etc.
+ *
+ * CSS may be %NULL, in which case %NULL is returned.
+ *
+ * Returns: (transfer full): a copy of @css with the key color placeholders
+ *     replaced, free with g_free()
+ * Since: 40
+ */
+gchar *
+gs_utils_set_key_colors_in_css (const gchar *css,
+                                GsApp       *app)
+{
+	GPtrArray *key_colors;
+	g_autoptr(GString) css_new = NULL;
+
+	if (css == NULL)
+		return NULL;
+
+	key_colors = gs_app_get_key_colors (app);
+
+	/* Do we not need to do any replacements? */
+	if (key_colors->len == 0 ||
+	    g_strstr_len (css, -1, "@keycolor") == NULL)
+		return g_strdup (css);
+
+	/* replace key color values */
+	css_new = g_string_new (css);
+	for (guint j = 0; j < key_colors->len; j++) {
+		GdkRGBA *color = g_ptr_array_index (key_colors, j);
+		g_autofree gchar *key = NULL;
+		g_autofree gchar *value = NULL;
+		key = g_strdup_printf ("@keycolor-%02u@", j);
+		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
+					 color->red * 255.f,
+					 color->green * 255.f,
+					 color->blue * 255.f);
+		as_gstring_replace (css_new, key, value);
+	}
+
+	return g_string_free (g_steal_pointer (&css_new), FALSE);
+}
+
+/**
  * gs_utils_widget_set_css:
  * @widget: a widget
  * @provider: (inout) (transfer full) (not optional) (nullable): pointer to a

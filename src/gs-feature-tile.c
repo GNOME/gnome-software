@@ -71,8 +71,9 @@ gs_feature_tile_refresh (GsAppTile *self)
 
 	if (tile->markup_cache != markup) {
 		g_autoptr(GsCss) css = gs_css_new ();
-		if (markup != NULL)
-			gs_css_parse (css, markup, NULL);
+		g_autofree gchar *modified_markup = gs_utils_set_key_colors_in_css (markup, app);
+		if (modified_markup != NULL)
+			gs_css_parse (css, modified_markup, NULL);
 		gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile",
 					 gs_css_get_markup_for_id (css, "tile"));
 		gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name",

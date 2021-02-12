@@ -45,6 +45,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
 	const gchar *css;
+	g_autofree gchar *modified_css = NULL;
 
 	if (app == NULL)
 		return;
@@ -75,7 +76,8 @@ gs_summary_tile_refresh (GsAppTile *self)
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", css);
+	modified_css = gs_utils_set_key_colors_in_css (css, app);
+	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", modified_css);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
