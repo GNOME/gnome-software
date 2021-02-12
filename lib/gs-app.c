@@ -4183,7 +4183,7 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
  * @app: a #GsApp
  * @key_color: a #GdkRGBA
  *
- * Adds a key colors used in the application icon.
+ * Adds a key color used in the application icon.
  *
  * Since: 3.22
  **/
