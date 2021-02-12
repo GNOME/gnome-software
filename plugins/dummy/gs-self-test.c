@@ -222,7 +222,6 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("zeus.desktop");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
