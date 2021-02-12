@@ -725,7 +725,6 @@ main (int argc, char **argv)
 		"generic-updates",
 		"hardcoded-blocklist",
 		"icons",
-		"key-colors",
 		"provenance",
 		"provenance-license",
 		NULL

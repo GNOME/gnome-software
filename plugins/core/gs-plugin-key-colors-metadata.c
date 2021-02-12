@@ -13,7 +13,6 @@
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "key-colors");
 }
 
 static gboolean

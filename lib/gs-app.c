@@ -75,7 +75,7 @@ typedef struct
 	GsAppQuality		 description_quality;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
-	GPtrArray		*key_colors;
+	GPtrArray		*key_colors;  /* (nullable) (element-type GdkRGBA) */
 	GHashTable		*urls;
 	GHashTable		*launchables;
 	gchar			*url_missing;
@@ -684,7 +684,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		tmp = g_ptr_array_index (priv->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
 	}
-	for (i = 0; i < priv->key_colors->len; i++) {
+	for (i = 0; priv->key_colors != NULL && i < priv->key_colors->len; i++) {
 		GdkRGBA *color = g_ptr_array_index (priv->key_colors, i);
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("key-color-%02u", i);
@@ -3986,6 +3986,155 @@ gs_app_get_is_update_downloaded (GsApp *app)
 	return priv->is_update_downloaded;
 }
 
+typedef struct {
+	guint8		 R;
+	guint8		 G;
+	guint8		 B;
+} CdColorRGB8;
+
+static guint32
+cd_color_rgb8_to_uint32 (CdColorRGB8 *rgb)
+{
+	return (guint32) rgb->R |
+		(guint32) rgb->G << 8 |
+		(guint32) rgb->B << 16;
+}
+
+typedef struct {
+	GdkRGBA		color;
+	guint		cnt;
+} GsColorBin;
+
+static gint
+gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
+{
+	GsColorBin *s1 = (GsColorBin *) a;
+	GsColorBin *s2 = (GsColorBin *) b;
+	if (s1->cnt < s2->cnt)
+		return 1;
+	if (s1->cnt > s2->cnt)
+		return -1;
+	return 0;
+}
+
+/* convert range of 0..255 to 0..1 */
+static inline gdouble
+_convert_from_rgb8 (guchar val)
+{
+	return (gdouble) val / 255.f;
+}
+
+static void
+key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
+{
+	gint rowstride, n_channels;
+	gint x, y, width, height;
+	guchar *pixels, *p;
+	guint bin_size = 200;
+	guint i;
+	guint number_of_bins;
+
+	/* go through each pixel */
+	n_channels = gdk_pixbuf_get_n_channels (pb);
+	rowstride = gdk_pixbuf_get_rowstride (pb);
+	pixels = gdk_pixbuf_get_pixels (pb);
+	width = gdk_pixbuf_get_width (pb);
+	height = gdk_pixbuf_get_height (pb);
+
+	for (bin_size = 250; bin_size > 0; bin_size -= 2) {
+		g_autoptr(GHashTable) hash = NULL;
+		hash = g_hash_table_new_full (g_direct_hash,  g_direct_equal,
+					      NULL, g_free);
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				CdColorRGB8 tmp;
+				GsColorBin *s;
+				gpointer key;
+
+				/* disregard any with alpha */
+				p = pixels + y * rowstride + x * n_channels;
+				if (p[3] != 255)
+					continue;
+
+				/* find in cache */
+				tmp.R = (guint8) (p[0] / bin_size);
+				tmp.G = (guint8) (p[1] / bin_size);
+				tmp.B = (guint8) (p[2] / bin_size);
+				key = GUINT_TO_POINTER (cd_color_rgb8_to_uint32 (&tmp));
+				s = g_hash_table_lookup (hash, key);
+				if (s != NULL) {
+					s->color.red += _convert_from_rgb8 (p[0]);
+					s->color.green += _convert_from_rgb8 (p[1]);
+					s->color.blue += _convert_from_rgb8 (p[2]);
+					s->cnt++;
+					continue;
+				}
+
+				/* add to hash table */
+				s = g_new0 (GsColorBin, 1);
+				s->color.red = _convert_from_rgb8 (p[0]);
+				s->color.green = _convert_from_rgb8 (p[1]);
+				s->color.blue = _convert_from_rgb8 (p[2]);
+				s->color.alpha = 1.0;
+				s->cnt = 1;
+				g_hash_table_insert (hash, key, s);
+			}
+		}
+
+		number_of_bins = g_hash_table_size (hash);
+//		g_debug ("number of colors: %i", number_of_bins);
+		if (number_of_bins >= number) {
+			g_autoptr(GList) values = NULL;
+
+			/* order by most popular */
+			values = g_hash_table_get_values (hash);
+			values = g_list_sort (values, gs_color_bin_sort_cb);
+			for (GList *l = values; l != NULL; l = l->next) {
+				GsColorBin *s = l->data;
+				g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
+				color->red = s->color.red / s->cnt;
+				color->green = s->color.green / s->cnt;
+				color->blue = s->color.blue / s->cnt;
+				gs_app_add_key_color (app, color);
+			}
+			return;
+		}
+	}
+
+	/* the algorithm failed, so just return a monochrome ramp */
+	for (i = 0; i < 3; i++) {
+		g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
+		color->red = (gdouble) i / 3.f;
+		color->green = color->red;
+		color->blue = color->red;
+		color->alpha = 1.0f;
+		gs_app_add_key_color (app, color);
+	}
+}
+
+static void
+calculate_key_colors (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	GdkPixbuf *pb;
+	g_autoptr(GdkPixbuf) pb_small = NULL;
+
+	/* Lazily create the array */
+	if (priv->key_colors == NULL)
+		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+
+	/* no pixbuf */
+	pb = gs_app_get_pixbuf (app);
+	if (pb == NULL) {
+		g_debug ("no pixbuf, so no key colors");
+		return;
+	}
+
+	/* get a list of key colors */
+	pb_small = gdk_pixbuf_scale_simple (pb, 32, 32, GDK_INTERP_BILINEAR);
+	key_colors_set_for_pixbuf (app, pb_small, 10);
+}
+
 /**
  * gs_app_get_key_colors:
  * @app: a #GsApp
@@ -4001,6 +4150,10 @@ gs_app_get_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	if (priv->key_colors == NULL)
+		calculate_key_colors (app);
+
 	return priv->key_colors;
 }
 
@@ -4040,6 +4193,11 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_color != NULL);
+
+	/* Lazily create the array */
+	if (priv->key_colors == NULL)
+		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+
 	g_ptr_array_add (priv->key_colors, gdk_rgba_copy (key_color));
 	gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
@@ -4481,7 +4639,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_enum (value, priv->pending_action);
 		break;
 	case PROP_KEY_COLORS:
-		g_value_set_boxed (value, priv->key_colors);
+		g_value_set_boxed (value, gs_app_get_key_colors (app));
 		break;
 	case PROP_IS_UPDATE_DOWNLOADED:
 		g_value_set_boolean (value, priv->is_update_downloaded);
@@ -4627,7 +4785,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->categories);
-	g_ptr_array_unref (priv->key_colors);
+	g_clear_pointer (&priv->key_colors, g_ptr_array_unref);
 	g_clear_object (&priv->cancellable);
 	if (priv->local_file != NULL)
 		g_object_unref (priv->local_file);
@@ -4811,7 +4969,6 @@ gs_app_init (GsApp *app)
 	priv->sources = g_ptr_array_new_with_free_func (g_free);
 	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	priv->categories = g_ptr_array_new_with_free_func (g_free);
-	priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
 	priv->addons = gs_app_list_new ();
 	priv->related = gs_app_list_new ();
 	priv->history = gs_app_list_new ();
