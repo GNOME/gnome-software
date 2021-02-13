@@ -127,6 +127,7 @@ typedef struct
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
 	gboolean		 is_update_downloaded;
+	GPtrArray		*version_history; /* (element-type AsRelease) */
 } GsAppPrivate;
 
 enum {
@@ -4584,6 +4585,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
 	g_clear_pointer (&priv->provided, g_ptr_array_unref);
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
+	g_clear_pointer (&priv->version_history, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -5120,4 +5122,44 @@ gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	priv->update_permissions = update_permissions;
+}
+
+/**
+ * gs_app_get_version_history:
+ * @app: a #GsApp
+ *
+ * Gets the list of past releases for an application (including the latest
+ * one).
+ *
+ * Returns: (element-type AsRelease) (transfer none): a list
+ *
+ * Since: 40
+ **/
+GPtrArray *
+gs_app_get_version_history (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->version_history;
+}
+
+/**
+ * gs_app_set_version_history:
+ * @app: a #GsApp
+ * @version_history: (element-type AsRelease): a set of entries representing
+ *   the version history
+ *
+ * Set the list of past releases for an application (including the latest one).
+ *
+ * Since: 40
+ **/
+void
+gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (version_history != NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
+	_g_set_ptr_array (&priv->version_history, version_history);
 }

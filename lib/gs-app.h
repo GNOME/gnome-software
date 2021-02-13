@@ -466,5 +466,8 @@ void		 gs_app_set_permissions		(GsApp		*app,
 GsAppPermissions gs_app_get_update_permissions	(GsApp		*app);
 void		 gs_app_set_update_permissions	(GsApp		*app,
 						 GsAppPermissions update_permissions);
+GPtrArray	*gs_app_get_version_history	(GsApp		*app);
+void		 gs_app_set_version_history	(GsApp		*app,
+						 GPtrArray	*version_history);
 
 G_END_DECLS

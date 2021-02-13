@@ -14,6 +14,12 @@
 
 #include "gs-common.h"
 
+#ifdef HAVE_GSETTINGS_DESKTOP_SCHEMAS
+#include <gdesktop-enums.h>
+#endif
+
+#include <langinfo.h>
+
 #define SPINNER_DELAY 500
 
 static gboolean
@@ -653,4 +659,65 @@ gs_utils_reboot_notify (GsAppList *list)
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_notification_set_priority (n, G_NOTIFICATION_PRIORITY_URGENT);
 	g_application_send_notification (g_application_get_default (), "restart-required", n);
+}
+
+/**
+ * gs_utils_time_to_string:
+ * @unix_time_seconds: Time since the epoch in seconds
+ *
+ * Converts a time to a string such as "5 minutes ago" or "2 weeks ago"
+ *
+ * Returns: (transfer full): the time string, or %NULL if @unix_time_seconds is
+ *   not valid
+ */
+gchar *
+gs_utils_time_to_string (gint64 unix_time_seconds)
+{
+	gint minutes_ago, hours_ago, days_ago;
+	gint weeks_ago, months_ago, years_ago;
+	g_autoptr(GDateTime) date_time = NULL;
+	g_autoptr(GDateTime) now = NULL;
+	GTimeSpan timespan;
+
+	if (unix_time_seconds <= 0)
+		return NULL;
+
+	date_time = g_date_time_new_from_unix_local (unix_time_seconds);
+	now = g_date_time_new_now_local ();
+	timespan = g_date_time_difference (now, date_time);
+
+	minutes_ago = (gint) (timespan / G_TIME_SPAN_MINUTE);
+	hours_ago = (gint) (timespan / G_TIME_SPAN_HOUR);
+	days_ago = (gint) (timespan / G_TIME_SPAN_DAY);
+	weeks_ago = days_ago / 7;
+	months_ago = days_ago / 30;
+	years_ago = weeks_ago / 52;
+
+	if (minutes_ago < 5) {
+		/* TRANSLATORS: something happened less than 5 minutes ago */
+		return g_strdup (_("Just now"));
+	} else if (hours_ago < 1)
+		return g_strdup_printf (ngettext ("%d minute ago",
+						  "%d minutes ago", minutes_ago),
+					minutes_ago);
+	else if (days_ago < 1)
+		return g_strdup_printf (ngettext ("%d hour ago",
+						  "%d hours ago", hours_ago),
+					hours_ago);
+	else if (days_ago < 15)
+		return g_strdup_printf (ngettext ("%d day ago",
+						  "%d days ago", days_ago),
+					days_ago);
+	else if (weeks_ago < 8)
+		return g_strdup_printf (ngettext ("%d week ago",
+						  "%d weeks ago", weeks_ago),
+					weeks_ago);
+	else if (years_ago < 1)
+		return g_strdup_printf (ngettext ("%d month ago",
+						  "%d months ago", months_ago),
+					months_ago);
+	else
+		return g_strdup_printf (ngettext ("%d year ago",
+						  "%d years ago", years_ago),
+					years_ago);
 }

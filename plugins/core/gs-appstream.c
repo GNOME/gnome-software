@@ -587,6 +587,63 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError **error)
+{
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GPtrArray) version_history = NULL; /* (element-type AsRelease) */
+	g_autoptr(GPtrArray) releases = NULL; /* (element-type XbNode) */
+
+	/* get all components */
+	releases = xb_node_query (component, "releases/*", 0, &error_local);
+	if (releases == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	version_history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	for (guint i = 0; i < releases->len; i++) {
+		XbNode *release_node = g_ptr_array_index (releases, i);
+		const gchar *version = xb_node_get_attr (release_node, "version");
+		g_autoptr(XbNode) description_node = NULL;
+		g_autofree gchar *description = NULL;
+		guint64 timestamp;
+		g_autoptr(AsRelease) release = NULL;
+		g_autofree char *timestamp_xpath = NULL;
+
+		/* ignore releases with no version */
+		if (version == NULL)
+			continue;
+
+		timestamp_xpath = g_strdup_printf ("releases/release[%u]", i+1);
+		timestamp = xb_node_query_attr_as_uint (component, timestamp_xpath, "timestamp", NULL);
+
+		/* include updates with or without a description */
+		description_node = xb_node_query_first (release_node, "description", NULL);
+		if (description_node != NULL)
+			description = gs_appstream_format_description (description_node, NULL);
+
+		release = as_release_new ();
+		as_release_set_version (release, version);
+		if (timestamp != G_MAXUINT64)
+			as_release_set_timestamp (release, timestamp);
+		if (description != NULL)
+			as_release_set_description (release, description, NULL);
+
+		g_ptr_array_add (version_history, g_steal_pointer (&release));
+	}
+
+	if (version_history->len > 0)
+		gs_app_set_version_history (app, version_history);
+
+	/* success */
+	return TRUE;
+}
+
 /**
  * _gs_utils_locale_has_translations:
  * @locale: A locale, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
@@ -922,6 +979,10 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	timestamp = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
 	if (timestamp != G_MAXUINT64)
 		gs_app_set_release_date (app, timestamp);
+
+	/* set the version history */
+	if (!gs_appstream_refine_add_version_history (app, component, error))
+		return FALSE;
 
 	/* copy all the metadata */
 	if (!gs_appstream_copy_metadata (app, component, error))
