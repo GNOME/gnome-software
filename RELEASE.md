@@ -25,7 +25,9 @@ git status
 
 Check the version in `meson.build` is correct for this release.
 
-Write release entries:
+Download
+[gitlab-changelog](https://gitlab.gnome.org/pwithnall/gitlab-changelog) and use
+it to write release entries:
 ```
 gitlab-changelog GNOME/gnome-software ${previous_version}..
 ```
