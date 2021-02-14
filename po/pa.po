@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-01-26 11:29+0000\n"
-"PO-Revision-Date: 2021-02-01 11:48-0800\n"
+"POT-Creation-Date: 2021-02-13 14:56+0000\n"
+"PO-Revision-Date: 2021-02-13 16:10-0800\n"
 "Last-Translator: A S Alam <aalam@satluj.org>\n"
 "Language-Team: Punjabi <kde-i18n-doc@kde.org>\n"
 "Language: pa\n"
@@ -69,7 +69,7 @@ msgstr "ਅੱਪਡੇਟ ਪੈਨਲ"
 msgid "The update details"
 msgstr "ਅੱਪਡੇਟ ਦੇ ਵੇਰਵੇ"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1528
+#: data/appdata/org.gnome.Software.appdata.xml.in:1581
 msgid "The GNOME Project"
 msgstr "ਗਨੋਮ ਪਰੋਜੈੱਕਟ"
 
@@ -194,7 +194,6 @@ msgid "The last upgrade notification timestamp"
 msgstr "ਆਖਰੀ ਅੱਪਗਰੇਡ ਸੂਚਨਾ ਸਮਾਂ"
 
 #: data/org.gnome.software.gschema.xml:60
-#| msgid "The last upgrade notification timestamp"
 msgid "The last update notification timestamp"
 msgstr "ਆਖਰੀ ਅੱਪਡੇਟ ਸੂਚਨਾ ਸਮਾਂ-ਮੋਹਰ"
 
@@ -360,7 +359,7 @@ msgstr "ਖੋਜ"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:943
+#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:982
 msgid "Source"
 msgstr "ਸਰੋਤ"
 
@@ -377,7 +376,7 @@ msgstr "ਡਿਸਕ ਦੀ ਜਾਂਚ ਕਰੋ"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:393 src/gs-updates-page.c:922
+#: src/gnome-software.ui:393 src/gs-updates-page.c:838
 msgid "Network Settings"
 msgstr "ਨੈੱਟਵਰਕ ਸੈਟਿੰਗ"
 
@@ -393,30 +392,35 @@ msgstr "ਹੋਰ ਜਾਣਕਾਰੀ"
 
 #: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
-#| msgid "Automatic Updates"
 msgid "Automatic Updates Paused"
 msgstr "ਆਪਣੇ-ਆਪ ਅੱਪਡੇਟ ਵਿਰਾਮ ਕੀਤੇ"
 
 #: src/gnome-software.ui:480
-#| msgid "Find out more…"
 msgid "Find Out _More"
 msgstr "ਹੋਰ ਲੱਭੋ(_M)"
 
-#. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4739
+#: lib/gs-app.c:4968
 msgid "Local file"
 msgstr "ਲੋਕਲ ਫ਼ਾਇਲ"
 
-#: lib/gs-app.c:4815
+#. TRANSLATORS: the first %s is replaced with an origin name;
+#. the second %s is replaced with the packaging format.
+#. Example string: "Local file (RPM)"
+#: lib/gs-app.c:4983
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: lib/gs-app.c:5051
 msgid "Package"
 msgstr "ਪੈਕੇਜ"
 
-#: src/gs-app-addon-row.c:83 src/gs-app-row.c:415
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:415
 msgid "Pending"
 msgstr "ਬਾਕੀ"
 
-#: src/gs-app-addon-row.c:89 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:88
+#: src/gs-app-addon-row.c:103 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:94
 msgid "Installed"
 msgstr "ਇੰਸਟਾਲ ਹੋਏ"
 
@@ -424,17 +428,51 @@ msgstr "ਇੰਸਟਾਲ ਹੋਏ"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:363
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:364
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:97 src/gs-repo-row.c:126
+#: src/gs-app-addon-row.c:111 src/gs-repo-row.c:126
 #: src/gs-third-party-repo-row.c:107
 msgid "Removing"
 msgstr "ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: src/gs-app-addon-row.ui:69 src/gs-details-page.c:989
+#: src/gs-details-page.ui:201
+msgid "_Uninstall"
+msgstr "ਅਣ-ਇੰਸਟਾਲ ਕਰੋ(_U)"
+
+#: src/gs-app-version-history-dialog.ui:5 src/gs-details-page.ui:483
+#| msgid "Version"
+msgid "Version History"
+msgstr "ਵਰਜ਼ਨ ਦਾ ਅਤੀਤ"
+
+#: src/gs-app-version-history-row.c:61
+#, c-format
+msgid "New in Version %s"
+msgstr "ਵਰਜ਼ਨ %s ਵਿੱਚ ਨਵਾਂ"
+
+#: src/gs-app-version-history-row.c:67
+#, c-format
+#| msgid "Version"
+msgid "Version %s"
+msgstr "ਵਰਜ਼ਨ %s"
+
+#: src/gs-app-version-history-row.c:69
+#| msgid "No details were available for this rating."
+msgid "No details for this release"
+msgstr "ਇਸ ਰੀਲਿਜ਼ ਲਈ ਕੋਈ ਵੇਰਵੇ ਨਹੀਂ ਹਨ"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: src/gs-app-version-history-row.c:83 src/gs-history-dialog.c:111
+#: src/gs-review-row.c:65
+msgid "%e %B %Y"
+msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
 #: src/gs-application.c:118
@@ -548,7 +586,7 @@ msgstr "..ਇੰਸਟਾਲ ਕਰੋ"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:482
+#: src/gs-app-row.c:139 src/gs-updates-section.c:488
 msgid "Cancel"
 msgstr "ਰੱਦ ਕਰੋ"
 
@@ -556,7 +594,7 @@ msgstr "ਰੱਦ ਕਰੋ"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:338
+#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:338
 msgid "Install"
 msgstr "ਇੰਸਟਾਲ ਕਰੋ"
 
@@ -570,14 +608,12 @@ msgstr "ਅੱਪਡੇਟ ਕਰੋ"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:496
-#| msgid "Install"
 msgid "Uninstall"
 msgstr "ਅਣ-ਇੰਸਟਾਲ ਕਰੋ"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
 #: src/gs-app-row.c:178
-#| msgid "Installing"
 msgid "Uninstalling"
 msgstr "ਅਣ-ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
@@ -614,8 +650,6 @@ msgid "_Cancel"
 msgstr "ਰੱਦ ਕਰੋ(_C)"
 
 #: src/gs-basic-auth-dialog.ui:39
-#| msgctxt "Menu of Games"
-#| msgid "Logic"
 msgid "_Login"
 msgstr "ਲਾਗਇਨ(_L)"
 
@@ -624,24 +658,23 @@ msgid "_User"
 msgstr "ਵਰਤੋਂਕਾਰ(_U)"
 
 #: src/gs-basic-auth-dialog.ui:119
-#| msgid "Password"
 msgid "_Password"
 msgstr "ਪਾਸਵਰਡ(_P)"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: lib/gs-category.c:178
+#: lib/gs-category.c:209
 msgid "Other"
 msgstr "ਹੋਰ"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:183
+#: lib/gs-category.c:214
 msgid "All"
 msgstr "ਸਭ"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: lib/gs-category.c:187
+#: lib/gs-category.c:218
 msgid "Featured"
 msgstr "ਫੀਚਰ"
 
@@ -659,7 +692,7 @@ msgstr "ਰੇਟਿੰਗ"
 
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:59
+#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:55
 msgid "Name"
 msgstr "ਨਾਂ"
 
@@ -682,66 +715,459 @@ msgid "Subcategories sorting menu"
 msgstr "ਅਧੀਨ-ਵਰਗ ਲੜੀਬੱਧ ਮੇਨੂ"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:191
+#: lib/gs-cmd.c:192
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "1 ਤੋਂ %u ਲਈ ਕੋਈ ਨੰਬਰ ਦਿਓ: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:254
+#: lib/gs-cmd.c:255
 msgid "Choose an application:"
 msgstr "ਐਪਲੀਕੇਸ਼ਨ ਚੁਣੋ:"
 
-#. TRANSLATORS: this is the summary of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:124
-msgid "OS updates are now installed"
-msgstr "ਓ.ਸਿ. ਅੱਪਡੇਟ ਹੁਣ ਇੰਸਟਾਲ ਕੀਤਾ ਗਿਆ"
+#: lib/gs-desktop-data.c:17
+msgctxt "Menu of Audio & Video"
+msgid "All"
+msgstr "ਸਭ"
 
-#. TRANSLATORS: this is the body of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:127
-msgid "Recently installed updates are available to review"
-msgstr "ਹੁਣੇ ਇੰਸਟਾਲ ਕੀਤੇ ਅੱਪਡੇਟ ਪੜਤਾਲ ਲਈ ਉਪਲਬਧ ਹਨ"
+#: lib/gs-desktop-data.c:20
+msgctxt "Menu of Audio & Video"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:23
+msgctxt "Menu of Audio & Video"
+msgid "Audio Creation & Editing"
+msgstr "ਆਡੀਓ ਬਣਾਉਣਾ ਤੇ ਸੋਧਣਾ"
+
+#: lib/gs-desktop-data.c:29
+msgctxt "Menu of Audio & Video"
+msgid "Music Players"
+msgstr "ਸੰਗੀਤ ਪਲੇਅਰ"
+
+#: lib/gs-desktop-data.c:38
+msgctxt "Menu of Developer Tools"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:41
+msgctxt "Menu of Developer Tools"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:44
+msgctxt "Menu of Developer Tools"
+msgid "Debuggers"
+msgstr "ਡੀਬੱਗਰ"
+
+#: lib/gs-desktop-data.c:47
+msgctxt "Menu of Developer Tools"
+msgid "IDEs"
+msgstr "IDE"
+
+#: lib/gs-desktop-data.c:56
+msgctxt "Menu of Education & Science"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:60
+msgctxt "Menu of Education & Science"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:64
+msgctxt "Menu of Education & Science"
+msgid "Artificial Intelligence"
+msgstr "ਨਕਲੀ ਮੁਹਾਰਤ"
+
+#: lib/gs-desktop-data.c:67
+msgctxt "Menu of Education & Science"
+msgid "Astronomy"
+msgstr "ਤਾਰਾ-ਵਿਗਿਆਨ"
+
+#: lib/gs-desktop-data.c:71
+msgctxt "Menu of Education & Science"
+msgid "Chemistry"
+msgstr "ਰਸਾਇਣ-ਵਿਗਿਆਨ"
+
+#: lib/gs-desktop-data.c:75
+msgctxt "Menu of Education & Science"
+msgid "Languages"
+msgstr "ਭਾਸ਼ਾਵਾਂ"
+
+#: lib/gs-desktop-data.c:79
+msgctxt "Menu of Education & Science"
+msgid "Math"
+msgstr "ਗਣਿਤ"
+
+#: lib/gs-desktop-data.c:86
+msgctxt "Menu of Education & Science"
+msgid "Robotics"
+msgstr "ਰੋਬੋਟ"
+
+#: lib/gs-desktop-data.c:95
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:98
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "ਫੀਚਰ"
+
+#: lib/gs-desktop-data.c:101
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "ਕਾਰਵਾਈ"
+
+#: lib/gs-desktop-data.c:104
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "ਜਾਂਬਾਜ਼ੀ"
+
+#: lib/gs-desktop-data.c:107
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "ਆਰਕੇਡ"
+
+#: lib/gs-desktop-data.c:110
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "ਬਲਾਕ"
+
+#: lib/gs-desktop-data.c:113
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "ਬੋਰਡ"
+
+#: lib/gs-desktop-data.c:116
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "ਤਾਸ਼"
+
+#: lib/gs-desktop-data.c:119
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "ਈਮੂਲੇਟਰ"
+
+#: lib/gs-desktop-data.c:122
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "ਬੱਚੇ"
+
+#: lib/gs-desktop-data.c:125
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "ਲਾਜਿਕ"
+
+#: lib/gs-desktop-data.c:129
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "ਭੂਮਿਕਾ ਨਿਭਾਉਣਾ"
+
+#: lib/gs-desktop-data.c:132
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "ਖੇਡਾਂ"
+
+#: lib/gs-desktop-data.c:135
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "ਕਾਰਜਨੀਤੀ"
+
+#: lib/gs-desktop-data.c:143
+msgctxt "Menu of Graphics & Photography"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:146
+msgctxt "Menu of Graphics & Photography"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:149
+msgctxt "Menu of Graphics & Photography"
+msgid "3D Graphics"
+msgstr "3D ਗਰਾਫਿਕਸ"
+
+#: lib/gs-desktop-data.c:152
+msgctxt "Menu of Graphics & Photography"
+msgid "Photography"
+msgstr "ਫੋਟੋਗਰਾਫ਼ੀ"
+
+#: lib/gs-desktop-data.c:155
+msgctxt "Menu of Graphics & Photography"
+msgid "Scanning"
+msgstr "ਸਕੈਨ ਕਰਨਾ"
+
+#: lib/gs-desktop-data.c:158
+msgctxt "Menu of Graphics & Photography"
+msgid "Vector Graphics"
+msgstr "ਵੈਕਟਰ ਗਰਾਫਿਕਸ"
+
+#: lib/gs-desktop-data.c:161
+msgctxt "Menu of Graphics & Photography"
+msgid "Viewers"
+msgstr "ਵਿਊਅਰ"
+
+#: lib/gs-desktop-data.c:169
+msgctxt "Menu of Productivity"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:172
+msgctxt "Menu of Productivity"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:175
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "ਕੈਲੰਡਰ"
+
+#: lib/gs-desktop-data.c:179
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "ਡਾਟਾਬੇਸ"
+
+#: lib/gs-desktop-data.c:182
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "ਵਿੱਤੀ"
+
+#: lib/gs-desktop-data.c:186
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "ਵਰਡ ਪਰੋਸੈਸ"
+
+#: lib/gs-desktop-data.c:195
+msgctxt "Menu of Add-ons"
+msgid "Fonts"
+msgstr "ਫ਼ੋਂਟ"
+
+#: lib/gs-desktop-data.c:198
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "ਕੋਡਕਸ"
+
+#: lib/gs-desktop-data.c:201
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "ਇੰਪੁੱਟ ਸਰੋਤ"
+
+#: lib/gs-desktop-data.c:204
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "ਭਾਸ਼ਾ ਪੈਕ"
+
+#: lib/gs-desktop-data.c:207
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "ਉਲੱਥਾ"
+
+#: lib/gs-desktop-data.c:210
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "ਹਾਰਡਵੇਅਰ ਡਰਾਇਵਰ"
+
+#: lib/gs-desktop-data.c:218
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:221
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:224
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "ਗੱਲਬਾਤ"
+
+#: lib/gs-desktop-data.c:231
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "ਖ਼ਬਰਾਂ"
+
+#: lib/gs-desktop-data.c:235
+msgctxt "Menu of Communication & News"
+msgid "Web Browsers"
+msgstr "ਵੈੱਬ ਬਰਾਊਜ਼ਰ"
+
+#: lib/gs-desktop-data.c:243
+msgctxt "Menu of Utilities"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:246
+msgctxt "Menu of Utilities"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:249
+msgctxt "Menu of Utilities"
+msgid "Text Editors"
+msgstr "ਲਿਖਤ ਐਡੀਟਰ"
+
+#: lib/gs-desktop-data.c:257
+msgctxt "Menu of Reference"
+msgid "All"
+msgstr "ਸਭ"
+
+#: lib/gs-desktop-data.c:260
+msgctxt "Menu of Reference"
+msgid "Featured"
+msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
+
+#: lib/gs-desktop-data.c:263
+msgctxt "Menu of Art"
+msgid "Art"
+msgstr "ਕਲਾ"
+
+#: lib/gs-desktop-data.c:266
+msgctxt "Menu of Reference"
+msgid "Biography"
+msgstr "ਆਤਮ-ਕਥਾ"
+
+#: lib/gs-desktop-data.c:269
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "ਕਾਮਿਕ"
+
+#: lib/gs-desktop-data.c:272
+msgctxt "Menu of Reference"
+msgid "Fiction"
+msgstr "ਗਲਪ"
+
+#: lib/gs-desktop-data.c:275
+msgctxt "Menu of Reference"
+msgid "Health"
+msgstr "ਸਿਹਤ"
+
+#: lib/gs-desktop-data.c:278
+msgctxt "Menu of Reference"
+msgid "History"
+msgstr "ਅਤੀਤ"
+
+#: lib/gs-desktop-data.c:281
+msgctxt "Menu of Reference"
+msgid "Lifestyle"
+msgstr "ਜੀਵਨ-ਜਾਚ"
+
+#: lib/gs-desktop-data.c:284
+msgctxt "Menu of Reference"
+msgid "Politics"
+msgstr "ਰਾਜਨੀਤੀ"
+
+#: lib/gs-desktop-data.c:287
+msgctxt "Menu of Reference"
+msgid "Sports"
+msgstr "ਖੇਡਾਂ"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: lib/gs-desktop-data.c:297
+msgid "Audio & Video"
+msgstr "ਆਡੀਓ ਤੇ ਵੀਡੀਓ"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: lib/gs-desktop-data.c:300
+msgid "Developer Tools"
+msgstr "ਡਿਵੈਲਪਰ ਟੂਲ"
+
+#. TRANSLATORS: this is the menu spec main category for Education & Science
+#: lib/gs-desktop-data.c:303
+msgid "Education & Science"
+msgstr "ਸਿੱਖਿਆ ਤੇ ਵਿਗਿਆਨ"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: lib/gs-desktop-data.c:306
+msgid "Games"
+msgstr "ਗੇਮਾਂ"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: lib/gs-desktop-data.c:309
+msgid "Graphics & Photography"
+msgstr "ਗਰਾਫਿਕਸ ਤੇ ਫੋਟੋਗਰਾਫ਼ੀ"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: lib/gs-desktop-data.c:312
+msgid "Productivity"
+msgstr "ਉਤਪਾਦਨ"
+
+#. TRANSLATORS: this is the menu spec main category for Add-ons
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#: lib/gs-desktop-data.c:315 src/gs-details-page.ui:409
+#: src/gs-installed-page.c:441
+msgid "Add-ons"
+msgstr "ਐਡ-ਆਨ"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: lib/gs-desktop-data.c:318
+msgid "Communication & News"
+msgstr "ਸੰਚਾਰ ਤੇ ਖ਼ਬਰਾਂ"
+
+#. TRANSLATORS: this is the menu spec main category for Reference
+#: lib/gs-desktop-data.c:321
+msgid "Reference"
+msgstr "ਰੈਫਰੈਂਸ"
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: lib/gs-desktop-data.c:324
+msgid "Utilities"
+msgstr "ਸਹੂਲਤਾਂ"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:132 src/gs-common.c:146
+#: src/gs-common.c:130 src/gs-common.c:153
 #, c-format
 msgid "%s is now installed"
 msgstr "%s ਹੁਣ ਇੰਸਟਾਲ ਹੈ"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:136 src/gs-common.c:150
+#: src/gs-common.c:134 src/gs-common.c:157
 msgid "A restart is required for the changes to take effect."
 msgstr "ਤਬਦੀਲੀਆਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।"
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:140
+#: src/gs-common.c:138
 msgid "Application is ready to be used."
 msgstr "ਐਪਲੀਕੇਸ਼ਨ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ।"
 
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:146
+msgid "OS updates are now installed"
+msgstr "ਓ.ਸਿ. ਅੱਪਡੇਟ ਹੁਣ ਇੰਸਟਾਲ ਕੀਤਾ ਗਿਆ"
+
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:149
+msgid "Recently installed updates are available to review"
+msgstr "ਹੁਣੇ ਇੰਸਟਾਲ ਕੀਤੇ ਅੱਪਡੇਟ ਪੜਤਾਲ ਲਈ ਉਪਲਬਧ ਹਨ"
+
 #. TRANSLATORS: button text
-#: src/gs-common.c:160 src/gs-common.c:651
+#: src/gs-common.c:168 src/gs-common.c:658
 msgid "Restart"
 msgstr "ਮੁੜ-ਚਾਲੂ ਕਰੋ"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:164
+#: src/gs-common.c:172
 msgid "Launch"
 msgstr "ਚਲਾਓ"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:223
+#: src/gs-common.c:231
 msgid "Install Third-Party Software?"
 msgstr "ਸੁਤੰਤਰ-ਧਿਰ ਸਾਫਟਵੇਅਰ ਇੰਸਟਾਲ ਕਰਨਾ ਹੈ?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:227 src/gs-repos-dialog.c:236
+#: src/gs-common.c:235 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
 msgstr "ਸੁਤੰਤਰ-ਧਿਰ ਸਾਫ਼ਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸਮਰੱਥ ਕਰਨੀ ਹੈ?"
 
@@ -749,7 +1175,7 @@ msgstr "ਸੁਤੰਤਰ-ਧਿਰ ਸਾਫ਼ਟਵੇਅਰ ਰਿਪੋਜ਼
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:243
+#: src/gs-common.c:251
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -761,599 +1187,116 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:253
+#: src/gs-common.c:261
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s ਨੂੰ “%s” ਵਲੋਂ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।"
 
-#: src/gs-common.c:262
+#: src/gs-common.c:270
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "ਇੰਸਟਾਲੇਸ਼ਨ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸਾਫ਼ਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਜ਼ਰੂਰੀ ਹੈ।"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:272
+#: src/gs-common.c:280
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "ਕੁਝ ਦੇਸ਼ਾਂ 'ਚ %s ਨੂੰ ਇੰਸਟਾਲ ਕਰਨਾ ਜਾਂ ਵਰਤਣਾ ਗ਼ੈਰਕਨੂੰਨੀ ਹੋ ਸਕਦਾ ਹੈ।"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:278
+#: src/gs-common.c:286
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "ਕੁਝ ਦੇਸ਼ਾਂ 'ਚ ਇਸ ਕੋਡਕਸ ਨੂੰ ਇੰਸਟਾਲ ਕਰਨਾ ਜਾਂ ਵਰਤਣਾ ਗ਼ੈਰਕਨੂੰਨੀ ਹੋ ਸਕਦਾ ਹੈ।"
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:285
+#: src/gs-common.c:293
 msgid "Don’t Warn Again"
 msgstr "ਮੁੜ ਚੇਤਾਵਨੀ ਨਾ ਦਿਓ"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:294
+#: src/gs-common.c:302
 msgid "Enable and Install"
 msgstr "ਸਮਰੱਥ ਕਰਕੇ ਇੰਸਟਾਲ ਕਰੋ"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:453
+#: src/gs-common.c:461
 msgid "Detailed errors from the package manager follow:"
 msgstr "ਪੈਕੇਜ ਮੈਨੇਜਰ ਤੋਂ ਵੇਰਵੇ ਸਮੇਤ ਗਲਤੀਆਂ ਅੱਗੇ ਹਨ:"
 
-#: src/gs-common.c:472 src/gs-details-page.ui:469
+#: src/gs-common.c:480 src/gs-details-page.ui:579
 msgid "Details"
 msgstr "ਵੇਰਵੇ"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:637
+#: src/gs-common.c:644
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ"
 msgstr[1] "ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕੀਤੇ ਜਾ ਚੁੱਕੇ ਹਨ"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:642
+#: src/gs-common.c:649
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "ਉਸ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।"
 msgstr[1] "ਉਹਨਾਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:649
+#: src/gs-common.c:656
 msgid "Not Now"
 msgstr "ਹੁਣ ਨਹੀਂ"
 
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:61
-msgid "No cartoon violence"
-msgstr "ਕੋਈ ਕਾਰਟੂਨ ਤਸ਼ਦੱਦ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:63
-msgid "Cartoon characters in unsafe situations"
-msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ 'ਚ ਕਾਰਟੂਨ ਕਰੈਟਰ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:65
-msgid "Cartoon characters in aggressive conflict"
-msgstr "ਲੜਾਕੇ ਟਾਕਰਿਆਂ ਵਿੱਚ ਕਾਰਟੂਨ ਕਰੈਟਰ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:67
-msgid "Graphic violence involving cartoon characters"
-msgstr "ਕਾਰਟੂਨ ਕਰੈਟਰ ਦੇ ਨਾਲ ਗਰਾਫਿਕ ਤਸ਼ਦੱਦ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:72
-msgid "No fantasy violence"
-msgstr "ਕਲਪਨਿਕ ਤਸ਼ਦੱਦ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:74
-msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ ਵਿੱਚ ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲੇ ਚਿੰਨ੍ਹ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:76
-msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr "ਹਮਲਾਵਰ ਟਕਰਾ ਵਿੱਚ ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲੇ ਚਿੰਨ੍ਹ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:78
-msgid "Graphic violence easily distinguishable from reality"
-msgstr "ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲਾ ਚਿੱਤਰਨ ਕੀਤਾ ਤਸ਼ਦੱਦ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:83
-msgid "No realistic violence"
-msgstr "ਕੋਈ ਅਸਲੀ ਤਸ਼ਦੱਦ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:85
-msgid "Mildly realistic characters in unsafe situations"
-msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ 'ਚ ਨਰਮ ਰੁਖ ਵਾਲਾ ਯਥਾਰਥਿਕ ਚਿੰਨ੍ਹ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:87
-msgid "Depictions of realistic characters in aggressive conflict"
-msgstr "ਲੜਾਕੇ ਟਾਕਰਿਆਂ ਵਿੱਚ ਅਸਲੀ ਚਿੰਨ੍ਹਾਂ ਦਾ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:89
-msgid "Graphic violence involving realistic characters"
-msgstr "ਯਥਾਰਥਿਕ ਕਰੈਟਰ ਦੇ ਨਾਲ ਗਰਾਫਿਕ ਤਸ਼ਦੱਦ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:94
-msgid "No bloodshed"
-msgstr "ਕੋਈ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:96
-msgid "Unrealistic bloodshed"
-msgstr "ਕਾਲਪਨਿਕ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:98
-msgid "Realistic bloodshed"
-msgstr "ਅਸਲੀ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:100
-msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr "ਖ਼ੂਨ-ਖ਼ਰਾਬੇ ਦਾ ਵਰਣਨ ਅਤੇ ਸਰੀਰਿਕ ਅੰਗਾਂ ਦੀ ਕੱਟ-ਵੱਢ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:105
-msgid "No sexual violence"
-msgstr "ਕੋਈ ਜਿਨਸੀ ਧੱਕਾ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:107
-msgid "Rape or other violent sexual behavior"
-msgstr "ਜਬਰ-ਜ਼ਿਨਾਹ ਜਾਂ ਹੋਰ ਧੱਕੇ ਵਾਲਾ ਜਿਨਸੀ ਰਵੱਈਆ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:114
-msgid "No references to alcohol"
-msgstr "ਕੋਈ ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:116
-msgid "References to alcoholic beverages"
-msgstr "ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਲਈ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:118
-msgid "Use of alcoholic beverages"
-msgstr "ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਦੀ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:124
-msgid "No references to illicit drugs"
-msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਲਈ ਕੋਈ ਹਵਾਲਾ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:126
-msgid "References to illicit drugs"
-msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਲਈ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:128
-msgid "Use of illicit drugs"
-msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਦੀ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:134
-#| msgid "References to tobacco products"
-msgid "No references to tobacco products"
-msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਲਈ ਕੋਈ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:136
-msgid "References to tobacco products"
-msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਲਈ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:138
-msgid "Use of tobacco products"
-msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਦੀ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:144
-msgid "No nudity of any sort"
-msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦਾ ਨੰਗੇਜ਼ ਨਹੀਂ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:146
-msgid "Brief artistic nudity"
-msgstr "ਸੰਖੇਪ ਕਲਕਾਰੀ ਨੰਗੇਜ਼"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:148
-msgid "Prolonged nudity"
-msgstr "ਲੰਮੇ ਸਮੇਂ ਲਈ ਨੰਗੇਜ਼"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:154
-msgid "No references to or depictions of sexual nature"
-msgstr "ਜਿਨਸੀ ਕਿਸਮ ਦੇ ਕੋਈ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ ਨਹੀਂ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:156
-msgid "Provocative references or depictions"
-msgstr "ਭੜਕਾਊ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:158
-msgid "Sexual references or depictions"
-msgstr "ਜਿਨਸੀ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:160
-msgid "Graphic sexual behavior"
-msgstr "ਗਰਾਫ਼ਿਕ ਜਿਨਸੀ ਰਵੱਈਆ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:165
-msgid "No profanity of any kind"
-msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੀ ਕੋਈ ਵੀ ਬੇਅਦਬੀ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:167
-msgid "Mild or infrequent use of profanity"
-msgstr "ਹਲਕੀ ਜਾਂ ਕਦੇ ਕਦਾਈ ਬੇਅਦਬੀ ਦੀ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:169
-msgid "Moderate use of profanity"
-msgstr "ਬੇਅਦਬੀ ਦੀ ਠੀਕ-ਠਾਕ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:171
-msgid "Strong or frequent use of profanity"
-msgstr "ਬੇਅਦਬੀ ਦੀ ਜ਼ੋਰਦਾਰ ਜਾਂ ਅਕਸਰ ਵਰਤੋਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:176
-msgid "No inappropriate humor"
-msgstr "ਕੋਈ ਅਢੁੱਕਵਾਂ ਮਜ਼ਾਕ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:178
-msgid "Slapstick humor"
-msgstr "ਮਸ਼ਕਰੀਆ ਮਜ਼ਾਕ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:180
-msgid "Vulgar or bathroom humor"
-msgstr "ਘਟੀਆ ਜਾਂ ਬਾਥਰੂਮ ਮਜ਼ਾਕ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:182
-msgid "Mature or sexual humor"
-msgstr "ਪ੍ਰੋੜ੍ਹ ਜਾਂ ਜਿਨਸੀ ਮਜ਼ਾਕ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:187
-msgid "No discriminatory language of any kind"
-msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੀ ਪੱਖਪਾਤੀ ਭਾਸ਼ਾ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:189
-msgid "Negativity towards a specific group of people"
-msgstr "ਖਾਸ ਕਿਸਮ ਦੇ ਲੋਕਾਂ ਦੇ ਖਿਲਾਫ਼ ਨਿਖੇਧੀ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:191
-msgid "Discrimination designed to cause emotional harm"
-msgstr "ਜ਼ਜ਼ਬਾਤੀ ਨੁਕਸਾਨ ਕਰਨ ਲਈ ਤਿਆਰ ਕੀਤਾ ਪੱਖਪਾਤ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:193
-msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr "ਲਿੰਗ, ਜਿਨਸ, ਨਸਲ ਜਾਂ ਧਰਮ 'ਤੇ ਅਧਾਰਿਤ ਸਾਫ਼ ਸਾਫ਼ ਪੱਖਪਾਤ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:198
-msgid "No advertising of any kind"
-msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੇ ਕੋਈ ਇਸ਼ਤਿਹਾਰ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:200
-msgid "Product placement"
-msgstr "ਉਤਪਾਦ ਸਥਾਪਨਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:202
-msgid "Explicit references to specific brands or trademarked products"
-msgstr "ਖਾਸ ਬਰੈਂਡਾਂ ਜਾਂ ਟਰੇਡਮਾਰਕ ਉਤਪਾਦਾਂ ਲਈ ਅਲਹਿਦਾ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:204
-msgid "Users are encouraged to purchase specific real-world items"
-msgstr "ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਖਾਸ ਅਸਲ ਸੰਸਾਰ ਦੀਆਂ ਚੀਜ਼ਾਂ ਖਰੀਦਣ ਲਈ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:209
-msgid "No gambling of any kind"
-msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦਾ ਜੂਆ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:211
-msgid "Gambling on random events using tokens or credits"
-msgstr "ਟੋਕਨ ਜਾਂ ਕਰੈਡਿਟ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਰਲਵੇਂ ਈਵੈਂਟਾਂ ਲਈ ਜੂਆ ਖੇਡਣਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:213
-msgid "Gambling using “play” money"
-msgstr "\"ਪਲੇਅ\" ਧਨ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਜੂਆ ਖੇਡਣਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:215
-msgid "Gambling using real money"
-msgstr "ਅਸਲੀ ਧਨ ਦੀ ਵਰਤੋਂਂ ਨਾਲ ਜੂਆ ਖੇਡਣਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:220
-msgid "No ability to spend money"
-msgstr "ਧਨ ਖ਼ਰਚਣ ਦੀ ਸਮਰੱਥ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:222
-msgid "Users are encouraged to donate real money"
-msgstr "ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਅਸਲ ਧਨ ਦਾਨ ਕਰਨ ਲਈ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:225
-msgid "Ability to spend real money in-app"
-msgstr "ਐਪ ਵਿੱਚ ਅਸਲ ਧਨ ਖ਼ਰਚ ਕਰਨ ਦੀ ਸਮਰੱਥਾ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:230
-msgid "No way to chat with other users"
-msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਗੱਲਾਂ ਕਰਨ ਦਾ ਕੋਈ ਢੰਗ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:232
-msgid "User-to-user interactions without chat functionality"
-msgstr "ਗੱਲਬਾਤ ਸਹੂਲਤ ਦੇ ਬਿਨਾਂ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਆਪਸ 'ਚ ਤਾਲਮੇਲ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:234
-msgid "Moderated chat functionality between users"
-msgstr "ਵਰਤੋਂਕਾਰਾਂ ਵਿਚਾਲੇ ਸੰਜਮੀ ਗੱਲਬਾਤ ਸਹੂਲਤ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:236
-msgid "Uncontrolled chat functionality between users"
-msgstr "ਵਰਤੋਂਕਾਰਾਂ 'ਚ ਬਿਨਾਂ-ਕੰਟਰੋਲ ਗੱਲਬਾਤ ਸਹੂਲਤ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:241
-msgid "No way to talk with other users"
-msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਗੱਲਾਂ (ਬੋਲ ਕੇ) ਕਰਨ ਦਾ ਕੋਈ ਢੰਗ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:243
-msgid "Uncontrolled audio or video chat functionality between users"
-msgstr "ਵਰਤੋਂਕਾਰਾਂ 'ਚ ਬਿਨਾਂ-ਕੰਟਰੋਲ ਆਡੀਓ ਜਾਂ ਵੀਡੀਓ ਗੱਲਬਾਤ ਸਹੂਲਤ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:250
-msgid "No sharing of social network usernames or email addresses"
-msgstr "ਸਮਾਜਿਕ ਨੈੱਟਵਰਕ ਵਰਤੋਂਕਾਰ ਜਾਂ ਈਮੇਲ ਸਿਰਨਾਵੇਂ ਸਾਂਝੇ ਨਹੀਂ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:252
-msgid "Sharing social network usernames or email addresses"
-msgstr "ਸਮਾਜਿਕ ਨੈੱਟਵਰਕ ਵਰਤੋਂਕਾਰ ਜਾਂ ਈਮੇਲ ਸਿਰਨਾਵੇਂ ਸਾਂਝੇ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:259
-msgid "No sharing of user information with third parties"
-msgstr "ਤੀਜੀਆਂ ਧਿਰਾਂ ਨਾਲ ਵਰਤੋਂਕਾਰ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
-msgid "Checking for the latest application version"
-msgstr "ਐਪਲੀਕੇਸ਼ਨ ਦੇ ਨਵੇਂ ਵਰਜ਼ਨ ਲਈ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:263
-msgid "Sharing diagnostic data that does not let others identify the user"
-msgstr ""
-"ਜਾਂਚ-ਪੜਤਾਲ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਜੋ ਕਿ ਹੋਰਾਂ ਨੂੰ ਵਰਤੋਂਕਾਰ ਦੀ ਪਛਾਣ ਨਹੀਂ"
-" ਕਰਨ ਦਿੰਦਾ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:265
-msgid "Sharing information that lets others identify the user"
-msgstr "ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨੀ, ਜਿਸ ਨਾਲ ਹੋਰ ਵਰਤੋਂਕਾਰ ਦੀ ਪਛਾਣ ਕਰਦੇ ਹਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:270
-msgid "No sharing of physical location with other users"
-msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਭੂਗੋਲਿਕ ਟਿਕਾਣਾ ਨਹੀਂ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:272
-msgid "Sharing physical location with other users"
-msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਭੂਗੋਲਿਕ ਟਿਕਾਣਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:281
-msgid "No references to homosexuality"
-msgstr "ਕੋਈ ਸਮਲਿੰਗ ਕਾਮੁਕਤਾ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:283
-msgid "Indirect references to homosexuality"
-msgstr "ਸਮਲਿੰਗ ਕਾਮੁਕਤਾ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:285
-msgid "Kissing between people of the same gender"
-msgstr "ਇੱਕੋ ਲਿੰਗ ਦੇ ਲੋਕਾਂ ਵਿਚਾਲੇ ਚੁੰਮਣ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:287
-msgid "Graphic sexual behavior between people of the same gender"
-msgstr "ਇੱਕੋ ਲਿੰਗ ਦੇ ਲੋਕਾਂ ਵਿਚਾਲੇ ਜਿਨਸੀ ਸੰਬੰਧਾਂ ਦਾ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:292
-msgid "No references to prostitution"
-msgstr "ਕੋਈ ਕੰਜਰਪੁਣੇ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:294
-msgid "Indirect references to prostitution"
-msgstr "ਕੰਜਰਪੁਣੇ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:296
-msgid "Direct references to prostitution"
-msgstr "ਕੰਜਰਪੁਣੇ ਲਈ ਸਿੱਧੇ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:298
-msgid "Graphic depictions of the act of prostitution"
-msgstr "ਕੰਜਰਪੁਣੇ ਦੇ ਕੰਮ ਲਈ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:303
-msgid "No references to adultery"
-msgstr "ਕੋਈ ਬਦਕਾਰੀ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:305
-msgid "Indirect references to adultery"
-msgstr "ਬਦਕਾਰੀ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:307
-msgid "Direct references to adultery"
-msgstr "ਬਦਕਾਰੀ ਲਈ ਸਿੱਧੇ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:309
-msgid "Graphic depictions of the act of adultery"
-msgstr "ਬਦਕਾਰੀ ਦੇ ਕੰਮ ਲਈ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:314
-msgid "No sexualized characters"
-msgstr "ਕੋਈ ਕਾਮਕਤਾ ਪਾਤਰ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:317
-msgid "Scantily clad human characters"
-msgstr "ਟਾਵੇਂ-ਟਾਵੇਂ ਕੱਪੜੇ ਪਾਏ ਹੋਏ ਮਨੁੱਖੀ ਪਾਤਰ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:319
-msgid "Overtly sexualized human characters"
-msgstr "ਪ੍ਰਤੱਖ ਜਿਨਸੀ ਸੰਬੰਧਾਂ ਵਿੱਚ ਰੁਝੇ ਮਨੁੱਖੀ ਪਾਤਰ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:324
-msgid "No references to desecration"
-msgstr "ਕੋਈ ਬੇਹੁਰਮਤੀ ਦੇ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:326
-msgid "Depictions of or references to historical desecration"
-msgstr "ਇਤਿਹਾਸਿਕ ਬੇਹੁਰਮਤੀ ਲਈ ਚਿੱਤਰਨ ਜਾਂ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:328
-msgid "Depictions of modern-day human desecration"
-msgstr "ਅੱਜ ਦੀ ਮਨੁੱਖੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:330
-msgid "Graphic depictions of modern-day desecration"
-msgstr "ਅੱਜ ਦੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰ ਰੂਪੀ ਵਰਣਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:335
-msgid "No visible dead human remains"
-msgstr "ਕੋਈ ਮਰੇ ਹੋਏ ਮਨੁੱਖੀ ਬਚੇ ਹੋਏ ਸਰੀਰਿਕ ਹਿੱਸੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:337
-msgid "Visible dead human remains"
-msgstr "ਮਰੇ ਹੋਏ ਮਨੁੱਖੀ ਬਚੇ ਹੋਏ ਸਰੀਰਿਕ ਹਿੱਸੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:339
-msgid "Dead human remains that are exposed to the elements"
-msgstr "ਮਰੇ ਹੋਏ ਮਨੁੱਖ ਦੇ ਸਰੀਰਿਕ ਹਿੱਸੇ, ਜੋ ਕਿ ਤੱਤਾਂ ਦੇ ਸਾਹਮਣੇ ਨੰਗੇ ਸਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:341
-msgid "Graphic depictions of desecration of human bodies"
-msgstr "ਮਨੁੱਖੀ ਸਰੀਰ ਦੇ ਹਿੱਸਿਆਂ ਦੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰਾਂ ਦੇ ਰੂਪ ਵਿੱਚ ਵਰਣਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:346
-msgid "No references to slavery"
-msgstr "ਕੋਈ ਗ਼ੁਲਾਮੀ ਦੇ ਹਵਾਲੇ ਨਹੀਂ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:348
-msgid "Depictions of or references to historical slavery"
-msgstr "ਇਤਿਹਾਸਕ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਨ ਜਾਂ ਹਵਾਲੇ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:350
-msgid "Depictions of modern-day slavery"
-msgstr "ਅੱਜ ਦੀ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਨ"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:352
-msgid "Graphic depictions of modern-day slavery"
-msgstr "ਅੱਜ ਦੀ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਾਂ ਦੇ ਰੂਪ ਵਿੱਚ ਵਰਣਨ"
-
-#. TRANSLATORS: This is the formatting of English and localized name
-#. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:412
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:698
+msgid "Just now"
+msgstr "ਹੁਣੇ ਹੀ"
+
+#: src/gs-common.c:700
 #, c-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d ਮਿੰਟ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਮਿੰਟ ਪਹਿਲਾਂ"
 
-#: src/gs-content-rating.c:546
-msgid "General"
-msgstr "ਆਮ"
+#: src/gs-common.c:704
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d ਘੰਟਾ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਘੰਟੇ ਪਹਿਲਾਂ"
 
-#: src/gs-content-rating.c:555
-msgid "ALL"
-msgstr "ਸਭ"
+#: src/gs-common.c:708
+#, c-format
+#| msgid "Two days ago"
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d ਦਿਨ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਦਿਨ ਪਹਿਲਾਂ"
 
-#: src/gs-content-rating.c:559
-msgid "Adults Only"
-msgstr "ਕੇਵਲ ਬਾਲਗ"
+#: src/gs-common.c:712
+#, c-format
+#| msgid "One week ago"
+msgid "%d week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] "%d ਹਫ਼ਤਾ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਹਫ਼ਤੇ ਪਹਿਲਾਂ"
 
-#: src/gs-content-rating.c:561
-msgid "Mature"
-msgstr "ਪ੍ਰੋੜ੍ਹ"
+#: src/gs-common.c:716
+#, c-format
+msgid "%d month ago"
+msgid_plural "%d months ago"
+msgstr[0] "%d ਮਹੀਨਾ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਮਹੀਨੇ ਪਹਿਲਾਂ"
 
-#: src/gs-content-rating.c:563
-msgid "Teen"
-msgstr "ਅੱਲੜ੍ਹ"
-
-#: src/gs-content-rating.c:565
-msgid "Everyone 10+"
-msgstr "ਹਰੇਕ 10+"
-
-#: src/gs-content-rating.c:567
-msgid "Everyone"
-msgstr "ਹਰੇਕ"
-
-#: src/gs-content-rating.c:569
-msgid "Early Childhood"
-msgstr "ਮੁੱਢਲਾ ਬਚਪਨ"
+#: src/gs-common.c:720
+#, c-format
+msgid "%d year ago"
+msgid_plural "%d years ago"
+msgstr[0] "%d ਸਾਲ ਪਹਿਲਾਂ"
+msgstr[1] "%d ਸਾਲ ਪਹਿਲਾਂ"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:283
@@ -1421,7 +1364,6 @@ msgid "Find in Software"
 msgstr "ਸਾਫਟਵੇਅਰ ਵਿੱਚੋਂ ਲੱਭੋ"
 
 #: src/gs-description-box.c:64 src/gs-description-box.c:168
-#| msgid "_Learn More"
 msgid "_Read More"
 msgstr "ਵੱਧ ਪੜ੍ਹੋ(_R)"
 
@@ -1429,25 +1371,24 @@ msgstr "ਵੱਧ ਪੜ੍ਹੋ(_R)"
 msgid "_Read Less"
 msgstr "ਘੱਟ ਪੜ੍ਹੋ(_R)"
 
-#: src/gs-details-page.c:358
+#: src/gs-details-page.c:359
 msgid "Removing…"
 msgstr "...ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:377
+#: src/gs-details-page.c:378
 msgid "Pending installation…"
 msgstr "…ਇੰਸਟਾਲੇਸ਼ਨ ਬਾਕੀ ਪਈ ਹੈ"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:384
+#: src/gs-details-page.c:385
 msgid "Pending update…"
 msgstr "…ਅੱਪਡੇਟ ਬਾਕੀ ਪਏ ਹਨ"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:398
-#| msgid "Removing…"
+#: src/gs-details-page.c:399
 msgid "Preparing…"
 msgstr "...ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
@@ -1457,7 +1398,7 @@ msgstr "...ਤਿਆਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:905 src/gs-details-page.c:922
+#: src/gs-details-page.c:906 src/gs-details-page.c:923
 #: src/gs-details-page.ui:176 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
@@ -1470,109 +1411,103 @@ msgstr "ਇੰਸਟਾਲ ਕਰੋ(_I)"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:936 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:937 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "...ਇੰਸਟਾਲ ਕਰੋ(_I)"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:964
+#: src/gs-details-page.c:965
 msgid "_Launch"
 msgstr "ਚਲਾਓ(_L)"
 
-#. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:988 src/gs-details-page.ui:201
-#| msgid "_Install"
-msgid "_Uninstall"
-msgstr "ਅਣ-ਇੰਸਟਾਲ ਕਰੋ(_U)"
-
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "ਨੈੱਟਵਰਕ"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੰਚਾਰ ਕਰ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "ਸਿਸਟਮ ਸੇਵਾਵਾਂ"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "ਸਿਸਟਮ ਬਸ ਨਾਲ ਡੀ-ਬੱਸ ਸੇਵਾਵਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "ਸ਼ੈਸ਼ਨ ਸੇਵਾਵਾਂ"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "ਸ਼ੈਸ਼ਨ ਬਸ ਨਾਲ ਡੀ-ਬੱਸ ਸੇਵਾਵਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "ਡਿਵਾਈਸ"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "ਸਿਸਟਮ ਡਿਵਾਈਸ ਫਾਇਲਾਂ ਲਈ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1024
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "ਘਰ ਫੋਲਡਰ"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1025
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "ਫ਼ਾਇਲਾਂ ਵੇਖ, ਸੋਧ ਅਤੇ ਬਣਾ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1025 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "ਫ਼ਾਇਲਾਂ ਵੇਖ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1025 src/gs-details-page.c:1026
+#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "ਫਾਇਲ ਸਿਸਟਮ"
 
-#: src/gs-details-page.c:1027 src/gs-details-page.c:1028
+#: src/gs-details-page.c:1028 src/gs-details-page.c:1029
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "ਡਾਊਨਲੋਡ ਫੋਲਡਰ"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "ਸੈਟਿੰਗਾਂ"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "ਕੋਈ ਵੀ ਸੈਟਿੰਗਾਂ ਵੇਖਣ ਅਤੇ ਬਦਲ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "ਪੁਰਾਣਾ ਡਿਸਪਲੇਅ ਸਿਸਟਮ"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "ਪੁਰਾਣੇ, ਅਸੁਰੱਖਿਅਤ ਡਿਸਪਲੇਅ ਸਿਸਟਮ ਨੂੰ ਵਰਤ ਸਕਦਾ ਹੈ"
 
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "ਸੈਂਡਬਾਕਸ ਛੁਟਕਾਰਾ"
 
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "ਸੈਂਡਬਾਕਸ ਤੋਂ ਛੁਟਕਾਰਾ ਪਾ ਸਕਦੀ ਹੈ ਅਤੇ ਹੋਰ ਰੋਕਾਂ ਨੂੰ ਝਾਂਸਾ ਦੇ ਸਕਦੀ ਹੈ"
 
-#: src/gs-details-page.c:1046
+#: src/gs-details-page.c:1047
 msgid "This application is fully sandboxed."
 msgstr "ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੈਂਡਬਾਕਸ ਕੀਤੀ ਹੈ।"
 
-#: src/gs-details-page.c:1054
+#: src/gs-details-page.c:1055
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1581,99 +1516,90 @@ msgstr ""
 " ਅਕਸਰ "
 "ਪੁਰਾਣੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨਾਲ ਹੁੰਦਾ ਹੈ।"
 
-#. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1210
-msgctxt "version"
-msgid "Unknown"
-msgstr "ਅਣਜਾਣ"
-
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1239
+#: src/gs-details-page.c:1233
 msgctxt "updated"
 msgid "Never"
 msgstr "ਕਦੇ ਨਹੀਂ"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1292
+#: src/gs-details-page.c:1286
 msgctxt "origin"
 msgid "Unknown"
 msgstr "ਅਣਜਾਣ"
 
-#: src/gs-details-page.c:1345
-#| msgctxt "content rating violence-cartoon"
-#| msgid "None"
+#: src/gs-details-page.c:1339
 msgid "None"
 msgstr "ਕੋਈ ਨਹੀਂ"
 
-#: src/gs-details-page.c:1347
+#: src/gs-details-page.c:1341
 msgid "Low"
 msgstr "ਘੱਟ"
 
-#: src/gs-details-page.c:1349
+#: src/gs-details-page.c:1343
 msgid "Medium"
 msgstr "ਮੱਧਮ"
 
-#: src/gs-details-page.c:1351
+#: src/gs-details-page.c:1345
 msgid "High"
 msgstr "ਵੱਧ"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1353 src/gs-details-page.ui:1063
+#: src/gs-details-page.c:1347 src/gs-details-page.ui:1102
 #: src/gs-review-row.c:58
 msgid "Unknown"
 msgstr "ਅਣਪਛਾਤਾ"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1691
+#: src/gs-details-page.c:1705
 msgid "You need internet access to write a review"
 msgstr "ਸਮੀਖਿਆ ਲਿਖਣ ਲਈ ਤੁਹਾਨੂੰ ਇੰਟਰਨੈੱਟ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/gs-details-page.c:1890 src/gs-details-page.c:1906
+#: src/gs-details-page.c:1904 src/gs-details-page.c:1920
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "“%s” ਲੱਭਣ ਲਈ ਅਸਮਰੱਥ"
 
-#: src/gs-details-page.c:1972 src/gs-details-page.c:2007
-#| msgid "Removing…"
+#: src/gs-details-page.c:1986 src/gs-details-page.c:2021
 msgid "Loading…"
 msgstr "...ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/gs-details-page.c:2427
+#: src/gs-details-page.c:2459
 msgid "The application contains no age-inappropriate content."
 msgstr "ਐਪਲੀਕੇਸ਼ਨ ਵਿੱਚ ਕੋਈ ਉਮਰ ਲਈ ਅਢੁੱਕਵੀਂ ਸਮੱਗਰੀ ਨਹੀਂ ਹੈ।"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2536
+#: src/gs-details-page.c:2568
 msgid "Public domain"
 msgstr "ਪਬਲਿਕ ਡੋਮੇਨ"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2539
+#: src/gs-details-page.c:2571
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2546
+#: src/gs-details-page.c:2578
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2556 src/gs-details-page.ui:1307
+#: src/gs-details-page.c:2588 src/gs-details-page.ui:1288
 msgid "Free Software"
 msgstr "ਮੁਕਤ ਸਾਫਟਵੇਅਰ"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2613
+#: src/gs-details-page.c:2645
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "ਵਰਤੋਂਕਾਰ ਲਈ ਅੱਗੇ ਦਿੱਤੇ ਲਸੰਸ ਦੀ ਬੰਦਿਸ਼ ਹੈ:"
 msgstr[1] "ਵਰਤੋਂਕਾਰ ਲਈ ਅੱਗੇ ਦਿੱਤੇ ਲਸੰਸਾਂ ਦੀ ਬੰਦਿਸ਼ ਹੈ:"
 
-#: src/gs-details-page.c:2640 src/gs-details-page.ui:1379
+#: src/gs-details-page.c:2672 src/gs-details-page.ui:1360
 msgid "More information"
 msgstr "ਹੋਰ ਜਾਣਕਾਰੀ"
 
@@ -1682,7 +1608,6 @@ msgid "Details page"
 msgstr "ਵੇਰਵਾ ਸਫ਼ਾ"
 
 #: src/gs-details-page.ui:39
-#| msgid "Downloading application ratings…"
 msgid "Loading application details…"
 msgstr "…ਐਪਲੀਕੇਸ਼ਨ ਵੇਰਵੇ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
 
@@ -1708,18 +1633,22 @@ msgstr "ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਹਟਾਓ(_m)"
 msgid "No screenshot provided"
 msgstr "ਕੋਈ ਸਕਰੀਨਸ਼ਾਟ ਨਹੀਂ ਗਿਆ"
 
-#: src/gs-details-page.ui:398
+#: src/gs-details-page.ui:421
+msgid "Selected add-ons will be installed with the application."
+msgstr "ਚੁਣੇ ਐਡ-ਆਨ ਨੂੰ ਐਪਲੀਕੇਸ਼ਨ ਦੇ ਨਾਲ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।"
+
+#: src/gs-details-page.ui:508
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
 "ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਕੇਵਲ ਤਾਂ ਹੀ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਦੋਂ ਇੰਟਰਨੈੱਟ ਕੁਨੈਕਸ਼ਨ ਚਾਲੂ ਹੈ"
 
-#: src/gs-details-page.ui:408
+#: src/gs-details-page.ui:518
 msgid "Software Repository Included"
 msgstr "ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸਮੇਤ"
 
-#: src/gs-details-page.ui:409
+#: src/gs-details-page.ui:519
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1728,11 +1657,11 @@ msgstr ""
 " ਸਾਫਟਵੇਅਰ ਵੀ "
 "ਦਿੰਦੀ ਹੈ।"
 
-#: src/gs-details-page.ui:416
+#: src/gs-details-page.ui:526
 msgid "No Software Repository Included"
 msgstr "ਕੋਈ ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਸ਼ਾਮਿਲ ਨਹੀਂ ਹੈ"
 
-#: src/gs-details-page.ui:417
+#: src/gs-details-page.ui:527
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1741,7 +1670,7 @@ msgstr ""
 " ਨਹੀਂ ਕੀਤਾ "
 "ਜਾਵੇਗਾ।"
 
-#: src/gs-details-page.ui:425
+#: src/gs-details-page.ui:535
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1751,134 +1680,112 @@ msgstr ""
 "ਹੈ।"
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:432
+#: src/gs-details-page.ui:542
 msgid "Software Repository Identified"
 msgstr "ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਦੀ ਪਛਾਣ ਕੀਤੀ ਗਈ"
 
-#: src/gs-details-page.ui:433
+#: src/gs-details-page.ui:543
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr ""
 "ਇਹ ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਨੂੰ ਜੋੜਨ ਨਾਲ ਤੁਹਾਨੂੰ ਵਾਧੂ ਸਾਫਟਵੇਅਰ ਅਤੇ ਅੱਪਗਰੇਡ ਮਿਲਣਗੇ।"
 
-#: src/gs-details-page.ui:434
+#: src/gs-details-page.ui:544
 msgid "Only use software repositories that you trust."
 msgstr "ਕੇਵਲ ਉਹੀ ਸਾਫਟਵੇਅਰ ਰਿਪੋਜ਼ਟਰੀ ਵਰਤੋਂ, ਜਿਸ ਉੱਤੇ ਤੁਹਾਨੂੰ ਭਰੋਸਾ ਹੈ।"
 
-#: src/gs-details-page.ui:444
+#: src/gs-details-page.ui:554
 msgid "_Website"
 msgstr "ਵੈੱਬਸਾਈਟ(_W)"
 
-#: src/gs-details-page.ui:453
+#: src/gs-details-page.ui:563
 msgid "_Donate"
 msgstr "ਦਾਨ ਦਿਓ(_D)"
 
-#: src/gs-details-page.ui:563
+#: src/gs-details-page.ui:673
 msgid "Localized in your Language"
 msgstr "ਤੁਹਾਡੀ ਭਾਸ਼ਾ ਵਿੱਚ ਉਲੱਥਾ ਕੀਤਾ"
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:684
 msgid "Documentation"
 msgstr "ਡੌਕੂਮੈਂਟੇਸ਼ਨ"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:695
 msgid "Release Activity"
 msgstr "ਰੀਲਿਜ਼ ਸਰਗਰਮੀ"
 
-#: src/gs-details-page.ui:596
+#: src/gs-details-page.ui:706
 msgid "System Integration"
 msgstr "ਸਿਸਟਮ ਐਂਟੀਗਰੇਸ਼ਨ"
 
-#: src/gs-details-page.ui:607
+#: src/gs-details-page.ui:717
 msgid "Sandboxed"
 msgstr "ਸੈਂਡਬਾਕਸ"
 
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:627 src/gs-origin-popover-row.c:103
+#: src/gs-details-page.ui:737 src/gs-origin-popover-row.c:91
 msgid "Channel"
 msgstr "ਚੈਨਲ"
 
-#. Translators: The available version of an app
-#: src/gs-details-page.ui:663 src/gs-origin-popover-row.ui:151
-msgid "Version"
-msgstr "ਵਰਜ਼ਨ"
-
-#: src/gs-details-page.ui:698
-#| msgid "Recent Releases"
-msgid "Released"
-msgstr "ਰੀਲਿਜ਼ ਹੈ"
-
-#: src/gs-details-page.ui:734
+#: src/gs-details-page.ui:773
 msgid "Age Rating"
 msgstr "ਉਮਰ ਦਰਜਾ"
 
-#: src/gs-details-page.ui:772 src/gs-details-page.ui:1465
+#: src/gs-details-page.ui:811 src/gs-details-page.ui:1446
 msgid "Permissions"
 msgstr "ਮਨਜ਼ੂਰੀਆਂ"
 
-#: src/gs-details-page.ui:810
+#: src/gs-details-page.ui:849
 msgid "Updated"
 msgstr "ਅੱਪਡੇਟ ਕੀਤੇ"
 
-#: src/gs-details-page.ui:844
+#: src/gs-details-page.ui:883
 msgid "Category"
 msgstr "ਕੈਟਾਗਰੀ"
 
-#: src/gs-details-page.ui:881
+#: src/gs-details-page.ui:920
 msgid "Installed Size"
 msgstr "ਇੰਸਟਾਲ ਹੋਇਆ ਸਾਈਜ਼"
 
-#: src/gs-details-page.ui:912
+#: src/gs-details-page.ui:951
 msgid "Download Size"
 msgstr "ਡਾਊਨਲੋਡ ਸਾਈਜ਼"
 
-#: src/gs-details-page.ui:974
+#: src/gs-details-page.ui:1013
 msgid "Developer"
 msgstr "ਡਿਵੈਲਪਰ"
 
-#: src/gs-details-page.ui:1020
+#: src/gs-details-page.ui:1059
 msgid "License"
 msgstr "ਲਸੰਸ"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1039
+#: src/gs-details-page.ui:1078
 msgid "Free"
 msgstr "ਮੁਕਤ"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1051
+#: src/gs-details-page.ui:1090
 msgid "Proprietary"
 msgstr "ਪਰੋਪ੍ਰੈਟਰੀ"
 
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
-#. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1101 src/gs-installed-page.c:441
-#: plugins/core/gs-desktop-common.c:315
-msgid "Add-ons"
-msgstr "ਐਡ-ਆਨ"
-
-#: src/gs-details-page.ui:1113
-msgid "Selected add-ons will be installed with the application."
-msgstr "ਚੁਣੇ ਐਡ-ਆਨ ਨੂੰ ਐਪਲੀਕੇਸ਼ਨ ਦੇ ਨਾਲ ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।"
-
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1151
+#: src/gs-details-page.ui:1134
 msgid "Reviews"
 msgstr "ਪੜਤਾਲਾਂ"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1169
+#: src/gs-details-page.ui:1152
 msgid "_Write a Review"
 msgstr "ਪੜਤਾਲ ਲਿਖੋ(_W)"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1190
+#: src/gs-details-page.ui:1173
 msgid "_Show More"
 msgstr "ਹੋਰ ਵੇਖੋ(_S)"
 
-#: src/gs-details-page.ui:1318
+#: src/gs-details-page.ui:1299
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1887,11 +1794,11 @@ msgstr ""
 " ਸਮਝਿਆ ਅਤੇ ਸੋਧਿਆ "
 "ਜਾ ਸਕਦਾ ਹੈ।"
 
-#: src/gs-details-page.ui:1358
+#: src/gs-details-page.ui:1339
 msgid "Proprietary Software"
 msgstr "ਪਰੋਪ੍ਰੈਟਰੀ ਸਾਫਟਵੇਅਰ"
 
-#: src/gs-details-page.ui:1369
+#: src/gs-details-page.ui:1350
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1901,19 +1808,19 @@ msgstr ""
 " ਵਰਤੋਂ ਲਈ "
 "ਪਾਬੰਦੀਆਂ ਹੁੰਦੀਆਂ ਹਨ ਅਤੇ ਇਸ ਦੇ ਸਰੋਤ ਕੋਡ ਲਈ ਆਮ ਤੌਰ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੁੰਦੀ ਹੈ।"
 
-#: src/gs-details-page.ui:1401
+#: src/gs-details-page.ui:1382
 msgid "Unknown Software License"
 msgstr "ਅਣਪਛਾਤਾ ਸਾਫਟਵੇਅਰ ਲਸੰਸ"
 
-#: src/gs-details-page.ui:1412
+#: src/gs-details-page.ui:1393
 msgid "The license terms of this software are unknown."
 msgstr "ਇਸ ਸਾਫਟਵੇਅਰ ਦੀਆਂ ਲਸੰਸ ਸ਼ਰਤਾਂ ਅਣਪਛਾਤੀਆਂ ਹਨ।"
 
-#: src/gs-details-page.ui:1432
+#: src/gs-details-page.ui:1413
 msgid "The application was rated this way because it features:"
 msgstr "ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਇਸ ਢੰਗ ਨਾਲ ਰੇਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਕਿਉਂਕਿ ਇਸ ਦੇ ਫ਼ੀਚਰ ਹਨ:"
 
-#: src/gs-details-page.ui:1446
+#: src/gs-details-page.ui:1427
 msgid "No details were available for this rating."
 msgstr "ਇਸ ਰੇਟਿੰਗ ਲਈ ਕੋਈ ਵੇਰਵੇ ਨਹੀਂ ਉਪਲਬਧ ਹਨ।"
 
@@ -1950,12 +1857,10 @@ msgid "Unable to Find Requested Software"
 msgstr "ਮੰਗ ਕੀਤੇ ਸਾਫਟਵੇਅਰ ਨੂੰ ਲੱਭਣ ਲਈ ਅਸਮਰੱਥ"
 
 #: src/gs-extras-page.c:256
-#| msgid "Screenshot size not found"
 msgid "Requested software not found"
 msgstr "ਮੰਘ ਕੀਤਾ ਸਾਫਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ"
 
 #: src/gs-extras-page.c:258
-#| msgid "Unable to Find Requested Software"
 msgid "Failed to find requested software"
 msgstr "ਮੰਗ ਕੀਤੇ ਸਾਫਟਵੇਅਰ ਨੂੰ ਲੱਭਣ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
@@ -2089,7 +1994,6 @@ msgstr ""
 
 #. TRANSLATORS: hyperlink title
 #: src/gs-extras-page.c:484
-#| msgid "Documentation"
 msgid "the documentation"
 msgstr "ਦਸਤਾਵੇਜ਼"
 
@@ -2097,12 +2001,6 @@ msgstr "ਦਸਤਾਵੇਜ਼"
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
 #: src/gs-extras-page.c:490
 #, c-format
-#| msgid ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
-#| msgid_plural ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural ""
@@ -2117,12 +2015,6 @@ msgstr[1] ""
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
 #: src/gs-extras-page.c:499
 #, c-format
-#| msgid ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
-#| msgid_plural ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
@@ -2167,14 +2059,12 @@ msgstr ""
 " ਕਰੋ।"
 
 #: src/gs-first-run-dialog.ui:62
-#| msgid "Free Software"
 msgid "_Browse Software"
 msgstr "ਸਾਫਟਵੇਅਰਾਂ ਦੀ ਝਲਕ ਵੇਖੋ(_B)"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was uninstalled
 #: src/gs-history-dialog.c:70
-#| msgid "Installed"
 msgctxt "app status"
 msgid "Uninstalled"
 msgstr "ਅਣ-ਇੰਸਟਾਲ ਹੈ"
@@ -2201,12 +2091,6 @@ msgctxt "app status"
 msgid "Unknown"
 msgstr "ਅਣਪਛਾਤਾ"
 
-#. TRANSLATORS: This is the date string with: day number, month name, year.
-#. i.e. "25 May 2012"
-#: src/gs-history-dialog.c:111 src/gs-review-row.c:65 src/gs-updates-page.c:258
-msgid "%e %B %Y"
-msgstr "%e %B %Y"
-
 #: src/gs-history-dialog.ui:5
 msgid "History"
 msgstr "ਅਤੀਤ"
@@ -2230,7 +2114,7 @@ msgstr "ਸਾਫਟਵੇਅਰ ਕੈਟਾਲਾਗ ਡਾਊਨਲੋਡ ਕ
 msgid "Loading page"
 msgstr "ਸਫ਼ਾ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/gs-loading-page.ui:47
+#: src/gs-loading-page.ui:48
 msgid "Starting up…"
 msgstr "ਸ਼ੁਰੂਆਤ ਸਮੇਂ…"
 
@@ -2247,18 +2131,18 @@ msgid ""
 "being metered, this setting can be changed."
 msgstr ""
 "ਮੌਜੂਦਾ ਨੈੱਟਵਰਕ ਮੀਟਰ ਵਾਲਾ ਹੈ। ਮੀਟਰ ਵਾਲੇ ਕਨੈਕਸ਼ਨ ਲਈ ਡਾਟਾ ਹੱਦ ਹੁੰਦੀ ਹੈ ਜਾਂ ਉਹਨਾਂ"
-" ਨਾਲ "
-"ਖ਼ਰਚੇ ਲਾਗੇ ਹੁੰਦੇ ਹਨ। ਡਾਟਾ ਬਚਾਉਣ ਲਈ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟਾਂ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ।\n"
+" ਨਾਲ ਖ਼ਰਚੇ ਲਾਗੇ "
+"ਹੁੰਦੇ ਹਨ। ਡਾਟਾ ਬਚਾਉਣ ਲਈ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟਾਂ ਨੂੰ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ।\n"
 "\n"
 "ਜਦੋਂ ਵੀ ਬਿਨਾਂ-ਮੀਟਰ ਵਾਲਾ ਨੈੱਟਵਰਕ ਮਿਲਿਆ ਤਾਂ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟ ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤੇ"
-" ਜਾਣਗੇ। "
-"ਉਦੋਂ ਤੱਕ ਅੱਪਡੇਟਾਂ ਨੂੰ ਖੁਦ ਇੰਸਟਾਲ ਕਰਨਾ ਹਾਲੇ ਵੀ ਸੰਭਵ ਹੋਵੇਗਾ।\n"
+" ਜਾਣਗੇ। ਉਦੋਂ ਤੱਕ ਅੱਪਡੇਟਾਂ "
+"ਨੂੰ ਖੁਦ ਇੰਸਟਾਲ ਕਰਨਾ ਹਾਲੇ ਵੀ ਸੰਭਵ ਹੋਵੇਗਾ।\n"
 "\n"
-"ਬਦਲਵੇਂ ਰੂਪ ਵਿੱਚ ਜੇ ਮੌਜੂਦਾ ਨੈੱਟਵਰਕ ਨੂੰ ਗਲਤੀ ਨਾਲ ਮੀਟਰ ਵਾਲੇ ਵਜੋਂ ਪਛਾਣਿਆ ਗਿਆ ਹੈ "
-"ਤਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।"
+"ਬਦਲਵੇਂ ਰੂਪ ਵਿੱਚ ਜੇ ਮੌਜੂਦਾ ਨੈੱਟਵਰਕ ਨੂੰ ਗਲਤੀ ਨਾਲ ਮੀਟਰ ਵਾਲੇ ਵਜੋਂ ਪਛਾਣਿਆ ਗਿਆ ਹੈ"
+" ਤਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ "
+"ਬਦਲਿਆ ਜਾ ਸਕਦਾ ਹੈ।"
 
 #: src/gs-metered-data-dialog.ui:53
-#| msgid "Network Settings"
 msgid "Open Network _Settings"
 msgstr "ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ(_S)"
 
@@ -2271,18 +2155,18 @@ msgid "There are no reviews to moderate"
 msgstr "ਨਿਯਮਿਤ ਕਰਨ ਲਈ ਕੋਈ ਸਮੀਖਿਆ ਨਹੀਂ ਹੈ"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:84
+#: src/gs-origin-popover-row.c:72
 msgid "system"
 msgstr "ਸਿਸਟਮ"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:87
+#: src/gs-origin-popover-row.c:75
 msgid "user"
 msgstr "ਵਰਤੋਂਕਾਰ"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:108 src/gs-origin-popover-row.ui:122
+#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
 msgid "Branch"
 msgstr "ਬਰਾਂਚ"
 
@@ -2290,15 +2174,15 @@ msgstr "ਬਰਾਂਚ"
 msgid "URL"
 msgstr "URL"
 
-#. Translators: The packaging format of the app being installed, e.g. 'RPM' or 'Flatpak'
-#: src/gs-origin-popover-row.ui:64
-msgid "Format"
-msgstr "ਫਾਰਮੈਟ"
-
 #. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
-#: src/gs-origin-popover-row.ui:93
+#: src/gs-origin-popover-row.ui:64
 msgid "Installation"
 msgstr "ਇੰਸਟਾਲੇਸ਼ਨ"
+
+#. Translators: The available version of an app
+#: src/gs-origin-popover-row.ui:122
+msgid "Version"
+msgstr "ਵਰਜ਼ਨ"
 
 #. add button
 #: src/gs-overview-page.c:314
@@ -2330,12 +2214,12 @@ msgid "Recommended Productivity Applications"
 msgstr "ਸਿਫਾਰਸ਼ ਕੀਤੀਆਂ ਉਤਪਾਦਨ ਐਪਲੀਕੇਸ਼ਨ"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:927 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:836
 msgid "Access additional software from selected third party sources."
 msgstr "ਚੁਣੇ ਗਏ ਤੀਜੀ ਧਿਰ ਸਰੋਤਾਂ ਤੋਂ ਵਧੀਕ ਸਾਫਟਵੇਅਰਾਂ ਲਈ ਪਹੁੰਚ।"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:931 src/gs-repos-dialog.c:840
+#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:840
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2346,13 +2230,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:936 src/gs-repos-dialog.c:845
+#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:845
 msgid "Find out more…"
 msgstr "…ਹੋਰ ਲੱਭੋ"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:944 src/gs-repos-dialog.c:241
+#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:241
 msgid "Enable"
 msgstr "ਸਮਰੱਥ ਕਰੋ"
 
@@ -2407,29 +2291,24 @@ msgstr "ਕੀ ਤੁਸੀਂ %s ਰਿਪੋਜ਼ਟਰੀ ਨੂੰ ਹਟਾ�
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:469
 #, c-format
-#| msgid ""
-#| "All applications from %s will be removed, and you will have to re-install "
-#| "the repository to use them again."
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
 "install the repository to use them again."
 msgstr ""
 "%s ਤੋਂ ਸਭ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਅਣ-ਇੰਸਟਾਲ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਨੂੰ ਵਰਤਣ ਲਈ"
-" ਰਿਪੋਜ਼ਟਰੀ ਤੋਂ "
-"ਮੁੜ-ਇੰਸਟਾਲ ਕਰਨਾ ਪਵੇਗਾ।"
+" ਰਿਪੋਜ਼ਟਰੀ ਤੋਂ ਮੁੜ-"
+"ਇੰਸਟਾਲ ਕਰਨਾ ਪਵੇਗਾ।"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
 #: src/gs-page.c:477
 #, c-format
-#| msgid "Are you sure you want to purchase %s?"
 msgid "Are you sure you want to uninstall %s?"
 msgstr "ਕੀ ਤੁਸੀਂ %s ਨੂੰ ਅਣ-ਇੰਸਟਾਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:480
 #, c-format
-#| msgid "%s will be removed, and you will have to install it to use it again."
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
 msgstr ""
@@ -2790,39 +2669,39 @@ msgstr "... ਨੂੰ ਹਟਾਓ"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:266
+#: src/gs-screenshot-image.c:347
 msgid "Screenshot not found"
 msgstr "ਸਕਰੀਨਸ਼ਾਟ ਨਹੀਂ ਲੱਭਿਆ"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:283
+#: src/gs-screenshot-image.c:364
 msgid "Failed to load image"
 msgstr "ਚਿੱਤਰ ਲੋਡ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:425
+#: src/gs-screenshot-image.c:506
 msgid "Screenshot size not found"
 msgstr "ਸਕਰੀਨਸ਼ਾਟ ਆਕਾਰ ਨਹੀਂ ਲੱਭਿਆ"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:455
+#: src/gs-screenshot-image.c:536
 msgid "Could not create cache"
 msgstr "ਕੈਸ਼ ਨਹੀਂ ਬਣਾਈ ਜਾ ਸਕਦੀ ਹੈ"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:515
+#: src/gs-screenshot-image.c:596
 msgid "Screenshot not valid"
 msgstr "ਸਕਰੀਨਸ਼ਾਟ ਠੀਕ ਨਹੀਂ ਹੈ"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:535
+#: src/gs-screenshot-image.c:616
 msgid "Screenshot not available"
 msgstr "ਸਕਰੀਨਸ਼ਾਟ ਨਹੀਂ ਹੈ"
 
-#: src/gs-screenshot-image.c:601
+#: src/gs-screenshot-image.c:682
 msgid "Screenshot"
 msgstr "ਸਕਰੀਨਸ਼ਾਟ"
 
@@ -3304,7 +3183,6 @@ msgstr "%s ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਲਈ ਅਸਮਰੱਥ"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
 #: src/gs-shell.c:1956
-#| msgid "%s needs to be restarted to use new plugins."
 msgid "Software needs to be restarted to use new plugins."
 msgstr "ਨਵੀਆਂ ਪਲੱਗਇਨਾਂ ਵਰਤਣ ਵਾਸਤੇ ਸਾਫਟਵੇਅਰ ਐਪ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।"
 
@@ -3342,7 +3220,7 @@ msgstr "ਸਭ ਹਟਾਓ(_R)"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-update-dialog.c:188
+#: src/gs-update-dialog.c:189
 msgid "No update description available."
 msgstr "ਕੋਈ ਅੱਪਡੇਟ ਵੇਰਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।"
 
@@ -3350,37 +3228,37 @@ msgstr "ਕੋਈ ਅੱਪਡੇਟ ਵੇਰਵਾ ਉਪਲਬਧ ਨਹੀ�
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:292
+#: src/gs-update-dialog.c:293
 #, c-format
 msgid "Installed on %s"
 msgstr "%s ਨੂੰ ਇੰਸਟਾਲ ਕੀਤਾ"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:312
+#: src/gs-update-dialog.c:313
 msgid "Installed Updates"
 msgstr "ਇੰਸਟਾਲ ਹੋਏ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:544
+#: src/gs-update-dialog.c:535
 msgid "Additions"
 msgstr "ਹੋਰ"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:548
+#: src/gs-update-dialog.c:539
 msgid "Removals"
 msgstr "ਹਟਾਓ"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:552
+#: src/gs-update-dialog.c:543
 msgid "Updates"
 msgstr "ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:556
+#: src/gs-update-dialog.c:547
 msgid "Downgrades"
 msgstr "ਅੱਪਗਰੇਡ"
 
@@ -3389,29 +3267,23 @@ msgid "No updates have been installed on this system."
 msgstr "ਇਸ ਸਿਸਟਮ ਉੱਤੇ ਕੋਈ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਨਹੀਂ ਹਨ।"
 
 #: src/gs-update-monitor.c:193
-#| msgid "Software Updates Failed"
 msgid "Software Updates Are Out of Date"
 msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਪੁਰਾਣੇ ਹੋ ਗਏ ਹਨ"
 
 #: src/gs-update-monitor.c:194
-#, fuzzy
 #| msgid "Recent Software Updates"
 msgid "Please check for software updates."
-msgstr "ਤਾਜ਼ਾ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ"
+msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਲਈ ਜਾਂਚ ਕਰੋ।"
 
 #: src/gs-update-monitor.c:200
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Critical Software Update Ready to Install"
 msgstr "ਨਾਜ਼ੁਕ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਤਿਆਰ ਹੈ"
 
 #: src/gs-update-monitor.c:201
-#| msgid "An important OS update failed to be installed."
 msgid "An important software update is ready to be installed."
 msgstr "ਖਾਸ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਤਿਆਰ ਹੈ।"
 
 #: src/gs-update-monitor.c:204
-#| msgid "Software Updates Available"
 msgid "Critical Software Updates Available to Download"
 msgstr "ਨਾਜ਼ੁਕ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਉਪਲਬਧ ਹੈ"
 
@@ -3420,23 +3292,18 @@ msgid "Important: critical software updates are waiting."
 msgstr "ਖ਼ਾਸ: ਨਾਜ਼ੁਕ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਉਡੀਕ ਕਰ ਰਹੇ ਹਨ।"
 
 #: src/gs-update-monitor.c:211
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Updates Ready to Install"
 msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਤਿਆਰ ਹਨ"
 
 #: src/gs-update-monitor.c:212
-#| msgid "An important OS update failed to be installed."
 msgid "Software updates are waiting and ready to be installed."
 msgstr "ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕੀਤੇ ਜਾਣ ਲਈ ਤਿਆਰ ਹਨ।"
 
 #: src/gs-update-monitor.c:217
-#| msgid "Software Updates Available"
 msgid "Software Updates Available to Download"
 msgstr "ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਉਪਲਬਧ ਹਨ"
 
 #: src/gs-update-monitor.c:218
-#| msgid "Downloading firmware update…"
 msgid "Please download waiting software updates."
 msgstr "ਉਡੀਕ ਵਿੱਚ ਸਾਫਟਵੇਅਰ ਅੱਪਡੇਟਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ।"
 
@@ -3612,107 +3479,57 @@ msgstr ""
 " ਕੋਸ਼ਿਸ਼ ਕਰੋ। ਜੇ "
 "ਸਮੱਸਿਆ ਬਣੀ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਆਪਣੇ ਸਾਫਟਵੇਅਰ ਪਰੋਵਾਇਡਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
 
-#. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:226
-msgid "%R"
-msgstr "%R"
-
-#. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:229
-msgid "%l:%M %p"
-msgstr "%l:%M %p"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:235
-msgid "Yesterday, %R"
-msgstr "ਕੱਲ੍ਹ, %R"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:239
-msgid "Yesterday, %l:%M %p"
-msgstr "ਕੱਲ੍ਹ, :%l∶%M %p"
-
-#: src/gs-updates-page.c:242
-msgid "Two days ago"
-msgstr "ਦੋ ਦਿਨ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:244
-msgid "Three days ago"
-msgstr "ਤਿੰਨ ਦਿਨ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:246
-msgid "Four days ago"
-msgstr "ਚਾਰ ਦਿਨ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:248
-msgid "Five days ago"
-msgstr "ਪੰਜ ਦਿਨ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:250
-msgid "Six days ago"
-msgstr "ਛੇ ਦਿਨ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:252
-msgid "One week ago"
-msgstr "1 ਹਫ਼ਤਾ ਪਹਿਲਾਂ"
-
-#: src/gs-updates-page.c:254
-msgid "Two weeks ago"
-msgstr "ਦੋ ਹਫ਼ਤੇ ਪਹਿਲਾਂ"
-
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:270
+#: src/gs-updates-page.c:186
 msgid "Looking for new updates…"
 msgstr "...ਨਵੇਂ ਅੱਪਡੇਟ ਲਈ ਚੈੱਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:339
+#: src/gs-updates-page.c:255
 msgid "Setting up updates…"
 msgstr "...ਅੱਪਡੇਟ ਸੈੱਟ ਅੱਪ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:340 src/gs-updates-page.c:347
+#: src/gs-updates-page.c:256 src/gs-updates-page.c:263
 msgid "(This could take a while)"
 msgstr "(ਇਸ ਨੂੰ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:454
+#: src/gs-updates-page.c:370
 #, c-format
 msgid "Last checked: %s"
 msgstr "ਆਖਰੀ ਜਾਂਚ ਕੀਤੀ: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:618
+#: src/gs-updates-page.c:534
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s ਹੁਣ ਸਹਾਇਕ ਨਹੀਂ ਰਿਹਾ ਹੈ।"
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:623
+#: src/gs-updates-page.c:539
 msgid "Your OS is no longer supported."
 msgstr "ਤੁਹਾਡਾ ਓ.ਸਿ. ਹੁਣ ਸਹਾਇਕ ਨਹੀਂ ਰਿਹਾ ਹੈ।"
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:628
+#: src/gs-updates-page.c:544
 msgid "This means that it does not receive security updates."
 msgstr "ਇਸ ਦਾ ਅਰਥ ਹੈ ਕਿ ਇਹ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਨਹੀਂ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ।"
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:632
+#: src/gs-updates-page.c:548
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿ ਤੁਸੀਂ ਹੋਰ ਨਵੇਂ ਵਰਜ਼ਨ ਲਈ ਅੱਪਗਰੇਡ ਕਰੋ।"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:890
+#: src/gs-updates-page.c:806
 msgid "Charges May Apply"
 msgstr "ਖ਼ਰਚਾ ਹੋ ਸਕਦਾ ਹੈ"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:894
+#: src/gs-updates-page.c:810
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3722,27 +3539,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:898
+#: src/gs-updates-page.c:814
 msgid "Check _Anyway"
 msgstr "ਕਿਵੇਂ ਵੀ ਚੈੱਕ ਕਰੋ(_A)"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:914
+#: src/gs-updates-page.c:830
 msgid "No Network"
 msgstr "ਨੈੱਟਵਰਕ ਨਹੀਂ"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:918
+#: src/gs-updates-page.c:834
 msgid "Internet access is required to check for updates."
 msgstr "ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਦੀ ਲੋੜ ਹੈ।"
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1341
+#: src/gs-updates-page.c:1257
 msgid "Checking…"
 msgstr "…ਚੈੱਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/gs-updates-page.c:1354
+#: src/gs-updates-page.c:1270
 msgid "Check for updates"
 msgstr "ਅੱਪਡੇਟ ਲਈ ਚੈੱਕ ਕਰੋ"
 
@@ -3781,41 +3598,41 @@ msgstr "ਅੱਪਡੇਟ ਦਾ ਪਰਬੰਧ ਆਪਣੇ-ਆਪ ਕੀਤ�
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:290
 msgid "Restart & Update"
 msgstr "ਮੁੜ-ਚਾਲੂ ਤੇ ਇੰਸਟਾਲ ਕਰੋ"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:290
+#: src/gs-updates-section.c:296
 msgid "Update All"
 msgstr "ਸਾਰੇ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:421
+#: src/gs-updates-section.c:427
 msgid "Integrated Firmware"
 msgstr "ਐਂਟੀਗਰੇਟਡ ਫਿਰਮਵੇਅਰ"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:425
+#: src/gs-updates-section.c:431
 msgid "Requires Restart"
 msgstr "ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:429
+#: src/gs-updates-section.c:435
 msgid "Application Updates"
 msgstr "ਐਪਲੀਕੇਸ਼ਨ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:433
+#: src/gs-updates-section.c:439
 msgid "Device Firmware"
 msgstr "ਡਿਵਾਈਸ ਫਿਰਮਵੇਅਰ"
 
-#: src/gs-updates-section.c:461 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:467 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "ਡਾਊਨਲੋਡ ਕਰੋ(_D)"
 
@@ -3888,391 +3705,6 @@ msgstr ""
 "ਅੱਪਡੇਟ;ਸਰੋਤ;ਰਿਪੋਜ਼ਟਰੀ;ਪਸੰਦ,ਇੰਸਟਾਲ;ਸਟੋਰ;ਅੱਪਗਰੇਡ;Updates;Upgrade;Sources;Reposito"
 "ries;"
 "Preferences;Install;Store;ਅਣਇੰਸਟਾਲ;ਅਣ-ਇੰਸਟਾਲ;ਪ੍ਰੋਗਰਾਮ;ਸਾਫਟਵੇਅਰ;ਐਪ;"
-
-#: plugins/core/gs-desktop-common.c:17
-msgctxt "Menu of Audio & Video"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:20
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:23
-msgctxt "Menu of Audio & Video"
-msgid "Audio Creation & Editing"
-msgstr "ਆਡੀਓ ਬਣਾਉਣਾ ਤੇ ਸੋਧਣਾ"
-
-#: plugins/core/gs-desktop-common.c:29
-msgctxt "Menu of Audio & Video"
-msgid "Music Players"
-msgstr "ਸੰਗੀਤ ਪਲੇਅਰ"
-
-#: plugins/core/gs-desktop-common.c:38
-msgctxt "Menu of Developer Tools"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:41
-msgctxt "Menu of Developer Tools"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:44
-msgctxt "Menu of Developer Tools"
-msgid "Debuggers"
-msgstr "ਡੀਬੱਗਰ"
-
-#: plugins/core/gs-desktop-common.c:47
-msgctxt "Menu of Developer Tools"
-msgid "IDEs"
-msgstr "IDE"
-
-#: plugins/core/gs-desktop-common.c:56
-msgctxt "Menu of Education & Science"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Education & Science"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:64
-msgctxt "Menu of Education & Science"
-msgid "Artificial Intelligence"
-msgstr "ਨਕਲੀ ਮੁਹਾਰਤ"
-
-#: plugins/core/gs-desktop-common.c:67
-msgctxt "Menu of Education & Science"
-msgid "Astronomy"
-msgstr "ਤਾਰਾ-ਵਿਗਿਆਨ"
-
-#: plugins/core/gs-desktop-common.c:71
-msgctxt "Menu of Education & Science"
-msgid "Chemistry"
-msgstr "ਰਸਾਇਣ-ਵਿਗਿਆਨ"
-
-#: plugins/core/gs-desktop-common.c:75
-msgctxt "Menu of Education & Science"
-msgid "Languages"
-msgstr "ਭਾਸ਼ਾਵਾਂ"
-
-#: plugins/core/gs-desktop-common.c:79
-msgctxt "Menu of Education & Science"
-msgid "Math"
-msgstr "ਗਣਿਤ"
-
-#: plugins/core/gs-desktop-common.c:86
-msgctxt "Menu of Education & Science"
-msgid "Robotics"
-msgstr "ਰੋਬੋਟ"
-
-#: plugins/core/gs-desktop-common.c:95
-msgctxt "Menu of Games"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:98
-msgctxt "Menu of Games"
-msgid "Featured"
-msgstr "ਫੀਚਰ"
-
-#: plugins/core/gs-desktop-common.c:101
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "ਕਾਰਵਾਈ"
-
-#: plugins/core/gs-desktop-common.c:104
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "ਜਾਂਬਾਜ਼ੀ"
-
-#: plugins/core/gs-desktop-common.c:107
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "ਆਰਕੇਡ"
-
-#: plugins/core/gs-desktop-common.c:110
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "ਬਲਾਕ"
-
-#: plugins/core/gs-desktop-common.c:113
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "ਬੋਰਡ"
-
-#: plugins/core/gs-desktop-common.c:116
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "ਤਾਸ਼"
-
-#: plugins/core/gs-desktop-common.c:119
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "ਈਮੂਲੇਟਰ"
-
-#: plugins/core/gs-desktop-common.c:122
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "ਬੱਚੇ"
-
-#: plugins/core/gs-desktop-common.c:125
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "ਲਾਜਿਕ"
-
-#: plugins/core/gs-desktop-common.c:129
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "ਭੂਮਿਕਾ ਨਿਭਾਉਣਾ"
-
-#: plugins/core/gs-desktop-common.c:132
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "ਖੇਡਾਂ"
-
-#: plugins/core/gs-desktop-common.c:135
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "ਕਾਰਜਨੀਤੀ"
-
-#: plugins/core/gs-desktop-common.c:143
-msgctxt "Menu of Graphics & Photography"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:146
-msgctxt "Menu of Graphics & Photography"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:149
-msgctxt "Menu of Graphics & Photography"
-msgid "3D Graphics"
-msgstr "3D ਗਰਾਫਿਕਸ"
-
-#: plugins/core/gs-desktop-common.c:152
-msgctxt "Menu of Graphics & Photography"
-msgid "Photography"
-msgstr "ਫੋਟੋਗਰਾਫ਼ੀ"
-
-#: plugins/core/gs-desktop-common.c:155
-msgctxt "Menu of Graphics & Photography"
-msgid "Scanning"
-msgstr "ਸਕੈਨ ਕਰਨਾ"
-
-#: plugins/core/gs-desktop-common.c:158
-msgctxt "Menu of Graphics & Photography"
-msgid "Vector Graphics"
-msgstr "ਵੈਕਟਰ ਗਰਾਫਿਕਸ"
-
-#: plugins/core/gs-desktop-common.c:161
-msgctxt "Menu of Graphics & Photography"
-msgid "Viewers"
-msgstr "ਵਿਊਅਰ"
-
-#: plugins/core/gs-desktop-common.c:169
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:172
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:175
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "ਕੈਲੰਡਰ"
-
-#: plugins/core/gs-desktop-common.c:179
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "ਡਾਟਾਬੇਸ"
-
-#: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "ਵਿੱਤੀ"
-
-#: plugins/core/gs-desktop-common.c:186
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "ਵਰਡ ਪਰੋਸੈਸ"
-
-#: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Add-ons"
-msgid "Fonts"
-msgstr "ਫ਼ੋਂਟ"
-
-#: plugins/core/gs-desktop-common.c:198
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "ਕੋਡਕਸ"
-
-#: plugins/core/gs-desktop-common.c:201
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "ਇੰਪੁੱਟ ਸਰੋਤ"
-
-#: plugins/core/gs-desktop-common.c:204
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "ਭਾਸ਼ਾ ਪੈਕ"
-
-#: plugins/core/gs-desktop-common.c:207
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "ਉਲੱਥਾ"
-
-#: plugins/core/gs-desktop-common.c:210
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "ਹਾਰਡਵੇਅਰ ਡਰਾਇਵਰ"
-
-#: plugins/core/gs-desktop-common.c:218
-msgctxt "Menu of Communication & News"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:221
-msgctxt "Menu of Communication & News"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:224
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "ਗੱਲਬਾਤ"
-
-#: plugins/core/gs-desktop-common.c:231
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "ਖ਼ਬਰਾਂ"
-
-#: plugins/core/gs-desktop-common.c:235
-msgctxt "Menu of Communication & News"
-msgid "Web Browsers"
-msgstr "ਵੈੱਬ ਬਰਾਊਜ਼ਰ"
-
-#: plugins/core/gs-desktop-common.c:243
-msgctxt "Menu of Utilities"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:246
-msgctxt "Menu of Utilities"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:249
-msgctxt "Menu of Utilities"
-msgid "Text Editors"
-msgstr "ਲਿਖਤ ਐਡੀਟਰ"
-
-#: plugins/core/gs-desktop-common.c:257
-msgctxt "Menu of Reference"
-msgid "All"
-msgstr "ਸਭ"
-
-#: plugins/core/gs-desktop-common.c:260
-msgctxt "Menu of Reference"
-msgid "Featured"
-msgstr "ਵਿਸ਼ੇਸ਼ਤਾ"
-
-#: plugins/core/gs-desktop-common.c:263
-msgctxt "Menu of Art"
-msgid "Art"
-msgstr "ਕਲਾ"
-
-#: plugins/core/gs-desktop-common.c:266
-msgctxt "Menu of Reference"
-msgid "Biography"
-msgstr "ਆਤਮ-ਕਥਾ"
-
-#: plugins/core/gs-desktop-common.c:269
-msgctxt "Menu of Reference"
-msgid "Comics"
-msgstr "ਕਾਮਿਕ"
-
-#: plugins/core/gs-desktop-common.c:272
-msgctxt "Menu of Reference"
-msgid "Fiction"
-msgstr "ਗਲਪ"
-
-#: plugins/core/gs-desktop-common.c:275
-msgctxt "Menu of Reference"
-msgid "Health"
-msgstr "ਸਿਹਤ"
-
-#: plugins/core/gs-desktop-common.c:278
-msgctxt "Menu of Reference"
-msgid "History"
-msgstr "ਅਤੀਤ"
-
-#: plugins/core/gs-desktop-common.c:281
-msgctxt "Menu of Reference"
-msgid "Lifestyle"
-msgstr "ਜੀਵਨ-ਜਾਚ"
-
-#: plugins/core/gs-desktop-common.c:284
-msgctxt "Menu of Reference"
-msgid "Politics"
-msgstr "ਰਾਜਨੀਤੀ"
-
-#: plugins/core/gs-desktop-common.c:287
-msgctxt "Menu of Reference"
-msgid "Sports"
-msgstr "ਖੇਡਾਂ"
-
-#. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:297
-msgid "Audio & Video"
-msgstr "ਆਡੀਓ ਤੇ ਵੀਡੀਓ"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:300
-msgid "Developer Tools"
-msgstr "ਡਿਵੈਲਪਰ ਟੂਲ"
-
-#. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:303
-msgid "Education & Science"
-msgstr "ਸਿੱਖਿਆ ਤੇ ਵਿਗਿਆਨ"
-
-#. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:306
-msgid "Games"
-msgstr "ਗੇਮਾਂ"
-
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:309
-msgid "Graphics & Photography"
-msgstr "ਗਰਾਫਿਕਸ ਤੇ ਫੋਟੋਗਰਾਫ਼ੀ"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:312
-msgid "Productivity"
-msgstr "ਉਤਪਾਦਨ"
-
-#. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:318
-msgid "Communication & News"
-msgstr "ਸੰਚਾਰ ਤੇ ਖ਼ਬਰਾਂ"
-
-#. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:321
-msgid "Reference"
-msgstr "ਰੈਫਰੈਂਸ"
-
-#. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:324
-msgid "Utilities"
-msgstr "ਸਹੂਲਤਾਂ"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -4359,116 +3791,105 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "ਫਲੈਟਪਕ (Flatpak) ਲੀਨਕਸ 'ਤੇ ਡੈਸਕਟਾਪ ਐਪਲੀਕੇਸ਼ਨਾਂ ਲਈ ਢਾਂਚਾ ਹੈ।"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:998
+#: plugins/flatpak/gs-flatpak.c:1008
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "…%s ਲਈ ਫਲੈਟਪਕ ਮੇਟਾਡਾਟਾ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: plugins/flatpak/gs-flatpak.c:2766
+#: plugins/flatpak/gs-flatpak.c:2799
 #, c-format
-#| msgid "Unable to find “%s”"
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "‘%s’ ਐਡ-ਆਨ ਸੋਧਣ ਲਈ ਫੇਲ੍ਹ ਹੈ: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:766
+#: plugins/flatpak/gs-plugin-flatpak.c:803
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
-msgstr ""
+msgstr "‘%s’ ਐਡ-ਆਨ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਜੋੜਨ ਵਾਸਤੇ ਫੇਲ੍ਹ: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:780
+#: plugins/flatpak/gs-plugin-flatpak.c:817
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
-msgstr ""
+msgstr "‘%s’ ਐਡ-ਆਨ ਅਣ-ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਜੋੜਨ ਵਾਸਤੇ ਫੇਲ੍ਹ: %s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:136
+#: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
-#| msgid "%s Device"
 msgid "%s Device Update"
 msgstr "%s ਡਿਵਾਈਸ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:141
+#: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
-#| msgid "%s System"
 msgid "%s System Update"
 msgstr "%s ਸਿਸਟਮ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:146
+#: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
-#| msgid "%s Embedded Controller"
 msgid "%s Embedded Controller Update"
 msgstr "%s ਇੰਬੈੱਡਡ ਕੰਟਰੋਲਰ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:151
+#: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
-#| msgid "Update"
 msgid "%s ME Update"
 msgstr "%s ME ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:156
+#: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
-#| msgid "%s Corporate ME"
 msgid "%s Corporate ME Update"
 msgstr "%s ਕਾਰਪੋਰੇਟ ME ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:161
+#: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
-#| msgid "%s Consumer ME"
 msgid "%s Consumer ME Update"
 msgstr "%s ਖਪਤਕਾਰ ME ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:167
+#: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
-#| msgid "%s Controller"
 msgid "%s Controller Update"
 msgstr "%s ਕੰਟਰੋਲਰ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:173
+#: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
-#| msgid "%s Thunderbolt Controller"
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s ਥੰਡਰਬੋਲਟ ਕੰਟਰੋਲਰ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:178
+#: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s CPU ਮਾਈਕਰੋਕੋਡ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:183
+#: plugins/fwupd/gs-fwupd-app.c:182
 #, c-format
-#| msgid "%u Application Updated"
-#| msgid_plural "%u Applications Updated"
 msgid "%s Configuration Update"
 msgstr "%s ਸੰਰਚਨਾ ਅੱਪਡੇਟ"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:710
+#: plugins/fwupd/gs-plugin-fwupd.c:707
 msgid "Downloading firmware update signature…"
 msgstr "…ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਦਸਤਖ਼ਤ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:751
+#: plugins/fwupd/gs-plugin-fwupd.c:748
 msgid "Downloading firmware update metadata…"
 msgstr "…ਫਿਰਮਵੇਅਰ ਅੱਪਡੇਟ ਮੇਟਾਡਾਟਾ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
@@ -4494,7 +3915,7 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS ਐਪਲੀਕੇਸ਼ਨਾਂ ਦੀ ਵਰਤੋਂਕਾਰ ਪੜਤਾਲਾਂ ਦੇਣ ਵਾਲੀ ਸੇਵਾ ਹੈ"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:240
+#: plugins/snap/gs-plugin-snap.c:239
 msgid "Snap Store"
 msgstr "ਸਨੈਪ ਸਟੋਰ"
 
@@ -4505,6 +3926,366 @@ msgstr "ਸਨੈਪ ਸਹਿਯੋਗ"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "ਸਨੈਪ ਯੂਨੀਵਰਸਲ ਲੀਨਕਸ ਪੈਕੇਜ ਹੈ"
+
+#~ msgid "No cartoon violence"
+#~ msgstr "ਕੋਈ ਕਾਰਟੂਨ ਤਸ਼ਦੱਦ ਨਹੀਂ"
+
+#~ msgid "Cartoon characters in unsafe situations"
+#~ msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ 'ਚ ਕਾਰਟੂਨ ਕਰੈਟਰ"
+
+#~ msgid "Cartoon characters in aggressive conflict"
+#~ msgstr "ਲੜਾਕੇ ਟਾਕਰਿਆਂ ਵਿੱਚ ਕਾਰਟੂਨ ਕਰੈਟਰ"
+
+#~ msgid "Graphic violence involving cartoon characters"
+#~ msgstr "ਕਾਰਟੂਨ ਕਰੈਟਰ ਦੇ ਨਾਲ ਗਰਾਫਿਕ ਤਸ਼ਦੱਦ"
+
+#~ msgid "No fantasy violence"
+#~ msgstr "ਕਲਪਨਿਕ ਤਸ਼ਦੱਦ ਨਹੀਂ"
+
+#~ msgid "Characters in unsafe situations easily distinguishable from reality"
+#~ msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ ਵਿੱਚ ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲੇ ਚਿੰਨ੍ਹ"
+
+#~ msgid ""
+#~ "Characters in aggressive conflict easily distinguishable from reality"
+#~ msgstr "ਹਮਲਾਵਰ ਟਕਰਾ ਵਿੱਚ ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲੇ ਚਿੰਨ੍ਹ"
+
+#~ msgid "Graphic violence easily distinguishable from reality"
+#~ msgstr "ਅਸਲੀਅਤ ਤੋਂ ਸੌਖੀ ਤਰ੍ਹਾਂ ਪਛਾਣੇ ਜਾਣ ਵਾਲਾ ਚਿੱਤਰਨ ਕੀਤਾ ਤਸ਼ਦੱਦ"
+
+#~ msgid "No realistic violence"
+#~ msgstr "ਕੋਈ ਅਸਲੀ ਤਸ਼ਦੱਦ ਨਹੀਂ"
+
+#~ msgid "Mildly realistic characters in unsafe situations"
+#~ msgstr "ਅਸੁਰੱਖਿਅਤ ਹਾਲਤਾਂ 'ਚ ਨਰਮ ਰੁਖ ਵਾਲਾ ਯਥਾਰਥਿਕ ਚਿੰਨ੍ਹ"
+
+#~ msgid "Depictions of realistic characters in aggressive conflict"
+#~ msgstr "ਲੜਾਕੇ ਟਾਕਰਿਆਂ ਵਿੱਚ ਅਸਲੀ ਚਿੰਨ੍ਹਾਂ ਦਾ ਚਿੱਤਰਨ"
+
+#~ msgid "Graphic violence involving realistic characters"
+#~ msgstr "ਯਥਾਰਥਿਕ ਕਰੈਟਰ ਦੇ ਨਾਲ ਗਰਾਫਿਕ ਤਸ਼ਦੱਦ"
+
+#~ msgid "No bloodshed"
+#~ msgstr "ਕੋਈ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ ਨਹੀਂ"
+
+#~ msgid "Unrealistic bloodshed"
+#~ msgstr "ਕਾਲਪਨਿਕ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ"
+
+#~ msgid "Realistic bloodshed"
+#~ msgstr "ਅਸਲੀ ਖ਼ੂਨ-ਖ਼ਰਾਬਾ"
+
+#~ msgid "Depictions of bloodshed and the mutilation of body parts"
+#~ msgstr "ਖ਼ੂਨ-ਖ਼ਰਾਬੇ ਦਾ ਵਰਣਨ ਅਤੇ ਸਰੀਰਿਕ ਅੰਗਾਂ ਦੀ ਕੱਟ-ਵੱਢ"
+
+#~ msgid "No sexual violence"
+#~ msgstr "ਕੋਈ ਜਿਨਸੀ ਧੱਕਾ ਨਹੀਂ"
+
+#~ msgid "Rape or other violent sexual behavior"
+#~ msgstr "ਜਬਰ-ਜ਼ਿਨਾਹ ਜਾਂ ਹੋਰ ਧੱਕੇ ਵਾਲਾ ਜਿਨਸੀ ਰਵੱਈਆ"
+
+#~ msgid "No references to alcohol"
+#~ msgstr "ਕੋਈ ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "References to alcoholic beverages"
+#~ msgstr "ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਲਈ ਹਵਾਲੇ"
+
+#~ msgid "Use of alcoholic beverages"
+#~ msgstr "ਸ਼ਰਾਬੀ ਖਾਣ-ਪੀਣ ਦੀ ਵਰਤੋਂ"
+
+#~ msgid "No references to illicit drugs"
+#~ msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਲਈ ਕੋਈ ਹਵਾਲਾ ਨਹੀਂ"
+
+#~ msgid "References to illicit drugs"
+#~ msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਲਈ ਹਵਾਲੇ"
+
+#~ msgid "Use of illicit drugs"
+#~ msgstr "ਵਰਜਿਤ ਦਵਾਈਆਂ (ਨਸ਼ਿਆਂ) ਦੀ ਵਰਤੋਂ"
+
+#~| msgid "References to tobacco products"
+#~ msgid "No references to tobacco products"
+#~ msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਲਈ ਕੋਈ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "References to tobacco products"
+#~ msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਲਈ ਹਵਾਲੇ"
+
+#~ msgid "Use of tobacco products"
+#~ msgstr "ਤਮਾਕੂ ਉਤਪਾਦਾਂ ਦੀ ਵਰਤੋਂ"
+
+#~ msgid "No nudity of any sort"
+#~ msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦਾ ਨੰਗੇਜ਼ ਨਹੀਂ ਹੈ"
+
+#~ msgid "Brief artistic nudity"
+#~ msgstr "ਸੰਖੇਪ ਕਲਕਾਰੀ ਨੰਗੇਜ਼"
+
+#~ msgid "Prolonged nudity"
+#~ msgstr "ਲੰਮੇ ਸਮੇਂ ਲਈ ਨੰਗੇਜ਼"
+
+#~ msgid "No references to or depictions of sexual nature"
+#~ msgstr "ਜਿਨਸੀ ਕਿਸਮ ਦੇ ਕੋਈ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ ਨਹੀਂ ਹੈ"
+
+#~ msgid "Provocative references or depictions"
+#~ msgstr "ਭੜਕਾਊ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ"
+
+#~ msgid "Sexual references or depictions"
+#~ msgstr "ਜਿਨਸੀ ਹਵਾਲੇ ਜਾਂ ਵਰਣਨ"
+
+#~ msgid "Graphic sexual behavior"
+#~ msgstr "ਗਰਾਫ਼ਿਕ ਜਿਨਸੀ ਰਵੱਈਆ"
+
+#~ msgid "No profanity of any kind"
+#~ msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੀ ਕੋਈ ਵੀ ਬੇਅਦਬੀ ਨਹੀਂ"
+
+#~ msgid "Mild or infrequent use of profanity"
+#~ msgstr "ਹਲਕੀ ਜਾਂ ਕਦੇ ਕਦਾਈ ਬੇਅਦਬੀ ਦੀ ਵਰਤੋਂ"
+
+#~ msgid "Moderate use of profanity"
+#~ msgstr "ਬੇਅਦਬੀ ਦੀ ਠੀਕ-ਠਾਕ ਵਰਤੋਂ"
+
+#~ msgid "Strong or frequent use of profanity"
+#~ msgstr "ਬੇਅਦਬੀ ਦੀ ਜ਼ੋਰਦਾਰ ਜਾਂ ਅਕਸਰ ਵਰਤੋਂ"
+
+#~ msgid "No inappropriate humor"
+#~ msgstr "ਕੋਈ ਅਢੁੱਕਵਾਂ ਮਜ਼ਾਕ ਨਹੀਂ"
+
+#~ msgid "Slapstick humor"
+#~ msgstr "ਮਸ਼ਕਰੀਆ ਮਜ਼ਾਕ"
+
+#~ msgid "Vulgar or bathroom humor"
+#~ msgstr "ਘਟੀਆ ਜਾਂ ਬਾਥਰੂਮ ਮਜ਼ਾਕ"
+
+#~ msgid "Mature or sexual humor"
+#~ msgstr "ਪ੍ਰੋੜ੍ਹ ਜਾਂ ਜਿਨਸੀ ਮਜ਼ਾਕ"
+
+#~ msgid "No discriminatory language of any kind"
+#~ msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੀ ਪੱਖਪਾਤੀ ਭਾਸ਼ਾ ਨਹੀਂ"
+
+#~ msgid "Negativity towards a specific group of people"
+#~ msgstr "ਖਾਸ ਕਿਸਮ ਦੇ ਲੋਕਾਂ ਦੇ ਖਿਲਾਫ਼ ਨਿਖੇਧੀ"
+
+#~ msgid "Discrimination designed to cause emotional harm"
+#~ msgstr "ਜ਼ਜ਼ਬਾਤੀ ਨੁਕਸਾਨ ਕਰਨ ਲਈ ਤਿਆਰ ਕੀਤਾ ਪੱਖਪਾਤ"
+
+#~ msgid "Explicit discrimination based on gender, sexuality, race or religion"
+#~ msgstr "ਲਿੰਗ, ਜਿਨਸ, ਨਸਲ ਜਾਂ ਧਰਮ 'ਤੇ ਅਧਾਰਿਤ ਸਾਫ਼ ਸਾਫ਼ ਪੱਖਪਾਤ"
+
+#~ msgid "No advertising of any kind"
+#~ msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦੇ ਕੋਈ ਇਸ਼ਤਿਹਾਰ ਨਹੀਂ"
+
+#~ msgid "Product placement"
+#~ msgstr "ਉਤਪਾਦ ਸਥਾਪਨਾ"
+
+#~ msgid "Explicit references to specific brands or trademarked products"
+#~ msgstr "ਖਾਸ ਬਰੈਂਡਾਂ ਜਾਂ ਟਰੇਡਮਾਰਕ ਉਤਪਾਦਾਂ ਲਈ ਅਲਹਿਦਾ ਹਵਾਲੇ"
+
+#~ msgid "Users are encouraged to purchase specific real-world items"
+#~ msgstr "ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਖਾਸ ਅਸਲ ਸੰਸਾਰ ਦੀਆਂ ਚੀਜ਼ਾਂ ਖਰੀਦਣ ਲਈ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
+
+#~ msgid "No gambling of any kind"
+#~ msgstr "ਕਿਸੇ ਵੀ ਕਿਸਮ ਦਾ ਜੂਆ ਨਹੀਂ"
+
+#~ msgid "Gambling on random events using tokens or credits"
+#~ msgstr "ਟੋਕਨ ਜਾਂ ਕਰੈਡਿਟ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਰਲਵੇਂ ਈਵੈਂਟਾਂ ਲਈ ਜੂਆ ਖੇਡਣਾ"
+
+#~ msgid "Gambling using “play” money"
+#~ msgstr "\"ਪਲੇਅ\" ਧਨ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਜੂਆ ਖੇਡਣਾ"
+
+#~ msgid "Gambling using real money"
+#~ msgstr "ਅਸਲੀ ਧਨ ਦੀ ਵਰਤੋਂਂ ਨਾਲ ਜੂਆ ਖੇਡਣਾ"
+
+#~ msgid "No ability to spend money"
+#~ msgstr "ਧਨ ਖ਼ਰਚਣ ਦੀ ਸਮਰੱਥ ਨਹੀਂ"
+
+#~ msgid "Users are encouraged to donate real money"
+#~ msgstr "ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਅਸਲ ਧਨ ਦਾਨ ਕਰਨ ਲਈ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
+
+#~ msgid "Ability to spend real money in-app"
+#~ msgstr "ਐਪ ਵਿੱਚ ਅਸਲ ਧਨ ਖ਼ਰਚ ਕਰਨ ਦੀ ਸਮਰੱਥਾ"
+
+#~ msgid "No way to chat with other users"
+#~ msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਗੱਲਾਂ ਕਰਨ ਦਾ ਕੋਈ ਢੰਗ ਨਹੀਂ"
+
+#~ msgid "User-to-user interactions without chat functionality"
+#~ msgstr "ਗੱਲਬਾਤ ਸਹੂਲਤ ਦੇ ਬਿਨਾਂ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਆਪਸ 'ਚ ਤਾਲਮੇਲ"
+
+#~ msgid "Moderated chat functionality between users"
+#~ msgstr "ਵਰਤੋਂਕਾਰਾਂ ਵਿਚਾਲੇ ਸੰਜਮੀ ਗੱਲਬਾਤ ਸਹੂਲਤ"
+
+#~ msgid "Uncontrolled chat functionality between users"
+#~ msgstr "ਵਰਤੋਂਕਾਰਾਂ 'ਚ ਬਿਨਾਂ-ਕੰਟਰੋਲ ਗੱਲਬਾਤ ਸਹੂਲਤ"
+
+#~ msgid "No way to talk with other users"
+#~ msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਗੱਲਾਂ (ਬੋਲ ਕੇ) ਕਰਨ ਦਾ ਕੋਈ ਢੰਗ ਨਹੀਂ"
+
+#~ msgid "Uncontrolled audio or video chat functionality between users"
+#~ msgstr "ਵਰਤੋਂਕਾਰਾਂ 'ਚ ਬਿਨਾਂ-ਕੰਟਰੋਲ ਆਡੀਓ ਜਾਂ ਵੀਡੀਓ ਗੱਲਬਾਤ ਸਹੂਲਤ"
+
+#~ msgid "No sharing of social network usernames or email addresses"
+#~ msgstr "ਸਮਾਜਿਕ ਨੈੱਟਵਰਕ ਵਰਤੋਂਕਾਰ ਜਾਂ ਈਮੇਲ ਸਿਰਨਾਵੇਂ ਸਾਂਝੇ ਨਹੀਂ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
+
+#~ msgid "Sharing social network usernames or email addresses"
+#~ msgstr "ਸਮਾਜਿਕ ਨੈੱਟਵਰਕ ਵਰਤੋਂਕਾਰ ਜਾਂ ਈਮੇਲ ਸਿਰਨਾਵੇਂ ਸਾਂਝੇ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
+
+#~ msgid "No sharing of user information with third parties"
+#~ msgstr "ਤੀਜੀਆਂ ਧਿਰਾਂ ਨਾਲ ਵਰਤੋਂਕਾਰ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ"
+
+#~ msgid "Checking for the latest application version"
+#~ msgstr "ਐਪਲੀਕੇਸ਼ਨ ਦੇ ਨਵੇਂ ਵਰਜ਼ਨ ਲਈ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
+
+#~ msgid "Sharing diagnostic data that does not let others identify the user"
+#~ msgstr ""
+#~ "ਜਾਂਚ-ਪੜਤਾਲ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਜੋ ਕਿ ਹੋਰਾਂ ਨੂੰ ਵਰਤੋਂਕਾਰ ਦੀ ਪਛਾਣ ਨਹੀਂ ਕਰਨ "
+#~ "ਦਿੰਦਾ ਹੈ"
+
+#~ msgid "Sharing information that lets others identify the user"
+#~ msgstr "ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨੀ, ਜਿਸ ਨਾਲ ਹੋਰ ਵਰਤੋਂਕਾਰ ਦੀ ਪਛਾਣ ਕਰਦੇ ਹਨ"
+
+#~ msgid "No sharing of physical location with other users"
+#~ msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਭੂਗੋਲਿਕ ਟਿਕਾਣਾ ਨਹੀਂ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ"
+
+#~ msgid "Sharing physical location with other users"
+#~ msgstr "ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨਾਲ ਭੂਗੋਲਿਕ ਟਿਕਾਣਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#~ msgid "No references to homosexuality"
+#~ msgstr "ਕੋਈ ਸਮਲਿੰਗ ਕਾਮੁਕਤਾ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "Indirect references to homosexuality"
+#~ msgstr "ਸਮਲਿੰਗ ਕਾਮੁਕਤਾ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
+
+#~ msgid "Kissing between people of the same gender"
+#~ msgstr "ਇੱਕੋ ਲਿੰਗ ਦੇ ਲੋਕਾਂ ਵਿਚਾਲੇ ਚੁੰਮਣ"
+
+#~ msgid "Graphic sexual behavior between people of the same gender"
+#~ msgstr "ਇੱਕੋ ਲਿੰਗ ਦੇ ਲੋਕਾਂ ਵਿਚਾਲੇ ਜਿਨਸੀ ਸੰਬੰਧਾਂ ਦਾ ਚਿੱਤਰਨ"
+
+#~ msgid "No references to prostitution"
+#~ msgstr "ਕੋਈ ਕੰਜਰਪੁਣੇ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "Indirect references to prostitution"
+#~ msgstr "ਕੰਜਰਪੁਣੇ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
+
+#~ msgid "Direct references to prostitution"
+#~ msgstr "ਕੰਜਰਪੁਣੇ ਲਈ ਸਿੱਧੇ ਹਵਾਲੇ"
+
+#~ msgid "Graphic depictions of the act of prostitution"
+#~ msgstr "ਕੰਜਰਪੁਣੇ ਦੇ ਕੰਮ ਲਈ ਚਿੱਤਰਨ"
+
+#~ msgid "No references to adultery"
+#~ msgstr "ਕੋਈ ਬਦਕਾਰੀ ਲਈ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "Indirect references to adultery"
+#~ msgstr "ਬਦਕਾਰੀ ਲਈ ਅਸਿੱਧੇ ਹਵਾਲੇ"
+
+#~ msgid "Direct references to adultery"
+#~ msgstr "ਬਦਕਾਰੀ ਲਈ ਸਿੱਧੇ ਹਵਾਲੇ"
+
+#~ msgid "Graphic depictions of the act of adultery"
+#~ msgstr "ਬਦਕਾਰੀ ਦੇ ਕੰਮ ਲਈ ਚਿੱਤਰਨ"
+
+#~ msgid "No sexualized characters"
+#~ msgstr "ਕੋਈ ਕਾਮਕਤਾ ਪਾਤਰ ਨਹੀਂ"
+
+#~ msgid "Scantily clad human characters"
+#~ msgstr "ਟਾਵੇਂ-ਟਾਵੇਂ ਕੱਪੜੇ ਪਾਏ ਹੋਏ ਮਨੁੱਖੀ ਪਾਤਰ"
+
+#~ msgid "Overtly sexualized human characters"
+#~ msgstr "ਪ੍ਰਤੱਖ ਜਿਨਸੀ ਸੰਬੰਧਾਂ ਵਿੱਚ ਰੁਝੇ ਮਨੁੱਖੀ ਪਾਤਰ"
+
+#~ msgid "No references to desecration"
+#~ msgstr "ਕੋਈ ਬੇਹੁਰਮਤੀ ਦੇ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "Depictions of or references to historical desecration"
+#~ msgstr "ਇਤਿਹਾਸਿਕ ਬੇਹੁਰਮਤੀ ਲਈ ਚਿੱਤਰਨ ਜਾਂ ਹਵਾਲੇ"
+
+#~ msgid "Depictions of modern-day human desecration"
+#~ msgstr "ਅੱਜ ਦੀ ਮਨੁੱਖੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰਨ"
+
+#~ msgid "Graphic depictions of modern-day desecration"
+#~ msgstr "ਅੱਜ ਦੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰ ਰੂਪੀ ਵਰਣਨ"
+
+#~ msgid "No visible dead human remains"
+#~ msgstr "ਕੋਈ ਮਰੇ ਹੋਏ ਮਨੁੱਖੀ ਬਚੇ ਹੋਏ ਸਰੀਰਿਕ ਹਿੱਸੇ ਨਹੀਂ"
+
+#~ msgid "Visible dead human remains"
+#~ msgstr "ਮਰੇ ਹੋਏ ਮਨੁੱਖੀ ਬਚੇ ਹੋਏ ਸਰੀਰਿਕ ਹਿੱਸੇ"
+
+#~ msgid "Dead human remains that are exposed to the elements"
+#~ msgstr "ਮਰੇ ਹੋਏ ਮਨੁੱਖ ਦੇ ਸਰੀਰਿਕ ਹਿੱਸੇ, ਜੋ ਕਿ ਤੱਤਾਂ ਦੇ ਸਾਹਮਣੇ ਨੰਗੇ ਸਨ"
+
+#~ msgid "Graphic depictions of desecration of human bodies"
+#~ msgstr "ਮਨੁੱਖੀ ਸਰੀਰ ਦੇ ਹਿੱਸਿਆਂ ਦੀ ਬੇਅਦਬੀ ਦਾ ਚਿੱਤਰਾਂ ਦੇ ਰੂਪ ਵਿੱਚ ਵਰਣਨ"
+
+#~ msgid "No references to slavery"
+#~ msgstr "ਕੋਈ ਗ਼ੁਲਾਮੀ ਦੇ ਹਵਾਲੇ ਨਹੀਂ"
+
+#~ msgid "Depictions of or references to historical slavery"
+#~ msgstr "ਇਤਿਹਾਸਕ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਨ ਜਾਂ ਹਵਾਲੇ"
+
+#~ msgid "Depictions of modern-day slavery"
+#~ msgstr "ਅੱਜ ਦੀ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਨ"
+
+#~ msgid "Graphic depictions of modern-day slavery"
+#~ msgstr "ਅੱਜ ਦੀ ਗ਼ੁਲਾਮੀ ਲਈ ਚਿੱਤਰਾਂ ਦੇ ਰੂਪ ਵਿੱਚ ਵਰਣਨ"
+
+#~ msgid "General"
+#~ msgstr "ਆਮ"
+
+#~ msgid "ALL"
+#~ msgstr "ਸਭ"
+
+#~ msgid "Adults Only"
+#~ msgstr "ਕੇਵਲ ਬਾਲਗ"
+
+#~ msgid "Mature"
+#~ msgstr "ਪ੍ਰੋੜ੍ਹ"
+
+#~ msgid "Teen"
+#~ msgstr "ਅੱਲੜ੍ਹ"
+
+#~ msgid "Everyone 10+"
+#~ msgstr "ਹਰੇਕ 10+"
+
+#~ msgid "Everyone"
+#~ msgstr "ਹਰੇਕ"
+
+#~ msgid "Early Childhood"
+#~ msgstr "ਮੁੱਢਲਾ ਬਚਪਨ"
+
+#~ msgctxt "version"
+#~ msgid "Unknown"
+#~ msgstr "ਅਣਜਾਣ"
+
+#~| msgid "Recent Releases"
+#~ msgid "Released"
+#~ msgstr "ਰੀਲਿਜ਼ ਹੈ"
+
+#~ msgid "Format"
+#~ msgstr "ਫਾਰਮੈਟ"
+
+#~ msgid "%R"
+#~ msgstr "%R"
+
+#~ msgid "%l:%M %p"
+#~ msgstr "%l:%M %p"
+
+#~ msgid "Yesterday, %R"
+#~ msgstr "ਕੱਲ੍ਹ, %R"
+
+#~ msgid "Yesterday, %l:%M %p"
+#~ msgstr "ਕੱਲ੍ਹ, :%l∶%M %p"
+
+#~ msgid "Three days ago"
+#~ msgstr "ਤਿੰਨ ਦਿਨ ਪਹਿਲਾਂ"
+
+#~ msgid "Four days ago"
+#~ msgstr "ਚਾਰ ਦਿਨ ਪਹਿਲਾਂ"
+
+#~ msgid "Five days ago"
+#~ msgstr "ਪੰਜ ਦਿਨ ਪਹਿਲਾਂ"
+
+#~ msgid "Six days ago"
+#~ msgstr "ਛੇ ਦਿਨ ਪਹਿਲਾਂ"
+
+#~ msgid "Two weeks ago"
+#~ msgstr "ਦੋ ਹਫ਼ਤੇ ਪਹਿਲਾਂ"
 
 #~ msgid "Show the folder management UI"
 #~ msgstr "ਫੋਲਡਰ ਪਰਬੰਧ UI ਦਿਖਾਓ"
