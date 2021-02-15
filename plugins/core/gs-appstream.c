@@ -1515,8 +1515,8 @@ gs_appstream_add_featured (GsPlugin *plugin,
 
 	/* find out how many packages are in each category */
 	array = xb_silo_query (silo,
-			       "components/component/custom/"
-			       "value[@key='GnomeSoftware::FeatureTile-css']/../..",
+			       "components/component/custom/value[@key='GnomeSoftware::FeatureTile']/../..|"
+			       "components/component/custom/value[@key='GnomeSoftware::FeatureTile-css']/../..",
 			       0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))

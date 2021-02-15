@@ -370,7 +370,7 @@ gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
  * the same application is featured for the entire calendar day.
  *
  * NOTE: The UI code may expect that applications have additional metadata set on
- * results, for instance <code>GnomeSoftware::FeatureTile-css</code>.
+ * results, for instance <code>GnomeSoftware::FeatureTile</code>.
  *
  * Plugins are expected to add new apps using gs_app_list_add().
  *
