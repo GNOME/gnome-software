@@ -152,6 +152,16 @@ executable(
 cdata = configuration_data()
 cdata.set('bindir', join_paths(get_option('prefix'),
                                get_option('bindir')))
+if (get_option('apt'))
+  cdata.set('apthandler', 'x-scheme-handler/apt;')
+else
+  cdata.set('apthandler', '')
+endif
+if (get_option('snap'))
+  cdata.set('snaphandler', 'x-scheme-handler/snap;')
+else
+  cdata.set('snaphandler', '')
+endif
 
 # replace @bindir@
 configure_file(
@@ -169,9 +179,14 @@ configure_file(
   configuration : cdata
 )
 
-# replace @bindir@
 i18n.merge_file(
-  input: 'org.gnome.Software.desktop.in',
+  input:
+    # replace mime-type handlers
+    configure_file(
+      input : 'org.gnome.Software.desktop.in',
+      output : 'org.gnome.Software.desktop.tmp',
+      configuration : cdata
+    ),
   output: 'org.gnome.Software.desktop',
   type: 'desktop',
   po_dir: join_paths(meson.source_root(), 'po'),
