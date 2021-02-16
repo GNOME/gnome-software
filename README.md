@@ -33,12 +33,21 @@ For development discussion, join us on `#gnome-software` on [irc.gnome.org](http
 
 # Building
 
+Software uses a number of plugins and depending on your operating system you
+may want to disable or enable certain ones. For example on Fedora Silverblue
+you'd want to disable the packagekit plugin as it wouldn't work. See the list
+in `meson_options.txt` and use e.g. `-Dpackagekit=false` in the `meson` command
+below.
+
 Build locally with:
 ```
 $ meson --prefix $PWD/install build/
 $ ninja -C build/ all install
 $ killall gnome-software
-$ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS ./install/bin/gnome-software
+# On Fedora, RHEL, etc:
+$ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS LD_LIBRARY_PATH=install/lib64/:$LD_LIBRARY_PATH ./install/bin/gnome-software
+# On Debian, Ubuntu, etc:
+$ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS LD_LIBRARY_PATH=install/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH ./install/bin/gnome-software
 ```
 
 # Debugging
