@@ -52,7 +52,11 @@ git commit -m "Release version ${new_version}"
 
 Build the release tarball:
 ```
-ninja dist
+# Only execute git clean if you don't have anything not tracked by git that you
+# want to keep
+git clean -dfx
+meson --prefix $PWD/install build/
+ninja -C build/ dist
 ```
 
 Tag, sign and push the release (see below for information about `git evtag`):
@@ -63,7 +67,7 @@ git push --atomic origin master ${new_version}
 
 Upload the release tarball:
 ```
-scp meson-dist/*.tar.xz master.gnome.org:
+scp build/meson-dist/*.tar.xz master.gnome.org:
 ssh master.gnome.org ftpadmin install gnome-software-*.tar.xz
 ```
 
@@ -73,9 +77,9 @@ Add the release notes to GitLab and close the milestone:
  - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/${new_version}/edit
    and link the milestone to it, then list the new release tarball and
    `sha256sum` file in the ‘Release Assets’ section
- - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/${new_version}
-   and close it, as all issues and merge requests tagged for this release should
-   now be complete
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/
+   choose the milestone and close it, as all issues and merge requests tagged
+   for this release should now be complete
 
 Post release version bump in `meson.build`:
 ```
