@@ -175,6 +175,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Odrs");
+
+	gs_plugin_set_enabled (plugin, priv->review_server && *priv->review_server);
 }
 
 static gboolean
