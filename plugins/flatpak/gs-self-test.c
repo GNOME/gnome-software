@@ -200,7 +200,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UNAVAILABLE);
 	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
 }
 
@@ -504,7 +504,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 }
 
 static void
@@ -602,7 +602,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 }
 
 static void
@@ -777,7 +777,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 }
 
 /* same as gs_plugins_flatpak_runtime_repo_func, but this time manually
@@ -938,7 +938,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 }
 
 static void
@@ -1581,7 +1581,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 }
 
 static void
@@ -1818,7 +1818,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
-	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, GS_APP_STATE_UNAVAILABLE);
 
 	/* verify that the extension has been removed by the app's removal */
 	g_assert_false (gs_app_is_installed (extension));

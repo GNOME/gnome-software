@@ -132,6 +132,9 @@ refresh_ui (GsRepoRow *row)
 		/* disable button */
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		break;
+	case GS_APP_STATE_UNAVAILABLE:
+		gtk_widget_destroy (GTK_WIDGET (row));
+		return;
 	default:
 		break;
 	}
@@ -160,9 +163,10 @@ refresh_idle (gpointer user_data)
 	g_autoptr(GsRepoRow) row = (GsRepoRow *) user_data;
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
 
+	priv->refresh_idle_id = 0;
+
 	refresh_ui (row);
 
-	priv->refresh_idle_id = 0;
 	return G_SOURCE_REMOVE;
 }
 

@@ -1072,6 +1072,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 	case GS_APP_STATE_REMOVING:
 		/* removing has to go into an stable state */
 		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_UNAVAILABLE ||
 		    state == GS_APP_STATE_AVAILABLE ||
 		    state == GS_APP_STATE_INSTALLED)
 			state_change_ok = TRUE;
