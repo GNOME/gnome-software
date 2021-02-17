@@ -246,6 +246,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	const gchar *tmp;
 	gboolean missing_search_result;
 	guint64 size = 0;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	if (priv->app == NULL)
 		return;
@@ -388,13 +389,13 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* pixbuf */
-	if (gs_app_get_pixbuf (priv->app) == NULL) {
+	pixbuf = gs_app_load_pixbuf (priv->app, gtk_image_get_pixel_size (GTK_IMAGE (priv->image)) * gtk_widget_get_scale_factor (priv->image));
+	if (pixbuf == NULL) {
 		gtk_image_set_from_icon_name (GTK_IMAGE (priv->image),
 					      "application-x-executable",
 					      GTK_ICON_SIZE_DIALOG);
 	} else {
-		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
-					  gs_app_get_pixbuf (priv->app));
+		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), pixbuf);
 	}
 
 	context = gtk_widget_get_style_context (priv->image);

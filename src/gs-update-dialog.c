@@ -157,7 +157,7 @@ static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	AsComponentKind kind;
-	const GdkPixbuf *pixbuf;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	const gchar *update_details;
 
 	/* set window title */
@@ -192,9 +192,9 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
-	pixbuf = gs_app_get_pixbuf (app);
+	pixbuf = gs_app_load_pixbuf (app, gtk_image_get_pixel_size (GTK_IMAGE (dialog->image_icon)) * gtk_widget_get_scale_factor (dialog->image_icon));
 	if (pixbuf != NULL)
-		gs_image_set_from_pixbuf (GTK_IMAGE (dialog->image_icon), pixbuf);
+		gtk_image_set_from_pixbuf (GTK_IMAGE (dialog->image_icon), pixbuf);
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));

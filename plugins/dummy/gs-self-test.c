@@ -348,6 +348,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	/* get installed packages */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
@@ -372,7 +373,9 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
-	g_assert (gs_app_get_pixbuf (app) != NULL);
+	pixbuf = gs_app_load_pixbuf (app, 48);
+	g_assert_nonnull (pixbuf);
+	g_clear_object (&pixbuf);
 
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE));
@@ -401,7 +404,8 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
 			 "LicenseRef-free=https://www.debian.org/");
-	g_assert (gs_app_get_pixbuf (addon) == NULL);
+	pixbuf = gs_app_load_pixbuf (addon, 48);
+	g_assert_null (pixbuf);
 }
 
 static void

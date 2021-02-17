@@ -121,7 +121,7 @@ typedef struct
 	GsApp			*runtime;
 	GFile			*local_file;
 	AsContentRating		*content_rating;
-	GdkPixbuf		*pixbuf;  /* (nullable) (owned) */
+	GPtrArray		*pixbufs;  /* (nullable) (owned) (element-type GdkPixbuf), sorted by pixel size, smallest first */
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
@@ -525,8 +525,12 @@ gs_app_to_string_append (GsApp *app, GString *str)
 			  gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
 		gs_app_kv_lpad (str, "name", priv->name);
-	if (priv->pixbuf != NULL)
-		gs_app_kv_printf (str, "pixbuf", "%p", priv->pixbuf);
+	for (i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		gs_app_kv_printf (str, "pixbuf", "%p, %dx%d", pixbuf,
+				  gdk_pixbuf_get_width (pixbuf),
+				  gdk_pixbuf_get_height (pixbuf));
+	}
 	if (priv->action_screenshot != NULL)
 		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
 	for (i = 0; i < priv->icons->len; i++) {
@@ -1787,21 +1791,76 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 }
 
 /**
- * gs_app_get_pixbuf:
+ * gs_app_has_pixbufs:
  * @app: a #GsApp
  *
- * Gets a pixbuf to represent the application.
+ * Gets whether there are any pixbufs set for this app.
  *
- * Returns: (transfer none) (nullable): a #GdkPixbuf, or %NULL
- *
- * Since: 3.22
- **/
-GdkPixbuf *
-gs_app_get_pixbuf (GsApp *app)
+ * Returns: %TRUE if one or more pixbufs are set for the app, %FALSE otherwise
+ * Since: 40
+ */
+gboolean
+gs_app_has_pixbufs (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	return (priv->pixbufs != NULL && priv->pixbufs->len > 0);
+}
+
+/**
+ * gs_app_load_pixbuf:
+ * @app: a #GsApp
+ * @size: size (width or height, square) of the pixbuf to load, in device pixels
+ *
+ * Loads a pixbuf to represent the application. This might be provided by the
+ * backend at the given @size, or downsized from a larger icon provided by the
+ * backend. The return value is guaranteed to be at @size, if it’s not %NULL.
+ *
+ * If an image at least @size pixels in width isn’t available, %NULL will be
+ * returned.
+ *
+ * This function may do disk I/O or image resizing, but it will not do network
+ * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
+ *
+ * Returns: (transfer full) (nullable): a #GdkPixbuf, or %NULL
+ *
+ * Since: 40
+ **/
+GdkPixbuf *
+gs_app_load_pixbuf (GsApp *app,
+                    guint  size)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->pixbuf;
+	g_return_val_if_fail (size > 0, NULL);
+
+	/* FIXME: This algorithm currently relies on gs-plugin-icons to
+	 * asynchronously load #AsIcons from #GsApp.icons and add them as
+	 * pixbufs. Eventually, that plugin should be retired and its code
+	 * folded in here. But for now, we can rely on everything being
+	 * available as a pixbuf. */
+
+	/* See if there’s a pixbuf the right size. Note that the pixbufs array
+	 * may be lazily created. */
+	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		if ((guint) gdk_pixbuf_get_width (pixbuf) == size)
+			return g_object_ref (pixbuf);
+		else if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
+			break;  /* array is sorted by size */
+	}
+
+	/* Now see if there’s a pixbuf which is too big, which could be resized. */
+	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
+			return gdk_pixbuf_scale_simple (pixbuf, size, size, GDK_INTERP_BILINEAR);
+	}
+
+	return NULL;
 }
 
 /**
@@ -2065,13 +2124,33 @@ gs_app_add_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	guint pixbuf_width;
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
 
-	/* TODO: For the moment, only one pixbuf is actually supported */
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->pixbuf, pixbuf);
+	pixbuf_width = gdk_pixbuf_get_width (pixbuf);
+
+	if (priv->pixbufs == NULL)
+		priv->pixbufs = g_ptr_array_new_with_free_func (g_object_unref);
+
+	/* Replace any existing pixbuf of the same size, or insert in order. */
+	for (guint i = 0; i < priv->pixbufs->len; i++) {
+		GdkPixbuf *p = priv->pixbufs->pdata[i];
+		guint p_width = gdk_pixbuf_get_width (p);
+
+		if (p_width == pixbuf_width) {
+			g_set_object (&priv->pixbufs->pdata[i], pixbuf);
+			return;
+		} else if (p_width > pixbuf_width) {
+			g_ptr_array_insert (priv->pixbufs, i, g_object_ref (pixbuf));
+			return;
+		}
+	}
+
+	/* Append if the array is empty. */
+	g_ptr_array_add (priv->pixbufs, g_object_ref (pixbuf));
 }
 
 /**
@@ -4125,7 +4204,6 @@ static void
 calculate_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	GdkPixbuf *pb;
 	g_autoptr(GdkPixbuf) pb_small = NULL;
 
 	/* Lazily create the array */
@@ -4133,14 +4211,13 @@ calculate_key_colors (GsApp *app)
 		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
 
 	/* no pixbuf */
-	pb = gs_app_get_pixbuf (app);
-	if (pb == NULL) {
+	pb_small = gs_app_load_pixbuf (app, 32);
+	if (pb_small == NULL) {
 		g_debug ("no pixbuf, so no key colors");
 		return;
 	}
 
 	/* get a list of key colors */
-	pb_small = gdk_pixbuf_scale_simple (pb, 32, 32, GDK_INTERP_BILINEAR);
 	key_colors_set_for_pixbuf (app, pb_small, 10);
 }
 
@@ -4800,8 +4877,7 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->local_file);
 	if (priv->content_rating != NULL)
 		g_object_unref (priv->content_rating);
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
+	g_clear_pointer (&priv->pixbufs, g_ptr_array_unref);
 	if (priv->action_screenshot != NULL)
 		g_object_unref (priv->action_screenshot);
 
