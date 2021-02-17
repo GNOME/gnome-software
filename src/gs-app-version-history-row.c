@@ -61,6 +61,7 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 		version_tmp = g_strdup_printf (_("New in Version %s"), version_number);
 		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
 		gtk_label_set_label (GTK_LABEL (row->version_description_label), version_description);
+		gtk_style_context_remove_class (gtk_widget_get_style_context (row->version_description_label), "dim-label");
 	} else {
 		g_autofree char *version_tmp = NULL;
 		const gchar *version_description_fallback;
