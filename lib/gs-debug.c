@@ -72,7 +72,8 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	/* this is really verbose */
 	if ((g_strcmp0 (log_domain, "dconf") == 0 ||
 	     g_strcmp0 (log_domain, "GLib-GIO") == 0 ||
-	     g_strcmp0 (log_domain, "GLib-Net") == 0) &&
+	     g_strcmp0 (log_domain, "GLib-Net") == 0 ||
+	     g_strcmp0 (log_domain, "GdkPixbuf") == 0) &&
 	    log_level == G_LOG_LEVEL_DEBUG)
 		return G_LOG_WRITER_HANDLED;
 
