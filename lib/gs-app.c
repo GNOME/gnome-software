@@ -2047,20 +2047,29 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 }
 
 /**
- * gs_app_set_pixbuf:
+ * gs_app_add_pixbuf:
  * @app: a #GsApp
- * @pixbuf: (transfer none) (nullable): a #GdkPixbuf, or %NULL
+ * @pixbuf: (transfer none) (not nullable): a #GdkPixbuf
  *
- * Sets a pixbuf used to represent the application.
+ * Add a pixbuf to the set of pixbufs used to represent the application.
+ * Multiple pixbufs are supported as the application’s icon might be available
+ * in multiple sizes.
  *
- * Since: 3.22
+ * Only add pixbufs for native icon sizes provided by the backend — don’t resize
+ * a pixbuf to pass to this function. #GsApp can handle resizing pixbufs itself.
+ *
+ * Since: 40
  **/
 void
-gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
+gs_app_add_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
+
+	/* TODO: For the moment, only one pixbuf is actually supported */
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->pixbuf, pixbuf);
 }

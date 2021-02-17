@@ -743,7 +743,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
+	gs_app_add_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
@@ -763,7 +763,7 @@ gs_plugin_add_recent (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
+	gs_app_add_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);

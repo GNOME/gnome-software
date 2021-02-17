@@ -742,7 +742,7 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
 		return FALSE;
 	}
-	gs_app_set_pixbuf (app, pixbuf);
+	gs_app_add_pixbuf (app, pixbuf);
 
 	return TRUE;
 }

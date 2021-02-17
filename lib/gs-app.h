@@ -354,7 +354,7 @@ const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
-void		 gs_app_set_pixbuf		(GsApp		*app,
+void		 gs_app_add_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
 GPtrArray	*gs_app_get_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,

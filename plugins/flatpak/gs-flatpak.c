@@ -3023,7 +3023,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			gs_utils_error_convert_gdk_pixbuf (error);
 			return NULL;
 		}
-		gs_app_set_pixbuf (app, pixbuf);
+		gs_app_add_pixbuf (app, pixbuf);
 	} else {
 		g_autoptr(AsIcon) icon = NULL;
 		icon = as_icon_new ();

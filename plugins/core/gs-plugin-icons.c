@@ -347,7 +347,7 @@ refine_app (GsPlugin             *plugin,
 			break;
 		}
 		if (pixbuf != NULL) {
-			gs_app_set_pixbuf (app, pixbuf);
+			gs_app_add_pixbuf (app, pixbuf);
 			break;
 		}
 
