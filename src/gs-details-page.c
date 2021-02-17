@@ -1433,17 +1433,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	g_list_free (addons);
 }
 
-static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
 static gint
 list_sort_func (GtkListBoxRow *a,
 		GtkListBoxRow *b,
@@ -2786,9 +2775,6 @@ gs_details_page_setup (GsPage *page,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (origin_popover_list_box),
 	                            origin_popover_list_sort_func,
 	                            NULL, NULL);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (origin_popover_list_box),
-	                              list_header_func,
-	                              NULL, NULL);
 	g_signal_connect (origin_popover_list_box, "row-activated",
 	                  G_CALLBACK (origin_popover_row_activated_cb),
 	                  self);
@@ -2952,16 +2938,10 @@ gs_details_page_init (GsDetailsPage *self)
 				  self);
 	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_addons),
-				      list_header_func,
-				      self, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_addons),
 				    list_sort_func,
 				    self, NULL);
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_version_history),
-				      list_header_func,
-				      self, NULL);
 	g_signal_connect (self->list_box_version_history, "row-activated",
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
 

@@ -62,25 +62,9 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 }
 
 static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-static void
 gs_app_version_history_dialog_init (GsAppVersionHistoryDialog *dialog)
 {
 	gtk_widget_init_template (GTK_WIDGET (dialog));
-
-	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox),
-				      list_header_func,
-				      dialog,
-				      NULL);
 }
 
 static void
