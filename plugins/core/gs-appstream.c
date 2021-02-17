@@ -208,24 +208,20 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 		gs_app_add_icon (app, icon);
 	}
 
-	/* if HiDPI get a 128px cached icon */
-	if (gs_plugin_get_scale (plugin) == 2) {
-		icon = gs_appstream_get_icon_by_kind_and_size (component,
-							       AS_ICON_KIND_CACHED,
-							       128);
-		if (icon != NULL) {
-			gs_app_add_icon (app, icon);
-			return;
-		}
-	}
-
-	/* non-HiDPI cached icon */
+	/* cached icon for large uses */
 	icon = gs_appstream_get_icon_by_kind_and_size (component,
 						       AS_ICON_KIND_CACHED,
-						       64);
+						       128 * gs_plugin_get_scale (plugin));
 	if (icon != NULL) {
 		gs_app_add_icon (app, icon);
-		return;
+	}
+
+	/* cached icon for normal uses */
+	icon = gs_appstream_get_icon_by_kind_and_size (component,
+						       AS_ICON_KIND_CACHED,
+						       64 * gs_plugin_get_scale (plugin));
+	if (icon != NULL) {
+		gs_app_add_icon (app, icon);
 	}
 
 	/* prefer local */
