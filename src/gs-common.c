@@ -322,14 +322,6 @@ gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, g
 	cairo_surface_destroy (surface);
 }
 
-void
-gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
-{
-	gint scale;
-	scale = gdk_pixbuf_get_width (pixbuf) / 64;
-	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
-
 gboolean
 gs_utils_is_current_desktop (const gchar *name)
 {
