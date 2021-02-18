@@ -1121,8 +1121,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	gint rc = -1;
 	g_autoptr(GError) error = NULL;
 
-	if (g_variant_dict_contains (options, "verbose"))
-		g_setenv ("GS_DEBUG", "1", TRUE);
+	gs_debug_set_verbose (self->debug, g_variant_dict_contains (options, "verbose"));
 
 	/* prefer local sources */
 	if (g_variant_dict_contains (options, "prefer-local"))

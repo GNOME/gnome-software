@@ -255,3 +255,23 @@ gs_debug_new_from_environment (void)
 
 	return gs_debug_new (g_steal_pointer (&domains), verbose, use_time);
 }
+
+/**
+ * gs_debug_set_verbose:
+ * @self: a #GsDebug
+ * @verbose: whether to output log debug messages
+ *
+ * Enable or disable verbose logging mode.
+ *
+ * This can be called at any time, from any thread.
+ *
+ * Since: 40
+ */
+void
+gs_debug_set_verbose (GsDebug  *self,
+                      gboolean  verbose)
+{
+	g_return_if_fail (GS_IS_DEBUG (self));
+
+	g_atomic_int_set (&self->verbose, verbose);
+}

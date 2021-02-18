@@ -21,5 +21,7 @@ GsDebug		*gs_debug_new		(gchar		**domains,
 					 gboolean	  verbose,
 					 gboolean	  use_time);
 GsDebug		*gs_debug_new_from_environment	(void);
+void		 gs_debug_set_verbose	(GsDebug	*self,
+					 gboolean	 verbose);
 
 G_END_DECLS

@@ -343,8 +343,7 @@ main (int argc, char **argv)
 		g_print ("Failed to parse options: %s\n", error->message);
 		return EXIT_FAILURE;
 	}
-	if (verbose)
-		g_setenv ("GS_DEBUG", "1", TRUE);
+	gs_debug_set_verbose (debug, verbose);
 
 	/* prefer local sources */
 	if (prefer_local)
