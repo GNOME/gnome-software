@@ -23,7 +23,6 @@
 #include "gs-common.h"
 
 #define N_TILES					9
-#define FEATURED_ROTATE_TIME			30 /* seconds */
 
 typedef struct
 {

@@ -35,6 +35,8 @@
 #include "gs-feature-tile.h"
 #include "gs-featured-carousel.h"
 
+#define FEATURED_ROTATE_TIME                   15 /* seconds */
+
 struct _GsFeaturedCarousel
 {
 	GtkBox		 parent_instance;
@@ -107,10 +109,8 @@ rotate_cb (gpointer user_data)
 static void
 start_rotation_timer (GsFeaturedCarousel *self)
 {
-	const guint rotation_period_seconds = 15;
-
 	if (self->rotation_timer_id == 0) {
-		self->rotation_timer_id = g_timeout_add_seconds (rotation_period_seconds,
+		self->rotation_timer_id = g_timeout_add_seconds (FEATURED_ROTATE_TIME,
 								 rotate_cb, self);
 	}
 }
