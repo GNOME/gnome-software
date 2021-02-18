@@ -3589,7 +3589,7 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
  * Gets some metadata for the application.
  * Is is expected that plugins namespace any plugin-specific metadata.
  *
- * Returns: a string, or %NULL for unset
+ * Returns: (transfer none) (nullable): a variant, or %NULL for unset
  *
  * Since: 3.26
  **/
