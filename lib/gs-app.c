@@ -4205,10 +4205,54 @@ calculate_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GdkPixbuf) pb_small = NULL;
+	const gchar *overrides_str;
 
 	/* Lazily create the array */
 	if (priv->key_colors == NULL)
 		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+
+	/* Look for an override first. Parse and use it if possible. This is
+	 * typically specified in the appdata for an app as:
+	 * |[
+	 * <component>
+	 *   <custom>
+	 *     <value key="GnomeSoftware::key-colors">[(124, 53, 77), (99, 16, 0)]</value>
+	 *   </custom>
+	 * </component>
+	 * ]|
+	 */
+	overrides_str = gs_app_get_metadata_item (app, "GnomeSoftware::key-colors");
+	if (overrides_str != NULL) {
+		g_autoptr(GVariant) overrides = NULL;
+		g_autoptr(GError) local_error = NULL;
+
+		overrides = g_variant_parse (G_VARIANT_TYPE ("a(yyy)"),
+					     overrides_str,
+					     NULL,
+					     NULL,
+					     &local_error);
+
+		if (overrides != NULL && g_variant_n_children (overrides) > 0) {
+			GVariantIter iter;
+			guint8 red, green, blue;
+
+			g_variant_iter_init (&iter, overrides);
+			while (g_variant_iter_loop (&iter, "(yyy)", &red, &green, &blue)) {
+				g_autoptr(GdkRGBA) rgba = g_new0 (GdkRGBA, 1);
+				rgba->red = (gdouble) red / 255.0;
+				rgba->green = (gdouble) green / 255.0;
+				rgba->blue = (gdouble) blue / 255.0;
+				rgba->alpha = 1.0;
+				g_ptr_array_add (priv->key_colors, g_steal_pointer (&rgba));
+			}
+
+			return;
+		} else {
+			g_warning ("Invalid value for GnomeSoftware::key-colors for %s: %s",
+				   gs_app_get_id (app), local_error->message);
+			/* fall through */
+		}
+	}
 
 	/* no pixbuf */
 	pb_small = gs_app_load_pixbuf (app, 32);
