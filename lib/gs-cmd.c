@@ -296,7 +296,7 @@ main (int argc, char **argv)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GPtrArray) categories = NULL;
-	g_autoptr(GsDebug) debug = gs_debug_new ();
+	g_autoptr(GsDebug) debug = gs_debug_new_from_environment ();
 	g_autofree gchar *plugin_blocklist_str = NULL;
 	g_autofree gchar *plugin_allowlist_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;
@@ -326,7 +326,6 @@ main (int argc, char **argv)
 	};
 
 	setlocale (LC_ALL, "");
-	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -343,8 +342,7 @@ main (int argc, char **argv)
 		g_print ("Failed to parse options: %s\n", error->message);
 		return EXIT_FAILURE;
 	}
-	if (verbose)
-		g_setenv ("GS_DEBUG", "1", TRUE);
+	gs_debug_set_verbose (debug, verbose);
 
 	/* prefer local sources */
 	if (prefer_local)

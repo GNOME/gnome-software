@@ -11,6 +11,7 @@
 
 #include "gnome-software-private.h"
 
+#include "gs-debug.h"
 #include "gs-test.h"
 
 static gboolean
@@ -583,19 +584,20 @@ gs_app_thread_cb (gpointer data)
 }
 
 static void
-gs_app_thread_func (void)
+gs_app_thread_func (gconstpointer user_data)
 {
+	GsDebug *debug = GS_DEBUG (user_data);
 	GThread *thread1;
 	GThread *thread2;
 	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
 
 	/* try really hard to cause a threading problem */
-	g_setenv ("G_MESSAGES_DEBUG", "", TRUE);
+	gs_debug_set_verbose (debug, FALSE);
 	thread1 = g_thread_new ("thread1", gs_app_thread_cb, app);
 	thread2 = g_thread_new ("thread2", gs_app_thread_cb, app);
 	g_thread_join (thread1); /* consumes the reference  */
 	g_thread_join (thread2);
-	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+	gs_debug_set_verbose (debug, TRUE);
 }
 
 static void
@@ -719,7 +721,7 @@ gs_app_progress_clamping_func (void)
 	} else {
 		g_test_trap_subprocess (NULL, 0, 0);
 		g_test_trap_assert_failed ();
-		g_test_trap_assert_stderr ("*WARNING*cannot set 142% for *, setting instead: 100%*");
+		g_test_trap_assert_stderr ("*cannot set 142% for *, setting instead: 100%*");
 	}
 }
 
@@ -813,12 +815,13 @@ gs_app_list_related_func (void)
 int
 main (int argc, char **argv)
 {
+	g_autoptr(GsDebug) debug = gs_debug_new (NULL, TRUE, FALSE);
+
 	g_test_init (&argc, &argv,
 #if GLIB_CHECK_VERSION(2, 60, 0)
 		     G_TEST_OPTION_ISOLATE_DIRS,
 #endif
 		     NULL);
-	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
@@ -835,7 +838,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app/progress-clamping", gs_app_progress_clamping_func);
 	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
-	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
+	g_test_add_data_func ("/gnome-software/lib/app{thread}", debug, gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/app{list}", gs_app_list_func);
 	g_test_add_func ("/gnome-software/lib/app{list-wildcard-dedupe}", gs_app_list_wildcard_dedupe_func);
 	g_test_add_func ("/gnome-software/lib/app{list-performance}", gs_app_list_performance_func);
