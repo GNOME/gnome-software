@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <glib.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -16,6 +17,9 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsDebug, gs_debug, GS, DEBUG, GObject)
 
-GsDebug	 	*gs_debug_new		(void);
+GsDebug		*gs_debug_new		(gchar		**domains,
+					 gboolean	  verbose,
+					 gboolean	  use_time);
+GsDebug		*gs_debug_new_from_environment	(void);
 
 G_END_DECLS

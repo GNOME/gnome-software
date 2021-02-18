@@ -296,7 +296,7 @@ main (int argc, char **argv)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GPtrArray) categories = NULL;
-	g_autoptr(GsDebug) debug = gs_debug_new ();
+	g_autoptr(GsDebug) debug = gs_debug_new_from_environment ();
 	g_autofree gchar *plugin_blocklist_str = NULL;
 	g_autofree gchar *plugin_allowlist_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;

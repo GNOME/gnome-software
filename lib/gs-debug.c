@@ -16,9 +16,11 @@
 
 struct _GsDebug
 {
-	GObject		 parent_instance;
-	GMutex		 mutex;
-	gboolean	 use_time;
+	GObject		  parent_instance;
+
+	gchar		**domains;  /* (owned) (nullable), read-only after construction, guaranteed to be %NULL if empty */
+	gboolean	  verbose;  /* (atomic) */
+	gboolean	  use_time;  /* read-only after construction */
 };
 
 G_DEFINE_TYPE (GsDebug, gs_debug, G_TYPE_OBJECT)
@@ -30,22 +32,21 @@ gs_log_writer_console (GLogLevelFlags log_level,
 		       gpointer user_data)
 {
 	GsDebug *debug = GS_DEBUG (user_data);
-	const gchar *domains = NULL;
-	const gchar *gs_debug = NULL;
+	gboolean verbose;
+	const gchar * const *domains = NULL;
 	const gchar *log_domain = NULL;
 	const gchar *log_message = NULL;
 	g_autofree gchar *tmp = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GString) domain = NULL;
 
-	domains = g_getenv ("G_MESSAGES_DEBUG");
-	gs_debug = g_getenv ("GS_DEBUG");
+	domains = (const gchar * const *) debug->domains;
+	verbose = g_atomic_int_get (&debug->verbose);
 
 	/* check enabled, fast path without parsing fields */
 	if ((log_level == G_LOG_LEVEL_DEBUG ||
 	     log_level == G_LOG_LEVEL_INFO) &&
-	    gs_debug == NULL &&
-	    (domains == NULL || *domains == '\0'))
+	    !verbose &&
+	    debug->domains == NULL)
 		return G_LOG_WRITER_HANDLED;
 
 	/* get data from arguments */
@@ -63,10 +64,10 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	/* check enabled, slower path */
 	if ((log_level == G_LOG_LEVEL_DEBUG ||
 	     log_level == G_LOG_LEVEL_INFO) &&
-	    gs_debug == NULL &&
-	    domains != NULL &&
-	    g_strcmp0 (domains, "all") != 0 &&
-	    (log_domain == NULL || !strstr (domains, log_domain)))
+	    !verbose &&
+	    debug->domains != NULL &&
+	    g_strcmp0 (debug->domains[0], "all") != 0 &&
+	    (log_domain == NULL || !g_strv_contains (domains, log_domain)))
 		return G_LOG_WRITER_HANDLED;
 
 	/* this is really verbose */
@@ -76,10 +77,6 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	     g_strcmp0 (log_domain, "GdkPixbuf") == 0) &&
 	    log_level == G_LOG_LEVEL_DEBUG)
 		return G_LOG_WRITER_HANDLED;
-
-	/* make threadsafe */
-	locker = g_mutex_locker_new (&debug->mutex);
-	g_assert (locker != NULL);
 
 	/* time header */
 	if (debug->use_time) {
@@ -180,7 +177,7 @@ gs_debug_finalize (GObject *object)
 {
 	GsDebug *debug = GS_DEBUG (object);
 
-	g_mutex_clear (&debug->mutex);
+	g_clear_pointer (&debug->domains, g_strfreev);
 
 	G_OBJECT_CLASS (gs_debug_parent_class)->finalize (object);
 }
@@ -195,15 +192,66 @@ gs_debug_class_init (GsDebugClass *klass)
 static void
 gs_debug_init (GsDebug *debug)
 {
-	g_mutex_init (&debug->mutex);
-	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
 	g_log_set_writer_func (gs_debug_log_writer,
 			       g_object_ref (debug),
 			       (GDestroyNotify) g_object_unref);
 }
 
+/**
+ * gs_debug_new:
+ * @domains: (transfer full) (nullable): a #GStrv of debug log domains to output,
+ *     or `{ "all", NULL }` to output all debug log domains; %NULL is equivalent
+ *     to an empty array
+ * @verbose: whether to output log debug messages
+ * @use_time: whether to output a timestamp with each log message
+ *
+ * Create a new #GsDebug with the given configuration.
+ *
+ * Ownership of @domains is transferred to this function. It will be freed with
+ * g_strfreev() when the #GsDebug is destroyed.
+ *
+ * Returns: (transfer full): a new #GsDebug
+ * Since: 40
+ */
 GsDebug *
-gs_debug_new (void)
+gs_debug_new (gchar    **domains,
+              gboolean   verbose,
+              gboolean   use_time)
 {
-	return GS_DEBUG (g_object_new (GS_TYPE_DEBUG, NULL));
+	g_autoptr(GsDebug) debug = g_object_new (GS_TYPE_DEBUG, NULL);
+
+	/* Strictly speaking these should be set before g_log_set_writer_func()
+	 * is called, but threads probably haven’t been started at this point. */
+	debug->domains = (domains != NULL && domains[0] != NULL) ? g_steal_pointer (&domains) : NULL;
+	debug->verbose = verbose;
+	debug->use_time = use_time;
+
+	return g_steal_pointer (&debug);
+}
+
+/**
+ * gs_debug_new_from_environment:
+ *
+ * Create a new #GsDebug with its configuration loaded from environment
+ * variables.
+ *
+ * Returns: (transfer full): a new #GsDebug
+ * Since: 40
+ */
+GsDebug *
+gs_debug_new_from_environment (void)
+{
+	g_auto(GStrv) domains = NULL;
+	gboolean verbose, use_time;
+
+	if (g_getenv ("G_MESSAGES_DEBUG") != NULL) {
+		domains = g_strsplit (g_getenv ("G_MESSAGES_DEBUG"), " ", -1);
+		if (domains[0] == NULL)
+			g_clear_pointer (&domains, g_strfreev);
+	}
+
+	verbose = (g_getenv ("GS_DEBUG") != NULL);
+	use_time = (g_getenv ("GS_DEBUG_NO_TIME") == NULL);
+
+	return gs_debug_new (g_steal_pointer (&domains), verbose, use_time);
 }

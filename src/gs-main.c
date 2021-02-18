@@ -26,7 +26,7 @@ main (int argc, char **argv)
 	int status = 0;
 	g_autoptr(GDesktopAppInfo) appinfo = NULL;
 	g_autoptr(GsApplication) application = NULL;
-	g_autoptr(GsDebug) debug = gs_debug_new ();
+	g_autoptr(GsDebug) debug = gs_debug_new_from_environment ();
 
 	g_set_prgname ("org.gnome.Software");
 	setlocale (LC_ALL, "");
