@@ -30,6 +30,7 @@
 #include "gs-dbus-helper.h"
 #endif
 
+#include "gs-debug.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
@@ -53,9 +54,16 @@ struct _GsApplication {
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
 	guint		 shell_loaded_handler_id;
+	GsDebug		*debug;  /* (owned) (not nullable) */
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
+
+typedef enum {
+	PROP_DEBUG = 1,
+} GsApplicationProperty;
+
+static GParamSpec *obj_props[PROP_DEBUG + 1] = { NULL, };
 
 enum {
 	INSTALL_RESOURCES_DONE,
@@ -1021,6 +1029,55 @@ gs_application_activate (GApplication *application)
 }
 
 static void
+gs_application_constructed (GObject *object)
+{
+	GsApplication *self = GS_APPLICATION (object);
+
+	G_OBJECT_CLASS (gs_application_parent_class)->constructed (object);
+
+	/* Check on our construct-only properties */
+	g_assert (self->debug != NULL);
+}
+
+static void
+gs_application_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+	GsApplication *self = GS_APPLICATION (object);
+
+	switch ((GsApplicationProperty) prop_id) {
+	case PROP_DEBUG:
+		g_value_set_object (value, self->debug);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_application_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+	GsApplication *self = GS_APPLICATION (object);
+
+	switch ((GsApplicationProperty) prop_id) {
+	case PROP_DEBUG:
+		/* Construct only */
+		g_assert (self->debug == NULL);
+		self->debug = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_application_dispose (GObject *object)
 {
 	GsApplication *app = GS_APPLICATION (object);
@@ -1037,6 +1094,7 @@ gs_application_dispose (GObject *object)
 #endif
 	g_clear_object (&app->settings);
 	g_clear_object (&app->action_map);
+	g_clear_object (&app->debug);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
@@ -1054,6 +1112,7 @@ get_page_interaction_from_string (const gchar *interaction)
 static int
 gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 {
+	GsApplication *self = GS_APPLICATION (app);
 	const gchar *id;
 	const gchar *pkgname;
 	const gchar *local_filename;
@@ -1169,6 +1228,9 @@ gs_application_class_init (GsApplicationClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GApplicationClass *application_class = G_APPLICATION_CLASS (klass);
 
+	object_class->constructed = gs_application_constructed;
+	object_class->get_property = gs_application_get_property;
+	object_class->set_property = gs_application_set_property;
 	object_class->dispose = gs_application_dispose;
 
 	application_class->startup = gs_application_startup;
@@ -1177,6 +1239,23 @@ gs_application_class_init (GsApplicationClass *klass)
 	application_class->open = gs_application_open;
 	application_class->dbus_register = gs_application_dbus_register;
 	application_class->dbus_unregister = gs_application_dbus_unregister;
+
+	/**
+	 * GsApplication:debug: (nullable)
+	 *
+	 * A #GsDebug object to control debug and logging output from the
+	 * application and everything within it.
+	 *
+	 * This may be %NULL if you don’t care about log output.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_DEBUG] =
+		g_param_spec_object ("debug", NULL, NULL,
+				     GS_TYPE_DEBUG,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	/**
 	 * GsApplication::install-resources-done:
@@ -1198,13 +1277,23 @@ gs_application_class_init (GsApplicationClass *klass)
 		G_TYPE_STRING, G_TYPE_ERROR);
 }
 
+/**
+ * gs_application_new:
+ * @debug: (transfer none) (not nullable): a #GsDebug for the application instance
+ *
+ * Create a new #GsApplication.
+ *
+ * Returns: (transfer full): a new #GsApplication
+ * Since: 40
+ */
 GsApplication *
-gs_application_new (void)
+gs_application_new (GsDebug *debug)
 {
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
 			     "flags", G_APPLICATION_HANDLES_OPEN,
 			     "inactivity-timeout", 12000,
+			     "debug", debug,
 			     NULL);
 }
 
