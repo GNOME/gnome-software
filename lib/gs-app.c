@@ -4170,7 +4170,6 @@ key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 		}
 
 		number_of_bins = g_hash_table_size (hash);
-//		g_debug ("number of colors: %i", number_of_bins);
 		if (number_of_bins >= number) {
 			g_autoptr(GList) values = NULL;
 
