@@ -151,7 +151,7 @@ next_button_direction_changed_cb (GtkWidget        *widget,
                                   GtkTextDirection  previous_direction,
                                   gpointer          user_data)
 {
-	image_set_icon_for_direction (GTK_IMAGE (widget), "carousel-arrow-next-symbolic", "carousel-arrow-previous-symbolic");
+	image_set_icon_for_direction (GTK_IMAGE (widget), "go-next-symbolic", "go-previous-symbolic");
 }
 
 static void
@@ -172,7 +172,7 @@ previous_button_direction_changed_cb (GtkWidget        *widget,
                                       GtkTextDirection  previous_direction,
                                       gpointer          user_data)
 {
-	image_set_icon_for_direction (GTK_IMAGE (widget), "carousel-arrow-previous-symbolic", "carousel-arrow-next-symbolic");
+	image_set_icon_for_direction (GTK_IMAGE (widget), "go-previous-symbolic", "go-next-symbolic");
 }
 
 static void
