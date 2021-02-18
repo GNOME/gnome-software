@@ -562,42 +562,36 @@ flowboxchild {
 	border-radius: 50%;
 	-gtk-outline-radius: 50%;
 	color: @theme_fg_color;
-}
-
-.featured-carousel button.osd {
-	-gtk-icon-shadow: none;
-}
-
-.featured-carousel button.osd:focus {
-	/* this is @theme_fg_color at 10% opacity, but we can’t use the variable
-	 * directly as rgba() requires 4 components */
-	background: rgba(46, 52, 54, 0.1);
-}
-
-.featured-carousel button.osd:hover {
-	/* this is @theme_fg_color at 20% opacity, but we can’t use the variable
-	 * directly as rgba() requires 4 components */
-	background: rgba(46, 52, 54, 0.2);
-}
-
-.featured-carousel button.osd:active {
-	/* this is @theme_fg_color at 35% opacity, but we can’t use the variable
-	 * directly as rgba() requires 4 components */
-	background: rgba(46, 52, 54, 0.35);
-}
-
-.featured-button-left:not(:hover),
-.featured-button-right:not(:hover) {
 	background: transparent;
-	border:transparent;
+	border: none;
 	box-shadow: none;
+	margin: 6px;
 }
 
-/* these typographical classes will be provided in gtk eventually */
-.title-1{
-  font-weight: 800;
-  font-size: 20pt;
-}
+  .featured-carousel button.osd {
+	  -gtk-icon-shadow: none;
+  }
+
+  .featured-carousel button.osd:focus {
+    // can't actually tab into. all this does is getting stuck with mouse only
+    // interaction.
+  }
+
+  .featured-carousel button.osd:hover {
+    background-color: #808080;
+    color: @theme_selected_fg_color;
+  }
+
+  .featured-carousel button.osd:active {
+	  background-color: #606060;
+	  color: @theme_selected_fg_color;
+  }
+
+  /* these typographical classes will be provided in gtk eventually */
+  .title-1{
+    font-weight: 800;
+    font-size: 20pt;
+  }
 .caption{
   font-weight: 400;
   font-size: 10pt;
