@@ -30,15 +30,22 @@ gs_log_writer_console (GLogLevelFlags log_level,
 		       gpointer user_data)
 {
 	GsDebug *debug = GS_DEBUG (user_data);
+	const gchar *domains = NULL;
+	const gchar *gs_debug = NULL;
 	const gchar *log_domain = NULL;
 	const gchar *log_message = NULL;
 	g_autofree gchar *tmp = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GString) domain = NULL;
 
-	/* enabled */
-	if (g_getenv ("GS_DEBUG") == NULL &&
-	    log_level == G_LOG_LEVEL_DEBUG)
+	domains = g_getenv ("G_MESSAGES_DEBUG");
+	gs_debug = g_getenv ("GS_DEBUG");
+
+	/* check enabled, fast path without parsing fields */
+	if ((log_level == G_LOG_LEVEL_DEBUG ||
+	     log_level == G_LOG_LEVEL_INFO) &&
+	    gs_debug == NULL &&
+	    (domains == NULL || *domains == '\0'))
 		return G_LOG_WRITER_HANDLED;
 
 	/* get data from arguments */
@@ -53,10 +60,20 @@ gs_log_writer_console (GLogLevelFlags log_level,
 		}
 	}
 
+	/* check enabled, slower path */
+	if ((log_level == G_LOG_LEVEL_DEBUG ||
+	     log_level == G_LOG_LEVEL_INFO) &&
+	    gs_debug == NULL &&
+	    domains != NULL &&
+	    g_strcmp0 (domains, "all") != 0 &&
+	    (log_domain == NULL || !strstr (domains, log_domain)))
+		return G_LOG_WRITER_HANDLED;
+
 	/* this is really verbose */
 	if ((g_strcmp0 (log_domain, "dconf") == 0 ||
 	     g_strcmp0 (log_domain, "GLib-GIO") == 0 ||
-	     g_strcmp0 (log_domain, "GLib-Net") == 0) &&
+	     g_strcmp0 (log_domain, "GLib-Net") == 0 ||
+	     g_strcmp0 (log_domain, "GdkPixbuf") == 0) &&
 	    log_level == G_LOG_LEVEL_DEBUG)
 		return G_LOG_WRITER_HANDLED;
 
