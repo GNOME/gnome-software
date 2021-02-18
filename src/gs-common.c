@@ -322,14 +322,6 @@ gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, g
 	cairo_surface_destroy (surface);
 }
 
-void
-gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
-{
-	gint scale;
-	scale = gdk_pixbuf_get_width (pixbuf) / 64;
-	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
-}
-
 gboolean
 gs_utils_is_current_desktop (const gchar *name)
 {
@@ -352,6 +344,58 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 		   gtk_css_section_get_start_line (section),
 		   gtk_css_section_get_start_position (section),
 		   error->message);
+}
+
+/**
+ * gs_utils_set_key_colors_in_css:
+ * @css: some CSS
+ * @app: a #GsApp to get the key colors from
+ *
+ * Replace placeholders in @css with the key colors from @app, returning a copy
+ * of the CSS with the key colors inlined as `rgb()` literals.
+ *
+ * The key color placeholders are of the form `@keycolor-XX@`, where `XX` is a
+ * two digit counter. The first counter (`00`) will be replaced with the first
+ * key color in @app, the second counter (`01`) with the second, etc.
+ *
+ * CSS may be %NULL, in which case %NULL is returned.
+ *
+ * Returns: (transfer full): a copy of @css with the key color placeholders
+ *     replaced, free with g_free()
+ * Since: 40
+ */
+gchar *
+gs_utils_set_key_colors_in_css (const gchar *css,
+                                GsApp       *app)
+{
+	GPtrArray *key_colors;
+	g_autoptr(GString) css_new = NULL;
+
+	if (css == NULL)
+		return NULL;
+
+	key_colors = gs_app_get_key_colors (app);
+
+	/* Do we not need to do any replacements? */
+	if (key_colors->len == 0 ||
+	    g_strstr_len (css, -1, "@keycolor") == NULL)
+		return g_strdup (css);
+
+	/* replace key color values */
+	css_new = g_string_new (css);
+	for (guint j = 0; j < key_colors->len; j++) {
+		GdkRGBA *color = g_ptr_array_index (key_colors, j);
+		g_autofree gchar *key = NULL;
+		g_autofree gchar *value = NULL;
+		key = g_strdup_printf ("@keycolor-%02u@", j);
+		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
+					 color->red * 255.f,
+					 color->green * 255.f,
+					 color->blue * 255.f);
+		as_gstring_replace (css_new, key, value);
+	}
+
+	return g_string_free (g_steal_pointer (&css_new), FALSE);
 }
 
 /**

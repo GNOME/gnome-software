@@ -2,9 +2,10 @@ subdir('appdata')
 subdir('icons')
 subdir('assets')
 
-compiled_schemas = gnome.compile_schemas()
+compiled_schemas = gnome.compile_schemas(
+  depend_files: 'org.gnome.software.gschema.xml')
 install_data('org.gnome.software.gschema.xml',
-             install_dir : 'share/glib-2.0/schemas')
+             install_dir : join_paths(get_option('datadir'), 'glib-2.0', 'schemas'))
 
 if get_option('external_appstream')
   # replace @libexecdir@

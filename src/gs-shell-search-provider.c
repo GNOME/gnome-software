@@ -224,7 +224,6 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 	GsShellSearchProvider *self = user_data;
 	GVariantBuilder meta;
 	GVariant *meta_variant;
-	GdkPixbuf *pixbuf;
 	gint i;
 	GVariantBuilder builder;
 
@@ -232,6 +231,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 
 	for (i = 0; results[i]; i++) {
 		GsApp *app;
+		g_autoptr(GdkPixbuf) pixbuf = NULL;
 		g_autofree gchar *description = NULL;
 
 		/* already built */
@@ -248,9 +248,14 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		g_variant_builder_init (&meta, G_VARIANT_TYPE ("a{sv}"));
 		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string (gs_app_get_unique_id (app)));
 		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string (gs_app_get_name (app)));
-		pixbuf = gs_app_get_pixbuf (app);
+		/* ICON_SIZE is defined as 24px in js/ui/search.js in gnome-shell */
+		pixbuf = gs_app_load_pixbuf (app, 24);
 		if (pixbuf != NULL)
 			g_variant_builder_add (&meta, "{sv}", "icon", g_icon_serialize (G_ICON (pixbuf)));
+		/* FIXME: Ideally we’d provide a `gicon` field here with the results of g_icon_to_string(),
+		 * if possible, which would allow gnome-shell to load the app’s
+		 * icon from the icon theme (if available) and potentially save
+		 * time and memory */
 
 		if (gs_utils_list_has_component_fuzzy (self->search_results, app) &&
 		    gs_app_get_origin_hostname (app) != NULL) {

@@ -1101,7 +1101,7 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
-	GdkPixbuf *pixbuf = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	GList *addons;
 	const gchar *tmp;
 	gboolean ret;
@@ -1138,9 +1138,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gs_details_page_set_description (self, tmp);
 
 	/* set the icon */
-	pixbuf = gs_app_get_pixbuf (self->app);
+	pixbuf = gs_app_load_pixbuf (self->app, gtk_image_get_pixel_size (GTK_IMAGE (self->application_details_icon)) * gtk_widget_get_scale_factor (self->application_details_icon));
 	if (pixbuf != NULL) {
-		gs_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
+		gtk_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
 	} else {
 		gtk_image_set_from_icon_name (GTK_IMAGE (self->application_details_icon),
 		                              "application-x-executable",

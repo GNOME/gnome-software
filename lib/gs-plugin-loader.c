@@ -3612,11 +3612,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	/* FIXME: the plugins should specify this, rather than hardcoding */
 	if (gs_plugin_job_has_refine_flags (plugin_job,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)) {
-		gs_plugin_job_add_refine_flags (plugin_job,
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
-	}
-	if (gs_plugin_job_has_refine_flags (plugin_job,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);

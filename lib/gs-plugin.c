@@ -1910,8 +1910,6 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 		g_ptr_array_add (cstrs, "require-reviews");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)
 		g_ptr_array_add (cstrs, "require-review-ratings");
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
-		g_ptr_array_add (cstrs, "require-key-colors");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
 		g_ptr_array_add (cstrs, "require-icon");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS)

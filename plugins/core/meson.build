@@ -14,32 +14,6 @@ shared_module(
 )
 
 shared_module(
-  'gs_plugin_key-colors',
-  sources : 'gs-plugin-key-colors.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-)
-
-shared_module(
-  'gs_plugin_key-colors-metadata',
-  sources : 'gs-plugin-key-colors-metadata.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-)
-
-shared_module(
   'gs_plugin_provenance',
   sources : 'gs-plugin-provenance.c',
   include_directories : [

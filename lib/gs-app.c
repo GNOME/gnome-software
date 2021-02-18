@@ -75,7 +75,7 @@ typedef struct
 	GsAppQuality		 description_quality;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
-	GPtrArray		*key_colors;
+	GPtrArray		*key_colors;  /* (nullable) (element-type GdkRGBA) */
 	GHashTable		*urls;
 	GHashTable		*launchables;
 	gchar			*url_missing;
@@ -121,7 +121,7 @@ typedef struct
 	GsApp			*runtime;
 	GFile			*local_file;
 	AsContentRating		*content_rating;
-	GdkPixbuf		*pixbuf;  /* (nullable) (owned) */
+	GPtrArray		*pixbufs;  /* (nullable) (owned) (element-type GdkPixbuf), sorted by pixel size, smallest first */
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
@@ -525,8 +525,12 @@ gs_app_to_string_append (GsApp *app, GString *str)
 			  gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
 		gs_app_kv_lpad (str, "name", priv->name);
-	if (priv->pixbuf != NULL)
-		gs_app_kv_printf (str, "pixbuf", "%p", priv->pixbuf);
+	for (i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		gs_app_kv_printf (str, "pixbuf", "%p, %dx%d", pixbuf,
+				  gdk_pixbuf_get_width (pixbuf),
+				  gdk_pixbuf_get_height (pixbuf));
+	}
 	if (priv->action_screenshot != NULL)
 		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
 	for (i = 0; i < priv->icons->len; i++) {
@@ -684,7 +688,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		tmp = g_ptr_array_index (priv->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
 	}
-	for (i = 0; i < priv->key_colors->len; i++) {
+	for (i = 0; priv->key_colors != NULL && i < priv->key_colors->len; i++) {
 		GdkRGBA *color = g_ptr_array_index (priv->key_colors, i);
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("key-color-%02u", i);
@@ -1787,21 +1791,76 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 }
 
 /**
- * gs_app_get_pixbuf:
+ * gs_app_has_pixbufs:
  * @app: a #GsApp
  *
- * Gets a pixbuf to represent the application.
+ * Gets whether there are any pixbufs set for this app.
  *
- * Returns: (transfer none) (nullable): a #GdkPixbuf, or %NULL
- *
- * Since: 3.22
- **/
-GdkPixbuf *
-gs_app_get_pixbuf (GsApp *app)
+ * Returns: %TRUE if one or more pixbufs are set for the app, %FALSE otherwise
+ * Since: 40
+ */
+gboolean
+gs_app_has_pixbufs (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	return (priv->pixbufs != NULL && priv->pixbufs->len > 0);
+}
+
+/**
+ * gs_app_load_pixbuf:
+ * @app: a #GsApp
+ * @size: size (width or height, square) of the pixbuf to load, in device pixels
+ *
+ * Loads a pixbuf to represent the application. This might be provided by the
+ * backend at the given @size, or downsized from a larger icon provided by the
+ * backend. The return value is guaranteed to be at @size, if it’s not %NULL.
+ *
+ * If an image at least @size pixels in width isn’t available, %NULL will be
+ * returned.
+ *
+ * This function may do disk I/O or image resizing, but it will not do network
+ * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
+ *
+ * Returns: (transfer full) (nullable): a #GdkPixbuf, or %NULL
+ *
+ * Since: 40
+ **/
+GdkPixbuf *
+gs_app_load_pixbuf (GsApp *app,
+                    guint  size)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->pixbuf;
+	g_return_val_if_fail (size > 0, NULL);
+
+	/* FIXME: This algorithm currently relies on gs-plugin-icons to
+	 * asynchronously load #AsIcons from #GsApp.icons and add them as
+	 * pixbufs. Eventually, that plugin should be retired and its code
+	 * folded in here. But for now, we can rely on everything being
+	 * available as a pixbuf. */
+
+	/* See if there’s a pixbuf the right size. Note that the pixbufs array
+	 * may be lazily created. */
+	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		if ((guint) gdk_pixbuf_get_width (pixbuf) == size)
+			return g_object_ref (pixbuf);
+		else if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
+			break;  /* array is sorted by size */
+	}
+
+	/* Now see if there’s a pixbuf which is too big, which could be resized. */
+	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
+		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
+		if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
+			return gdk_pixbuf_scale_simple (pixbuf, size, size, GDK_INTERP_BILINEAR);
+	}
+
+	return NULL;
 }
 
 /**
@@ -2047,22 +2106,51 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 }
 
 /**
- * gs_app_set_pixbuf:
+ * gs_app_add_pixbuf:
  * @app: a #GsApp
- * @pixbuf: (transfer none) (nullable): a #GdkPixbuf, or %NULL
+ * @pixbuf: (transfer none) (not nullable): a #GdkPixbuf
  *
- * Sets a pixbuf used to represent the application.
+ * Add a pixbuf to the set of pixbufs used to represent the application.
+ * Multiple pixbufs are supported as the application’s icon might be available
+ * in multiple sizes.
  *
- * Since: 3.22
+ * Only add pixbufs for native icon sizes provided by the backend — don’t resize
+ * a pixbuf to pass to this function. #GsApp can handle resizing pixbufs itself.
+ *
+ * Since: 40
  **/
 void
-gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
+gs_app_add_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	guint pixbuf_width;
+
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
+
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->pixbuf, pixbuf);
+	pixbuf_width = gdk_pixbuf_get_width (pixbuf);
+
+	if (priv->pixbufs == NULL)
+		priv->pixbufs = g_ptr_array_new_with_free_func (g_object_unref);
+
+	/* Replace any existing pixbuf of the same size, or insert in order. */
+	for (guint i = 0; i < priv->pixbufs->len; i++) {
+		GdkPixbuf *p = priv->pixbufs->pdata[i];
+		guint p_width = gdk_pixbuf_get_width (p);
+
+		if (p_width == pixbuf_width) {
+			g_set_object (&priv->pixbufs->pdata[i], pixbuf);
+			return;
+		} else if (p_width > pixbuf_width) {
+			g_ptr_array_insert (priv->pixbufs, i, g_object_ref (pixbuf));
+			return;
+		}
+	}
+
+	/* Append if the array is empty. */
+	g_ptr_array_add (priv->pixbufs, g_object_ref (pixbuf));
 }
 
 /**
@@ -3986,6 +4074,152 @@ gs_app_get_is_update_downloaded (GsApp *app)
 	return priv->is_update_downloaded;
 }
 
+typedef struct {
+	guint8		 R;
+	guint8		 G;
+	guint8		 B;
+} CdColorRGB8;
+
+static guint32
+cd_color_rgb8_to_uint32 (CdColorRGB8 *rgb)
+{
+	return (guint32) rgb->R |
+		(guint32) rgb->G << 8 |
+		(guint32) rgb->B << 16;
+}
+
+typedef struct {
+	GdkRGBA		color;
+	guint		cnt;
+} GsColorBin;
+
+static gint
+gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
+{
+	GsColorBin *s1 = (GsColorBin *) a;
+	GsColorBin *s2 = (GsColorBin *) b;
+	if (s1->cnt < s2->cnt)
+		return 1;
+	if (s1->cnt > s2->cnt)
+		return -1;
+	return 0;
+}
+
+/* convert range of 0..255 to 0..1 */
+static inline gdouble
+_convert_from_rgb8 (guchar val)
+{
+	return (gdouble) val / 255.f;
+}
+
+static void
+key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
+{
+	gint rowstride, n_channels;
+	gint x, y, width, height;
+	guchar *pixels, *p;
+	guint bin_size = 200;
+	guint i;
+	guint number_of_bins;
+
+	/* go through each pixel */
+	n_channels = gdk_pixbuf_get_n_channels (pb);
+	rowstride = gdk_pixbuf_get_rowstride (pb);
+	pixels = gdk_pixbuf_get_pixels (pb);
+	width = gdk_pixbuf_get_width (pb);
+	height = gdk_pixbuf_get_height (pb);
+
+	for (bin_size = 250; bin_size > 0; bin_size -= 2) {
+		g_autoptr(GHashTable) hash = NULL;
+		hash = g_hash_table_new_full (g_direct_hash,  g_direct_equal,
+					      NULL, g_free);
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				CdColorRGB8 tmp;
+				GsColorBin *s;
+				gpointer key;
+
+				/* disregard any with alpha */
+				p = pixels + y * rowstride + x * n_channels;
+				if (p[3] != 255)
+					continue;
+
+				/* find in cache */
+				tmp.R = (guint8) (p[0] / bin_size);
+				tmp.G = (guint8) (p[1] / bin_size);
+				tmp.B = (guint8) (p[2] / bin_size);
+				key = GUINT_TO_POINTER (cd_color_rgb8_to_uint32 (&tmp));
+				s = g_hash_table_lookup (hash, key);
+				if (s != NULL) {
+					s->color.red += _convert_from_rgb8 (p[0]);
+					s->color.green += _convert_from_rgb8 (p[1]);
+					s->color.blue += _convert_from_rgb8 (p[2]);
+					s->cnt++;
+					continue;
+				}
+
+				/* add to hash table */
+				s = g_new0 (GsColorBin, 1);
+				s->color.red = _convert_from_rgb8 (p[0]);
+				s->color.green = _convert_from_rgb8 (p[1]);
+				s->color.blue = _convert_from_rgb8 (p[2]);
+				s->color.alpha = 1.0;
+				s->cnt = 1;
+				g_hash_table_insert (hash, key, s);
+			}
+		}
+
+		number_of_bins = g_hash_table_size (hash);
+		if (number_of_bins >= number) {
+			g_autoptr(GList) values = NULL;
+
+			/* order by most popular */
+			values = g_hash_table_get_values (hash);
+			values = g_list_sort (values, gs_color_bin_sort_cb);
+			for (GList *l = values; l != NULL; l = l->next) {
+				GsColorBin *s = l->data;
+				g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
+				color->red = s->color.red / s->cnt;
+				color->green = s->color.green / s->cnt;
+				color->blue = s->color.blue / s->cnt;
+				gs_app_add_key_color (app, color);
+			}
+			return;
+		}
+	}
+
+	/* the algorithm failed, so just return a monochrome ramp */
+	for (i = 0; i < 3; i++) {
+		g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
+		color->red = (gdouble) i / 3.f;
+		color->green = color->red;
+		color->blue = color->red;
+		color->alpha = 1.0f;
+		gs_app_add_key_color (app, color);
+	}
+}
+
+static void
+calculate_key_colors (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GdkPixbuf) pb_small = NULL;
+
+	/* Lazily create the array */
+	if (priv->key_colors == NULL)
+		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+
+	/* no pixbuf */
+	pb_small = gs_app_load_pixbuf (app, 32);
+	if (pb_small == NULL) {
+		g_debug ("no pixbuf, so no key colors");
+		return;
+	}
+
+	/* get a list of key colors */
+	key_colors_set_for_pixbuf (app, pb_small, 10);
+}
+
 /**
  * gs_app_get_key_colors:
  * @app: a #GsApp
@@ -4001,6 +4235,10 @@ gs_app_get_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	if (priv->key_colors == NULL)
+		calculate_key_colors (app);
+
 	return priv->key_colors;
 }
 
@@ -4030,7 +4268,7 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
  * @app: a #GsApp
  * @key_color: a #GdkRGBA
  *
- * Adds a key colors used in the application icon.
+ * Adds a key color used in the application icon.
  *
  * Since: 3.22
  **/
@@ -4040,6 +4278,11 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_color != NULL);
+
+	/* Lazily create the array */
+	if (priv->key_colors == NULL)
+		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+
 	g_ptr_array_add (priv->key_colors, gdk_rgba_copy (key_color));
 	gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
@@ -4481,7 +4724,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_enum (value, priv->pending_action);
 		break;
 	case PROP_KEY_COLORS:
-		g_value_set_boxed (value, priv->key_colors);
+		g_value_set_boxed (value, gs_app_get_key_colors (app));
 		break;
 	case PROP_IS_UPDATE_DOWNLOADED:
 		g_value_set_boolean (value, priv->is_update_downloaded);
@@ -4627,14 +4870,13 @@ gs_app_finalize (GObject *object)
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->categories);
-	g_ptr_array_unref (priv->key_colors);
+	g_clear_pointer (&priv->key_colors, g_ptr_array_unref);
 	g_clear_object (&priv->cancellable);
 	if (priv->local_file != NULL)
 		g_object_unref (priv->local_file);
 	if (priv->content_rating != NULL)
 		g_object_unref (priv->content_rating);
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
+	g_clear_pointer (&priv->pixbufs, g_ptr_array_unref);
 	if (priv->action_screenshot != NULL)
 		g_object_unref (priv->action_screenshot);
 
@@ -4811,7 +5053,6 @@ gs_app_init (GsApp *app)
 	priv->sources = g_ptr_array_new_with_free_func (g_free);
 	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	priv->categories = g_ptr_array_new_with_free_func (g_free);
-	priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
 	priv->addons = gs_app_list_new ();
 	priv->related = gs_app_list_new ();
 	priv->history = gs_app_list_new ();

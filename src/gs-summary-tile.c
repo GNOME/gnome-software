@@ -40,11 +40,12 @@ gs_summary_tile_refresh (GsAppTile *self)
 	GsApp *app = gs_app_tile_get_app (self);
 	AtkObject *accessible;
 	GtkStyleContext *context;
-	const GdkPixbuf *pixbuf;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
 	const gchar *css;
+	g_autofree gchar *modified_css = NULL;
 
 	if (app == NULL)
 		return;
@@ -59,9 +60,9 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
 	gtk_widget_set_visible (tile->summary, summary && summary[0]);
 
-	pixbuf = gs_app_get_pixbuf (app);
+	pixbuf = gs_app_load_pixbuf (app, gtk_image_get_pixel_size (GTK_IMAGE (tile->image)) * gtk_widget_get_scale_factor (tile->image));
 	if (pixbuf != NULL) {
-		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
+		gtk_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
 	} else {
 		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 					      "application-x-executable",
@@ -75,7 +76,8 @@ gs_summary_tile_refresh (GsAppTile *self)
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", css);
+	modified_css = gs_utils_set_key_colors_in_css (css, app);
+	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", modified_css);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

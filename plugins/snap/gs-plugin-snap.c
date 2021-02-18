@@ -742,7 +742,7 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
 		return FALSE;
 	}
-	gs_app_set_pixbuf (app, pixbuf);
+	gs_app_add_pixbuf (app, pixbuf);
 
 	return TRUE;
 }
@@ -1071,7 +1071,7 @@ refine_app_with_client (GsPlugin             *plugin,
 	}
 
 	/* load icon if requested */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && !gs_app_has_pixbufs (app))
 		load_icon (plugin, client, app, snap_name, local_snap, store_snap, cancellable);
 
 	return TRUE;

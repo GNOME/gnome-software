@@ -314,7 +314,7 @@ refine_app (GsPlugin             *plugin,
 		return TRUE;
 
 	/* invalid */
-	if (gs_app_get_pixbuf (app) != NULL)
+	if (gs_app_has_pixbufs (app))
 		return TRUE;
 
 	/* process all icons */
@@ -347,14 +347,13 @@ refine_app (GsPlugin             *plugin,
 			break;
 		}
 		if (pixbuf != NULL) {
-			gs_app_set_pixbuf (app, pixbuf);
-			break;
+			gs_app_add_pixbuf (app, pixbuf);
+		} else {
+			/* we failed, but keep going */
+			g_debug ("failed to load icon for %s: %s",
+				 gs_app_get_id (app),
+				 error_local->message);
 		}
-
-		/* we failed, but keep going */
-		g_debug ("failed to load icon for %s: %s",
-			 gs_app_get_id (app),
-			 error_local->message);
 	}
 
 	return TRUE;
