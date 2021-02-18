@@ -1164,15 +1164,19 @@ gs_application_open (GApplication  *application,
 }
 
 static void
-gs_application_class_init (GsApplicationClass *class)
+gs_application_class_init (GsApplicationClass *klass)
 {
-	G_OBJECT_CLASS (class)->dispose = gs_application_dispose;
-	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
-	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
-	G_APPLICATION_CLASS (class)->handle_local_options = gs_application_handle_local_options;
-	G_APPLICATION_CLASS (class)->open = gs_application_open;
-	G_APPLICATION_CLASS (class)->dbus_register = gs_application_dbus_register;
-	G_APPLICATION_CLASS (class)->dbus_unregister = gs_application_dbus_unregister;
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GApplicationClass *application_class = G_APPLICATION_CLASS (klass);
+
+	object_class->dispose = gs_application_dispose;
+
+	application_class->startup = gs_application_startup;
+	application_class->activate = gs_application_activate;
+	application_class->handle_local_options = gs_application_handle_local_options;
+	application_class->open = gs_application_open;
+	application_class->dbus_register = gs_application_dbus_register;
+	application_class->dbus_unregister = gs_application_dbus_unregister;
 
 	/**
 	 * GsApplication::install-resources-done:
@@ -1185,7 +1189,7 @@ gs_application_class_init (GsApplicationClass *class)
 	 */
 	signals[INSTALL_RESOURCES_DONE] = g_signal_new (
 		"install-resources-done",
-		G_TYPE_FROM_CLASS (class),
+		G_TYPE_FROM_CLASS (klass),
 		G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 		0,
 		NULL, NULL,
