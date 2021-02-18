@@ -113,9 +113,9 @@ gs_log_writer_console (GLogLevelFlags log_level,
 			g_printerr ("%c[%dm%s\n%c[%dm", 0x1B, 31, log_message, 0x1B, 0);
 		} else { /* to file */
 			if (tmp != NULL)
-				g_print ("%s ", tmp);
-			g_print ("%s ", domain->str);
-			g_print ("%s\n", log_message);
+				g_printerr ("%s ", tmp);
+			g_printerr ("%s ", domain->str);
+			g_printerr ("%s\n", log_message);
 		}
 		break;
 	default:
