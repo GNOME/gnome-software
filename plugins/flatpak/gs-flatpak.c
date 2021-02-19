@@ -1601,12 +1601,6 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		/* check the application has already been downloaded */
 		commit = flatpak_ref_get_commit (FLATPAK_REF (xref));
 		latest_commit = flatpak_installed_ref_get_latest_commit (xref);
-		if (latest_commit == NULL) {
-			g_debug ("could not get latest commit for %s",
-				 flatpak_ref_get_name (FLATPAK_REF (xref)));
-			continue;
-		}
-
 		app = gs_flatpak_create_installed (self, xref, NULL, cancellable);
 		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
 		if (main_app == NULL) {
@@ -1628,7 +1622,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 
 		/* already downloaded */
-		if (g_strcmp0 (commit, latest_commit) != 0) {
+		if (latest_commit && g_strcmp0 (commit, latest_commit) != 0) {
 			g_debug ("%s has a downloaded update %s->%s",
 				 flatpak_ref_get_name (FLATPAK_REF (xref)),
 				 commit, latest_commit);
@@ -1636,7 +1630,6 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			gs_app_set_update_version (main_app, NULL);
 			gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
 			gs_app_set_size_download (main_app, 0);
-			gs_app_list_add (list, main_app);
 
 		/* needs download */
 		} else {
