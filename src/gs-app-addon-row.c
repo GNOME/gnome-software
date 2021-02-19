@@ -115,13 +115,14 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	}
 
-	/* update the checkbox and remove button */
+	/* update the checkbox, remove button, and activatable state */
 	g_signal_handlers_block_by_func (row->checkbox, checkbox_toggled, row);
 	g_signal_handlers_block_by_func (row->checkbox, app_addon_remove_button_cb, row);
 	switch (gs_app_get_state (row->app)) {
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
@@ -129,25 +130,30 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		gtk_widget_set_visible (row->button_remove, FALSE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (row->checkbox, FALSE);
 		gtk_widget_set_visible (row->button_remove, TRUE);
 		gtk_widget_set_sensitive (row->button_remove, TRUE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (row->checkbox, FALSE);
 		gtk_widget_set_visible (row->button_remove, TRUE);
 		gtk_widget_set_sensitive (row->button_remove, FALSE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	default:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	}
 	g_signal_handlers_unblock_by_func (row->checkbox, checkbox_toggled, row);

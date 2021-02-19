@@ -3,6 +3,7 @@
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsAppAddonRow" parent="GtkListBoxRow">
     <property name="visible">True</property>
+    <property name="selectable">False</property>
     <child>
       <object class="GtkBox" id="box">
         <property name="visible">True</property>
