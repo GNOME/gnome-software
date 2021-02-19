@@ -257,6 +257,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		if (!gs_flatpak_add_updates (flatpak, list, cancellable, error))
 			return FALSE;
 	}
+	gs_plugin_cache_lookup_by_state (plugin, list, GS_APP_STATE_INSTALLING);
 	return TRUE;
 }
 

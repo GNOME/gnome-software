@@ -134,7 +134,8 @@ gs_updates_page_invalidate (GsUpdatesPage *self)
 static GsUpdatesSectionKind
 _get_app_section (GsApp *app)
 {
-	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE ||
+	    gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
 			return GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE;
 		return GS_UPDATES_SECTION_KIND_ONLINE;
