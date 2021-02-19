@@ -553,11 +553,8 @@ gs_folders_convert (void)
 		const gchar * const utilities_apps[] = {
 			"gnome-abrt.desktop",
 			"gnome-system-log.desktop",
-			"gnome-system-monitor.desktop",
-			"gucharmap.desktop",
 			"nm-connection-editor.desktop",
 			"org.gnome.baobab.desktop",
-			"org.gnome.Calculator.desktop",
 			"org.gnome.DejaDup.desktop",
 			"org.gnome.Dictionary.desktop",
 			"org.gnome.DiskUtility.desktop",
@@ -565,14 +562,10 @@ gs_folders_convert (void)
 			"org.gnome.Evince.desktop",
 			"org.gnome.FileRoller.desktop",
 			"org.gnome.fonts.desktop",
-			"org.gnome.Screenshot.desktop",
 			"org.gnome.seahorse.Application.desktop",
-			"org.gnome.Terminal.desktop",
 			"org.gnome.tweaks.desktop",
 			"org.gnome.Usage.desktop",
-			"simple-scan.desktop",
 			"vinagre.desktop",
-			"yelp.desktop",
 			NULL
 		};
 		const gchar * const yast_categories[] = {
