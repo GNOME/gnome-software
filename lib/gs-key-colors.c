@@ -34,127 +34,234 @@
 
 #include "gs-key-colors.h"
 
+/* Hard-code the number of clusters to split the icon color space into. This
+ * gives the maximum number of key colors returned for an icon. This number has
+ * been chosen by examining 1000 icons to subjectively see how many key colors
+ * each has. The number of key colors ranged from 1 to 6, but the mode was
+ * definitely 3. */
+const guint n_clusters = 3;
+
+/* Discard pixels with less than this level of alpha. Almost all icons have a
+ * transparent background/border at 100% transparency, and a blending fringe
+ * with some intermediate level of transparency which should be ignored for
+ * choosing key colors. A number of icons have partially-transparent colored
+ * sections in the main body of the icon, which should be used if they’re above
+ * this threshold. About 1% of icons have no completely opaque pixels, so we
+ * can’t discard non-opaque pixels entirely. */
+const guint minimum_alpha = 0.5 * 255;
+
 typedef struct {
-	guint8		 R;
-	guint8		 G;
-	guint8		 B;
-} CdColorRGB8;
-
-static guint32
-cd_color_rgb8_to_uint32 (CdColorRGB8 *rgb)
-{
-	return (guint32) rgb->R |
-		(guint32) rgb->G << 8 |
-		(guint32) rgb->B << 16;
-}
+	guint8 red;
+	guint8 green;
+	guint8 blue;
+} Pixel8;
 
 typedef struct {
-	GdkRGBA		color;
-	guint		cnt;
-} GsColorBin;
+	Pixel8 color;
+	union {
+		guint8 alpha;
+		guint8 cluster;
+	};
+} ClusterPixel8;
 
-static gint
-gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
+typedef struct {
+	guint red;
+	guint green;
+	guint blue;
+	guint n_members;
+} CentroidAccumulator;
+
+static inline ClusterPixel8 *
+get_pixel (guint8 *pixels,
+           guint   x,
+           guint   y,
+           guint   rowstride,
+           guint   n_channels)
 {
-	GsColorBin *s1 = (GsColorBin *) a;
-	GsColorBin *s2 = (GsColorBin *) b;
-	if (s1->cnt < s2->cnt)
-		return 1;
-	if (s1->cnt > s2->cnt)
-		return -1;
-	return 0;
+	return (ClusterPixel8 *) (pixels + y * rowstride + x * n_channels);
 }
 
-/* convert range of 0..255 to 0..1 */
-static inline gdouble
-_convert_from_rgb8 (guchar val)
+static inline guint
+color_distance (const Pixel8 *a,
+                const Pixel8 *b)
 {
-	return (gdouble) val / 255.f;
+	/* Take the absolute value rather than the square root to save some
+	 * time, as the caller is comparing distances.
+	 *
+	 * The arithmetic here can’t overflow, as the R/G/B components have a
+	 * maximum value of 255 but the arithmetic is done in (at least) 32-bit
+	 * variables.*/
+	gint dr = b->red - a->red;
+	gint dg = b->green - a->green;
+	gint db = b->blue - a->blue;
+
+	return abs (dr * dr + dg * dg + db * db);
 }
 
-static void
-key_colors_set_for_pixbuf (GArray *colors, GdkPixbuf *pb, guint number)
+/* NOTE: This has to return stable results when more than one cluster is
+ * equidistant from the @pixel, or the k_means() function may not terminate. */
+static inline gsize
+nearest_cluster (const Pixel8 *pixel,
+                 const Pixel8 *cluster_centres,
+                 gsize         n_cluster_centres)
 {
-	gint rowstride, n_channels;
-	gint x, y, width, height;
-	guchar *pixels, *p;
-	guint bin_size = 200;
-	guint i;
-	guint number_of_bins;
+	gsize nearest_cluster = 0;
+	guint nearest_cluster_distance = color_distance (&cluster_centres[0], pixel);
 
-	/* go through each pixel */
-	n_channels = gdk_pixbuf_get_n_channels (pb);
-	rowstride = gdk_pixbuf_get_rowstride (pb);
-	pixels = gdk_pixbuf_get_pixels (pb);
-	width = gdk_pixbuf_get_width (pb);
-	height = gdk_pixbuf_get_height (pb);
-
-	for (bin_size = 250; bin_size > 0; bin_size -= 2) {
-		g_autoptr(GHashTable) hash = NULL;
-		hash = g_hash_table_new_full (g_direct_hash,  g_direct_equal,
-					      NULL, g_free);
-		for (y = 0; y < height; y++) {
-			for (x = 0; x < width; x++) {
-				CdColorRGB8 tmp;
-				GsColorBin *s;
-				gpointer key;
-
-				/* disregard any with alpha */
-				p = pixels + y * rowstride + x * n_channels;
-				if (p[3] != 255)
-					continue;
-
-				/* find in cache */
-				tmp.R = (guint8) (p[0] / bin_size);
-				tmp.G = (guint8) (p[1] / bin_size);
-				tmp.B = (guint8) (p[2] / bin_size);
-				key = GUINT_TO_POINTER (cd_color_rgb8_to_uint32 (&tmp));
-				s = g_hash_table_lookup (hash, key);
-				if (s != NULL) {
-					s->color.red += _convert_from_rgb8 (p[0]);
-					s->color.green += _convert_from_rgb8 (p[1]);
-					s->color.blue += _convert_from_rgb8 (p[2]);
-					s->cnt++;
-					continue;
-				}
-
-				/* add to hash table */
-				s = g_new0 (GsColorBin, 1);
-				s->color.red = _convert_from_rgb8 (p[0]);
-				s->color.green = _convert_from_rgb8 (p[1]);
-				s->color.blue = _convert_from_rgb8 (p[2]);
-				s->color.alpha = 1.0;
-				s->cnt = 1;
-				g_hash_table_insert (hash, key, s);
-			}
-		}
-
-		number_of_bins = g_hash_table_size (hash);
-		if (number_of_bins >= number) {
-			g_autoptr(GList) values = NULL;
-
-			/* order by most popular */
-			values = g_hash_table_get_values (hash);
-			values = g_list_sort (values, gs_color_bin_sort_cb);
-			for (GList *l = values; l != NULL; l = l->next) {
-				GsColorBin *s = l->data;
-				GdkRGBA color;
-				color.red = s->color.red / s->cnt;
-				color.green = s->color.green / s->cnt;
-				color.blue = s->color.blue / s->cnt;
-				g_array_append_val (colors, color);
-			}
-			return;
+	for (gsize i = 1; i < n_cluster_centres; i++) {
+		guint distance = color_distance (&cluster_centres[i], pixel);
+		if (distance < nearest_cluster_distance) {
+			nearest_cluster = i;
+			nearest_cluster_distance = distance;
 		}
 	}
 
-	/* the algorithm failed, so just return a monochrome ramp */
-	for (i = 0; i < 3; i++) {
+	return nearest_cluster;
+}
+
+/* Extract the key colors from @pb by clustering the pixels in RGB space.
+ * Clustering is done using k-means, with initialisation using a
+ * Random Partition.
+ *
+ * This approach can be thought of as plotting every pixel in @pb in a
+ * three-dimensional color space, with red, green and blue axes (alpha is
+ * clipped to 0 (pixel is ignored) or 1 (pixel is used)). The key colors for
+ * the image are the ones where a large number of pixels are plotted in a group
+ * in the color space — either a lot of pixels with an identical color
+ * (repeated use of exactly the same color in the image) or a lot of pixels in
+ * a rough group (use of a lot of similar shades of the same color in the
+ * image).
+ *
+ * By transforming to a color space, information about the X and Y positions of
+ * each color is ignored, so a thin outline in the image of a single color
+ * will appear in the color space as a cluster, just as a contiguous block of
+ * one color would.
+ *
+ * The k-means clustering algorithm is then used to find these clusters. k-means
+ * is used, rather than (say) principal component analysis, because it
+ * inherently calculates the centroid for each cluster. In a color space, the
+ * centroid is itself a color, which can then be used as the key color to
+ * return.
+ *
+ * The number of clusters is limited to @n_clusters, as a subjective survey of
+ * 1000 icons found that they commonly used this number of key colors.
+ *
+ * Various other shortcuts have been taken which make this approach quite
+ * specific to key color extraction from icons, with the aim of making it
+ * faster. That’s fine — it doesn’t matter if the results this function produces
+ * are optimal, only that they’re good enough. */
+static void
+k_means (GArray    *colors,
+         GdkPixbuf *pb)
+{
+	gint rowstride, n_channels;
+	gint width, height;
+	guint8 *raw_pixels;
+	ClusterPixel8 *pixels;
+	const ClusterPixel8 *pixels_end;
+	Pixel8 cluster_centres[n_clusters];
+	CentroidAccumulator cluster_accumulators[n_clusters];
+	guint n_assignments_changed;
+	guint n_iterations = 0;
+	guint assignments_termination_limit;
+
+	n_channels = gdk_pixbuf_get_n_channels (pb);
+	rowstride = gdk_pixbuf_get_rowstride (pb);
+	raw_pixels = gdk_pixbuf_get_pixels (pb);
+	width = gdk_pixbuf_get_width (pb);
+	height = gdk_pixbuf_get_height (pb);
+
+	/* The pointer arithmetic over pixels can be simplified if we can assume
+	 * there are no gaps in the @raw_pixels data. Since the caller is
+	 * downsizing the #GdkPixbuf, this is a reasonable assumption. */
+	g_assert (rowstride == width * n_channels);
+	g_assert (n_channels == 4);
+
+	pixels = (ClusterPixel8 *) raw_pixels;
+	pixels_end = &pixels[height * width];
+
+	/* Initialise the clusters using the Random Partition method: randomly
+	 * assign a starting cluster to each pixel.
+	 *
+	 * The Forgy method (choosing random pixels as the starting cluster
+	 * centroids) is not appropriate as the checks required to make sure
+	 * they aren’t transparent or duplicated colors mean that the
+	 * initialisation step may never complete. Consider the case of an icon
+	 * which is a block of solid color. */
+	for (ClusterPixel8 *p = pixels; p < pixels_end; p++) {
+		if (p->alpha < minimum_alpha)
+			p->cluster = G_N_ELEMENTS (cluster_centres);
+		else
+			p->cluster = g_random_int_range (0, G_N_ELEMENTS (cluster_centres));
+	}
+
+	/* Iterate until every cluster is relatively settled. This is determined
+	 * by the number of pixels whose assignment to a cluster changes in
+	 * each iteration — if the number of pixels is less than 1% of the image
+	 * then subsequent iterations are not going to significantly affect the
+	 * results.
+	 *
+	 * As we’re choosing key colors, finding the optimal result is not
+	 * needed. We just need to find one which is good enough, quickly.
+	 *
+	 * A second termination condition is set on the number of iterations, to
+	 * avoid a potential infinite loop. This termination condition is never
+	 * normally expected to be hit — typically an icon will require 5–10
+	 * iterations to terminate based on @n_assignments_changed. */
+	assignments_termination_limit = width * height * 0.01;
+	n_iterations = 0;
+	do {
+		/* Update step. Re-calculate the centroid of each cluster from
+		 * the colors which are in it. */
+		memset (cluster_accumulators, 0, sizeof (cluster_accumulators));
+
+		for (const ClusterPixel8 *p = pixels; p < pixels_end; p++) {
+			if (p->cluster >= G_N_ELEMENTS (cluster_centres))
+				continue;
+
+			cluster_accumulators[p->cluster].red += p->color.red;
+			cluster_accumulators[p->cluster].green += p->color.green;
+			cluster_accumulators[p->cluster].blue += p->color.blue;
+			cluster_accumulators[p->cluster].n_members++;
+		}
+
+		for (gsize i = 0; i < G_N_ELEMENTS (cluster_centres); i++) {
+			if (cluster_accumulators[i].n_members == 0)
+				continue;
+
+			cluster_centres[i].red = cluster_accumulators[i].red / cluster_accumulators[i].n_members;
+			cluster_centres[i].green = cluster_accumulators[i].green / cluster_accumulators[i].n_members;
+			cluster_centres[i].blue = cluster_accumulators[i].blue / cluster_accumulators[i].n_members;
+		}
+
+		/* Update assignments of colors to clusters. */
+		n_assignments_changed = 0;
+		for (ClusterPixel8 *p = pixels; p < pixels_end; p++) {
+			gsize new_cluster;
+
+			if (p->cluster >= G_N_ELEMENTS (cluster_centres))
+				continue;
+
+			new_cluster = nearest_cluster (&p->color, cluster_centres, G_N_ELEMENTS (cluster_centres));
+			if (new_cluster != p->cluster)
+				n_assignments_changed++;
+			p->cluster = new_cluster;
+		}
+
+		n_iterations++;
+	} while (n_assignments_changed > assignments_termination_limit && n_iterations < 50);
+
+	/* Output the cluster centres: these are the icon’s key colors. */
+	for (gsize i = 0; i < G_N_ELEMENTS (cluster_centres); i++) {
 		GdkRGBA color;
-		color.red = (gdouble) i / 3.f;
-		color.green = color.red;
-		color.blue = color.red;
-		color.alpha = 1.0f;
+
+		if (cluster_accumulators[i].n_members == 0)
+			continue;
+
+		color.red = (gdouble) cluster_centres[i].red / 255.0;
+		color.green = (gdouble) cluster_centres[i].green / 255.0;
+		color.blue = (gdouble) cluster_centres[i].blue / 255.0;
+		color.alpha = 1.0;
 		g_array_append_val (colors, color);
 	}
 }
@@ -180,11 +287,17 @@ gs_calculate_key_colors (GdkPixbuf *pixbuf)
 	g_autoptr(GdkPixbuf) pb_small = NULL;
 	g_autoptr(GArray) colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
 
-	/* scale the icon down to simplify calculations */
 	pb_small = gdk_pixbuf_scale_simple (pixbuf, 32, 32, GDK_INTERP_BILINEAR);
 
+	/* require an alpha channel for storing temporary values; most images
+	 * have one already, about 2% don’t */
+	if (gdk_pixbuf_get_n_channels (pixbuf) != 4) {
+		g_autoptr(GdkPixbuf) temp = g_steal_pointer (&pb_small);
+		pb_small = gdk_pixbuf_add_alpha (temp, FALSE, 0, 0, 0);
+	}
+
 	/* get a list of key colors */
-	key_colors_set_for_pixbuf (colors, pb_small, 10);
+	k_means (colors, pb_small);
 
 	return g_steal_pointer (&colors);
 }
