@@ -3075,7 +3075,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 		xb_silo_invalidate (self->silo);
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 	return TRUE;
 }
 
