@@ -2245,6 +2245,137 @@ gs_flatpak_get_installed_ref (GsFlatpak *self,
 }
 
 static gboolean
+gs_flatpak_prune_addons_list (GsFlatpak *self,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	GsAppList *addons_list;
+	g_autoptr(GPtrArray) installed_related_refs = NULL;
+	g_autoptr(GPtrArray) remote_related_refs = NULL;
+	g_autofree gchar *ref = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	addons_list = gs_app_get_addons (app);
+	if (gs_app_list_length (addons_list) == 0)
+		return TRUE;
+
+	if (gs_app_get_origin (app) == NULL)
+		return TRUE;
+
+	/* return early if the addons haven't been refined */
+	for (guint i = 0; i < gs_app_list_length (addons_list); i++) {
+		GsApp *app_addon = gs_app_list_index (addons_list, i);
+
+		if (gs_flatpak_app_get_ref_name (app_addon) == NULL ||
+		    gs_flatpak_app_get_ref_arch (app_addon) == NULL ||
+		    gs_app_get_branch (app_addon) == NULL)
+			return TRUE;
+	}
+
+	/* return early if the API we need isn't available */
+#if !FLATPAK_CHECK_VERSION(1,11,1)
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+		return TRUE;
+#endif
+
+	ref = g_strdup_printf ("%s/%s/%s/%s",
+			      gs_flatpak_app_get_ref_kind_as_str (app),
+			      gs_flatpak_app_get_ref_name (app),
+			      gs_flatpak_app_get_ref_arch (app),
+			      gs_app_get_branch (app));
+
+	/* Find installed related refs in case the app is installed */
+	installed_related_refs = flatpak_installation_list_installed_related_refs_sync (self->installation,
+											gs_app_get_origin (app),
+											ref,
+											NULL, &error_local);
+	if (installed_related_refs == NULL &&
+	    !g_error_matches (error_local,
+			      FLATPAK_ERROR,
+			      FLATPAK_ERROR_NOT_INSTALLED)) {
+		gs_flatpak_error_convert (&error_local);
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	g_clear_error (&error_local);
+
+#if FLATPAK_CHECK_VERSION(1,11,1)
+	/* Find remote related refs that match the installed version in case the app is installed */
+	remote_related_refs = flatpak_installation_list_remote_related_refs_for_installed_sync (self->installation,
+												gs_app_get_origin (app),
+												ref,
+												NULL, &error_local);
+	if (remote_related_refs == NULL &&
+	    !g_error_matches (error_local,
+			      FLATPAK_ERROR,
+			      FLATPAK_ERROR_NOT_INSTALLED)) {
+		gs_flatpak_error_convert (&error_local);
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	g_clear_error (&error_local);
+#endif
+
+	/* Find remote related refs in case the app is not installed */
+	if (remote_related_refs == NULL) {
+		remote_related_refs = flatpak_installation_list_remote_related_refs_sync (self->installation,
+											  gs_app_get_origin (app),
+											  ref,
+											  NULL, &error_local);
+		/* don't make the error fatal in case we're offline */
+		if (error_local != NULL)
+			g_debug ("failed to list remote related refs of %s: %s",
+				 gs_app_get_unique_id (app), error_local->message);
+	}
+
+	g_clear_error (&error_local);
+
+	/* For each addon, if it is neither installed nor available, hide it
+	 * since it may be intended for a different version of the app. We
+	 * don't want to show both org.videolan.VLC.Plugin.bdj//3-19.08 and
+	 * org.videolan.VLC.Plugin.bdj//3-20.08 in the UI; only one will work
+	 * for the installed app
+	 */
+	for (guint i = 0; i < gs_app_list_length (addons_list); i++) {
+		GsApp *app_addon = gs_app_list_index (addons_list, i);
+		gboolean found = FALSE;
+		g_autofree char *addon_ref = NULL;
+
+		addon_ref = g_strdup_printf ("%s/%s/%s/%s",
+					     gs_flatpak_app_get_ref_kind_as_str (app_addon),
+					     gs_flatpak_app_get_ref_name (app_addon),
+					     gs_flatpak_app_get_ref_arch (app_addon),
+					     gs_app_get_branch (app_addon));
+		for (guint j = 0; installed_related_refs && j < installed_related_refs->len; j++) {
+			FlatpakRelatedRef *rel = g_ptr_array_index (installed_related_refs, j);
+			g_autofree char *rel_ref = flatpak_ref_format_ref (FLATPAK_REF (rel));
+			if (g_strcmp0 (addon_ref, rel_ref) == 0)
+				found = TRUE;
+		}
+		for (guint j = 0; remote_related_refs && j < remote_related_refs->len; j++) {
+			FlatpakRelatedRef *rel = g_ptr_array_index (remote_related_refs, j);
+			g_autofree char *rel_ref = flatpak_ref_format_ref (FLATPAK_REF (rel));
+			if (g_strcmp0 (addon_ref, rel_ref) == 0)
+				found = TRUE;
+		}
+
+		if (!found) {
+			gs_app_add_quirk (app_addon, GS_APP_QUIRK_HIDE_EVERYWHERE);
+			g_debug ("hiding %s since it's not related to %s",
+				 addon_ref, gs_app_get_unique_id (app));
+		} else {
+			gs_app_remove_quirk (app_addon, GS_APP_QUIRK_HIDE_EVERYWHERE);
+			g_debug ("unhiding %s since it's related to %s",
+				 addon_ref, gs_app_get_unique_id (app));
+		}
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_plugin_refine_item_size (GsFlatpak *self,
 			    GsApp *app,
 			    GCancellable *cancellable,
@@ -2669,6 +2800,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 {
 	GsAppState old_state = gs_app_get_state (app);
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* not us */
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_FLATPAK)
@@ -2690,6 +2822,12 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	if (!gs_flatpak_refine_app_state_unlocked (self, app, cancellable, error)) {
 		g_prefix_error (error, "failed to get state: ");
 		return FALSE;
+	}
+
+	/* hide any addons that aren't for this app */
+	if (!gs_flatpak_prune_addons_list (self, app, cancellable, &local_error)) {
+		g_warning ("failed to prune addons: %s", local_error->message);
+		g_clear_error (&local_error);
 	}
 
 	/* scope is fast, do unconditionally */
