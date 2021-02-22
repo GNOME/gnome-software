@@ -157,3 +157,5 @@ if get_option('tests')
   )
   test('gs-self-test-lib', e, suite: ['lib'], env: test_env, timeout : 120)
 endif
+
+subdir('tools')
