@@ -50,7 +50,7 @@ struct _GsApplication {
 #ifdef HAVE_PACKAGEKIT
 	GsDbusHelper	*dbus_helper;
 #endif
-	GsShellSearchProvider *search_provider;
+	GsShellSearchProvider *search_provider;  /* (nullable) (owned) */
 	GSettings       *settings;
 	GSimpleActionGroup	*action_map;
 	guint		 shell_loaded_handler_id;
@@ -920,7 +920,8 @@ static void
 gs_application_setup_search_provider (GsApplication *app)
 {
 	gs_application_initialize_plugins (app);
-	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
+	if (app->search_provider)
+		gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 }
 
 static void
