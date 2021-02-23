@@ -76,7 +76,7 @@ typedef struct
 	GsAppQuality		 description_quality;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
-	GPtrArray		*key_colors;  /* (nullable) (element-type GdkRGBA) */
+	GArray			*key_colors;  /* (nullable) (element-type GdkRGBA) */
 	GHashTable		*urls;
 	GHashTable		*launchables;
 	gchar			*url_missing;
@@ -690,7 +690,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "category", tmp);
 	}
 	for (i = 0; priv->key_colors != NULL && i < priv->key_colors->len; i++) {
-		GdkRGBA *color = g_ptr_array_index (priv->key_colors, i);
+		GdkRGBA *color = &g_array_index (priv->key_colors, GdkRGBA, i);
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("key-color-%02u", i);
 		gs_app_kv_printf (str, key, "%.0f,%.0f,%.0f",
@@ -4082,11 +4082,10 @@ calculate_key_colors (GsApp *app)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GdkPixbuf) pb_small = NULL;
 	const gchar *overrides_str;
-	g_autoptr(GArray) colors = NULL;
 
 	/* Lazily create the array */
 	if (priv->key_colors == NULL)
-		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+		priv->key_colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
 
 	/* Look for an override first. Parse and use it if possible. This is
 	 * typically specified in the appdata for an app as:
@@ -4115,12 +4114,12 @@ calculate_key_colors (GsApp *app)
 
 			g_variant_iter_init (&iter, overrides);
 			while (g_variant_iter_loop (&iter, "(yyy)", &red, &green, &blue)) {
-				g_autoptr(GdkRGBA) rgba = g_new0 (GdkRGBA, 1);
-				rgba->red = (gdouble) red / 255.0;
-				rgba->green = (gdouble) green / 255.0;
-				rgba->blue = (gdouble) blue / 255.0;
-				rgba->alpha = 1.0;
-				g_ptr_array_add (priv->key_colors, g_steal_pointer (&rgba));
+				GdkRGBA rgba;
+				rgba.red = (gdouble) red / 255.0;
+				rgba.green = (gdouble) green / 255.0;
+				rgba.blue = (gdouble) blue / 255.0;
+				rgba.alpha = 1.0;
+				g_array_append_val (priv->key_colors, rgba);
 			}
 
 			return;
@@ -4139,11 +4138,8 @@ calculate_key_colors (GsApp *app)
 	}
 
 	/* get a list of key colors */
-	colors = gs_calculate_key_colors (pb_small);
-	for (guint i = 0; i < colors->len; i++) {
-		GdkRGBA *rgba = &g_array_index (colors, GdkRGBA, i);
-		g_ptr_array_add (priv->key_colors, gdk_rgba_copy (rgba));
-	}
+	g_clear_pointer (&priv->key_colors, g_array_unref);
+	priv->key_colors = gs_calculate_key_colors (pb_small);
 }
 
 /**
@@ -4154,9 +4150,9 @@ calculate_key_colors (GsApp *app)
  *
  * Returns: (element-type GdkRGBA) (transfer none): a list
  *
- * Since: 3.22
+ * Since: 40
  **/
-GPtrArray *
+GArray *
 gs_app_get_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
@@ -4175,17 +4171,17 @@ gs_app_get_key_colors (GsApp *app)
  *
  * Sets the key colors used in the application icon.
  *
- * Since: 3.22
+ * Since: 40
  **/
 void
-gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
+gs_app_set_key_colors (GsApp *app, GArray *key_colors)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_colors != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
-	if (_g_set_ptr_array (&priv->key_colors, key_colors))
+	if (_g_set_array (&priv->key_colors, key_colors))
 		gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
 
@@ -4207,9 +4203,9 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 
 	/* Lazily create the array */
 	if (priv->key_colors == NULL)
-		priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+		priv->key_colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
 
-	g_ptr_array_add (priv->key_colors, gdk_rgba_copy (key_color));
+	g_array_append_val (priv->key_colors, *key_color);
 	gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
 
@@ -4796,7 +4792,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->categories);
-	g_clear_pointer (&priv->key_colors, g_ptr_array_unref);
+	g_clear_pointer (&priv->key_colors, g_array_unref);
 	g_clear_object (&priv->cancellable);
 	if (priv->local_file != NULL)
 		g_object_unref (priv->local_file);
@@ -4947,7 +4943,7 @@ gs_app_class_init (GsAppClass *klass)
 	 * GsApp:key-colors:
 	 */
 	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
-				    G_TYPE_PTR_ARRAY, G_PARAM_READWRITE);
+				    G_TYPE_ARRAY, G_PARAM_READWRITE);
 
 	/**
 	 * GsApp:is-update-downloaded:

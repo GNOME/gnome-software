@@ -27,7 +27,7 @@ struct _GsFeatureTile
 	GtkCssProvider	*tile_provider;  /* (owned) (nullable) */
 	GtkCssProvider	*title_provider;  /* (owned) (nullable) */
 	GtkCssProvider	*subtitle_provider;  /* (owned) (nullable) */
-	GPtrArray	*key_colors_cache;  /* (unowned) (nullable) */
+	GArray		*key_colors_cache;  /* (unowned) (nullable) */
 	gboolean	 narrow_mode;
 };
 
@@ -110,7 +110,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 					 gs_css_get_markup_for_id (css, "summary"));
 		tile->markup_cache = markup;
 	} else if (markup == NULL) {
-		GPtrArray *key_colors = gs_app_get_key_colors (app);
+		GArray *key_colors = gs_app_get_key_colors (app);
 		g_autofree gchar *css = NULL;
 
 		if (key_colors != tile->key_colors_cache) {
@@ -124,7 +124,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 *  - always light enough that grey text is visible on it
 			 */
 			if (key_colors != NULL && key_colors->len > 0) {
-				GdkRGBA *color = key_colors->pdata[key_colors->len - 1];
+				const GdkRGBA *color = &g_array_index (key_colors, GdkRGBA, key_colors->len - 1);
 
 				css = g_strdup_printf (
 					"background-color: rgb(%.0f,%.0f,%.0f);",
