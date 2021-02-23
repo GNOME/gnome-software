@@ -31,6 +31,18 @@ struct _GsFeatureTile
 	gboolean	 narrow_mode;
 };
 
+/* A colour represented in hue, saturation, brightness form; with an additional
+ * field for its contrast calculated with respect to some external colour.
+ *
+ * See https://en.wikipedia.org/wiki/HSL_and_HSV */
+typedef struct
+{
+	gdouble hue;  /* [0.0, 1.0] */
+	gdouble saturation;  /* [0.0, 1.0] */
+	gdouble brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
+	gdouble contrast;  /* [-1.0, ∞], may actually be `INF` */
+} GsHSBC;
+
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
 
 static void
@@ -43,6 +55,121 @@ gs_feature_tile_dispose (GObject *object)
 	g_clear_object (&tile->subtitle_provider);
 
 	G_OBJECT_CLASS (gs_feature_tile_parent_class)->dispose (object);
+}
+
+/* These are subjectively chosen. See below. */
+static const gdouble min_valid_saturation = 0.5;
+static const gdouble max_valid_saturation = 0.85;
+
+/* Subjectively chosen as the minimum absolute contrast ratio between the
+ * foreground and background colours.
+ *
+ * Note that contrast is in the range [-1.0, ∞], so @min_abs_contrast always has
+ * to be handled with positive and negative branches.
+ */
+static const gdouble min_abs_contrast = 0.78;
+
+/* Sort two candidate background colours for the feature tile, ranking them by
+ * suitability for being chosen as the background colour, with the most suitable
+ * first.
+ *
+ * There are several criteria being used here:
+ *  1. First, colours are sorted by whether their saturation is in the range
+ *     [0.5, 0.85], which is a subjectively-chosen range of ‘light, but not too
+ *     saturated’ colours.
+ *  2. Colours with saturation in that valid range are then sorted by contrast,
+ *     with higher contrast being preferred. The contrast is calculated against
+ *     an external colour by the caller.
+ *  3. Colours with saturation outside that valid range are sorted by their
+ *     absolute distance from the range, so that colours which are nearer to
+ *     having a valid saturation are preferred. This is useful in the case where
+ *     none of the key colours in this array have valid saturations; the caller
+ *     will want the one which is closest to being valid.
+ */
+static gboolean
+saturation_is_valid (const GsHSBC *hsbc,
+                     gdouble      *distance_from_valid_range)
+{
+	*distance_from_valid_range = (hsbc->saturation > max_valid_saturation) ? hsbc->saturation - max_valid_saturation : min_valid_saturation - hsbc->saturation;
+	return (hsbc->saturation >= min_valid_saturation && hsbc->saturation <= max_valid_saturation);
+}
+
+static gint
+colors_sort_cb (gconstpointer a,
+		gconstpointer b)
+{
+	const GsHSBC *hsbc_a = a;
+	const GsHSBC *hsbc_b = b;
+	gdouble hsbc_a_distance_from_range, hsbc_b_distance_from_range;
+	gboolean hsbc_a_saturation_in_range = saturation_is_valid (hsbc_a, &hsbc_a_distance_from_range);
+	gboolean hsbc_b_saturation_in_range = saturation_is_valid (hsbc_b, &hsbc_b_distance_from_range);
+
+	if (hsbc_a_saturation_in_range && !hsbc_b_saturation_in_range)
+		return -1;
+	else if (!hsbc_a_saturation_in_range && hsbc_b_saturation_in_range)
+		return 1;
+	else if (!hsbc_a_saturation_in_range && !hsbc_b_saturation_in_range)
+		return hsbc_a_distance_from_range - hsbc_b_distance_from_range;
+	else
+		return ABS (hsbc_b->contrast) - ABS (hsbc_a->contrast);
+}
+
+/* Calculate the weber contrast between @foreground and @background. This is
+ * only valid if the area covered by @foreground is significantly smaller than
+ * that covered by @background.
+ *
+ * See https://en.wikipedia.org/wiki/Contrast_(vision)#Weber_contrast
+ *
+ * The return value is in the range [-1.0, ∞], and may actually be `INF`.
+ */
+static gdouble
+weber_contrast (const GsHSBC *foreground,
+                const GsHSBC *background)
+{
+	/* Note that this may divide by zero, and that’s fine. However, in
+	 * IEEE 754, dividing ±0.0 by ±0.0 results in NAN, so avoid that. */
+	if (foreground->brightness == background->brightness)
+		return 0.0;
+
+	return (foreground->brightness - background->brightness) / background->brightness;
+}
+
+/* Inverse of the Weber contrast function which finds a brightness (luminance)
+ * level for the background which gives an absolute contrast of at least
+ * @desired_abs_contrast against @foreground. The same validity restrictions
+ * apply as for weber_contrast().
+ *
+ * The return value is in the range [0.0, 1.0].
+ */
+static gdouble
+weber_contrast_find_brightness (const GsHSBC *foreground,
+                                gdouble       desired_abs_contrast)
+{
+	g_assert (desired_abs_contrast >= 0.0);
+
+	/* There are two solutions to solving
+	 *    |(I - I_B) / I_B| ≥ C
+	 * in the general case, although given that I (`foreground->brightness`)
+	 * and I_B (the return value) are only valid in the range [0.0, 1.0],
+	 * there are many cases where only one solution is valid.
+	 *
+	 * Solutions are:
+	 *    I_B ≤ I / (1 + C)
+	 *    I_B ≥ I / (1 - C)
+	 *
+	 * When given a choice, prefer the solution which gives a higher
+	 * brightness.
+	 *
+	 * In the case I == 0.0, and value of I_B is valid (as per the second
+	 * solution), so arbitrarily choose 0.5 as a solution.
+	 */
+	if (foreground->brightness == 0.0)
+		return 0.5;
+	else if (foreground->brightness <= 1.0 - desired_abs_contrast &&
+		 desired_abs_contrast < 1.0)
+		return foreground->brightness / (1.0 - desired_abs_contrast);
+	else
+		return foreground->brightness / (1.0 + desired_abs_contrast);
 }
 
 static void
@@ -113,24 +240,112 @@ gs_feature_tile_refresh (GsAppTile *self)
 		GArray *key_colors = gs_app_get_key_colors (app);
 		g_autofree gchar *css = NULL;
 
+		/* If there is no override CSS for the app, default to a solid
+		 * background colour based on the app’s key colors.
+		 *
+		 * Choose an arbitrary key color from the app’s key colors, and
+		 * ensure that it’s:
+		 *  - a light, not too saturated version of the dominant color
+		 *    of the icon
+		 *  - always light enough that grey text is visible on it
+		 *
+		 * Cache the result until the app’s key colours change, as the
+		 * amount of calculation going on here is not entirely trivial.
+		 */
 		if (key_colors != tile->key_colors_cache) {
-			/* If there is no override CSS for the app, default to a solid
-			 * background colour based on the app’s key colors.
-			 *
-			 * Choose an arbitrary key color from the app’s key colors, and
-			 * hope that it’s:
-			 *  - a light, not too saturated version of the dominant color
-			 *    of the icon
-			 *  - always light enough that grey text is visible on it
-			 */
-			if (key_colors != NULL && key_colors->len > 0) {
-				const GdkRGBA *color = &g_array_index (key_colors, GdkRGBA, key_colors->len - 1);
+			g_autoptr(GArray) colors = NULL;
+			GdkRGBA fg_rgba;
+			gboolean fg_rgba_valid;
+			GsHSBC fg_hsbc;
 
-				css = g_strdup_printf (
-					"background-color: rgb(%.0f,%.0f,%.0f);",
-					color->red * 255.f,
-					color->green * 255.f,
-					color->blue * 255.f);
+			/* Look up the foreground colour for the feature tile,
+			 * which is the colour of the text. This should always
+			 * be provided as a named colour by the theme.
+			 *
+			 * Knowing the foreground colour allows calculation of
+			 * the contrast between candidate background colours and
+			 * the foreground which will be rendered on top of them.
+			 *
+			 * We want to choose a background colour with at least
+			 * @min_abs_contrast contrast with the foreground, so
+			 * that the text is legible.
+			 */
+			fg_rgba_valid = gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba);
+			g_assert (fg_rgba_valid);
+
+			gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
+					&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
+
+			g_debug ("FG color: RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
+				 fg_rgba.red, fg_rgba.green, fg_rgba.blue,
+				 fg_hsbc.hue, fg_hsbc.saturation, fg_hsbc.brightness);
+
+			/* Convert all the RGBA key colours to HSB, and
+			 * calculate their contrast against the foreground
+			 * colour.
+			 *
+			 * The contrast is calculated as the Weber contrast,
+			 * which is valid for small amounts of foreground colour
+			 * (i.e. text) against larger background areas. Contrast
+			 * is strictly calculated using luminance, but it’s OK
+			 * to subjectively calculate it using brightness, as
+			 * brightness is the subjective impression of luminance.
+			 */
+			if (key_colors != NULL)
+				colors = g_array_sized_new (FALSE, FALSE, sizeof (GsHSBC), key_colors->len);
+
+			g_debug ("Candidate background colors for %s:", gs_app_get_id (app));
+			for (guint i = 0; key_colors != NULL && i < key_colors->len; i++) {
+				const GdkRGBA *rgba = &g_array_index (key_colors, GdkRGBA, i);
+				GsHSBC hsbc;
+
+				gtk_rgb_to_hsv (rgba->red, rgba->green, rgba->blue,
+						&hsbc.hue, &hsbc.saturation, &hsbc.brightness);
+				hsbc.contrast = weber_contrast (&fg_hsbc, &hsbc);
+				g_array_append_val (colors, hsbc);
+
+				g_debug (" • RGB: (%f, %f, %f), HSB: (%f, %f, %f), contrast: %f",
+					 rgba->red, rgba->green, rgba->blue,
+					 hsbc.hue, hsbc.saturation, hsbc.brightness,
+					 hsbc.contrast);
+			}
+
+			/* Sort the candidate background colours to find the
+			 * most appropriate one. */
+			g_array_sort (colors, colors_sort_cb);
+
+			/* Take the top colour. If it’s not good enough, modify
+			 * its brightness to improve the contrast, and clamp its
+			 * saturation to the valid range. */
+			if (colors != NULL && colors->len > 0) {
+				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+				GdkRGBA chosen_rgba;
+				gdouble modified_saturation, modified_brightness;
+
+				modified_saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
+
+				if (chosen_hsbc->contrast < -min_abs_contrast ||
+				    chosen_hsbc->contrast > min_abs_contrast)
+					modified_brightness = chosen_hsbc->brightness;
+				else
+					modified_brightness = weber_contrast_find_brightness (&fg_hsbc, min_abs_contrast);
+
+				gtk_hsv_to_rgb (chosen_hsbc->hue,
+						modified_saturation,
+						modified_brightness,
+						&chosen_rgba.red, &chosen_rgba.green, &chosen_rgba.blue);
+
+				g_debug ("Chosen background colour for %s (saturation %s, brightness %s): RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
+					 gs_app_get_id (app),
+					 (modified_saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
+					 (modified_brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
+					 chosen_rgba.red, chosen_rgba.green, chosen_rgba.blue,
+					 chosen_hsbc->hue, modified_saturation, modified_brightness);
+
+				css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f);",
+						       chosen_rgba.red * 255.f,
+						       chosen_rgba.green * 255.f,
+						       chosen_rgba.blue * 255.f);
 			}
 
 			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile", css);
