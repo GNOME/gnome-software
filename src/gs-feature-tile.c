@@ -389,6 +389,19 @@ gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_
 }
 
 static void
+gs_feature_tile_style_updated (GtkWidget *widget)
+{
+	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
+
+	/* Clear the key colours cache, as the tile background colour will
+	 * potentially need recalculating if the widget’s foreground colour has
+	 * changed. */
+	tile->key_colors_cache = NULL;
+
+	gs_feature_tile_refresh (GS_APP_TILE (tile));
+}
+
+static void
 gs_feature_tile_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
 {
@@ -424,6 +437,7 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	object_class->dispose = gs_feature_tile_dispose;
 
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
+	widget_class->style_updated = gs_feature_tile_style_updated;
 	widget_class->size_allocate = gs_feature_tile_size_allocate;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;
