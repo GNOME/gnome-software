@@ -287,7 +287,11 @@ gs_calculate_key_colors (GdkPixbuf *pixbuf)
 	g_autoptr(GdkPixbuf) pb_small = NULL;
 	g_autoptr(GArray) colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
 
-	pb_small = gdk_pixbuf_scale_simple (pixbuf, 32, 32, GDK_INTERP_BILINEAR);
+	/* people almost always use BILINEAR scaling with pixbufs, but we can
+	 * use NEAREST here since we only care about the rough colour data, not
+	 * whether the edges in the image are smooth and visually appealing;
+	 * NEAREST is twice as fast as BILINEAR */
+	pb_small = gdk_pixbuf_scale_simple (pixbuf, 32, 32, GDK_INTERP_NEAREST);
 
 	/* require an alpha channel for storing temporary values; most images
 	 * have one already, about 2% don’t */
