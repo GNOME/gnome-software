@@ -1446,6 +1446,20 @@ list_sort_func (GtkListBoxRow *a,
 }
 
 static void
+addons_list_row_activated_cb (GtkListBox *list_box,
+			      GtkListBoxRow *row,
+			      GsDetailsPage *self)
+{
+	gboolean selected;
+
+	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
+
+	/* This would be racy if multithreaded but we're in the main thread */
+	selected = gs_app_addon_row_get_selected (GS_APP_ADDON_ROW (row));
+	gs_app_addon_row_set_selected (GS_APP_ADDON_ROW (row), !selected);
+}
+
+static void
 version_history_list_row_activated_cb (GtkListBox *list_box,
 				       GtkListBoxRow *row,
 				       GsDetailsPage *self)
@@ -2945,6 +2959,9 @@ gs_details_page_init (GsDetailsPage *self)
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_addons),
 				    list_sort_func,
 				    self, NULL);
+
+	g_signal_connect (self->list_box_addons, "row-activated",
+			  G_CALLBACK (addons_list_row_activated_cb), self);
 
 	g_signal_connect (self->list_box_version_history, "row-activated",
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
