@@ -49,6 +49,12 @@ if get_option('polkit')
   librarydeps += polkit
 endif
 
+gs_build_ident_h = vcs_tag(
+     fallback: meson.project_version(),
+        input: 'gs-build-ident.h.in',
+       output: 'gs-build-ident.h',
+)
+
 libgnomesoftware_enums = gnome.mkenums_simple('gs-enums',
   sources : libgnomesoftware_public_headers,
   install_header : true,
@@ -79,7 +85,7 @@ libgnomesoftware = static_library(
     'gs-plugin-loader-sync.c',
     'gs-test.c',
     'gs-utils.c',
-  ] + libgnomesoftware_enums,
+  ] + libgnomesoftware_enums + [gs_build_ident_h],
   include_directories : libgnomesoftware_include_directories,
   dependencies : librarydeps,
   c_args : cargs,
