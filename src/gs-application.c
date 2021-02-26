@@ -30,6 +30,7 @@
 #include "gs-dbus-helper.h"
 #endif
 
+#include "gs-build-ident.h"
 #include "gs-debug.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
@@ -71,6 +72,15 @@ enum {
 };
 
 static guint signals[LAST_SIGNAL];
+
+static const char *
+get_version (void)
+{
+	if (g_strcmp0 (BUILD_TYPE, "release") == 0)
+		return VERSION;
+	else
+		return GS_BUILD_IDENTIFIER;
+}
 
 typedef struct {
 	GsApplication *app;
@@ -342,7 +352,7 @@ about_activated (GSimpleAction *action,
 	gtk_about_dialog_set_license_type (dialog, GTK_LICENSE_GPL_2_0);
 	gtk_about_dialog_set_logo_icon_name (dialog, "org.gnome.Software");
 	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
-	gtk_about_dialog_set_version (dialog, VERSION);
+	gtk_about_dialog_set_version (dialog, get_version());
 	gtk_about_dialog_set_program_name (dialog, g_get_application_name ());
 
 	/* TRANSLATORS: this is the title of the about window */
@@ -1129,7 +1139,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
 
 	if (g_variant_dict_contains (options, "version")) {
-		g_print ("gnome-software " VERSION "\n");
+		g_print ("gnome-software %s\n", get_version());
 		return 0;
 	}
 
