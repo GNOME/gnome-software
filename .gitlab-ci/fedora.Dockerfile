@@ -29,6 +29,7 @@ RUN dnf -y install \
     libappstream-glib-devel \
     lmdb-devel \
     appstream-devel \
+    libcurl-devel \
     libdnf-devel \
     libgudev-devel \
     liboauth-devel \
