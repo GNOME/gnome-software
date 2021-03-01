@@ -61,7 +61,7 @@ typedef struct
 	gchar			*name;
 	gchar			*renamed_from;
 	GsAppQuality		 name_quality;
-	GPtrArray		*icons;  /* (nullable) (owned) (element-type AsIcon) */
+	GPtrArray		*icons;  /* (nullable) (owned) (element-type AsIcon), sorted by pixel size, smallest first */
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
 	gchar			*project_group;
@@ -1917,6 +1917,25 @@ gs_app_get_icons (GsApp *app)
 	return priv->icons;
 }
 
+static gint
+icon_sort_width_cb (gconstpointer a,
+                    gconstpointer b)
+{
+	AsIcon *icon_a = *((AsIcon **) a);
+	AsIcon *icon_b = *((AsIcon **) b);
+	guint width_a = as_icon_get_width (icon_a);
+	guint width_b = as_icon_get_width (icon_b);
+
+	if (width_a == 0 && width_b == 0)
+		return 0;
+	else if (width_a == 0)
+		return 1;
+	else if (width_b == 0)
+		return -1;
+	else
+		return width_a - width_b;
+}
+
 /**
  * gs_app_add_icon:
  * @app: a #GsApp
@@ -1944,6 +1963,9 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 		priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
+
+	/* Ensure the array is sorted by increasing width. */
+	g_ptr_array_sort (priv->icons, icon_sort_width_cb);
 }
 
 /**
