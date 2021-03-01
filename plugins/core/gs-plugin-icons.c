@@ -318,7 +318,7 @@ refine_app (GsPlugin             *plugin,
 
 	/* process all icons */
 	icons = gs_app_get_icons (app);
-	for (i = 0; i < icons->len; i++) {
+	for (i = 0; icons != NULL && i < icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (icons, i);
 		g_autoptr(GdkPixbuf) pixbuf = NULL;
 		g_autoptr(GError) error_local = NULL;

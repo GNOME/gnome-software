@@ -3048,7 +3048,7 @@ _gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
 {
 	GPtrArray *icons = gs_app_get_icons (app);
 	guint i;
-	for (i = 0; i < icons->len; i++) {
+	for (i = 0; icons != NULL && i < icons->len; i++) {
 		AsIcon *ic = g_ptr_array_index (icons, i);
 		if (as_icon_get_kind (ic) == kind)
 			return ic;

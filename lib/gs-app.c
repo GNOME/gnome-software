@@ -61,7 +61,7 @@ typedef struct
 	gchar			*name;
 	gchar			*renamed_from;
 	GsAppQuality		 name_quality;
-	GPtrArray		*icons;
+	GPtrArray		*icons;  /* (nullable) (owned) (element-type AsIcon) */
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
 	gchar			*project_group;
@@ -534,7 +534,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	}
 	if (priv->action_screenshot != NULL)
 		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
-	for (i = 0; i < priv->icons->len; i++) {
+	for (i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (priv->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
 				as_icon_kind_to_string (as_icon_get_kind (icon)));
@@ -1889,7 +1889,11 @@ gs_app_get_action_screenshot (GsApp *app)
  *
  * Gets the icons for the application.
  *
- * Returns: (transfer none) (element-type AsIcon): an array of icons
+ * This will never return an empty array; it will always return either %NULL or
+ * a non-empty array.
+ *
+ * Returns: (transfer none) (element-type AsIcon) (nullable): an array of icons,
+ *     or %NULL if there are no icons
  *
  * Since: 3.22
  **/
@@ -1898,6 +1902,10 @@ gs_app_get_icons (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	if (priv->icons != NULL && priv->icons->len == 0)
+		return NULL;
+
 	return priv->icons;
 }
 
@@ -1918,10 +1926,15 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
+
 	if (icon == NULL) {
 		g_ptr_array_set_size (priv->icons, 0);
 		return;
 	}
+
+	if (priv->icons == NULL)
+		priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
 }
 
@@ -1945,7 +1958,7 @@ gs_app_get_use_drop_shadow (GsApp *app)
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
 	/* guess */
-	if (priv->icons->len == 0)
+	if (priv->icons == NULL || priv->icons->len == 0)
 		return TRUE;
 
 	/* stock, and symbolic */
@@ -4951,7 +4964,6 @@ gs_app_init (GsApp *app)
 	priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->provided = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,
 	                                        g_free,

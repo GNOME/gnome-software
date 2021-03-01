@@ -950,7 +950,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
-	    gs_app_get_icons(app)->len == 0)
+	    gs_app_get_icons (app) == NULL)
 		gs_appstream_refine_icon (plugin, app, component);
 
 	/* set categories */

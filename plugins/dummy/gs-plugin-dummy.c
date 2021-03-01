@@ -649,7 +649,7 @@ refine_app (GsPlugin *plugin,
 			gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "tmp");
 		if (gs_app_get_summary (app) == NULL)
 			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "tmp");
-		if (gs_app_get_icons(app)->len == 0) {
+		if (gs_app_get_icons (app) == NULL) {
 			g_autoptr(AsIcon) ic = NULL;
 			ic = as_icon_new ();
 			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);

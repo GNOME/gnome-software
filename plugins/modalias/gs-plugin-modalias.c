@@ -110,7 +110,7 @@ refine_app (GsPlugin             *plugin,
 	guint i;
 
 	/* not required */
-	if (gs_app_get_icons(app)->len > 0)
+	if (gs_app_get_icons (app) != NULL)
 		return TRUE;
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DRIVER)
 		return TRUE;
