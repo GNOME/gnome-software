@@ -444,7 +444,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		/* get the new icon from the package */
 		gs_app_set_local_file (app, NULL);
-		gs_app_add_icon (app, NULL);
+		gs_app_remove_all_icons (app);
 		break;
 	default:
 		g_set_error (error,

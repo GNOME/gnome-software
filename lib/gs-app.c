@@ -1939,7 +1939,7 @@ icon_sort_width_cb (gconstpointer a,
 /**
  * gs_app_add_icon:
  * @app: a #GsApp
- * @icon: a #AsIcon, or %NULL to remove all icons
+ * @icon: a #AsIcon
  *
  * Adds an icon to use for the application.
  * If the first icon added cannot be loaded then the next one is tried.
@@ -1952,12 +1952,8 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (AS_IS_ICON (icon));
 	locker = g_mutex_locker_new (&priv->mutex);
-
-	if (icon == NULL) {
-		g_ptr_array_set_size (priv->icons, 0);
-		return;
-	}
 
 	if (priv->icons == NULL)
 		priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -1966,6 +1962,26 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 
 	/* Ensure the array is sorted by increasing width. */
 	g_ptr_array_sort (priv->icons, icon_sort_width_cb);
+}
+
+/**
+ * gs_app_remove_all_icons:
+ * @app: a #GsApp
+ *
+ * Remove all icons from @app.
+ *
+ * Since: 40
+ */
+void
+gs_app_remove_all_icons (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->icons != NULL)
+		g_ptr_array_set_size (priv->icons, 0);
 }
 
 /**
