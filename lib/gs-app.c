@@ -536,6 +536,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
 	for (i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (priv->icons, i);
+		g_autofree gchar *dimensions_str = NULL;
+
 		gs_app_kv_lpad (str, "icon-kind",
 				as_icon_kind_to_string (as_icon_get_kind (icon)));
 		if (as_icon_get_name (icon) != NULL)
@@ -547,6 +549,12 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		if (as_icon_get_url (icon) != NULL)
 			gs_app_kv_lpad (str, "icon-url",
 					as_icon_get_url (icon));
+
+		if (as_icon_get_width (icon) != 0 && as_icon_get_height (icon) != 0)
+			dimensions_str = g_strdup_printf ("%ux%u",
+							  as_icon_get_width (icon),
+							  as_icon_get_height (icon));
+		gs_app_kv_lpad (str, "width", (dimensions_str != NULL) ? dimensions_str : "unknown");
 	}
 	if (priv->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
