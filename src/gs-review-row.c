@@ -55,7 +55,7 @@ gs_review_row_refresh (GsReviewRow *row)
 	reviewer = as_review_get_reviewer_name (priv->review);
 	if (reviewer == NULL) {
 		/* TRANSLATORS: this is when a user doesn't specify a name */
-		reviewer = _("Unknown");
+		reviewer = C_("Reviewer name", "Unknown");
 	}
 	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer);
 	date = as_review_get_date (priv->review);

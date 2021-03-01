@@ -156,7 +156,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* Fallback */
 	if (priv->distro == NULL)
-		priv->distro = g_strdup ("Unknown");
+		priv->distro = g_strdup (C_("Distribution name", "Unknown"));
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));

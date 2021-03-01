@@ -1336,15 +1336,15 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 		if (permissions != GS_APP_PERMISSIONS_UNKNOWN) {
 			if (permissions == GS_APP_PERMISSIONS_NONE)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("None"));
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "None"));
 			else if ((permissions & ~LIMITED_PERMISSIONS) == 0)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Low"));
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Low"));
 			else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Medium"));
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Medium"));
 			else
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("High"));
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "High"));
 		} else {
-			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Unknown"));
+			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Unknown"));
 		}
 
 		gtk_widget_set_visible (self->label_details_permissions_title, TRUE);
