@@ -2667,7 +2667,7 @@ gs_details_page_license_nonfree_cb (GtkWidget *widget, GsDetailsPage *self)
 	/* license specified as a link */
 	tokens = as_spdx_license_tokenize (gs_app_get_license (self->app));
 	for (guint i = 0; tokens[i] != NULL; i++) {
-		if (g_str_has_prefix (tokens[i], "@LicenseRef-proprietary=")) {
+		if (g_ascii_strncasecmp (tokens[i], "@LicenseRef-proprietary=", strlen ("@LicenseRef-proprietary=")) == 0) {
 			uri = g_strdup (tokens[i] + 24);
 			break;
 		}
