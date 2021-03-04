@@ -901,7 +901,8 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename (gs_flatpak_get_id (self),
 					      "components.xmlb",
-					      GS_UTILS_CACHE_FLAG_WRITEABLE,
+					      GS_UTILS_CACHE_FLAG_WRITEABLE |
+					      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					      error);
 	if (blobfn == NULL)
 		return FALSE;

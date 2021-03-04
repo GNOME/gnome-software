@@ -1272,7 +1272,8 @@ gs_plugin_flatpak_create_temporary (GsPlugin *plugin, GCancellable *cancellable,
 	installation_path = gs_utils_get_cache_filename ("flatpak",
 							 "installation-tmp",
 							 GS_UTILS_CACHE_FLAG_WRITEABLE |
-							 GS_UTILS_CACHE_FLAG_ENSURE_EMPTY,
+							 GS_UTILS_CACHE_FLAG_ENSURE_EMPTY |
+							 GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 							 error);
 	if (installation_path == NULL)
 		return NULL;

@@ -114,7 +114,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* get the file to cache */
 	priv->cachefn = gs_utils_get_cache_filename ("fedora-pkgdb-collections",
 						     "fedora.json",
-						     GS_UTILS_CACHE_FLAG_WRITEABLE,
+						     GS_UTILS_CACHE_FLAG_WRITEABLE |
+						     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						     error);
 	if (priv->cachefn == NULL)
 		return FALSE;

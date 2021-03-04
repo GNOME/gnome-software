@@ -141,6 +141,9 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
  * -- gnome-software will not ever clean the cache for the plugin.
  * For this reason it is a good idea to use the plugin name as @kind.
  *
+ * This function can only fail if %GS_UTILS_CACHE_FLAG_ENSURE_EMPTY or
+ * %GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY are passed in @flags.
+ *
  * Returns: The full path and filename, which may or may not exist, or %NULL
  **/
 gchar *
@@ -197,7 +200,8 @@ gs_utils_get_cache_filename (const gchar *kind,
 		if (!gs_utils_rmtree (cachedir, error))
 			return NULL;
 	}
-	if (!g_file_query_exists (cachedir_file, NULL) &&
+	if ((flags & GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY) &&
+	    !g_file_query_exists (cachedir_file, NULL) &&
 	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
 		return NULL;
 	g_ptr_array_add (candidates, g_build_filename (cachedir, basename, NULL));

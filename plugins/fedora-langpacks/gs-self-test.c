@@ -32,7 +32,8 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 
 	/* start with a clean slate */
 	cachefn = gs_utils_get_cache_filename ("langpacks", "langpacks-ja",
-					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE |
+					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					       &error);
 	g_assert_no_error (error);
 	g_unlink (cachefn);

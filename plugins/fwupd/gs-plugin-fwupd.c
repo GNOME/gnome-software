@@ -442,7 +442,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 	basename = g_path_get_basename (update_uri);
 	filename_cache = gs_utils_get_cache_filename ("fwupd",
 						      basename,
-						      GS_UTILS_CACHE_FLAG_NONE,
+						      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						      error);
 	if (filename_cache == NULL)
 		return NULL;
@@ -697,7 +697,8 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	cache_id = g_strdup_printf ("fwupd/remotes.d/%s", fwupd_remote_get_id (remote));
 	basename_sig = g_path_get_basename (fwupd_remote_get_filename_cache_sig (remote));
 	filename_sig = gs_utils_get_cache_filename (cache_id, basename_sig,
-						    GS_UTILS_CACHE_FLAG_WRITEABLE,
+						    GS_UTILS_CACHE_FLAG_WRITEABLE |
+						    GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						    error);
 
 	/* download the signature first, it's smaller */
@@ -738,7 +739,8 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	/* download the payload and save to file */
 	basename = g_path_get_basename (fwupd_remote_get_filename_cache (remote));
 	filename = gs_utils_get_cache_filename (cache_id, basename,
-						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						GS_UTILS_CACHE_FLAG_WRITEABLE |
+						GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						error);
 	if (filename == NULL)
 		return FALSE;

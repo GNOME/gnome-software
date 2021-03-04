@@ -277,7 +277,8 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 	size_dir = g_strdup_printf ("%ux%u", width, height);
 	cache_kind = g_build_filename ("screenshots", size_dir, NULL);
 	filename = gs_utils_get_cache_filename (cache_kind, basename,
-						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						GS_UTILS_CACHE_FLAG_WRITEABLE |
+						GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						&error_local);
 
         if (filename == NULL) {
@@ -530,12 +531,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 						       basename,
 						       GS_UTILS_CACHE_FLAG_NONE,
 						       NULL);
-	if (ssimg->filename == NULL) {
-		/* TRANSLATORS: this is when we try create the cache directory
-		 * but we were out of space or permission was denied */
-		gs_screenshot_image_set_error (ssimg, _("Could not create cache"));
-		return;
-	}
+	g_assert (ssimg->filename != NULL);
 
 	/* does local file already exist and has recently been downloaded */
 	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
@@ -573,8 +569,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 							     basename_thumb,
 							     GS_UTILS_CACHE_FLAG_NONE,
 							     NULL);
-		if (cachefn_thumb == NULL)
-			return;
+		g_assert (cachefn_thumb != NULL);
 		if (g_file_test (cachefn_thumb, G_FILE_TEST_EXISTS))
 			gs_screenshot_image_show_blurred (ssimg, cachefn_thumb);
 	}
@@ -584,8 +579,15 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_free (ssimg->filename);
 	ssimg->filename = gs_utils_get_cache_filename (cache_kind,
 						       basename,
-						       GS_UTILS_CACHE_FLAG_WRITEABLE,
+						       GS_UTILS_CACHE_FLAG_WRITEABLE |
+						       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						       NULL);
+	if (ssimg->filename == NULL) {
+		/* TRANSLATORS: this is when we try create the cache directory
+		 * but we were out of space or permission was denied */
+		gs_screenshot_image_set_error (ssimg, _("Could not create cache"));
+		return;
+	}
 
 	/* download file */
 	g_debug ("downloading %s to %s", url, ssimg->filename);

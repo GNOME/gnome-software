@@ -156,7 +156,8 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 	 * the system */
 	tmp_file_path = gs_utils_get_cache_filename ("external-appstream",
 						     file_name,
-						     GS_UTILS_CACHE_FLAG_WRITEABLE,
+						     GS_UTILS_CACHE_FLAG_WRITEABLE |
+						     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						     error);
 	if (tmp_file_path == NULL)
 		return FALSE;

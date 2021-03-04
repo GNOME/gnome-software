@@ -111,7 +111,8 @@ gs_utils_cache_func (void)
 
 	fn1 = gs_utils_get_cache_filename ("test",
 					   "http://www.foo.bar/baz",
-					   GS_UTILS_CACHE_FLAG_WRITEABLE,
+					   GS_UTILS_CACHE_FLAG_WRITEABLE |
+					   GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					   &error);
 	g_assert_no_error (error);
 	g_assert_cmpstr (fn1, !=, NULL);
@@ -121,7 +122,8 @@ gs_utils_cache_func (void)
 	fn2 = gs_utils_get_cache_filename ("test",
 					   "http://www.foo.bar/baz",
 					   GS_UTILS_CACHE_FLAG_WRITEABLE |
-					   GS_UTILS_CACHE_FLAG_USE_HASH,
+					   GS_UTILS_CACHE_FLAG_USE_HASH |
+					   GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					   &error);
 	g_assert_no_error (error);
 	g_assert_cmpstr (fn2, !=, NULL);
