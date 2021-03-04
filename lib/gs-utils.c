@@ -185,21 +185,6 @@ gs_utils_get_cache_filename (const gchar *kind,
 		}
 	}
 
-	/* not writable, so try the system cache first */
-	if (!(flags & GS_UTILS_CACHE_FLAG_WRITEABLE)) {
-		g_autofree gchar *cachefn = NULL;
-		cachefn = g_build_filename (DATADIR,
-					    "gnome-software",
-					    "cache",
-					    kind,
-					    basename,
-					    NULL);
-		if (g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
-			g_ptr_array_add (candidates,
-					 g_steal_pointer (&cachefn));
-		}
-	}
-
 	/* create the cachedir in a per-release location, creating
 	 * if it does not already exist */
 	cachedir = g_build_filename (g_get_user_cache_dir (),
