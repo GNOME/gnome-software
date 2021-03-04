@@ -171,7 +171,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 	}
 
 	/* not writable, so try the system cache first */
-	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
+	if (!(flags & GS_UTILS_CACHE_FLAG_WRITEABLE)) {
 		g_autofree gchar *cachefn = NULL;
 		cachefn = g_build_filename (LOCALSTATEDIR,
 					    "cache",
@@ -186,7 +186,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 	}
 
 	/* not writable, so try the system cache first */
-	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
+	if (!(flags & GS_UTILS_CACHE_FLAG_WRITEABLE)) {
 		g_autofree gchar *cachefn = NULL;
 		cachefn = g_build_filename (DATADIR,
 					    "gnome-software",
