@@ -354,6 +354,22 @@ out:
 	gs_overview_page_decrement_action_cnt (self);
 }
 
+static gboolean
+filter_hi_res_icon (GsApp *app, gpointer user_data)
+{
+	g_autoptr(GIcon) icon = NULL;
+	GtkWidget *overview_page = GTK_WIDGET (user_data);
+
+	/* This is the minimum icon size needed by `GsFeatureTile`. */
+	icon = gs_app_get_icon_for_size (app,
+					 128,
+					 gtk_widget_get_scale_factor (overview_page),
+					 NULL);
+
+	/* Returning TRUE means to keep the app in the list */
+	return (icon != NULL);
+}
+
 static void
 gs_overview_page_get_featured_cb (GObject *source_object,
                                   GAsyncResult *res,
@@ -382,6 +398,9 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 		gs_app_list_randomize (list);
 	}
+
+	/* Filter out apps which don’t have a suitable hi-res icon. */
+	gs_app_list_filter (list, filter_hi_res_icon, self);
 
 	gtk_widget_set_visible (priv->featured_carousel, gs_app_list_length (list) > 0);
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (priv->featured_carousel), list);
