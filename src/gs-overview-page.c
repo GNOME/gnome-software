@@ -386,7 +386,7 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	gtk_widget_set_visible (priv->featured_carousel, gs_app_list_length (list) > 0);
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (priv->featured_carousel), list);
 
-	priv->empty = FALSE;
+	priv->empty = priv->empty && (gs_app_list_length (list) == 0);
 
 out:
 	gs_overview_page_decrement_action_cnt (self);
