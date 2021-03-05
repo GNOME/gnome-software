@@ -3077,14 +3077,12 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GCancellable *cancellable,
 			       GError **error)
 {
-	gint size;
 	g_autoptr(GBytes) appstream_gz = NULL;
-	g_autoptr(GBytes) icon_data = NULL;
+	g_autoptr(GBytes) icon_data64 = NULL, icon_data128 = NULL;
 	g_autoptr(GBytes) metadata = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
 	g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
-	g_autoptr(GIcon) icon = NULL;
 	const char *origin = NULL;
 
 	/* load bundle */
@@ -3140,17 +3138,29 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, "");
 	}
 
-	/* load icon */
-	size = 64 * (gint) gs_plugin_get_scale (self->plugin);
-	icon_data = flatpak_bundle_ref_get_icon (xref_bundle, size);
-	if (icon_data == NULL)
-		icon_data = flatpak_bundle_ref_get_icon (xref_bundle, 64);
+	/* Load icons. Currently flatpak only supports exactly 64px or 128px
+	 * icons in bundles. */
+	icon_data64 = flatpak_bundle_ref_get_icon (xref_bundle, 64);
+	if (icon_data64 != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (icon_data64);
+		gs_icon_set_width (icon, 64);
+		gs_icon_set_height (icon, 64);
+		gs_app_add_icon (app, icon);
+	}
 
-	if (icon_data != NULL)
-		icon = g_bytes_icon_new (icon_data);
-	else
-		icon = g_themed_icon_new ("application-x-executable");
-	gs_app_add_icon (app, icon);
+	icon_data128 = flatpak_bundle_ref_get_icon (xref_bundle, 128);
+	if (icon_data128 != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (icon_data128);
+		gs_icon_set_width (icon, 128);
+		gs_icon_set_height (icon, 128);
+		gs_app_add_icon (app, icon);
+	}
+
+	/* Fallback */
+	if (icon_data64 == NULL && icon_data128 == NULL) {
+		g_autoptr(GIcon) icon = g_themed_icon_new ("application-x-executable");
+		gs_app_add_icon (app, icon);
+	}
 
 	/* not quite true: this just means we can update this specific app */
 	if (flatpak_bundle_ref_get_origin (xref_bundle))
