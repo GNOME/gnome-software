@@ -3124,7 +3124,9 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-	gs_utils_set_online_updates_timestamp (plugin_loader->settings);
+	if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_UPDATE)
+		gs_utils_set_online_updates_timestamp (plugin_loader->settings);
+
 	return TRUE;
 }
 
