@@ -261,6 +261,8 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	GPtrArray *screenshots, *images;
 	AsScreenshot *screenshot;
 	AsImage *image;
+	g_autoptr(GIcon) icon = NULL;
+	g_autoptr(GInputStream) icon_stream = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -300,8 +302,8 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (as_image_get_url (image), ==, "http://example.com/screenshot2.jpg");
 	g_assert_cmpint (as_image_get_width (image), ==, 1024);
 	g_assert_cmpint (as_image_get_height (image), ==, 768);
-	pixbuf = gs_app_load_pixbuf (app, 64);
-	g_assert_null (pixbuf);
+	icon = gs_app_get_icon_for_size (app, 64, 1, NULL);
+	g_assert_null (icon);
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 0);
 	g_assert_cmpint (gs_app_get_size_download (app), ==, 500);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);
@@ -319,7 +321,14 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 1000);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
 
-	pixbuf = gs_app_load_pixbuf (app, 128);
+	icon = gs_app_get_icon_for_size (app, 128, 1, NULL);
+	g_assert_nonnull (icon);
+	g_assert_true (G_IS_LOADABLE_ICON (icon));
+	icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), 128, NULL, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (icon_stream);
+	pixbuf = gdk_pixbuf_new_from_stream (icon_stream, NULL, &error);
+	g_assert_no_error (error);
 	g_assert_nonnull (pixbuf);
 	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 128);
 	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 128);

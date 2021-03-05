@@ -353,9 +353,6 @@ void		 gs_app_set_update_urgency	(GsApp		*app,
 const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
-gboolean	 gs_app_has_pixbufs		(GsApp		*app);
-GdkPixbuf	*gs_app_load_pixbuf		(GsApp		*app,
-						 guint		 size);
 GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
 						 guint		 size,
 						 guint		 scale,

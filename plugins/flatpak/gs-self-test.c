@@ -115,7 +115,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -151,8 +151,8 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "Longer multiline comment that does into detail.");
 	g_assert_true (gs_app_get_local_file (app) != NULL);
-	pixbuf = gs_app_load_pixbuf (app, 64);
-	g_assert_nonnull (pixbuf);
+	icon = gs_app_get_icon_for_size (app, 64, 1, NULL);
+	g_assert_nonnull (icon);
 
 	/* now install the remote */
 	g_object_unref (plugin_job);

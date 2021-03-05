@@ -181,7 +181,8 @@ gs_feature_tile_refresh (GsAppTile *self)
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
 	GtkStyleContext *context;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
+	guint icon_size;
 
 	if (app == NULL)
 		return;
@@ -197,12 +198,24 @@ gs_feature_tile_refresh (GsAppTile *self)
 
 	/* Update the icon. Try a 160px version if not in narrow mode, and it’s
 	 * available; otherwise use 128px. */
-	if (!tile->narrow_mode)
-		pixbuf = gs_app_load_pixbuf (app, 160 * gtk_widget_get_scale_factor (tile->image));
-	if (pixbuf == NULL)
-		pixbuf = gs_app_load_pixbuf (app, 128 * gtk_widget_get_scale_factor (tile->image));
-	if (pixbuf != NULL) {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
+	if (!tile->narrow_mode) {
+		icon = gs_app_get_icon_for_size (app,
+						 160,
+						 gtk_widget_get_scale_factor (tile->image),
+						 NULL);
+		icon_size = 160;
+	}
+	if (icon == NULL) {
+		icon = gs_app_get_icon_for_size (app,
+						 128,
+						 gtk_widget_get_scale_factor (tile->image),
+						 NULL);
+		icon_size = 128;
+	}
+
+	if (icon != NULL) {
+		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_INVALID);
+		gtk_image_set_pixel_size (GTK_IMAGE (tile->image), icon_size);
 		gtk_widget_show (tile->image);
 	} else {
 		gtk_widget_hide (tile->image);

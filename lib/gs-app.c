@@ -1778,65 +1778,6 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 }
 
 /**
- * gs_app_has_pixbufs:
- * @app: a #GsApp
- *
- * Gets whether there are any pixbufs set for this app.
- *
- * Returns: %TRUE if one or more pixbufs are set for the app, %FALSE otherwise
- * Since: 40
- */
-gboolean
-gs_app_has_pixbufs (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-
-	return (priv->icons != NULL && priv->icons->len > 0);
-}
-
-/**
- * gs_app_load_pixbuf:
- * @app: a #GsApp
- * @size: size (width or height, square) of the pixbuf to load, in device pixels
- *
- * Loads a pixbuf to represent the application. This might be provided by the
- * backend at the given @size, or downsized from a larger icon provided by the
- * backend. The return value is guaranteed to be at @size, if it’s not %NULL.
- *
- * If an image at least @size pixels in width isn’t available, %NULL will be
- * returned.
- *
- * This function may do disk I/O or image resizing, but it will not do network
- * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
- *
- * Returns: (transfer full) (nullable): a #GdkPixbuf, or %NULL
- *
- * Since: 40
- **/
-GdkPixbuf *
-gs_app_load_pixbuf (GsApp *app,
-                    guint  size)
-{
-	g_autoptr(GIcon) icon = NULL;
-	g_autoptr(GInputStream) input_stream = NULL;
-
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	g_return_val_if_fail (size > 0, NULL);
-
-	icon = gs_app_get_icon_for_size (app, size, 1, NULL);
-	if (icon == NULL || !G_IS_LOADABLE_ICON (icon))
-		return NULL;
-
-	input_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), size, NULL, NULL, NULL);
-	if (input_stream == NULL)
-		return NULL;
-
-	return gdk_pixbuf_new_from_stream_at_scale (input_stream, size, size, TRUE, NULL, NULL);
-}
-
-/**
  * gs_app_get_icon_for_size:
  * @app: a #GsApp
  * @size: size (width or height, square) of the icon to fetch, in device pixels
@@ -4124,6 +4065,7 @@ static void
 calculate_key_colors (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GIcon) icon_small = NULL;
 	g_autoptr(GdkPixbuf) pb_small = NULL;
 	const gchar *overrides_str;
 
@@ -4174,10 +4116,50 @@ calculate_key_colors (GsApp *app)
 		}
 	}
 
-	/* no pixbuf */
-	pb_small = gs_app_load_pixbuf (app, 32);
-	if (pb_small == NULL) {
+	/* Try and load the pixbuf. */
+	icon_small = gs_app_get_icon_for_size (app, 32, 1, NULL);
+
+	if (icon_small == NULL) {
 		g_debug ("no pixbuf, so no key colors");
+		return;
+	} else if (G_IS_LOADABLE_ICON (icon_small)) {
+		g_autoptr(GInputStream) icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon_small), 32, NULL, NULL, NULL);
+		pb_small = gdk_pixbuf_new_from_stream_at_scale (icon_stream, 32, 32, TRUE, NULL, NULL);
+	} else if (G_IS_THEMED_ICON (icon_small)) {
+		g_autoptr(GtkIconTheme) theme = NULL;
+		g_autoptr(GtkIconInfo) icon_info = NULL;
+
+		if (gdk_screen_get_default () != NULL) {
+			theme = g_object_ref (gtk_icon_theme_get_default ());
+		} else {
+			const gchar *test_search_path;
+
+			/* This fallback path is needed for the unit tests,
+			 * which run without a screen, and in an environment
+			 * where the XDG dir variables don’t point to the system
+			 * datadir which contains the system icon theme. */
+			theme = gtk_icon_theme_new ();
+
+			test_search_path = g_getenv ("GS_SELF_TEST_ICON_THEME_PATH");
+			if (test_search_path != NULL) {
+				g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
+
+				/* This prepends, so we have to iterate in reverse to preserve order */
+				for (gsize i = g_strv_length (dirs); i > 0; i--)
+					gtk_icon_theme_prepend_search_path (theme, dirs[i - 1]);
+			}
+		}
+
+		icon_info = gtk_icon_theme_lookup_by_gicon (theme, icon_small, 32, GTK_ICON_LOOKUP_USE_BUILTIN);
+		if (icon_info != NULL)
+			pb_small = gtk_icon_info_load_icon (icon_info, NULL);
+	} else {
+		g_debug ("unsupported pixbuf, so no key colors");
+		return;
+	}
+
+	if (pb_small == NULL) {
+		g_debug ("pixbuf couldn’t be loaded, so no key colors");
 		return;
 	}
 

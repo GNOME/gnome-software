@@ -1101,7 +1101,7 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 	GList *addons;
 	const gchar *tmp;
 	gboolean ret;
@@ -1138,14 +1138,12 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gs_details_page_set_description (self, tmp);
 
 	/* set the icon */
-	pixbuf = gs_app_load_pixbuf (self->app, gtk_image_get_pixel_size (GTK_IMAGE (self->application_details_icon)) * gtk_widget_get_scale_factor (self->application_details_icon));
-	if (pixbuf != NULL) {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
-	} else {
-		gtk_image_set_from_icon_name (GTK_IMAGE (self->application_details_icon),
-		                              "application-x-executable",
-		                              GTK_ICON_SIZE_DIALOG);
-	}
+	icon = gs_app_get_icon_for_size (self->app,
+					 gtk_image_get_pixel_size (GTK_IMAGE (self->application_details_icon)),
+					 gtk_widget_get_scale_factor (self->application_details_icon),
+					 "application-x-executable");
+	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
+				  GTK_ICON_SIZE_DIALOG);
 
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL && tmp[0] != '\0') {
