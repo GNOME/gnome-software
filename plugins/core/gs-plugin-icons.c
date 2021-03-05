@@ -241,7 +241,6 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 		return NULL;
 	}
 
-	gs_plugin_icons_add_theme_path (plugin, as_icon_get_filename (icon));
 	size = (gint) (64 * gs_plugin_get_scale (plugin));
 	pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
 					   as_icon_get_name (icon),
