@@ -219,7 +219,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 
 	/* get the extra bits */
-	app = gs_app_new ("zeus.desktop");
+	app = gs_app_new ("chiron.desktop");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
