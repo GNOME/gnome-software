@@ -493,7 +493,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *name_owner = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GIcon) ic = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_debug ("%s", G_STRFUNC);
@@ -549,9 +549,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	/* prepare EOS upgrade app + sync initial state */
 
 	/* use stock icon */
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-	as_icon_set_name (ic, "application-x-addon");
+	ic = g_themed_icon_new ("application-x-addon");
 
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");

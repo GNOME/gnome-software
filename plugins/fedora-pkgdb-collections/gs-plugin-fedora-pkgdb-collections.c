@@ -257,7 +257,8 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	g_autofree gchar *cache_key = NULL;
 	g_autofree gchar *css = NULL;
 	g_autofree gchar *url = NULL;
-	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GFile) icon_file = NULL;
+	g_autoptr(GIcon) ic = NULL;
 
 	/* search in the cache */
 	cache_key = g_strdup_printf ("release-%u", item->version);
@@ -269,9 +270,8 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	app_version = g_strdup_printf ("%u", item->version);
 
 	/* icon from disk */
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-	as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
+	icon_file = g_file_new_for_path ("/usr/share/pixmaps/fedora-logo-sprite.png");
+	ic = g_file_icon_new (icon_file);
 
 	/* create */
 	app = gs_app_new (app_id);

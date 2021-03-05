@@ -796,7 +796,7 @@ load_desktop_icon (GsApp *app, SnapdSnap *snap)
 		g_autoptr(GKeyFile) desktop_file = NULL;
 		g_autoptr(GError) error = NULL;
 		g_autofree gchar *icon_value = NULL;
-		g_autoptr(AsIcon) icon = NULL;
+		g_autoptr(GIcon) icon = NULL;
 
 		desktop_file_path = snapd_app_get_desktop_file (snap_app);
 		if (desktop_file_path == NULL)
@@ -816,11 +816,10 @@ load_desktop_icon (GsApp *app, SnapdSnap *snap)
 
 		icon = as_icon_new ();
 		if (g_str_has_prefix (icon_value, "/")) {
-			as_icon_set_kind (icon, AS_ICON_KIND_LOCAL);
-			as_icon_set_filename (icon, icon_value);
+			g_autoptr(GFile) icon_file = g_file_new_for_path (icon_value);
+			icon = g_file_icon_new (icon_file);
 		} else {
-			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-			as_icon_set_name (icon, icon_value);
+			icon = g_themed_icon_new (icon_value);
 		}
 		gs_app_add_icon (app, icon);
 
@@ -840,9 +839,7 @@ load_store_icon (GsApp *app, SnapdSnap *snap)
 		return FALSE;
 
 	if (g_str_has_prefix (icon_url, "http://") || g_str_has_prefix (icon_url, "https://")) {
-		g_autoptr(AsIcon) icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_REMOTE);
-		as_icon_set_url (icon, icon_url);
+		g_autoptr(GIcon) icon = gs_remote_icon_new (icon_url);
 		gs_app_add_icon (app, icon);
 		return TRUE;
 	}

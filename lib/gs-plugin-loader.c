@@ -3043,19 +3043,6 @@ gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 
 /******************************************************************************/
 
-static AsIcon *
-_gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
-{
-	GPtrArray *icons = gs_app_get_icons (app);
-	guint i;
-	for (i = 0; icons != NULL && i < icons->len; i++) {
-		AsIcon *ic = g_ptr_array_index (icons, i);
-		if (as_icon_get_kind (ic) == kind)
-			return ic;
-	}
-	return NULL;
-}
-
 static void
 generic_update_cancelled_cb (GCancellable *cancellable, gpointer data)
 {
@@ -3331,15 +3318,14 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		for (guint j = 0; j < gs_app_list_length (list); j++) {
 			GsApp *app = gs_app_list_index (list, j);
-			if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
-			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
-			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
-				g_autoptr(AsIcon) ic = as_icon_new ();
-				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+			if (gs_app_get_icons (app) == NULL) {
+				g_autoptr(GIcon) ic = NULL;
+				const gchar *icon_name;
 				if (gs_app_has_quirk (app, GS_APP_QUIRK_HAS_SOURCE))
-					as_icon_set_name (ic, "x-package-repository");
+					icon_name = "x-package-repository";
 				else
-					as_icon_set_name (ic, "application-x-executable");
+					icon_name = "application-x-executable";
+				ic = g_themed_icon_new (icon_name);
 				gs_app_add_icon (app, ic);
 			}
 		}

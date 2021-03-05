@@ -44,6 +44,7 @@
 #include "gs-app-private.h"
 #include "gs-desktop-data.h"
 #include "gs-enums.h"
+#include "gs-icon.h"
 #include "gs-key-colors.h"
 #include "gs-os-release.h"
 #include "gs-plugin.h"
@@ -122,7 +123,6 @@ typedef struct
 	GsApp			*runtime;
 	GFile			*local_file;
 	AsContentRating		*content_rating;
-	GPtrArray		*pixbufs;  /* (nullable) (owned) (element-type GdkPixbuf), sorted by pixel size, smallest first */
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
@@ -526,35 +526,12 @@ gs_app_to_string_append (GsApp *app, GString *str)
 			  gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
 		gs_app_kv_lpad (str, "name", priv->name);
-	for (i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
-		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
-		gs_app_kv_printf (str, "pixbuf", "%p, %dx%d", pixbuf,
-				  gdk_pixbuf_get_width (pixbuf),
-				  gdk_pixbuf_get_height (pixbuf));
-	}
 	if (priv->action_screenshot != NULL)
 		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
 	for (i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
-		AsIcon *icon = g_ptr_array_index (priv->icons, i);
-		g_autofree gchar *dimensions_str = NULL;
-
-		gs_app_kv_lpad (str, "icon-kind",
-				as_icon_kind_to_string (as_icon_get_kind (icon)));
-		if (as_icon_get_name (icon) != NULL)
-			gs_app_kv_lpad (str, "icon-name",
-					as_icon_get_name (icon));
-		if (as_icon_get_filename (icon) != NULL)
-			gs_app_kv_lpad (str, "icon-filename",
-					as_icon_get_filename (icon));
-		if (as_icon_get_url (icon) != NULL)
-			gs_app_kv_lpad (str, "icon-url",
-					as_icon_get_url (icon));
-
-		if (as_icon_get_width (icon) != 0 && as_icon_get_height (icon) != 0)
-			dimensions_str = g_strdup_printf ("%ux%u",
-							  as_icon_get_width (icon),
-							  as_icon_get_height (icon));
-		gs_app_kv_lpad (str, "width", (dimensions_str != NULL) ? dimensions_str : "unknown");
+		GIcon *icon = g_ptr_array_index (priv->icons, i);
+		g_autofree gchar *icon_str = g_icon_to_string (icon);
+		gs_app_kv_lpad (str, "icon", icon_str);
 	}
 	if (priv->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
@@ -1816,7 +1793,7 @@ gs_app_has_pixbufs (GsApp *app)
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	return (priv->pixbufs != NULL && priv->pixbufs->len > 0);
+	return (priv->icons != NULL && priv->icons->len > 0);
 }
 
 /**
@@ -1842,35 +1819,108 @@ GdkPixbuf *
 gs_app_load_pixbuf (GsApp *app,
                     guint  size)
 {
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GIcon) icon = NULL;
+	g_autoptr(GInputStream) input_stream = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (size > 0, NULL);
 
-	/* FIXME: This algorithm currently relies on gs-plugin-icons to
-	 * asynchronously load #AsIcons from #GsApp.icons and add them as
-	 * pixbufs. Eventually, that plugin should be retired and its code
-	 * folded in here. But for now, we can rely on everything being
-	 * available as a pixbuf. */
+	icon = gs_app_get_icon_for_size (app, size, 1, NULL);
+	if (icon == NULL || !G_IS_LOADABLE_ICON (icon))
+		return NULL;
 
-	/* See if there’s a pixbuf the right size. Note that the pixbufs array
-	 * may be lazily created. */
-	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
-		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
-		if ((guint) gdk_pixbuf_get_width (pixbuf) == size)
-			return g_object_ref (pixbuf);
-		else if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
-			break;  /* array is sorted by size */
+	input_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), size, NULL, NULL, NULL);
+	if (input_stream == NULL)
+		return NULL;
+
+	return gdk_pixbuf_new_from_stream_at_scale (input_stream, size, size, TRUE, NULL, NULL);
+}
+
+/**
+ * gs_app_get_icon_for_size:
+ * @app: a #GsApp
+ * @size: size (width or height, square) of the icon to fetch, in device pixels
+ * @scale: scale of the icon to fetch, typically from gtk_widget_get_scale_factor()
+ * @fallback_icon_name: (nullable): name of an icon to load as a fallback if
+ *    no other suitable one is found, or %NULL for no fallback
+ *
+ * Finds the most appropriate icon in the @app’s set of icons to be loaded at
+ * the given @size×@scale to represent the application. This might be provided
+ * by the backend at the given @size, or downsized from a larger icon provided
+ * by the backend. The return value is guaranteed to be suitable for loading as
+ * a pixbuf at @size, if it’s not %NULL.
+ *
+ * If an image at least @size pixels in width isn’t available, and
+ * @fallback_icon_name has not been provided, %NULL will be returned. If
+ * @fallback_icon_name has been provided, a #GIcon representing that will be
+ * returned, and %NULL is guaranteed not to be returned.
+ *
+ * Icons which come from a remote server (over HTTP or HTTPS) will be returned
+ * as a pointer into a local cache, which may not have been populated. You must
+ * call gs_remote_icon_ensure_cached() on icons of type #GsRemoteIcon to
+ * download them; this function will not do that for you.
+ *
+ * This function may do disk I/O or image resizing, but it will not do network
+ * I/O to load a pixbuf. It should be acceptable to call this from a UI thread.
+ *
+ * Returns: (transfer full) (nullable): a #GIcon, or %NULL
+ *
+ * Since: 40
+ */
+GIcon *
+gs_app_get_icon_for_size (GsApp       *app,
+                          guint        size,
+                          guint        scale,
+                          const gchar *fallback_icon_name)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	g_return_val_if_fail (size > 0, NULL);
+	g_return_val_if_fail (scale >= 1, NULL);
+
+	g_debug ("Looking for icon for %s, at size %u×%u, with fallback %s",
+		 gs_app_get_id (app), size, scale, fallback_icon_name);
+
+	/* See if there’s an icon the right size, or the first one which is too
+	 * big which could be scaled down. Note that the icons array may be
+	 * lazily created. */
+	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
+		GIcon *icon = priv->icons->pdata[i];
+		guint icon_width = gs_icon_get_width (icon);
+		guint icon_scale = gs_icon_get_scale (icon);
+
+		g_debug ("\tConsidering icon of type %s, width %u×%u",
+			 G_OBJECT_TYPE_NAME (icon), icon_width, icon_scale);
+
+		/* Ignore icons with unknown width and skip over ones which
+		 * are too small. */
+		if (icon_width == 0 || icon_width * icon_scale < size * scale)
+			continue;
+
+		if (icon_width * icon_scale >= size * scale)
+			return g_object_ref (icon);
 	}
 
-	/* Now see if there’s a pixbuf which is too big, which could be resized. */
-	for (guint i = 0; priv->pixbufs != NULL && i < priv->pixbufs->len; i++) {
-		GdkPixbuf *pixbuf = priv->pixbufs->pdata[i];
-		if ((guint) gdk_pixbuf_get_width (pixbuf) > size)
-			return gdk_pixbuf_scale_simple (pixbuf, size, size, GDK_INTERP_BILINEAR);
+	g_debug ("Found no icons of the right size; checking themed icons");
+
+	/* If there’s a themed icon with no width set, use that, as typically
+	 * themed icons are available in all the right sizes. */
+	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
+		GIcon *icon = priv->icons->pdata[i];
+		guint icon_width = gs_icon_get_width (icon);
+
+		if (icon_width == 0 && G_IS_THEMED_ICON (icon))
+			return g_object_ref (icon);
 	}
 
-	return NULL;
+	if (fallback_icon_name != NULL) {
+		g_debug ("Using fallback icon %s", fallback_icon_name);
+		return g_themed_icon_new (fallback_icon_name);
+	} else {
+		g_debug ("No icon found");
+		return NULL;
+	}
 }
 
 /**
@@ -1900,7 +1950,7 @@ gs_app_get_action_screenshot (GsApp *app)
  * This will never return an empty array; it will always return either %NULL or
  * a non-empty array.
  *
- * Returns: (transfer none) (element-type AsIcon) (nullable): an array of icons,
+ * Returns: (transfer none) (element-type GIcon) (nullable): an array of icons,
  *     or %NULL if there are no icons
  *
  * Since: 3.22
@@ -1921,11 +1971,12 @@ static gint
 icon_sort_width_cb (gconstpointer a,
                     gconstpointer b)
 {
-	AsIcon *icon_a = *((AsIcon **) a);
-	AsIcon *icon_b = *((AsIcon **) b);
-	guint width_a = as_icon_get_width (icon_a);
-	guint width_b = as_icon_get_width (icon_b);
+	GIcon *icon_a = *((GIcon **) a);
+	GIcon *icon_b = *((GIcon **) b);
+	guint width_a = gs_icon_get_width (icon_a);
+	guint width_b = gs_icon_get_width (icon_b);
 
+	/* Sort unknown widths (0 value) to the end. */
 	if (width_a == 0 && width_b == 0)
 		return 0;
 	else if (width_a == 0)
@@ -1939,7 +1990,7 @@ icon_sort_width_cb (gconstpointer a,
 /**
  * gs_app_add_icon:
  * @app: a #GsApp
- * @icon: a #AsIcon
+ * @icon: a #GIcon
  *
  * Adds an icon to use for the application.
  * If the first icon added cannot be loaded then the next one is tried.
@@ -1947,12 +1998,13 @@ icon_sort_width_cb (gconstpointer a,
  * Since: 40
  **/
 void
-gs_app_add_icon (GsApp *app, AsIcon *icon)
+gs_app_add_icon (GsApp *app, GIcon *icon)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (AS_IS_ICON (icon));
+	g_return_if_fail (G_IS_ICON (icon));
+
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	if (priv->icons == NULL)
@@ -1999,7 +2051,8 @@ gboolean
 gs_app_get_use_drop_shadow (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	AsIcon *ic;
+	GIcon *icon;
+	const gchar * const *names;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
@@ -2007,10 +2060,20 @@ gs_app_get_use_drop_shadow (GsApp *app)
 	if (priv->icons == NULL || priv->icons->len == 0)
 		return TRUE;
 
-	/* stock, and symbolic */
-	ic = g_ptr_array_index (priv->icons, 0);
-	return as_icon_get_kind (ic) != AS_ICON_KIND_STOCK ||
-		!g_str_has_suffix (as_icon_get_name (ic), "-symbolic");
+	icon = g_ptr_array_index (priv->icons, 0);
+
+	/* Apply drop shadows to non-themed icons. */
+	if (!G_IS_THEMED_ICON (icon))
+		return TRUE;
+
+	/* Don’t apply drop shadows to symbolic icons. */
+	names = g_themed_icon_get_names (G_THEMED_ICON (icon));
+	for (gsize i = 0; names[i] != NULL; i++) {
+		if (g_str_has_suffix (names[i], "-symbolic"))
+			return FALSE;
+	}
+
+	return TRUE;
 }
 
 /**
@@ -2164,54 +2227,6 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	g_return_if_fail (app != runtime);
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->runtime, runtime);
-}
-
-/**
- * gs_app_add_pixbuf:
- * @app: a #GsApp
- * @pixbuf: (transfer none) (not nullable): a #GdkPixbuf
- *
- * Add a pixbuf to the set of pixbufs used to represent the application.
- * Multiple pixbufs are supported as the application’s icon might be available
- * in multiple sizes.
- *
- * Only add pixbufs for native icon sizes provided by the backend — don’t resize
- * a pixbuf to pass to this function. #GsApp can handle resizing pixbufs itself.
- *
- * Since: 40
- **/
-void
-gs_app_add_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	guint pixbuf_width;
-
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
-
-	locker = g_mutex_locker_new (&priv->mutex);
-	pixbuf_width = gdk_pixbuf_get_width (pixbuf);
-
-	if (priv->pixbufs == NULL)
-		priv->pixbufs = g_ptr_array_new_with_free_func (g_object_unref);
-
-	/* Replace any existing pixbuf of the same size, or insert in order. */
-	for (guint i = 0; i < priv->pixbufs->len; i++) {
-		GdkPixbuf *p = priv->pixbufs->pdata[i];
-		guint p_width = gdk_pixbuf_get_width (p);
-
-		if (p_width == pixbuf_width) {
-			g_set_object (&priv->pixbufs->pdata[i], pixbuf);
-			return;
-		} else if (p_width > pixbuf_width) {
-			g_ptr_array_insert (priv->pixbufs, i, g_object_ref (pixbuf));
-			return;
-		}
-	}
-
-	/* Append if the array is empty. */
-	g_ptr_array_add (priv->pixbufs, g_object_ref (pixbuf));
 }
 
 /**
@@ -4827,7 +4842,6 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->local_file);
 	if (priv->content_rating != NULL)
 		g_object_unref (priv->content_rating);
-	g_clear_pointer (&priv->pixbufs, g_ptr_array_unref);
 	if (priv->action_screenshot != NULL)
 		g_object_unref (priv->action_screenshot);
 

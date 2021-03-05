@@ -348,15 +348,13 @@ gs_flatpak_create_app (GsFlatpak *self,
 
 	/* fallback values */
 	if (gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
-		g_autoptr(AsIcon) icon = NULL;
+		g_autoptr(GIcon) icon = NULL;
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 flatpak_ref_get_name (FLATPAK_REF (xref)));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 				    "Framework for applications");
 		gs_app_set_version (app, flatpak_ref_get_branch (FLATPAK_REF (xref)));
-		icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "system-run-symbolic");
+		icon = g_themed_icon_new ("system-run-symbolic");
 		gs_app_add_icon (app, icon);
 	}
 
@@ -3086,6 +3084,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
 	g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+	g_autoptr(GIcon) icon = NULL;
 	const char *origin = NULL;
 
 	/* load bundle */
@@ -3146,23 +3145,12 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	icon_data = flatpak_bundle_ref_get_icon (xref_bundle, size);
 	if (icon_data == NULL)
 		icon_data = flatpak_bundle_ref_get_icon (xref_bundle, 64);
-	if (icon_data != NULL) {
-		g_autoptr(GInputStream) stream_icon = NULL;
-		g_autoptr(GdkPixbuf) pixbuf = NULL;
-		stream_icon = g_memory_input_stream_new_from_bytes (icon_data);
-		pixbuf = gdk_pixbuf_new_from_stream (stream_icon, cancellable, error);
-		if (pixbuf == NULL) {
-			gs_utils_error_convert_gdk_pixbuf (error);
-			return NULL;
-		}
-		gs_app_add_pixbuf (app, pixbuf);
-	} else {
-		g_autoptr(AsIcon) icon = NULL;
-		icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "application-x-executable");
-		gs_app_add_icon (app, icon);
-	}
+
+	if (icon_data != NULL)
+		icon = g_bytes_icon_new (icon_data);
+	else
+		icon = g_themed_icon_new ("application-x-executable");
+	gs_app_add_icon (app, icon);
 
 	/* not quite true: this just means we can update this specific app */
 	if (flatpak_bundle_ref_get_origin (xref_bundle))
@@ -3277,11 +3265,11 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	if (ref_homepage != NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, ref_homepage);
 	ref_icon = g_key_file_get_string (kf, "Flatpak Ref", "Icon", NULL);
-	if (ref_icon != NULL) {
-		g_autoptr(AsIcon) ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
-		as_icon_set_url (ic, ref_icon);
-		gs_app_add_icon (app, ic);
+	if (ref_icon != NULL &&
+	    (g_str_has_prefix (ref_icon, "http:") ||
+	     g_str_has_prefix (ref_icon, "https:"))) {
+		g_autoptr(GIcon) icon = gs_remote_icon_new (ref_icon);
+		gs_app_add_icon (app, icon);
 	}
 
 	/* set the origin data */

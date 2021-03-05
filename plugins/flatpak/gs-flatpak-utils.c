@@ -203,11 +203,11 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	if (repo_default_branch != NULL)
 		gs_app_set_branch (app, repo_default_branch);
 	repo_icon = g_key_file_get_string (kf, "Flatpak Repo", "Icon", NULL);
-	if (repo_icon != NULL) {
-		g_autoptr(AsIcon) ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
-		as_icon_set_url (ic, repo_icon);
-		gs_app_add_icon (app, ic);
+	if (repo_icon != NULL &&
+	    (g_str_has_prefix (repo_icon, "http:") ||
+	     g_str_has_prefix (repo_icon, "https:"))) {
+		g_autoptr(GIcon) icon = gs_remote_icon_new (repo_icon);
+		gs_app_add_icon (app, icon);
 	}
 
 	/* success */

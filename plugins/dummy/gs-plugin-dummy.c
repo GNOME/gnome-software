@@ -276,7 +276,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GIcon) ic = NULL;
 
 	/* hang the plugin for 5 seconds */
 	if (g_strcmp0 (values[0], "hang") == 0) {
@@ -305,9 +305,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
 
 	/* use a generic stock icon */
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-	as_icon_set_name (ic, "drive-harddisk");
+	ic = g_themed_icon_new ("drive-harddisk");
 
 	/* add a live updatable normal application */
 	app = gs_app_new ("chiron.desktop");
@@ -337,7 +335,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 {
 	GsApp *app;
 	GsApp *proxy;
-	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GIcon) ic = NULL;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -347,9 +345,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		return FALSE;
 
 	/* use a generic stock icon */
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-	as_icon_set_name (ic, "drive-harddisk");
+	ic = g_themed_icon_new ("drive-harddisk");
 
 	/* add a live updatable normal application */
 	app = gs_app_new ("chiron.desktop");
@@ -650,10 +646,7 @@ refine_app (GsPlugin *plugin,
 		if (gs_app_get_summary (app) == NULL)
 			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "tmp");
 		if (gs_app_get_icons (app) == NULL) {
-			g_autoptr(AsIcon) ic = NULL;
-			ic = as_icon_new ();
-			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-			as_icon_set_name (ic, "drive-harddisk");
+			g_autoptr(GIcon) ic = g_themed_icon_new ("drive-harddisk");
 			gs_app_add_icon (app, ic);
 		}
 	}
@@ -737,14 +730,14 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	g_autoptr(GdkPixbuf) pixbuf = gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL);
+	g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
 	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_add_pixbuf (app, pixbuf);
+	gs_app_add_icon (app, icon);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
@@ -758,14 +751,14 @@ gs_plugin_add_recent (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autoptr(GdkPixbuf) pixbuf = gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL);
+	g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
 	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_add_pixbuf (app, pixbuf);
+	gs_app_add_icon (app, icon);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
@@ -779,12 +772,10 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GError **error)
 {
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GIcon) ic = NULL;
 
 	/* use stock icon */
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-	as_icon_set_name (ic, "application-x-addon");
+	ic = g_themed_icon_new ("application-x-addon");
 
 	/* get existing item from the cache */
 	app = gs_plugin_cache_lookup (plugin, "user/*/os-upgrade/org.fedoraproject.release-rawhide.upgrade/*");
