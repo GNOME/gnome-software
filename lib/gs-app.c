@@ -2600,23 +2600,6 @@ gs_app_get_license_is_free (GsApp *app)
 	return priv->license_is_free;
 }
 
-static gboolean
-gs_app_get_license_token_is_nonfree (const gchar *token)
-{
-	/* grammar */
-	if (g_strcmp0 (token, "(") == 0)
-		return FALSE;
-	if (g_strcmp0 (token, ")") == 0)
-		return FALSE;
-
-	/* a token, but still nonfree */
-	if (g_str_has_prefix (token, "@LicenseRef-proprietary"))
-		return TRUE;
-
-	/* if it has a prefix, assume it is free */
-	return token[0] != '@';
-}
-
 /**
  * gs_app_set_license:
  * @app: a #GsApp
@@ -2632,8 +2615,6 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
-	guint i;
-	g_auto(GStrv) tokens = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -2646,19 +2627,8 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 		return;
 	priv->license_quality = quality;
 
-	/* assume free software until we find a nonfree SPDX token */
-	priv->license_is_free = TRUE;
-	tokens = as_spdx_license_tokenize (license);
-	for (i = 0; tokens[i] != NULL; i++) {
-		if (g_strcmp0 (tokens[i], "&") == 0 ||
-		    g_strcmp0 (tokens[i], "+") == 0 ||
-		    g_strcmp0 (tokens[i], "|") == 0)
-			continue;
-		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
-			priv->license_is_free = FALSE;
-			break;
-		}
-	}
+	priv->license_is_free = as_license_is_free_license (license);
+
 	_g_set_str (&priv->license, license);
 }
 
