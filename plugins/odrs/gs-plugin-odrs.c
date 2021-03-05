@@ -148,14 +148,15 @@ gs_plugin_initialize (GsPlugin *plugin)
 	os_release = gs_os_release_new (&error);
 	if (os_release != NULL) {
 		priv->distro = g_strdup (gs_os_release_get_name (os_release));
-		if (priv->distro == NULL) {
+		if (priv->distro == NULL)
 			g_warning ("no distro name specified");
-			priv->distro = g_strdup ("Unknown");
-		}
 	} else {
 		g_warning ("failed to get distro name: %s", error->message);
-		priv->distro = g_strdup ("Unknown");
 	}
+
+	/* Fallback */
+	if (priv->distro == NULL)
+		priv->distro = g_strdup (C_("Distribution name", "Unknown"));
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
