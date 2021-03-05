@@ -21,6 +21,7 @@ libgnomesoftware_public_headers = [
   'gs-plugin-loader-sync.h',
   'gs-plugin-types.h',
   'gs-plugin-vfuncs.h',
+  'gs-remote-icon.h',
   'gs-utils.h'
 ]
 
@@ -85,6 +86,7 @@ libgnomesoftware = static_library(
     'gs-plugin-job.c',
     'gs-plugin-loader.c',
     'gs-plugin-loader-sync.c',
+    'gs-remote-icon.c',
     'gs-test.c',
     'gs-utils.c',
   ] + libgnomesoftware_enums + [gs_build_ident_h],
