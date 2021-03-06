@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
- * Copyright (C) 2021 Endless OS Foundation, Inc
+ * Copyright (C) 2021 Endless OS Foundation LLC
  *
  * Authors:
  *  - Philip Withnall <pwithnall@endlessos.org>

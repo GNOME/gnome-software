@@ -2,7 +2,7 @@
  * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
  * Copyright (C) 2020 Alexander Mikhaylenko
- * Copyright (C) 2021 Endless OS Foundation, Inc
+ * Copyright (C) 2021 Endless OS Foundation LLC
  *
  * Authors:
  *  - Alexander Mikhaylenko <alexm@gnome.org>

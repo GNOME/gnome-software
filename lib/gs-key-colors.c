@@ -4,7 +4,7 @@
  * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
- * Copyright (C) 2021 Endless OS Foundation, Inc
+ * Copyright (C) 2021 Endless OS Foundation LLC
  *
  * Authors:
  *  - Richard Hughes <richard@hughsie.com>
