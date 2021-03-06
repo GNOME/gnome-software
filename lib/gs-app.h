@@ -419,9 +419,9 @@ void		 gs_app_set_release_date	(GsApp		*app,
 GPtrArray	*gs_app_get_categories		(GsApp		*app);
 void		 gs_app_set_categories		(GsApp		*app,
 						 GPtrArray	*categories);
-GPtrArray	*gs_app_get_key_colors		(GsApp		*app);
+GArray		*gs_app_get_key_colors		(GsApp		*app);
 void		 gs_app_set_key_colors		(GsApp		*app,
-						 GPtrArray	*key_colors);
+						 GArray		*key_colors);
 void		 gs_app_add_key_color		(GsApp		*app,
 						 GdkRGBA	*key_color);
 void            gs_app_set_is_update_downloaded (GsApp         *app,

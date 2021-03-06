@@ -368,7 +368,7 @@ gchar *
 gs_utils_set_key_colors_in_css (const gchar *css,
                                 GsApp       *app)
 {
-	GPtrArray *key_colors;
+	GArray *key_colors;
 	g_autoptr(GString) css_new = NULL;
 
 	if (css == NULL)
@@ -384,7 +384,7 @@ gs_utils_set_key_colors_in_css (const gchar *css,
 	/* replace key color values */
 	css_new = g_string_new (css);
 	for (guint j = 0; j < key_colors->len; j++) {
-		GdkRGBA *color = g_ptr_array_index (key_colors, j);
+		const GdkRGBA *color = &g_array_index (key_colors, GdkRGBA, j);
 		g_autofree gchar *key = NULL;
 		g_autofree gchar *value = NULL;
 		key = g_strdup_printf ("@keycolor-%02u@", j);

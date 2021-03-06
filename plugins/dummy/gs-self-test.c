@@ -211,7 +211,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 static void
 gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 {
-	GPtrArray *array;
+	GArray *array;
 	gboolean ret;
 	guint i;
 	g_autoptr(GsApp) app = NULL;
@@ -233,7 +233,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 
 	/* check values are in range */
 	for (i = 0; i < array->len; i++) {
-		GdkRGBA *kc = g_ptr_array_index (array, i);
+		const GdkRGBA *kc = &g_array_index (array, GdkRGBA, i);
 		g_assert_cmpfloat (kc->red, >=, 0.f);
 		g_assert_cmpfloat (kc->red, <=, 1.f);
 		g_assert_cmpfloat (kc->green, >=, 0.f);

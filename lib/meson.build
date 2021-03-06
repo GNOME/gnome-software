@@ -11,6 +11,7 @@ libgnomesoftware_public_headers = [
   'gs-category-manager.h',
   'gs-desktop-data.h',
   'gs-ioprio.h',
+  'gs-key-colors.h',
   'gs-metered.h',
   'gs-os-release.h',
   'gs-plugin.h',
@@ -76,6 +77,7 @@ libgnomesoftware = static_library(
     'gs-desktop-data.c',
     'gs-ioprio.c',
     'gs-ioprio.h',
+    'gs-key-colors.c',
     'gs-metered.c',
     'gs-os-release.c',
     'gs-plugin.c',
@@ -161,3 +163,5 @@ if get_option('tests')
   )
   test('gs-self-test-lib', e, suite: ['lib'], env: test_env, timeout : 120)
 endif
+
+subdir('tools')

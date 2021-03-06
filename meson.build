@@ -13,7 +13,7 @@ conf.set_quoted('BUILD_TYPE', get_option('buildtype'))
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-gs_plugin_api_version = '15'
+gs_plugin_api_version = '16'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 # install docs
