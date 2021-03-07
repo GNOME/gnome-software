@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-03-05 12:55+0000\n"
-"PO-Revision-Date: 2021-03-06 09:00+0300\n"
+"POT-Creation-Date: 2021-03-06 06:04+0000\n"
+"PO-Revision-Date: 2021-03-07 23:12+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-POOTLE-MTIME: 1433975102.000000\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -396,19 +396,19 @@ msgstr "Kendiliğinden Güncellemeler Duraklatıldı"
 msgid "Find Out _More"
 msgstr "_Daha Çoğunu Öğren"
 
-#: lib/gs-app.c:5210
+#: lib/gs-app.c:5131
 msgid "Local file"
 msgstr "Yerel dosya"
 
 #. TRANSLATORS: the first %s is replaced with an origin name;
 #. the second %s is replaced with the packaging format.
 #. Example string: "Local file (RPM)"
-#: lib/gs-app.c:5225
+#: lib/gs-app.c:5146
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5293
+#: lib/gs-app.c:5214
 msgid "Package"
 msgstr "Paket"
 
@@ -417,7 +417,7 @@ msgid "Pending"
 msgstr "Beklemede"
 
 #: src/gs-app-addon-row.c:103 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:153
+#: src/gs-feature-tile.c:368
 msgid "Installed"
 msgstr "Kuruldu"
 
@@ -1162,12 +1162,12 @@ msgstr "Başlat"
 #. TRANSLATORS: window title
 #: src/gs-common.c:231
 msgid "Install Third-Party Software?"
-msgstr "Üçüncü Taraf Yazılım Kurulsun mu?"
+msgstr "Üçüncü Taraf Yazılım Kurulsun Mu?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:235 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
-msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin mi?"
+msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin Mi?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -2235,7 +2235,7 @@ msgstr "Genel bakış sayfası"
 
 #: src/gs-overview-page.ui:40
 msgid "Enable Third Party Software Repositories?"
-msgstr "Üçüncü Taraf Yazılım Depoları Etkinleştirilsin mi?"
+msgstr "Üçüncü Taraf Yazılım Depoları Etkinleştirilsin Mi?"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: src/gs-overview-page.ui:96
@@ -2388,14 +2388,14 @@ msgstr[0] "%s ve %s kuruldu"
 #: src/gs-repos-dialog.c:303
 #, c-format
 msgid "Remove “%s”?"
-msgstr "“%s” deposunu kaldır?"
+msgstr "“%s” deposu kaldırılsın mı?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
 #: src/gs-repos-dialog.c:308
 #, c-format
 msgid "Disable “%s”?"
-msgstr "“%s” deposunu devre dışı bırak?"
+msgstr "“%s” deposu devre dışı bırakılsın mı?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-repos-dialog.c:312
