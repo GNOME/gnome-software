@@ -214,6 +214,7 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 		 * to style all apps in the software center). Since we can not rely on the icon's presence,
 		 * we also add other icons to the list and do not return here. */
 		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* cached icon for large uses */
@@ -222,6 +223,7 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 						       128 * gs_plugin_get_scale (plugin));
 	if (icon != NULL) {
 		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* cached icon for normal uses */
@@ -230,6 +232,7 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 						       64 * gs_plugin_get_scale (plugin));
 	if (icon != NULL) {
 		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* prefer local */
@@ -258,6 +261,7 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 	if (n != NULL) {
 		icon = gs_appstream_new_icon (component, n, AS_ICON_KIND_STOCK, 0);
 		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 }
 
