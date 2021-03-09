@@ -413,6 +413,29 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 	return TRUE;
 }
 
+static guint64
+component_get_release_timestamp (XbNode *component)
+{
+	guint64 timestamp;
+	const gchar *date_str;
+
+	/* Spec says to prefer `timestamp` over `date` if both are provided:
+	 * https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-releases */
+	timestamp = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
+	date_str = xb_node_query_attr (component, "releases/release", "date", NULL);
+
+	if (timestamp != G_MAXUINT64) {
+		return timestamp;
+	} else if (date_str != NULL) {
+		g_autoptr(GDateTime) date = g_date_time_new_from_iso8601 (date_str, NULL);
+		if (date != NULL)
+			return g_date_time_to_unix (date);
+	}
+
+	/* Unknown. */
+	return G_MAXUINT64;
+}
+
 static gboolean
 gs_appstream_is_recent_release (XbNode *component)
 {
@@ -420,7 +443,7 @@ gs_appstream_is_recent_release (XbNode *component)
 	gint64 secs;
 
 	/* get newest release */
-	ts = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
+	ts = component_get_release_timestamp (component);
 	if (ts == G_MAXUINT64)
 		return FALSE;
 
@@ -608,6 +631,7 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 		g_autoptr(XbNode) description_node = NULL;
 		g_autofree gchar *description = NULL;
 		guint64 timestamp;
+		const gchar *date_str;
 		g_autoptr(AsRelease) release = NULL;
 		g_autofree char *timestamp_xpath = NULL;
 
@@ -617,6 +641,7 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 
 		timestamp_xpath = g_strdup_printf ("releases/release[%u]", i+1);
 		timestamp = xb_node_query_attr_as_uint (component, timestamp_xpath, "timestamp", NULL);
+		date_str = xb_node_query_attr (component, timestamp_xpath, "date", NULL);
 
 		/* include updates with or without a description */
 		description_node = xb_node_query_first (release_node, "description", NULL);
@@ -627,6 +652,8 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 		as_release_set_version (release, version);
 		if (timestamp != G_MAXUINT64)
 			as_release_set_timestamp (release, timestamp);
+		else if (date_str != NULL)  /* timestamp takes precedence over date */
+			as_release_set_date (release, date_str);
 		if (description != NULL)
 			as_release_set_description (release, description, NULL);
 
@@ -972,7 +999,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set the release date */
-	timestamp = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
+	timestamp = component_get_release_timestamp (component);
 	if (timestamp != G_MAXUINT64)
 		gs_app_set_release_date (app, timestamp);
 
