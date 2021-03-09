@@ -465,6 +465,14 @@ static void
 child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	/* return immediately if we are in destruction (this doesn't, however,
+	 * catch the case where we are being removed from a container without
+	 * having been destroyed first.)
+	 */
+	if (priv->app == NULL)
+		return;
 
 	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
 }
