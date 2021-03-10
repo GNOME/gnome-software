@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-01-16 11:46+0000\n"
-"PO-Revision-Date: 2021-01-17 14:36+0100\n"
+"POT-Creation-Date: 2021-03-10 01:09+0000\n"
+"PO-Revision-Date: 2021-03-10 11:58+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -67,7 +67,7 @@ msgstr "Panel inzornaments"
 msgid "The update details"
 msgstr "I detais dal inzornament"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1528
+#: data/appdata/org.gnome.Software.appdata.xml.in:1609
 msgid "The GNOME Project"
 msgstr "Il progjet GNOME"
 
@@ -325,106 +325,113 @@ msgstr "Instale software"
 msgid "Install selected software on the system"
 msgstr "Instale il software selezionât tal sisteme"
 
-#: src/gnome-software.ui:10
+#: src/gnome-software.ui:11
 msgid "Select All"
 msgstr "Selezione dut"
 
-#: src/gnome-software.ui:16
+#: src/gnome-software.ui:17
 msgid "Select None"
 msgstr "Nissune selezion"
 
-#: src/gnome-software.ui:35
+#: src/gnome-software.ui:36
 msgid "_Software Repositories"
 msgstr "Dipuesits _software"
 
-#: src/gnome-software.ui:40
+#: src/gnome-software.ui:41
 msgid "_Update Preferences"
 msgstr "Preferencis di _inzornament"
 
-#: src/gnome-software.ui:48 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:49 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Software"
 
-#: src/gnome-software.ui:64 src/gs-update-dialog.ui:20
+#: src/gnome-software.ui:65 src/gs-update-dialog.ui:20
 msgid "Go back"
 msgstr "Torne indaûr"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:96
+#: src/gnome-software.ui:97
 msgid "_Explore"
 msgstr "_Esplore"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:119
+#: src/gnome-software.ui:120
 msgid "_Installed"
 msgstr "_Instalât"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:159
+#: src/gnome-software.ui:160
 msgid "_Updates"
 msgstr "_Inzornaments"
 
-#: src/gnome-software.ui:228
+#: src/gnome-software.ui:229
 msgid "Search"
 msgstr "Ricercje"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:943
+#: src/gnome-software.ui:273 src/gs-app-row.c:295 src/gs-details-page.ui:979
 msgid "Source"
 msgstr "Sorzint"
 
 #. button in the info bar
-#: src/gnome-software.ui:377 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
+#: src/gnome-software.ui:378 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
 msgid "Software Repositories"
 msgstr "Dipuesits software"
 
 #. button in the info bar
-#: src/gnome-software.ui:385
+#: src/gnome-software.ui:386
 msgid "Examine Disk"
 msgstr "Esamine disc"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:393 src/gs-updates-page.c:922
+#: src/gnome-software.ui:394 src/gs-updates-page.c:838
 msgid "Network Settings"
 msgstr "Impostazions di rêt"
 
 #. button in the info bar
-#: src/gnome-software.ui:401
+#: src/gnome-software.ui:402
 msgid "Restart Now"
 msgstr "Torne invie cumò"
 
 #. button in the info bar
-#: src/gnome-software.ui:409
+#: src/gnome-software.ui:410
 msgid "More Information"
 msgstr "Plui informazions"
 
-#: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
+#: src/gnome-software.ui:462 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
 msgid "Automatic Updates Paused"
 msgstr "Inzornaments automatics in pause"
 
-#: src/gnome-software.ui:480
+#: src/gnome-software.ui:481
 msgid "Find Out _More"
 msgstr "Par savê di _plui"
 
-#. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4739
+#: lib/gs-app.c:5101
 msgid "Local file"
 msgstr "File locâl"
 
-#: lib/gs-app.c:4815
+#. TRANSLATORS: the first %s is replaced with an origin name;
+#. the second %s is replaced with the packaging format.
+#. Example string: "Local file (RPM)"
+#: lib/gs-app.c:5116
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: lib/gs-app.c:5184
 msgid "Package"
 msgstr "Pachet"
 
-#: src/gs-app-addon-row.c:83 src/gs-app-row.c:415
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:416
 msgid "Pending"
 msgstr "In spiete"
 
-#: src/gs-app-addon-row.c:89 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:88
+#: src/gs-app-addon-row.c:103 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:368
 msgid "Installed"
 msgstr "Instalât"
 
@@ -432,66 +439,97 @@ msgstr "Instalât"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:363
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:364
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Instalazion"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:97 src/gs-repo-row.c:126
+#: src/gs-app-addon-row.c:111 src/gs-repo-row.c:126
 #: src/gs-third-party-repo-row.c:107
 msgid "Removing"
 msgstr "Rimozion"
 
+#. TRANSLATORS: button text in the header when an application can be erased
+#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:989
+#: src/gs-details-page.ui:202
+msgid "_Uninstall"
+msgstr "_Disinstale"
+
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:480
+msgid "Version History"
+msgstr "Cronologjie des versions"
+
+#: src/gs-app-version-history-row.c:61
+#, c-format
+msgid "New in Version %s"
+msgstr "Gnûf te version %s"
+
+#: src/gs-app-version-history-row.c:68
+#, c-format
+msgid "Version %s"
+msgstr "Version %s"
+
+#: src/gs-app-version-history-row.c:70
+msgid "No details for this release"
+msgstr "Nissun detai par cheste publicazion"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: src/gs-app-version-history-row.c:84 src/gs-history-dialog.c:111
+#: src/gs-review-row.c:65
+msgid "%e %B %Y"
+msgstr "%e di %B dal %Y"
+
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:118
+#: src/gs-application.c:136
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modalitât di inviament: al pues jessi ‘updates’, ‘updated’, ‘installed’ o "
 "‘overview’"
 
-#: src/gs-application.c:118
+#: src/gs-application.c:136
 msgid "MODE"
 msgstr "MODALITÂT"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:138
 msgid "Search for applications"
 msgstr "Cîr aplicazions"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:138
 msgid "SEARCH"
 msgstr "CÎR"
 
-#: src/gs-application.c:122
+#: src/gs-application.c:140
 msgid "Show application details (using application ID)"
 msgstr "Mostre detais aplicazions (doprant l'ID de aplicazion)"
 
-#: src/gs-application.c:122 src/gs-application.c:126
+#: src/gs-application.c:140 src/gs-application.c:144
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:124
+#: src/gs-application.c:142
 msgid "Show application details (using package name)"
 msgstr "Mostre detais aplicazions (doprant il non dal pachet)"
 
-#: src/gs-application.c:124
+#: src/gs-application.c:142
 msgid "PKGNAME"
 msgstr "NONPACHET"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:144
 msgid "Install the application (using application ID)"
 msgstr "Instale la aplicazion (doprant il ID de aplicazion)"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:146
 msgid "Open a local package file"
 msgstr "Vierç un file di pachet locâl"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:146
 msgid "FILENAME"
 msgstr "NONFILE"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:148
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -499,47 +537,47 @@ msgstr ""
 "Il gjenar di interazion spietade par cheste azion: sedi ‘none’, ‘notify’, o "
 "‘full’"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:151
 msgid "Show verbose debugging information"
 msgstr "Mostre informazion detaiadis di debug"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:153
 msgid "Installs any pending updates in the background"
 msgstr "Al instale in sotfont cualsisei inzornament in spiete"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:155
 msgid "Show update preferences"
 msgstr "Mostre lis preferencis di inzornament"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:157
 msgid "Quit the running instance"
 msgstr "Jes de istance in esecuzion"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:159
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferìs lis sorzints di file locâi par AppStream"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:161
 msgid "Show version number"
 msgstr "Mostre il numar di version"
 
-#: src/gs-application.c:336
+#: src/gs-application.c:354
 msgid "translator-credits"
 msgstr "Fabio Tomat <f.t.public@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:341 src/gs-shell.c:2126
+#: src/gs-application.c:359 src/gs-shell.c:2136
 msgid "About Software"
 msgstr "Informazions su Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:344
+#: src/gs-application.c:362
 msgid "A nice way to manage the software on your system."
 msgstr "Un biel mût di ministrâ il software sul sisteme."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:572
+#: src/gs-application.c:590
 msgid "Sorry! There are no details for that application."
 msgstr "Scuse! No son detais par cheste la aplicazion."
 
@@ -558,7 +596,7 @@ msgstr "Instale…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:482
+#: src/gs-app-row.c:139 src/gs-updates-section.c:488
 msgid "Cancel"
 msgstr "Anule"
 
@@ -566,7 +604,7 @@ msgstr "Anule"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:338
+#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:338
 msgid "Install"
 msgstr "Instale"
 
@@ -591,16 +629,16 @@ msgstr "Daûr a disinstalâ"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:284
+#: src/gs-app-row.c:285
 msgid "Device cannot be used during update."
 msgstr "Il dispositîf nol pues jessi doprât intant che si inzorne."
 
-#: src/gs-app-row.c:475 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:476 src/gs-update-dialog.ui:185
 msgid "Requires additional permissions"
 msgstr "Al à bisugne di permès adizionâi"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:482
+#: src/gs-app-row.c:483
 #, c-format
 msgid "Renamed from %s"
 msgstr "Cambiât non di %s"
@@ -615,7 +653,7 @@ msgstr "Acès esterni par %s domandât (ream %s)"
 msgid "Login Required"
 msgstr "Acès necessari"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:261
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:262
 #: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
 #: src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -635,18 +673,18 @@ msgstr "_Password"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: lib/gs-category.c:178
+#: lib/gs-category.c:209
 msgid "Other"
 msgstr "Altri"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:183
+#: lib/gs-category.c:214
 msgid "All"
 msgstr "Dutis"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: lib/gs-category.c:187
+#: lib/gs-category.c:218
 msgid "Featured"
 msgstr "In risalt"
 
@@ -664,7 +702,7 @@ msgstr "Valutazion"
 
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:59
+#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:55
 msgid "Name"
 msgstr "Non"
 
@@ -687,67 +725,460 @@ msgid "Subcategories sorting menu"
 msgstr "Menù ordenament sot-categoriis"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:191
+#: lib/gs-cmd.c:193
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "Inserìs un numar di 1 a %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:254
+#: lib/gs-cmd.c:256
 msgid "Choose an application:"
 msgstr "Sielç une aplicazion:"
 
-#. TRANSLATORS: this is the summary of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:124
-msgid "OS updates are now installed"
-msgstr "I inzornaments dal SO cumò a son instalâts"
+#: lib/gs-desktop-data.c:17
+msgctxt "Menu of Audio & Video"
+msgid "All"
+msgstr "Dutis"
 
-#. TRANSLATORS: this is the body of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:127
-msgid "Recently installed updates are available to review"
-msgstr ""
-"I inzornaments instalâts cumò denant a son disponibii par jessi esaminâts"
+#: lib/gs-desktop-data.c:20
+msgctxt "Menu of Audio & Video"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:23
+msgctxt "Menu of Audio & Video"
+msgid "Audio Creation & Editing"
+msgstr "Creazion e modifiche audio"
+
+#: lib/gs-desktop-data.c:29
+msgctxt "Menu of Audio & Video"
+msgid "Music Players"
+msgstr "Riprodutôrs musicâi"
+
+#: lib/gs-desktop-data.c:38
+msgctxt "Menu of Developer Tools"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:41
+msgctxt "Menu of Developer Tools"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:44
+msgctxt "Menu of Developer Tools"
+msgid "Debuggers"
+msgstr "Debugger"
+
+#: lib/gs-desktop-data.c:47
+msgctxt "Menu of Developer Tools"
+msgid "IDEs"
+msgstr "IDE"
+
+#: lib/gs-desktop-data.c:56
+msgctxt "Menu of Education & Science"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:60
+msgctxt "Menu of Education & Science"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:64
+msgctxt "Menu of Education & Science"
+msgid "Artificial Intelligence"
+msgstr "Inteligjence artificiâl"
+
+#: lib/gs-desktop-data.c:67
+msgctxt "Menu of Education & Science"
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: lib/gs-desktop-data.c:71
+msgctxt "Menu of Education & Science"
+msgid "Chemistry"
+msgstr "Chimiche"
+
+#: lib/gs-desktop-data.c:75
+msgctxt "Menu of Education & Science"
+msgid "Languages"
+msgstr "Lenghis"
+
+#: lib/gs-desktop-data.c:79
+msgctxt "Menu of Education & Science"
+msgid "Math"
+msgstr "Matematiche"
+
+#: lib/gs-desktop-data.c:86
+msgctxt "Menu of Education & Science"
+msgid "Robotics"
+msgstr "Robotiche"
+
+#: lib/gs-desktop-data.c:95
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "Ducj"
+
+#: lib/gs-desktop-data.c:98
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:101
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Azion"
+
+#: lib/gs-desktop-data.c:104
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Aventure"
+
+#: lib/gs-desktop-data.c:107
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: lib/gs-desktop-data.c:110
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Blocs"
+
+#: lib/gs-desktop-data.c:113
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Taule"
+
+#: lib/gs-desktop-data.c:116
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Cjartis"
+
+#: lib/gs-desktop-data.c:119
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Emuladôrs"
+
+#: lib/gs-desktop-data.c:122
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Fruts"
+
+#: lib/gs-desktop-data.c:125
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Logjiche"
+
+#: lib/gs-desktop-data.c:129
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Zûcs di rûl"
+
+#: lib/gs-desktop-data.c:132
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Sport"
+
+#: lib/gs-desktop-data.c:135
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Strategjie"
+
+#: lib/gs-desktop-data.c:143
+msgctxt "Menu of Graphics & Photography"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:146
+msgctxt "Menu of Graphics & Photography"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:149
+msgctxt "Menu of Graphics & Photography"
+msgid "3D Graphics"
+msgstr "Grafiche 3D"
+
+#: lib/gs-desktop-data.c:152
+msgctxt "Menu of Graphics & Photography"
+msgid "Photography"
+msgstr "Fotografie"
+
+#: lib/gs-desktop-data.c:155
+msgctxt "Menu of Graphics & Photography"
+msgid "Scanning"
+msgstr "Scansion"
+
+#: lib/gs-desktop-data.c:158
+msgctxt "Menu of Graphics & Photography"
+msgid "Vector Graphics"
+msgstr "Grafiche vetoriâl"
+
+#: lib/gs-desktop-data.c:161
+msgctxt "Menu of Graphics & Photography"
+msgid "Viewers"
+msgstr "Visualizadôr"
+
+#: lib/gs-desktop-data.c:169
+msgctxt "Menu of Productivity"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:172
+msgctxt "Menu of Productivity"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:175
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "Calendari"
+
+#: lib/gs-desktop-data.c:179
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "Base di dâts"
+
+#: lib/gs-desktop-data.c:182
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "Finance"
+
+#: lib/gs-desktop-data.c:186
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "Elaboradôr di tescj"
+
+#: lib/gs-desktop-data.c:195
+msgctxt "Menu of Add-ons"
+msgid "Fonts"
+msgstr "Caratars"
+
+#: lib/gs-desktop-data.c:198
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "Codec"
+
+#: lib/gs-desktop-data.c:201
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Sorzints di input"
+
+#: lib/gs-desktop-data.c:204
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Pachets des lenghis"
+
+#: lib/gs-desktop-data.c:207
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Localizazion"
+
+#: lib/gs-desktop-data.c:210
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Driver Hardware"
+
+#: lib/gs-desktop-data.c:218
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:221
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:224
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "Chat"
+
+#: lib/gs-desktop-data.c:231
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "Notiziis"
+
+#: lib/gs-desktop-data.c:235
+msgctxt "Menu of Communication & News"
+msgid "Web Browsers"
+msgstr "Navigadôrs web"
+
+#: lib/gs-desktop-data.c:243
+msgctxt "Menu of Utilities"
+msgid "All"
+msgstr "Dutis"
+
+#: lib/gs-desktop-data.c:246
+msgctxt "Menu of Utilities"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:249
+msgctxt "Menu of Utilities"
+msgid "Text Editors"
+msgstr "Editôrs di test"
+
+#: lib/gs-desktop-data.c:257
+msgctxt "Menu of Reference"
+msgid "All"
+msgstr "Ducj"
+
+#: lib/gs-desktop-data.c:260
+msgctxt "Menu of Reference"
+msgid "Featured"
+msgstr "In risalt"
+
+#: lib/gs-desktop-data.c:263
+msgctxt "Menu of Art"
+msgid "Art"
+msgstr "Art"
+
+#: lib/gs-desktop-data.c:266
+msgctxt "Menu of Reference"
+msgid "Biography"
+msgstr "Biografie"
+
+#: lib/gs-desktop-data.c:269
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "Comics"
+
+#: lib/gs-desktop-data.c:272
+msgctxt "Menu of Reference"
+msgid "Fiction"
+msgstr "Finzion"
+
+#: lib/gs-desktop-data.c:275
+msgctxt "Menu of Reference"
+msgid "Health"
+msgstr "Salût"
+
+#: lib/gs-desktop-data.c:278
+msgctxt "Menu of Reference"
+msgid "History"
+msgstr "Storie"
+
+#: lib/gs-desktop-data.c:281
+msgctxt "Menu of Reference"
+msgid "Lifestyle"
+msgstr "Stîl di vite"
+
+#: lib/gs-desktop-data.c:284
+msgctxt "Menu of Reference"
+msgid "Politics"
+msgstr "Politichis"
+
+#: lib/gs-desktop-data.c:287
+msgctxt "Menu of Reference"
+msgid "Sports"
+msgstr "Sport"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: lib/gs-desktop-data.c:297
+msgid "Audio & Video"
+msgstr "Audio e video"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: lib/gs-desktop-data.c:300
+msgid "Developer Tools"
+msgstr "Struments di svilup"
+
+#. TRANSLATORS: this is the menu spec main category for Education & Science
+#: lib/gs-desktop-data.c:303
+msgid "Education & Science"
+msgstr "Educazion e Sience"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: lib/gs-desktop-data.c:306
+msgid "Games"
+msgstr "Zûcs"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: lib/gs-desktop-data.c:309
+msgid "Graphics & Photography"
+msgstr "Fotografie"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: lib/gs-desktop-data.c:312
+msgid "Productivity"
+msgstr "Produtivitât"
+
+#. TRANSLATORS: this is the menu spec main category for Add-ons
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#: lib/gs-desktop-data.c:315 src/gs-details-page.ui:410
+#: src/gs-installed-page.c:441
+msgid "Add-ons"
+msgstr "Estensions"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: lib/gs-desktop-data.c:318
+msgid "Communication & News"
+msgstr "Comunicazion e notiziis"
+
+#. TRANSLATORS: this is the menu spec main category for Reference
+#: lib/gs-desktop-data.c:321
+msgid "Reference"
+msgstr "Riferiment"
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: lib/gs-desktop-data.c:324
+msgid "Utilities"
+msgstr "Utilitâts"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:132 src/gs-common.c:146
+#: src/gs-common.c:130 src/gs-common.c:153
 #, c-format
 msgid "%s is now installed"
 msgstr "%s al è cumò instalât"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:136 src/gs-common.c:150
+#: src/gs-common.c:134 src/gs-common.c:157
 msgid "A restart is required for the changes to take effect."
 msgstr "Al è necessari tornâ a inviâ par rindi efetivis lis modifichis."
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:140
+#: src/gs-common.c:138
 msgid "Application is ready to be used."
 msgstr "La aplicazion e je pronte par jessi doprade."
 
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:146
+msgid "OS updates are now installed"
+msgstr "I inzornaments dal SO cumò a son instalâts"
+
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:149
+msgid "Recently installed updates are available to review"
+msgstr ""
+"I inzornaments instalâts cumò denant a son disponibii par jessi esaminâts"
+
 #. TRANSLATORS: button text
-#: src/gs-common.c:160 src/gs-common.c:651
+#: src/gs-common.c:168 src/gs-common.c:702
 msgid "Restart"
 msgstr "Torne invie"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:164
+#: src/gs-common.c:172
 msgid "Launch"
 msgstr "Eseguìs"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:223
+#: src/gs-common.c:231
 msgid "Install Third-Party Software?"
 msgstr "Instalâ software di tiercis parts?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:227 src/gs-repos-dialog.c:236
+#: src/gs-common.c:235 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
 msgstr "Abilitâ il dipuesit software di tiercis parts?"
 
@@ -755,7 +1186,7 @@ msgstr "Abilitâ il dipuesit software di tiercis parts?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:243
+#: src/gs-common.c:251
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -767,599 +1198,113 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:253
+#: src/gs-common.c:261
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s al è furnît di “%s”."
 
-#: src/gs-common.c:262
+#: src/gs-common.c:270
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Chest dipuesit software al scugne jessi abilitât par continuâ la instalazion."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:272
+#: src/gs-common.c:280
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Al podarès jessi ilegâl instalâ o doprâ %s in cualchi paîs."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:278
+#: src/gs-common.c:286
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Al podarès jessi ilegâl instalâ o doprâ chest codec in cualchi paîs."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:285
+#: src/gs-common.c:293
 msgid "Don’t Warn Again"
 msgstr "No sta visâmi plui"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:294
+#: src/gs-common.c:302
 msgid "Enable and Install"
 msgstr "Abilite e instale"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:453
+#: src/gs-common.c:505
 msgid "Detailed errors from the package manager follow:"
 msgstr "Chi daspò i erôrs in detai dal gjestôr dai pachets:"
 
-#: src/gs-common.c:472 src/gs-details-page.ui:469
+#: src/gs-common.c:524 src/gs-details-page.ui:576
 msgid "Details"
 msgstr "Detais"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:637
+#: src/gs-common.c:688
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Al è stât instalât un inzornament"
 msgstr[1] "I inzornaments a son stâts instalâts"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:642
+#: src/gs-common.c:693
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Al è necessari tornâ a inviâ par rindilu efetîf."
 msgstr[1] "Al è necessari tornâ a inviâ par rindiju efetîfs."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:649
+#: src/gs-common.c:700
 msgid "Not Now"
 msgstr "No cumò"
 
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:61
-msgid "No cartoon violence"
-msgstr "Nissune violence dai cartons animâts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:63
-msgid "Cartoon characters in unsafe situations"
-msgstr "Personaçs di cartons animâts in situazions pericolosis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:65
-msgid "Cartoon characters in aggressive conflict"
-msgstr "Personaçs di cartons animâts in conflit violent"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:67
-msgid "Graphic violence involving cartoon characters"
-msgstr "Grafiche di violence che e cjape dentri personaçs di cartons animâts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:72
-msgid "No fantasy violence"
-msgstr "Nissune violence fantasy"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:74
-msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr "Personaçs in situazions pericolosis facilis di distingui de realtât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:76
-msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr "Personaçs in conflit violent facil di distingui de realtât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:78
-msgid "Graphic violence easily distinguishable from reality"
-msgstr "Grafiche di violence facil di distingui de realtât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:83
-msgid "No realistic violence"
-msgstr "Nissune violence realistiche"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:85
-msgid "Mildly realistic characters in unsafe situations"
-msgstr "Personaçs un pôc realistics in situazions pericolosis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:87
-msgid "Depictions of realistic characters in aggressive conflict"
-msgstr "Figuris di personaçs realistics in conflit violent"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:89
-msgid "Graphic violence involving realistic characters"
-msgstr "Grafiche di violence che e cjape dentri personaçs realistics"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:94
-msgid "No bloodshed"
-msgstr "Nissun maçament"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:96
-msgid "Unrealistic bloodshed"
-msgstr "Maçaments no realistics"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:98
-msgid "Realistic bloodshed"
-msgstr "Maçaments realistics"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:100
-msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr "Figuris di sassinaments e mutilazions di tocs di cuarp"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:105
-msgid "No sexual violence"
-msgstr "Nissune violence sessuâl"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:107
-msgid "Rape or other violent sexual behavior"
-msgstr "Stupri o altris compuartaments sessuâi violents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:114
-msgid "No references to alcohol"
-msgstr "Nissun riferiment a bevandis alcolichis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:116
-msgid "References to alcoholic beverages"
-msgstr "Riferiments a bevandis alcolichis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:118
-msgid "Use of alcoholic beverages"
-msgstr "Ûs di bevandis alcolichis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:124
-msgid "No references to illicit drugs"
-msgstr "Nissun riferiment a droghis ilecitis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:126
-msgid "References to illicit drugs"
-msgstr "Riferiments a droghis ilecitis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:128
-msgid "Use of illicit drugs"
-msgstr "Ûs ilecit di droghis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:134
-msgid "No references to tobacco products"
-msgstr "Nissun riferiment a prodots derivâts dal tabac"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:136
-msgid "References to tobacco products"
-msgstr "Riferiments a tabacs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:138
-msgid "Use of tobacco products"
-msgstr "Ûs di tabacs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:144
-msgid "No nudity of any sort"
-msgstr "Nissune crotarie di cualsisei gjenar"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:146
-msgid "Brief artistic nudity"
-msgstr "Curte crotarie artistiche"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:148
-msgid "Prolonged nudity"
-msgstr "Crotarie sprolungjade"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:154
-msgid "No references to or depictions of sexual nature"
-msgstr "Nissun riferiment a o rafigurazions di nature sessuâl"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:156
-msgid "Provocative references or depictions"
-msgstr "Figuris o riferiments provocants"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:158
-msgid "Sexual references or depictions"
-msgstr "Riferiments o figuris sessuâi"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:160
-msgid "Graphic sexual behavior"
-msgstr "Grafiche di compuartaments sessuâi"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:165
-msgid "No profanity of any kind"
-msgstr "Nissune blasfemie di cualsisei gjenar"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:167
-msgid "Mild or infrequent use of profanity"
-msgstr "Ûs lizêr o no frecuent di profanitâts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:169
-msgid "Moderate use of profanity"
-msgstr "Ûs moderât di blasfemie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:171
-msgid "Strong or frequent use of profanity"
-msgstr "Ûs frecuent e fuart di blasfemie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:176
-msgid "No inappropriate humor"
-msgstr "Nissun umorisim sconvenient"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:178
-msgid "Slapstick humor"
-msgstr "Umorisim di comedie grese"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:180
-msgid "Vulgar or bathroom humor"
-msgstr "Umorisim volgâr o di cesso"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:182
-msgid "Mature or sexual humor"
-msgstr "Umorisim soç o par grancj"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:187
-msgid "No discriminatory language of any kind"
-msgstr "Nissun lengaç discriminatori di cualsisei gjenar"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:189
-msgid "Negativity towards a specific group of people"
-msgstr "Negativitât viers un specific grup di personis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:191
-msgid "Discrimination designed to cause emotional harm"
-msgstr "Discriminazion pensade par fâ mâl emotivamentri"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:193
-msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
-"Discriminazion esplicite basade su gjenar, sessualitât, raze o religjon"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:198
-msgid "No advertising of any kind"
-msgstr "Nissune publicitât di cualsisei gjenar"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:200
-msgid "Product placement"
-msgstr "Vendite di prodots"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:202
-msgid "Explicit references to specific brands or trademarked products"
-msgstr "Riferiments esplicits a marcjis specifichis o prodots firmâts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:204
-msgid "Users are encouraged to purchase specific real-world items"
-msgstr "I utents a son incitâts a comprâ ogjets reâi specifics"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:209
-msgid "No gambling of any kind"
-msgstr "Nissun zûc di azart di cualsisei gjenar"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:211
-msgid "Gambling on random events using tokens or credits"
-msgstr "Zûc di azart su events casuâi che al dopre gjetons o credits"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:213
-msgid "Gambling using “play” money"
-msgstr "Zûc di azart che al dopre bêçs “dal zûc”"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:215
-msgid "Gambling using real money"
-msgstr "Zûc di azart che al dopre bêçs vêrs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:220
-msgid "No ability to spend money"
-msgstr "Nissune pussibilitât di spindi bêçs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:222
-msgid "Users are encouraged to donate real money"
-msgstr "I utents a son incitâts a donâ bêçs vêrs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:225
-msgid "Ability to spend real money in-app"
-msgstr "Abilitât di spindi bêçs vêrs inte aplicazion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:230
-msgid "No way to chat with other users"
-msgstr "Nissune maniere par chatâ cun altris utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:232
-msgid "User-to-user interactions without chat functionality"
-msgstr "Interazions tra utents cence funzionalitât di chat"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:234
-msgid "Moderated chat functionality between users"
-msgstr "Funzionalitât no controllade di chat tra utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:236
-msgid "Uncontrolled chat functionality between users"
-msgstr "Funzionalitât no controllade di chat tra utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:241
-msgid "No way to talk with other users"
-msgstr "Nissune maniere par cjacarâ cun altris utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:243
-msgid "Uncontrolled audio or video chat functionality between users"
-msgstr "Funzionalitât no controllade di chat video o audio tra utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:250
-msgid "No sharing of social network usernames or email addresses"
-msgstr "Nissune condivision di nons utent di social network o direzions e-mail"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:252
-msgid "Sharing social network usernames or email addresses"
-msgstr "Condivision di nons utent di social network o direzions e-mail"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:259
-msgid "No sharing of user information with third parties"
-msgstr "Nissune condivision di informazions dal utent cun tiercis parts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
-msgid "Checking for the latest application version"
-msgstr "Control pe ultime version de aplicazion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:263
-msgid "Sharing diagnostic data that does not let others identify the user"
-msgstr ""
-"Condivision di dâts diagnostics che no permetin a altris di identificâ "
-"l'utent"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:265
-msgid "Sharing information that lets others identify the user"
-msgstr ""
-"Condivision di dâts diagnostics che a permetin a altris di identificâ l'utent"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:270
-msgid "No sharing of physical location with other users"
-msgstr "Nissune condivision di posizion fisiche cun altris utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:272
-msgid "Sharing physical location with other users"
-msgstr "Condivision posizion fisiche cun altris utents"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:281
-msgid "No references to homosexuality"
-msgstr "Nissun riferiment a omosessualitât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:283
-msgid "Indirect references to homosexuality"
-msgstr "Riferiments indirets ae omosessualitât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:285
-msgid "Kissing between people of the same gender"
-msgstr "Bussadis tra personis dal stes ses"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:287
-msgid "Graphic sexual behavior between people of the same gender"
-msgstr "Compuartament sessuâl grafic tra personis dal stes ses"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:292
-msgid "No references to prostitution"
-msgstr "Nissun riferiment a prostituzion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:294
-msgid "Indirect references to prostitution"
-msgstr "Riferiments indirets ae prostituzion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:296
-msgid "Direct references to prostitution"
-msgstr "Riferiments direts ae prostituzion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:298
-msgid "Graphic depictions of the act of prostitution"
-msgstr "Rapresentazions grafichis dal at di prostituzion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:303
-msgid "No references to adultery"
-msgstr "Nissun riferiment a adulteri"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:305
-msgid "Indirect references to adultery"
-msgstr "Riferiments indirets al adulteri"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:307
-msgid "Direct references to adultery"
-msgstr "Riferiment direts al adulteri"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:309
-msgid "Graphic depictions of the act of adultery"
-msgstr "Rapresentazions grafichis dal at di adulteri"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:314
-msgid "No sexualized characters"
-msgstr "Nissun personaç sessuât"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:317
-msgid "Scantily clad human characters"
-msgstr "Personaçs umans pôc vistîts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:319
-msgid "Overtly sexualized human characters"
-msgstr "Personaçs umans sessuâts in maniere anomale"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:324
-msgid "No references to desecration"
-msgstr "Nissun riferiment a profanazion"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:326
-msgid "Depictions of or references to historical desecration"
-msgstr "Rapresentazions o riferiments a profanazions storichis"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:328
-msgid "Depictions of modern-day human desecration"
-msgstr "Rapresentazion di profanazion umane moderne"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:330
-msgid "Graphic depictions of modern-day desecration"
-msgstr "Rapresentazions grafichis di profanazion moderne"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:335
-msgid "No visible dead human remains"
-msgstr "Nissun rest visibil di oms muarts"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:337
-msgid "Visible dead human remains"
-msgstr "Rescj di oms muarts visibii"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:339
-msgid "Dead human remains that are exposed to the elements"
-msgstr "Rescj di oms muarts che a son esposcj ai elements"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:341
-msgid "Graphic depictions of desecration of human bodies"
-msgstr "Rapresentazions grafichis di profanazion di cuarps umans"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:346
-msgid "No references to slavery"
-msgstr "Nissun riferiment a sclavitût"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:348
-msgid "Depictions of or references to historical slavery"
-msgstr "Rapresentazions o riferiments a sclavitût storiche"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:350
-msgid "Depictions of modern-day slavery"
-msgstr "Rapresentazions de sclavitût moderne"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:352
-msgid "Graphic depictions of modern-day slavery"
-msgstr "Rapresentazions grafichis de sclavitût moderne"
-
-#. TRANSLATORS: This is the formatting of English and localized name
-#. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:412
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:742
+msgid "Just now"
+msgstr "Propite cumò"
+
+#: src/gs-common.c:744
 #, c-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d minût indaûr"
+msgstr[1] "%d minûts indaûr"
 
-#: src/gs-content-rating.c:546
-msgid "General"
-msgstr "Gjenerâl"
+#: src/gs-common.c:748
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d ore indaûr"
+msgstr[1] "%d oris indaûr"
 
-#: src/gs-content-rating.c:555
-msgid "ALL"
-msgstr "DUCJ"
+#: src/gs-common.c:752
+#, c-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d zornade indaûr"
+msgstr[1] "%d dîs indaûr"
 
-#: src/gs-content-rating.c:559
-msgid "Adults Only"
-msgstr "Dome grancj"
+#: src/gs-common.c:756
+#, c-format
+msgid "%d week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] "%d setemane indaûr"
+msgstr[1] "%d setemanis indaûr"
 
-#: src/gs-content-rating.c:561
-msgid "Mature"
-msgstr "Madûr"
+#: src/gs-common.c:760
+#, c-format
+msgid "%d month ago"
+msgid_plural "%d months ago"
+msgstr[0] "%d mês indaûr"
+msgstr[1] "%d mês indaûr"
 
-#: src/gs-content-rating.c:563
-msgid "Teen"
-msgstr "Fantat"
-
-#: src/gs-content-rating.c:565
-msgid "Everyone 10+"
-msgstr "Ducj parsore dai 10"
-
-#: src/gs-content-rating.c:567
-msgid "Everyone"
-msgstr "Ducj"
-
-#: src/gs-content-rating.c:569
-msgid "Early Childhood"
-msgstr "Prime infanzie"
+#: src/gs-common.c:764
+#, c-format
+msgid "%d year ago"
+msgid_plural "%d years ago"
+msgstr[0] "%d an indaûr"
+msgstr[1] "%d agns indaûr"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:283
@@ -1434,24 +1379,24 @@ msgstr "_Lei di plui"
 msgid "_Read Less"
 msgstr "_Lei di mancul"
 
-#: src/gs-details-page.c:358
+#: src/gs-details-page.c:359
 msgid "Removing…"
 msgstr "Daûr a gjavâ…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:377
+#: src/gs-details-page.c:378
 msgid "Pending installation…"
 msgstr "In spiete pe instalazion…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:384
+#: src/gs-details-page.c:385
 msgid "Pending update…"
 msgstr "In spiete pal inzornament…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:398
+#: src/gs-details-page.c:399
 msgid "Preparing…"
 msgstr "Daûr a prontâ…"
 
@@ -1461,8 +1406,8 @@ msgstr "Daûr a prontâ…"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:905 src/gs-details-page.c:922
-#: src/gs-details-page.ui:176 src/gs-third-party-repo-row.c:84
+#: src/gs-details-page.c:906 src/gs-details-page.c:923
+#: src/gs-details-page.ui:177 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Instale"
@@ -1474,109 +1419,104 @@ msgstr "_Instale"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:936 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:937 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Instale…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:964
+#: src/gs-details-page.c:965
 msgid "_Launch"
 msgstr "_Invie"
 
-#. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:988 src/gs-details-page.ui:201
-msgid "_Uninstall"
-msgstr "_Disinstale"
-
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Rêt"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Al pues comunicâ vie rêt"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Servizis di sisteme"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus di sisteme"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Servizis di session"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus de session"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Dispositîfs"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Al pues acedi ai file dal dispositîf dal sisteme"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1024
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Cartele cjase"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1025
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "Al pues viodi, modificâ e creâ i file"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1025 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Al pues viodi i file"
 
-#: src/gs-details-page.c:1025 src/gs-details-page.c:1026
+#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "File System"
 
-#: src/gs-details-page.c:1027 src/gs-details-page.c:1028
+#: src/gs-details-page.c:1028 src/gs-details-page.c:1029
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Cartele dai discjariaments"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Impostazions"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Al pues viodi e modificâ cualsisei impostazion"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Sisteme di visualizazion vecje maniere"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Al dopre un sisteme di visualizazion vieli e no sigûr"
 
 # aplicazion
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Jessude dal isolament"
 
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Al pues lâ fûr dal isolament e imbroiâ cualsisei altre restrizion"
 
-#: src/gs-details-page.c:1046
+#: src/gs-details-page.c:1047
 msgid "This application is fully sandboxed."
 msgstr "Cheste aplicazion e je completamentri isolade."
 
-#: src/gs-details-page.c:1054
+#: src/gs-details-page.c:1055
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1584,132 +1524,132 @@ msgstr ""
 "Impussibil determinâ cualis parts dal sisteme a son acessibilis di cheste "
 "aplicazion. Chest al è solit pes aplicazions vecjis."
 
-#. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1210
-msgctxt "version"
-msgid "Unknown"
-msgstr "No cognossude"
-
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1239
+#: src/gs-details-page.c:1233
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1292
+#: src/gs-details-page.c:1286
 msgctxt "origin"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#: src/gs-details-page.c:1345
+#: src/gs-details-page.c:1339
+msgctxt "App permissions"
 msgid "None"
-msgstr "Nissune"
+msgstr "Nissun"
+
+#: src/gs-details-page.c:1341
+msgctxt "App permissions"
+msgid "Low"
+msgstr "Bas"
+
+#: src/gs-details-page.c:1343
+msgctxt "App permissions"
+msgid "Medium"
+msgstr "Medi"
+
+#: src/gs-details-page.c:1345
+msgctxt "App permissions"
+msgid "High"
+msgstr "Elevât"
 
 #: src/gs-details-page.c:1347
-msgid "Low"
-msgstr "Basse"
-
-#: src/gs-details-page.c:1349
-msgid "Medium"
-msgstr "Medie"
-
-#: src/gs-details-page.c:1351
-msgid "High"
-msgstr "Alte"
-
-#. This refers to the license of the application
-#. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1353 src/gs-details-page.ui:1063
-#: src/gs-review-row.c:58
+msgctxt "App permissions"
 msgid "Unknown"
-msgstr "No cognossude"
+msgstr "No cognossût"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1691
+#: src/gs-details-page.c:1711
 msgid "You need internet access to write a review"
 msgstr "Al covente un acès a internet par scrivi une recension"
 
-#: src/gs-details-page.c:1890 src/gs-details-page.c:1906
+#: src/gs-details-page.c:1911 src/gs-details-page.c:1927
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impussibil cjatâ “%s”"
 
-#: src/gs-details-page.c:1972 src/gs-details-page.c:2007
+#: src/gs-details-page.c:1993 src/gs-details-page.c:2028
 msgid "Loading…"
 msgstr "Daûr a cjariâ…"
 
-#: src/gs-details-page.c:2427
+#: src/gs-details-page.c:2466
 msgid "The application contains no age-inappropriate content."
 msgstr "La aplicazion no conten contignûts inadats pe etât."
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2536
+#: src/gs-details-page.c:2575
 msgid "Public domain"
 msgstr "Domini public"
 
 # fâ pagjine par software proprietari su vikipedie
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2539
+#: src/gs-details-page.c:2578
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2546
+#: src/gs-details-page.c:2585
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2556 src/gs-details-page.ui:1307
+#: src/gs-details-page.c:2595 src/gs-details-page.ui:1285
 msgid "Free Software"
 msgstr "Software Libar"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2613
+#: src/gs-details-page.c:2652
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "I utents a son limitâts de licence chi daurman:"
 msgstr[1] "I utents a son limitâts des licencis chi daurman:"
 
-#: src/gs-details-page.c:2640 src/gs-details-page.ui:1379
+#: src/gs-details-page.c:2679 src/gs-details-page.ui:1357
 msgid "More information"
 msgstr "Plui informazions"
 
-#: src/gs-details-page.ui:7
+#: src/gs-details-page.ui:8
 msgid "Details page"
 msgstr "Pagjine di detais"
 
 # recensions des aplicazions o recensions de aplicazion?
-#: src/gs-details-page.ui:39
+#: src/gs-details-page.ui:40
 msgid "Loading application details…"
 msgstr "Daûr a discjariâ i detais de aplicazion…"
 
-#: src/gs-details-page.ui:231
+#: src/gs-details-page.ui:232
 msgid "Downloading"
 msgstr "Daûr a discjariâ"
 
-#: src/gs-details-page.ui:271
+#: src/gs-details-page.ui:272
 msgid "_Update"
 msgstr "_Inzorne"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:287
+#: src/gs-details-page.ui:288
 msgid "_Add shortcut"
 msgstr "_Zonte scurte"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:301
+#: src/gs-details-page.ui:302
 msgid "Re_move shortcut"
 msgstr "Gja_ve scurte"
 
-#: src/gs-details-page.ui:375
+#: src/gs-details-page.ui:376
 msgid "No screenshot provided"
 msgstr "Cature di schermi no furnide"
 
-#: src/gs-details-page.ui:398
+#: src/gs-details-page.ui:422
+msgid "Selected add-ons will be installed with the application."
+msgstr "Lis estensions selezionadis a vignaran instaladis cu la aplicazion."
+
+#: src/gs-details-page.ui:505
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1717,11 +1657,11 @@ msgstr ""
 "Cheste aplicazion e pues jessi doprade nome cuant che e je ative une "
 "conession internet."
 
-#: src/gs-details-page.ui:408
+#: src/gs-details-page.ui:515
 msgid "Software Repository Included"
 msgstr "Dipuesit software includût"
 
-#: src/gs-details-page.ui:409
+#: src/gs-details-page.ui:516
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1729,11 +1669,11 @@ msgstr ""
 "Cheste aplicazion e inclût un dipuesit software che al furnìs inzornaments, "
 "cussì ancje l'acès a altri software."
 
-#: src/gs-details-page.ui:416
+#: src/gs-details-page.ui:523
 msgid "No Software Repository Included"
 msgstr "Nissun dipuesit software includût"
 
-#: src/gs-details-page.ui:417
+#: src/gs-details-page.ui:524
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1741,7 +1681,7 @@ msgstr ""
 "Cheste aplicazion no inclût un dipuesit software. No vignarà inzornade cun "
 "gnovis versions."
 
-#: src/gs-details-page.ui:425
+#: src/gs-details-page.ui:532
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1750,11 +1690,11 @@ msgstr ""
 "sostituide."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:432
+#: src/gs-details-page.ui:539
 msgid "Software Repository Identified"
 msgstr "Dipuesit software identificât"
 
-#: src/gs-details-page.ui:433
+#: src/gs-details-page.ui:540
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1762,124 +1702,109 @@ msgstr ""
 "Zontant chest dipuesit software tu varâs acès a software in plui e "
 "inzornaments."
 
-#: src/gs-details-page.ui:434
+#: src/gs-details-page.ui:541
 msgid "Only use software repositories that you trust."
 msgstr "Dopre nome i dipuesits software che tu ti fidis."
 
-#: src/gs-details-page.ui:444
+#: src/gs-details-page.ui:551
 msgid "_Website"
 msgstr "Sît _web"
 
-#: src/gs-details-page.ui:453
+#: src/gs-details-page.ui:560
 msgid "_Donate"
 msgstr "_Done"
 
 # aplicazion
-#: src/gs-details-page.ui:563
+#: src/gs-details-page.ui:670
 msgid "Localized in your Language"
 msgstr "Localizade te tô lenghe"
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:681
 msgid "Documentation"
 msgstr "Documentazion"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:692
 msgid "Release Activity"
 msgstr "Ativitât di publicazion"
 
-#: src/gs-details-page.ui:596
+#: src/gs-details-page.ui:703
 msgid "System Integration"
 msgstr "Integrazion tal sisteme"
 
 # aplicazion
-#: src/gs-details-page.ui:607
+#: src/gs-details-page.ui:714
 msgid "Sandboxed"
 msgstr "Isolade"
 
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:627 src/gs-origin-popover-row.c:103
+#: src/gs-details-page.ui:734 src/gs-origin-popover-row.c:91
 msgid "Channel"
 msgstr "Canâl"
 
-#. Translators: The available version of an app
-#: src/gs-details-page.ui:663 src/gs-origin-popover-row.ui:151
-msgid "Version"
-msgstr "Version"
-
-#: src/gs-details-page.ui:698
-msgid "Released"
-msgstr "Publicât"
-
-#: src/gs-details-page.ui:734
+#: src/gs-details-page.ui:770
 msgid "Age Rating"
 msgstr "Fasse di etât"
 
-#: src/gs-details-page.ui:772 src/gs-details-page.ui:1465
+#: src/gs-details-page.ui:808 src/gs-details-page.ui:1443
 msgid "Permissions"
 msgstr "Permès"
 
-#: src/gs-details-page.ui:810
+#: src/gs-details-page.ui:846
 msgid "Updated"
 msgstr "Inzornade"
 
-#: src/gs-details-page.ui:844
+#: src/gs-details-page.ui:880
 msgid "Category"
 msgstr "Categorie"
 
-#: src/gs-details-page.ui:881
+#: src/gs-details-page.ui:917
 msgid "Installed Size"
 msgstr "Dimension daspò la instalazion"
 
-#: src/gs-details-page.ui:912
+#: src/gs-details-page.ui:948
 msgid "Download Size"
 msgstr "Dimension dal discjariament"
 
-#: src/gs-details-page.ui:974
+#: src/gs-details-page.ui:1010
 msgid "Developer"
 msgstr "Svilupadôr"
 
-#: src/gs-details-page.ui:1020
+#: src/gs-details-page.ui:1056
 msgid "License"
 msgstr "Licence"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1039
+#: src/gs-details-page.ui:1075
 msgid "Free"
 msgstr "Libar"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1051
+#: src/gs-details-page.ui:1087
 msgid "Proprietary"
 msgstr "Proprietarie"
 
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
-#. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1101 src/gs-installed-page.c:441
-#: plugins/core/gs-desktop-common.c:315
-msgid "Add-ons"
-msgstr "Estensions"
-
-#: src/gs-details-page.ui:1113
-msgid "Selected add-ons will be installed with the application."
-msgstr "Lis estensions selezionadis a vignaran instaladis cu la aplicazion."
+#. This refers to the license of the application
+#: src/gs-details-page.ui:1099
+msgctxt "Application license"
+msgid "Unknown"
+msgstr "No cognossude"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1151
+#: src/gs-details-page.ui:1131
 msgid "Reviews"
 msgstr "Recensions"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1169
+#: src/gs-details-page.ui:1149
 msgid "_Write a Review"
 msgstr "_Scrîf une recension"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1190
+#: src/gs-details-page.ui:1170
 msgid "_Show More"
 msgstr "_Mostre altris"
 
-#: src/gs-details-page.ui:1318
+#: src/gs-details-page.ui:1296
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1887,11 +1812,11 @@ msgstr ""
 "Chest al significhe che il software al pues jessi inviât, copiât, "
 "distribuît, studiât e modificât cence fastidis."
 
-#: src/gs-details-page.ui:1358
+#: src/gs-details-page.ui:1336
 msgid "Proprietary Software"
 msgstr "Software proprietari"
 
-#: src/gs-details-page.ui:1369
+#: src/gs-details-page.ui:1347
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1901,20 +1826,20 @@ msgstr ""
 "une compagnie. Di solit a son restrizions sul ûs e il so codiç sorzint di "
 "solit nol è acessibil."
 
-#: src/gs-details-page.ui:1401
+#: src/gs-details-page.ui:1379
 msgid "Unknown Software License"
 msgstr "Licence software no cognossude"
 
-#: src/gs-details-page.ui:1412
+#: src/gs-details-page.ui:1390
 msgid "The license terms of this software are unknown."
 msgstr "I tiermins di licence di chest software no son cognossûts."
 
 # proviôt o e je caraterizade?
-#: src/gs-details-page.ui:1432
+#: src/gs-details-page.ui:1410
 msgid "The application was rated this way because it features:"
 msgstr "La aplicazion e je stade valutade cussì par vie che e proviôt:"
 
-#: src/gs-details-page.ui:1446
+#: src/gs-details-page.ui:1424
 msgid "No details were available for this rating."
 msgstr "Nissun detai al jere disponibil par cheste valutazion."
 
@@ -2131,6 +2056,18 @@ msgstr "Formât di file %s"
 msgid "Codecs page"
 msgstr "Pagjine dai codec"
 
+#: src/gs-featured-carousel.ui:43
+msgid "Previous"
+msgstr "Precedent"
+
+#: src/gs-featured-carousel.ui:73
+msgid "Next"
+msgstr "Prossim"
+
+#: src/gs-featured-carousel.ui:100
+msgid "Featured Apps List"
+msgstr "Liste aplicazions in risalt"
+
 #: src/gs-first-run-dialog.ui:6 src/gs-first-run-dialog.ui:15
 msgid "Welcome"
 msgstr "Benvignûts"
@@ -2182,12 +2119,6 @@ msgctxt "app status"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#. TRANSLATORS: This is the date string with: day number, month name, year.
-#. i.e. "25 May 2012"
-#: src/gs-history-dialog.c:111 src/gs-review-row.c:65 src/gs-updates-page.c:258
-msgid "%e %B %Y"
-msgstr "%e di %B dal %Y"
-
 #: src/gs-history-dialog.ui:5
 msgid "History"
 msgstr "Cronologjie"
@@ -2211,7 +2142,7 @@ msgstr "Al ven discjariât il catalic dai software"
 msgid "Loading page"
 msgstr "Daûr a cjariâ la pagjine"
 
-#: src/gs-loading-page.ui:47
+#: src/gs-loading-page.ui:48
 msgid "Starting up…"
 msgstr "Inviament in cors…"
 
@@ -2251,18 +2182,18 @@ msgid "There are no reviews to moderate"
 msgstr "No son recensions di moderâ"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:84
+#: src/gs-origin-popover-row.c:72
 msgid "system"
 msgstr "sisteme"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:87
+#: src/gs-origin-popover-row.c:75
 msgid "user"
 msgstr "utent"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:108 src/gs-origin-popover-row.ui:122
+#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
 msgid "Branch"
 msgstr "Ram"
 
@@ -2270,54 +2201,54 @@ msgstr "Ram"
 msgid "URL"
 msgstr "URL"
 
-#. Translators: The packaging format of the app being installed, e.g. 'RPM' or 'Flatpak'
-#: src/gs-origin-popover-row.ui:64
-msgid "Format"
-msgstr "Formât"
-
 #. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
-#: src/gs-origin-popover-row.ui:93
+#: src/gs-origin-popover-row.ui:64
 msgid "Installation"
 msgstr "Instalazion"
 
+#. Translators: The available version of an app
+#: src/gs-origin-popover-row.ui:122
+msgid "Version"
+msgstr "Version"
+
 #. add button
-#: src/gs-overview-page.c:314
+#: src/gs-overview-page.c:320
 msgid "More…"
 msgstr "Plui…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:564
+#: src/gs-overview-page.c:463
 msgid "Recommended Audio & Video Applications"
 msgstr "Aplicazions audio e video conseadis"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:569
+#: src/gs-overview-page.c:468
 msgid "Recommended Games"
 msgstr "Zûcs conseâts"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:574
+#: src/gs-overview-page.c:473
 msgid "Recommended Graphics Applications"
 msgstr "Aplicazions di grafiche conseadis"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:579
+#: src/gs-overview-page.c:478
 msgid "Recommended Productivity Applications"
 msgstr "Aplicazions di produtivitât conseadis"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:927 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:825 src/gs-repos-dialog.c:836
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "Rive a doprâ software adizionâl che al ven di sorzints di tiercis parts "
 "selezionadis."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:931 src/gs-repos-dialog.c:840
+#: src/gs-overview-page.c:829 src/gs-repos-dialog.c:840
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2327,47 +2258,39 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:936 src/gs-repos-dialog.c:845
+#: src/gs-overview-page.c:834 src/gs-repos-dialog.c:845
 msgid "Find out more…"
 msgstr "Par savê di plui…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:944 src/gs-repos-dialog.c:241
+#: src/gs-overview-page.c:842 src/gs-repos-dialog.c:241
 msgid "Enable"
 msgstr "Abilite"
 
-#: src/gs-overview-page.ui:7
+#: src/gs-overview-page.ui:8
 msgid "Overview page"
 msgstr "Pagjine panoramiche"
 
-#: src/gs-overview-page.ui:39
+#: src/gs-overview-page.ui:40
 msgid "Enable Third Party Software Repositories?"
 msgstr "Abilitâ i dipuesits software di tiercis parts?"
 
-#: src/gs-overview-page.ui:105
-msgid "Previous"
-msgstr "Precedent"
-
-#: src/gs-overview-page.ui:130
-msgid "Next"
-msgstr "Prossim"
-
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-overview-page.ui:153
+#: src/gs-overview-page.ui:96
 msgid "Editor’s Picks"
 msgstr "Selezionadis di noaltris"
 
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-overview-page.ui:179
+#: src/gs-overview-page.ui:122
 msgid "Recent Releases"
 msgstr "Publicazions resintis"
 
-#: src/gs-overview-page.ui:213
+#: src/gs-overview-page.ui:156
 msgid "Categories"
 msgstr "Categoriis"
 
-#: src/gs-overview-page.ui:280
+#: src/gs-overview-page.ui:223
 msgid "No Application Data Found"
 msgstr "Dâts de aplicazion no cjatâts"
 
@@ -2411,7 +2334,7 @@ msgstr ""
 "%s al vignarà disinstalât e par podêlu doprâ di gnûf tu varâs di instalâlu."
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:64 src/gs-summary-tile.c:87
+#: src/gs-popular-tile.c:65 src/gs-summary-tile.c:89
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Instalât)"
@@ -2598,13 +2521,13 @@ msgstr "Daûr a disabilitâ"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
-#: src/gs-repo-row.c:144
+#: src/gs-repo-row.c:147
 msgid "Enabled"
 msgstr "Abilitât"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
-#: src/gs-repo-row.c:150
+#: src/gs-repo-row.c:153
 msgid "Disabled"
 msgstr "Disabilitât"
 
@@ -2713,6 +2636,12 @@ msgstr ""
 msgid "ratings in total"
 msgstr "recensions in totâl"
 
+#. TRANSLATORS: this is when a user doesn't specify a name
+#: src/gs-review-row.c:58
+msgctxt "Reviewer name"
+msgid "Unknown"
+msgstr "No cognossût"
+
 #. TRANSLATORS: we explain what the action is going to do
 #: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
@@ -2770,45 +2699,45 @@ msgstr "Gjave…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:266
+#: src/gs-screenshot-image.c:347
 msgid "Screenshot not found"
 msgstr "Cature di schermi no cjatade"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:283
+#: src/gs-screenshot-image.c:364
 msgid "Failed to load image"
 msgstr "Cjariament de imagjin falît"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:425
+#: src/gs-screenshot-image.c:506
 msgid "Screenshot size not found"
 msgstr "Dimension de cature di schermi no cjatade"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:455
+#: src/gs-screenshot-image.c:536
 msgid "Could not create cache"
 msgstr "Impussibil cjariâ la cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:515
+#: src/gs-screenshot-image.c:596
 msgid "Screenshot not valid"
 msgstr "Cature di schermi no valide"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:535
+#: src/gs-screenshot-image.c:616
 msgid "Screenshot not available"
 msgstr "Cature di schermi no disponibile"
 
-#: src/gs-screenshot-image.c:601
+#: src/gs-screenshot-image.c:682
 msgid "Screenshot"
 msgstr "Cature"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:143
+#: src/gs-search-page.c:144
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -2831,33 +2760,33 @@ msgstr "Nissune aplicazion cjatade"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1127 src/gs-shell.c:1132 src/gs-shell.c:1147
-#: src/gs-shell.c:1151
+#: src/gs-shell.c:1137 src/gs-shell.c:1142 src/gs-shell.c:1157
+#: src/gs-shell.c:1161
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1198
+#: src/gs-shell.c:1208
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Impussibil discjariâ di %s i inzornaments firmware"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1204
+#: src/gs-shell.c:1214
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Impussibil discjariâ di %s i inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1211 src/gs-shell.c:1256
+#: src/gs-shell.c:1221 src/gs-shell.c:1266
 msgid "Unable to download updates"
 msgstr "Impussibil discjariâ i inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1217
+#: src/gs-shell.c:1227
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2866,50 +2795,50 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1226
+#: src/gs-shell.c:1236
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Impussibil discjariâ di %s i inzornaments: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1231
+#: src/gs-shell.c:1241
 msgid "Unable to download updates: not enough disk space"
 msgstr "Impussibil discjariâ i inzornaments: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1238
+#: src/gs-shell.c:1248
 msgid "Unable to download updates: authentication was required"
 msgstr "Impussibil discjariâ i inzornaments: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243
+#: src/gs-shell.c:1253
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Impussibil discjariâ i inzornaments: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1248
+#: src/gs-shell.c:1258
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
 "Impussibil discjariâ i inzornaments: no si à i permès par instalâ software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1259
+#: src/gs-shell.c:1269
 msgid "Unable to get list of updates"
 msgstr "Impussibil otignî la liste dai inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1302
+#: src/gs-shell.c:1312
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Impussibil instalâ %s par vie che no si è rivâts a discjariâ di %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1318
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Impussibil instalâ %s par vie che no si è rivâts a discjariâ"
@@ -2918,73 +2847,73 @@ msgstr "Impussibil instalâ %s par vie che no si è rivâts a discjariâ"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1321
+#: src/gs-shell.c:1331
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Impussibil instalâ %s par vie che il runtime %s nol è disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1337
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Impussibil instalâ %s par vie che nol è supuartât"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1334
+#: src/gs-shell.c:1344
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Impussibil instalâ: al coventave l'acès a internet ma nol jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1350
 msgid "Unable to install: the application has an invalid format"
 msgstr "Impussibil instalâ: la aplicazion e à un formât no valit"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1345
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Impussibil instalâ %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1352
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Impussibil instalâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1359
+#: src/gs-shell.c:1369
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Impussibil instalâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1366
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Impussibil instalâ %s: no si à i permès par instalâ software"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1384
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Impussibil instalâ %s: e covente la alimentazion vie prese"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1381
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Impussibil instalâ %s: il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1390
+#: src/gs-shell.c:1400
 #, c-format
 msgid "Unable to install %s"
 msgstr "Impussibil instalâ %s"
@@ -2993,14 +2922,14 @@ msgstr "Impussibil instalâ %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1437
+#: src/gs-shell.c:1447
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Impussibil inzornâ %s di %s par vie che no si è rivâts a discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1444
+#: src/gs-shell.c:1454
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Impussibil inzornâ %s par vie che no si è rivâts a discjariâ"
@@ -3008,7 +2937,7 @@ msgstr "Impussibil inzornâ %s par vie che no si è rivâts a discjariâ"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1451
+#: src/gs-shell.c:1461
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr ""
@@ -3016,66 +2945,66 @@ msgstr ""
 "discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1465
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr ""
 "Impussibil instalâ i inzornaments par vie che no si è rivâts a discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1461
+#: src/gs-shell.c:1471
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Impussibil inzornâ: al coventave l'acès a internet ma nol jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1471
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Impussibil inzornâ %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1476
+#: src/gs-shell.c:1486
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Impussibil instalâ i inzornaments: nol è vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1486
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Impussibil inzornâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1491
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Impussibil instalâ i inzornaments: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1500
+#: src/gs-shell.c:1510
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Impussibil inzornâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1505
+#: src/gs-shell.c:1515
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Impussibil instalâ i inzornaments: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1524
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Impussibil inzornâ %s: no si à i permès par inzornâ software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1530
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3084,14 +3013,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1530
+#: src/gs-shell.c:1540
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Impussibil inzornâ %s: e covente la alimentazion vie prese"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1536
+#: src/gs-shell.c:1546
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr ""
@@ -3099,27 +3028,27 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1545
+#: src/gs-shell.c:1555
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Impussibil inzornâ %s: il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1551
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Impussibil instalâ i inzornaments: il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1562
+#: src/gs-shell.c:1572
 #, c-format
 msgid "Unable to update %s"
 msgstr "Impussibil inzornâ %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1565
+#: src/gs-shell.c:1575
 #, c-format
 msgid "Unable to install updates"
 msgstr "Impussibil instalâ i inzornaments"
@@ -3128,21 +3057,21 @@ msgstr "Impussibil instalâ i inzornaments"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1608
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Impussibil avanzâ a %s di %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1613
+#: src/gs-shell.c:1623
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Impussibil avanzâ a %s par vie che no si è rivâts a discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1622
+#: src/gs-shell.c:1632
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3151,91 +3080,91 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1631
+#: src/gs-shell.c:1641
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Impussibil avanzâ a %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1639
+#: src/gs-shell.c:1649
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Impussibil avanzâ a %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1646
+#: src/gs-shell.c:1656
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Impussibil avanzâ a %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1653
+#: src/gs-shell.c:1663
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Impussibil avanzâ a %s: no si à i permès par avanzâ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1660
+#: src/gs-shell.c:1670
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Impussibil avanzâ a %s: e covente la alimentazion vie prese"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1667
+#: src/gs-shell.c:1677
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Impussibil avanzâ a %s: il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1676
+#: src/gs-shell.c:1686
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Impussibil avanzâ a %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1714
+#: src/gs-shell.c:1724
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Impussibil gjavâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1720
+#: src/gs-shell.c:1730
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Impussibil gjavâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1726
+#: src/gs-shell.c:1736
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Impussibil gjavâ %s: no si à i permès par gjavâ software"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1733
+#: src/gs-shell.c:1743
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Impussibil gjavâ %s: e covente la alimentazion vie prese"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1740
+#: src/gs-shell.c:1750
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Impussibil gjavâ %s: il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1752
+#: src/gs-shell.c:1762
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Impussibil gjavâ %s"
@@ -3244,79 +3173,79 @@ msgstr "Impussibil gjavâ %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1795
+#: src/gs-shell.c:1805
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Impussibil inviâ %s: %s nol è instalât"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1802 src/gs-shell.c:1853 src/gs-shell.c:1894
-#: src/gs-shell.c:1940
+#: src/gs-shell.c:1812 src/gs-shell.c:1863 src/gs-shell.c:1904
+#: src/gs-shell.c:1950
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "No'nd è vonde spazi libar sul disc — libere un tic di spazi e torne prove"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1813 src/gs-shell.c:1864 src/gs-shell.c:1905
-#: src/gs-shell.c:1964
+#: src/gs-shell.c:1823 src/gs-shell.c:1874 src/gs-shell.c:1915
+#: src/gs-shell.c:1974
 msgid "Sorry, something went wrong"
 msgstr "Nus displâs, alc al è lât stuart"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1845
+#: src/gs-shell.c:1855
 msgid "Failed to install file: not supported"
 msgstr "No si è rivâts a instalâ il file: no supuartât"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1849
+#: src/gs-shell.c:1859
 msgid "Failed to install file: authentication failed"
 msgstr "No si è rivâts a instalâ il file: autenticazion falide"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1886
+#: src/gs-shell.c:1896
 msgid "Failed to install: not supported"
 msgstr "No si è rivâts a instalâ: no supuartât"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1890
+#: src/gs-shell.c:1900
 msgid "Failed to install: authentication failed"
 msgstr "No si è rivâts a instalâ: autenticazion falide"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1934
+#: src/gs-shell.c:1944
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Impussibil contatâ %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1946
+#: src/gs-shell.c:1956
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Si scugne tornâ a inviâ Software par podê doprâ i gnûfs plugins."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1951
+#: src/gs-shell.c:1961
 msgid "AC power is required"
 msgstr "Al covente jessi tacâts ae prese"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1955
+#: src/gs-shell.c:1965
 msgid "The battery level is too low"
 msgstr "Il nivel de batarie al è masse bas"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-shell-search-provider.c:258
+#: src/gs-shell-search-provider.c:263
 #, c-format
 msgid "Source: %s"
 msgstr "Sorzint: %s"
 
-#: src/gs-summary-tile.c:92
+#: src/gs-summary-tile.c:94
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Instalazion)"
 
-#: src/gs-summary-tile.c:97
+#: src/gs-summary-tile.c:99
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Rimozion)"
@@ -3329,7 +3258,7 @@ msgstr "_Gjave ducj"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-update-dialog.c:188
+#: src/gs-update-dialog.c:189
 msgid "No update description available."
 msgstr "Nissune descrizion dal inzornament disponibile."
 
@@ -3337,37 +3266,37 @@ msgstr "Nissune descrizion dal inzornament disponibile."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:292
+#: src/gs-update-dialog.c:293
 #, c-format
 msgid "Installed on %s"
 msgstr "Instalât ai %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:312
+#: src/gs-update-dialog.c:313
 msgid "Installed Updates"
 msgstr "Inzornaments instalâts"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:544
+#: src/gs-update-dialog.c:535
 msgid "Additions"
 msgstr "Zontaduris"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:548
+#: src/gs-update-dialog.c:539
 msgid "Removals"
 msgstr "Rimozions"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:552
+#: src/gs-update-dialog.c:543
 msgid "Updates"
 msgstr "Inzornaments"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:556
+#: src/gs-update-dialog.c:547
 msgid "Downgrades"
 msgstr "Regressions"
 
@@ -3589,107 +3518,57 @@ msgstr ""
 "inzornament e torne prove. Se il probleme al persist, contate il to furnidôr "
 "di software."
 
-#. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:226
-msgid "%R"
-msgstr "%R"
-
-#. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:229
-msgid "%l:%M %p"
-msgstr "%l:%M %p"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:235
-msgid "Yesterday, %R"
-msgstr "Îr, %R"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:239
-msgid "Yesterday, %l:%M %p"
-msgstr "Îr, %l:%M %p"
-
-#: src/gs-updates-page.c:242
-msgid "Two days ago"
-msgstr "Doi dîs indaûr"
-
-#: src/gs-updates-page.c:244
-msgid "Three days ago"
-msgstr "Trê dîs indaûr"
-
-#: src/gs-updates-page.c:246
-msgid "Four days ago"
-msgstr "Cuatri dîs indaûr"
-
-#: src/gs-updates-page.c:248
-msgid "Five days ago"
-msgstr "Cinc dîs indaûr"
-
-#: src/gs-updates-page.c:250
-msgid "Six days ago"
-msgstr "Sîs dîs indaûr"
-
-#: src/gs-updates-page.c:252
-msgid "One week ago"
-msgstr "Une setemane indaûr"
-
-#: src/gs-updates-page.c:254
-msgid "Two weeks ago"
-msgstr "Dôs setemanis indaûr"
-
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:270
+#: src/gs-updates-page.c:186
 msgid "Looking for new updates…"
 msgstr "Daûr a cirî gnûfs inzornaments…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:339
+#: src/gs-updates-page.c:255
 msgid "Setting up updates…"
 msgstr "Daûr a configurâ i inzornaments…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:340 src/gs-updates-page.c:347
+#: src/gs-updates-page.c:256 src/gs-updates-page.c:263
 msgid "(This could take a while)"
 msgstr "(Al podarès tirâle a dilunc)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:454
+#: src/gs-updates-page.c:370
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ultin control: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:618
+#: src/gs-updates-page.c:534
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s no je plui supuartade."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:623
+#: src/gs-updates-page.c:539
 msgid "Your OS is no longer supported."
 msgstr "Il to Sisteme Operatîf nol è plui supuartât."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:628
+#: src/gs-updates-page.c:544
 msgid "This means that it does not receive security updates."
 msgstr "Chest al significhe che nol ricevarà inzornaments di sigurece."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:632
+#: src/gs-updates-page.c:548
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Si consee di avanzâ a une version plui resinte."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:890
+#: src/gs-updates-page.c:806
 msgid "Charges May Apply"
 msgstr "Tu podaressis spindi bêçs"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:894
+#: src/gs-updates-page.c:810
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3699,27 +3578,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:898
+#: src/gs-updates-page.c:814
 msgid "Check _Anyway"
 msgstr "Controle _distès"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:914
+#: src/gs-updates-page.c:830
 msgid "No Network"
 msgstr "Nissune rêt"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:918
+#: src/gs-updates-page.c:834
 msgid "Internet access is required to check for updates."
 msgstr "L'acès a internet al è necessari par controlâ i inzornaments."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1341
+#: src/gs-updates-page.c:1257
 msgid "Checking…"
 msgstr "Daûr a controlâ…"
 
-#: src/gs-updates-page.c:1354
+#: src/gs-updates-page.c:1270
 msgid "Check for updates"
 msgstr "Control inzornaments"
 
@@ -3758,41 +3637,41 @@ msgstr "I inzornaments a son gjestîts in automatic"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:290
 msgid "Restart & Update"
 msgstr "Torne invie e inzorne"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:290
+#: src/gs-updates-section.c:296
 msgid "Update All"
 msgstr "Inzorne dut"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:421
+#: src/gs-updates-section.c:427
 msgid "Integrated Firmware"
 msgstr "Firmware integrât"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:425
+#: src/gs-updates-section.c:431
 msgid "Requires Restart"
 msgstr "Al covente tornâ a inviâ"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:429
+#: src/gs-updates-section.c:435
 msgid "Application Updates"
 msgstr "Inzornaments aplicazion"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:433
+#: src/gs-updates-section.c:439
 msgid "Device Firmware"
 msgstr "Firmware dispositîf"
 
-#: src/gs-updates-section.c:461 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:467 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Discjarie"
 
@@ -3865,391 +3744,6 @@ msgid ""
 msgstr ""
 "Inzornaments;Avanzament;Sorzints;Repositories;Dipuesits;Preferencis;Instalâ;"
 "Disinstalâ;Program;Software;Aplicazion;Negozi;"
-
-#: plugins/core/gs-desktop-common.c:17
-msgctxt "Menu of Audio & Video"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:20
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:23
-msgctxt "Menu of Audio & Video"
-msgid "Audio Creation & Editing"
-msgstr "Creazion e modifiche audio"
-
-#: plugins/core/gs-desktop-common.c:29
-msgctxt "Menu of Audio & Video"
-msgid "Music Players"
-msgstr "Riprodutôrs musicâi"
-
-#: plugins/core/gs-desktop-common.c:38
-msgctxt "Menu of Developer Tools"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:41
-msgctxt "Menu of Developer Tools"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:44
-msgctxt "Menu of Developer Tools"
-msgid "Debuggers"
-msgstr "Debugger"
-
-#: plugins/core/gs-desktop-common.c:47
-msgctxt "Menu of Developer Tools"
-msgid "IDEs"
-msgstr "IDE"
-
-#: plugins/core/gs-desktop-common.c:56
-msgctxt "Menu of Education & Science"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Education & Science"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:64
-msgctxt "Menu of Education & Science"
-msgid "Artificial Intelligence"
-msgstr "Inteligjence artificiâl"
-
-#: plugins/core/gs-desktop-common.c:67
-msgctxt "Menu of Education & Science"
-msgid "Astronomy"
-msgstr "Astronomie"
-
-#: plugins/core/gs-desktop-common.c:71
-msgctxt "Menu of Education & Science"
-msgid "Chemistry"
-msgstr "Chimiche"
-
-#: plugins/core/gs-desktop-common.c:75
-msgctxt "Menu of Education & Science"
-msgid "Languages"
-msgstr "Lenghis"
-
-#: plugins/core/gs-desktop-common.c:79
-msgctxt "Menu of Education & Science"
-msgid "Math"
-msgstr "Matematiche"
-
-#: plugins/core/gs-desktop-common.c:86
-msgctxt "Menu of Education & Science"
-msgid "Robotics"
-msgstr "Robotiche"
-
-#: plugins/core/gs-desktop-common.c:95
-msgctxt "Menu of Games"
-msgid "All"
-msgstr "Ducj"
-
-#: plugins/core/gs-desktop-common.c:98
-msgctxt "Menu of Games"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:101
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "Azion"
-
-#: plugins/core/gs-desktop-common.c:104
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "Aventure"
-
-#: plugins/core/gs-desktop-common.c:107
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "Arcade"
-
-#: plugins/core/gs-desktop-common.c:110
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "Blocs"
-
-#: plugins/core/gs-desktop-common.c:113
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "Taule"
-
-#: plugins/core/gs-desktop-common.c:116
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "Cjartis"
-
-#: plugins/core/gs-desktop-common.c:119
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "Emuladôrs"
-
-#: plugins/core/gs-desktop-common.c:122
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "Fruts"
-
-#: plugins/core/gs-desktop-common.c:125
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "Logjiche"
-
-#: plugins/core/gs-desktop-common.c:129
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "Zûcs di rûl"
-
-#: plugins/core/gs-desktop-common.c:132
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "Sport"
-
-#: plugins/core/gs-desktop-common.c:135
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "Strategjie"
-
-#: plugins/core/gs-desktop-common.c:143
-msgctxt "Menu of Graphics & Photography"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:146
-msgctxt "Menu of Graphics & Photography"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:149
-msgctxt "Menu of Graphics & Photography"
-msgid "3D Graphics"
-msgstr "Grafiche 3D"
-
-#: plugins/core/gs-desktop-common.c:152
-msgctxt "Menu of Graphics & Photography"
-msgid "Photography"
-msgstr "Fotografie"
-
-#: plugins/core/gs-desktop-common.c:155
-msgctxt "Menu of Graphics & Photography"
-msgid "Scanning"
-msgstr "Scansion"
-
-#: plugins/core/gs-desktop-common.c:158
-msgctxt "Menu of Graphics & Photography"
-msgid "Vector Graphics"
-msgstr "Grafiche vetoriâl"
-
-#: plugins/core/gs-desktop-common.c:161
-msgctxt "Menu of Graphics & Photography"
-msgid "Viewers"
-msgstr "Visualizadôr"
-
-#: plugins/core/gs-desktop-common.c:169
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:172
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:175
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "Calendari"
-
-#: plugins/core/gs-desktop-common.c:179
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "Base di dâts"
-
-#: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "Finance"
-
-#: plugins/core/gs-desktop-common.c:186
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "Elaboradôr di tescj"
-
-#: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Add-ons"
-msgid "Fonts"
-msgstr "Caratars"
-
-#: plugins/core/gs-desktop-common.c:198
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "Codec"
-
-#: plugins/core/gs-desktop-common.c:201
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Sorzints di input"
-
-#: plugins/core/gs-desktop-common.c:204
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Pachets des lenghis"
-
-#: plugins/core/gs-desktop-common.c:207
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Localizazion"
-
-#: plugins/core/gs-desktop-common.c:210
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Driver Hardware"
-
-#: plugins/core/gs-desktop-common.c:218
-msgctxt "Menu of Communication & News"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:221
-msgctxt "Menu of Communication & News"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:224
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "Chat"
-
-#: plugins/core/gs-desktop-common.c:231
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "Notiziis"
-
-#: plugins/core/gs-desktop-common.c:235
-msgctxt "Menu of Communication & News"
-msgid "Web Browsers"
-msgstr "Navigadôrs web"
-
-#: plugins/core/gs-desktop-common.c:243
-msgctxt "Menu of Utilities"
-msgid "All"
-msgstr "Dutis"
-
-#: plugins/core/gs-desktop-common.c:246
-msgctxt "Menu of Utilities"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:249
-msgctxt "Menu of Utilities"
-msgid "Text Editors"
-msgstr "Editôrs di test"
-
-#: plugins/core/gs-desktop-common.c:257
-msgctxt "Menu of Reference"
-msgid "All"
-msgstr "Ducj"
-
-#: plugins/core/gs-desktop-common.c:260
-msgctxt "Menu of Reference"
-msgid "Featured"
-msgstr "In risalt"
-
-#: plugins/core/gs-desktop-common.c:263
-msgctxt "Menu of Art"
-msgid "Art"
-msgstr "Art"
-
-#: plugins/core/gs-desktop-common.c:266
-msgctxt "Menu of Reference"
-msgid "Biography"
-msgstr "Biografie"
-
-#: plugins/core/gs-desktop-common.c:269
-msgctxt "Menu of Reference"
-msgid "Comics"
-msgstr "Comics"
-
-#: plugins/core/gs-desktop-common.c:272
-msgctxt "Menu of Reference"
-msgid "Fiction"
-msgstr "Finzion"
-
-#: plugins/core/gs-desktop-common.c:275
-msgctxt "Menu of Reference"
-msgid "Health"
-msgstr "Salût"
-
-#: plugins/core/gs-desktop-common.c:278
-msgctxt "Menu of Reference"
-msgid "History"
-msgstr "Storie"
-
-#: plugins/core/gs-desktop-common.c:281
-msgctxt "Menu of Reference"
-msgid "Lifestyle"
-msgstr "Stîl di vite"
-
-#: plugins/core/gs-desktop-common.c:284
-msgctxt "Menu of Reference"
-msgid "Politics"
-msgstr "Politichis"
-
-#: plugins/core/gs-desktop-common.c:287
-msgctxt "Menu of Reference"
-msgid "Sports"
-msgstr "Sport"
-
-#. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:297
-msgid "Audio & Video"
-msgstr "Audio e video"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:300
-msgid "Developer Tools"
-msgstr "Struments di svilup"
-
-#. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:303
-msgid "Education & Science"
-msgstr "Educazion e Sience"
-
-#. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:306
-msgid "Games"
-msgstr "Zûcs"
-
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:309
-msgid "Graphics & Photography"
-msgstr "Fotografie"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:312
-msgid "Productivity"
-msgstr "Produtivitât"
-
-#. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:318
-msgid "Communication & News"
-msgstr "Comunicazion e notiziis"
-
-#. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:321
-msgid "Reference"
-msgstr "Riferiment"
-
-#. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:324
-msgid "Utilities"
-msgstr "Utilitâts"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -4340,49 +3834,64 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak al è un ambient di svilup par aplicazions di scritori su Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:998
+#: plugins/flatpak/gs-flatpak.c:1008
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Daûr a otignî i metadâts flatpak par %s…"
 
+#: plugins/flatpak/gs-flatpak.c:2930
+#, c-format
+msgid "Failed to refine addon ‘%s’: %s"
+msgstr "No si è rivâts a rifinî la zonte ‘%s’: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:803
+#, c-format
+msgid "Failed to add to install for addon ‘%s’: %s"
+msgstr "No si è rivâts a zontâ par instalâ la zonte ‘%s’: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:817
+#, c-format
+msgid "Failed to add to uninstall for addon ‘%s’: %s"
+msgstr "No si è rivâts a zontâ par disinstalâ la zonte ‘%s’: %s"
+
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:136
+#: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
 msgid "%s Device Update"
 msgstr "Inzornament dispositîf %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:141
+#: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
 msgid "%s System Update"
 msgstr "Inzornament sisteme %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:146
+#: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "Inzornament dal controlôr incorporât %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:151
+#: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
 msgid "%s ME Update"
 msgstr "Inzornament motôr di gjestion %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:156
+#: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "Inzornament motôr di gjestion (ME) aziendâl di %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:161
+#: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "Inzornament motôr di gjestion (ME) utent di %s"
@@ -4390,7 +3899,7 @@ msgstr "Inzornament motôr di gjestion (ME) utent di %s"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:167
+#: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
 msgid "%s Controller Update"
 msgstr "Inzornament dal controlôr %s"
@@ -4398,32 +3907,32 @@ msgstr "Inzornament dal controlôr %s"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:173
+#: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "Inzornament dal controlôr Thunderbolt di %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:178
+#: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Inzornament dal Microcode de CPU %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:183
+#: plugins/fwupd/gs-fwupd-app.c:182
 #, c-format
 msgid "%s Configuration Update"
 msgstr "Inzornament configurazion %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:710
+#: plugins/fwupd/gs-plugin-fwupd.c:707
 msgid "Downloading firmware update signature…"
 msgstr "Daûr a discjariâ la firme dal inzornament dal firmware…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:751
+#: plugins/fwupd/gs-plugin-fwupd.c:748
 msgid "Downloading firmware update metadata…"
 msgstr "Daûr a discjariâ i metadâts dal inzornament dal firmware…"
 
@@ -4435,9 +3944,14 @@ msgstr "Supuart di inzornament dai Firmware"
 msgid "Provides support for firmware upgrades"
 msgstr "Al furnìs supuart pai inzornaments dai firmware"
 
+#: plugins/odrs/gs-plugin-odrs.c:159
+msgctxt "Distribution name"
+msgid "Unknown"
+msgstr "No cognossût"
+
 # recensions des aplicazions o recensions de aplicazion?
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:305
+#: plugins/odrs/gs-plugin-odrs.c:306
 msgid "Downloading application ratings…"
 msgstr "Daûr a discjariâ lis recensions de aplicazion…"
 
@@ -4451,7 +3965,7 @@ msgstr ""
 "ODRS al è un servizi che al furnìs recensions dai utents des aplicazions"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:240
+#: plugins/snap/gs-plugin-snap.c:239
 msgid "Snap Store"
 msgstr "Archivi Snap"
 
@@ -4462,6 +3976,369 @@ msgstr "Supuart Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Un snap al è un pachet universâl par Linux"
+
+#~ msgid "No cartoon violence"
+#~ msgstr "Nissune violence dai cartons animâts"
+
+#~ msgid "Cartoon characters in unsafe situations"
+#~ msgstr "Personaçs di cartons animâts in situazions pericolosis"
+
+#~ msgid "Cartoon characters in aggressive conflict"
+#~ msgstr "Personaçs di cartons animâts in conflit violent"
+
+#~ msgid "Graphic violence involving cartoon characters"
+#~ msgstr ""
+#~ "Grafiche di violence che e cjape dentri personaçs di cartons animâts"
+
+#~ msgid "No fantasy violence"
+#~ msgstr "Nissune violence fantasy"
+
+#~ msgid "Characters in unsafe situations easily distinguishable from reality"
+#~ msgstr "Personaçs in situazions pericolosis facilis di distingui de realtât"
+
+#~ msgid ""
+#~ "Characters in aggressive conflict easily distinguishable from reality"
+#~ msgstr "Personaçs in conflit violent facil di distingui de realtât"
+
+#~ msgid "Graphic violence easily distinguishable from reality"
+#~ msgstr "Grafiche di violence facil di distingui de realtât"
+
+#~ msgid "No realistic violence"
+#~ msgstr "Nissune violence realistiche"
+
+#~ msgid "Mildly realistic characters in unsafe situations"
+#~ msgstr "Personaçs un pôc realistics in situazions pericolosis"
+
+#~ msgid "Depictions of realistic characters in aggressive conflict"
+#~ msgstr "Figuris di personaçs realistics in conflit violent"
+
+#~ msgid "Graphic violence involving realistic characters"
+#~ msgstr "Grafiche di violence che e cjape dentri personaçs realistics"
+
+#~ msgid "No bloodshed"
+#~ msgstr "Nissun maçament"
+
+#~ msgid "Unrealistic bloodshed"
+#~ msgstr "Maçaments no realistics"
+
+#~ msgid "Realistic bloodshed"
+#~ msgstr "Maçaments realistics"
+
+#~ msgid "Depictions of bloodshed and the mutilation of body parts"
+#~ msgstr "Figuris di sassinaments e mutilazions di tocs di cuarp"
+
+#~ msgid "No sexual violence"
+#~ msgstr "Nissune violence sessuâl"
+
+#~ msgid "Rape or other violent sexual behavior"
+#~ msgstr "Stupri o altris compuartaments sessuâi violents"
+
+#~ msgid "No references to alcohol"
+#~ msgstr "Nissun riferiment a bevandis alcolichis"
+
+#~ msgid "References to alcoholic beverages"
+#~ msgstr "Riferiments a bevandis alcolichis"
+
+#~ msgid "Use of alcoholic beverages"
+#~ msgstr "Ûs di bevandis alcolichis"
+
+#~ msgid "No references to illicit drugs"
+#~ msgstr "Nissun riferiment a droghis ilecitis"
+
+#~ msgid "References to illicit drugs"
+#~ msgstr "Riferiments a droghis ilecitis"
+
+#~ msgid "Use of illicit drugs"
+#~ msgstr "Ûs ilecit di droghis"
+
+#~ msgid "No references to tobacco products"
+#~ msgstr "Nissun riferiment a prodots derivâts dal tabac"
+
+#~ msgid "References to tobacco products"
+#~ msgstr "Riferiments a tabacs"
+
+#~ msgid "Use of tobacco products"
+#~ msgstr "Ûs di tabacs"
+
+#~ msgid "No nudity of any sort"
+#~ msgstr "Nissune crotarie di cualsisei gjenar"
+
+#~ msgid "Brief artistic nudity"
+#~ msgstr "Curte crotarie artistiche"
+
+#~ msgid "Prolonged nudity"
+#~ msgstr "Crotarie sprolungjade"
+
+#~ msgid "No references to or depictions of sexual nature"
+#~ msgstr "Nissun riferiment a o rafigurazions di nature sessuâl"
+
+#~ msgid "Provocative references or depictions"
+#~ msgstr "Figuris o riferiments provocants"
+
+#~ msgid "Sexual references or depictions"
+#~ msgstr "Riferiments o figuris sessuâi"
+
+#~ msgid "Graphic sexual behavior"
+#~ msgstr "Grafiche di compuartaments sessuâi"
+
+#~ msgid "No profanity of any kind"
+#~ msgstr "Nissune blasfemie di cualsisei gjenar"
+
+#~ msgid "Mild or infrequent use of profanity"
+#~ msgstr "Ûs lizêr o no frecuent di profanitâts"
+
+#~ msgid "Moderate use of profanity"
+#~ msgstr "Ûs moderât di blasfemie"
+
+#~ msgid "Strong or frequent use of profanity"
+#~ msgstr "Ûs frecuent e fuart di blasfemie"
+
+#~ msgid "No inappropriate humor"
+#~ msgstr "Nissun umorisim sconvenient"
+
+#~ msgid "Slapstick humor"
+#~ msgstr "Umorisim di comedie grese"
+
+#~ msgid "Vulgar or bathroom humor"
+#~ msgstr "Umorisim volgâr o di cesso"
+
+#~ msgid "Mature or sexual humor"
+#~ msgstr "Umorisim soç o par grancj"
+
+#~ msgid "No discriminatory language of any kind"
+#~ msgstr "Nissun lengaç discriminatori di cualsisei gjenar"
+
+#~ msgid "Negativity towards a specific group of people"
+#~ msgstr "Negativitât viers un specific grup di personis"
+
+#~ msgid "Discrimination designed to cause emotional harm"
+#~ msgstr "Discriminazion pensade par fâ mâl emotivamentri"
+
+#~ msgid "Explicit discrimination based on gender, sexuality, race or religion"
+#~ msgstr ""
+#~ "Discriminazion esplicite basade su gjenar, sessualitât, raze o religjon"
+
+#~ msgid "No advertising of any kind"
+#~ msgstr "Nissune publicitât di cualsisei gjenar"
+
+#~ msgid "Product placement"
+#~ msgstr "Vendite di prodots"
+
+#~ msgid "Explicit references to specific brands or trademarked products"
+#~ msgstr "Riferiments esplicits a marcjis specifichis o prodots firmâts"
+
+#~ msgid "Users are encouraged to purchase specific real-world items"
+#~ msgstr "I utents a son incitâts a comprâ ogjets reâi specifics"
+
+#~ msgid "No gambling of any kind"
+#~ msgstr "Nissun zûc di azart di cualsisei gjenar"
+
+#~ msgid "Gambling on random events using tokens or credits"
+#~ msgstr "Zûc di azart su events casuâi che al dopre gjetons o credits"
+
+#~ msgid "Gambling using “play” money"
+#~ msgstr "Zûc di azart che al dopre bêçs “dal zûc”"
+
+#~ msgid "Gambling using real money"
+#~ msgstr "Zûc di azart che al dopre bêçs vêrs"
+
+#~ msgid "No ability to spend money"
+#~ msgstr "Nissune pussibilitât di spindi bêçs"
+
+#~ msgid "Users are encouraged to donate real money"
+#~ msgstr "I utents a son incitâts a donâ bêçs vêrs"
+
+#~ msgid "Ability to spend real money in-app"
+#~ msgstr "Abilitât di spindi bêçs vêrs inte aplicazion"
+
+#~ msgid "No way to chat with other users"
+#~ msgstr "Nissune maniere par chatâ cun altris utents"
+
+#~ msgid "User-to-user interactions without chat functionality"
+#~ msgstr "Interazions tra utents cence funzionalitât di chat"
+
+#~ msgid "Moderated chat functionality between users"
+#~ msgstr "Funzionalitât no controllade di chat tra utents"
+
+#~ msgid "Uncontrolled chat functionality between users"
+#~ msgstr "Funzionalitât no controllade di chat tra utents"
+
+#~ msgid "No way to talk with other users"
+#~ msgstr "Nissune maniere par cjacarâ cun altris utents"
+
+#~ msgid "Uncontrolled audio or video chat functionality between users"
+#~ msgstr "Funzionalitât no controllade di chat video o audio tra utents"
+
+#~ msgid "No sharing of social network usernames or email addresses"
+#~ msgstr ""
+#~ "Nissune condivision di nons utent di social network o direzions e-mail"
+
+#~ msgid "Sharing social network usernames or email addresses"
+#~ msgstr "Condivision di nons utent di social network o direzions e-mail"
+
+#~ msgid "No sharing of user information with third parties"
+#~ msgstr "Nissune condivision di informazions dal utent cun tiercis parts"
+
+#~ msgid "Checking for the latest application version"
+#~ msgstr "Control pe ultime version de aplicazion"
+
+#~ msgid "Sharing diagnostic data that does not let others identify the user"
+#~ msgstr ""
+#~ "Condivision di dâts diagnostics che no permetin a altris di identificâ "
+#~ "l'utent"
+
+#~ msgid "Sharing information that lets others identify the user"
+#~ msgstr ""
+#~ "Condivision di dâts diagnostics che a permetin a altris di identificâ "
+#~ "l'utent"
+
+#~ msgid "No sharing of physical location with other users"
+#~ msgstr "Nissune condivision di posizion fisiche cun altris utents"
+
+#~ msgid "Sharing physical location with other users"
+#~ msgstr "Condivision posizion fisiche cun altris utents"
+
+#~ msgid "No references to homosexuality"
+#~ msgstr "Nissun riferiment a omosessualitât"
+
+#~ msgid "Indirect references to homosexuality"
+#~ msgstr "Riferiments indirets ae omosessualitât"
+
+#~ msgid "Kissing between people of the same gender"
+#~ msgstr "Bussadis tra personis dal stes ses"
+
+#~ msgid "Graphic sexual behavior between people of the same gender"
+#~ msgstr "Compuartament sessuâl grafic tra personis dal stes ses"
+
+#~ msgid "No references to prostitution"
+#~ msgstr "Nissun riferiment a prostituzion"
+
+#~ msgid "Indirect references to prostitution"
+#~ msgstr "Riferiments indirets ae prostituzion"
+
+#~ msgid "Direct references to prostitution"
+#~ msgstr "Riferiments direts ae prostituzion"
+
+#~ msgid "Graphic depictions of the act of prostitution"
+#~ msgstr "Rapresentazions grafichis dal at di prostituzion"
+
+#~ msgid "No references to adultery"
+#~ msgstr "Nissun riferiment a adulteri"
+
+#~ msgid "Indirect references to adultery"
+#~ msgstr "Riferiments indirets al adulteri"
+
+#~ msgid "Direct references to adultery"
+#~ msgstr "Riferiment direts al adulteri"
+
+#~ msgid "Graphic depictions of the act of adultery"
+#~ msgstr "Rapresentazions grafichis dal at di adulteri"
+
+#~ msgid "No sexualized characters"
+#~ msgstr "Nissun personaç sessuât"
+
+#~ msgid "Scantily clad human characters"
+#~ msgstr "Personaçs umans pôc vistîts"
+
+#~ msgid "Overtly sexualized human characters"
+#~ msgstr "Personaçs umans sessuâts in maniere anomale"
+
+#~ msgid "No references to desecration"
+#~ msgstr "Nissun riferiment a profanazion"
+
+#~ msgid "Depictions of or references to historical desecration"
+#~ msgstr "Rapresentazions o riferiments a profanazions storichis"
+
+#~ msgid "Depictions of modern-day human desecration"
+#~ msgstr "Rapresentazion di profanazion umane moderne"
+
+#~ msgid "Graphic depictions of modern-day desecration"
+#~ msgstr "Rapresentazions grafichis di profanazion moderne"
+
+#~ msgid "No visible dead human remains"
+#~ msgstr "Nissun rest visibil di oms muarts"
+
+#~ msgid "Visible dead human remains"
+#~ msgstr "Rescj di oms muarts visibii"
+
+#~ msgid "Dead human remains that are exposed to the elements"
+#~ msgstr "Rescj di oms muarts che a son esposcj ai elements"
+
+#~ msgid "Graphic depictions of desecration of human bodies"
+#~ msgstr "Rapresentazions grafichis di profanazion di cuarps umans"
+
+#~ msgid "No references to slavery"
+#~ msgstr "Nissun riferiment a sclavitût"
+
+#~ msgid "Depictions of or references to historical slavery"
+#~ msgstr "Rapresentazions o riferiments a sclavitût storiche"
+
+#~ msgid "Depictions of modern-day slavery"
+#~ msgstr "Rapresentazions de sclavitût moderne"
+
+#~ msgid "Graphic depictions of modern-day slavery"
+#~ msgstr "Rapresentazions grafichis de sclavitût moderne"
+
+#~ msgid "General"
+#~ msgstr "Gjenerâl"
+
+#~ msgid "ALL"
+#~ msgstr "DUCJ"
+
+#~ msgid "Adults Only"
+#~ msgstr "Dome grancj"
+
+#~ msgid "Mature"
+#~ msgstr "Madûr"
+
+#~ msgid "Teen"
+#~ msgstr "Fantat"
+
+#~ msgid "Everyone 10+"
+#~ msgstr "Ducj parsore dai 10"
+
+#~ msgid "Everyone"
+#~ msgstr "Ducj"
+
+#~ msgid "Early Childhood"
+#~ msgstr "Prime infanzie"
+
+#~ msgctxt "version"
+#~ msgid "Unknown"
+#~ msgstr "No cognossude"
+
+#~ msgid "Released"
+#~ msgstr "Publicât"
+
+#~ msgid "Format"
+#~ msgstr "Formât"
+
+#~ msgid "%R"
+#~ msgstr "%R"
+
+#~ msgid "%l:%M %p"
+#~ msgstr "%l:%M %p"
+
+#~ msgid "Yesterday, %R"
+#~ msgstr "Îr, %R"
+
+#~ msgid "Yesterday, %l:%M %p"
+#~ msgstr "Îr, %l:%M %p"
+
+#~ msgid "Three days ago"
+#~ msgstr "Trê dîs indaûr"
+
+#~ msgid "Four days ago"
+#~ msgstr "Cuatri dîs indaûr"
+
+#~ msgid "Five days ago"
+#~ msgstr "Cinc dîs indaûr"
+
+#~ msgid "Six days ago"
+#~ msgstr "Sîs dîs indaûr"
+
+#~ msgid "Two weeks ago"
+#~ msgstr "Dôs setemanis indaûr"
 
 #~ msgid "_Remove"
 #~ msgstr "_Gjave"
@@ -4629,9 +4506,6 @@ msgstr "Un snap al è un pachet universâl par Linux"
 
 #~ msgid "Delete Design"
 #~ msgstr "Elimine disen"
-
-#~ msgid "Featured App"
-#~ msgstr "App in risalt"
 
 #~ msgid "OS Upgrade"
 #~ msgstr "Avanzament dal SO"
