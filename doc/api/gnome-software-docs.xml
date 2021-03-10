@@ -193,7 +193,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 {
   g_autofree gchar *fn = NULL;
   g_autoptr(GsApp) app = NULL;
-  g_autoptr(AsIcon) icon = NULL;
+  g_autoptr(GIcon) icon = NULL;
 
   /* check if the app exists */
   fn = g_build_filename (g_get_home_dir (), "chiron", NULL);
@@ -221,10 +221,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
   gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
   gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+ and LGPL-2.1+");
 
-  /* create a stock icon which will be loaded by the 'icons' plugin */
-  icon = as_icon_new ();
-  as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-  as_icon_set_name (icon, "input-gaming");
+  /* use a stock icon */
+  icon = g_themed_icon_new ("input-gaming");
   gs_app_add_icon (app, icon);
 
   /* return new app */

@@ -348,15 +348,13 @@ gs_flatpak_create_app (GsFlatpak *self,
 
 	/* fallback values */
 	if (gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
-		g_autoptr(AsIcon) icon = NULL;
+		g_autoptr(GIcon) icon = NULL;
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 flatpak_ref_get_name (FLATPAK_REF (xref)));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 				    "Framework for applications");
 		gs_app_set_version (app, flatpak_ref_get_branch (FLATPAK_REF (xref)));
-		icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "system-run-symbolic");
+		icon = g_themed_icon_new ("system-run-symbolic");
 		gs_app_add_icon (app, icon);
 	}
 
@@ -901,7 +899,8 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename (gs_flatpak_get_id (self),
 					      "components.xmlb",
-					      GS_UTILS_CACHE_FLAG_WRITEABLE,
+					      GS_UTILS_CACHE_FLAG_WRITEABLE |
+					      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					      error);
 	if (blobfn == NULL)
 		return FALSE;
@@ -3078,9 +3077,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GCancellable *cancellable,
 			       GError **error)
 {
-	gint size;
 	g_autoptr(GBytes) appstream_gz = NULL;
-	g_autoptr(GBytes) icon_data = NULL;
+	g_autoptr(GBytes) icon_data64 = NULL, icon_data128 = NULL;
 	g_autoptr(GBytes) metadata = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
@@ -3140,26 +3138,27 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, "");
 	}
 
-	/* load icon */
-	size = 64 * (gint) gs_plugin_get_scale (self->plugin);
-	icon_data = flatpak_bundle_ref_get_icon (xref_bundle, size);
-	if (icon_data == NULL)
-		icon_data = flatpak_bundle_ref_get_icon (xref_bundle, 64);
-	if (icon_data != NULL) {
-		g_autoptr(GInputStream) stream_icon = NULL;
-		g_autoptr(GdkPixbuf) pixbuf = NULL;
-		stream_icon = g_memory_input_stream_new_from_bytes (icon_data);
-		pixbuf = gdk_pixbuf_new_from_stream (stream_icon, cancellable, error);
-		if (pixbuf == NULL) {
-			gs_utils_error_convert_gdk_pixbuf (error);
-			return NULL;
-		}
-		gs_app_add_pixbuf (app, pixbuf);
-	} else {
-		g_autoptr(AsIcon) icon = NULL;
-		icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "application-x-executable");
+	/* Load icons. Currently flatpak only supports exactly 64px or 128px
+	 * icons in bundles. */
+	icon_data64 = flatpak_bundle_ref_get_icon (xref_bundle, 64);
+	if (icon_data64 != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (icon_data64);
+		gs_icon_set_width (icon, 64);
+		gs_icon_set_height (icon, 64);
+		gs_app_add_icon (app, icon);
+	}
+
+	icon_data128 = flatpak_bundle_ref_get_icon (xref_bundle, 128);
+	if (icon_data128 != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (icon_data128);
+		gs_icon_set_width (icon, 128);
+		gs_icon_set_height (icon, 128);
+		gs_app_add_icon (app, icon);
+	}
+
+	/* Fallback */
+	if (icon_data64 == NULL && icon_data128 == NULL) {
+		g_autoptr(GIcon) icon = g_themed_icon_new ("application-x-executable");
 		gs_app_add_icon (app, icon);
 	}
 
@@ -3276,11 +3275,11 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	if (ref_homepage != NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, ref_homepage);
 	ref_icon = g_key_file_get_string (kf, "Flatpak Ref", "Icon", NULL);
-	if (ref_icon != NULL) {
-		g_autoptr(AsIcon) ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
-		as_icon_set_url (ic, ref_icon);
-		gs_app_add_icon (app, ic);
+	if (ref_icon != NULL &&
+	    (g_str_has_prefix (ref_icon, "http:") ||
+	     g_str_has_prefix (ref_icon, "https:"))) {
+		g_autoptr(GIcon) icon = gs_remote_icon_new (ref_icon);
+		gs_app_add_icon (app, icon);
 	}
 
 	/* set the origin data */

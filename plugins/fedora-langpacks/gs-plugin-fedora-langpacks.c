@@ -79,7 +79,8 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 	/* per-user cache */
 	langpack_pkgname = g_strconcat ("langpacks-", language_code, NULL);
 	cachefn = gs_utils_get_cache_filename ("langpacks", langpack_pkgname,
-					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE |
+					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					       error);
 	if (cachefn == NULL)
 		return FALSE;

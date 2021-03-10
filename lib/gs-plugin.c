@@ -1282,7 +1282,8 @@ gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
 	/* get cache location */
 	cachefn = gs_utils_get_cache_filename ("cssresource", uri,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE |
-					       GS_UTILS_CACHE_FLAG_USE_HASH,
+					       GS_UTILS_CACHE_FLAG_USE_HASH |
+					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					       error);
 	if (cachefn == NULL)
 		return NULL;

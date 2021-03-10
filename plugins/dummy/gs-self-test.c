@@ -219,7 +219,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 
 	/* get the extra bits */
-	app = gs_app_new ("zeus.desktop");
+	app = gs_app_new ("chiron.desktop");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
@@ -349,7 +349,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 
 	/* get installed packages */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
@@ -374,9 +374,9 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
-	pixbuf = gs_app_load_pixbuf (app, 48);
-	g_assert_nonnull (pixbuf);
-	g_clear_object (&pixbuf);
+	icon = gs_app_get_icon_for_size (app, 48, 1, NULL);
+	g_assert_nonnull (icon);
+	g_clear_object (&icon);
 
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE));
@@ -405,8 +405,8 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
 			 "LicenseRef-free=https://www.debian.org/");
-	pixbuf = gs_app_load_pixbuf (addon, 48);
-	g_assert_null (pixbuf);
+	icon = gs_app_get_icon_for_size (addon, 48, 1, NULL);
+	g_assert_null (icon);
 }
 
 static void

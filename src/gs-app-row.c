@@ -246,7 +246,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	const gchar *tmp;
 	gboolean missing_search_result;
 	guint64 size = 0;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 
 	if (priv->app == NULL)
 		return;
@@ -389,14 +389,11 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* pixbuf */
-	pixbuf = gs_app_load_pixbuf (priv->app, gtk_image_get_pixel_size (GTK_IMAGE (priv->image)) * gtk_widget_get_scale_factor (priv->image));
-	if (pixbuf == NULL) {
-		gtk_image_set_from_icon_name (GTK_IMAGE (priv->image),
-					      "application-x-executable",
-					      GTK_ICON_SIZE_DIALOG);
-	} else {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), pixbuf);
-	}
+	icon = gs_app_get_icon_for_size (priv->app,
+					 gtk_image_get_pixel_size (GTK_IMAGE (priv->image)),
+					 gtk_widget_get_scale_factor (priv->image),
+					 "application-x-executable");
+	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon, GTK_ICON_SIZE_DIALOG);
 
 	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)

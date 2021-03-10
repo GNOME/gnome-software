@@ -282,7 +282,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	/* check cache age */
 	cache_filename = gs_utils_get_cache_filename ("odrs",
 						      "ratings.json",
-						      GS_UTILS_CACHE_FLAG_WRITEABLE,
+						      GS_UTILS_CACHE_FLAG_WRITEABLE |
+						      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						      error);
 	if (cache_filename == NULL)
 		return FALSE;
@@ -661,7 +662,8 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 		   when refresh/download disabled on start */
 		cache_filename = gs_utils_get_cache_filename ("odrs",
 							      "ratings.json",
-							      GS_UTILS_CACHE_FLAG_WRITEABLE,
+							      GS_UTILS_CACHE_FLAG_WRITEABLE |
+							      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 							      error);
 
 		if (!cache_filename ||
@@ -770,7 +772,8 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
 	cachefn = gs_utils_get_cache_filename ("odrs",
 					       cachefn_basename,
-					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE |
+					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					       error);
 	if (cachefn == NULL)
 		return NULL;
@@ -1007,7 +1010,8 @@ gs_plugin_odrs_invalidate_cache (AsReview *review, GError **error)
 					    as_review_get_metadata_item (review, "app_id"));
 	cachefn = gs_utils_get_cache_filename ("odrs",
 					       cachefn_basename,
-					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE |
+					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					       error);
 	if (cachefn == NULL)
 		return FALSE;

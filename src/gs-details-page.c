@@ -1101,7 +1101,7 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 	GList *addons;
 	const gchar *tmp;
 	gboolean ret;
@@ -1112,6 +1112,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
 	GPtrArray *version_history;
+	guint icon_size;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -1137,15 +1138,31 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_description (self->app);
 	gs_details_page_set_description (self, tmp);
 
-	/* set the icon */
-	pixbuf = gs_app_load_pixbuf (self->app, gtk_image_get_pixel_size (GTK_IMAGE (self->application_details_icon)) * gtk_widget_get_scale_factor (self->application_details_icon));
-	if (pixbuf != NULL) {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
-	} else {
-		gtk_image_set_from_icon_name (GTK_IMAGE (self->application_details_icon),
-		                              "application-x-executable",
-		                              GTK_ICON_SIZE_DIALOG);
+	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
+	 * happens at 2× scale factor (hi-DPI) */
+	icon_size = 96;
+	icon = gs_app_get_icon_for_size (self->app,
+					 icon_size,
+					 gtk_widget_get_scale_factor (self->application_details_icon),
+					 NULL);
+	if (icon == NULL) {
+		icon_size = 64;
+		icon = gs_app_get_icon_for_size (self->app,
+						 icon_size,
+						 gtk_widget_get_scale_factor (self->application_details_icon),
+						 NULL);
 	}
+	if (icon == NULL) {
+		icon_size = 96;
+		icon = gs_app_get_icon_for_size (self->app,
+						 icon_size,
+						 gtk_widget_get_scale_factor (self->application_details_icon),
+						 "application-x-executable");
+	}
+
+	gtk_image_set_pixel_size (GTK_IMAGE (self->application_details_icon), icon_size);
+	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
+				  GTK_ICON_SIZE_INVALID);
 
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL && tmp[0] != '\0') {

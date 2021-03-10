@@ -353,14 +353,14 @@ void		 gs_app_set_update_urgency	(GsApp		*app,
 const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
-gboolean	 gs_app_has_pixbufs		(GsApp		*app);
-GdkPixbuf	*gs_app_load_pixbuf		(GsApp		*app,
-						 guint		 size);
-void		 gs_app_add_pixbuf		(GsApp		*app,
-						 GdkPixbuf	*pixbuf);
+GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
+						 guint		 size,
+						 guint		 scale,
+						 const gchar	*fallback_icon_name);
 GPtrArray	*gs_app_get_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,
-						 AsIcon		*icon);
+						 GIcon		*icon);
+void		 gs_app_remove_all_icons	(GsApp		*app);
 gboolean	 gs_app_get_use_drop_shadow	(GsApp		*app);
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,

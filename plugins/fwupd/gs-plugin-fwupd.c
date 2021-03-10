@@ -278,7 +278,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
 	GsApp *app;
 	g_autofree gchar *id = NULL;
-	g_autoptr(AsIcon) icon = NULL;
+	g_autoptr(GIcon) icon = NULL;
 
 	/* older versions of fwups didn't record this for historical devices */
 	if (fwupd_release_get_appstream_id (rel) == NULL)
@@ -306,9 +306,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
 	/* create icon */
-	icon = as_icon_new ();
-	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-	as_icon_set_name (icon, "application-x-firmware");
+	icon = g_themed_icon_new ("application-x-firmware");
 	gs_app_add_icon (app, icon);
 	gs_fwupd_app_set_from_device (app, dev);
 	gs_fwupd_app_set_from_release (app, rel);
@@ -359,16 +357,15 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	/* create icon */
 	icons = fwupd_device_get_icons (device);
 	for (guint j = 0; j < icons->len; j++) {
-		const gchar *icon = g_ptr_array_index (icons, j);
-		g_autoptr(AsIcon) icon_tmp = as_icon_new ();
-		if (g_str_has_prefix (icon, "/")) {
-			as_icon_set_kind (icon_tmp, AS_ICON_KIND_LOCAL);
-			as_icon_set_filename (icon_tmp, icon);
+		const gchar *icon_str = g_ptr_array_index (icons, j);
+		g_autoptr(GIcon) icon = NULL;
+		if (g_str_has_prefix (icon_str, "/")) {
+			g_autoptr(GFile) icon_file = g_file_new_for_path (icon_str);
+			icon = g_file_icon_new (icon_file);
 		} else {
-			as_icon_set_kind (icon_tmp, AS_ICON_KIND_STOCK);
-			as_icon_set_name (icon_tmp, icon);
+			icon = g_themed_icon_new (icon_str);
 		}
-		gs_app_add_icon (app, icon_tmp);
+		gs_app_add_icon (app, icon);
 	}
 	return g_steal_pointer (&app);
 }
@@ -442,7 +439,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 	basename = g_path_get_basename (update_uri);
 	filename_cache = gs_utils_get_cache_filename ("fwupd",
 						      basename,
-						      GS_UTILS_CACHE_FLAG_NONE,
+						      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						      error);
 	if (filename_cache == NULL)
 		return NULL;
@@ -697,7 +694,8 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	cache_id = g_strdup_printf ("fwupd/remotes.d/%s", fwupd_remote_get_id (remote));
 	basename_sig = g_path_get_basename (fwupd_remote_get_filename_cache_sig (remote));
 	filename_sig = gs_utils_get_cache_filename (cache_id, basename_sig,
-						    GS_UTILS_CACHE_FLAG_WRITEABLE,
+						    GS_UTILS_CACHE_FLAG_WRITEABLE |
+						    GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						    error);
 
 	/* download the signature first, it's smaller */
@@ -738,7 +736,8 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	/* download the payload and save to file */
 	basename = g_path_get_basename (fwupd_remote_get_filename_cache (remote));
 	filename = gs_utils_get_cache_filename (cache_id, basename,
-						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						GS_UTILS_CACHE_FLAG_WRITEABLE |
+						GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						error);
 	if (filename == NULL)
 		return FALSE;

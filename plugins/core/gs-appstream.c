@@ -193,6 +193,14 @@ gs_appstream_get_icon_by_kind_and_size (XbNode *component, AsIconKind icon_kind,
 }
 
 static void
+app_add_icon (GsApp  *app,
+              AsIcon *as_icon)
+{
+	g_autoptr(GIcon) icon = gs_icon_new_for_appstream_icon (as_icon);
+	gs_app_add_icon (app, icon);
+}
+
+static void
 gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 {
 	g_autoptr(AsIcon) icon = NULL;
@@ -205,7 +213,8 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 		 * theme (usually more stock icon entries are added to permit huge themes like Papirus
 		 * to style all apps in the software center). Since we can not rely on the icon's presence,
 		 * we also add other icons to the list and do not return here. */
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* cached icon for large uses */
@@ -213,7 +222,8 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 						       AS_ICON_KIND_CACHED,
 						       128 * gs_plugin_get_scale (plugin));
 	if (icon != NULL) {
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* cached icon for normal uses */
@@ -221,7 +231,8 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 						       AS_ICON_KIND_CACHED,
 						       64 * gs_plugin_get_scale (plugin));
 	if (icon != NULL) {
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 
 	/* prefer local */
@@ -234,14 +245,14 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 				 as_icon_get_name (icon));
 			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		}
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
 		return;
 	}
 
 	/* remote URL */
 	icon = gs_appstream_get_icon_by_kind (component, AS_ICON_KIND_REMOTE);
 	if (icon != NULL) {
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
 		return;
 	}
 
@@ -249,7 +260,8 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 	n = xb_node_query_first (component, "icon", NULL);
 	if (n != NULL) {
 		icon = gs_appstream_new_icon (component, n, AS_ICON_KIND_STOCK, 0);
-		gs_app_add_icon (app, icon);
+		app_add_icon (app, icon);
+		g_clear_object (&icon);
 	}
 }
 
@@ -950,7 +962,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
-	    gs_app_get_icons(app)->len == 0)
+	    gs_app_get_icons (app) == NULL)
 		gs_appstream_refine_icon (plugin, app, component);
 
 	/* set categories */

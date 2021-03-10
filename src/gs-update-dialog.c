@@ -157,7 +157,8 @@ static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	AsComponentKind kind;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
+	guint icon_size;
 	const gchar *update_details;
 
 	/* set window title */
@@ -192,9 +193,31 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
-	pixbuf = gs_app_load_pixbuf (app, gtk_image_get_pixel_size (GTK_IMAGE (dialog->image_icon)) * gtk_widget_get_scale_factor (dialog->image_icon));
-	if (pixbuf != NULL)
-		gtk_image_set_from_pixbuf (GTK_IMAGE (dialog->image_icon), pixbuf);
+	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
+	 * happens at 2× scale factor (hi-DPI) */
+	icon_size = 96;
+	icon = gs_app_get_icon_for_size (app,
+					 icon_size,
+					 gtk_widget_get_scale_factor (dialog->image_icon),
+					 NULL);
+	if (icon == NULL) {
+		icon_size = 64;
+		icon = gs_app_get_icon_for_size (app,
+						 icon_size,
+						 gtk_widget_get_scale_factor (dialog->image_icon),
+						 NULL);
+	}
+	if (icon == NULL) {
+		icon_size = 96;
+		icon = gs_app_get_icon_for_size (app,
+						 icon_size,
+						 gtk_widget_get_scale_factor (dialog->image_icon),
+						 "application-x-executable");
+	}
+
+	gtk_image_set_pixel_size (GTK_IMAGE (dialog->image_icon), icon_size);
+	gtk_image_set_from_gicon (GTK_IMAGE (dialog->image_icon), icon,
+				  GTK_ICON_SIZE_INVALID);
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));

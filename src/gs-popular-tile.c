@@ -48,7 +48,7 @@ gs_popular_tile_refresh (GsAppTile *self)
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 	const gchar *css;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) icon = NULL;
 
 	if (app == NULL)
 		return;
@@ -89,14 +89,11 @@ gs_popular_tile_refresh (GsAppTile *self)
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::PopularTile-css");
 	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "popular-tile", css);
 
-	pixbuf = gs_app_load_pixbuf (app, gtk_image_get_pixel_size (GTK_IMAGE (tile->image)) * gtk_widget_get_scale_factor (tile->image));
-	if (pixbuf != NULL) {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
-	} else {
-		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-					      "application-x-executable",
-					      GTK_ICON_SIZE_DIALOG);
-	}
+	icon = gs_app_get_icon_for_size (app,
+					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
+					 gtk_widget_get_scale_factor (tile->image),
+					 "application-x-executable");
+	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_DIALOG);
 
 	gtk_label_set_label (GTK_LABEL (tile->label), gs_app_get_name (app));
 }

@@ -10,6 +10,7 @@ libgnomesoftware_public_headers = [
   'gs-category.h',
   'gs-category-manager.h',
   'gs-desktop-data.h',
+  'gs-icon.h',
   'gs-ioprio.h',
   'gs-key-colors.h',
   'gs-metered.h',
@@ -21,6 +22,7 @@ libgnomesoftware_public_headers = [
   'gs-plugin-loader-sync.h',
   'gs-plugin-types.h',
   'gs-plugin-vfuncs.h',
+  'gs-remote-icon.h',
   'gs-utils.h'
 ]
 
@@ -75,6 +77,7 @@ libgnomesoftware = static_library(
     'gs-category-manager.c',
     'gs-debug.c',
     'gs-desktop-data.c',
+    'gs-icon.c',
     'gs-ioprio.c',
     'gs-ioprio.h',
     'gs-key-colors.c',
@@ -85,6 +88,7 @@ libgnomesoftware = static_library(
     'gs-plugin-job.c',
     'gs-plugin-loader.c',
     'gs-plugin-loader-sync.c',
+    'gs-remote-icon.c',
     'gs-test.c',
     'gs-utils.c',
   ] + libgnomesoftware_enums + [gs_build_ident_h],

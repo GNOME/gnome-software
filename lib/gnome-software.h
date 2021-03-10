@@ -20,8 +20,10 @@
 #include <gs-category-manager.h>
 #include <gs-desktop-data.h>
 #include <gs-enums.h>
+#include <gs-icon.h>
 #include <gs-metered.h>
 #include <gs-os-release.h>
 #include <gs-plugin.h>
 #include <gs-plugin-vfuncs.h>
+#include <gs-remote-icon.h>
 #include <gs-utils.h>

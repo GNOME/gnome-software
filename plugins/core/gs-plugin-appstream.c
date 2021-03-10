@@ -589,7 +589,8 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename ("appstream", "components.xmlb",
-					      GS_UTILS_CACHE_FLAG_WRITEABLE,
+					      GS_UTILS_CACHE_FLAG_WRITEABLE |
+					      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 					      error);
 	if (blobfn == NULL)
 		return FALSE;
