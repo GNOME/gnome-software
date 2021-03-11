@@ -1,3 +1,123 @@
+Version 3.38.2
+~~~~~~~~~~~~~~
+Released: 2020-03-11
+
+This is a stable release with the following changes:
+ * Fix a crash on the updates page in some situations
+
+Version 3.38.1
+~~~~~~~~~~~~~~
+Released: 2020-02-08
+
+This is a stable release with the following changes:
+ * Fix package details not found for some packages
+ * Ignore harmless warnings when using unusual fwupd versions
+
+This release also updates existing translations.
+
+Version 3.38.0
+~~~~~~~~~~~~~~
+Released: 2020-09-11
+
+This is an stable release that just updates existing translations.
+
+Version 3.37.92
+~~~~~~~~~~~~~~~
+Released: 2020-09-01
+
+This is an unstable release with the following changes:
+ * Add sysprof support for profiling jobs
+ * Add webflow and basic auth support to flatpak plugin
+ * Coalesce refresh operations where possible
+ * Correctly mark layered rpm-ostree local packages as removable
+ * Fix flatpak bundle installation
+ * Handle invalid snap auth data
+ * Improve flatpak progress reporting for transactions
+ * Improve the heuristic for detecting old-style AppStream override files
+ * Many performance improvements in many areas of the code
+ * Only delete the firmware archive if we downloaded it to the cache
+ * Show a pulsing progress bar if progress is unknown
+ * Support loading appstream files from custom install prefix
+ * Use the runtime fwupd version for the user agent
+
+This release also updates existing translations.
+
+Version 3.36.0
+~~~~~~~~~~~~~~
+Released: 2020-03-11
+
+This is the first stable release for GNOME 3.36.
+
+Version 3.35.92
+~~~~~~~~~~~~~~~
+Released: 2020-03-04
+
+This is an unstable stable release with the following changes:
+ * Fix crash when viewing application details
+ * Fix “thrice daily” check running every 3 days
+ * Improve the appearance of the front page banners
+ * Show the correct upgrade banner contents when a reboot is requried
+
+This release also updates existing translations.
+
+Version 3.35.91
+~~~~~~~~~~~~~~~
+Released: 2020-02-19
+
+This is an unstable stable release with the following changes:
+ * Add an info bar about automatic updates
+ * Avoid rpm-ostree downgrade error when doing distro upgrade
+ * Click on stars to open review dialog in the details view
+ * Fix loading of icons from AppStream YAML
+ * Fix weird font sizes in the batter
+ * Hide any in-app notifications when closing the main window
+ * Integrate better with snapd
+ * Only ignore flatpak estimated progress if >10%
+ * Remove color stripes on categories in the Explore page
+ * Remove support for Shell extensions
+ * Remove webapp support
+ * Reset star rating when loading an unrated app
+ * Sort applications using locale based algorithms
+ * Stop snaps from being automatically updated
+
+This release also adds and updates existing translations.
+
+Version 3.35.2
+~~~~~~~~~~~~~~
+Released: 2019-11-25
+
+This is an unstable stable release with the following changes:
+ * Add missing OARS content rating descriptions
+ * Add new plugin for restricting access to apps
+ * Avoid a UI crash when switching modes
+ * Build libmalcontent dependency on Fedora CI
+ * Correctly distinguish empty content ratings from missing ones
+ * Correctly set the application state if autoupdate is in progress
+ * Do not show a crazy error when installing packages
+ * Do not show non-applications in the installed panel
+ * Download Flatpak updates in the correct installation
+ * Expose snap channels as app alternates
+ * Fix a crash on 32-bit systems
+ * Fix langpacks autoinstall on Fedora SilverBlue
+ * Fix manual detach when updating removable device firmware
+ * Fix third party repo enabling not working
+ * Hide add/remove shortcut buttons for parentally filtered apps
+ * Improve some front page banners
+ * Invalidate caches when adding or removing remotes
+ * Make flatpak more thread-safe to fix some crashes
+ * Match the exact ID when refining a wildcard
+ * Only set the app row's buttons as destructive when they remove an app
+ * Remove hardcoded-featured plugin
+ * Remove the app folder functionality as this is now built-in to the shell
+ * Remove the banner editor as this is now an app on it's own
+ * Rework age ratings handling to avoid hard-coded list
+ * Set the shell extension origin correctly in all cases
+ * Show the channel for snaps
+ * Speed up the flatpak plugin in some situations
+ * Use plugin API to launch apps from install notification.
+
+This release also adds and updates existing translations.
+
 Version 3.34.0
 ~~~~~~~~~~~~~~
 Released: 2019-09-09
