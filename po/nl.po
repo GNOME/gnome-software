@@ -6,14 +6,14 @@
 #
 # Nathan Follens <nthn@unseen.is>, 2015-2020.
 # Justin van Steijn <jvs@fsfe.org> 2015, 2016, 2017, 2018, 2019.
-# Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2016, 2018, 2019, 2020.
+# Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2016, 2018, 2019, 2020, 2021.
 # Reinout van Schouwen <reinouts@gnome.org>, 2016 (review).
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-16\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-08-19 14:58+0000\n"
-"PO-Revision-Date: 2020-08-22 12:59+0200\n"
+"POT-Creation-Date: 2021-03-10 15:04+0000\n"
+"PO-Revision-Date: 2021-03-11 11:49+0100\n"
 "Last-Translator: Hannie Dumoleyn <hannie@ubuntu-nl.org>\n"
 "Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
 "Language: nl\n"
@@ -71,7 +71,7 @@ msgstr "Tabblad met updates"
 msgid "The update details"
 msgstr "Details van de update"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1494
+#: data/appdata/org.gnome.Software.appdata.xml.in:1609
 msgid "The GNOME Project"
 msgstr "Het Gnome-project"
 
@@ -195,24 +195,29 @@ msgid "The last upgrade notification timestamp"
 msgstr "Tijdstempel van de laatste upgradecontrole"
 
 #: data/org.gnome.software.gschema.xml:60
+#| msgid "The last upgrade notification timestamp"
+msgid "The last update notification timestamp"
+msgstr "Tijdstempel van de laatste updatemelding"
+
+#: data/org.gnome.software.gschema.xml:64
 msgid "The timestamp of the first security update, cleared after update"
 msgstr "Het tijdstempel van de eerste veiligheidsupdate, gewist na de update"
 
-#: data/org.gnome.software.gschema.xml:64
+#: data/org.gnome.software.gschema.xml:68
 msgid "The last update timestamp"
 msgstr "Tijdstempel van laatste update"
 
-#: data/org.gnome.software.gschema.xml:68
+#: data/org.gnome.software.gschema.xml:72
 msgid "The last timestamp when the system was online and got any updates"
 msgstr "De laatste tijdstempel toen het systeem online was en bijgewerkt werd"
 
-#: data/org.gnome.software.gschema.xml:72
+#: data/org.gnome.software.gschema.xml:76
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr ""
 "De tijd in seconden om te controleren of de bovenstroomse schermafdruk nog "
 "geldig is"
 
-#: data/org.gnome.software.gschema.xml:73
+#: data/org.gnome.software.gschema.xml:77
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
@@ -223,78 +228,78 @@ msgstr ""
 "schermafdrukken worden getoond aan de gebruiker. De waarde 0 betekent dat de "
 "server nooit gecontroleerd wordt als het beeld al in de cache staat."
 
-#: data/org.gnome.software.gschema.xml:82
+#: data/org.gnome.software.gschema.xml:86
 msgid "The server to use for application reviews"
 msgstr "De server die moet worden gebruikt voor toepassingsbeoordelingen"
 
-#: data/org.gnome.software.gschema.xml:86
+#: data/org.gnome.software.gschema.xml:90
 msgid "The minimum karma score for reviews"
 msgstr "De minimale karma-score voor beoordelingen"
 
-#: data/org.gnome.software.gschema.xml:87
+#: data/org.gnome.software.gschema.xml:91
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Beoordelingen met minder karma dan dit aantal worden niet getoond."
 
-#: data/org.gnome.software.gschema.xml:91
+#: data/org.gnome.software.gschema.xml:95
 msgid "A list of official repositories that should not be considered 3rd party"
 msgstr ""
 "Een lijst met officiële opslagbronnen die niet als van derden moeten worden "
 "beschouwd"
 
-#: data/org.gnome.software.gschema.xml:95
+#: data/org.gnome.software.gschema.xml:99
 msgid "A list of official repositories that should be considered free software"
 msgstr ""
 "Een lijst met officiële opslagbronnen die als vrije software moeten worden "
 "beschouwd"
 
-#: data/org.gnome.software.gschema.xml:99
+#: data/org.gnome.software.gschema.xml:103
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "De URL van de te gebruiken licentie wanneer een toepassing als vrije "
 "software moet worden beschouwd"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:107
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Gebundelde toepassingen installeren voor alle gebruikers op het systeem waar "
 "mogelijk"
 
-#: data/org.gnome.software.gschema.xml:107
+#: data/org.gnome.software.gschema.xml:111
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Toegang geven tot het softwarebronnen-dialoogvenser"
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:115
 msgid "Offer upgrades for pre-releases"
 msgstr "Opwaarderingen aanbieden voor pre-releases"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:119
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Enkele UI-elementen tonen waarmee de gebruiker geïnformeerd wordt dat een "
 "app niet-vrij is"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show the prompt to install nonfree software repositories"
 msgstr "De prompt voor het installeren van niet-vrije softwarebronnen tonen"
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "De grootte van geïnstalleerde toepassingen tonen in de lijst met "
 "geïnstalleerde toepassingen"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:131
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://nl.wikipedia.org/wiki/Propri%C3%ABtaire_software'"
 
-#: data/org.gnome.software.gschema.xml:128
+#: data/org.gnome.software.gschema.xml:132
 msgid "The URI that explains nonfree and proprietary software"
 msgstr ""
 "De URI waarin uitleg wordt gegeven over niet-vrije en propriëtaire software"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -302,15 +307,11 @@ msgstr ""
 "Een lijst met URL’s die verwijzen naar appstream-bestanden die gedownload "
 "zullen worden naar een app-info-map"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:140
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "De AppStream-bestanden installeren op een systeembrede locatie voor alle "
 "gebruikers"
-
-#: data/org.gnome.software.gschema.xml:140
-msgid "Enable GNOME Shell extensions repository"
-msgstr "Pakketbron met GNOME Shell-uitbreidingen inschakelen"
 
 #: data/org.gnome.software.gschema.xml:147
 msgid "A string storing the gnome-online-account id used to login"
@@ -324,106 +325,113 @@ msgstr "Software-installatie"
 msgid "Install selected software on the system"
 msgstr "De geselecteerde software installeren op het systeem"
 
-#: src/gnome-software.ui:10
+#: src/gnome-software.ui:11
 msgid "Select All"
 msgstr "Alles selecteren"
 
-#: src/gnome-software.ui:16
+#: src/gnome-software.ui:17
 msgid "Select None"
 msgstr "Niets selecteren"
 
-#: src/gnome-software.ui:35
+#: src/gnome-software.ui:36
 msgid "_Software Repositories"
 msgstr "_Softwarebronnen"
 
-#: src/gnome-software.ui:40
+#: src/gnome-software.ui:41
 msgid "_Update Preferences"
 msgstr "_Updatevoorkeuren"
 
-#: src/gnome-software.ui:48 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:49 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Software"
 
-#: src/gnome-software.ui:64 src/gs-update-dialog.ui:20
+#: src/gnome-software.ui:65 src/gs-update-dialog.ui:20
 msgid "Go back"
 msgstr "Ga terug"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:96
+#: src/gnome-software.ui:97
 msgid "_Explore"
 msgstr "_Verkennen"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:119
+#: src/gnome-software.ui:120
 msgid "_Installed"
 msgstr "_Geïnstalleerd"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:159
+#: src/gnome-software.ui:160
 msgid "_Updates"
 msgstr "_Updates"
 
-#: src/gnome-software.ui:228
+#: src/gnome-software.ui:229
 msgid "Search"
 msgstr "Zoeken"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:886
+#: src/gnome-software.ui:273 src/gs-app-row.c:295 src/gs-details-page.ui:979
 msgid "Source"
 msgstr "Bron"
 
 #. button in the info bar
-#: src/gnome-software.ui:377 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
+#: src/gnome-software.ui:378 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
 msgid "Software Repositories"
 msgstr "Softwarebronnen"
 
 #. button in the info bar
-#: src/gnome-software.ui:385
+#: src/gnome-software.ui:386
 msgid "Examine Disk"
 msgstr "Schijf nakijken"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:393 src/gs-updates-page.c:922
+#: src/gnome-software.ui:394 src/gs-updates-page.c:838
 msgid "Network Settings"
 msgstr "Netwerkinstellingen"
 
 #. button in the info bar
-#: src/gnome-software.ui:401
+#: src/gnome-software.ui:402
 msgid "Restart Now"
 msgstr "Nu herstarten"
 
 #. button in the info bar
-#: src/gnome-software.ui:409
+#: src/gnome-software.ui:410
 msgid "More Information"
 msgstr "Meer informatie"
 
-#: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
+#: src/gnome-software.ui:462 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
 msgid "Automatic Updates Paused"
 msgstr "Automatische updates gepauzeerd"
 
-#: src/gnome-software.ui:480
+#: src/gnome-software.ui:481
 msgid "Find Out _More"
 msgstr "_Meer te weten komen…"
 
-#. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4559
+#: lib/gs-app.c:5155
 msgid "Local file"
 msgstr "Lokaal bestand"
 
-#: lib/gs-app.c:4611
+#. TRANSLATORS: the first %s is replaced with an origin name;
+#. the second %s is replaced with the packaging format.
+#. Example string: "Local file (RPM)"
+#: lib/gs-app.c:5170
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: lib/gs-app.c:5238
 msgid "Package"
 msgstr "Pakket"
 
-#: src/gs-app-addon-row.c:83 src/gs-app-row.c:401
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:413
 msgid "Pending"
 msgstr "In behandeling"
 
-#: src/gs-app-addon-row.c:89 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:88
+#: src/gs-app-addon-row.c:103 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:381
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
@@ -431,68 +439,101 @@ msgstr "Geïnstalleerd"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:351
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:364
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Wordt geïnstalleerd"
 
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:178 src/gs-repo-row.c:126
+#: src/gs-app-addon-row.c:111 src/gs-repo-row.c:126
 #: src/gs-third-party-repo-row.c:107
 msgid "Removing"
 msgstr "Wordt verwijderd"
 
+#. TRANSLATORS: button text in the header when an application can be erased
+#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:989
+#: src/gs-details-page.ui:202
+#| msgid "_Install"
+msgid "_Uninstall"
+msgstr "_Deïnstalleren"
+
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:480
+#| msgid "Version"
+msgid "Version History"
+msgstr "Versie-geschiedenis"
+
+#: src/gs-app-version-history-row.c:61
+#, c-format
+msgid "New in Version %s"
+msgstr "Nieuw in versie %s"
+
+#: src/gs-app-version-history-row.c:68
+#, c-format
+#| msgid "Version"
+msgid "Version %s"
+msgstr "Versie %s"
+
+#: src/gs-app-version-history-row.c:70
+#| msgid "No details were available for this rating."
+msgid "No details for this release"
+msgstr "Er zijn geen details beschikbaar voor deze uitgave"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: src/gs-app-version-history-row.c:84 src/gs-history-dialog.c:111
+#: src/gs-review-row.c:65
+msgid "%e %B %Y"
+msgstr "%e %B %Y"
+
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:110
+#: src/gs-application.c:136
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Opstartmodus: ofwel ‘updates’, ‘updated’ (bijgewerkt), "
 "‘installed’ (geïnstalleerd) of ‘overview’ (overzicht)"
 
-#: src/gs-application.c:110
+#: src/gs-application.c:136
 msgid "MODE"
 msgstr "Modus"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:138
 msgid "Search for applications"
 msgstr "Naar toepassingen zoeken"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:138
 msgid "SEARCH"
 msgstr "Zoeken"
 
-#: src/gs-application.c:114
+#: src/gs-application.c:140
 msgid "Show application details (using application ID)"
 msgstr "Toepassingsgegevens tonen (met gebruikmaking van toepassings-ID)"
 
-#: src/gs-application.c:114 src/gs-application.c:118
+#: src/gs-application.c:140 src/gs-application.c:144
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:142
 msgid "Show application details (using package name)"
 msgstr "Toepassingsgegevens tonen (met gebruikmaking van pakketnaam)"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:142
 msgid "PKGNAME"
 msgstr "Pakketnaam"
 
-#: src/gs-application.c:118
+#: src/gs-application.c:144
 msgid "Install the application (using application ID)"
 msgstr "De toepassing installeren (met behulp van toepassings-ID)"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:146
 msgid "Open a local package file"
 msgstr "Een lokaal pakketbestand openen"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:146
 msgid "FILENAME"
 msgstr "Bestandsnaam"
 
-#: src/gs-application.c:122
+#: src/gs-application.c:148
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -500,31 +541,31 @@ msgstr ""
 "De soort interactie verwacht voor deze actie: ‘none’ (geen), "
 "‘notify’ (melden) of ‘full’ (volledig)"
 
-#: src/gs-application.c:125
+#: src/gs-application.c:151
 msgid "Show verbose debugging information"
 msgstr "Gedetailleerde foutopsporingsinformatie tonen"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:153
 msgid "Installs any pending updates in the background"
 msgstr "Installeert updates die op de achtergrond klaar staan"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:155
 msgid "Show update preferences"
 msgstr "Updatevoorkeuren tonen"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:157
 msgid "Quit the running instance"
 msgstr "Draaiende instantie afsluiten"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:159
 msgid "Prefer local file sources to AppStream"
 msgstr "Lokale bestandsbronnen verkiezen boven AppStream"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:161
 msgid "Show version number"
 msgstr "Versienummer tonen"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:354
 msgid "translator-credits"
 msgstr ""
 "Nathan Follens\n"
@@ -535,17 +576,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:333 src/gs-shell.c:2123
+#: src/gs-application.c:359 src/gs-shell.c:2136
 msgid "About Software"
 msgstr "Over Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:336
+#: src/gs-application.c:362
 msgid "A nice way to manage the software on your system."
 msgstr "Een prettige manier om de software op uw systeem te beheren."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:564
+#: src/gs-application.c:590
 msgid "Sorry! There are no details for that application."
 msgstr "Er zijn helaas geen details voor die toepassing."
 
@@ -564,7 +605,7 @@ msgstr "Installeren…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:479
+#: src/gs-app-row.c:139 src/gs-updates-section.c:488
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -572,7 +613,7 @@ msgstr "Annuleren"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:288 src/gs-page.c:334
+#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:338
 msgid "Install"
 msgstr "Installeren"
 
@@ -585,21 +626,33 @@ msgstr "Bijwerken"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
-#: src/gs-repos-dialog.c:326
-msgid "Remove"
-msgstr "Verwijderen"
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:496
+#| msgid "Install"
+msgid "Uninstall"
+msgstr "Deïnstalleren"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: src/gs-app-row.c:178
+#| msgid "Installing"
+msgid "Uninstalling"
+msgstr "Wordt gedeïnstalleerd"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:284
+#: src/gs-app-row.c:285
 msgid "Device cannot be used during update."
 msgstr "Apparaat kan niet worden gebruikt tijdens het bijwerken."
 
-#: src/gs-app-row.c:459 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:473 src/gs-update-dialog.ui:185
 msgid "Requires additional permissions"
-msgstr "%s vraagt om extra rechten"
+msgstr "Vereist extra rechten"
+
+#. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
+#: src/gs-app-row.c:480
+#, c-format
+msgid "Renamed from %s"
+msgstr "%s hernoemd"
 
 #. TRANSLATORS: This is a description for entering user/password
 #: src/gs-basic-auth-dialog.c:82
@@ -608,19 +661,16 @@ msgid "Login required remote %s (realm %s)"
 msgstr "Aanmelding externe server %s (realm %s) verplicht"
 
 #: src/gs-basic-auth-dialog.ui:10
-#| msgid "Restart Required"
 msgid "Login Required"
 msgstr "Aanmelding vereist"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:252
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:262
 #: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
 #: src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
 msgstr "_Annuleren"
 
 #: src/gs-basic-auth-dialog.ui:39
-#| msgctxt "Menu of Games"
-#| msgid "Logic"
 msgid "_Login"
 msgstr "_Aanmelden"
 
@@ -629,24 +679,23 @@ msgid "_User"
 msgstr "Gebr_uiker"
 
 #: src/gs-basic-auth-dialog.ui:119
-#| msgid "Password"
 msgid "_Password"
 msgstr "_Wachtwoord"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: lib/gs-category.c:178
+#: lib/gs-category.c:209
 msgid "Other"
 msgstr "Andere"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:183
+#: lib/gs-category.c:214
 msgid "All"
 msgstr "Alles"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: lib/gs-category.c:187
+#: lib/gs-category.c:218
 msgid "Featured"
 msgstr "Aanbevolen"
 
@@ -664,7 +713,7 @@ msgstr "Beoordeling"
 
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:59
+#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:55
 msgid "Name"
 msgstr "Naam"
 
@@ -687,66 +736,459 @@ msgid "Subcategories sorting menu"
 msgstr "Sorteermenu voor subcategorieën"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:191
+#: lib/gs-cmd.c:193
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "Voer een getal in van 1 tot %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:254
+#: lib/gs-cmd.c:256
 msgid "Choose an application:"
 msgstr "Kies een toepassing:"
 
-#. TRANSLATORS: this is the summary of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:124
-msgid "OS updates are now installed"
-msgstr "OS-updates zijn nu geïnstalleerd"
+#: lib/gs-desktop-data.c:17
+msgctxt "Menu of Audio & Video"
+msgid "All"
+msgstr "Alles"
 
-#. TRANSLATORS: this is the body of a notification that OS updates
-#. * have been successfully installed
-#: src/gs-common.c:127
-msgid "Recently installed updates are available to review"
-msgstr "Recent geïnstalleerde updates zijn klaar voor beoordeling"
+#: lib/gs-desktop-data.c:20
+msgctxt "Menu of Audio & Video"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:23
+msgctxt "Menu of Audio & Video"
+msgid "Audio Creation & Editing"
+msgstr "Audiocreatie en -bewerking"
+
+#: lib/gs-desktop-data.c:29
+msgctxt "Menu of Audio & Video"
+msgid "Music Players"
+msgstr "Muziekspelers"
+
+#: lib/gs-desktop-data.c:38
+msgctxt "Menu of Developer Tools"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:41
+msgctxt "Menu of Developer Tools"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:44
+msgctxt "Menu of Developer Tools"
+msgid "Debuggers"
+msgstr "Foutopsporingsprogramma’s"
+
+#: lib/gs-desktop-data.c:47
+msgctxt "Menu of Developer Tools"
+msgid "IDEs"
+msgstr "IDE’s"
+
+#: lib/gs-desktop-data.c:56
+msgctxt "Menu of Education & Science"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:60
+msgctxt "Menu of Education & Science"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:64
+msgctxt "Menu of Education & Science"
+msgid "Artificial Intelligence"
+msgstr "Kunstmatige intelligentie"
+
+#: lib/gs-desktop-data.c:67
+msgctxt "Menu of Education & Science"
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: lib/gs-desktop-data.c:71
+msgctxt "Menu of Education & Science"
+msgid "Chemistry"
+msgstr "Scheikunde"
+
+#: lib/gs-desktop-data.c:75
+msgctxt "Menu of Education & Science"
+msgid "Languages"
+msgstr "Talen"
+
+#: lib/gs-desktop-data.c:79
+msgctxt "Menu of Education & Science"
+msgid "Math"
+msgstr "Wiskunde"
+
+#: lib/gs-desktop-data.c:86
+msgctxt "Menu of Education & Science"
+msgid "Robotics"
+msgstr "Robotica"
+
+#: lib/gs-desktop-data.c:95
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:98
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:101
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Actie"
+
+#: lib/gs-desktop-data.c:104
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Avontuur"
+
+#: lib/gs-desktop-data.c:107
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: lib/gs-desktop-data.c:110
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Blokken"
+
+#: lib/gs-desktop-data.c:113
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Bordspellen"
+
+#: lib/gs-desktop-data.c:116
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Kaartspellen"
+
+#: lib/gs-desktop-data.c:119
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Emulators"
+
+#: lib/gs-desktop-data.c:122
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Kinderen"
+
+#: lib/gs-desktop-data.c:125
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Logica"
+
+#: lib/gs-desktop-data.c:129
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Rollenspellen"
+
+#: lib/gs-desktop-data.c:132
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Sport"
+
+#: lib/gs-desktop-data.c:135
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Strategische spellen"
+
+#: lib/gs-desktop-data.c:143
+msgctxt "Menu of Graphics & Photography"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:146
+msgctxt "Menu of Graphics & Photography"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:149
+msgctxt "Menu of Graphics & Photography"
+msgid "3D Graphics"
+msgstr "3D"
+
+#: lib/gs-desktop-data.c:152
+msgctxt "Menu of Graphics & Photography"
+msgid "Photography"
+msgstr "Fotografie"
+
+#: lib/gs-desktop-data.c:155
+msgctxt "Menu of Graphics & Photography"
+msgid "Scanning"
+msgstr "Scannen"
+
+#: lib/gs-desktop-data.c:158
+msgctxt "Menu of Graphics & Photography"
+msgid "Vector Graphics"
+msgstr "Vectorafbeeldingen"
+
+#: lib/gs-desktop-data.c:161
+msgctxt "Menu of Graphics & Photography"
+msgid "Viewers"
+msgstr "Viewers"
+
+#: lib/gs-desktop-data.c:169
+msgctxt "Menu of Productivity"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:172
+msgctxt "Menu of Productivity"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:175
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "Agenda"
+
+#: lib/gs-desktop-data.c:179
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "Database"
+
+#: lib/gs-desktop-data.c:182
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "Financiën"
+
+#: lib/gs-desktop-data.c:186
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "Tekstverwerker"
+
+#: lib/gs-desktop-data.c:195
+msgctxt "Menu of Add-ons"
+msgid "Fonts"
+msgstr "Lettertypes"
+
+#: lib/gs-desktop-data.c:198
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "Codecs"
+
+#: lib/gs-desktop-data.c:201
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Invoerbronnen"
+
+#: lib/gs-desktop-data.c:204
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Taalpakketten"
+
+#: lib/gs-desktop-data.c:207
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Lokalisatie"
+
+#: lib/gs-desktop-data.c:210
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Hardware-stuurprogramma’s"
+
+#: lib/gs-desktop-data.c:218
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:221
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:224
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "Chat"
+
+#: lib/gs-desktop-data.c:231
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "Nieuws"
+
+#: lib/gs-desktop-data.c:235
+msgctxt "Menu of Communication & News"
+msgid "Web Browsers"
+msgstr "Webbrowsers"
+
+#: lib/gs-desktop-data.c:243
+msgctxt "Menu of Utilities"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:246
+msgctxt "Menu of Utilities"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:249
+msgctxt "Menu of Utilities"
+msgid "Text Editors"
+msgstr "Tekstverwerkers"
+
+#: lib/gs-desktop-data.c:257
+msgctxt "Menu of Reference"
+msgid "All"
+msgstr "Alles"
+
+#: lib/gs-desktop-data.c:260
+msgctxt "Menu of Reference"
+msgid "Featured"
+msgstr "Aanbevolen"
+
+#: lib/gs-desktop-data.c:263
+msgctxt "Menu of Art"
+msgid "Art"
+msgstr "Kunst"
+
+#: lib/gs-desktop-data.c:266
+msgctxt "Menu of Reference"
+msgid "Biography"
+msgstr "Biografie"
+
+#: lib/gs-desktop-data.c:269
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "Strips"
+
+#: lib/gs-desktop-data.c:272
+msgctxt "Menu of Reference"
+msgid "Fiction"
+msgstr "Fictie"
+
+#: lib/gs-desktop-data.c:275
+msgctxt "Menu of Reference"
+msgid "Health"
+msgstr "Gezondheid"
+
+#: lib/gs-desktop-data.c:278
+msgctxt "Menu of Reference"
+msgid "History"
+msgstr "Geschiedenis"
+
+#: lib/gs-desktop-data.c:281
+msgctxt "Menu of Reference"
+msgid "Lifestyle"
+msgstr "Levensstijl"
+
+#: lib/gs-desktop-data.c:284
+msgctxt "Menu of Reference"
+msgid "Politics"
+msgstr "Politiek"
+
+#: lib/gs-desktop-data.c:287
+msgctxt "Menu of Reference"
+msgid "Sports"
+msgstr "Sport"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: lib/gs-desktop-data.c:297
+msgid "Audio & Video"
+msgstr "Audio & video"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: lib/gs-desktop-data.c:300
+msgid "Developer Tools"
+msgstr "Ontwikkelhulpmiddelen"
+
+#. TRANSLATORS: this is the menu spec main category for Education & Science
+#: lib/gs-desktop-data.c:303
+msgid "Education & Science"
+msgstr "Onderwijs & wetenschap"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: lib/gs-desktop-data.c:306
+msgid "Games"
+msgstr "Spelletjes"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: lib/gs-desktop-data.c:309
+msgid "Graphics & Photography"
+msgstr "Grafisch & fotografie"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: lib/gs-desktop-data.c:312
+msgid "Productivity"
+msgstr "Productiviteit"
+
+#. TRANSLATORS: this is the menu spec main category for Add-ons
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#: lib/gs-desktop-data.c:315 src/gs-details-page.ui:410
+#: src/gs-installed-page.c:441
+msgid "Add-ons"
+msgstr "Add-ons"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: lib/gs-desktop-data.c:318
+msgid "Communication & News"
+msgstr "Communicatie & nieuws"
+
+#. TRANSLATORS: this is the menu spec main category for Reference
+#: lib/gs-desktop-data.c:321
+msgid "Reference"
+msgstr "Referentie"
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: lib/gs-desktop-data.c:324
+msgid "Utilities"
+msgstr "Hulpprogramma’s"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:132 src/gs-common.c:146
+#: src/gs-common.c:130 src/gs-common.c:153
 #, c-format
 msgid "%s is now installed"
 msgstr "%s is nu geïnstalleerd"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:136 src/gs-common.c:150
+#: src/gs-common.c:134 src/gs-common.c:157
 msgid "A restart is required for the changes to take effect."
 msgstr "Pas na een herstart zullen de wijzigingen van kracht zijn."
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:140
+#: src/gs-common.c:138
 msgid "Application is ready to be used."
 msgstr "De toepassing is klaar voor gebruik."
 
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:146
+msgid "OS updates are now installed"
+msgstr "OS-updates zijn nu geïnstalleerd"
+
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:149
+msgid "Recently installed updates are available to review"
+msgstr "Recent geïnstalleerde updates zijn klaar voor beoordeling"
+
 #. TRANSLATORS: button text
-#: src/gs-common.c:160 src/gs-common.c:650
+#: src/gs-common.c:168 src/gs-common.c:702
 msgid "Restart"
 msgstr "Herstarten"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:164
+#: src/gs-common.c:172
 msgid "Launch"
 msgstr "Starten"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222
+#: src/gs-common.c:231
 msgid "Install Third-Party Software?"
 msgstr "Software van derden installeren?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:226 src/gs-repos-dialog.c:235
+#: src/gs-common.c:235 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
 msgstr "Softwarebron van derden inschakelen?"
 
@@ -754,7 +1196,7 @@ msgstr "Softwarebron van derden inschakelen?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:242
+#: src/gs-common.c:251
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -767,709 +1209,214 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:252
+#: src/gs-common.c:261
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s wordt geleverd door ‘%s’."
 
-#: src/gs-common.c:261
+#: src/gs-common.c:270
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Deze softwarebron moet ingeschakeld worden om met de installatie verder te "
 "kunnen gaan."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:271
+#: src/gs-common.c:280
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "In sommige landen kan het illegaal zijn %s te installeren of te gebruiken."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:277
+#: src/gs-common.c:286
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "In sommige landen kan het illegaal zijn deze codec te installeren of te "
 "gebruiken."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:284
+#: src/gs-common.c:293
 msgid "Don’t Warn Again"
 msgstr "Niet opnieuw waarschuwen"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:293
+#: src/gs-common.c:302
 msgid "Enable and Install"
 msgstr "Inschakelen en installeren"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:452
+#: src/gs-common.c:505
 msgid "Detailed errors from the package manager follow:"
 msgstr "Gedetailleerde fouten van de pakketbeheerder volgen:"
 
-#: src/gs-common.c:471 src/gs-details-page.ui:447
+#: src/gs-common.c:524 src/gs-details-page.ui:576
 msgid "Details"
 msgstr "Gegevens"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:636
+#: src/gs-common.c:688
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Er is een update geïnstalleerd"
 msgstr[1] "Er zijn updates geïnstalleerd"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:641
+#: src/gs-common.c:693
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Pas na een herstart zal deze van kracht zijn."
 msgstr[1] "Pas na een herstart zullen ze van kracht zijn."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:648 src/gs-update-monitor.c:123
+#: src/gs-common.c:700
 msgid "Not Now"
 msgstr "Niet nu"
 
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:61
-msgid "No cartoon violence"
-msgstr "Geen geweld in strip"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:63
-msgid "Cartoon characters in unsafe situations"
-msgstr "Stripfiguren in onveilige situaties"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:65
-msgid "Cartoon characters in aggressive conflict"
-msgstr "Stripfiguren in een agressieve conflictsituatie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:67
-msgid "Graphic violence involving cartoon characters"
-msgstr "Grafisch geweld met stripfiguren"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:72
-msgid "No fantasy violence"
-msgstr "Geen geweld in fantasie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:74
-msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr ""
-"Figuren in onveilige situaties, gemakkelijk te onderscheiden van de "
-"werkelijkheid"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:76
-msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr ""
-"Figuren in agressieve conflictsituaties, gemakkelijk te onderscheiden van de "
-"werkelijkheid"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:78
-msgid "Graphic violence easily distinguishable from reality"
-msgstr "Grafisch geweld, gemakkelijk te onderscheiden van de werkelijkheid"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:83
-msgid "No realistic violence"
-msgstr "Geen realistisch geweld"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:85
-msgid "Mildly realistic characters in unsafe situations"
-msgstr "Enigszins realistisch figuur in onveilige situaties"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:87
-msgid "Depictions of realistic characters in aggressive conflict"
-msgstr "Afbeeldingen van realistische figuren in agressieve conflictsituatie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:89
-msgid "Graphic violence involving realistic characters"
-msgstr "Grafisch geweld met realistische figuren"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:94
-msgid "No bloodshed"
-msgstr "Geen bloedvergieten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:96
-msgid "Unrealistic bloodshed"
-msgstr "Niet-realistisch bloedvergieten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:98
-msgid "Realistic bloodshed"
-msgstr "Realistisch bloedvergieten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:100
-msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr "Afbeeldingen van bloedvergieten en het mutileren van lichaamsdelen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:105
-msgid "No sexual violence"
-msgstr "Geen seksueel geweld"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:107
-msgid "Rape or other violent sexual behavior"
-msgstr "Verkrachting of ander gewelddadig seksueel gedrag"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:114
-msgid "No references to alcohol"
-msgstr "Geen verwijzingen naar alcohol"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:116
-msgid "References to alcoholic beverages"
-msgstr "Verwijzingen naar alcoholische dranken"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:118
-msgid "Use of alcoholic beverages"
-msgstr "Gebruik van alcoholische dranken"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:124
-msgid "No references to illicit drugs"
-msgstr "Geen verwijzingen naar illegale drugs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:126
-msgid "References to illicit drugs"
-msgstr "Verwijzingen naar illegale drugs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:128
-msgid "Use of illicit drugs"
-msgstr "Gebruik van illegale drugs"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:134
-msgid "No references to tobacco products"
-msgstr "Kom _meer te weten…"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:136
-msgid "References to tobacco products"
-msgstr "Verwijzingen naar tabaksproducten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:138
-msgid "Use of tobacco products"
-msgstr "Gebruik van tabaksproducten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:144
-msgid "No nudity of any sort"
-msgstr "Geen enkel naakt"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:146
-msgid "Brief artistic nudity"
-msgstr "Beknopt artistiek naakt"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:148
-msgid "Prolonged nudity"
-msgstr "Langdurig naakt"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:154
-msgid "No references to or depictions of sexual nature"
-msgstr "Geen seksuele verwijzingen of afbeeldingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:156
-msgid "Provocative references or depictions"
-msgstr "Provocerende verwijzingen of afbeeldingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:158
-msgid "Sexual references or depictions"
-msgstr "Seksuele verwijzingen of afbeeldingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:160
-msgid "Graphic sexual behavior"
-msgstr "Grafisch seksueel gedrag"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:165
-msgid "No profanity of any kind"
-msgstr "Geen enkele godslastering"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:167
-msgid "Mild or infrequent use of profanity"
-msgstr "Mild of niet veelvuldig gebruik van godslastering"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:169
-msgid "Moderate use of profanity"
-msgstr "Matig gebruik van godslastering"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:171
-msgid "Strong or frequent use of profanity"
-msgstr "Sterk of veelvuldig gebruik van godslastering"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:176
-msgid "No inappropriate humor"
-msgstr "Geen ongepaste humor"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:178
-msgid "Slapstick humor"
-msgstr "Slapstick-humor"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:180
-msgid "Vulgar or bathroom humor"
-msgstr "Vulgaire of platte humor"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:182
-msgid "Mature or sexual humor"
-msgstr "Volwassen of seksuele humor"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:187
-msgid "No discriminatory language of any kind"
-msgstr "Geen enkel discriminerend woordgebruik"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:189
-msgid "Negativity towards a specific group of people"
-msgstr "Negativiteit in de richting van een specifieke groep mensen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:191
-msgid "Discrimination designed to cause emotional harm"
-msgstr "Discriminatie met de bedoeling emotionele schade te berokkenen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:193
-msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
-"Expliciete discriminatie op grond van geslacht, seksuele geaardheid, ras of "
-"religie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:198
-msgid "No advertising of any kind"
-msgstr "Zonder enige reclame"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:200
-msgid "Product placement"
-msgstr "Sluikreclame"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:202
-msgid "Explicit references to specific brands or trademarked products"
-msgstr ""
-"Expliciete verwijzingen naar bepaalde merken of producten met handelsmerk"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:204
-msgid "Users are encouraged to purchase specific real-world items"
-msgstr "Gebruikers worden aangemoedigd om bepaalde echte artikelen te kopen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:209
-msgid "No gambling of any kind"
-msgstr "Zonder gokken"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:211
-msgid "Gambling on random events using tokens or credits"
-msgstr "Gokken op willekeurige gebeurtenissen met behulp van tokens of credits"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:213
-msgid "Gambling using “play” money"
-msgstr "Gokken met ‘speel’geld"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:215
-msgid "Gambling using real money"
-msgstr "Gokken met echt geld"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:220
-msgid "No ability to spend money"
-msgstr "Geen mogelijkheid om echt geld uit te geven"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:222
-msgid "Users are encouraged to donate real money"
-msgstr "Gebruikers worden aangemoedigd om echt geld te doneren"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:225
-msgid "Ability to spend real money in-app"
-msgstr "Mogelijk om in de toepassing echt geld uit te geven"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:230
-msgid "No way to chat with other users"
-msgstr "Niet mogelijk om met andere gebruikers te chatten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:232
-msgid "User-to-user interactions without chat functionality"
-msgstr "Interactie tussen gebruikers zonder gespreksfunctionaliteit"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:234
-msgid "Moderated chat functionality between users"
-msgstr "Gecontroleerde gespreksfunctionaliteit tussen gebruikers"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:236
-msgid "Uncontrolled chat functionality between users"
-msgstr "Niet-gecontroleerde gespreksfunctionaliteit tussen gebruikers"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:241
-msgid "No way to talk with other users"
-msgstr "Geen manier om met andere gebruikers te praten"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:243
-msgid "Uncontrolled audio or video chat functionality between users"
-msgstr ""
-"Niet-gecontroleerde audio- of videogespreksfunctionaliteit tussen gebruikers"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:250
-msgid "No sharing of social network usernames or email addresses"
-msgstr ""
-"Gebruikersnamen van sociale netwerken en e-mailadressen worden niet gedeeld"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:252
-msgid "Sharing social network usernames or email addresses"
-msgstr "Deelt gebruikersnamen van sociale netwerken of e-mailadressen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:259
-msgid "No sharing of user information with third parties"
-msgstr "Gebruikersinformatie wordt niet gedeeld met derden"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
-msgid "Checking for the latest application version"
-msgstr "Controleert voor de nieuwste toepassingsversie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:263
-msgid "Sharing diagnostic data that does not let others identify the user"
-msgstr ""
-"Deelt diagnostische gegevens waarmee anderen de gebruiker niet kunnen "
-"identificeren"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:265
-msgid "Sharing information that lets others identify the user"
-msgstr ""
-"Deelt diagnostische gegevens waarmee anderen de gebruiker kunnen "
-"identificeren"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:270
-msgid "No sharing of physical location with other users"
-msgstr "Fysieke locatie wordt niet gedeeld met andere gebruikers"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:272
-msgid "Sharing physical location with other users"
-msgstr "Deelt fysieke locatie met andere gebruikers"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:281
-msgid "No references to homosexuality"
-msgstr "Geen verwijzingen naar homoseksualiteit"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:283
-msgid "Indirect references to homosexuality"
-msgstr "Indirecte verwijzingen naar homoseksualiteit"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:285
-msgid "Kissing between people of the same gender"
-msgstr "Mensen van hetzelfde geslacht kussen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:287
-msgid "Graphic sexual behavior between people of the same gender"
-msgstr "Grafisch seksueel gedrag tussen mensen van hetzelfde geslacht"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:292
-msgid "No references to prostitution"
-msgstr "Geen verwijzingen naar prostitutie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:294
-msgid "Indirect references to prostitution"
-msgstr "Indirecte verwijzingen naar prostitutie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:296
-msgid "Direct references to prostitution"
-msgstr "Directe verwijzingen naar prostitutie"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:298
-msgid "Graphic depictions of the act of prostitution"
-msgstr "Grafische vertoningen van prostitutiedaden"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:303
-msgid "No references to adultery"
-msgstr "Geen verwijzingen naar overspel"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:305
-msgid "Indirect references to adultery"
-msgstr "Indirecte verwijzingen naar overspel"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:307
-msgid "Direct references to adultery"
-msgstr "Directe verwijzingen naar overspel"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:309
-msgid "Graphic depictions of the act of adultery"
-msgstr "Grafische vertoningen van overspel"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:314
-msgid "No sexualized characters"
-msgstr "Geen geseksualiseerde personages"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:317
-msgid "Scantily clad human characters"
-msgstr "Schaars geklede menselijke personages"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:319
-msgid "Overtly sexualized human characters"
-msgstr "Openlijk geseksualiseerde menselijke personages"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:324
-msgid "No references to desecration"
-msgstr "Geen verwijzingen naar beschadigingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:326
-msgid "Depictions of or references to historical desecration"
-msgstr "Vertoningen van of verwijzingen naar historische beschadigingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:328
-msgid "Depictions of modern-day human desecration"
-msgstr "Vertoningen van moderne menselijke beschadigingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:330
-msgid "Graphic depictions of modern-day desecration"
-msgstr "Grafische vertoningen van moderne menselijke beschadigingen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:335
-msgid "No visible dead human remains"
-msgstr "Geen zichtbare dode menselijke overblijfselen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:337
-msgid "Visible dead human remains"
-msgstr "Zichtbare dode menselijke overblijfselen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:339
-msgid "Dead human remains that are exposed to the elements"
-msgstr ""
-"Dode menselijke overblijfselen die worden blootgesteld aan weer en wind"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:341
-msgid "Graphic depictions of desecration of human bodies"
-msgstr "Grafische vertoningen van beschadiging van menselijke lichamen"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:346
-msgid "No references to slavery"
-msgstr "Geen verwijzingen naar slavernij"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:348
-msgid "Depictions of or references to historical slavery"
-msgstr "Vertoningen van of verwijzingen naar historische slavernij"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:350
-msgid "Depictions of modern-day slavery"
-msgstr "Vertoningen van moderne slavernij"
-
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:352
-msgid "Graphic depictions of modern-day slavery"
-msgstr "Grafische vertoningen van moderne slavernij"
-
-#. TRANSLATORS: This is the formatting of English and localized name
-#. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:412
+#. TRANSLATORS: something happened less than 5 minutes ago
+#: src/gs-common.c:742
+msgid "Just now"
+msgstr "Zojuist"
+
+#: src/gs-common.c:744
 #, c-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d minuut geleden"
+msgstr[1] "%d minuten geleden"
 
-#: src/gs-content-rating.c:546
-msgid "General"
-msgstr "Algemeen"
+#: src/gs-common.c:748
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d uur geleden"
+msgstr[1] "%d uur geleden"
 
-#: src/gs-content-rating.c:555
-msgid "ALL"
-msgstr "ALLES"
+#: src/gs-common.c:752
+#, c-format
+#| msgid "Two days ago"
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d dag geleden"
+msgstr[1] "%d dagen geleden"
 
-#: src/gs-content-rating.c:559
-msgid "Adults Only"
-msgstr "Volwassenen"
+#: src/gs-common.c:756
+#, c-format
+#| msgid "One week ago"
+msgid "%d week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] "%d week geleden"
+msgstr[1] "%d weken geleden"
 
-#: src/gs-content-rating.c:561
-msgid "Mature"
-msgstr "Volwassen inhoud"
+#: src/gs-common.c:760
+#, c-format
+msgid "%d month ago"
+msgid_plural "%d months ago"
+msgstr[0] "%d maand geleden"
+msgstr[1] "%d maanden geleden"
 
-#: src/gs-content-rating.c:563
-msgid "Teen"
-msgstr "Tieners"
-
-#: src/gs-content-rating.c:565
-msgid "Everyone 10+"
-msgstr "Iedereen 10+"
-
-#: src/gs-content-rating.c:567
-msgid "Everyone"
-msgstr "Iedereen"
-
-#: src/gs-content-rating.c:569
-msgid "Early Childhood"
-msgstr "Jonge kinderen"
+#: src/gs-common.c:764
+#, c-format
+msgid "%d year ago"
+msgid_plural "%d years ago"
+msgstr[0] "%d jaar geleden"
+msgstr[1] "%d jaar geleden"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: src/gs-dbus-helper.c:282
+#: src/gs-dbus-helper.c:283
 msgid "An application"
 msgstr "Een toepassing"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: src/gs-dbus-helper.c:288
+#: src/gs-dbus-helper.c:289
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s vraagt om extra bestandsformaatondersteuning."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:290
+#: src/gs-dbus-helper.c:291
 msgid "Additional MIME Types Required"
 msgstr "Aanvullende MIME-types vereist"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: src/gs-dbus-helper.c:294
+#: src/gs-dbus-helper.c:295
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s vraagt om extra lettertypes."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:296
+#: src/gs-dbus-helper.c:297
 msgid "Additional Fonts Required"
 msgstr "Extra lettertypes vereist"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: src/gs-dbus-helper.c:300
+#: src/gs-dbus-helper.c:301
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s vraagt om extra multimedia-codecs."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:302
+#: src/gs-dbus-helper.c:303
 msgid "Additional Multimedia Codecs Required"
 msgstr "Extra multimedia-codecs vereist"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: src/gs-dbus-helper.c:306
+#: src/gs-dbus-helper.c:307
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s vraagt om extra printerstuurprogramma’s."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:308
+#: src/gs-dbus-helper.c:309
 msgid "Additional Printer Drivers Required"
 msgstr "Extra printerstuurprogramma’s vereist"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: src/gs-dbus-helper.c:312
+#: src/gs-dbus-helper.c:313
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s vraagt om extra pakketten."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:314
+#: src/gs-dbus-helper.c:315
 msgid "Additional Packages Required"
 msgstr "Extra pakketten vereist"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:323
+#: src/gs-dbus-helper.c:324
 msgid "Find in Software"
 msgstr "Zoeken in Software"
 
-#: src/gs-details-page.c:346
+#: src/gs-description-box.c:64 src/gs-description-box.c:168
+#| msgid "_Learn More"
+msgid "_Read More"
+msgstr "_Meer informatie"
+
+#: src/gs-description-box.c:64
+msgid "_Read Less"
+msgstr "_Minder informatie"
+
+#: src/gs-details-page.c:359
 msgid "Removing…"
 msgstr "Wordt verwijderd…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:365
+#: src/gs-details-page.c:378
 msgid "Pending installation…"
 msgstr "Installatie in afwachting…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:372
+#: src/gs-details-page.c:385
 msgid "Pending update…"
 msgstr "Update in afwachting…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:386
-#| msgid "Removing…"
+#: src/gs-details-page.c:399
 msgid "Preparing…"
 msgstr "Voorbereiden…"
-
-#. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:745
-msgid ""
-"This application can only be used when there is an active internet "
-"connection."
-msgstr ""
-"Deze toepassing kan alleen gebruikt worden met een actieve "
-"internetverbinding."
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
@@ -1477,8 +1424,8 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:890 src/gs-details-page.c:907
-#: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:84
+#: src/gs-details-page.c:906 src/gs-details-page.c:923
+#: src/gs-details-page.ui:177 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Installeren"
@@ -1490,108 +1437,103 @@ msgstr "_Installeren"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:921 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:937 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Installeren…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:963
+#: src/gs-details-page.c:965
 msgid "_Launch"
 msgstr "_Starten"
 
-#. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:987 src/gs-details-page.ui:192
-msgid "_Remove"
-msgstr "_Verwijderen"
-
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Netwerk"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Kan over het netwerk communiceren"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Systeemdiensten"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Heeft toegang tot D-Bus-diensten op de systeembus"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Sessiediensten"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Heeft toegang tot D-Bus-diensten op de sessiebus"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Apparaten"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Kan systeem-apparaatbestanden lezen"
 
-#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Persoonlijke map"
 
-#: src/gs-details-page.c:1022 src/gs-details-page.c:1024
-#: src/gs-details-page.c:1026 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "Kan bestanden lezen, bewerken en aanmaken"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1025
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1025 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Kan bestanden lezen"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
+#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "Bestandssysteem"
 
-#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1028 src/gs-details-page.c:1029
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Downloadmap"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Instellingen"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Kan alle instellingen inzien en wijzigen"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Verouderd weergavesysteem"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Gebruikt een oud en onveilig weergavesysteem"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Zandbak omzeilen"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Kan de zandbak en andere beperkingen omzeilen"
 
-#: src/gs-details-page.c:1045
+#: src/gs-details-page.c:1047
 msgid "This application is fully sandboxed."
 msgstr "Deze toepassing bevindt zich volledig in een zandbak."
 
-#: src/gs-details-page.c:1053
+#: src/gs-details-page.c:1055
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1599,118 +1541,150 @@ msgstr ""
 "Kan niet bepalen tot welke delen van het systeem deze toepassing toegang "
 "heeft. Dit geldt vaak voor oudere toepassingen."
 
-#. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1212
-msgctxt "version"
-msgid "Unknown"
-msgstr "Onbekend"
-
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1225
+#: src/gs-details-page.c:1250
 msgctxt "updated"
 msgid "Never"
 msgstr "Nooit"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1278
+#: src/gs-details-page.c:1303
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: src/gs-details-page.c:1331
+#: src/gs-details-page.c:1356
+#| msgctxt "content rating violence-cartoon"
+#| msgid "None"
+msgctxt "App permissions"
+msgid "None"
+msgstr "Geen"
+
+#: src/gs-details-page.c:1358
+#| msgid "Low"
+msgctxt "App permissions"
 msgid "Low"
 msgstr "Laag"
 
-#: src/gs-details-page.c:1333
+#: src/gs-details-page.c:1360
+#| msgid "Medium"
+msgctxt "App permissions"
 msgid "Medium"
 msgstr "Gemiddeld"
 
-#: src/gs-details-page.c:1335
+#: src/gs-details-page.c:1362
+#| msgid "High"
+msgctxt "App permissions"
 msgid "High"
 msgstr "Hoog"
 
-#. This refers to the license of the application
-#. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1337 src/gs-details-page.ui:1006
-#: src/gs-review-row.c:58
+#: src/gs-details-page.c:1364
+#| msgid "Unknown"
+msgctxt "App permissions"
 msgid "Unknown"
 msgstr "Onbekend"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1675
+#: src/gs-details-page.c:1728
 msgid "You need internet access to write a review"
 msgstr "U heeft internettoegang nodig om een beoordeling te schrijven"
 
-#: src/gs-details-page.c:1864 src/gs-details-page.c:1880
+#: src/gs-details-page.c:1928 src/gs-details-page.c:1944
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "‘%s’ niet gevonden"
 
+#: src/gs-details-page.c:2010 src/gs-details-page.c:2045
+#| msgid "Removing…"
+msgid "Loading…"
+msgstr "Wordt geladen…"
+
+#: src/gs-details-page.c:2483
+msgid "The application contains no age-inappropriate content."
+msgstr "De toepassing bevat geen leeftijd-ongepaste inhoud."
+
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2458
+#: src/gs-details-page.c:2592
 msgid "Public domain"
 msgstr "Publiek domein"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2461
+#: src/gs-details-page.c:2595
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://nl.wikipedia.org/wiki/Publiek_domein"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2468
+#: src/gs-details-page.c:2602
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.nl"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2478 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2612 src/gs-details-page.ui:1285
 msgid "Free Software"
 msgstr "Vrije software"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2535
+#: src/gs-details-page.c:2669
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Gebruikers zijn gebonden aan de volgende licentie:"
 msgstr[1] "Gebruikers zijn gebonden aan de volgende licenties:"
 
-#: src/gs-details-page.c:2562 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2696 src/gs-details-page.ui:1357
 msgid "More information"
 msgstr "Meer informatie"
 
-#: src/gs-details-page.ui:7
+#: src/gs-details-page.ui:8
 msgid "Details page"
 msgstr "Pagina met informatie"
 
-#: src/gs-details-page.ui:222
+#: src/gs-details-page.ui:40
+#| msgid "Downloading application ratings…"
+msgid "Loading application details…"
+msgstr "Toepassingsdetails worden geladen…"
+
+#: src/gs-details-page.ui:232
 msgid "Downloading"
 msgstr "Downloaden"
 
-#: src/gs-details-page.ui:262
+#: src/gs-details-page.ui:272
 msgid "_Update"
 msgstr "_Bijwerken"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:278
+#: src/gs-details-page.ui:288
 msgid "_Add shortcut"
 msgstr "Sneltoets _toevoegen"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:292
+#: src/gs-details-page.ui:302
 msgid "Re_move shortcut"
 msgstr "Sneltoets _verwijderen"
 
-#: src/gs-details-page.ui:366
+#: src/gs-details-page.ui:376
 msgid "No screenshot provided"
 msgstr "Geen schermafdruk beschikbaar"
 
-#: src/gs-details-page.ui:386
+#: src/gs-details-page.ui:422
+msgid "Selected add-ons will be installed with the application."
+msgstr "Geselecteerde add-ons zullen met de toepassing worden geïnstalleerd."
+
+#: src/gs-details-page.ui:505
+msgid ""
+"This application can only be used when there is an active internet "
+"connection."
+msgstr ""
+"Deze toepassing kan alleen gebruikt worden met een actieve "
+"internetverbinding."
+
+#: src/gs-details-page.ui:515
 msgid "Software Repository Included"
 msgstr "Inclusief softwarebron"
 
-#: src/gs-details-page.ui:387
+#: src/gs-details-page.ui:516
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1718,11 +1692,11 @@ msgstr ""
 "Deze toepassing bevat een softwarebron die naast updates ook toegang biedt "
 "tot andere software."
 
-#: src/gs-details-page.ui:394
+#: src/gs-details-page.ui:523
 msgid "No Software Repository Included"
 msgstr "Geen softwarebron inbegrepen"
 
-#: src/gs-details-page.ui:395
+#: src/gs-details-page.ui:524
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1730,7 +1704,7 @@ msgstr ""
 "Deze toepassing bevat geen softwarebron en zal niet worden bijgewerkt met "
 "nieuwe versies."
 
-#: src/gs-details-page.ui:403
+#: src/gs-details-page.ui:532
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1739,11 +1713,11 @@ msgstr ""
 "vervangen te worden."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:410
+#: src/gs-details-page.ui:539
 msgid "Software Repository Identified"
 msgstr "Softwarebron geïdentificeerd"
 
-#: src/gs-details-page.ui:411
+#: src/gs-details-page.ui:540
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1751,121 +1725,111 @@ msgstr ""
 "Door het toevoegen van deze softwarebron krijgt u toegang tot extra software "
 "en upgrades."
 
-#: src/gs-details-page.ui:412
+#: src/gs-details-page.ui:541
 msgid "Only use software repositories that you trust."
 msgstr "Gebruik alleen softwarebronnen die u vertrouwt."
 
-#: src/gs-details-page.ui:422
+#: src/gs-details-page.ui:551
 msgid "_Website"
 msgstr "_Website"
 
-#: src/gs-details-page.ui:431
+#: src/gs-details-page.ui:560
 msgid "_Donate"
 msgstr "_Doneren"
 
-#: src/gs-details-page.ui:541
+#: src/gs-details-page.ui:670
 msgid "Localized in your Language"
 msgstr "Vertaald in uw taal"
 
-#: src/gs-details-page.ui:552
+#: src/gs-details-page.ui:681
 msgid "Documentation"
 msgstr "Documentatie"
 
 # Ik weet niet wat hier met Release bedoeld wordt. Ik laat het maar even onvertaald.
-#: src/gs-details-page.ui:563
+#: src/gs-details-page.ui:692
 msgid "Release Activity"
 msgstr "Uitgave-activiteit"
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:703
 msgid "System Integration"
 msgstr "Systeemintegratie"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:714
 msgid "Sandboxed"
 msgstr "In een zandbak"
 
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:103
+#: src/gs-details-page.ui:734 src/gs-origin-popover-row.c:91
 msgid "Channel"
 msgstr "Kanaal"
 
-#. Translators: The available version of an app
-#: src/gs-details-page.ui:641 src/gs-origin-popover-row.ui:151
-msgid "Version"
-msgstr "Versie"
-
-#: src/gs-details-page.ui:677
+#: src/gs-details-page.ui:770
 msgid "Age Rating"
 msgstr "Leeftijdsbeoordeling"
 
-#: src/gs-details-page.ui:715 src/gs-details-page.ui:1408
+#: src/gs-details-page.ui:808 src/gs-details-page.ui:1443
 msgid "Permissions"
 msgstr "Rechten"
 
-#: src/gs-details-page.ui:753
+#: src/gs-details-page.ui:846
 msgid "Updated"
 msgstr "Bijgewerkt"
 
-#: src/gs-details-page.ui:787
+#: src/gs-details-page.ui:880
 msgid "Category"
 msgstr "Categorie"
 
-#: src/gs-details-page.ui:824
+#: src/gs-details-page.ui:917
 msgid "Installed Size"
 msgstr "Grootte na installatie"
 
-#: src/gs-details-page.ui:855
+#: src/gs-details-page.ui:948
 msgid "Download Size"
 msgstr "Downloadgrootte"
 
-#: src/gs-details-page.ui:917
+#: src/gs-details-page.ui:1010
 msgid "Developer"
 msgstr "Ontwikkelaar"
 
-#: src/gs-details-page.ui:963
+#: src/gs-details-page.ui:1056
 msgid "License"
 msgstr "Licentie"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:982
+#: src/gs-details-page.ui:1075
 msgid "Free"
 msgstr "Vrij"
 
 # Ik heb toch maar gekozen voor Bedrijfseigen i.p.v. proriëtair. - Hannie
 # ‘Proprietary’ is het tegenovergestelde van ‘free’ en is dus een synoniem van ‘nonfree’; in dit geval is het het meest logisch om in het Nederlands te kiezen voor ‘niet-vrij’. Niet-vrije software hoeft niet door een bedrijf ontwikkeld te zijn. - Justin
 #. This refers to the license of the application
-#: src/gs-details-page.ui:994
+#: src/gs-details-page.ui:1087
 msgid "Proprietary"
 msgstr "Niet-vrij"
 
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
-#. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:441
-#: plugins/core/gs-desktop-common.c:315
-msgid "Add-ons"
-msgstr "Add-ons"
-
-#: src/gs-details-page.ui:1056
-msgid "Selected add-ons will be installed with the application."
-msgstr "Geselecteerde add-ons zullen met de toepassing worden geïnstalleerd."
+#. This refers to the license of the application
+#: src/gs-details-page.ui:1099
+#| msgid "Unknown"
+msgctxt "Application license"
+msgid "Unknown"
+msgstr "Onbekend"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1094
+#: src/gs-details-page.ui:1131
 msgid "Reviews"
 msgstr "Beoordelingen"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1112
+#: src/gs-details-page.ui:1149
 msgid "_Write a Review"
 msgstr "Een beoordeling _schrijven"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1133
+#: src/gs-details-page.ui:1170
 msgid "_Show More"
 msgstr "_Meer weergeven"
 
-#: src/gs-details-page.ui:1261
+#: src/gs-details-page.ui:1296
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1873,11 +1837,11 @@ msgstr ""
 "Dit betekent dat de software vrij kan worden gebruikt, gekopieerd, "
 "verspreid, bestudeerd en gewijzigd."
 
-#: src/gs-details-page.ui:1301
+#: src/gs-details-page.ui:1336
 msgid "Proprietary Software"
 msgstr "Niet-vrije software"
 
-#: src/gs-details-page.ui:1312
+#: src/gs-details-page.ui:1347
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1887,35 +1851,35 @@ msgstr ""
 "zijn er beperkingen met betrekking tot het gebruik ervan en er is meestal "
 "geen toegang tot de broncode."
 
-#: src/gs-details-page.ui:1344
+#: src/gs-details-page.ui:1379
 msgid "Unknown Software License"
 msgstr "Onbekende softwarelicentie"
 
-#: src/gs-details-page.ui:1355
+#: src/gs-details-page.ui:1390
 msgid "The license terms of this software are unknown."
 msgstr "De licentievoorwaarden van deze software zijn niet bekend."
 
-#: src/gs-details-page.ui:1375
+#: src/gs-details-page.ui:1410
 msgid "The application was rated this way because it features:"
 msgstr "De beoordeling van deze toepassing is gebaseerd op:"
 
-#: src/gs-details-page.ui:1389
+#: src/gs-details-page.ui:1424
 msgid "No details were available for this rating."
 msgstr "Er zijn geen details beschikbaar voor deze beoordeling."
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:135
+#: src/gs-extras-page.c:138
 msgid " and "
 msgstr " en "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:138
+#: src/gs-extras-page.c:141
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:164
+#: src/gs-extras-page.c:167
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1924,31 +1888,41 @@ msgstr[1] "Beschikbare lettertypes voor de %s-scripts"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:172
+#: src/gs-extras-page.c:175
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "Beschikbare software voor %s"
 msgstr[1] "Beschikbare software voor %s"
 
-#: src/gs-extras-page.c:214
+#: src/gs-extras-page.c:217
 msgid "Unable to Find Requested Software"
 msgstr "Gevraagde software kon niet gevonden worden"
 
+#: src/gs-extras-page.c:256
+#| msgid "Screenshot size not found"
+msgid "Requested software not found"
+msgstr "Gevraagde software niet gevonden"
+
+#: src/gs-extras-page.c:258
+#| msgid "Unable to Find Requested Software"
+msgid "Failed to find requested software"
+msgstr "Gevraagde software niet gevonden"
+
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:319
+#: src/gs-extras-page.c:348
 #, c-format
 msgid "%s not found"
 msgstr "%s niet gevonden"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:323
+#: src/gs-extras-page.c:352
 msgid "on the website"
 msgstr "op de website"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:330
+#: src/gs-extras-page.c:359
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Geen toepassingen beschikbaar die het bestand %s aanbieden."
@@ -1957,7 +1931,7 @@ msgstr "Geen toepassingen beschikbaar die het bestand %s aanbieden."
 # Van de entry die hier 2 boven staat - Justin
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:334 src/gs-extras-page.c:345 src/gs-extras-page.c:356
+#: src/gs-extras-page.c:363 src/gs-extras-page.c:374 src/gs-extras-page.c:385
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1968,21 +1942,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:341 src/gs-extras-page.c:363
+#: src/gs-extras-page.c:370 src/gs-extras-page.c:392
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Geen toepassingen beschikbaar die %s ondersteunen."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:352
+#: src/gs-extras-page.c:381
 #, c-format
 msgid "%s is not available."
 msgstr "%s is niet beschikbaar."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:367
+#: src/gs-extras-page.c:396
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1993,7 +1967,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:374
+#: src/gs-extras-page.c:403
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr ""
@@ -2001,7 +1975,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:378
+#: src/gs-extras-page.c:407
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2012,14 +1986,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:385
+#: src/gs-extras-page.c:414
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Geen add-on-codecs beschikbaar voor het formaat %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:389
+#: src/gs-extras-page.c:418
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2030,14 +2004,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:396
+#: src/gs-extras-page.c:425
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Geen Plasma-bronnen beschikbaar die %s ondersteunen."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:400
+#: src/gs-extras-page.c:429
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2048,14 +2022,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:407
+#: src/gs-extras-page.c:436
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Geen printerstuurprogramma’s beschikbaar voor %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:411
+#: src/gs-extras-page.c:440
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2065,31 +2039,59 @@ msgstr ""
 "deze printer ondersteunt kunnen gevonden worden %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:455
-msgid "this website"
-msgstr "deze website"
+#: src/gs-extras-page.c:484
+#| msgid "Documentation"
+msgid "the documentation"
+msgstr "Documentatie"
 
-#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: src/gs-extras-page.c:459
+#. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
+#. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
+#: src/gs-extras-page.c:490
 #, c-format
+#| msgid ""
+#| "Unfortunately, the %s you were searching for could not be found. Please "
+#| "see %s for more information."
+#| msgid_plural ""
+#| "Unfortunately, the %s you were searching for could not be found. Please "
+#| "see %s for more information."
 msgid ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] ""
-"De %s waar u naar zocht kon niet gevonden worden. Zie %s voor meer "
+"%s gevraagd door %s kon niet gevonden worden. Zie %s voor meer "
 "informatie."
 msgstr[1] ""
-"De %s waar u naar zocht konden niet gevonden worden. Zie %s voor meer "
+"%s gevraagd door %s konden niet gevonden worden. Zie %s voor meer "
 "informatie."
 
-#: src/gs-extras-page.c:527 src/gs-extras-page.c:583 src/gs-extras-page.c:622
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
+#: src/gs-extras-page.c:499
+#, c-format
+#| msgid ""
+#| "Unfortunately, the %s you were searching for could not be found. Please "
+#| "see %s for more information."
+#| msgid_plural ""
+#| "Unfortunately, the %s you were searching for could not be found. Please "
+#| "see %s for more information."
+msgid ""
+"Unable to find the %s you were searching for. Please see %s for more "
+"information."
+msgid_plural ""
+"Unable to find the %s you were searching for. Please see %s for more "
+"information."
+msgstr[0] ""
+"%s waar u naar zocht kon niet gevonden worden. Zie %s voor meer "
+"informatie."
+msgstr[1] ""
+"%s waar u naar zocht konden niet gevonden worden. Zie %s voor meer "
+"informatie."
+
+#: src/gs-extras-page.c:569 src/gs-extras-page.c:625 src/gs-extras-page.c:664
 msgid "Failed to find any search results"
 msgstr "Geen zoekresultaten gevonden"
 
-#: src/gs-extras-page.c:810
+#: src/gs-extras-page.c:852
 #, c-format
 msgid "%s file format"
 msgstr "%s bestandsformaat"
@@ -2097,6 +2099,19 @@ msgstr "%s bestandsformaat"
 #: src/gs-extras-page.ui:7
 msgid "Codecs page"
 msgstr "Codecs-pagina"
+
+#: src/gs-featured-carousel.ui:43
+msgid "Previous"
+msgstr "Vorige"
+
+#: src/gs-featured-carousel.ui:73
+msgid "Next"
+msgstr "Volgende"
+
+#: src/gs-featured-carousel.ui:100
+#| msgid "Featured App"
+msgid "Featured Apps List"
+msgstr "Lijst met aanbevolen toepassingen"
 
 #: src/gs-first-run-dialog.ui:6 src/gs-first-run-dialog.ui:15
 msgid "Welcome"
@@ -2117,15 +2132,17 @@ msgstr ""
 "gewenste toepassingen."
 
 #: src/gs-first-run-dialog.ui:62
-msgid "_Let’s Go Shopping"
-msgstr "_Laten we winkelen"
+#| msgid "Free Software"
+msgid "_Browse Software"
+msgstr "Software _doorbladeren"
 
 #. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was removed
+#. * where we are showing the application was uninstalled
 #: src/gs-history-dialog.c:70
+#| msgid "Installed"
 msgctxt "app status"
-msgid "Removed"
-msgstr "Verwijderd"
+msgid "Uninstalled"
+msgstr "Gedeïnstalleerd"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
@@ -2148,12 +2165,6 @@ msgstr "Bijgewerkt"
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Onbekend"
-
-#. TRANSLATORS: This is the date string with: day number, month name, year.
-#. i.e. "25 May 2012"
-#: src/gs-history-dialog.c:111 src/gs-review-row.c:65 src/gs-updates-page.c:258
-msgid "%e %B %Y"
-msgstr "%e %B %Y"
 
 #: src/gs-history-dialog.ui:5
 msgid "History"
@@ -2178,7 +2189,7 @@ msgstr "De softwarecatalogus wordt gedownload"
 msgid "Loading page"
 msgstr "Laden-pagina"
 
-#: src/gs-loading-page.ui:47
+#: src/gs-loading-page.ui:48
 msgid "Starting up…"
 msgstr "Starten…"
 
@@ -2218,18 +2229,18 @@ msgid "There are no reviews to moderate"
 msgstr "Er zijn geen beoordelingen om te modereren"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:84
+#: src/gs-origin-popover-row.c:72
 msgid "system"
 msgstr "systeem"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:87
+#: src/gs-origin-popover-row.c:75
 msgid "user"
 msgstr "gebruiker"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:108 src/gs-origin-popover-row.ui:122
+#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
 msgid "Branch"
 msgstr "Branch"
 
@@ -2237,53 +2248,53 @@ msgstr "Branch"
 msgid "URL"
 msgstr "URL"
 
-#. Translators: The packaging format of the app being installed, e.g. 'RPM' or 'Flatpak'
-#: src/gs-origin-popover-row.ui:64
-msgid "Format"
-msgstr "Indeling"
-
 #. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
-#: src/gs-origin-popover-row.ui:93
+#: src/gs-origin-popover-row.ui:64
 msgid "Installation"
 msgstr "Installatie"
 
+#. Translators: The available version of an app
+#: src/gs-origin-popover-row.ui:122
+msgid "Version"
+msgstr "Versie"
+
 #. add button
-#: src/gs-overview-page.c:313
+#: src/gs-overview-page.c:320
 msgid "More…"
 msgstr "Meer…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:563
+#: src/gs-overview-page.c:482
 msgid "Recommended Audio & Video Applications"
 msgstr "Aanbevolen audio- en videotoepassingen"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:568
+#: src/gs-overview-page.c:487
 msgid "Recommended Games"
 msgstr "Aanbevolen spelletjes"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:573
+#: src/gs-overview-page.c:492
 msgid "Recommended Graphics Applications"
 msgstr "Aanbevolen grafische toepassingen"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:578
+#: src/gs-overview-page.c:497
 msgid "Recommended Productivity Applications"
 msgstr "Aanbevolen productiviteitstoepassingen"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:832
+#: src/gs-overview-page.c:844 src/gs-repos-dialog.c:836
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "Toegang krijgen tot aanvullende software van geselecteerde derde partijen."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:848 src/gs-repos-dialog.c:840
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2293,91 +2304,89 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:841
+#: src/gs-overview-page.c:853 src/gs-repos-dialog.c:845
 msgid "Find out more…"
 msgstr "Meer te weten komen…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:240
+#: src/gs-overview-page.c:861 src/gs-repos-dialog.c:241
 msgid "Enable"
 msgstr "Inschakelen"
 
-#: src/gs-overview-page.ui:7
+#: src/gs-overview-page.ui:8
 msgid "Overview page"
 msgstr "Overzicht-pagina"
 
-#: src/gs-overview-page.ui:39
+#: src/gs-overview-page.ui:40
 msgid "Enable Third Party Software Repositories?"
 msgstr "Softwarebronnen van derden inschakelen?"
 
-#: src/gs-overview-page.ui:101
-msgid "Previous"
-msgstr "Vorige"
-
-#: src/gs-overview-page.ui:126
-msgid "Next"
-msgstr "Volgende"
-
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-overview-page.ui:149
+#: src/gs-overview-page.ui:96
 msgid "Editor’s Picks"
 msgstr "Keuze van de redactie"
 
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-overview-page.ui:175
+#: src/gs-overview-page.ui:122
 msgid "Recent Releases"
 msgstr "Recente uitgaven"
 
-#: src/gs-overview-page.ui:209
+#: src/gs-overview-page.ui:156
 msgid "Categories"
 msgstr "Categorieën"
 
-#: src/gs-overview-page.ui:274
+#: src/gs-overview-page.ui:223
 msgid "No Application Data Found"
 msgstr "Geen toepassingsgegevens gevonden"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:325
+#: src/gs-page.c:329
 #, c-format
 msgid "Prepare %s"
 msgstr "%s voorbereiden"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:461
+#: src/gs-page.c:465
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Weet u zeker dat u de pakketbron %s wilt verwijderen?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:465
+#: src/gs-page.c:469
 #, c-format
+#| msgid ""
+#| "All applications from %s will be removed, and you will have to re-install "
+#| "the repository to use them again."
 msgid ""
-"All applications from %s will be removed, and you will have to re-install "
-"the repository to use them again."
+"All applications from %s will be uninstalled, and you will have to re-"
+"install the repository to use them again."
 msgstr ""
 "Alle toepassingen van %s zullen verwijderd worden en u zult de pakketbron "
 "opnieuw moeten installeren om ze weer te kunnen gebruiken."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:473
+#: src/gs-page.c:477
 #, c-format
-msgid "Are you sure you want to remove %s?"
+#| msgid "Are you sure you want to purchase %s?"
+msgid "Are you sure you want to uninstall %s?"
 msgstr "Weet u zeker dat u %s wilt verwijderen?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:476
+#: src/gs-page.c:480
 #, c-format
-msgid "%s will be removed, and you will have to install it to use it again."
+#| msgid "%s will be removed, and you will have to install it to use it again."
+msgid ""
+"%s will be uninstalled, and you will have to install it to use it again."
 msgstr ""
 "%s zal verwijderd worden en u zult het opnieuw moeten installeren om het te "
 "gebruiken."
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:64 src/gs-summary-tile.c:87
+#: src/gs-popular-tile.c:65 src/gs-summary-tile.c:87
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (geïnstalleerd)"
@@ -2426,7 +2435,7 @@ msgstr "_Doorgaan"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:98
+#: src/gs-repos-dialog.c:99
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2435,7 +2444,7 @@ msgstr[1] "%u toepassingen geïnstalleerd"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:105
+#: src/gs-repos-dialog.c:106
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2445,7 +2454,7 @@ msgstr[1] "%u add-ons geïnstalleerd"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:113
+#: src/gs-repos-dialog.c:114
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2455,7 +2464,7 @@ msgstr[1] "%u toepassingen"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:119
+#: src/gs-repos-dialog.c:120
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2466,7 +2475,7 @@ msgstr[1] "%u add-ons"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:126
+#: src/gs-repos-dialog.c:127
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2475,20 +2484,20 @@ msgstr[1] "%s en %s geïnstalleerd"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:302
+#: src/gs-repos-dialog.c:303
 #, c-format
 msgid "Remove “%s”?"
 msgstr "‘%s’ verwijderen?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:307
+#: src/gs-repos-dialog.c:308
 #, c-format
 msgid "Disable “%s”?"
 msgstr "‘%s’ uitschakelen?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:311
+#: src/gs-repos-dialog.c:312
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2497,25 +2506,30 @@ msgstr ""
 "ontvangen, waaronder beveiligingsupdates."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:329
+#: src/gs-repos-dialog.c:327
+msgid "Remove"
+msgstr "Verwijderen"
+
+#. TRANSLATORS: this is button text to remove the repo
+#: src/gs-repos-dialog.c:330
 msgid "Disable"
 msgstr "Uitschakelen"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:745
+#: src/gs-repos-dialog.c:749
 msgid "the operating system"
 msgstr "het besturingssysteem"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:811 src/gs-repos-dialog.c:847
+#: src/gs-repos-dialog.c:815 src/gs-repos-dialog.c:851
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Deze softwarebronnen leveren de standaardsoftware vanuit %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:829
+#: src/gs-repos-dialog.c:833
 msgid "Third Party Repositories"
 msgstr "Softwarebronnen van derden"
 
@@ -2557,13 +2571,13 @@ msgstr "Wordt uitgeschakeld"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
-#: src/gs-repo-row.c:144
+#: src/gs-repo-row.c:147
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
-#: src/gs-repo-row.c:150
+#: src/gs-repo-row.c:153
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
@@ -2672,6 +2686,13 @@ msgstr ""
 msgid "ratings in total"
 msgstr "aantal beoordelingen"
 
+#. TRANSLATORS: this is when a user doesn't specify a name
+#: src/gs-review-row.c:58
+#| msgid "Unknown"
+msgctxt "Reviewer name"
+msgid "Unknown"
+msgstr "Onbekend"
+
 #. TRANSLATORS: we explain what the action is going to do
 #: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
@@ -2729,45 +2750,45 @@ msgstr "Verwijderen…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:236
+#: src/gs-screenshot-image.c:348
 msgid "Screenshot not found"
 msgstr "Schermafdruk niet gevonden"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:251
+#: src/gs-screenshot-image.c:365
 msgid "Failed to load image"
 msgstr "Laden van afbeelding mislukt"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:382
+#: src/gs-screenshot-image.c:507
 msgid "Screenshot size not found"
 msgstr "Schermafdrukgrootte niet gevonden"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:588
 msgid "Could not create cache"
 msgstr "Cache kon niet worden aangemaakt"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:472
+#: src/gs-screenshot-image.c:598
 msgid "Screenshot not valid"
 msgstr "Schermafdruk ongeldig"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:487
+#: src/gs-screenshot-image.c:618
 msgid "Screenshot not available"
 msgstr "Schermafdruk niet beschikbaar"
 
-#: src/gs-screenshot-image.c:545
+#: src/gs-screenshot-image.c:684
 msgid "Screenshot"
 msgstr "Schermafdruk"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:143
+#: src/gs-search-page.c:144
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -2790,33 +2811,33 @@ msgstr "Geen toepassing gevonden"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1111 src/gs-shell.c:1116 src/gs-shell.c:1131
-#: src/gs-shell.c:1135
+#: src/gs-shell.c:1137 src/gs-shell.c:1142 src/gs-shell.c:1157
+#: src/gs-shell.c:1161
 #, c-format
 msgid "“%s”"
 msgstr "‘%s’"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1182
+#: src/gs-shell.c:1208
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Downloaden van firmware-updates van %s mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1188
+#: src/gs-shell.c:1214
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Downloaden van updates van %s mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1195 src/gs-shell.c:1240
+#: src/gs-shell.c:1221 src/gs-shell.c:1266
 msgid "Unable to download updates"
 msgstr "Downloaden van updates mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1201
+#: src/gs-shell.c:1227
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2825,28 +2846,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1210
+#: src/gs-shell.c:1236
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Downloaden van updates van %s mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1215
+#: src/gs-shell.c:1241
 msgid "Unable to download updates: not enough disk space"
 msgstr "Downloaden van updates mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1248
 msgid "Unable to download updates: authentication was required"
 msgstr "Downloaden van updates mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1227
+#: src/gs-shell.c:1253
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Downloaden van updates mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1232
+#: src/gs-shell.c:1258
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2854,14 +2875,14 @@ msgstr ""
 "installeren"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243
+#: src/gs-shell.c:1269
 msgid "Unable to get list of updates"
 msgstr "Verkrijgen van lijst met updates mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1286
+#: src/gs-shell.c:1312
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr ""
@@ -2869,7 +2890,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1292
+#: src/gs-shell.c:1318
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Installeren van %s niet mogelijk omdat het downloaden is mislukt"
@@ -2878,51 +2899,51 @@ msgstr "Installeren van %s niet mogelijk omdat het downloaden is mislukt"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1305
+#: src/gs-shell.c:1331
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Installeren van %s niet mogelijk omdat runtime %s niet beschikbaar is"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1311
+#: src/gs-shell.c:1337
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Installeren van %s niet mogelijk omdat het niet wordt ondersteund"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1318
+#: src/gs-shell.c:1344
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Installeren mislukt: internettoegang vereist, maar niet beschikbaar"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1324
+#: src/gs-shell.c:1350
 msgid "Unable to install: the application has an invalid format"
 msgstr "Installeren mislukt: de toepassing heeft een ongeldig formaat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1329
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Installeren van %s mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1336
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Installeren van %s mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1343
+#: src/gs-shell.c:1369
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Installeren van %s mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -2931,21 +2952,21 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1358
+#: src/gs-shell.c:1384
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Installeren van %s mislukt: wisselstroomvermogen vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1365
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Installeren van %s mislukt: accuniveau is te laag"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1400
 #, c-format
 msgid "Unable to install %s"
 msgstr "Installeren van %s mislukt"
@@ -2954,14 +2975,14 @@ msgstr "Installeren van %s mislukt"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1421
+#: src/gs-shell.c:1447
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Bijwerken van %s niet mogelijk omdat het downloaden van %s is mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1428
+#: src/gs-shell.c:1454
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Bijwerken van %s niet mogelijk omdat het downloaden is mislukt"
@@ -2969,72 +2990,72 @@ msgstr "Bijwerken van %s niet mogelijk omdat het downloaden is mislukt"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1435
+#: src/gs-shell.c:1461
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr ""
 "Installeren van updates uit %s niet mogelijk omdat het downloaden is mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1465
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Installeren van updates niet mogelijk omdat het downloaden is mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1445
+#: src/gs-shell.c:1471
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Bijwerken mislukt: internettoegang vereist, maar niet beschikbaar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Bijwerken van %s mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1460
+#: src/gs-shell.c:1486
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Installeren van updates mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1470
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Bijwerken van %s mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1475
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Installeren van updates mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1484
+#: src/gs-shell.c:1510
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Bijwerken van %s mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1489
+#: src/gs-shell.c:1515
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Installeren van updates mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1498
+#: src/gs-shell.c:1524
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Bijwerken van %s mislukt: u heeft niet de rechten om software te installeren"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1504
+#: src/gs-shell.c:1530
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3044,41 +3065,41 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1540
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Bijwerken van %s mislukt: wisselstroomvermogen vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1546
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Installeren van updates mislukt: wisselstroomvermogen vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1529
+#: src/gs-shell.c:1555
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Bijwerken van %s mislukt: accuniveau is te laag"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1535
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Installeren van updates mislukt: accuniveau is te laag"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1572
 #, c-format
 msgid "Unable to update %s"
 msgstr "Bijwerken van %s mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1549
+#: src/gs-shell.c:1575
 #, c-format
 msgid "Unable to install updates"
 msgstr "Installeren van updates mislukt"
@@ -3086,21 +3107,21 @@ msgstr "Installeren van updates mislukt"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1592
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%s opwaarderen van %s mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1597
+#: src/gs-shell.c:1623
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Opwaarderen naar %s niet mogelijk omdat het downloaden is mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1606
+#: src/gs-shell.c:1632
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3109,28 +3130,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1615
+#: src/gs-shell.c:1641
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Opwaarderen naar %s mislukt: niet genoeg schijfruimte"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1649
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Opwaarderen naar %s mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1656
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Opwaarderen naar %s mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1663
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr ""
@@ -3139,42 +3160,42 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1644
+#: src/gs-shell.c:1670
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Opwaarderen naar %s mislukt: wisselstroomvermogen vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1677
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Opwaarderen naar %s mislukt: accuniveau is te laag"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1660
+#: src/gs-shell.c:1686
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Opwaarderen naar %s mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1698
+#: src/gs-shell.c:1724
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Verwijderen van %s mislukt: authenticatie vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1704
+#: src/gs-shell.c:1730
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Verwijderen van %s mislukt: authenticatie ongeldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1710
+#: src/gs-shell.c:1736
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr ""
@@ -3183,21 +3204,21 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1717
+#: src/gs-shell.c:1743
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Verwijderen van %s mislukt: wisselstroomvermogen vereist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1724
+#: src/gs-shell.c:1750
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Verwijderen van %s mislukt: accuniveau is te laag"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1736
+#: src/gs-shell.c:1762
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Verwijderen van %s mislukt"
@@ -3206,78 +3227,71 @@ msgstr "Verwijderen van %s mislukt"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1779
+#: src/gs-shell.c:1805
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Starten van %s mislukt: %s is niet geïnstalleerd"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1786 src/gs-shell.c:1837 src/gs-shell.c:1878
-#: src/gs-shell.c:1926
+#: src/gs-shell.c:1812 src/gs-shell.c:1863 src/gs-shell.c:1904
+#: src/gs-shell.c:1950
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Er is niet genoeg opslagruimte — maak wat ruimte vrij en probeer het opnieuw"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1797 src/gs-shell.c:1848 src/gs-shell.c:1889
-#: src/gs-shell.c:1960
+#: src/gs-shell.c:1823 src/gs-shell.c:1874 src/gs-shell.c:1915
+#: src/gs-shell.c:1974
 msgid "Sorry, something went wrong"
 msgstr "Helaas, er ging iets mis"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1829
+#: src/gs-shell.c:1855
 msgid "Failed to install file: not supported"
 msgstr "Installeren van bestand mislukt: niet ondersteund"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1833
+#: src/gs-shell.c:1859
 msgid "Failed to install file: authentication failed"
 msgstr "Installeren van bestand mislukt: authenticatie mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1870
+#: src/gs-shell.c:1896
 msgid "Failed to install: not supported"
 msgstr "Installeren mislukt: niet ondersteund"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1874
+#: src/gs-shell.c:1900
 msgid "Failed to install: authentication failed"
 msgstr "Installeren mislukt: authenticatie mislukt"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1920
+#: src/gs-shell.c:1944
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Contact opnemen met %s mislukt"
 
-#. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1935
-#, c-format
-msgid "%s needs to be restarted to use new plugins."
-msgstr "%s moet opnieuw opgestart worden om nieuwe plug-ins te gebruiken."
-
-#. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1940
-msgid "This application needs to be restarted to use new plugins."
+#. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
+#: src/gs-shell.c:1956
+#| msgid "%s needs to be restarted to use new plugins."
+msgid "Software needs to be restarted to use new plugins."
 msgstr ""
-"Deze toepassing moet opnieuw opgestart worden om nieuwe plug-ins te "
-"gebruiken."
+"Het programma moet opnieuw gestart worden om nieuwe plug-ins te gebruiken."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1947
+#: src/gs-shell.c:1961
 msgid "AC power is required"
 msgstr "Wisselstroomvermogen vereist"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1951
+#: src/gs-shell.c:1965
 msgid "The battery level is too low"
 msgstr "Het accuniveau is te laag"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-shell-search-provider.c:258
+#: src/gs-shell-search-provider.c:267
 #, c-format
 msgid "Source: %s"
 msgstr "Bron: %s"
@@ -3300,7 +3314,7 @@ msgstr "Alle _verwijderen"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-update-dialog.c:188
+#: src/gs-update-dialog.c:190
 msgid "No update description available."
 msgstr "Geen updatebeschrijving beschikbaar."
 
@@ -3308,37 +3322,37 @@ msgstr "Geen updatebeschrijving beschikbaar."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:292
+#: src/gs-update-dialog.c:316
 #, c-format
 msgid "Installed on %s"
 msgstr "Geïnstalleerd op %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:312
+#: src/gs-update-dialog.c:336
 msgid "Installed Updates"
 msgstr "Geïnstalleerde updates"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:528
+#: src/gs-update-dialog.c:558
 msgid "Additions"
 msgstr "Aanvullingen"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:532
+#: src/gs-update-dialog.c:562
 msgid "Removals"
 msgstr "Verwijderingen"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:536
+#: src/gs-update-dialog.c:566
 msgid "Updates"
 msgstr "Updates"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:540
+#: src/gs-update-dialog.c:570
 msgid "Downgrades"
 msgstr "Neerwaarderingen"
 
@@ -3346,34 +3360,60 @@ msgstr "Neerwaarderingen"
 msgid "No updates have been installed on this system."
 msgstr "Er zijn geen updates geïnstalleerd op dit systeem."
 
-#: src/gs-update-monitor.c:111
-msgid "Security Updates Pending"
-msgstr "Veiligheidsupdates staan klaar"
+#: src/gs-update-monitor.c:193
+#| msgid "Software Updates Failed"
+msgid "Software Updates Are Out of Date"
+msgstr "Software-updates zijn verouderd"
 
-#: src/gs-update-monitor.c:112
-msgid "It is recommended that you install important updates now"
-msgstr "Het wordt aanbevolen om belangrijke updates nu te installeren"
+#: src/gs-update-monitor.c:194
+#| msgid "Check for updates"
+msgid "Please check for software updates."
+msgstr "Gelieve te controleren of er software-updates zijn."
 
-#: src/gs-update-monitor.c:115
-msgid "Restart & Install"
-msgstr "Herstarten & installeren"
+#: src/gs-update-monitor.c:200
+#| msgid "Software Update Installed"
+#| msgid_plural "Software Updates Installed"
+msgid "Critical Software Update Ready to Install"
+msgstr "Kritieke software-update klaar om te installeren"
 
-#: src/gs-update-monitor.c:119
-msgid "Software Updates Available"
-msgstr "Software-updates beschikbaar"
-
-#: src/gs-update-monitor.c:120
-msgid "Important OS and application updates are ready to be installed"
+#: src/gs-update-monitor.c:201
+#| msgid "An important OS update failed to be installed."
+msgid "An important software update is ready to be installed."
 msgstr ""
-"Belangrijke updates voor OS en toepassingen staan klaar om geïnstalleerd te "
-"worden"
+"Een belangrijke software-update staat klaar om geïnstalleerd te worden."
 
-#: src/gs-update-monitor.c:124
-msgid "View"
-msgstr "Bekijken"
+#: src/gs-update-monitor.c:204
+#| msgid "Software Updates Available"
+msgid "Critical Software Updates Available to Download"
+msgstr "Kritieke software-updates beschikbaar om te downloaden"
+
+#: src/gs-update-monitor.c:205
+msgid "Important: critical software updates are waiting."
+msgstr "Belangrijk: kritieke software-updates staan klaar."
+
+#: src/gs-update-monitor.c:211
+#| msgid "Software Update Installed"
+#| msgid_plural "Software Updates Installed"
+msgid "Software Updates Ready to Install"
+msgstr "Software-updates staan klaar om geïnstalleerd te worden"
+
+#: src/gs-update-monitor.c:212
+#| msgid "An important OS update failed to be installed."
+msgid "Software updates are waiting and ready to be installed."
+msgstr "Software-update staat klaar om geïnstalleerd te worden."
+
+#: src/gs-update-monitor.c:217
+#| msgid "Software Updates Available"
+msgid "Software Updates Available to Download"
+msgstr "Software-updates beschikbaar om te downloaden"
+
+#: src/gs-update-monitor.c:218
+#| msgid "Downloading firmware update…"
+msgid "Please download waiting software updates."
+msgstr "Gelieve klaarstaande software-updates te downloaden."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:232
+#: src/gs-update-monitor.c:323
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3381,7 +3421,7 @@ msgstr[0] "%u toepassing bijgewerkt — Herstarten vereist"
 msgstr[1] "%u toepassingen bijgewerkt  — Herstarten vereist"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:238
+#: src/gs-update-monitor.c:329
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3389,24 +3429,24 @@ msgstr[0] "%u toepassing bijgewerkt"
 msgstr[1] "%u toepassingen bijgewerkt"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:249
+#: src/gs-update-monitor.c:340
 #, c-format
 msgid "%s has been updated."
 msgstr "%s is bijgewerkt."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:252
+#: src/gs-update-monitor.c:343
 msgid "Please restart the application."
 msgstr "Herstart de toepassing."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:260
+#: src/gs-update-monitor.c:351
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s en %s zijn bijgewerkt."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:266 src/gs-update-monitor.c:285
+#: src/gs-update-monitor.c:357 src/gs-update-monitor.c:376
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3414,69 +3454,69 @@ msgstr[0] "%u toepassing vereist een herstart."
 msgstr[1] "%u toepassingen vereisen een herstart."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:369
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Bevat %s, %s en %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:519 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:580 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Updates voor besturingssysteem niet beschikbaar"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:521
+#: src/gs-update-monitor.c:582
 msgid "Upgrade to continue receiving security updates."
 msgstr "Opwaardeer uw systeem om beveiligingsupdates te ontvangen."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:576
+#: src/gs-update-monitor.c:637
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Er is een nieuwe versie van %s beschikbaar om te installeren"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:580
+#: src/gs-update-monitor.c:641
 msgid "Software Upgrade Available"
 msgstr "Software-upgrade beschikbaar"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:969
+#: src/gs-update-monitor.c:1035
 msgid "Software Updates Failed"
 msgstr "Software-updates mislukt"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:971
+#: src/gs-update-monitor.c:1037
 msgid "An important OS update failed to be installed."
 msgstr "Installatie van een belangrijke OS-update is mislukt."
 
-#: src/gs-update-monitor.c:972
+#: src/gs-update-monitor.c:1038
 msgid "Show Details"
 msgstr "Gegevens tonen"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:995
+#: src/gs-update-monitor.c:1061
 msgid "System Upgrade Complete"
 msgstr "Systeemupgrade voltooid"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1000
+#: src/gs-update-monitor.c:1066
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Welkom bij %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1006
+#: src/gs-update-monitor.c:1072
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Software-update geïnstalleerd"
 msgstr[1] "Software-updates geïnstalleerd"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1010
+#: src/gs-update-monitor.c:1076
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Een belangrijke OS-update is geïnstalleerd."
@@ -3489,30 +3529,30 @@ msgstr[1] "Belangrijke OS-updates zijn geïnstalleerd."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1021
+#: src/gs-update-monitor.c:1087
 msgctxt "updates"
 msgid "Review"
 msgstr "Bekijken"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1069
+#: src/gs-update-monitor.c:1136
 msgid "Failed To Update"
 msgstr "Bijwerken mislukt"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1075
+#: src/gs-update-monitor.c:1142
 msgid "The system was already up to date."
 msgstr "Het systeem was al bijgewerkt."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1080
+#: src/gs-update-monitor.c:1147
 msgid "The update was cancelled."
 msgstr "De update is geannuleerd."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1086
+#: src/gs-update-monitor.c:1153
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3521,7 +3561,7 @@ msgstr ""
 "internettoegang heeft en probeer het opnieuw."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1092
+#: src/gs-update-monitor.c:1159
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3530,14 +3570,14 @@ msgstr ""
 "te raadplegen voor meer details."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1098
+#: src/gs-update-monitor.c:1165
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Er is niet genoeg opslagruimte. Maak wat ruimte vrij en probeer het opnieuw."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1103
+#: src/gs-update-monitor.c:1170
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3546,109 +3586,59 @@ msgstr ""
 "update en probeer het dan opnieuw. Als het probleem zich blijft voordoen, "
 "neem dan contact op met uw softwareleverancier."
 
-#. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:226
-msgid "%R"
-msgstr "%R"
-
-#. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:229
-msgid "%l:%M %p"
-msgstr "%l:%M %p"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:235
-msgid "Yesterday, %R"
-msgstr "Gisteren, %R"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:239
-msgid "Yesterday, %l:%M %p"
-msgstr "Gisteren, %l:%M %p"
-
-#: src/gs-updates-page.c:242
-msgid "Two days ago"
-msgstr "Twee dagen geleden"
-
-#: src/gs-updates-page.c:244
-msgid "Three days ago"
-msgstr "Drie dagen geleden"
-
-#: src/gs-updates-page.c:246
-msgid "Four days ago"
-msgstr "Vier dagen geleden"
-
-#: src/gs-updates-page.c:248
-msgid "Five days ago"
-msgstr "Vijf dagen geleden"
-
-#: src/gs-updates-page.c:250
-msgid "Six days ago"
-msgstr "Zes dagen geleden"
-
-#: src/gs-updates-page.c:252
-msgid "One week ago"
-msgstr "Een week geleden"
-
-#: src/gs-updates-page.c:254
-msgid "Two weeks ago"
-msgstr "Twee weken geleden"
-
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:270
+#: src/gs-updates-page.c:186
 msgid "Looking for new updates…"
 msgstr "Zoeken naar nieuwe updates…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:339
+#: src/gs-updates-page.c:255
 msgid "Setting up updates…"
 msgstr "Instellen van nieuwe updates…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:340 src/gs-updates-page.c:347
+#: src/gs-updates-page.c:256 src/gs-updates-page.c:263
 msgid "(This could take a while)"
 msgstr "(Dit kan even duren)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:454
+#: src/gs-updates-page.c:370
 #, c-format
 msgid "Last checked: %s"
 msgstr "Laatst gecontroleerd: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:618
+#: src/gs-updates-page.c:534
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s wordt niet meer ondersteund."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:623
+#: src/gs-updates-page.c:539
 msgid "Your OS is no longer supported."
 msgstr "Uw besturingssysteem wordt niet meer ondersteund."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:628
+#: src/gs-updates-page.c:544
 msgid "This means that it does not receive security updates."
 msgstr "Dit betekent dat het geen beveiligingsupdates meer ontvangt."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:632
+#: src/gs-updates-page.c:548
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr ""
 "Het wordt aanbevolen om uw besturingssysteem bij te werken naar een meer "
 "recente versie."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:890
+#: src/gs-updates-page.c:806
 msgid "Charges May Apply"
 msgstr "Er kunnen kosten aan verbonden zijn"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:894
+#: src/gs-updates-page.c:810
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3658,27 +3648,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:898
+#: src/gs-updates-page.c:814
 msgid "Check _Anyway"
 msgstr "_Toch controleren"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:914
+#: src/gs-updates-page.c:830
 msgid "No Network"
 msgstr "Geen netwerk"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:918
+#: src/gs-updates-page.c:834
 msgid "Internet access is required to check for updates."
 msgstr "Internettoegang is vereist voor het controleren op updates."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1341
+#: src/gs-updates-page.c:1257
 msgid "Checking…"
 msgstr "Controleren…"
 
-#: src/gs-updates-page.c:1354
+#: src/gs-updates-page.c:1270
 msgid "Check for updates"
 msgstr "Controleren op updates"
 
@@ -3717,41 +3707,41 @@ msgstr "Updates worden automatisch beheerd"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:281
+#: src/gs-updates-section.c:290
 msgid "Restart & Update"
 msgstr "Herstarten & bijwerken"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:287
+#: src/gs-updates-section.c:296
 msgid "Update All"
 msgstr "Alles bijwerken"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:418
+#: src/gs-updates-section.c:427
 msgid "Integrated Firmware"
 msgstr "Geïntegreerde firmware"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:422
+#: src/gs-updates-section.c:431
 msgid "Requires Restart"
 msgstr "Herstart vereist"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:426
+#: src/gs-updates-section.c:435
 msgid "Application Updates"
 msgstr "Toepassingsupdates"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:430
+#: src/gs-updates-section.c:439
 msgid "Device Firmware"
 msgstr "Apparaatfirmware"
 
-#: src/gs-updates-section.c:458 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:467 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Downloaden"
 
@@ -3825,391 +3815,6 @@ msgstr ""
 "Installeren;Uninstall;Verwijderen;Program;Programma;Software;App;Toepassing;"
 "Applicatie;Store;Winkel;"
 
-#: plugins/core/gs-desktop-common.c:17
-msgctxt "Menu of Audio & Video"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:20
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:23
-msgctxt "Menu of Audio & Video"
-msgid "Audio Creation & Editing"
-msgstr "Audiocreatie en -bewerking"
-
-#: plugins/core/gs-desktop-common.c:29
-msgctxt "Menu of Audio & Video"
-msgid "Music Players"
-msgstr "Muziekspelers"
-
-#: plugins/core/gs-desktop-common.c:38
-msgctxt "Menu of Developer Tools"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:41
-msgctxt "Menu of Developer Tools"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:44
-msgctxt "Menu of Developer Tools"
-msgid "Debuggers"
-msgstr "Foutopsporingsprogramma’s"
-
-#: plugins/core/gs-desktop-common.c:47
-msgctxt "Menu of Developer Tools"
-msgid "IDEs"
-msgstr "IDE’s"
-
-#: plugins/core/gs-desktop-common.c:56
-msgctxt "Menu of Education & Science"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Education & Science"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:64
-msgctxt "Menu of Education & Science"
-msgid "Artificial Intelligence"
-msgstr "Kunstmatige intelligentie"
-
-#: plugins/core/gs-desktop-common.c:67
-msgctxt "Menu of Education & Science"
-msgid "Astronomy"
-msgstr "Astronomie"
-
-#: plugins/core/gs-desktop-common.c:71
-msgctxt "Menu of Education & Science"
-msgid "Chemistry"
-msgstr "Scheikunde"
-
-#: plugins/core/gs-desktop-common.c:75
-msgctxt "Menu of Education & Science"
-msgid "Languages"
-msgstr "Talen"
-
-#: plugins/core/gs-desktop-common.c:79
-msgctxt "Menu of Education & Science"
-msgid "Math"
-msgstr "Wiskunde"
-
-#: plugins/core/gs-desktop-common.c:86
-msgctxt "Menu of Education & Science"
-msgid "Robotics"
-msgstr "Robotica"
-
-#: plugins/core/gs-desktop-common.c:95
-msgctxt "Menu of Games"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:98
-msgctxt "Menu of Games"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:101
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "Actie"
-
-#: plugins/core/gs-desktop-common.c:104
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "Avontuur"
-
-#: plugins/core/gs-desktop-common.c:107
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "Arcade"
-
-#: plugins/core/gs-desktop-common.c:110
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "Blokken"
-
-#: plugins/core/gs-desktop-common.c:113
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "Bordspellen"
-
-#: plugins/core/gs-desktop-common.c:116
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "Kaartspellen"
-
-#: plugins/core/gs-desktop-common.c:119
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "Emulators"
-
-#: plugins/core/gs-desktop-common.c:122
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "Kinderen"
-
-#: plugins/core/gs-desktop-common.c:125
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "Logica"
-
-#: plugins/core/gs-desktop-common.c:128
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "Rollenspellen"
-
-#: plugins/core/gs-desktop-common.c:131
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "Sport"
-
-#: plugins/core/gs-desktop-common.c:135
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "Strategische spellen"
-
-#: plugins/core/gs-desktop-common.c:143
-msgctxt "Menu of Graphics & Photography"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:146
-msgctxt "Menu of Graphics & Photography"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:149
-msgctxt "Menu of Graphics & Photography"
-msgid "3D Graphics"
-msgstr "3D"
-
-#: plugins/core/gs-desktop-common.c:152
-msgctxt "Menu of Graphics & Photography"
-msgid "Photography"
-msgstr "Fotografie"
-
-#: plugins/core/gs-desktop-common.c:155
-msgctxt "Menu of Graphics & Photography"
-msgid "Scanning"
-msgstr "Scannen"
-
-#: plugins/core/gs-desktop-common.c:158
-msgctxt "Menu of Graphics & Photography"
-msgid "Vector Graphics"
-msgstr "Vectorafbeeldingen"
-
-#: plugins/core/gs-desktop-common.c:161
-msgctxt "Menu of Graphics & Photography"
-msgid "Viewers"
-msgstr "Viewers"
-
-#: plugins/core/gs-desktop-common.c:169
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:172
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:175
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "Agenda"
-
-#: plugins/core/gs-desktop-common.c:179
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "Database"
-
-#: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "Financiën"
-
-#: plugins/core/gs-desktop-common.c:186
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "Tekstverwerker"
-
-#: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Add-ons"
-msgid "Fonts"
-msgstr "Lettertypes"
-
-#: plugins/core/gs-desktop-common.c:198
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "Codecs"
-
-#: plugins/core/gs-desktop-common.c:201
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Invoerbronnen"
-
-#: plugins/core/gs-desktop-common.c:204
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Taalpakketten"
-
-#: plugins/core/gs-desktop-common.c:207
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Lokalisatie"
-
-#: plugins/core/gs-desktop-common.c:210
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Hardware-stuurprogramma’s"
-
-#: plugins/core/gs-desktop-common.c:218
-msgctxt "Menu of Communication & News"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:221
-msgctxt "Menu of Communication & News"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:224
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "Chat"
-
-#: plugins/core/gs-desktop-common.c:231
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "Nieuws"
-
-#: plugins/core/gs-desktop-common.c:235
-msgctxt "Menu of Communication & News"
-msgid "Web Browsers"
-msgstr "Webbrowsers"
-
-#: plugins/core/gs-desktop-common.c:243
-msgctxt "Menu of Utilities"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:246
-msgctxt "Menu of Utilities"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:249
-msgctxt "Menu of Utilities"
-msgid "Text Editors"
-msgstr "Tekstverwerkers"
-
-#: plugins/core/gs-desktop-common.c:257
-msgctxt "Menu of Reference"
-msgid "All"
-msgstr "Alles"
-
-#: plugins/core/gs-desktop-common.c:260
-msgctxt "Menu of Reference"
-msgid "Featured"
-msgstr "Aanbevolen"
-
-#: plugins/core/gs-desktop-common.c:263
-msgctxt "Menu of Art"
-msgid "Art"
-msgstr "Kunst"
-
-#: plugins/core/gs-desktop-common.c:266
-msgctxt "Menu of Reference"
-msgid "Biography"
-msgstr "Biografie"
-
-#: plugins/core/gs-desktop-common.c:269
-msgctxt "Menu of Reference"
-msgid "Comics"
-msgstr "Strips"
-
-#: plugins/core/gs-desktop-common.c:272
-msgctxt "Menu of Reference"
-msgid "Fiction"
-msgstr "Fictie"
-
-#: plugins/core/gs-desktop-common.c:275
-msgctxt "Menu of Reference"
-msgid "Health"
-msgstr "Gezondheid"
-
-#: plugins/core/gs-desktop-common.c:278
-msgctxt "Menu of Reference"
-msgid "History"
-msgstr "Geschiedenis"
-
-#: plugins/core/gs-desktop-common.c:281
-msgctxt "Menu of Reference"
-msgid "Lifestyle"
-msgstr "Levensstijl"
-
-#: plugins/core/gs-desktop-common.c:284
-msgctxt "Menu of Reference"
-msgid "Politics"
-msgstr "Politiek"
-
-#: plugins/core/gs-desktop-common.c:287
-msgctxt "Menu of Reference"
-msgid "Sports"
-msgstr "Sport"
-
-#. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:297
-msgid "Audio & Video"
-msgstr "Audio & video"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:300
-msgid "Developer Tools"
-msgstr "Ontwikkelhulpmiddelen"
-
-#. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:303
-msgid "Education & Science"
-msgstr "Onderwijs & wetenschap"
-
-#. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:306
-msgid "Games"
-msgstr "Spelletjes"
-
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:309
-msgid "Graphics & Photography"
-msgstr "Grafisch & fotografie"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:312
-msgid "Productivity"
-msgstr "Productiviteit"
-
-#. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:318
-msgid "Communication & News"
-msgstr "Communicatie & nieuws"
-
-#. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:321
-msgid "Reference"
-msgstr "Referentie"
-
-#. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:324
-msgid "Utilities"
-msgstr "Hulpprogramma’s"
-
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:56
@@ -4228,16 +3833,16 @@ msgid "Downloading featured images…"
 msgstr "Afbeeldingen worden gedownload…"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:562
+#: plugins/eos-updater/gs-plugin-eos-updater.c:560
 msgid "Endless OS"
 msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:565
+#: plugins/eos-updater/gs-plugin-eos-updater.c:563
 msgid "An Endless OS update with new features and fixes."
 msgstr "Een Endless OS-update, met nieuwe functies en verbeteringen."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:826
+#: plugins/eos-updater/gs-plugin-eos-updater.c:824
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS-updateservice kan de update niet ophalen en toepassen."
 
@@ -4276,12 +3881,12 @@ msgid "Downloading extra metadata files…"
 msgstr "Extra metadatabestanden worden gedownload…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:193
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:194
 msgid "Downloading upgrade information…"
 msgstr "Opwaarderingsinformatie wordt gedownload…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:283
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:284
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4297,100 +3902,106 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak is een raamwerk voor bureaubladtoepassingen op Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:901
+#: plugins/flatpak/gs-flatpak.c:1007
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-metadata voor %s worden opgehaald…"
 
+#: plugins/flatpak/gs-flatpak.c:2929
+#, c-format
+#| msgid "Unable to find “%s”"
+msgid "Failed to refine addon ‘%s’: %s"
+msgstr "Add-on ‘%s’ kan niet verfijnd worden: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:803
+#, c-format
+msgid "Failed to add to install for addon ‘%s’: %s"
+msgstr "Toevoegen om te installeren van add-on ‘%s’ is mislukt: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:817
+#, c-format
+msgid "Failed to add to uninstall for addon ‘%s’: %s"
+msgstr "Toevoegen om te deïnstalleren van add-on ‘%s’ is mislukt: %s"
+
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:136
+#: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
-#| msgid "%s Device"
 msgid "%s Device Update"
 msgstr "Update apparaat %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:141
+#: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
-#| msgid "%s System"
 msgid "%s System Update"
 msgstr "Systeem-update %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:146
+#: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
-#| msgid "%s Embedded Controller"
 msgid "%s Embedded Controller Update"
 msgstr "Update embedded Controller %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:151
+#: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
-#| msgid "Update"
 msgid "%s ME Update"
 msgstr "Update ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:156
+#: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
-#| msgid "%s Corporate ME"
 msgid "%s Corporate ME Update"
 msgstr "Update corporate ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:161
+#: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
-#| msgid "%s Consumer ME"
 msgid "%s Consumer ME Update"
 msgstr "Update consumer ME %s"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:167
+#: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
-#| msgid "%s Controller"
 msgid "%s Controller Update"
 msgstr "Update controller %s"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:173
+#: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
-#| msgid "%s Thunderbolt Controller"
 msgid "%s Thunderbolt Controller Update"
 msgstr "Update Thunderbolt Controller %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:178
+#: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "Update CPU Microcode %s"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:183
+#: plugins/fwupd/gs-fwupd-app.c:182
 #, c-format
-#| msgid "%u Application Updated"
-#| msgid_plural "%u Applications Updated"
 msgid "%s Configuration Update"
 msgstr "Update configuratie %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:691
+#: plugins/fwupd/gs-plugin-fwupd.c:705
 msgid "Downloading firmware update signature…"
 msgstr "Ondertekening van firmware-update wordt gedownload…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:732
+#: plugins/fwupd/gs-plugin-fwupd.c:747
 msgid "Downloading firmware update metadata…"
 msgstr "Metadata van firmware-update worden gedownload…"
 
@@ -4402,8 +4013,14 @@ msgstr "Ondersteuning voor opwaarderen van firmware"
 msgid "Provides support for firmware upgrades"
 msgstr "Biedt ondersteuning voor het opwaarderen van firmware"
 
+#: plugins/odrs/gs-plugin-odrs.c:159
+#| msgid "Unknown"
+msgctxt "Distribution name"
+msgid "Unknown"
+msgstr "Onbekend"
+
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:291
+#: plugins/odrs/gs-plugin-odrs.c:307
 msgid "Downloading application ratings…"
 msgstr "Toepassingswaarderingen worden gedownload…"
 
@@ -4416,7 +4033,7 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS is een dienst die gebruikersrecensies van toepassingen aanbiedt"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:240
+#: plugins/snap/gs-plugin-snap.c:239
 msgid "Snap Store"
 msgstr "Snap-winkel"
 
@@ -4427,6 +4044,418 @@ msgstr "Snap-ondersteuning"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Een snap is een universeel Linux-pakket"
+
+#~ msgid "Enable GNOME Shell extensions repository"
+#~ msgstr "Pakketbron met GNOME Shell-uitbreidingen inschakelen"
+
+#~ msgid "No cartoon violence"
+#~ msgstr "Geen geweld in strip"
+
+#~ msgid "Cartoon characters in unsafe situations"
+#~ msgstr "Stripfiguren in onveilige situaties"
+
+#~ msgid "Cartoon characters in aggressive conflict"
+#~ msgstr "Stripfiguren in een agressieve conflictsituatie"
+
+#~ msgid "Graphic violence involving cartoon characters"
+#~ msgstr "Grafisch geweld met stripfiguren"
+
+#~ msgid "No fantasy violence"
+#~ msgstr "Geen geweld in fantasie"
+
+#~ msgid "Characters in unsafe situations easily distinguishable from reality"
+#~ msgstr ""
+#~ "Figuren in onveilige situaties, gemakkelijk te onderscheiden van de "
+#~ "werkelijkheid"
+
+#~ msgid ""
+#~ "Characters in aggressive conflict easily distinguishable from reality"
+#~ msgstr ""
+#~ "Figuren in agressieve conflictsituaties, gemakkelijk te onderscheiden van "
+#~ "de werkelijkheid"
+
+#~ msgid "Graphic violence easily distinguishable from reality"
+#~ msgstr "Grafisch geweld, gemakkelijk te onderscheiden van de werkelijkheid"
+
+#~ msgid "No realistic violence"
+#~ msgstr "Geen realistisch geweld"
+
+#~ msgid "Mildly realistic characters in unsafe situations"
+#~ msgstr "Enigszins realistisch figuur in onveilige situaties"
+
+#~ msgid "Depictions of realistic characters in aggressive conflict"
+#~ msgstr ""
+#~ "Afbeeldingen van realistische figuren in agressieve conflictsituatie"
+
+#~ msgid "Graphic violence involving realistic characters"
+#~ msgstr "Grafisch geweld met realistische figuren"
+
+#~ msgid "No bloodshed"
+#~ msgstr "Geen bloedvergieten"
+
+#~ msgid "Unrealistic bloodshed"
+#~ msgstr "Niet-realistisch bloedvergieten"
+
+#~ msgid "Realistic bloodshed"
+#~ msgstr "Realistisch bloedvergieten"
+
+#~ msgid "Depictions of bloodshed and the mutilation of body parts"
+#~ msgstr "Afbeeldingen van bloedvergieten en het mutileren van lichaamsdelen"
+
+#~ msgid "No sexual violence"
+#~ msgstr "Geen seksueel geweld"
+
+#~ msgid "Rape or other violent sexual behavior"
+#~ msgstr "Verkrachting of ander gewelddadig seksueel gedrag"
+
+#~ msgid "No references to alcohol"
+#~ msgstr "Geen verwijzingen naar alcohol"
+
+#~ msgid "References to alcoholic beverages"
+#~ msgstr "Verwijzingen naar alcoholische dranken"
+
+#~ msgid "Use of alcoholic beverages"
+#~ msgstr "Gebruik van alcoholische dranken"
+
+#~ msgid "No references to illicit drugs"
+#~ msgstr "Geen verwijzingen naar illegale drugs"
+
+#~ msgid "References to illicit drugs"
+#~ msgstr "Verwijzingen naar illegale drugs"
+
+#~ msgid "Use of illicit drugs"
+#~ msgstr "Gebruik van illegale drugs"
+
+#~ msgid "No references to tobacco products"
+#~ msgstr "Kom _meer te weten…"
+
+#~ msgid "References to tobacco products"
+#~ msgstr "Verwijzingen naar tabaksproducten"
+
+#~ msgid "Use of tobacco products"
+#~ msgstr "Gebruik van tabaksproducten"
+
+#~ msgid "No nudity of any sort"
+#~ msgstr "Geen enkel naakt"
+
+#~ msgid "Brief artistic nudity"
+#~ msgstr "Beknopt artistiek naakt"
+
+#~ msgid "Prolonged nudity"
+#~ msgstr "Langdurig naakt"
+
+#~ msgid "No references to or depictions of sexual nature"
+#~ msgstr "Geen seksuele verwijzingen of afbeeldingen"
+
+#~ msgid "Provocative references or depictions"
+#~ msgstr "Provocerende verwijzingen of afbeeldingen"
+
+#~ msgid "Sexual references or depictions"
+#~ msgstr "Seksuele verwijzingen of afbeeldingen"
+
+#~ msgid "Graphic sexual behavior"
+#~ msgstr "Grafisch seksueel gedrag"
+
+#~ msgid "No profanity of any kind"
+#~ msgstr "Geen enkele godslastering"
+
+#~ msgid "Mild or infrequent use of profanity"
+#~ msgstr "Mild of niet veelvuldig gebruik van godslastering"
+
+#~ msgid "Moderate use of profanity"
+#~ msgstr "Matig gebruik van godslastering"
+
+#~ msgid "Strong or frequent use of profanity"
+#~ msgstr "Sterk of veelvuldig gebruik van godslastering"
+
+#~ msgid "No inappropriate humor"
+#~ msgstr "Geen ongepaste humor"
+
+#~ msgid "Slapstick humor"
+#~ msgstr "Slapstick-humor"
+
+#~ msgid "Vulgar or bathroom humor"
+#~ msgstr "Vulgaire of platte humor"
+
+#~ msgid "Mature or sexual humor"
+#~ msgstr "Volwassen of seksuele humor"
+
+#~ msgid "No discriminatory language of any kind"
+#~ msgstr "Geen enkel discriminerend woordgebruik"
+
+#~ msgid "Negativity towards a specific group of people"
+#~ msgstr "Negativiteit in de richting van een specifieke groep mensen"
+
+#~ msgid "Discrimination designed to cause emotional harm"
+#~ msgstr "Discriminatie met de bedoeling emotionele schade te berokkenen"
+
+#~ msgid "Explicit discrimination based on gender, sexuality, race or religion"
+#~ msgstr ""
+#~ "Expliciete discriminatie op grond van geslacht, seksuele geaardheid, ras "
+#~ "of religie"
+
+#~ msgid "No advertising of any kind"
+#~ msgstr "Zonder enige reclame"
+
+#~ msgid "Product placement"
+#~ msgstr "Sluikreclame"
+
+#~ msgid "Explicit references to specific brands or trademarked products"
+#~ msgstr ""
+#~ "Expliciete verwijzingen naar bepaalde merken of producten met handelsmerk"
+
+#~ msgid "Users are encouraged to purchase specific real-world items"
+#~ msgstr "Gebruikers worden aangemoedigd om bepaalde echte artikelen te kopen"
+
+#~ msgid "No gambling of any kind"
+#~ msgstr "Zonder gokken"
+
+#~ msgid "Gambling on random events using tokens or credits"
+#~ msgstr ""
+#~ "Gokken op willekeurige gebeurtenissen met behulp van tokens of credits"
+
+#~ msgid "Gambling using “play” money"
+#~ msgstr "Gokken met ‘speel’geld"
+
+#~ msgid "Gambling using real money"
+#~ msgstr "Gokken met echt geld"
+
+#~ msgid "No ability to spend money"
+#~ msgstr "Geen mogelijkheid om echt geld uit te geven"
+
+#~ msgid "Users are encouraged to donate real money"
+#~ msgstr "Gebruikers worden aangemoedigd om echt geld te doneren"
+
+#~ msgid "Ability to spend real money in-app"
+#~ msgstr "Mogelijk om in de toepassing echt geld uit te geven"
+
+#~ msgid "No way to chat with other users"
+#~ msgstr "Niet mogelijk om met andere gebruikers te chatten"
+
+#~ msgid "User-to-user interactions without chat functionality"
+#~ msgstr "Interactie tussen gebruikers zonder gespreksfunctionaliteit"
+
+#~ msgid "Moderated chat functionality between users"
+#~ msgstr "Gecontroleerde gespreksfunctionaliteit tussen gebruikers"
+
+#~ msgid "Uncontrolled chat functionality between users"
+#~ msgstr "Niet-gecontroleerde gespreksfunctionaliteit tussen gebruikers"
+
+#~ msgid "No way to talk with other users"
+#~ msgstr "Geen manier om met andere gebruikers te praten"
+
+#~ msgid "Uncontrolled audio or video chat functionality between users"
+#~ msgstr ""
+#~ "Niet-gecontroleerde audio- of videogespreksfunctionaliteit tussen "
+#~ "gebruikers"
+
+#~ msgid "No sharing of social network usernames or email addresses"
+#~ msgstr ""
+#~ "Gebruikersnamen van sociale netwerken en e-mailadressen worden niet "
+#~ "gedeeld"
+
+#~ msgid "Sharing social network usernames or email addresses"
+#~ msgstr "Deelt gebruikersnamen van sociale netwerken of e-mailadressen"
+
+#~ msgid "No sharing of user information with third parties"
+#~ msgstr "Gebruikersinformatie wordt niet gedeeld met derden"
+
+#~ msgid "Checking for the latest application version"
+#~ msgstr "Controleert voor de nieuwste toepassingsversie"
+
+#~ msgid "Sharing diagnostic data that does not let others identify the user"
+#~ msgstr ""
+#~ "Deelt diagnostische gegevens waarmee anderen de gebruiker niet kunnen "
+#~ "identificeren"
+
+#~ msgid "Sharing information that lets others identify the user"
+#~ msgstr ""
+#~ "Deelt diagnostische gegevens waarmee anderen de gebruiker kunnen "
+#~ "identificeren"
+
+#~ msgid "No sharing of physical location with other users"
+#~ msgstr "Fysieke locatie wordt niet gedeeld met andere gebruikers"
+
+#~ msgid "Sharing physical location with other users"
+#~ msgstr "Deelt fysieke locatie met andere gebruikers"
+
+#~ msgid "No references to homosexuality"
+#~ msgstr "Geen verwijzingen naar homoseksualiteit"
+
+#~ msgid "Indirect references to homosexuality"
+#~ msgstr "Indirecte verwijzingen naar homoseksualiteit"
+
+#~ msgid "Kissing between people of the same gender"
+#~ msgstr "Mensen van hetzelfde geslacht kussen"
+
+#~ msgid "Graphic sexual behavior between people of the same gender"
+#~ msgstr "Grafisch seksueel gedrag tussen mensen van hetzelfde geslacht"
+
+#~ msgid "No references to prostitution"
+#~ msgstr "Geen verwijzingen naar prostitutie"
+
+#~ msgid "Indirect references to prostitution"
+#~ msgstr "Indirecte verwijzingen naar prostitutie"
+
+#~ msgid "Direct references to prostitution"
+#~ msgstr "Directe verwijzingen naar prostitutie"
+
+#~ msgid "Graphic depictions of the act of prostitution"
+#~ msgstr "Grafische vertoningen van prostitutiedaden"
+
+#~ msgid "No references to adultery"
+#~ msgstr "Geen verwijzingen naar overspel"
+
+#~ msgid "Indirect references to adultery"
+#~ msgstr "Indirecte verwijzingen naar overspel"
+
+#~ msgid "Direct references to adultery"
+#~ msgstr "Directe verwijzingen naar overspel"
+
+#~ msgid "Graphic depictions of the act of adultery"
+#~ msgstr "Grafische vertoningen van overspel"
+
+#~ msgid "No sexualized characters"
+#~ msgstr "Geen geseksualiseerde personages"
+
+#~ msgid "Scantily clad human characters"
+#~ msgstr "Schaars geklede menselijke personages"
+
+#~ msgid "Overtly sexualized human characters"
+#~ msgstr "Openlijk geseksualiseerde menselijke personages"
+
+#~ msgid "No references to desecration"
+#~ msgstr "Geen verwijzingen naar beschadigingen"
+
+#~ msgid "Depictions of or references to historical desecration"
+#~ msgstr "Vertoningen van of verwijzingen naar historische beschadigingen"
+
+#~ msgid "Depictions of modern-day human desecration"
+#~ msgstr "Vertoningen van moderne menselijke beschadigingen"
+
+#~ msgid "Graphic depictions of modern-day desecration"
+#~ msgstr "Grafische vertoningen van moderne menselijke beschadigingen"
+
+#~ msgid "No visible dead human remains"
+#~ msgstr "Geen zichtbare dode menselijke overblijfselen"
+
+#~ msgid "Visible dead human remains"
+#~ msgstr "Zichtbare dode menselijke overblijfselen"
+
+#~ msgid "Dead human remains that are exposed to the elements"
+#~ msgstr ""
+#~ "Dode menselijke overblijfselen die worden blootgesteld aan weer en wind"
+
+#~ msgid "Graphic depictions of desecration of human bodies"
+#~ msgstr "Grafische vertoningen van beschadiging van menselijke lichamen"
+
+#~ msgid "No references to slavery"
+#~ msgstr "Geen verwijzingen naar slavernij"
+
+#~ msgid "Depictions of or references to historical slavery"
+#~ msgstr "Vertoningen van of verwijzingen naar historische slavernij"
+
+#~ msgid "Depictions of modern-day slavery"
+#~ msgstr "Vertoningen van moderne slavernij"
+
+#~ msgid "Graphic depictions of modern-day slavery"
+#~ msgstr "Grafische vertoningen van moderne slavernij"
+
+#~ msgid "General"
+#~ msgstr "Algemeen"
+
+#~ msgid "ALL"
+#~ msgstr "ALLES"
+
+#~ msgid "Adults Only"
+#~ msgstr "Volwassenen"
+
+#~ msgid "Mature"
+#~ msgstr "Volwassen inhoud"
+
+#~ msgid "Teen"
+#~ msgstr "Tieners"
+
+#~ msgid "Everyone 10+"
+#~ msgstr "Iedereen 10+"
+
+#~ msgid "Everyone"
+#~ msgstr "Iedereen"
+
+#~ msgid "Early Childhood"
+#~ msgstr "Jonge kinderen"
+
+#~ msgid "_Remove"
+#~ msgstr "_Verwijderen"
+
+#~ msgctxt "version"
+#~ msgid "Unknown"
+#~ msgstr "Onbekend"
+
+#~ msgid "this website"
+#~ msgstr "deze website"
+
+#~ msgid "_Let’s Go Shopping"
+#~ msgstr "_Laten we winkelen"
+
+#~ msgctxt "app status"
+#~ msgid "Removed"
+#~ msgstr "Verwijderd"
+
+#~ msgid "Format"
+#~ msgstr "Indeling"
+
+#~ msgid "Are you sure you want to remove %s?"
+#~ msgstr "Weet u zeker dat u %s wilt verwijderen?"
+
+#~ msgid "This application needs to be restarted to use new plugins."
+#~ msgstr ""
+#~ "Deze toepassing moet opnieuw opgestart worden om nieuwe plug-ins te "
+#~ "gebruiken."
+
+#~ msgid "Security Updates Pending"
+#~ msgstr "Veiligheidsupdates staan klaar"
+
+#~ msgid "It is recommended that you install important updates now"
+#~ msgstr "Het wordt aanbevolen om belangrijke updates nu te installeren"
+
+#~ msgid "Restart & Install"
+#~ msgstr "Herstarten & installeren"
+
+#~ msgid "Important OS and application updates are ready to be installed"
+#~ msgstr ""
+#~ "Belangrijke updates voor OS en toepassingen staan klaar om geïnstalleerd "
+#~ "te worden"
+
+#~ msgid "View"
+#~ msgstr "Bekijken"
+
+#~ msgid "%R"
+#~ msgstr "%R"
+
+#~ msgid "%l:%M %p"
+#~ msgstr "%l:%M %p"
+
+#~ msgid "Yesterday, %R"
+#~ msgstr "Gisteren, %R"
+
+#~ msgid "Yesterday, %l:%M %p"
+#~ msgstr "Gisteren, %l:%M %p"
+
+#~ msgid "Three days ago"
+#~ msgstr "Drie dagen geleden"
+
+#~ msgid "Four days ago"
+#~ msgstr "Vier dagen geleden"
+
+#~ msgid "Five days ago"
+#~ msgstr "Vijf dagen geleden"
+
+#~ msgid "Six days ago"
+#~ msgstr "Zes dagen geleden"
+
+#~ msgid "Two weeks ago"
+#~ msgstr "Twee weken geleden"
 
 #~ msgid "About %s"
 #~ msgstr "Over %s"
@@ -4545,9 +4574,6 @@ msgstr "Een snap is een universeel Linux-pakket"
 #~ msgid "Delete Design"
 #~ msgstr "Ontwerp verwijderen"
 
-#~ msgid "Featured App"
-#~ msgstr "Aanbevolen toepassing"
-
 #~ msgid "OS Upgrade"
 #~ msgstr "OS-opwaardering"
 
@@ -4614,9 +4640,6 @@ msgstr "Een snap is een universeel Linux-pakket"
 
 #~ msgid "Add another…"
 #~ msgstr "Nog één toevoegen…"
-
-#~ msgid "Are you sure you want to purchase %s?"
-#~ msgstr "Weet u zeker dat u %s wilt kopen?"
 
 #~ msgid "%s will be installed, and you will be charged %s."
 #~ msgstr "%s zal geïnstalleerd worden, en u zal %s aangerekend worden."
@@ -4781,9 +4804,6 @@ msgstr "Een snap is een universeel Linux-pakket"
 
 #~ msgid "Getting runtime source…"
 #~ msgstr "Ophalen van runtimebron…"
-
-#~ msgid "Downloading firmware update…"
-#~ msgstr "Firmware-update wordt gedownload…"
 
 #~ msgid "Limba Support"
 #~ msgstr "Limba-ondersteuning"
@@ -4979,12 +4999,6 @@ msgstr "Een snap is een universeel Linux-pakket"
 #~| msgid "_Install"
 #~ msgid "_Install All"
 #~ msgstr "Alles i_nstalleren"
-
-#~| msgctxt "menu category"
-#~| msgid "None"
-#~ msgctxt "content rating violence-cartoon"
-#~ msgid "None"
-#~ msgstr "Geen"
 
 #~| msgctxt "menu category"
 #~| msgid "None"
