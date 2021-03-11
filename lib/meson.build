@@ -112,7 +112,10 @@ pkg.generate(
     filebase : 'gnome-software',
     name : 'gnome-software',
     subdirs : 'gnome-software',
-    variables : 'plugindir=${libdir}/gs-plugins-' + gs_plugin_api_version,
+    variables : [
+      'gs_private_libdir=${libdir}/gnome-software',
+      'plugindir=${gs_private_libdir}/plugins-' + gs_plugin_api_version,
+    ],
     install_dir : join_paths(get_option('prefix'), get_option('libdir'), 'pkgconfig'),  # or it defaults to gs_private_libdir, which is wrong
 )
 

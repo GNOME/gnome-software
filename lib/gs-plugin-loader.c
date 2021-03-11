@@ -2374,8 +2374,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	/* use the default, but this requires a 'make install' */
 	if (plugin_loader->locations->len == 0) {
 		g_autofree gchar *filename = NULL;
-		filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
-		g_ptr_array_add (plugin_loader->locations, g_build_filename (LIBDIR, filename, NULL));
+		filename = g_strdup_printf ("plugins-%s", GS_PLUGIN_API_VERSION);
+		g_ptr_array_add (plugin_loader->locations, g_build_filename (LIBDIR, "gnome-software", filename, NULL));
 	}
 
 	for (i = 0; i < plugin_loader->locations->len; i++) {

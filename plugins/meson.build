@@ -1,4 +1,4 @@
-plugin_dir = join_paths(get_option('libdir'), 'gs-plugins-' + gs_plugin_api_version)
+plugin_dir = join_paths(gs_private_libdir, 'plugins-' + gs_plugin_api_version)
 plugin_libs = [
   appstream,
   gio_unix,
