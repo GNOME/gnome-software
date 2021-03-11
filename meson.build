@@ -16,6 +16,9 @@ conf.set_quoted('BUILD_TYPE', get_option('buildtype'))
 gs_plugin_api_version = '16'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
+# private subdirectory of libdir for the private shared libgnomesoftware to live in
+gs_private_libdir = join_paths(get_option('prefix'), get_option('libdir'), 'gnome-software')
+
 # install docs
 install_data('README.md', install_dir : 'share/doc/gnome-software')
 
