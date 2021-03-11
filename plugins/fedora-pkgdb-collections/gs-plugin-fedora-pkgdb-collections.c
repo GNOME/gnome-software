@@ -281,7 +281,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    /* TRANSLATORS: this is a title for Fedora distro upgrades */
-			    _("Upgrade for the latest features, performance and stability improvements."));
+			    _("Upgrade for the latest features, performance, and stability improvements."));
 	gs_app_set_version (app, app_version);
 	gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
 	gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
