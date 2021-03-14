@@ -25,10 +25,12 @@
 /*
  * Compile and install with:
  *
-gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
- `pkg-config --libs --cflags gnome-software` \
- -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE &&
- sudo cp libgs_plugin_example.so `pkg-config gnome-software --variable=plugindir`
+ * |[
+ * gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
+ *     $(pkg-config --libs --cflags gnome-software) \
+ *     -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE && \
+ * cp libgs_plugin_example.so $(pkg-config gnome-software --variable=plugindir)
+ * ]|
  */
 
 void
