@@ -324,7 +324,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	icon = gs_app_get_icon_for_size (app, 128, 1, NULL);
 	g_assert_nonnull (icon);
 	g_assert_true (G_IS_LOADABLE_ICON (icon));
-	icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), 128, NULL, &error);
+	icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), 128, NULL, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_nonnull (icon_stream);
 	pixbuf = gdk_pixbuf_new_from_stream (icon_stream, NULL, &error);

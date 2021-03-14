@@ -721,8 +721,7 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 {
 	const gchar *icon_url;
 	g_autoptr(SnapdIcon) icon = NULL;
-	g_autoptr(GInputStream) input_stream = NULL;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GIcon) gicon = NULL;
 	g_autoptr(GError) error = NULL;
 
 	icon_url = snapd_snap_get_icon (snap);
@@ -736,13 +735,8 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 		return FALSE;
 	}
 
-	input_stream = g_memory_input_stream_new_from_bytes (snapd_icon_get_data (icon));
-	pixbuf = gdk_pixbuf_new_from_stream_at_scale (input_stream, 64, 64, TRUE, cancellable, &error);
-	if (pixbuf == NULL) {
-		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
-		return FALSE;
-	}
-	gs_app_add_pixbuf (app, pixbuf);
+	gicon = g_bytes_icon_new (snapd_icon_get_data (icon));
+	gs_app_add_icon (app, gicon);
 
 	return TRUE;
 }
@@ -814,7 +808,6 @@ load_desktop_icon (GsApp *app, SnapdSnap *snap)
 			continue;
 		}
 
-		icon = as_icon_new ();
 		if (g_str_has_prefix (icon_value, "/")) {
 			g_autoptr(GFile) icon_file = g_file_new_for_path (icon_value);
 			icon = g_file_icon_new (icon_file);
@@ -898,7 +891,7 @@ refine_screenshots (GsApp *app, SnapdSnap *snap)
 			continue;
 
 		ss = as_screenshot_new ();
-		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
+		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_EXTRA);
 		image = as_image_new ();
 		as_image_set_url (image, snapd_media_get_url (m));
 		as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
@@ -1068,7 +1061,7 @@ refine_app_with_client (GsPlugin             *plugin,
 	}
 
 	/* load icon if requested */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && !gs_app_has_pixbufs (app))
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
 		load_icon (plugin, client, app, snap_name, local_snap, store_snap, cancellable);
 
 	return TRUE;
