@@ -47,8 +47,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	guint i;
-	for (i = 0; values[i] != NULL; i++) {
+	for (gsize i = 0; values[i] != NULL; i++) {
 		if (g_strcmp0 (values[i], "fotoshop") == 0) {
 			g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
 			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
