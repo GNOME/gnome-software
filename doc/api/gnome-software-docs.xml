@@ -270,8 +270,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
           </listitem>
           <listitem>
             <para>
-              The <code>icons</code> plugin will take the stock icon and convert
-              it to a pixbuf of the correct size.
+              The icon will be loaded into a pixbuf of the correct size when
+              needed by the UI. You must ensure that icons are available at
+              common sizes. For icons of type <code>GsRemoteIcon</code>, the
+              <code>icons</code> plugin will download and cache the icon
+              locally.
             </para>
           </listitem>
         </itemizedlist>
