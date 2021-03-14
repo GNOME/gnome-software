@@ -891,7 +891,7 @@ refine_screenshots (GsApp *app, SnapdSnap *snap)
 			continue;
 
 		ss = as_screenshot_new ();
-		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
+		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_EXTRA);
 		image = as_image_new ();
 		as_image_set_url (image, snapd_media_get_url (m));
 		as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
