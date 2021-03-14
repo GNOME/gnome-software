@@ -808,7 +808,6 @@ load_desktop_icon (GsApp *app, SnapdSnap *snap)
 			continue;
 		}
 
-		icon = as_icon_new ();
 		if (g_str_has_prefix (icon_value, "/")) {
 			g_autoptr(GFile) icon_file = g_file_new_for_path (icon_value);
 			icon = g_file_icon_new (icon_file);
