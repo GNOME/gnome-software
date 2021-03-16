@@ -149,8 +149,12 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 	default:
 		as_icon_set_name (icon, xb_node_get_text (n));
 	}
-	if (sz == 0)
-		sz = xb_node_get_attr_as_uint (n, "width");
+	if (sz == 0) {
+		guint64 width = xb_node_get_attr_as_uint (n, "width");
+		if (width > 0 && width < G_MAXUINT)
+			sz = width;
+	}
+
 	if (sz > 0) {
 		as_icon_set_width (icon, sz);
 		as_icon_set_height (icon, sz);
