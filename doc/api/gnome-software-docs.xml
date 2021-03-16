@@ -76,6 +76,7 @@
  * Copyright (C) 2016 Richard Hughes
  */
 
+#include &lt;glib.h&gt;
 #include &lt;gnome-software.h&gt;
 
 void
@@ -91,8 +92,7 @@ gs_plugin_add_search (GsPlugin *plugin,
                       GCancellable *cancellable,
                       GError **error)
 {
-  guint i;
-  for (i = 0; values[i] != NULL; i++) {
+  for (gsize i = 0; values[i] != NULL; i++) {
     if (g_strcmp0 (values[i], "fotoshop") == 0) {
       g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
       gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
@@ -122,9 +122,9 @@ gs_plugin_add_search (GsPlugin *plugin,
         <informalexample>
           <programlisting>
 gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
- `pkg-config --libs --cflags gnome-software` \
- -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE &amp;&amp;
- sudo cp libgs_plugin_example.so `pkg-config gnome-software --variable=plugindir`
+    $(pkg-config --libs --cflags gnome-software) \
+    -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE &amp;&amp; \
+cp libgs_plugin_example.so $(pkg-config gnome-software --variable=plugindir)
           </programlisting>
         </informalexample>
 
@@ -250,7 +250,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
           </listitem>
           <listitem>
             <para>
-              The origin is where the application originated from -- usually
+              The origin is where the application originated from — usually
               this will be something like <emphasis>Fedora Updates</emphasis>.
             </para>
           </listitem>
@@ -263,15 +263,18 @@ gs_plugin_add_installed (GsPlugin *plugin,
           </listitem>
           <listitem>
             <para>
-              Setting the license means we don't get the non-free warning --
+              Setting the license means we don't get the non-free warning —
               removing the 3rd party warning can be done using
               <code>GS_APP_QUIRK_PROVENANCE</code>
             </para>
           </listitem>
           <listitem>
             <para>
-              The <code>icons</code> plugin will take the stock icon and convert
-              it to a pixbuf of the correct size.
+              The icon will be loaded into a pixbuf of the correct size when
+              needed by the UI. You must ensure that icons are available at
+              common sizes. For icons of type <code>GsRemoteIcon</code>, the
+              <code>icons</code> plugin will download and cache the icon
+              locally.
             </para>
           </listitem>
         </itemizedlist>
@@ -345,7 +348,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
           <code>gs_plugin_download_app()</code> is called.
         </para>
         <para>
-          If the <code>@app</code> parameter is set for
+          If the <code>app</code> parameter is set for
           <code>gs_plugin_download_file()</code> then the progress of the download
           is automatically proxied to the UI elements associated with the
           application, for instance the install button would show a progress bar
