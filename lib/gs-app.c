@@ -1828,11 +1828,12 @@ gs_app_get_icon_for_size (GsApp       *app,
 	 * lazily created. */
 	for (guint i = 0; priv->icons != NULL && i < priv->icons->len; i++) {
 		GIcon *icon = priv->icons->pdata[i];
+		g_autofree gchar *icon_str = g_icon_to_string (icon);
 		guint icon_width = gs_icon_get_width (icon);
 		guint icon_scale = gs_icon_get_scale (icon);
 
-		g_debug ("\tConsidering icon of type %s, width %u×%u",
-			 G_OBJECT_TYPE_NAME (icon), icon_width, icon_scale);
+		g_debug ("\tConsidering icon of type %s (%s), width %u×%u",
+			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
 		/* Ignore icons with unknown width and skip over ones which
 		 * are too small. */
