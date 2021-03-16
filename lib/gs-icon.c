@@ -200,11 +200,21 @@ gs_icon_load_cached (AsIcon *icon)
 {
 	const gchar *filename = as_icon_get_filename (icon);
 	const gchar *name = as_icon_get_name (icon);
+	g_autofree gchar *name_allocated = NULL;
 	g_autofree gchar *full_filename = NULL;
 	g_autoptr(GFile) file = NULL;
 
 	if (filename == NULL || name == NULL)
 		return NULL;
+
+	/* FIXME: Work around https://github.com/hughsie/appstream-glib/pull/390
+	 * where appstream files generated with appstream-builder from
+	 * appstream-glib, with its hidpi option enabled, will contain an
+	 * unnecessary size subdirectory in the icon name. */
+	if (g_str_has_prefix (name, "64x64/"))
+		name = name_allocated = g_strdup (name + strlen ("64x64/"));
+	else if (g_str_has_prefix (name, "128x128/"))
+		name = name_allocated = g_strdup (name + strlen ("128x128/"));
 
 	if (!g_str_has_suffix (filename, name)) {
 		/* Spec: https://www.freedesktop.org/software/appstream/docs/sect-AppStream-IconCache.html#spec-iconcache-location */
