@@ -588,7 +588,7 @@ gs_app_thread_cb (gpointer data)
 static void
 gs_app_thread_func (gconstpointer user_data)
 {
-	GsDebug *debug = GS_DEBUG (user_data);
+	GsDebug *debug = GS_DEBUG ((void *)user_data);
 	GThread *thread1;
 	GThread *thread2;
 	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");

@@ -49,7 +49,6 @@ test_args = [
   '-Wmissing-prototypes',
   '-Wnested-externs',
   '-Werror=nested-externs',
-  '-Wno-discarded-qualifiers',
   '-Wno-missing-field-initializers',
   '-Wno-strict-aliasing',
   '-Wno-suggest-attribute=format',

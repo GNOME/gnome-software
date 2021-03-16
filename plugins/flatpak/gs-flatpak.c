@@ -3413,7 +3413,7 @@ gs_flatpak_search (GsFlatpak *self,
 									split[3],
 									NULL, NULL);
 		if (installed_ref == NULL) {
-			g_ptr_array_add (silos_to_remove, app_ref);
+			g_ptr_array_add (silos_to_remove, (void *)app_ref);
 			continue;
 		}
 

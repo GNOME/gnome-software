@@ -1873,6 +1873,8 @@ gchar *
 gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 {
 	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY)
 		g_ptr_array_add (cstrs, "use-history");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE)
@@ -1933,6 +1935,7 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 		g_ptr_array_add (cstrs, "require-kudos");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING)
 		g_ptr_array_add (cstrs, "content-rating");
+#pragma GCC diagnostic pop
 	if (cstrs->len == 0)
 		return g_strdup ("none");
 	g_ptr_array_add (cstrs, NULL);

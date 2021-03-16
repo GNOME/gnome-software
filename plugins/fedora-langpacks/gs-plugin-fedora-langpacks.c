@@ -36,10 +36,13 @@ gs_plugin_initialize (GsPlugin *plugin)
 	* Example: en {en_GB}, pt {pt_BR}, zh {zh_CN, zh_TW}
 	*/
 	priv->locale_langpack_map = g_hash_table_new (g_str_hash, g_str_equal);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	g_hash_table_insert (priv->locale_langpack_map, "en_GB", "langpacks-en_GB");
 	g_hash_table_insert (priv->locale_langpack_map, "pt_BR", "langpacks-pt_BR");
 	g_hash_table_insert (priv->locale_langpack_map, "zh_CN", "langpacks-zh_CN");
 	g_hash_table_insert (priv->locale_langpack_map, "zh_TW", "langpacks-zh_TW");
+#pragma GCC diagnostic pop
 }
 
 void
