@@ -10,6 +10,7 @@
 
 #include "config.h"
 
+#include <handy.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -69,6 +70,7 @@ struct _GsShell
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
+	HdyLeaflet		*main_leaflet;
 	GtkStack		*stack_main;
 	GsPage			*page;
 	GsSidebar		*sidebar;
@@ -81,10 +83,13 @@ struct _GsShell
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
 
+	GtkWidget		*sidebar_box;
 	GtkWidget		*main_header;
 	GtkWidget		*metered_updates_bar;
-	GtkWidget		*menu_button;
-	GtkWidget		*search_button;
+	GtkWidget		*menu_button_main;
+	GtkWidget		*menu_button_sidebar;
+	GtkWidget		*search_button_main;
+	GtkWidget		*search_button_sidebar;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
@@ -401,6 +406,48 @@ static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *s
 static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
 
 static void
+update_header_widgets (GsShell *shell)
+{
+	GsShellMode mode = gs_shell_get_mode (shell);
+	gboolean mode_needs_sidebar;
+	gboolean sidebar_visible;
+	gboolean mode_needs_menu;
+	gboolean mode_needs_search;
+
+	/* update the visibility of various shell widgets */
+	mode_needs_sidebar = (mode == GS_SHELL_MODE_OVERVIEW ||
+			      mode == GS_SHELL_MODE_INSTALLED ||
+			      mode == GS_SHELL_MODE_UPDATES ||
+			      mode == GS_SHELL_MODE_SEARCH);
+	gtk_widget_set_visible (shell->sidebar_box, mode_needs_sidebar);
+	sidebar_visible = mode_needs_sidebar && !hdy_leaflet_get_folded (shell->main_leaflet);
+
+	mode_needs_menu = (mode == GS_SHELL_MODE_OVERVIEW ||
+			   mode == GS_SHELL_MODE_INSTALLED ||
+			   mode == GS_SHELL_MODE_UPDATES ||
+			   mode == GS_SHELL_MODE_SEARCH);
+	gtk_widget_set_visible (shell->menu_button_main, mode_needs_menu && !sidebar_visible);
+	gtk_widget_set_visible (shell->menu_button_sidebar, mode_needs_menu && sidebar_visible);
+
+	/* only show the search button in overview and search pages */
+	g_signal_handlers_block_by_func (shell->search_button_main, search_button_clicked_cb, shell);
+	g_signal_handlers_block_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
+
+	mode_needs_search = (mode == GS_SHELL_MODE_OVERVIEW ||
+			     mode == GS_SHELL_MODE_SEARCH ||
+			     mode == GS_SHELL_MODE_INSTALLED);
+	gtk_widget_set_visible (shell->search_button_main, mode_needs_search && !sidebar_visible);
+	gtk_widget_set_visible (shell->search_button_sidebar, mode_needs_search && sidebar_visible);
+
+	/* hide unless we're going to search */
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
+					mode == GS_SHELL_MODE_SEARCH);
+
+	g_signal_handlers_unblock_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_button_main, search_button_clicked_cb, shell);
+}
+
+static void
 stack_notify_visible_child_cb (GObject    *object,
                                GParamSpec *pspec,
                                gpointer    user_data)
@@ -408,10 +455,8 @@ stack_notify_visible_child_cb (GObject    *object,
 	GsShell *shell = GS_SHELL (user_data);
 	GsPage *page;
 	GtkWidget *widget;
-	GtkStyleContext *context;
 	GsShellMode mode;
 	gsize i;
-	gboolean buttonbox_visible;
 
 	/* Work out the mode for this child. */
 	for (i = 0; i < G_N_ELEMENTS (page_name); i++) {
@@ -422,32 +467,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 	g_assert (i < G_N_ELEMENTS (page_name));
 
-	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (shell->main_header), TRUE);
-
-	/* update the visibility of mode-specific header widgets
-	 */
-	buttonbox_visible = (mode == GS_SHELL_MODE_OVERVIEW ||
-			     mode == GS_SHELL_MODE_INSTALLED ||
-			     mode == GS_SHELL_MODE_UPDATES ||
-			     mode == GS_SHELL_MODE_SEARCH);
-
-	gtk_widget_set_visible (shell->menu_button, buttonbox_visible);
-
-	gtk_widget_set_visible (shell->application_details_header, !buttonbox_visible);
-
-	/* only show the search button in overview and search pages */
-	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
-	gtk_widget_set_visible (shell->search_button,
-				mode == GS_SHELL_MODE_OVERVIEW ||
-				mode == GS_SHELL_MODE_SEARCH ||
-				mode == GS_SHELL_MODE_INSTALLED);
-	/* hide unless we're going to search */
-	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
-					mode == GS_SHELL_MODE_SEARCH);
-	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
-
-	context = gtk_widget_get_style_context (shell->main_header);
-	gtk_style_context_remove_class (context, "selection-mode");
+	update_header_widgets (shell);
 
 	/* set the window title back to default */
 	gtk_window_set_title (GTK_WINDOW (shell), g_get_application_name ());
@@ -506,6 +526,16 @@ stack_notify_visible_child_cb (GObject    *object,
 		}
 		g_ptr_array_set_size (shell->modal_dialogs, 0);
 	}
+}
+
+static void
+main_leaflet_notify_folded_cb (GObject    *obj,
+                               GParamSpec *pspec,
+                               gpointer    user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+
+	update_header_widgets (shell);
 }
 
 void
@@ -2304,11 +2334,16 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button_sidebar);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
@@ -2353,6 +2388,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
+	gtk_widget_class_bind_template_callback (widget_class, main_leaflet_notify_folded_cb);
 }
 
 static void
