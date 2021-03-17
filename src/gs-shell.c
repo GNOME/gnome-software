@@ -529,6 +529,16 @@ stack_notify_visible_child_cb (GObject    *object,
 }
 
 static void
+sidebar_category_selected_cb (GsSidebar  *sidebar,
+                              GsCategory *category,
+                              gpointer    user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+
+	gs_shell_show_category (shell, category);
+}
+
+static void
 main_leaflet_notify_folded_cb (GObject    *obj,
                                GParamSpec *pspec,
                                gpointer    user_data)
@@ -2087,6 +2097,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	shell->settings = g_settings_new ("org.gnome.software");
 
+	gs_sidebar_set_category_manager (shell->sidebar, gs_plugin_loader_get_category_manager (plugin_loader));
+
 	/* get UI */
 	accel_group = gtk_accel_group_new ();
 	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
@@ -2389,6 +2401,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, main_leaflet_notify_folded_cb);
+	gtk_widget_class_bind_template_callback (widget_class, sidebar_category_selected_cb);
 }
 
 static void

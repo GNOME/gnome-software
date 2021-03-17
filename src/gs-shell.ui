@@ -360,6 +360,7 @@
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="stack">stack_main</property>
+                        <signal name="category-selected" handler="sidebar_category_selected_cb"/>
                         <child internal-child="accessible">
                           <object class="AtkObject">
                             <property name="accessible-description" translatable="yes">Navigation sidebar</property>
