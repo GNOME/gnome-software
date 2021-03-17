@@ -32,6 +32,7 @@
 #include "gs-extras-page.h"
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
+#include "gs-sidebar.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
@@ -70,6 +71,7 @@ struct _GsShell
 	gchar			*events_info_uri;
 	GtkStack		*stack_main;
 	GsPage			*page;
+	GsSidebar		*sidebar;
 
 	GBinding		*application_details_header_binding;
 

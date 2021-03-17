@@ -392,6 +392,64 @@
             </child>
 
             <child>
+              <object class="HdyLeaflet" id="main_leaflet">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="transition-type">slide</property>
+                <signal name="notify::folded" handler="on_main_leaflet_folded_changed_cb" object="CcWindow" swapped="yes" />
+
+                <child>
+                  <object class="GtkBox" id="sidebar_box">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="hexpand">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="width-request">200</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <style>
+                          <class name="view"/>
+                        </style>
+                        <child>
+                          <object class="GsSidebar" id="sidebar">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <!-- TODO <property name="search-mode" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="bidirectional" />
+                            <property name="search-query" bind-source="search_entry" bind-property="text" bind-flags="default" />-->
+                            <!-- TODO <signal name="show-panel" handler="show_panel_cb" object="CcWindow" swapped="yes" />-->
+                            <child internal-child="accessible">
+                              <object class="AtkObject">
+                                <property name="accessible-description" translatable="yes">Navigation sidebar</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkSeparator" id="panel_separator">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <style>
+                      <class name="sidebar"/>
+                    </style>
+                  </object>
+                </child>
+
+            <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
@@ -530,6 +588,9 @@
                     </child>
                   </object>
                 </child>
+              </object>
+            </child>
+
               </object>
             </child>
           </object>
