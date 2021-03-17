@@ -2107,6 +2107,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
 	/* fix up the header bar */
+#if 0
 	if (gs_utils_is_current_desktop ("Unity")) {
 		style_context = gtk_widget_get_style_context (shell->header);
 		gtk_style_context_remove_class (style_context, GTK_STYLE_CLASS_TITLEBAR);
@@ -2118,6 +2119,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		gtk_window_set_titlebar (GTK_WINDOW (shell), shell->header);
 		g_object_unref (shell->header);
 	}
+#endif
 
 	/* setup buttons */
 	g_object_set_data (G_OBJECT (shell->button_explore),
