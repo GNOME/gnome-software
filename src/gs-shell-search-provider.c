@@ -254,7 +254,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		if (icon != NULL) {
 			g_autofree gchar *icon_str = g_icon_to_string (icon);
 			if (icon_str != NULL) {
-				g_variant_builder_add (&meta, "{sv}", "gicon", icon_str);
+				g_variant_builder_add (&meta, "{sv}", "gicon", g_variant_new_string (icon_str));
 			} else {
 				g_autoptr(GVariant) icon_serialized = g_icon_serialize (icon);
 				g_variant_builder_add (&meta, "{sv}", "icon", icon_serialized);
