@@ -486,7 +486,7 @@ gs_installed_page_list_header_func (GtkListBoxRow *row,
 {
 	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
 	GsInstalledPageSection section;
-	GtkWidget *header;
+	GtkWidget *header = NULL;
 
 	/* Don’t show a header if the REMOVABLE_APPS section is listed first,
 	 * as it looks redundant. (But do show a header if another section is
@@ -506,7 +506,7 @@ gs_installed_page_list_header_func (GtkListBoxRow *row,
 		header = gs_installed_page_get_section_header (section);
 		if (header == NULL)
 			return;
-	} else {
+	} else if (before != NULL) {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	}
 	gtk_list_box_row_set_header (row, header);
