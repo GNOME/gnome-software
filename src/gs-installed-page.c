@@ -408,21 +408,33 @@ gs_installed_page_sort_func (GtkListBoxRow *a,
 }
 
 typedef enum {
+	GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING,
 	GS_UPDATE_LIST_SECTION_REMOVABLE_APPS,
 	GS_UPDATE_LIST_SECTION_SYSTEM_APPS,
 	GS_UPDATE_LIST_SECTION_ADDONS,
 	GS_UPDATE_LIST_SECTION_LAST
 } GsInstalledPageSection;
 
+/* This must mostly mirror gs_installed_page_get_app_sort_key() otherwise apps
+ * will end up sorted into a section they don’t belong in. */
 static GsInstalledPageSection
 gs_installed_page_get_app_section (GsApp *app)
 {
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP ||
-	    gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
+	GsAppState state = gs_app_get_state (app);
+	AsComponentKind kind = gs_app_get_kind (app);
+
+	if (state == GS_APP_STATE_INSTALLING ||
+	    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
+	    state == GS_APP_STATE_REMOVING)
+		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
+
+	if (kind == AS_COMPONENT_KIND_DESKTOP_APP ||
+	    kind == AS_COMPONENT_KIND_WEB_APP) {
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
 			return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
 		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
 	}
+
 	return GS_UPDATE_LIST_SECTION_ADDONS;
 }
 
