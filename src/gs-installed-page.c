@@ -485,9 +485,13 @@ gs_installed_page_list_header_func (GtkListBoxRow *row,
                                     gpointer user_data)
 {
 	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
-	GsInstalledPageSection before_section = GS_UPDATE_LIST_SECTION_LAST;
 	GsInstalledPageSection section;
 	GtkWidget *header;
+
+	/* Don’t show a header if the REMOVABLE_APPS section is listed first,
+	 * as it looks redundant. (But do show a header if another section is
+	 * listed first.) */
+	GsInstalledPageSection before_section = GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
 
 	/* first entry */
 	gtk_list_box_row_set_header (row, NULL);
