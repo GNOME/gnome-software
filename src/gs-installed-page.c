@@ -443,14 +443,30 @@ gs_installed_page_get_section_header (GsInstalledPageSection section)
 {
 	GtkWidget *header = NULL;
 
-	if (section == GS_UPDATE_LIST_SECTION_SYSTEM_APPS) {
+	switch (section) {
+	case GS_UPDATE_LIST_SECTION_SYSTEM_APPS:
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the system ones */
 		header = gtk_label_new (_("System Applications"));
-	} else if (section == GS_UPDATE_LIST_SECTION_ADDONS) {
+		break;
+	case GS_UPDATE_LIST_SECTION_ADDONS:
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
+		break;
+	case GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING:
+		/* TRANSLATORS: This is the header dividing the normal
+		 * installed applications and the applications which are
+		 * currently being installed or removed. */
+		header = gtk_label_new (_("In Progress"));
+		break;
+	case GS_UPDATE_LIST_SECTION_REMOVABLE_APPS:
+		/* TRANSLATORS: This is the header above normal installed
+		 * applications on the installed page. */
+		header = gtk_label_new (_("Applications"));
+		break;
+	default:
+		g_assert_not_reached ();
 	}
 
 	/* fix header style */
