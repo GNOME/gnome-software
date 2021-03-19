@@ -102,6 +102,11 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		/* To indicate the app is already downloaded */
+		gs_app_set_size_download (app, 0);
+	}
 	return TRUE;
 }
 
