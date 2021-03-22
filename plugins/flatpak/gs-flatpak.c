@@ -579,6 +579,28 @@ gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError
 }
 #endif
 
+#if LIBXMLB_CHECK_VERSION(0,3,0)
+static gboolean
+gs_flatpak_tokenize_cb (XbBuilderFixup *self,
+			XbBuilderNode *bn,
+			gpointer user_data,
+			GError **error)
+{
+	const gchar * const tokn[] = {
+		"id",
+		"keyword",
+		"launchable",
+		"mimetype",
+		"name",
+		"summary",
+		NULL };
+	if (xb_builder_node_get_element (bn) != NULL &&
+	    g_strv_contains (tokn, xb_builder_node_get_element (bn)))
+		xb_builder_node_tokenize_text (bn);
+	return TRUE;
+}
+#endif
+
 static void
 fixup_flatpak_appstream_xml (XbBuilderSource *source,
 		             const char *origin)
@@ -586,6 +608,9 @@ fixup_flatpak_appstream_xml (XbBuilderSource *source,
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
+#if LIBXMLB_CHECK_VERSION(0,3,0)
+	g_autoptr(XbBuilderFixup) fixup5 = NULL;
+#endif
 
 	/* add the flatpak search keyword */
 	fixup1 = xb_builder_fixup_new ("AddKeywordFlatpak",
@@ -607,6 +632,14 @@ fixup_flatpak_appstream_xml (XbBuilderSource *source,
 				       NULL, NULL);
 	xb_builder_fixup_set_max_depth (fixup3, 2);
 	xb_builder_source_add_fixup (source, fixup3);
+
+#if LIBXMLB_CHECK_VERSION(0,3,0)
+	fixup5 = xb_builder_fixup_new ("TextTokenize",
+				       gs_flatpak_tokenize_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup5, 2);
+	xb_builder_source_add_fixup (source, fixup5);
+#endif
 
 	if (origin != NULL) {
 		g_autoptr(XbBuilderFixup) fixup4 = NULL;
