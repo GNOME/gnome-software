@@ -362,7 +362,7 @@ gs_plugin_appstream_tokenize_cb (XbBuilderFixup *self,
 		"summary",
 		NULL };
 	if (xb_builder_node_get_element (bn) != NULL &&
-	    g_strv_contains (tokn, xb_builder_node_get_element (bn)))
+	    g_strv_contains (elements_to_tokenize, xb_builder_node_get_element (bn)))
 		xb_builder_node_tokenize_text (bn);
 	return TRUE;
 }
