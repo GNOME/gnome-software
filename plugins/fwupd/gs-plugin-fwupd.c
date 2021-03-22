@@ -375,6 +375,9 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 {
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
 	GPtrArray *checksums;
+#if FWUPD_CHECK_VERSION(1,5,6)
+	GPtrArray *locations = fwupd_release_get_locations (rel);
+#endif
 	const gchar *update_uri;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *filename_cache = NULL;
@@ -425,7 +428,14 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 			     gs_app_get_update_version (app));
 		return NULL;
 	}
+#if FWUPD_CHECK_VERSION(1,5,6)
+	/* typically the first URI will be the main HTTP mirror, and we
+	 * don't have the capability to use an IPFS/IPNS URL anyway */
+	if (locations->len > 0)
+		update_uri = g_ptr_array_index (locations, 0);
+#else
 	update_uri = fwupd_release_get_uri (rel);
+#endif
 	if (update_uri == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
