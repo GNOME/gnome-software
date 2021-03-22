@@ -345,6 +345,29 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
+#if LIBXMLB_CHECK_VERSION(0,3,1)
+static gboolean
+gs_plugin_appstream_tokenize_cb (XbBuilderFixup *self,
+				 XbBuilderNode *bn,
+				 gpointer user_data,
+				 GError **error)
+{
+	const gchar * const elements_to_tokenize[] = {
+		"id",
+		"keyword",
+		"launchable",
+		"mimetype",
+		"name",
+		"pkgname",
+		"summary",
+		NULL };
+	if (xb_builder_node_get_element (bn) != NULL &&
+	    g_strv_contains (elements_to_tokenize, xb_builder_node_get_element (bn)))
+		xb_builder_node_tokenize_text (bn);
+	return TRUE;
+}
+#endif
+
 static gboolean
 gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 				       XbBuilder *builder,
@@ -357,6 +380,9 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
+#if LIBXMLB_CHECK_VERSION(0,3,1)
+	g_autoptr(XbBuilderFixup) fixup4 = NULL;
+#endif
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for DEP-11 files */
@@ -403,6 +429,14 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 				       plugin, NULL);
 	xb_builder_fixup_set_max_depth (fixup3, 1);
 	xb_builder_source_add_fixup (source, fixup3);
+
+#if LIBXMLB_CHECK_VERSION(0,3,1)
+	fixup4 = xb_builder_fixup_new ("TextTokenize",
+				       gs_plugin_appstream_tokenize_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup4, 2);
+	xb_builder_source_add_fixup (source, fixup4);
+#endif
 
 	/* success */
 	xb_builder_import_source (builder, source);
