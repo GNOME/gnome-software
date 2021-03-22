@@ -1899,6 +1899,10 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
+	/* ensure origin set */
+	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
+		return FALSE;
+
 	/* find the app using the origin and the ID */
 	g_mutex_lock (&self->installed_refs_mutex);
 
@@ -1947,10 +1951,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		}
 		return TRUE;
 	}
-
-	/* ensure origin set */
-	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
-		return FALSE;
 
 	/* anything not installed just check the remote is still present */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN &&
