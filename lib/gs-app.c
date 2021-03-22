@@ -5136,33 +5136,36 @@ gs_app_get_origin_ui (GsApp *app)
 {
 	GsAppPrivate *priv;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autofree gchar *packaging_format = NULL;
-	const gchar *origin_str;
+	const gchar *origin_str = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* use the distro name for official packages */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
-		g_autoptr(GsOsRelease) os_release = gs_os_release_new (NULL);
+		os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
-			return g_strdup (gs_os_release_get_name (os_release));
+			origin_str = gs_os_release_get_name (os_release);
 	}
 
 	priv = gs_app_get_instance_private (app);
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	origin_str = priv->origin_ui;
+	if (!origin_str) {
+		origin_str = priv->origin_ui;
 
-	if (origin_str == NULL || origin_str[0] == '\0') {
-		/* use "Local file" rather than the filename for local files */
-		if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
-			origin_str = _("Local file");
-		else if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0)
-			origin_str = "Flathub";
-		else if (g_strcmp0 (gs_app_get_origin (app), "flathub-beta") == 0)
-			origin_str = "Flathub Beta";
-		else
-			origin_str = gs_app_get_origin (app);
+		if (origin_str == NULL || origin_str[0] == '\0') {
+			/* use "Local file" rather than the filename for local files */
+			if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
+				origin_str = _("Local file");
+			else if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0)
+				origin_str = "Flathub";
+			else if (g_strcmp0 (gs_app_get_origin (app), "flathub-beta") == 0)
+				origin_str = "Flathub Beta";
+			else
+				origin_str = gs_app_get_origin (app);
+		}
 	}
 
 	packaging_format = gs_app_get_packaging_format (app);
