@@ -1343,24 +1343,32 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 		       GCancellable *cancellable, GError **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
-	g_autoptr(GPtrArray) xrefs = NULL;
 
 	g_return_val_if_fail (ref != NULL, NULL);
 
-	/* get all the installed apps (no network I/O) */
-	xrefs = flatpak_installation_list_installed_refs (self->installation,
-							  cancellable,
-							  error);
-	if (xrefs == NULL) {
-		gs_flatpak_error_convert (error);
-		return NULL;
+	g_mutex_lock (&self->installed_refs_mutex);
+
+	if (self->installed_refs == NULL) {
+		self->installed_refs = flatpak_installation_list_installed_refs (self->installation,
+								 cancellable, error);
+
+		if (self->installed_refs == NULL) {
+			g_mutex_unlock (&self->installed_refs_mutex);
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
 	}
-	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+
+	for (guint i = 0; i < self->installed_refs->len; i++) {
+		FlatpakInstalledRef *xref = g_ptr_array_index (self->installed_refs, i);
 		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
-		if (g_strcmp0 (ref, ref_tmp) == 0)
+		if (g_strcmp0 (ref, ref_tmp) == 0) {
+			g_mutex_unlock (&self->installed_refs_mutex);
 			return gs_flatpak_create_installed (self, xref, NULL, cancellable);
+		}
 	}
+
+	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* look at each remote xref */
 	xremotes = flatpak_installation_list_remotes (self->installation,
