@@ -410,12 +410,15 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	/* drop the installed refs cache */
 	locker = g_mutex_locker_new (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
-
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* drop the remote title cache */
 	locker = g_mutex_locker_new (&self->remote_title_mutex);
 	g_hash_table_remove_all (self->remote_title);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
+	gs_plugin_cache_invalidate (self->plugin);
+	gs_plugin_reload (self->plugin);
 }
 
 static gboolean
@@ -1926,7 +1929,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	}
 
 	installed_refs = g_ptr_array_ref (self->installed_refs);
-	g_mutex_unlock (&self->installed_refs_mutex);
 
 	for (guint i = 0; i < installed_refs->len; i++) {
 		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (installed_refs, i);
@@ -1942,6 +1944,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 			break;
 		}
 	}
+	g_mutex_unlock (&self->installed_refs_mutex);
 	if (ref != NULL) {
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_unique_id (app));
