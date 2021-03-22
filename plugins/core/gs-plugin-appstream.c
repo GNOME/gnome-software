@@ -352,7 +352,7 @@ gs_plugin_appstream_tokenize_cb (XbBuilderFixup *self,
 				 gpointer user_data,
 				 GError **error)
 {
-	const gchar * const tokn[] = {
+	const gchar * const elements_to_tokenize[] = {
 		"id",
 		"keyword",
 		"launchable",
