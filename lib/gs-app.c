@@ -415,6 +415,8 @@ static gchar *
 gs_app_kudos_to_string (guint64 kudos)
 {
 	g_autoptr(GPtrArray) array = g_ptr_array_new ();
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
 	if ((kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
 		g_ptr_array_add (array, "my-language");
 	if ((kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
@@ -443,6 +445,7 @@ gs_app_kudos_to_string (guint64 kudos)
 		g_ptr_array_add (array, "sandboxed");
 	if ((kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
 		g_ptr_array_add (array, "sandboxed-secure");
+#pragma GCC diagnostic pop
 	g_ptr_array_add (array, NULL);
 	return g_strjoinv ("|", (gchar **) array->pdata);
 }
