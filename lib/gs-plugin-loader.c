@@ -2126,6 +2126,21 @@ gs_plugin_loader_reload_cb (GsPlugin *plugin,
 }
 
 static void
+gs_plugin_loader_repository_changed_cb (GsPlugin *plugin,
+					GsApp *repository,
+					GsPluginLoader *plugin_loader)
+{
+	GApplication *application = g_application_get_default ();
+
+	/* Can be NULL when running the self tests */
+	if (application) {
+		g_signal_emit_by_name (application,
+			"repository-changed",
+			repository);
+	}
+}
+
+static void
 gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *filename)
 {
@@ -2155,6 +2170,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "allow-updates",
 			  G_CALLBACK (gs_plugin_loader_allow_updates_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "repository-changed",
+			  G_CALLBACK (gs_plugin_loader_repository_changed_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, plugin_loader->soup_session);
 	gs_plugin_set_locale (plugin, plugin_loader->locale);

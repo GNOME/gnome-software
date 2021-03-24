@@ -43,7 +43,9 @@ struct _GsPluginClass
 							 const gchar	*realm,
 							 GCallback	 callback,
 							 gpointer	 user_data);
-	gpointer		 padding[25];
+	void			(*repository_changed)	(GsPlugin	*plugin,
+							 GsApp		*repository);
+	gpointer		 padding[24];
 };
 
 typedef struct	GsPluginData	GsPluginData;
@@ -130,5 +132,10 @@ void		 gs_plugin_basic_auth_start		(GsPlugin	*plugin,
 							 const gchar	*realm,
 							 GCallback	 callback,
 							 gpointer	 user_data);
+void		gs_plugin_repository_changed		(GsPlugin	*plugin,
+							 GsApp		*repository);
+void		gs_plugin_update_cache_state_for_repository
+							(GsPlugin *plugin,
+							 GsApp *repository);
 
 G_END_DECLS

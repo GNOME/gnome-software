@@ -953,6 +953,9 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 	}
 	gs_app_set_state (app, enabled ?
 	                  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+
+	gs_plugin_repository_changed (plugin, app);
+
 	return TRUE;
 }
 
