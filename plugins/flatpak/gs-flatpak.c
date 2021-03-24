@@ -3474,6 +3474,10 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GError **error)
 {
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
+	if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
+		return FALSE;
+
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 	return gs_appstream_add_category_apps (self->plugin, self->silo,
 					       category, list,
