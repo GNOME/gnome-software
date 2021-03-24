@@ -102,6 +102,9 @@ gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
 GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,
 							 const gchar	*key);
+void		 gs_plugin_cache_lookup_by_state	(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 GsAppState	 state);
 void		 gs_plugin_cache_add			(GsPlugin	*plugin,
 							 const gchar	*key,
 							 GsApp		*app);

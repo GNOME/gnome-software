@@ -1401,6 +1401,44 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 }
 
 /**
+ * gs_plugin_cache_lookup_by_state:
+ * @plugin: a #GsPlugin
+ * @list: a #GsAppList to add applications to
+ * @state: a #GsAppState
+ *
+ * Adds each cached #GsApp with state @state into the @list.
+ * When the state is %GS_APP_STATE_UNKNOWN, then adds all
+ * cached applications.
+ *
+ * Since: 40
+ **/
+void
+gs_plugin_cache_lookup_by_state (GsPlugin *plugin,
+				 GsAppList *list,
+				 GsAppState state)
+{
+	GsPluginPrivate *priv;
+	GHashTableIter iter;
+	gpointer value;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	priv = gs_plugin_get_instance_private (plugin);
+	locker = g_mutex_locker_new (&priv->cache_mutex);
+
+	g_hash_table_iter_init (&iter, priv->cache);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		GsApp *app = value;
+
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == gs_app_get_state (app))
+			gs_app_list_add (list, app);
+	}
+}
+
+/**
  * gs_plugin_cache_remove:
  * @plugin: a #GsPlugin
  * @key: a key which matches

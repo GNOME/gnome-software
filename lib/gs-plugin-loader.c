@@ -1338,7 +1338,7 @@ static gboolean
 gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 {
 	return gs_plugin_loader_app_is_valid (app, user_data) &&
-		gs_app_is_updatable (app);
+		(gs_app_is_updatable (app) || gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
 }
 
 static gboolean
