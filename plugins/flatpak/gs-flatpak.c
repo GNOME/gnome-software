@@ -410,12 +410,15 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	/* drop the installed refs cache */
 	locker = g_mutex_locker_new (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
-
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* drop the remote title cache */
 	locker = g_mutex_locker_new (&self->remote_title_mutex);
 	g_hash_table_remove_all (self->remote_title);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
+	gs_plugin_cache_invalidate (self->plugin);
+	gs_plugin_reload (self->plugin);
 }
 
 static gboolean
@@ -1376,24 +1379,32 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 		       GCancellable *cancellable, GError **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
-	g_autoptr(GPtrArray) xrefs = NULL;
 
 	g_return_val_if_fail (ref != NULL, NULL);
 
-	/* get all the installed apps (no network I/O) */
-	xrefs = flatpak_installation_list_installed_refs (self->installation,
-							  cancellable,
-							  error);
-	if (xrefs == NULL) {
-		gs_flatpak_error_convert (error);
-		return NULL;
+	g_mutex_lock (&self->installed_refs_mutex);
+
+	if (self->installed_refs == NULL) {
+		self->installed_refs = flatpak_installation_list_installed_refs (self->installation,
+								 cancellable, error);
+
+		if (self->installed_refs == NULL) {
+			g_mutex_unlock (&self->installed_refs_mutex);
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
 	}
-	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+
+	for (guint i = 0; i < self->installed_refs->len; i++) {
+		FlatpakInstalledRef *xref = g_ptr_array_index (self->installed_refs, i);
 		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
-		if (g_strcmp0 (ref, ref_tmp) == 0)
+		if (g_strcmp0 (ref, ref_tmp) == 0) {
+			g_mutex_unlock (&self->installed_refs_mutex);
 			return gs_flatpak_create_installed (self, xref, NULL, cancellable);
+		}
 	}
+
+	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* look at each remote xref */
 	xremotes = flatpak_installation_list_remotes (self->installation,
@@ -1932,6 +1943,10 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
+	/* ensure origin set */
+	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
+		return FALSE;
+
 	/* find the app using the origin and the ID */
 	g_mutex_lock (&self->installed_refs_mutex);
 
@@ -1947,7 +1962,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	}
 
 	installed_refs = g_ptr_array_ref (self->installed_refs);
-	g_mutex_unlock (&self->installed_refs_mutex);
 
 	for (guint i = 0; i < installed_refs->len; i++) {
 		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (installed_refs, i);
@@ -1963,6 +1977,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 			break;
 		}
 	}
+	g_mutex_unlock (&self->installed_refs_mutex);
 	if (ref != NULL) {
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_unique_id (app));
@@ -1980,10 +1995,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		}
 		return TRUE;
 	}
-
-	/* ensure origin set */
-	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
-		return FALSE;
 
 	/* anything not installed just check the remote is still present */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN &&

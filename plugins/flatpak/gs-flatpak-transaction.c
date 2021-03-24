@@ -175,9 +175,13 @@ _transaction_ready (FlatpakTransaction *transaction)
 			_transaction_operation_set_app (op, app);
 			/* if we're updating a component, then mark all the apps
 			 * involved to ensure updating the button state */
-			if (flatpak_transaction_operation_get_operation_type (op) ==
-					FLATPAK_TRANSACTION_OPERATION_UPDATE)
+			if (flatpak_transaction_operation_get_operation_type (op) == FLATPAK_TRANSACTION_OPERATION_UPDATE) {
+				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+				    gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+					gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
+
 				gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+			}
 		}
 
 #if FLATPAK_CHECK_VERSION(1, 7, 3)
@@ -516,7 +520,8 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UPDATE:
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		    gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		break;

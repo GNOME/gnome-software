@@ -34,6 +34,7 @@
 #define SHOW_NR_REVIEWS_INITIAL		4
 
 static void gs_details_page_refresh_all (GsDetailsPage *self);
+static void gs_details_page_refresh_buttons (GsDetailsPage *self);
 
 typedef enum {
 	GS_DETAILS_PAGE_STATE_LOADING,
@@ -797,6 +798,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GtkWidget *origin_button_label;
 	GtkWidget *origin_popover_list_box;
 	g_autofree gchar *origin_ui = NULL;
+	gboolean instance_changed = FALSE;
 
 	origin_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_box"));
 	origin_button_label = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_button_label"));
@@ -835,8 +837,20 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 		GtkWidget *row = gs_origin_popover_row_new (app);
 		gtk_widget_show (row);
-		if (app == self->app)
+		if (app == self->app || (
+		    gs_app_get_bundle_kind (app) == gs_app_get_bundle_kind (self->app) &&
+		    gs_app_get_scope (app) == gs_app_get_scope (self->app) &&
+		    g_strcmp0 (gs_app_get_origin (app), gs_app_get_origin (self->app)) == 0 &&
+		    g_strcmp0 (gs_app_get_branch (app), gs_app_get_branch (self->app)) == 0 &&
+		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0)) {
+			/* This can happen on reload of the page */
+			if (app != self->app) {
+				g_clear_object (&self->app);
+				self->app = g_object_ref (app);
+				instance_changed = TRUE;
+			}
 			gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (row), TRUE);
+		}
 		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
 		                                      self->size_group_origin_popover);
 		gtk_container_add (GTK_CONTAINER (origin_popover_list_box), row);
@@ -849,6 +863,10 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gtk_label_set_text (GTK_LABEL (origin_button_label), "");
 
 	gtk_widget_show (origin_box);
+
+	/* The other parts of the app are the same, only the state/buttons could change */
+	if (instance_changed)
+		gs_details_page_refresh_buttons (self);
 }
 
 static gboolean
