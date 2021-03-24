@@ -181,6 +181,31 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			 * e.g. a security database or a default power value */
 			return g_strdup_printf (_("%s Configuration Update"), name);
 		}
+		if (g_strcmp0 (cat, "X-Battery") == 0) {
+			/* TRANSLATORS: battery refers to the system power source */
+			return g_strdup_printf (_("%s Battery Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Camera") == 0) {
+			/* TRANSLATORS: camera can refer to the laptop internal
+			 * camera in the bezel or external USB webcam */
+			return g_strdup_printf (_("%s Camera Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-TPM") == 0) {
+			/* TRANSLATORS: TPM refers to a Trusted Platform Module */
+			return g_strdup_printf (_("%s TPM Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Touchpad") == 0) {
+			/* TRANSLATORS: TouchPad refers to a flat input device */
+			return g_strdup_printf (_("%s Touchpad Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Mouse") == 0) {
+			/* TRANSLATORS: Mouse refers to a handheld input device */
+			return g_strdup_printf (_("%s Mouse Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Keyboard") == 0) {
+			/* TRANSLATORS: Keyboard refers to an input device for typing */
+			return g_strdup_printf (_("%s Keyboard Update"), name);
+		}
 	}
 #endif
 
