@@ -262,7 +262,7 @@ gs_page_install_app (GsPage *page,
 	helper->interaction = interaction;
 
 	plugin_job = gs_plugin_job_newv (helper->action,
-					 "interactive", TRUE,
+					 "interactive", (interaction == GS_SHELL_INTERACTION_FULL),
 					 "app", helper->app,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
