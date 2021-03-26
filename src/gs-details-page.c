@@ -785,6 +785,47 @@ gs_details_page_refresh_size (GsDetailsPage *self)
 	}
 }
 
+static gboolean
+app_origin_equal (GsApp *a,
+                  GsApp *b)
+{
+	g_autofree gchar *a_origin_ui = NULL, *b_origin_ui = NULL;
+	GFile *a_local_file, *b_local_file;
+
+	a_origin_ui = gs_app_get_origin_ui (a);
+	b_origin_ui = gs_app_get_origin_ui (b);
+
+	a_local_file = gs_app_get_local_file (a);
+	b_local_file = gs_app_get_local_file (b);
+
+	/* Compare all the fields used in GsOriginPopoverRow. */
+	if (g_strcmp0 (a_origin_ui, b_origin_ui) != 0)
+		return FALSE;
+
+	if (!((a_local_file == NULL && b_local_file == NULL) ||
+	      (a_local_file != NULL && b_local_file != NULL &&
+	       g_file_equal (a_local_file, b_local_file))))
+		return FALSE;
+
+	if (g_strcmp0 (gs_app_get_origin_hostname (a),
+		       gs_app_get_origin_hostname (b)) != 0)
+		return FALSE;
+
+	if (gs_app_get_bundle_kind (a) != gs_app_get_bundle_kind (b))
+		return FALSE;
+
+	if (gs_app_get_scope (a) != gs_app_get_scope (b))
+		return FALSE;
+
+	if (g_strcmp0 (gs_app_get_branch (a), gs_app_get_branch (b)) != 0)
+		return FALSE;
+
+	if (g_strcmp0 (gs_app_get_version (a), gs_app_get_version (b)) != 0)
+		return FALSE;
+
+	return TRUE;
+}
+
 static void
 gs_details_page_get_alternates_cb (GObject *source_object,
                                    GAsyncResult *res,
@@ -820,6 +861,27 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 			g_warning ("failed to get alternates: %s", error->message);
 		gtk_widget_hide (origin_box);
 		return;
+	}
+
+	/* deduplicate the list; duplicates can get in the list if
+	 * get_alternates() returns the old/new version of a renamed app, which
+	 * happens to come from the same origin; see
+	 * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1192
+	 *
+	 * This nested loop is OK as the origin list is normally only 2 or 3
+	 * items long. */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *i_app = gs_app_list_index (list, i);
+
+		for (guint j = i + 1; j < gs_app_list_length (list);) {
+			GsApp *j_app = gs_app_list_index (list, j);
+
+			if (app_origin_equal (i_app, j_app)) {
+				gs_app_list_remove (list, j_app);
+			} else {
+				j++;
+			}
+		}
 	}
 
 	/* add the local file to the list so that we can carry it over when
