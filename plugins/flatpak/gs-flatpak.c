@@ -255,7 +255,10 @@ perms_from_metadata (GKeyFile *keyfile)
 }
 
 static void
-gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalledRef *xref)
+gs_flatpak_set_update_permissions (GsFlatpak           *self,
+                                   GsApp               *app,
+                                   FlatpakInstalledRef *xref,
+                                   GCancellable        *cancellable)
 {
 	g_autoptr(GBytes) old_bytes = NULL;
 	g_autoptr(GKeyFile) old_keyfile = NULL;
@@ -274,7 +277,7 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 	bytes = flatpak_installation_fetch_remote_metadata_sync (self->installation,
 	                                                         gs_app_get_origin (app),
 	                                                         FLATPAK_REF (xref),
-	                                                         NULL,
+	                                                         cancellable,
 	                                                         &error_local);
 	if (bytes == NULL) {
 		g_debug ("Failed to get metadata for remote ‘%s’: %s",
@@ -1701,7 +1704,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 				}
 			}
 		}
-		gs_flatpak_set_update_permissions (self, main_app, xref);
+		gs_flatpak_set_update_permissions (self, main_app, xref, cancellable);
 		gs_app_list_add (list, main_app);
 	}
 
