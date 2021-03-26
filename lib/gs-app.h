@@ -12,6 +12,7 @@
 #include <glib-object.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <libsoup/soup.h>
 #include <appstream.h>
 
 G_BEGIN_DECLS
@@ -471,5 +472,9 @@ void		 gs_app_set_update_permissions	(GsApp		*app,
 GPtrArray	*gs_app_get_version_history	(GsApp		*app);
 void		 gs_app_set_version_history	(GsApp		*app,
 						 GPtrArray	*version_history);
+void		gs_app_ensure_icons_downloaded	(GsApp		*app,
+						 SoupSession	*soup_session,
+						 guint		 maximum_icon_size,
+						 GCancellable	*cancellable);
 
 G_END_DECLS
