@@ -414,9 +414,10 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 			}
 		}
 
-		if (kind == AS_PROVIDED_KIND_UNKNOWN) {
+		if (kind == AS_PROVIDED_KIND_UNKNOWN ||
+		    xb_node_get_text (provide) == NULL) {
 			/* give up */
-			g_warning ("ignoring unknown provided item type: %s", element_name);
+			g_warning ("ignoring unknown or empty provided item type: %s", element_name);
 			continue;
 		}
 
