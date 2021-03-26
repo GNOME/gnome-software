@@ -48,6 +48,7 @@
 #include "gs-key-colors.h"
 #include "gs-os-release.h"
 #include "gs-plugin.h"
+#include "gs-remote-icon.h"
 #include "gs-utils.h"
 
 typedef struct
@@ -5356,4 +5357,55 @@ gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
 	g_return_if_fail (version_history != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
 	_g_set_ptr_array (&priv->version_history, version_history);
+}
+
+/**
+ * gs_app_ensure_icons_downloaded:
+ * @app: a #GsApp
+ * @soup_session: a #SoupSession
+ * @maximum_icon_size: maximum icon size
+ * @cancellable: (nullable): optional #GCancellable object
+ *
+ * Ensure all remote icons in the @app's icons are locally cached.
+ *
+ * Since: 41
+ **/
+void
+gs_app_ensure_icons_downloaded (GsApp *app,
+				SoupSession *soup_session,
+				guint maximum_icon_size,
+				GCancellable *cancellable)
+{
+	GsAppPrivate *priv;
+	g_autoptr(GMutexLocker) locker = NULL;
+	GPtrArray *icons;
+	guint i;
+
+	g_return_if_fail (GS_IS_APP (app));
+
+	priv = gs_app_get_instance_private (app);
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	/* process all icons */
+	icons = priv->icons;
+
+	for (i = 0; icons != NULL && i < icons->len; i++) {
+		GIcon *icon = g_ptr_array_index (icons, i);
+		g_autoptr(GError) error_local = NULL;
+
+		/* Only remote icons need to be cached. */
+		if (!GS_IS_REMOTE_ICON (icon))
+			continue;
+
+		if (!gs_remote_icon_ensure_cached (GS_REMOTE_ICON (icon),
+						   soup_session,
+						   maximum_icon_size,
+						   cancellable,
+						   &error_local)) {
+			/* we failed, but keep going */
+			g_debug ("failed to cache icon for %s: %s",
+				 gs_app_get_id (app),
+				 error_local->message);
+		}
+	}
 }
