@@ -5364,7 +5364,7 @@ gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
  * @app: a #GsApp
  * @soup_session: a #SoupSession
  * @maximum_icon_size: maximum icon size
- * @cancellable: optional #GCancellable object
+ * @cancellable: (nullable): optional #GCancellable object
  *
  * Ensure all remote icons in the @app's icons are locally cached.
  *
