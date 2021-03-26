@@ -45,8 +45,6 @@ refine_app (GsPlugin             *plugin,
 	    GCancellable         *cancellable,
 	    GError              **error)
 {
-	GPtrArray *icons;
-	guint i;
 	SoupSession *soup_session;
 	guint maximum_icon_size;
 
@@ -59,27 +57,7 @@ refine_app (GsPlugin             *plugin,
 	/* Currently a 160px icon is needed for #GsFeatureTile, at most. */
 	maximum_icon_size = 160 * gs_plugin_get_scale (plugin);
 
-	/* process all icons */
-	icons = gs_app_get_icons (app);
-	for (i = 0; icons != NULL && i < icons->len; i++) {
-		GIcon *icon = g_ptr_array_index (icons, i);
-		g_autoptr(GError) error_local = NULL;
-
-		/* Only remote icons need to be cached. */
-		if (!GS_IS_REMOTE_ICON (icon))
-			continue;
-
-		if (!gs_remote_icon_ensure_cached (GS_REMOTE_ICON (icon),
-						   soup_session,
-						   maximum_icon_size,
-						   cancellable,
-						   &error_local)) {
-			/* we failed, but keep going */
-			g_debug ("failed to cache icon for %s: %s",
-				 gs_app_get_id (app),
-				 error_local->message);
-		}
-	}
+	gs_app_ensure_icons_downloaded (app, soup_session, maximum_icon_size, cancellable);
 
 	return TRUE;
 }
