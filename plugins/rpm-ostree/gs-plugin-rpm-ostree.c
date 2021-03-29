@@ -565,7 +565,7 @@ make_rpmostree_modifiers_variant (const char *install_package,
 	if (install_package != NULL) {
 		g_autoptr(GPtrArray) repo_pkgs = g_ptr_array_new ();
 
-		g_ptr_array_add (repo_pkgs, install_package);
+		g_ptr_array_add (repo_pkgs, (gpointer) install_package);
 
 		g_variant_dict_insert_value (&dict, "install-packages",
 		                             g_variant_new_strv ((const char *const*)repo_pkgs->pdata,
@@ -576,7 +576,7 @@ make_rpmostree_modifiers_variant (const char *install_package,
 	if (uninstall_package != NULL) {
 		g_autoptr(GPtrArray) repo_pkgs = g_ptr_array_new ();
 
-		g_ptr_array_add (repo_pkgs, uninstall_package);
+		g_ptr_array_add (repo_pkgs, (gpointer) uninstall_package);
 
 		g_variant_dict_insert_value (&dict, "uninstall-packages",
 		                             g_variant_new_strv ((const char *const*)repo_pkgs->pdata,
