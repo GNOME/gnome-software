@@ -90,7 +90,7 @@ show_relative_page (GsFeaturedCarousel *self,
 	/* Don’t animate if we’re wrapping from the last page back to the first,
 	 * as it means rapidly spooling through all the pages, which looks
 	 * confusing. */
-	if (new_page == 0.0)
+	if (new_page == 0.0 && delta > 0)
 		animation_duration_ms = 0;
 
 	hdy_carousel_scroll_to_full (self->carousel, new_page_widget, animation_duration_ms);
