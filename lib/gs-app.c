@@ -2558,7 +2558,9 @@ const gchar *
 gs_app_get_launchable (GsApp *app, AsLaunchableKind kind)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
 	return g_hash_table_lookup (priv->launchables,
 				    as_launchable_kind_to_string (kind));
 }
@@ -2577,12 +2579,21 @@ void
 gs_app_set_launchable (GsApp *app, AsLaunchableKind kind, const gchar *launchable)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	gpointer current_value = NULL;
+	const gchar *key;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_hash_table_insert (priv->launchables,
-			     g_strdup (as_launchable_kind_to_string (kind)),
-			     g_strdup (launchable));
+	key = as_launchable_kind_to_string (kind);
+	if (g_hash_table_lookup_extended (priv->launchables, key, NULL, &current_value)) {
+		if (g_strcmp0 ((const gchar *) current_value, launchable) != 0)
+			g_debug ("Preventing app '%s' replace of %s's launchable '%s' with '%s'",
+				 priv->name, key, (const gchar *) current_value, launchable);
+	} else {
+		g_hash_table_insert (priv->launchables,
+				     (gpointer) as_launchable_kind_to_string (kind),
+				     g_strdup (launchable));
+	}
 }
 
 /**
@@ -5021,7 +5032,7 @@ gs_app_init (GsApp *app)
 	                                    g_free);
 	priv->launchables = g_hash_table_new_full (g_str_hash,
 	                                           g_str_equal,
-	                                           g_free,
+	                                           NULL,
 	                                           g_free);
 	priv->allow_cancel = TRUE;
 	g_mutex_init (&priv->mutex);
