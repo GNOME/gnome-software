@@ -2587,7 +2587,7 @@ gs_app_set_launchable (GsApp *app, AsLaunchableKind kind, const gchar *launchabl
 	if (g_hash_table_lookup_extended (priv->launchables, key, NULL, &current_value)) {
 		if (g_strcmp0 ((const gchar *) current_value, launchable) != 0)
 			g_debug ("Preventing app '%s' replace of %s's launchable '%s' with '%s'",
-				priv->name, key, (const gchar *) current_value, launchable);
+				 priv->name, key, (const gchar *) current_value, launchable);
 	} else {
 		g_hash_table_insert (priv->launchables,
 				     (gpointer) as_launchable_kind_to_string (kind),
