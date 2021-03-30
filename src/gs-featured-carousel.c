@@ -87,10 +87,10 @@ show_relative_page (GsFeaturedCarousel *self,
 	new_page_widget = g_list_nth_data (children, new_page);
 	g_assert (new_page_widget != NULL);
 
-	/* Don’t animate if we’re wrapping from the last page back to the first,
-	 * as it means rapidly spooling through all the pages, which looks
-	 * confusing. */
-	if (new_page == 0.0)
+	/* Don’t animate if we’re wrapping from the last page back to the first
+     * or from the first page to the last going backwards as it means rapidly
+     * spooling through all the pages, which looks confusing. */
+	if ((new_page == 0.0 && delta > 0) || (new_page == n_pages - 1 && delta < 0))
 		animation_duration_ms = 0;
 
 	hdy_carousel_scroll_to_full (self->carousel, new_page_widget, animation_duration_ms);
