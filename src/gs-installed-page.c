@@ -408,21 +408,33 @@ gs_installed_page_sort_func (GtkListBoxRow *a,
 }
 
 typedef enum {
+	GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING,
 	GS_UPDATE_LIST_SECTION_REMOVABLE_APPS,
 	GS_UPDATE_LIST_SECTION_SYSTEM_APPS,
 	GS_UPDATE_LIST_SECTION_ADDONS,
 	GS_UPDATE_LIST_SECTION_LAST
 } GsInstalledPageSection;
 
+/* This must mostly mirror gs_installed_page_get_app_sort_key() otherwise apps
+ * will end up sorted into a section they don’t belong in. */
 static GsInstalledPageSection
 gs_installed_page_get_app_section (GsApp *app)
 {
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP ||
-	    gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
+	GsAppState state = gs_app_get_state (app);
+	AsComponentKind kind = gs_app_get_kind (app);
+
+	if (state == GS_APP_STATE_INSTALLING ||
+	    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
+	    state == GS_APP_STATE_REMOVING)
+		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
+
+	if (kind == AS_COMPONENT_KIND_DESKTOP_APP ||
+	    kind == AS_COMPONENT_KIND_WEB_APP) {
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
 			return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
 		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
 	}
+
 	return GS_UPDATE_LIST_SECTION_ADDONS;
 }
 
@@ -431,14 +443,30 @@ gs_installed_page_get_section_header (GsInstalledPageSection section)
 {
 	GtkWidget *header = NULL;
 
-	if (section == GS_UPDATE_LIST_SECTION_SYSTEM_APPS) {
+	switch (section) {
+	case GS_UPDATE_LIST_SECTION_SYSTEM_APPS:
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the system ones */
 		header = gtk_label_new (_("System Applications"));
-	} else if (section == GS_UPDATE_LIST_SECTION_ADDONS) {
+		break;
+	case GS_UPDATE_LIST_SECTION_ADDONS:
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
+		break;
+	case GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING:
+		/* TRANSLATORS: This is the header dividing the normal
+		 * installed applications and the applications which are
+		 * currently being installed or removed. */
+		header = gtk_label_new (_("In Progress"));
+		break;
+	case GS_UPDATE_LIST_SECTION_REMOVABLE_APPS:
+		/* TRANSLATORS: This is the header above normal installed
+		 * applications on the installed page. */
+		header = gtk_label_new (_("Applications"));
+		break;
+	default:
+		g_assert_not_reached ();
 	}
 
 	/* fix header style */
@@ -457,9 +485,13 @@ gs_installed_page_list_header_func (GtkListBoxRow *row,
                                     gpointer user_data)
 {
 	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
-	GsInstalledPageSection before_section = GS_UPDATE_LIST_SECTION_LAST;
 	GsInstalledPageSection section;
-	GtkWidget *header;
+	GtkWidget *header = NULL;
+
+	/* Don’t show a header if the REMOVABLE_APPS section is listed first,
+	 * as it looks redundant. (But do show a header if another section is
+	 * listed first.) */
+	GsInstalledPageSection before_section = GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
 
 	/* first entry */
 	gtk_list_box_row_set_header (row, NULL);
@@ -474,7 +506,7 @@ gs_installed_page_list_header_func (GtkListBoxRow *row,
 		header = gs_installed_page_get_section_header (section);
 		if (header == NULL)
 			return;
-	} else {
+	} else if (before != NULL) {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	}
 	gtk_list_box_row_set_header (row, header);
