@@ -3767,10 +3767,12 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-		helper->timeout_id =
-			g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
-					       gs_plugin_loader_job_timeout_cb,
-					       helper);
+		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
+			helper->timeout_id =
+				g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
+						       gs_plugin_loader_job_timeout_cb,
+						       helper);
+		}
 		break;
 	default:
 		break;

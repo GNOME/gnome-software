@@ -252,7 +252,7 @@ gs_search_page_load (GsSearchPage *self)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", self->value,
 					 "max-results", self->max_results,
-					 "timeout", 10,
+					 "timeout", 0, /* This is a user action, let it take as long as it needs to */
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
@@ -371,6 +371,15 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 }
 
 static void
+gs_search_page_switch_from (GsPage *page)
+{
+	GsSearchPage *self = GS_SEARCH_PAGE (page);
+
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
+}
+
+static void
 gs_search_page_list_header_func (GtkListBoxRow *row,
                                  GtkListBoxRow *before,
                                  gpointer user_data)
@@ -484,6 +493,7 @@ gs_search_page_class_init (GsSearchPageClass *klass)
 	page_class->app_installed = gs_search_page_app_installed;
 	page_class->app_removed = gs_search_page_app_removed;
 	page_class->switch_to = gs_search_page_switch_to;
+	page_class->switch_from = gs_search_page_switch_from;
 	page_class->reload = gs_search_page_reload;
 	page_class->setup = gs_search_page_setup;
 
