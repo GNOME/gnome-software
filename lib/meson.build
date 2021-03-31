@@ -92,6 +92,7 @@ libgnomesoftware = library(
     'gs-test.c',
     'gs-utils.c',
   ] + libgnomesoftware_enums + [gs_build_ident_h],
+  soversion: gs_plugin_api_version,
   include_directories : libgnomesoftware_include_directories,
   dependencies : librarydeps,
   c_args : cargs,
