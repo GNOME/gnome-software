@@ -648,28 +648,49 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 #define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
 #define RPMOSTREE_DIR_CACHE_SOLV "solv"
 
-static gboolean
-ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static DnfContext *
+create_bare_rpmostree_dnf_context (GCancellable *cancellable,
+				   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *transaction_address = NULL;
-	g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(DnfContext) context = dnf_context_new ();
-	g_autoptr(DnfState) state = dnf_state_new ();
-	g_autoptr(GVariant) options = NULL;
-	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
-
-	if (priv->dnf_context != NULL)
-		return TRUE;
-
-	tp->app = g_object_ref (progress_app);
-	tp->plugin = g_object_ref (plugin);
 
 	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
 	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
 	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
 	dnf_context_set_cache_age (context, G_MAXUINT);
 	dnf_context_set_enable_filelists (context, FALSE);
+
+	if (!dnf_context_setup (context, cancellable, error)) {
+		gs_rpmostree_error_convert (error);
+		return NULL;
+	}
+
+	return g_steal_pointer (&context);
+}
+
+static gboolean
+ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(DnfContext) context = NULL;
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GsApp) progress_app = NULL;
+	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = NULL;
+	g_autoptr(DnfState) state = NULL;
+
+	if (priv->dnf_context != NULL)
+		return TRUE;
+
+	context = create_bare_rpmostree_dnf_context (cancellable, error);
+	if (!context)
+		return FALSE;
+
+	progress_app = gs_app_new (gs_plugin_get_name (plugin));
+	tp = transaction_progress_new ();
+
+	tp->app = g_object_ref (progress_app);
+	tp->plugin = g_object_ref (plugin);
 
 	options = make_refresh_md_options_variant (FALSE /* force */);
 	if (!gs_rpmostree_os_call_refresh_md_sync (priv->os_proxy,
@@ -690,10 +711,7 @@ ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GErro
 		return FALSE;
 	}
 
-	if (!dnf_context_setup (context, cancellable, error)) {
-		gs_rpmostree_error_convert (error);
-		return FALSE;
-	}
+	state = dnf_state_new ();
 
 	if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
 		gs_rpmostree_error_convert (error);
@@ -1814,14 +1832,18 @@ gs_plugin_add_sources (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(DnfContext) dnf_context = NULL;
 	GPtrArray *repos;
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
-	if (priv->dnf_context == NULL)
-		return TRUE;
+	dnf_context = create_bare_rpmostree_dnf_context (cancellable, error);
+	if (!dnf_context) {
+		gs_rpmostree_error_convert (error);
+		return FALSE;
+	}
 
-	repos = dnf_context_get_repos (priv->dnf_context);
+	repos = dnf_context_get_repos (dnf_context);
 	if (repos == NULL)
 		return TRUE;
 
