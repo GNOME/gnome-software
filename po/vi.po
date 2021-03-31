@@ -1,16 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Bản dịch tiếng Việt dành cho gói gnome-software.
 # This file is distributed under the same license as the gnome-software package.
-#
 # Translators:
 # Roddy Shuler <roddy@endlessm.com>, 2016-2017
-# Trần Ngọc Quân <vnwildman@gmail.com>, 2020-2021
+# Trần Ngọc Quân <vnwildman@gmail.com>, 2020-2021.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-03-22 21:42+0000\n"
-"PO-Revision-Date: 2021-03-24 13:44+0700\n"
+"POT-Creation-Date: 2021-03-30 19:17+0000\n"
+"PO-Revision-Date: 2021-03-31 08:23+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Nhóm Việt hóa GNOME <gnome-vi-list@gnome.org>\n"
 "Language: vi\n"
@@ -349,7 +348,7 @@ msgstr "_Khám phá"
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gnome-software.ui:120
 msgid "_Installed"
-msgstr "_Đã cài đặt"
+msgstr "Đã cà_i đặt"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gnome-software.ui:160
@@ -379,7 +378,7 @@ msgstr "Kiểm nghiệm ổ đĩa"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:394 src/gs-updates-page.c:838
+#: src/gnome-software.ui:394 src/gs-updates-page.c:839
 msgid "Network Settings"
 msgstr "Cài đặt Mạng"
 
@@ -402,19 +401,19 @@ msgstr "Tự động cập nhật bị tạm dừng"
 msgid "Find Out _More"
 msgstr "Tì_m thêm nữa"
 
-#: lib/gs-app.c:5161
+#: lib/gs-app.c:5173
 msgid "Local file"
 msgstr "Tập tin nội bộ"
 
 #. TRANSLATORS: the first %s is replaced with an origin name;
 #. the second %s is replaced with the packaging format.
 #. Example string: "Local file (RPM)"
-#: lib/gs-app.c:5177
+#: lib/gs-app.c:5189
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5245
+#: lib/gs-app.c:5257
 msgid "Package"
 msgstr "Gói"
 
@@ -431,7 +430,7 @@ msgstr "Đã cài đặt"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:364
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:365
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Đang cài đặt"
@@ -444,10 +443,10 @@ msgid "Removing"
 msgstr "Đang xóa"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:989
+#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:1007
 #: src/gs-details-page.ui:202
 msgid "_Uninstall"
-msgstr "_Hủy cài đặt"
+msgstr "_Gỡ bỏ cài đặt"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:480
 msgid "Version History"
@@ -475,53 +474,53 @@ msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:136
+#: src/gs-application.c:137
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Chế độ khởi chạy: \"bản cập nhật\", \"đã cập nhật\", \"đã cài đặt\" hoặc "
 "\"tổng quan\""
 
-#: src/gs-application.c:136
+#: src/gs-application.c:137
 msgid "MODE"
 msgstr "CHẾ_ĐỘ"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:139
 msgid "Search for applications"
 msgstr "Tìm kiếm các ứng dụng"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:139
 msgid "SEARCH"
 msgstr "TÌM_KIẾM"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:141
 msgid "Show application details (using application ID)"
 msgstr "Hiển thị chi tiết ứng dụng (sử dụng ID ứng dụng)"
 
-#: src/gs-application.c:140 src/gs-application.c:144
+#: src/gs-application.c:141 src/gs-application.c:145
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:143
 msgid "Show application details (using package name)"
 msgstr "Hiển thị thông tin chi tiết về ứng dụng (sử dụng tên gói)"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:143
 msgid "PKGNAME"
 msgstr "TÊN_GÓI"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:145
 msgid "Install the application (using application ID)"
 msgstr "Cài đặt ứng dụng (sử dụng ID ứng dụng)"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:147
 msgid "Open a local package file"
 msgstr "Mở một tập tin package trong hệ thống"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:147
 msgid "FILENAME"
 msgstr "TÊN_TẬP_TIN"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:149
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -529,47 +528,47 @@ msgstr ""
 "Kiểu tương tác cần có cho hành động này: có thể là \"không\", \"thông báo\" "
 "hoặc \"đầy đủ\""
 
-#: src/gs-application.c:151
+#: src/gs-application.c:152
 msgid "Show verbose debugging information"
 msgstr "Hiển thị thông tin gỡ rối chi tiết"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:154
 msgid "Installs any pending updates in the background"
 msgstr "Cài đặt bất kỳ bản cập nhật đang chờ xử lý nào trong nền"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:156
 msgid "Show update preferences"
 msgstr "Hiển thị tuỳ thích cập nhật phần mềm"
 
-#: src/gs-application.c:157
+#: src/gs-application.c:158
 msgid "Quit the running instance"
 msgstr "Thoát tiến trình đang chạy"
 
-#: src/gs-application.c:159
+#: src/gs-application.c:160
 msgid "Prefer local file sources to AppStream"
 msgstr "Thích nguồn tập tin cục bộ hơn là AppStream"
 
-#: src/gs-application.c:161
+#: src/gs-application.c:162
 msgid "Show version number"
 msgstr "Hiển thị số phiên bản"
 
-#: src/gs-application.c:354
+#: src/gs-application.c:355
 msgid "translator-credits"
 msgstr "Nhóm Việt hóa GNOME <gnome-vi-list@gnome.org>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:359 src/gs-shell.c:2136
+#: src/gs-application.c:360 src/gs-shell.c:2136
 msgid "About Software"
 msgstr "Giới thiệu Phần mềm"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:362
+#: src/gs-application.c:363
 msgid "A nice way to manage the software on your system."
 msgstr "Một cách hay để quản lý phần mềm trên hệ thống của bạn."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:590
+#: src/gs-application.c:591
 msgid "Sorry! There are no details for that application."
 msgstr "Rất tiếc! Không có bất cứ thông tin nào cho ứng dụng đó."
 
@@ -577,7 +576,7 @@ msgstr "Rất tiếc! Không có bất cứ thông tin nào cho ứng dụng đ�
 #. * allows the application to be easily installed
 #: src/gs-app-row.c:127
 msgid "Visit website"
-msgstr "Truy cập website"
+msgstr "Truy cập trang thông tin điện tử"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
@@ -740,7 +739,7 @@ msgstr "Nổi bật"
 #: lib/gs-desktop-data.c:23
 msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
-msgstr "Tạo & Chỉnh sửa Audio"
+msgstr "Tạo & Chỉnh sửa Âm thanh"
 
 #: lib/gs-desktop-data.c:29
 msgctxt "Menu of Audio & Video"
@@ -840,7 +839,7 @@ msgstr "Hình khối"
 #: lib/gs-desktop-data.c:113
 msgctxt "Menu of Games"
 msgid "Board"
-msgstr "Bảng"
+msgstr "Bàn"
 
 #: lib/gs-desktop-data.c:116
 msgctxt "Menu of Games"
@@ -950,7 +949,7 @@ msgstr "Kiểu chữ"
 #: lib/gs-desktop-data.c:198
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
-msgstr "Bộ mã hóa-giải mã"
+msgstr "Bộ mã hóa và giải mã"
 
 #: lib/gs-desktop-data.c:201
 msgctxt "Menu of Add-ons"
@@ -960,7 +959,7 @@ msgstr "Nguồn nhập liệu"
 #: lib/gs-desktop-data.c:204
 msgctxt "Menu of Add-ons"
 msgid "Language Packs"
-msgstr "Các gói Ngôn ngữ"
+msgstr "Các gói ngôn ngữ"
 
 #: lib/gs-desktop-data.c:207
 msgctxt "Menu of Add-ons"
@@ -970,7 +969,7 @@ msgstr "Bản địa hóa"
 #: lib/gs-desktop-data.c:210
 msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
-msgstr "Driver Phần cứng"
+msgstr "Trình điều khiển Phần cứng"
 
 #: lib/gs-desktop-data.c:218
 msgctxt "Menu of Communication & News"
@@ -1101,7 +1100,7 @@ msgstr "Năng suất"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #: lib/gs-desktop-data.c:315 src/gs-details-page.ui:410
-#: src/gs-installed-page.c:441
+#: src/gs-installed-page.c:455
 msgid "Add-ons"
 msgstr "Tiện ích bổ sung"
 
@@ -1364,24 +1363,24 @@ msgstr "_Tìm hiểu thêm"
 msgid "_Read Less"
 msgstr "Đọc ít _hơn"
 
-#: src/gs-details-page.c:359
+#: src/gs-details-page.c:360
 msgid "Removing…"
 msgstr "Đang xóa…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:379
 msgid "Pending installation…"
 msgstr "Cài đặt đang chờ…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:386
 msgid "Pending update…"
 msgstr "Cập nhật đang chờ…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:399
+#: src/gs-details-page.c:400
 msgid "Preparing…"
 msgstr "Đang chuẩn bị…"
 
@@ -1391,7 +1390,7 @@ msgstr "Đang chuẩn bị…"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:906 src/gs-details-page.c:923
+#: src/gs-details-page.c:924 src/gs-details-page.c:941
 #: src/gs-details-page.ui:177 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
@@ -1404,103 +1403,103 @@ msgstr "_Cài đặt"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:937 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:955 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Cài đặt…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:965
+#: src/gs-details-page.c:983
 msgid "_Launch"
 msgstr "_Khởi chạy"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1038 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Mạng"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1038 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Không thể liên lạc qua mạng"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1039 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Dịch vụ Hệ thống"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1039 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Có thể truy cập các dịch vụ D-Bus trên bus hệ thống"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1040 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Dịch vụ phiên làm việc"
 
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1040 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Có thể truy cập các dịch vụ D-Bus trên bus phiên làm việc"
 
-#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1041 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Thiết bị"
 
-#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1041 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Không thể truy cập các tập tin thiết bị hệ thống"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
+#: src/gs-details-page.c:1042 src/gs-details-page.c:1043
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Thư mục cá nhân (HOME)"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1042 src/gs-details-page.c:1044
+#: src/gs-details-page.c:1046 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "Có thể xem, sửa và tạo các tập tin"
 
-#: src/gs-details-page.c:1025 src/gs-details-page.c:1027
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1043 src/gs-details-page.c:1045
+#: src/gs-details-page.c:1047 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Có thể xem các tập tin"
 
-#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1044 src/gs-details-page.c:1045
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "Hệ thống tập tin"
 
-#: src/gs-details-page.c:1028 src/gs-details-page.c:1029
+#: src/gs-details-page.c:1046 src/gs-details-page.c:1047
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Thư mục tải về"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1048 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Các cài đặt"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1048 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Có thể xem và thay đổi bất kỳ cài đặt nào"
 
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1049 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Hệ thống màn hình cũ"
 
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1049 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Dùng một hệ thống hiển thị cũ và thiếu an toàn"
 
-#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1050 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Thoát khỏi sandbox"
 
-#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1050 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Có thể thoát khỏi sandbox và phá vỡ bất kỳ hạn chế nào khác"
 
-#: src/gs-details-page.c:1047
+#: src/gs-details-page.c:1065
 msgid "This application is fully sandboxed."
 msgstr "Ứng dụng này được sandbox đầy đủ."
 
-#: src/gs-details-page.c:1055
+#: src/gs-details-page.c:1073
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1509,90 +1508,90 @@ msgstr ""
 "là điển hình cho các ứng dụng cũ."
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1250
+#: src/gs-details-page.c:1268
 msgctxt "updated"
 msgid "Never"
-msgstr "Không bao giờ"
+msgstr "Chưa bao giờ"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1303
+#: src/gs-details-page.c:1321
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Không rõ"
 
-#: src/gs-details-page.c:1356
+#: src/gs-details-page.c:1374
 msgctxt "App permissions"
 msgid "None"
 msgstr "Không"
 
-#: src/gs-details-page.c:1358
+#: src/gs-details-page.c:1376
 msgctxt "App permissions"
 msgid "Low"
 msgstr "Thấp"
 
-#: src/gs-details-page.c:1360
+#: src/gs-details-page.c:1378
 msgctxt "App permissions"
 msgid "Medium"
 msgstr "Trung bình"
 
-#: src/gs-details-page.c:1362
+#: src/gs-details-page.c:1380
 msgctxt "App permissions"
 msgid "High"
 msgstr "Cao"
 
-#: src/gs-details-page.c:1364
+#: src/gs-details-page.c:1382
 msgctxt "App permissions"
 msgid "Unknown"
 msgstr "Không rõ"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1728
+#: src/gs-details-page.c:1746
 msgid "You need internet access to write a review"
 msgstr "Bạn cần truy cập internet để viết bình luận"
 
-#: src/gs-details-page.c:1928 src/gs-details-page.c:1944
+#: src/gs-details-page.c:1946 src/gs-details-page.c:1962
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Không tìm thấy “%s”"
 
-#: src/gs-details-page.c:2010 src/gs-details-page.c:2045
+#: src/gs-details-page.c:2028 src/gs-details-page.c:2063
 msgid "Loading…"
 msgstr "Đang tải…"
 
-#: src/gs-details-page.c:2483
+#: src/gs-details-page.c:2501
 msgid "The application contains no age-inappropriate content."
 msgstr "Ứng dụng có chứa nội dung không phù hợp với lứa tuổi."
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2592
+#: src/gs-details-page.c:2610
 msgid "Public domain"
 msgstr "Phạm vi công cộng"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2595
+#: src/gs-details-page.c:2613
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2602
+#: src/gs-details-page.c:2620
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2612 src/gs-details-page.ui:1285
+#: src/gs-details-page.c:2630 src/gs-details-page.ui:1285
 msgid "Free Software"
 msgstr "Phần mềm Tự do"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2669
+#: src/gs-details-page.c:2687
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Người dùng bị ràng buộc trong các quyền sử dụng sau đây:"
 
-#: src/gs-details-page.c:2696 src/gs-details-page.ui:1357
+#: src/gs-details-page.c:2714 src/gs-details-page.ui:1357
 msgid "More information"
 msgstr "Thêm thông tin"
 
@@ -2044,7 +2043,7 @@ msgstr "Chào mừng"
 
 #: src/gs-first-run-dialog.ui:43
 msgid "Welcome to Software"
-msgstr "Chào mừng đến Phần mềm"
+msgstr "Chào mừng bạn dùng Phần mềm"
 
 #: src/gs-first-run-dialog.ui:53
 msgid ""
@@ -2095,9 +2094,22 @@ msgstr "Lịch sử"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:437
+#: src/gs-installed-page.c:450
 msgid "System Applications"
 msgstr "Ứng dụng Hệ thống"
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * installed applications and the applications which are
+#. * currently being installed or removed.
+#: src/gs-installed-page.c:461
+msgid "In Progress"
+msgstr "Đang tiến hành"
+
+#. TRANSLATORS: This is the header above normal installed
+#. * applications on the installed page.
+#: src/gs-installed-page.c:466
+msgid "Applications"
+msgstr "Ứng dụng"
 
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
@@ -2207,7 +2219,7 @@ msgstr "Ứng dụng Đồ họa được Đề xuất"
 #. * have been featured ('recommended') by the distribution
 #: src/gs-overview-page.c:497
 msgid "Recommended Productivity Applications"
-msgstr "Ứng dụng về Hiệu suất Khuyên dùng"
+msgstr "Ứng dụng về Sản xuất Khuyên dùng"
 
 #. TRANSLATORS: this is the third party repositories info bar.
 #: src/gs-overview-page.c:844 src/gs-repos-dialog.c:836
@@ -2395,7 +2407,7 @@ msgstr[0] "%s và %s đã được cài đặt"
 #: src/gs-repos-dialog.c:303
 #, c-format
 msgid "Remove “%s”?"
-msgstr "Xóa “%s”?"
+msgstr "Xóa bỏ “%s”?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
@@ -2557,7 +2569,7 @@ msgstr "Đăng đánh giá"
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:34
 msgid "_Post"
-msgstr "_Đăng"
+msgstr "Đăn_g"
 
 #: src/gs-review-dialog.ui:110
 msgid "Summary"
@@ -3403,7 +3415,7 @@ msgstr[0] "Các bản cập nhật Hệ điều hành quan trọng đã được
 #: src/gs-update-monitor.c:1087
 msgctxt "updates"
 msgid "Review"
-msgstr "Rà soát"
+msgstr "Đánh giá"
 
 #. TRANSLATORS: this is when the offline update failed
 #: src/gs-update-monitor.c:1136
@@ -3444,7 +3456,7 @@ msgstr ""
 #: src/gs-update-monitor.c:1165
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
-msgstr "Dung lượng đĩa không đủ. Vui lòng xóa bớt dữ liệu và thử lại."
+msgstr "Đĩa không đủ chỗ trống. Vui lòng xóa bớt dữ liệu và thử lại."
 
 #. TRANSLATORS: We didn't handle the error type
 #: src/gs-update-monitor.c:1170
@@ -3457,57 +3469,56 @@ msgstr ""
 "cấp phần mềm của bạn."
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:186
+#: src/gs-updates-page.c:187
 msgid "Looking for new updates…"
 msgstr "Đang tìm kiếm các cập nhật mới…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:255
+#: src/gs-updates-page.c:256
 msgid "Setting up updates…"
 msgstr "Đang thiết lập các cài đặt…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:256 src/gs-updates-page.c:263
+#: src/gs-updates-page.c:257 src/gs-updates-page.c:264
 msgid "(This could take a while)"
 msgstr "(Việc này có thể hơi mất thời gian)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:370
+#: src/gs-updates-page.c:371
 #, c-format
 msgid "Last checked: %s"
 msgstr "Lần cuối kiểm tra: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:534
+#: src/gs-updates-page.c:535
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s không còn được hỗ trợ."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:539
+#: src/gs-updates-page.c:540
 msgid "Your OS is no longer supported."
 msgstr "HĐH của bạn không còn được hỗ trợ."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:544
+#: src/gs-updates-page.c:545
 msgid "This means that it does not receive security updates."
-msgstr ""
-"Điều này có nghĩa là distro EOL không nhận được những cập nhật bảo mật."
+msgstr "Điều này có nghĩa là nó không còn nhận được những cập nhật bảo mật."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:548
+#: src/gs-updates-page.c:549
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Bạn nên nâng cấp lên phiên bản mới hơn."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:806
+#: src/gs-updates-page.c:807
 msgid "Charges May Apply"
-msgstr "Có thể thu phí"
+msgstr "Có thể mất chi phí"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:810
+#: src/gs-updates-page.c:811
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3517,27 +3528,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:814
+#: src/gs-updates-page.c:815
 msgid "Check _Anyway"
 msgstr "_Vẫn cứ xem"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:830
+#: src/gs-updates-page.c:831
 msgid "No Network"
 msgstr "Không có Mạng"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:834
+#: src/gs-updates-page.c:835
 msgid "Internet access is required to check for updates."
 msgstr "Cần truy cập Internet để tìm xem các bản cập nhật."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1257
+#: src/gs-updates-page.c:1258
 msgid "Checking…"
 msgstr "Đang kiểm tra…"
 
-#: src/gs-updates-page.c:1270
+#: src/gs-updates-page.c:1271
 msgid "Check for updates"
 msgstr "Kiểm tra cập nhật"
 
@@ -3568,7 +3579,7 @@ msgstr "Kết nối mạng để tìm xem các bản cập nhật"
 
 #: src/gs-updates-page.ui:284
 msgid "_Network Settings"
-msgstr "_Cài đặt mạng"
+msgstr "Cài đặt mạ_ng"
 
 #: src/gs-updates-page.ui:357
 msgid "Updates are automatically managed"
@@ -3769,22 +3780,22 @@ msgstr ""
 "Flatpak là một chương trình khung cho các ứng dụng máy tính chạy trên Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1040
+#: plugins/flatpak/gs-flatpak.c:1046
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Đang tải siêu dữ liệu flatapak cho %s…"
 
-#: plugins/flatpak/gs-flatpak.c:2962
+#: plugins/flatpak/gs-flatpak.c:2979
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Gặp lỗi khi tinh lọc phần bổ sung ‘%s’: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:803
+#: plugins/flatpak/gs-plugin-flatpak.c:804
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Gặp lỗi khi thêm để cài đặt cho phần bổ sung ‘%s’: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:817
+#: plugins/flatpak/gs-plugin-flatpak.c:818
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Gặp lỗi khi thêm để gỡ bỏ cho phần bổ sung ‘%s’: %s"
@@ -3885,7 +3896,7 @@ msgid "Unknown"
 msgstr "Không rõ"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:307
+#: plugins/odrs/gs-plugin-odrs.c:309
 msgid "Downloading application ratings…"
 msgstr "Đang tải xếp hạng ứng dụng…"
 
@@ -3910,7 +3921,9 @@ msgstr "Hỗ trợ Snap"
 
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
-msgstr "Snap (tệp ứng dụng chạy độc lập) là một gói ứng dụng Linux phổ quát"
+msgstr ""
+"Snap (tệp ứng dụng chạy độc lập) là một gói ứng dụng dùng được trên nhiều "
+"bản Linux khác nhau"
 
 #~ msgid "Enable GNOME Shell extensions repository"
 #~ msgstr "Bật kho phần mở rộng GNOME Shell"
