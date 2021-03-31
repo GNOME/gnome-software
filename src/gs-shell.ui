@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.15.2 on Thu Aug 15 17:13:59 2013 -->
 <interface>
-  <!-- interface-requires gtk+ 3.10 -->
-  <!-- interface-requires handy 1.0 -->
+  <requires lib="gtk+" version="3.10"/>
+  <requires lib="handy" version="1.0"/>
   <object class="GtkMenu" id="header_selection_menu">
     <property name="visible">True</property>
     <child>
@@ -18,19 +17,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopoverMenu" id="account_popover">
-    <property name="visible">False</property>
-    <child>
-      <object class="GtkBox" id="account_box">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="margin">6</property>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-  </object>
   <menu id="primary_menu">
     <item>
       <attribute name="label" translatable="yes">_Software Repositories</attribute>
@@ -42,12 +28,19 @@
       <attribute name="action">app.prefs</attribute>
     </item>
   </menu>
-  <object class="GtkApplicationWindow" id="window_software">
+
+  <template class="GsShell" parent="GtkApplicationWindow">
     <property name="visible">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
     <property name="title" translatable="yes">Software</property>
     <property name="icon_name">org.gnome.Software</property>
+    <signal name="map" handler="gs_shell_main_window_mapped_cb"/>
+    <signal name="realize" handler="gs_shell_main_window_realized_cb"/>
+    <signal name="delete-event" handler="main_window_closed_cb"/>
+    <signal name="key-press-event" handler="window_key_press_event" after="yes"/>
+    <signal name="key-press-event" handler="window_keypress_handler"/>
+    <signal name="button-press-event" handler="window_button_press_event" after="yes"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -60,6 +53,7 @@
               <object class="GtkButton" id="button_back">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <signal name="clicked" handler="gs_shell_back_button_cb"/>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="button_back_accessible">
                     <property name="accessible-name" translatable="yes">Go back</property>
@@ -95,6 +89,7 @@
                         <property name="receives_default">True</property>
                         <property name="use_underline">True</property>
                         <property name="label" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
@@ -105,6 +100,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <child>
                           <object class="GtkBox" id="button_installed_box">
                             <property name="visible">True</property>
@@ -128,6 +124,8 @@
                               <object class="GtkLabel" id="button_installed_counter">
                                 <property name="visible">False</property>
                                 <property name="width-chars">2</property>
+                                <property name="label" bind-source="installed_page" bind-property="counter" bind-flags="sync-create"/>
+                                <signal name="notify::label" handler="counter_notify_label_cb"/>
                                 <style>
                                   <class name="counter-label"/>
                                 </style>
@@ -145,6 +143,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <signal name="clicked" handler="gs_overview_page_button_cb"/>
                         <child>
                           <object class="GtkBox" id="button_updates_box">
                             <property name="visible">True</property>
@@ -168,6 +167,8 @@
                               <object class="GtkLabel" id="button_updates_counter">
                                 <property name="visible">False</property>
                                 <property name="width-chars">2</property>
+                                <property name="label" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
+                                <signal name="notify::label" handler="counter_notify_label_cb"/>
                                 <style>
                                   <class name="counter-label"/>
                                 </style>
@@ -184,7 +185,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="application_details_header">
-                    <property name="visible">False</property>
+                    <property name="visible">True</property>
                     <property name="selectable">False</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -195,8 +196,8 @@
                 <child>
                   <object class="GtkMenuButton" id="header_selection_menu_button">
                     <property name="visible">False</property>
-		    <property name="popup">header_selection_menu</property>
-		    <style>
+                    <property name="popup">header_selection_menu</property>
+                    <style>
                       <class name="selection-menu"/>
                     </style>
                     <child>
@@ -224,6 +225,8 @@
               <object class="GtkToggleButton" id="search_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
+                <signal name="clicked" handler="search_button_clicked_cb"/>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="search_button_accessible">
                     <property name="accessible-name" translatable="yes">Search</property>
@@ -262,59 +265,6 @@
                 <property name="pack-type">end</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkBox" id="origin_box">
-                <property name="visible">True</property>
-                <property name="orientation">horizontal</property>
-                <property name="halign">fill</property>
-                <property name="spacing">9</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes" comments="Translators: This is a label in the header bar, followed by a drop down to choose between different source repos">Source</property>
-                    <property name="valign">GTK_ALIGN_CENTER</property>
-                    <property name="visible">1</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="origin_button">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="sensitive">True</property>
-                    <property name="popover">origin_popover</property>
-                    <child>
-                      <object class="GtkGrid">
-                        <property name="column-spacing">12</property>
-                        <property name="visible">1</property>
-                        <property name="valign">GTK_ALIGN_CENTER</property>
-                        <child>
-                          <object class="GtkLabel" id="origin_button_label">
-                            <property name="label"></property>
-                            <property name="valign">GTK_ALIGN_CENTER</property>
-                            <property name="visible">1</property>
-                            <property name="xalign">0</property>
-                            <property name="width_chars">10</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkImage">
-                            <property name="icon-name">pan-down-symbolic</property>
-                            <property name="pixel-size">16</property>
-                            <property name="valign">GTK_ALIGN_CENTER</property>
-                            <property name="visible">1</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="pack-type">end</property>
-              </packing>
-            </child>
           </object>
         </child>
         <child>
@@ -329,6 +279,7 @@
                 <property name="max_length">100</property>
                 <property name="hexpand">True</property>
                 <property name="halign">center</property>
+                <signal name="search-changed" handler="search_changed_handler"/>
               </object>
             </child>
           </object>
@@ -378,6 +329,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
                           </object>
                         </child>
                         <child>
@@ -386,6 +338,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
                           </object>
                         </child>
                         <child>
@@ -394,6 +347,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
                           </object>
                         </child>
                         <child>
@@ -402,6 +356,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">Restart Now</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
                           </object>
                         </child>
                         <child>
@@ -410,6 +365,7 @@
                             <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
                           </object>
                         </child>
                       </object>
@@ -418,6 +374,7 @@
                       <object class="GtkButton" id="button_events_dismiss">
                         <property name="visible">True</property>
                         <property name="valign">start</property>
+                        <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
                         <style>
                           <class name="flat"/>
                         </style>
@@ -447,6 +404,7 @@
                     <property name="message-type">GTK_MESSAGE_INFO</property>
                     <property name="show-close-button">False</property>
                     <property name="revealed">False</property>
+                    <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
                     <child internal-child="content_area">
                       <object class="GtkBox">
                         <property name="visible">True</property>
@@ -494,6 +452,7 @@
                     <property name="visible">True</property>
                     <property name="homogeneous">False</property>
                     <property name="transition-type">crossfade</property>
+                    <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                     <child>
                       <object class="GsOverviewPage" id="overview_page">
                         <property name="visible">True</property>
@@ -521,6 +480,7 @@
                     <child>
                       <object class="GsLoadingPage" id="loading_page">
                         <property name="visible">True</property>
+                        <signal name="refreshed" handler="initial_refresh_done"/>
                       </object>
                       <packing>
                         <property name="name">loading</property>
@@ -576,32 +536,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkPopover" id="origin_popover">
-    <property name="visible">False</property>
-    <child>
-      <object class="GtkBox" id="origin_popover_box">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
-        <child>
-          <object class="GtkScrolledWindow">
-            <property name="propagate-natural-height">true</property>
-            <property name="propagate-natural-width">true</property>
-            <property name="max-content-height">600</property>
-            <property name="visible">true</property>
-            <child>
-              <object class="GtkListBox" id="origin_popover_list_box">
-                <property name="selection-mode">none</property>
-                <property name="visible">true</property>
-                <style>
-                  <class name="content"/>
-                </style>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
+  </template>
 </interface>

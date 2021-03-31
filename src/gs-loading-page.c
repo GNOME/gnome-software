@@ -146,7 +146,7 @@ gs_loading_page_load (GsLoadingPage *self)
 }
 
 static void
-gs_loading_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_loading_page_switch_to (GsPage *page)
 {
 	GsLoadingPage *self = GS_LOADING_PAGE (page);
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
@@ -163,7 +163,6 @@ static gboolean
 gs_loading_page_setup (GsPage *page,
                        GsShell *shell,
                        GsPluginLoader *plugin_loader,
-                       GtkBuilder *builder,
                        GCancellable *cancellable,
                        GError **error)
 {

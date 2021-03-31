@@ -23,6 +23,6 @@ G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GO
 GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app);
 void		 gs_update_monitor_autoupdate		(GsUpdateMonitor *monitor);
 void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
-							 GsShell	*shell);
+							 GtkWindow	*window);
 
 G_END_DECLS

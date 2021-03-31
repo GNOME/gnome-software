@@ -45,7 +45,6 @@ struct _GsUpdatesPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*cancellable_refresh;
 	GCancellable		*cancellable_upgrade_download;
@@ -64,6 +63,7 @@ struct _GsUpdatesPage
 	GtkWidget		*header_end_box;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
+	guint			 updates_counter;
 
 	GtkWidget		*updates_box;
 	GtkWidget		*button_updates_mobile;
@@ -93,7 +93,19 @@ enum {
 	COLUMN_UPDATE_LAST
 };
 
-G_DEFINE_TYPE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE)
+static void gs_updates_page_scrollable_init (GtkScrollable *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_updates_page_scrollable_init))
+
+typedef enum {
+	PROP_HADJUSTMENT = 1,
+	PROP_VADJUSTMENT,
+	PROP_HSCROLL_POLICY,
+	PROP_VSCROLL_POLICY,
+	PROP_TITLE,
+	PROP_COUNTER,
+} GsUpdatesPageProperty;
 
 static void
 gs_updates_page_set_flag (GsUpdatesPage *self, GsUpdatesPageFlags flag)
@@ -190,29 +202,18 @@ gs_updates_page_get_state_string (GsPluginStatus status)
 static void
 refresh_headerbar_updates_counter (GsUpdatesPage *self)
 {
-	GtkWidget *widget;
-	guint num_updates;
+	guint new_updates_counter;
 
-	num_updates = _get_num_updates (self);
+	new_updates_counter = _get_num_updates (self);
+	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader) ||
+	    self->state == GS_UPDATES_PAGE_STATE_FAILED)
+		new_updates_counter = 0;
 
-	/* update the counter */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
-	if (num_updates > 0 &&
-	    gs_plugin_loader_get_allow_updates (self->plugin_loader)) {
-		g_autofree gchar *text = NULL;
-		text = g_strdup_printf ("%u", num_updates);
-		gtk_label_set_label (GTK_LABEL (widget), text);
-		gtk_widget_show (widget);
-	} else {
-		gtk_widget_hide (widget);
-	}
+	if (new_updates_counter == self->updates_counter)
+		return;
 
-	/* update the tab style */
-	if (num_updates > 0 &&
-	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
-		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
-	else
-		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
+	self->updates_counter = new_updates_counter;
+	g_object_notify (G_OBJECT (self), "counter");
 }
 
 static void
@@ -419,7 +420,6 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
                                 GAsyncResult *res,
                                 GsUpdatesPage *self)
 {
-	GtkWidget *widget;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -434,9 +434,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
-							     "button_updates_counter"));
-		gtk_widget_hide (widget);
+		refresh_headerbar_updates_counter (self);
 		return;
 	}
 
@@ -628,11 +626,9 @@ gs_updates_page_reload (GsPage *page)
 }
 
 static void
-gs_updates_page_switch_to (GsPage *page,
-                           gboolean scroll_up)
+gs_updates_page_switch_to (GsPage *page)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
-	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES) {
 		g_warning ("Called switch_to(updates) when in mode %s",
@@ -640,18 +636,7 @@ gs_updates_page_switch_to (GsPage *page,
 		return;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
-	gtk_widget_show (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
-	gtk_widget_show (widget);
-
 	gtk_widget_set_visible (self->button_refresh, TRUE);
-
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 
 	/* no need to refresh */
 	if (self->cache_valid) {
@@ -699,7 +684,8 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 
 	/* get the new list */
 	gs_updates_page_invalidate (self);
-	gs_page_switch_to (GS_PAGE (self), TRUE);
+	gs_page_switch_to (GS_PAGE (self));
+	gs_page_scroll_up (GS_PAGE (self));
 }
 
 static void
@@ -777,6 +763,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
                                    GsUpdatesPage *self)
 {
 	GtkWidget *dialog;
+	GtkWindow *parent_window = GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (self), GTK_TYPE_WINDOW));
 
 	/* cancel existing action? */
 	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH) {
@@ -797,7 +784,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 			gs_updates_page_get_new_updates (self);
 			return;
 		}
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
+		dialog = gtk_message_dialog_new (parent_window,
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -821,7 +808,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 
 	/* no network connection */
 	} else {
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
+		dialog = gtk_message_dialog_new (parent_window,
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1194,7 +1181,6 @@ static gboolean
 gs_updates_page_setup (GsPage *page,
                        GsShell *shell,
                        GsPluginLoader *plugin_loader,
-                       GtkBuilder *builder,
                        GCancellable *cancellable,
                        GError **error)
 {
@@ -1233,7 +1219,6 @@ gs_updates_page_setup (GsPage *page,
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_updates_page_network_available_notify_cb),
 				 self, 0);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* setup system upgrades */
@@ -1295,6 +1280,72 @@ gs_updates_page_setup (GsPage *page,
 }
 
 static void
+gs_updates_page_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
+
+	switch ((GsUpdatesPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
+		break;
+	case PROP_VADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
+		break;
+	case PROP_HSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	case PROP_VSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	case PROP_TITLE:
+		g_value_set_string (value, _("Updates"));
+		break;
+	case PROP_COUNTER:
+		g_value_set_uint (value, self->updates_counter);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_updates_page_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
+
+	switch ((GsUpdatesPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates),
+						     g_value_get_object (value));
+		break;
+	case PROP_VADJUSTMENT:
+		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates),
+						     g_value_get_object (value));
+		break;
+	case PROP_HSCROLL_POLICY:
+	case PROP_VSCROLL_POLICY:
+		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	case PROP_TITLE:
+	case PROP_COUNTER:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_updates_page_dispose (GObject *object)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
@@ -1311,7 +1362,6 @@ gs_updates_page_dispose (GObject *object)
 		}
 	}
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);
@@ -1333,10 +1383,20 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_updates_page_get_property;
+	object_class->set_property = gs_updates_page_set_property;
 	object_class->dispose = gs_updates_page_dispose;
+
 	page_class->switch_to = gs_updates_page_switch_to;
 	page_class->reload = gs_updates_page_reload;
 	page_class->setup = gs_updates_page_setup;
+
+	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
+	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
+	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
+	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
+	g_object_class_override_property (object_class, PROP_COUNTER, "counter");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-page.ui");
 
@@ -1352,6 +1412,12 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, box_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
+}
+
+static void
+gs_updates_page_scrollable_init (GtkScrollable *iface)
+{
+	/* Nothing to do here; all defined in properties */
 }
 
 static void
@@ -1374,7 +1440,5 @@ gs_updates_page_init (GsUpdatesPage *self)
 GsUpdatesPage *
 gs_updates_page_new (void)
 {
-	GsUpdatesPage *self;
-	self = g_object_new (GS_TYPE_UPDATES_PAGE, NULL);
-	return GS_UPDATES_PAGE (self);
+	return GS_UPDATES_PAGE (g_object_new (GS_TYPE_UPDATES_PAGE, NULL));
 }

@@ -15,14 +15,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_OVERVIEW_PAGE (gs_overview_page_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsOverviewPage, gs_overview_page, GS, OVERVIEW_PAGE, GsPage)
-
-struct _GsOverviewPageClass
-{
-	GsPageClass		 parent_class;
-
-	void	(*refreshed)	(GsOverviewPage *self);
-};
+G_DECLARE_FINAL_TYPE (GsOverviewPage, gs_overview_page, GS, OVERVIEW_PAGE, GsPage)
 
 GsOverviewPage	*gs_overview_page_new		(void);
 void		 gs_overview_page_set_category	(GsOverviewPage		*self,

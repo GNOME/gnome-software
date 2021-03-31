@@ -24,7 +24,6 @@ struct _GsInstalledPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
@@ -34,6 +33,7 @@ struct _GsInstalledPage
 	gboolean		 waiting;
 	GsShell			*shell;
 	GSettings		*settings;
+	guint			 pending_apps_counter;
 
 	GtkWidget		*list_box_install;
 	GtkWidget		*scrolledwindow_install;
@@ -41,7 +41,18 @@ struct _GsInstalledPage
 	GtkWidget		*stack_install;
 };
 
-G_DEFINE_TYPE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE)
+static void gs_installed_page_scrollable_init (GtkScrollable *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_installed_page_scrollable_init))
+
+typedef enum {
+	PROP_HADJUSTMENT = 1,
+	PROP_VADJUSTMENT,
+	PROP_HSCROLL_POLICY,
+	PROP_VSCROLL_POLICY,
+	PROP_TITLE,
+} GsInstalledPageProperty;
 
 static void gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                                        GsInstalledPage *self);
@@ -267,10 +278,9 @@ gs_installed_page_reload (GsPage *page)
 }
 
 static void
-gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_installed_page_switch_to (GsPage *page)
 {
 	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
-	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_INSTALLED) {
 		g_warning ("Called switch_to(installed) when in mode %s",
@@ -278,16 +288,6 @@ gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
 		return;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
-	gtk_widget_show (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
-	gtk_widget_show (widget);
-
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_INSTALLED) {
 		gs_grab_focus_when_mapped (self->scrolledwindow_install);
 	}
@@ -535,7 +535,6 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                            GsInstalledPage *self)
 {
 	GsApp *app;
-	GtkWidget *widget;
 	guint i;
 	guint cnt = 0;
 	g_autoptr(GsAppList) pending = NULL;
@@ -558,16 +557,10 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		cnt++;
 	}
 
-	/* show a label with the number of on-going operations */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
-						     "button_installed_counter"));
-	if (cnt == 0) {
-		gtk_widget_hide (widget);
-	} else {
-		g_autofree gchar *label = NULL;
-		label = g_strdup_printf ("%u", cnt);
-		gtk_label_set_label (GTK_LABEL (widget), label);
-		gtk_widget_show (widget);
+	/* update the number of on-going operations */
+	if (cnt != self->pending_apps_counter) {
+		self->pending_apps_counter = cnt;
+		g_object_notify (G_OBJECT (self), "counter");
 	}
 }
 
@@ -575,7 +568,6 @@ static gboolean
 gs_installed_page_setup (GsPage *page,
                          GsShell *shell,
                          GsPluginLoader *plugin_loader,
-                         GtkBuilder *builder,
                          GCancellable *cancellable,
                          GError **error)
 {
@@ -589,7 +581,6 @@ gs_installed_page_setup (GsPage *page,
 			  G_CALLBACK (gs_installed_page_pending_apps_changed_cb),
 			  self);
 
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* setup installed */
@@ -605,6 +596,69 @@ gs_installed_page_setup (GsPage *page,
 }
 
 static void
+gs_installed_page_get_property (GObject    *object,
+                                guint       prop_id,
+                                GValue     *value,
+                                GParamSpec *pspec)
+{
+	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
+
+	switch ((GsInstalledPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install)));
+		break;
+	case PROP_VADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install)));
+		break;
+	case PROP_HSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	case PROP_VSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	case PROP_TITLE:
+		/* Translators: This is in the context of a list of apps which are installed on the system. */
+		g_value_set_string (value, _("Installed"));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_installed_page_set_property (GObject      *object,
+                                guint         prop_id,
+                                const GValue *value,
+                                GParamSpec   *pspec)
+{
+	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
+
+	switch ((GsInstalledPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install),
+						     g_value_get_object (value));
+		break;
+	case PROP_VADJUSTMENT:
+		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install),
+						     g_value_get_object (value));
+		break;
+	case PROP_HSCROLL_POLICY:
+	case PROP_VSCROLL_POLICY:
+		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	case PROP_TITLE:
+		/* Read only. */
+		g_assert_not_reached ();
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_installed_page_dispose (GObject *object)
 {
 	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
@@ -614,7 +668,6 @@ gs_installed_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);
@@ -629,11 +682,20 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_installed_page_get_property;
+	object_class->set_property = gs_installed_page_set_property;
 	object_class->dispose = gs_installed_page_dispose;
+
 	page_class->app_removed = gs_installed_page_app_removed;
 	page_class->switch_to = gs_installed_page_switch_to;
 	page_class->reload = gs_installed_page_reload;
 	page_class->setup = gs_installed_page_setup;
+
+	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
+	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
+	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
+	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-installed-page.ui");
 
@@ -641,6 +703,12 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, scrolledwindow_install);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, spinner_install);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, stack_install);
+}
+
+static void
+gs_installed_page_scrollable_init (GtkScrollable *iface)
+{
+	/* Nothing to do here; all defined in properties */
 }
 
 static void

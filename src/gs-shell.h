@@ -17,14 +17,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_SHELL (gs_shell_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsShell, gs_shell, GS, SHELL, GObject)
-
-struct _GsShellClass
-{
-	GObjectClass			 parent_class;
-
-	void (* loaded)		 (GsShell *shell);
-};
+G_DECLARE_FINAL_TYPE (GsShell, gs_shell, GS, SHELL, GtkApplicationWindow)
 
 typedef enum {
 	GS_SHELL_MODE_UNKNOWN,
@@ -89,8 +82,6 @@ void		 gs_shell_show_uri		(GsShell	*shell,
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
-gboolean	 gs_shell_is_active		(GsShell	*shell);
-GtkWindow	*gs_shell_get_window		(GsShell	*shell);
 void		 gs_shell_show_notification	(GsShell	*shell,
 						 const gchar	*title);
 

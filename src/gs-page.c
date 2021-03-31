@@ -28,6 +28,13 @@ typedef struct
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 
+typedef enum {
+	PROP_TITLE = 1,
+	PROP_COUNTER,
+} GsPageProperty;
+
+static GParamSpec *obj_props[PROP_COUNTER + 1] = { NULL, };
+
 GsShell *
 gs_page_get_shell (GsPage *page)
 {
@@ -75,7 +82,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 	GtkWidget *dialog;
 	g_autofree gchar *escaped = NULL;
 
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_USE_HEADER_BAR,
 					 GTK_MESSAGE_INFO,
@@ -121,7 +128,6 @@ gs_page_app_installed_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsPage *page = helper->page;
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 
@@ -162,7 +168,7 @@ gs_page_app_installed_cb (GObject *source,
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
 	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
-	    !gs_shell_is_active (priv->shell) &&
+	    !gtk_window_is_active (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW))) &&
 	    ((helper->interaction) & GS_SHELL_INTERACTION_NOTIFY) != 0)
 		gs_app_notify_installed (helper->app);
 
@@ -249,7 +255,7 @@ gs_page_install_app (GsPage *page,
 	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		GtkResponseType response;
 
-		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
+		response = gs_app_notify_unavailable (app, GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)));
 		if (response != GTK_RESPONSE_OK)
 			return;
 	}
@@ -319,7 +325,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_USE_HEADER_BAR,
 					 GTK_MESSAGE_INFO,
@@ -484,7 +490,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	}
 
 	/* ask for confirmation */
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)),
 	                                 GTK_DIALOG_MODAL,
 	                                 GTK_MESSAGE_QUESTION,
 	                                 GTK_BUTTONS_CANCEL,
@@ -596,20 +602,68 @@ gs_page_is_active (GsPage *page)
 }
 
 /**
+ * gs_page_get_title:
+ * @page: a #GsPage
+ *
+ * Get the value of #GsPage:title.
+ *
+ * Returns: (nullable): human readable title for the page, or %NULL if one isn’t set
+ *
+ * Since: 40
+ */
+const gchar *
+gs_page_get_title (GsPage *page)
+{
+	g_auto(GValue) value = G_VALUE_INIT;
+
+	g_return_val_if_fail (GS_IS_PAGE (page), NULL);
+
+	/* The property is typically overridden by subclasses; the
+	 * implementation in #GsPage itself is just a placeholder. */
+	g_object_get_property (G_OBJECT (page), "title", &value);
+
+	return g_value_get_string (&value);
+}
+
+/**
+ * gs_page_get_counter:
+ * @page: a #GsPage
+ *
+ * Get the value of #GsPage:counter.
+ *
+ * Returns: a counter of the number of available updates, installed packages,
+ *     etc. on this page
+ *
+ * Since: 40
+ */
+guint
+gs_page_get_counter (GsPage *page)
+{
+	g_auto(GValue) value = G_VALUE_INIT;
+
+	g_return_val_if_fail (GS_IS_PAGE (page), 0);
+
+	/* The property is typically overridden by subclasses; the
+	 * implementation in #GsPage itself is just a placeholder. */
+	g_object_get_property (G_OBJECT (page), "counter", &value);
+
+	return g_value_get_uint (&value);
+}
+
+/**
  * gs_page_switch_to:
  *
  * Pure virtual method that subclasses have to override to show page specific
  * widgets.
  */
 void
-gs_page_switch_to (GsPage *page,
-                   gboolean scroll_up)
+gs_page_switch_to (GsPage *page)
 {
 	GsPageClass *klass = GS_PAGE_GET_CLASS (page);
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	priv->is_active = TRUE;
 	if (klass->switch_to != NULL)
-		klass->switch_to (page, scroll_up);
+		klass->switch_to (page);
 }
 
 /**
@@ -628,6 +682,28 @@ gs_page_switch_from (GsPage *page)
 		klass->switch_from (page);
 }
 
+/**
+ * gs_page_scroll_up:
+ * @page: a #GsPage
+ *
+ * Scroll the page to the top of its content, if it supports scrolling.
+ *
+ * If it doesn’t support scrolling, this is a no-op.
+ *
+ * Since: 40
+ */
+void
+gs_page_scroll_up (GsPage *page)
+{
+	g_return_if_fail (GS_IS_PAGE (page));
+
+	if (GTK_IS_SCROLLABLE (page)) {
+		GtkAdjustment *adj;
+		adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (page));
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+	}
+}
+
 void
 gs_page_reload (GsPage *page)
 {
@@ -642,7 +718,6 @@ gboolean
 gs_page_setup (GsPage *page,
                GsShell *shell,
                GsPluginLoader *plugin_loader,
-               GtkBuilder *builder,
                GCancellable *cancellable,
                GError **error)
 {
@@ -657,7 +732,28 @@ gs_page_setup (GsPage *page,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->shell = shell;
 
-	return klass->setup (page, shell, plugin_loader, builder, cancellable, error);
+	return klass->setup (page, shell, plugin_loader, cancellable, error);
+}
+
+static void
+gs_page_get_property (GObject    *object,
+                      guint       prop_id,
+                      GValue     *value,
+                      GParamSpec *pspec)
+{
+	switch ((GsPageProperty) prop_id) {
+	case PROP_TITLE:
+		/* Should be overridden by subclasses. */
+		g_value_set_string (value, NULL);
+		break;
+	case PROP_COUNTER:
+		/* Should be overridden by subclasses. */
+		g_value_set_uint (value, 0);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -683,13 +779,40 @@ gs_page_class_init (GsPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->get_property = gs_page_get_property;
 	object_class->dispose = gs_page_dispose;
+
+	/**
+	 * GsPage:title: (nullable)
+	 *
+	 * A human readable title for this page, or %NULL if one isn’t set or
+	 * doesn’t make sense.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_TITLE] =
+		g_param_spec_string ("title", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsPage:counter:
+	 *
+	 * A counter indicating the number of installed packages, available
+	 * updates, etc. on this page.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_COUNTER] =
+		g_param_spec_uint ("counter", NULL, NULL,
+				   0, G_MAXUINT, 0,
+				   G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 GsPage *
 gs_page_new (void)
 {
-	GsPage *page;
-	page = g_object_new (GS_TYPE_PAGE, NULL);
-	return GS_PAGE (page);
+	return GS_PAGE (g_object_new (GS_TYPE_PAGE, NULL));
 }

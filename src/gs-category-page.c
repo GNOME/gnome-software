@@ -30,7 +30,6 @@ struct _GsCategoryPage
 	GsPage		 parent_instance;
 
 	GsPluginLoader	*plugin_loader;
-	GtkBuilder	*builder;
 	GCancellable	*cancellable;
 	GsShell		*shell;
 	GsCategory	*category;
@@ -57,16 +56,9 @@ struct _GsCategoryPage
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
-static void
-gs_category_page_switch_to (GsPage *page, gboolean scroll_up)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_widget_show (widget);
-	gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (self->category));
-}
+typedef enum {
+	PROP_TITLE = 1,
+} GsCategoryPageProperty;
 
 static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
@@ -480,6 +472,9 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	 * with the previous scroll value */
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+
+	/* notify of the updated title */
+	g_object_notify (G_OBJECT (self), "title");
 }
 
 GsCategory *
@@ -492,6 +487,27 @@ static void
 gs_category_page_init (GsCategoryPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
+}
+
+static void
+gs_category_page_get_property (GObject    *object,
+                               guint       prop_id,
+                               GValue     *value,
+                               GParamSpec *pspec)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (object);
+
+	switch ((GsCategoryPageProperty) prop_id) {
+	case PROP_TITLE:
+		if (self->category != NULL)
+			g_value_set_string (value, gs_category_get_name (self->category));
+		else
+			g_value_set_string (value, NULL);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -514,7 +530,6 @@ gs_category_page_dispose (GObject *object)
 		self->sort_name_handler_id = 0;
 	}
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->category);
 	g_clear_object (&self->subcategory);
 	g_clear_object (&self->plugin_loader);
@@ -526,14 +541,12 @@ static gboolean
 gs_category_page_setup (GsPage *page,
                         GsShell *shell,
                         GsPluginLoader *plugin_loader,
-                        GtkBuilder *builder,
                         GCancellable *cancellable,
                         GError **error)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->shell = shell;
 	self->sort_type = SUBCATEGORY_SORT_TYPE_RATING;
 	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->category_detail_box),
@@ -559,10 +572,13 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_category_page_get_property;
 	object_class->dispose = gs_category_page_dispose;
-	page_class->switch_to = gs_category_page_switch_to;
+
 	page_class->reload = gs_category_page_reload;
 	page_class->setup = gs_category_page_setup;
+
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 
@@ -585,7 +601,5 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 GsCategoryPage *
 gs_category_page_new (void)
 {
-	GsCategoryPage *self;
-	self = g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
-	return self;
+	return g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
 }

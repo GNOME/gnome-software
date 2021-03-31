@@ -47,7 +47,6 @@ struct _GsDetailsPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
 	GsApp			*app;
@@ -159,14 +158,40 @@ struct _GsDetailsPage
 	GtkWidget		*popover_permissions;
 	GtkWidget		*box_permissions_details;
 	GtkWidget		*star_eventbox;
+	GtkWidget		*origin_popover;
+	GtkWidget		*origin_popover_list_box;
+	GtkWidget		*origin_box;
+	GtkWidget		*origin_button_label;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
+
+typedef enum {
+	PROP_TITLE = 1,
+} GsDetailsPageProperty;
+
+static GsDetailsPageState
+gs_details_page_get_state (GsDetailsPage *self)
+{
+	const gchar *visible_child_name = gtk_stack_get_visible_child_name (GTK_STACK (self->stack_details));
+
+	if (g_str_equal (visible_child_name, "spinner"))
+		return GS_DETAILS_PAGE_STATE_LOADING;
+	else if (g_str_equal (visible_child_name, "ready"))
+		return GS_DETAILS_PAGE_STATE_READY;
+	else if (g_str_equal (visible_child_name, "failed"))
+		return GS_DETAILS_PAGE_STATE_FAILED;
+	else
+		g_assert_not_reached ();
+}
 
 static void
 gs_details_page_set_state (GsDetailsPage *self,
                            GsDetailsPageState state)
 {
+	if (state == gs_details_page_get_state (self))
+		return;
+
 	/* spinner */
 	switch (state) {
 	case GS_DETAILS_PAGE_STATE_LOADING:
@@ -196,6 +221,9 @@ gs_details_page_set_state (GsDetailsPage *self,
 	default:
 		g_assert_not_reached ();
 	}
+
+	/* the page title will have changed */
+	g_object_notify (G_OBJECT (self), "title");
 }
 
 static void
@@ -268,18 +296,7 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
-gs_details_page_set_header_label (GsDetailsPage *self,
-				  const gchar *text)
-{
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_label_set_label (GTK_LABEL (widget), text ? text : "");
-	gtk_widget_set_visible (widget, text != NULL);
-}
-
-static void
-gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_details_page_switch_to (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
@@ -290,11 +307,12 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		return;
 	}
 
+	/* hide the alternates for now until the query is complete */
+	gtk_widget_hide (self->origin_box);
+
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
 		return;
-
-	gs_details_page_set_header_label (self, gs_app_get_name (self->app));
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -500,8 +518,10 @@ gs_details_page_switch_to_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
-	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
-		gs_page_switch_to (GS_PAGE (self), TRUE);
+	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
+		gs_page_switch_to (GS_PAGE (self));
+		gs_page_scroll_up (GS_PAGE (self));
+	}
 
 	/* update widgets */
 	gs_details_page_refresh_all (self);
@@ -835,21 +855,14 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	GtkWidget *origin_box;
-	GtkWidget *origin_button_label;
-	GtkWidget *origin_popover_list_box;
 	g_autofree gchar *origin_ui = NULL;
 	gboolean instance_changed = FALSE;
 
-	origin_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_box"));
-	origin_button_label = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_button_label"));
-	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
-
-	gs_container_remove_all (GTK_CONTAINER (origin_popover_list_box));
+	gs_container_remove_all (GTK_CONTAINER (self->origin_popover_list_box));
 
 	/* Did we switch away from the page in the meantime? */
 	if (!gs_page_is_active (GS_PAGE (self))) {
-		gtk_widget_hide (origin_box);
+		gtk_widget_hide (self->origin_box);
 		return;
 	}
 
@@ -859,7 +872,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get alternates: %s", error->message);
-		gtk_widget_hide (origin_box);
+		gtk_widget_hide (self->origin_box);
 		return;
 	}
 
@@ -891,7 +904,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	/* no alternates to show */
 	if (gs_app_list_length (list) < 2) {
-		gtk_widget_hide (origin_box);
+		gtk_widget_hide (self->origin_box);
 		return;
 	}
 
@@ -915,16 +928,16 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		}
 		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
 		                                      self->size_group_origin_popover);
-		gtk_container_add (GTK_CONTAINER (origin_popover_list_box), row);
+		gtk_container_add (GTK_CONTAINER (self->origin_popover_list_box), row);
 	}
 
 	origin_ui = gs_app_get_origin_ui (self->app);
 	if (origin_ui != NULL)
-		gtk_label_set_text (GTK_LABEL (origin_button_label), origin_ui);
+		gtk_label_set_text (GTK_LABEL (self->origin_button_label), origin_ui);
 	else
-		gtk_label_set_text (GTK_LABEL (origin_button_label), "");
+		gtk_label_set_text (GTK_LABEL (self->origin_button_label), "");
 
-	gtk_widget_show (origin_box);
+	gtk_widget_show (self->origin_box);
 
 	/* The other parts of the app are the same, only the state/buttons could change */
 	if (instance_changed)
@@ -1196,7 +1209,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
-	gs_details_page_set_header_label (self, tmp);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
@@ -1567,7 +1579,7 @@ version_history_list_row_activated_cb (GtkListBox *list_box,
 	if (GS_IS_APP_VERSION_HISTORY_ROW (row))
 		return;
 
-	dialog = gs_app_version_history_dialog_new (gs_shell_get_window (self->shell),
+	dialog = gs_app_version_history_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW)),
 						    self->app);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 
@@ -1912,6 +1924,10 @@ _set_app (GsDetailsPage *self, GsApp *app)
 
 	/* save app */
 	g_set_object (&self->app, app);
+
+	/* title/app name will have changed */
+	g_object_notify (G_OBJECT (self), "title");
+
 	if (self->app == NULL) {
 		/* switch away from the details view that failed to load */
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
@@ -2087,7 +2103,6 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_set_header_label (self, _("Loading…"));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2122,7 +2137,6 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_set_header_label (self, _("Loading…"));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2158,7 +2172,8 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* update UI */
-	gs_page_switch_to (GS_PAGE (self), TRUE);
+	gs_page_switch_to (GS_PAGE (self));
+	gs_page_scroll_up (GS_PAGE (self));
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 
 	/* get extra details about the app */
@@ -2221,10 +2236,8 @@ origin_popover_row_activated_cb (GtkListBox *list_box,
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	GsApp *app;
-	GtkWidget *popover;
 
-	popover = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover"));
-	gtk_popover_popdown (GTK_POPOVER (popover));
+	gtk_popover_popdown (GTK_POPOVER (self->origin_popover));
 
 	app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (row));
 	if (app != self->app) {
@@ -2802,20 +2815,17 @@ static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
                        GsPluginLoader *plugin_loader,
-                       GtkBuilder *builder,
                        GCancellable *cancellable,
                        GError **error)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
-	GtkWidget *origin_popover_list_box;
 
 	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
 
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* show review widgets if we have plugins that provide them */
@@ -2886,17 +2896,49 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->label_license_nonfree_details, "activate-link",
 			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
-	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (origin_popover_list_box),
+
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
 	                            origin_popover_list_sort_func,
 	                            NULL, NULL);
-	g_signal_connect (origin_popover_list_box, "row-activated",
+	g_signal_connect (self->origin_popover_list_box, "row-activated",
 	                  G_CALLBACK (origin_popover_row_activated_cb),
 	                  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);
 	return TRUE;
+}
+
+static void
+gs_details_page_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (object);
+
+	switch ((GsDetailsPageProperty) prop_id) {
+	case PROP_TITLE:
+		switch (gs_details_page_get_state (self)) {
+		case GS_DETAILS_PAGE_STATE_LOADING:
+			/* TRANSLATORS: This is a title for the app details page,
+			 * shown when it’s loading the details of an app. */
+			g_value_set_string (value, _("Loading…"));
+			break;
+		case GS_DETAILS_PAGE_STATE_READY:
+			g_value_set_string (value, gs_app_get_name (self->app));
+			break;
+		case GS_DETAILS_PAGE_STATE_FAILED:
+			g_value_set_string (value, NULL);
+			break;
+		default:
+			g_assert_not_reached ();
+		}
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -2912,7 +2954,6 @@ gs_details_page_dispose (GObject *object)
 		g_clear_object (&self->app);
 	}
 	g_clear_object (&self->app_local_file);
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
@@ -2930,12 +2971,16 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_details_page_get_property;
 	object_class->dispose = gs_details_page_dispose;
+
 	page_class->app_installed = gs_details_page_app_installed;
 	page_class->app_removed = gs_details_page_app_removed;
 	page_class->switch_to = gs_details_page_switch_to;
 	page_class->reload = gs_details_page_reload;
 	page_class->setup = gs_details_page_setup;
+
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
@@ -3037,6 +3082,10 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_permissions);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_permissions_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
 }
 
 static void
@@ -3063,13 +3112,13 @@ gs_details_page_init (GsDetailsPage *self)
 	g_signal_connect (self->list_box_version_history, "row-activated",
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
 
+	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
+
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_details_permissions_value), "content-rating-permissions");
 }
 
 GsDetailsPage *
 gs_details_page_new (void)
 {
-	GsDetailsPage *self;
-	self = g_object_new (GS_TYPE_DETAILS_PAGE, NULL);
-	return GS_DETAILS_PAGE (self);
+	return GS_DETAILS_PAGE (g_object_new (GS_TYPE_DETAILS_PAGE, NULL));
 }

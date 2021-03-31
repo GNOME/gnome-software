@@ -651,7 +651,6 @@ gs_updates_section_init (GsUpdatesSection *self)
 				      self, NULL);
 	g_signal_connect (self, "row-activated",
 			  G_CALLBACK (_app_row_activated_cb), self);
-	gtk_widget_set_margin_top (GTK_WIDGET (self), 24);
 
 	/* make rounded edges */
 	context = gtk_widget_get_style_context (GTK_WIDGET (self));
