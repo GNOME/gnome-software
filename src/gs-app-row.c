@@ -497,7 +497,7 @@ child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 	 * catch the case where we are being removed from a container without
 	 * having been destroyed first.)
 	 */
-	if (priv->app == NULL)
+	if (priv->app == NULL || !gtk_widget_get_mapped (GTK_WIDGET (app_row)))
 		return;
 
 	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
