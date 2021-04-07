@@ -240,6 +240,7 @@ typedef struct {
 	GMainContext *context;
 	GsApp *app;
 	gboolean complete;
+	gboolean owner_changed;
 } TransactionProgress;
 
 static TransactionProgress *
@@ -332,6 +333,8 @@ on_owner_notify (GObject    *obj,
 {
 	TransactionProgress *tp = user_data;
 
+	tp->owner_changed = TRUE;
+
 	/* Wake up the context so it can notice the server has disappeared. */
 	g_main_context_wakeup (tp->context);
 }
@@ -358,6 +361,7 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	gulong notify_handler = 0;
 	gboolean success = FALSE;
 	gboolean just_started = FALSE;
+	gboolean saw_name_owner = FALSE;
 	g_autofree gchar *name_owner = NULL;
 
 	peer_connection = g_dbus_connection_new_for_address_sync (transaction_address,
@@ -401,9 +405,15 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 		goto out;
 
 	/* Process all the signals until we receive the Finished signal or the
-	 * daemon disappears (which can happen if it crashes). */
+	 * daemon disappears (which can happen if it crashes).
+	 *
+	 * The property can be NULL right after connecting to it, before the D-Bus
+	 * transfers the property value to the client. */
 	while (!tp->complete &&
-	       (name_owner = g_dbus_proxy_get_name_owner (G_DBUS_PROXY (transaction))) != NULL) {
+	       !g_cancellable_is_cancelled (cancellable) &&
+	       ((name_owner = g_dbus_proxy_get_name_owner (G_DBUS_PROXY (transaction))) != NULL ||
+		(!saw_name_owner && !tp->owner_changed))) {
+		saw_name_owner = saw_name_owner || name_owner != NULL;
 		g_clear_pointer (&name_owner, g_free);
 		g_main_context_iteration (tp->context, TRUE);
 	}
