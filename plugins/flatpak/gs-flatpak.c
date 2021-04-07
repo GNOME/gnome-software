@@ -2054,6 +2054,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GsApp) app_cache = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* get the name/arch/branch */
 	split = g_strsplit (runtime, "/", -1);
@@ -2091,6 +2092,9 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
+
+	if (!gs_flatpak_refine_app_state_unlocked (self, app, NULL, &local_error))
+		g_debug ("Failed to refine state for runtime '%s': %s", gs_app_get_unique_id (app), local_error->message);
 
 	/* save in the cache */
 	gs_plugin_cache_add (self->plugin, NULL, app);
