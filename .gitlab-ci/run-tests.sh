@@ -28,6 +28,7 @@ meson test \
         -C _build \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
         --no-suite flaky \
+	--print-errorlogs \
         "$@"
 
 exit_code=$?
