@@ -353,7 +353,7 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 {
 	GsRPMOSTreeTransaction *transaction = NULL;
 	g_autoptr(GDBusConnection) peer_connection = NULL;
-	gint cancel_handler;
+	gint cancel_handler = 0;
 	gulong signal_handler = 0;
 	gulong notify_handler = 0;
 	gboolean success = FALSE;
@@ -378,10 +378,12 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	if (transaction == NULL)
 		goto out;
 
-	/* setup cancel handler */
-	cancel_handler = g_cancellable_connect (cancellable,
-	                                        G_CALLBACK (cancelled_handler),
-	                                        transaction, NULL);
+	if (cancellable) {
+		/* setup cancel handler */
+		cancel_handler = g_cancellable_connect (cancellable,
+							G_CALLBACK (cancelled_handler),
+							transaction, NULL);
+	}
 
 	signal_handler = g_signal_connect (transaction, "g-signal",
 	                                   G_CALLBACK (on_transaction_progress),
@@ -406,8 +408,6 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 		g_main_context_iteration (tp->context, TRUE);
 	}
 
-	g_cancellable_disconnect (cancellable, cancel_handler);
-
 	if (!g_cancellable_set_error_if_cancelled (cancellable, error)) {
 		if (tp->error) {
 			g_propagate_error (error, g_steal_pointer (&tp->error));
@@ -420,6 +420,8 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	}
 
 out:
+	if (cancel_handler)
+		g_cancellable_disconnect (cancellable, cancel_handler);
 	if (notify_handler != 0)
 		g_signal_handler_disconnect (transaction, notify_handler);
 	if (signal_handler)
