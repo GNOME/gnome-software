@@ -28,6 +28,11 @@
  */
 #define GS_RPMOSTREE_CLIENT_ID PACKAGE_NAME
 
+/* How long to wait between two consecutive requests, before considering
+ * the connection to the rpm-ostree daemon inactive and disconnect from it.
+ */
+#define INACTIVE_TIMEOUT_SECONDS 60
+
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(Header, headerFree, NULL)
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
@@ -40,6 +45,7 @@ struct GsPluginData {
 	OstreeSysroot		*ot_sysroot;
 	DnfContext		*dnf_context;
 	gboolean		 update_triggered;
+	guint			 inactive_timeout_id;
 };
 
 void
@@ -81,16 +87,15 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->os_proxy != NULL)
-		g_object_unref (priv->os_proxy);
-	if (priv->sysroot_proxy != NULL)
-		g_object_unref (priv->sysroot_proxy);
-	if (priv->ot_sysroot != NULL)
-		g_object_unref (priv->ot_sysroot);
-	if (priv->ot_repo != NULL)
-		g_object_unref (priv->ot_repo);
-	if (priv->dnf_context != NULL)
-		g_object_unref (priv->dnf_context);
+	if (priv->inactive_timeout_id) {
+		g_source_remove (priv->inactive_timeout_id);
+		priv->inactive_timeout_id = 0;
+	}
+	g_clear_object (&priv->os_proxy);
+	g_clear_object (&priv->sysroot_proxy);
+	g_clear_object (&priv->ot_sysroot);
+	g_clear_object (&priv->ot_repo);
+	g_clear_object (&priv->dnf_context);
 	g_mutex_clear (&priv->mutex);
 }
 
@@ -130,6 +135,65 @@ gs_rpmostree_error_convert (GError **perror)
 		return;
 }
 
+static void
+gs_rpmostree_unregister_client_done_cb (GObject *source_object,
+					GAsyncResult *result,
+					gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_rpmostree_sysroot_call_unregister_client_finish (GS_RPMOSTREE_SYSROOT (source_object), result, &error))
+		g_debug ("Failed to unregister client: %s", error->message);
+	else
+		g_debug ("Unregistered client from the rpm-ostreed");
+}
+
+static gboolean
+gs_rpmostree_inactive_timeout_cb (gpointer user_data)
+{
+	GsPlugin *plugin = user_data;
+	GsPluginData *priv;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	if (g_source_is_destroyed (g_main_current_source ()))
+		return G_SOURCE_REMOVE;
+
+	priv = gs_plugin_get_data (plugin);
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	/* In case it gets destroyed before the lock is acquired */
+	if (!g_source_is_destroyed (g_main_current_source ()) &&
+	    priv->inactive_timeout_id == g_source_get_id (g_main_current_source ())) {
+		g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+
+		if (priv->sysroot_proxy)
+			sysroot_proxy = g_steal_pointer (&priv->sysroot_proxy);
+
+		g_clear_object (&priv->os_proxy);
+		g_clear_object (&priv->sysroot_proxy);
+		g_clear_object (&priv->ot_sysroot);
+		g_clear_object (&priv->ot_repo);
+		g_clear_object (&priv->dnf_context);
+		priv->inactive_timeout_id = 0;
+
+		g_clear_pointer (&locker, g_mutex_locker_free);
+
+		if (sysroot_proxy) {
+			g_autoptr(GVariantBuilder) options_builder = NULL;
+			options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+			g_variant_builder_add (options_builder, "{sv}", "id",
+					       g_variant_new_string (GS_RPMOSTREE_CLIENT_ID));
+			gs_rpmostree_sysroot_call_unregister_client (sysroot_proxy,
+								     g_variant_builder_end (options_builder),
+								     NULL,
+								     gs_rpmostree_unregister_client_done_cb,
+								     NULL);
+		}
+	}
+
+	return G_SOURCE_REMOVE;
+}
+
 /* Hold the plugin mutex when called */
 static gboolean
 gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
@@ -139,6 +203,11 @@ gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
 				 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	if (priv->inactive_timeout_id) {
+		g_source_remove (priv->inactive_timeout_id);
+		priv->inactive_timeout_id = 0;
+	}
 
 	/* Create a proxy for sysroot */
 	if (priv->sysroot_proxy == NULL) {
@@ -167,6 +236,8 @@ gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
 			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
+
+		g_debug ("Registered client on the rpm-ostreed");
 	}
 
 	/* Create a proxy for currently booted OS */
@@ -223,6 +294,9 @@ gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
 			return FALSE;
 		}
 	}
+
+	priv->inactive_timeout_id = g_timeout_add_seconds (INACTIVE_TIMEOUT_SECONDS,
+		gs_rpmostree_inactive_timeout_cb, plugin);
 
 	if (out_os_proxy)
 		*out_os_proxy = g_object_ref (priv->os_proxy);
