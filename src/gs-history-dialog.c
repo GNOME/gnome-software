@@ -146,29 +146,6 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 }
 
 static void
-update_header_func (GtkListBoxRow *row,
-		    GtkListBoxRow *before,
-		    gpointer user_data)
-{
-	GtkWidget *header;
-
-	/* first entry */
-	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
-		return;
-	}
-
-	/* already set */
-	if (header != NULL)
-		return;
-
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-static void
 scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 {
 	GtkWidget *frame;
@@ -205,11 +182,6 @@ gs_history_dialog_init (GsHistoryDialog *dialog)
 	dialog->sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	dialog->sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	dialog->sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-
-	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->list_box),
-				      update_header_func,
-				      dialog,
-				      NULL);
 
 	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (dialog->scrolledwindow));
 	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), dialog->scrolledwindow);
