@@ -273,21 +273,15 @@
                 <property name="vscrollbar_policy">automatic</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkFrame" id="frame_installed_updates">
+                  <object class="GsUpdateList" id="list_box_installed_updates">
                     <property name="visible">True</property>
-                    <property name="shadow_type">none</property>
+                    <property name="can_focus">True</property>
+                    <property name="selection_mode">none</property>
                     <property name="halign">fill</property>
                     <property name="valign">start</property>
                     <style>
-                      <class name="view"/>
+                      <class name="content" />
                     </style>
-                    <child>
-                      <object class="GsUpdateList" id="list_box_installed_updates">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="selection_mode">none</property>
-                      </object>
-                    </child>
                   </object>
                 </child>
               </object>
