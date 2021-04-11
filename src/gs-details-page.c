@@ -120,7 +120,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
-	GtkWidget		*box_version_history_frame;
 	GtkWidget		*row_latest_version;
 	GtkWidget		*version_history_button;
 	GtkWidget		*box_reviews;
@@ -1317,7 +1316,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	if (version_history == NULL) {
 		const char *version = gs_app_get_version (self->app);
 		if (version == NULL || *version == '\0')
-			gtk_widget_set_visible (self->box_version_history_frame, FALSE);
+			gtk_widget_set_visible (self->list_box_version_history, FALSE);
 		else
 			gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (self->row_latest_version),
 							     version, gs_app_get_release_date (self->app), NULL);
@@ -3044,7 +3043,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_version_history_frame);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
