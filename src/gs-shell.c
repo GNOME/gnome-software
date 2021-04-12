@@ -81,7 +81,7 @@ struct _GsShell
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
 
-	GtkWidget		*header;
+	GtkWidget		*main_header;
 	GtkWidget		*metered_updates_bar;
 	GtkWidget		*buttonbox_main;
 	GtkWidget		*menu_button;
@@ -168,13 +168,13 @@ gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_start (GTK_HEADER_BAR (shell->header), widget);
+		gtk_header_bar_pack_start (GTK_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_start_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->header), old_widget);
+		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -191,13 +191,13 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_end (GTK_HEADER_BAR (shell->header), widget);
+		gtk_header_bar_pack_end (GTK_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->header), old_widget);
+		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -427,7 +427,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 	g_assert (i < G_N_ELEMENTS (page_name));
 
-	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (shell->header), TRUE);
+	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (shell->main_header), TRUE);
 
 	/* update the visibility of mode-specific header widgets
 	 */
@@ -452,7 +452,7 @@ stack_notify_visible_child_cb (GObject    *object,
 					mode == GS_SHELL_MODE_SEARCH);
 	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
 
-	context = gtk_widget_get_style_context (shell->header);
+	context = gtk_widget_get_style_context (shell->main_header);
 	gtk_style_context_remove_class (context, "selection-mode");
 
 	/* set the window title back to default */
@@ -2109,15 +2109,15 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* fix up the header bar */
 #if 0
 	if (gs_utils_is_current_desktop ("Unity")) {
-		style_context = gtk_widget_get_style_context (shell->header);
+		style_context = gtk_widget_get_style_context (shell->main_header);
 		gtk_style_context_remove_class (style_context, GTK_STYLE_CLASS_TITLEBAR);
 		gtk_style_context_add_class (style_context, GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (shell->header), "");
+		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (shell->main_header), "");
 	} else {
-		g_object_ref (shell->header);
-		gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (shell->header)), shell->header);
-		gtk_window_set_titlebar (GTK_WINDOW (shell), shell->header);
-		g_object_unref (shell->header);
+		g_object_ref (shell->main_header);
+		gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (shell->main_header)), shell->main_header);
+		gtk_window_set_titlebar (GTK_WINDOW (shell), shell->main_header);
+		g_object_unref (shell->main_header);
 	}
 #endif
 
@@ -2358,7 +2358,7 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShell, header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, buttonbox_main);
