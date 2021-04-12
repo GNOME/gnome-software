@@ -83,13 +83,9 @@ struct _GsShell
 
 	GtkWidget		*main_header;
 	GtkWidget		*metered_updates_bar;
-	GtkWidget		*buttonbox_main;
 	GtkWidget		*menu_button;
 	GtkWidget		*header_selection_menu_button;
 	GtkWidget		*search_button;
-	GtkWidget		*button_explore;
-	GtkWidget		*button_installed;
-	GtkWidget		*button_updates;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
@@ -436,7 +432,6 @@ stack_notify_visible_child_cb (GObject    *object,
 			     mode == GS_SHELL_MODE_UPDATES ||
 			     mode == GS_SHELL_MODE_SEARCH);
 
-	gtk_widget_set_visible (shell->buttonbox_main, buttonbox_visible);
 	gtk_widget_set_visible (shell->menu_button, buttonbox_visible);
 	gtk_widget_hide (shell->header_selection_menu_button);
 
@@ -457,23 +452,6 @@ stack_notify_visible_child_cb (GObject    *object,
 
 	/* set the window title back to default */
 	gtk_window_set_title (GTK_WINDOW (shell), g_get_application_name ());
-
-	/* update main buttons according to mode */
-	g_signal_handlers_block_by_func (shell->button_explore, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_explore), mode == GS_SHELL_MODE_OVERVIEW);
-	g_signal_handlers_unblock_by_func (shell->button_explore, gs_overview_page_button_cb, shell);
-
-	g_signal_handlers_block_by_func (shell->button_installed, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_installed), mode == GS_SHELL_MODE_INSTALLED);
-	g_signal_handlers_unblock_by_func (shell->button_installed, gs_overview_page_button_cb, shell);
-
-	g_signal_handlers_block_by_func (shell->button_updates, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_updates), mode == GS_SHELL_MODE_UPDATES);
-	g_signal_handlers_unblock_by_func (shell->button_updates, gs_overview_page_button_cb, shell);
-
-	gtk_widget_set_visible (shell->button_updates,
-				gs_plugin_loader_get_allow_updates (shell->plugin_loader) ||
-				mode == GS_SHELL_MODE_UPDATES);
 
 	/* do action for mode */
 	page = shell->pages[mode];
@@ -959,31 +937,9 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 	/* adapt the window for low and medium resolution screens */
 	gdk_monitor_get_geometry (monitor, &geometry);
 	if (geometry.width < 800 || geometry.height < 600) {
-		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
-					     shell->button_explore,
-					     "non-homogeneous", TRUE,
-					     NULL);
-		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
-					     shell->button_installed,
-					     "non-homogeneous", TRUE,
-					     NULL);
-		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
-					     shell->button_updates,
-					     "non-homogeneous", TRUE,
-					     NULL);
 	} else if (geometry.width < 1366 || geometry.height < 768) {
 		gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
 	}
-}
-
-static void
-gs_shell_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
-				    GParamSpec *pspec,
-				    GsShell *shell)
-{
-	gtk_widget_set_visible (shell->button_updates,
-				gs_plugin_loader_get_allow_updates (plugin_loader) ||
-				gs_shell_get_mode (shell) == GS_SHELL_MODE_UPDATES);
 }
 
 typedef enum {
@@ -2087,15 +2043,17 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect_object (shell->plugin_loader, "notify::events",
 				 G_CALLBACK (gs_shell_events_notify_cb),
 				 shell, 0);
-	g_signal_connect_object (shell->plugin_loader, "notify::allow-updates",
-				 G_CALLBACK (gs_shell_allow_updates_notify_cb),
-				 shell, 0);
 	g_signal_connect_object (shell->plugin_loader, "notify::network-metered",
 				 G_CALLBACK (gs_shell_network_metered_notify_cb),
 				 shell, 0);
 	g_signal_connect_object (shell->plugin_loader, "basic-auth-start",
 				 G_CALLBACK (gs_shell_basic_auth_start_cb),
 				 shell, 0);
+
+	g_object_bind_property (shell->plugin_loader, "allow-updates",
+				shell->pages[GS_SHELL_MODE_UPDATES], "visible",
+				G_BINDING_SYNC_CREATE);
+
 	shell->cancellable = g_object_ref (cancellable);
 
 	shell->settings = g_settings_new ("org.gnome.software");
@@ -2120,17 +2078,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		g_object_unref (shell->main_header);
 	}
 #endif
-
-	/* setup buttons */
-	g_object_set_data (G_OBJECT (shell->button_explore),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_SHELL_MODE_OVERVIEW));
-	g_object_set_data (G_OBJECT (shell->button_installed),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_SHELL_MODE_INSTALLED));
-	g_object_set_data (G_OBJECT (shell->button_updates),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
 
 	/* set up pages */
 	gs_shell_setup_pages (shell);
@@ -2361,13 +2308,9 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, buttonbox_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, header_selection_menu_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_explore);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_installed);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, button_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
