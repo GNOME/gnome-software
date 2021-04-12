@@ -2048,26 +2048,24 @@ gs_shell_close_window_accel_cb (GtkAccelGroup *accel_group,
 }
 
 static void
-counter_notify_label_cb (GObject    *obj,
-                         GParamSpec *pspec,
-                         gpointer    user_data)
+updates_page_notify_counter_cb (GObject    *obj,
+                                GParamSpec *pspec,
+                                gpointer    user_data)
 {
-	GtkLabel *label = GTK_LABEL (obj);
+	GsPage *page = GS_PAGE (obj);
 	GsShell *shell = GS_SHELL (user_data);
-	gboolean is_interesting;
+	gboolean needs_attention;
 
-	/* hide the label if its value is not useful to the user */
-	is_interesting = (g_strcmp0 (gtk_label_get_label (label), "") != 0 &&
-			  g_strcmp0 (gtk_label_get_label (label), "0") != 0);
+	/* Update the needs-attention child property of the page in the
+	 * GtkStack. There’s no need to account for whether it’s the currently
+	 * visible page, as the CSS rules do that for us. This can’t be a simple
+	 * property binding, though, as it’s a binding between an object
+	 * property and a child property. */
+	needs_attention = (gs_page_get_counter (page) > 0);
 
-	gtk_widget_set_visible (GTK_WIDGET (label), is_interesting);
-
-	/* update the tab style */
-	if (is_interesting &&
-	    gs_shell_get_mode (shell) != GS_SHELL_MODE_UPDATES)
-		gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (label)), "needs-attention");
-	else
-		gtk_style_context_remove_class (gtk_widget_get_style_context (GTK_WIDGET (label)), "needs-attention");
+	gtk_container_child_set (GTK_CONTAINER (shell->stack_main), GTK_WIDGET (page),
+				 "needs-attention", needs_attention,
+				 NULL);
 }
 
 void
@@ -2388,7 +2386,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, window_button_press_event);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
-	gtk_widget_class_bind_template_callback (widget_class, counter_notify_label_cb);
+	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);
