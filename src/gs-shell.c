@@ -2078,7 +2078,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 {
 	g_autoptr(GtkAccelGroup) accel_group = NULL;
 	GClosure *closure;
-	GtkStyleContext *style_context;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
 
