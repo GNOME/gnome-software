@@ -2103,21 +2103,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
 	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
-	/* fix up the header bar */
-#if 0
-	if (gs_utils_is_current_desktop ("Unity")) {
-		style_context = gtk_widget_get_style_context (shell->main_header);
-		gtk_style_context_remove_class (style_context, GTK_STYLE_CLASS_TITLEBAR);
-		gtk_style_context_add_class (style_context, GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (shell->main_header), "");
-	} else {
-		g_object_ref (shell->main_header);
-		gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (shell->main_header)), shell->main_header);
-		gtk_window_set_titlebar (GTK_WINDOW (shell), shell->main_header);
-		g_object_unref (shell->main_header);
-	}
-#endif
-
 	/* set up pages */
 	gs_shell_setup_pages (shell);
 
