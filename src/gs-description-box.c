@@ -64,6 +64,8 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	gtk_button_set_label (box->button, box->is_collapsed ? _("_Read More") : _("_Read Less"));
 
 	gtk_label_set_text (box->label, box->text);
+	gtk_label_set_lines (box->label, -1);
+	gtk_label_set_ellipsize (box->label, PANGO_ELLIPSIZE_NONE);
 
 	layout = gtk_label_get_layout (box->label);
 	n_lines = pango_layout_get_line_count (layout);
@@ -91,9 +93,6 @@ gs_description_box_update_content (GsDescriptionBox *box)
 		gtk_label_set_text (box->label, str->str);
 
 		g_string_free (str, TRUE);
-	} else {
-		gtk_label_set_lines (box->label, -1);
-		gtk_label_set_ellipsize (box->label, PANGO_ELLIPSIZE_NONE);
 	}
 }
 
