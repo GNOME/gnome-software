@@ -25,23 +25,17 @@
                 <property name="visible">True</property>
                 <property name="vexpand">True</property>
                 <property name="hexpand">False</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+                <property name="margin-bottom">18</property>
+                <property name="margin-top">18</property>
                 <child>
-                  <object class="GtkFrame">
+                  <object class="GtkListBox" id="listbox">
                     <property name="visible">True</property>
-                    <property name="shadow_type">none</property>
-                    <property name="margin-start">12</property>
-                    <property name="margin-end">12</property>
-                    <property name="margin-bottom">18</property>
-                    <property name="margin-top">18</property>
-                    <child>
-                      <object class="GtkListBox" id="listbox">
-                        <property name="visible">True</property>
-                        <property name="selection-mode">none</property>
-                        <style>
-                          <class name="content"/>
-                        </style>
-                      </object>
-                    </child>
+                    <property name="selection-mode">none</property>
+                    <style>
+                      <class name="content"/>
+                    </style>
                   </object>
                 </child>
               </object>

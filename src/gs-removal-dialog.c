@@ -23,17 +23,6 @@ struct _GsRemovalDialog
 
 G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, GTK_TYPE_MESSAGE_DIALOG)
 
-static void
-list_header_func (GtkListBoxRow *row,
-                  GtkListBoxRow *before,
-                  gpointer user_data)
-{
-	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
 static gint
 list_sort_func (GtkListBoxRow *a,
                 GtkListBoxRow *b,
@@ -141,10 +130,6 @@ gs_removal_dialog_init (GsRemovalDialog *self)
 
 	insert_details_widget (GTK_MESSAGE_DIALOG (self), self->scrolledwindow);
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (self->listbox),
-	                              list_header_func,
-	                              self,
-	                              NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->listbox),
 	                            list_sort_func,
 	                            self, NULL);

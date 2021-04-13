@@ -28,8 +28,6 @@ struct _GsReposDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
-	GtkWidget	*frame;
-	GtkWidget	*frame_third_party;
 	GtkWidget	*label_description;
 	GtkWidget	*label_empty;
 	GtkWidget	*label_header;
@@ -498,11 +496,11 @@ static void
 refresh_third_party_repo (GsReposDialog *dialog)
 {
 	if (dialog->third_party_repo == NULL) {
-		gtk_widget_hide (dialog->frame_third_party);
+		gtk_widget_hide (dialog->listbox_third_party);
 		return;
 	}
 
-	gtk_widget_show (dialog->frame_third_party);
+	gtk_widget_show (dialog->listbox_third_party);
 }
 
 static void
@@ -571,7 +569,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		add_repo (dialog, app);
 	}
 
-	gtk_widget_set_visible (dialog->frame,
+	gtk_widget_set_visible (dialog->listbox,
 		gtk_list_box_get_row_at_index (GTK_LIST_BOX (dialog->listbox), 0) != NULL);
 }
 
@@ -663,17 +661,6 @@ reload_third_party_repo (GsReposDialog *dialog)
 	                                    dialog->cancellable,
 	                                    (GAsyncReadyCallback) resolve_third_party_repo_cb,
 	                                    dialog);
-}
-
-static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
 }
 
 static gchar *
@@ -800,10 +787,6 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 
 	os_name = get_os_name ();
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox),
-				      list_header_func,
-				      dialog,
-				      NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->listbox),
 				    list_sort_func,
 				    dialog, NULL);
@@ -817,10 +800,6 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
-	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox_third_party),
-	                              list_header_func,
-	                              dialog,
-	                              NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->listbox_third_party),
 	                            list_sort_func,
 	                            dialog, NULL);
@@ -863,8 +842,6 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_description);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
