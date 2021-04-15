@@ -1,5 +1,8 @@
+include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
+
 stages:
   - build
+  - deploy
 
 cache:
   paths:
@@ -9,6 +12,7 @@ variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr"
+  BUNDLE: "gnome-software-dev.flatpak"
 
 .build:
   before_script:
@@ -69,3 +73,32 @@ debian-stable-x86_64:
       - "_build/config.h"
       - "_build/meson-logs"
       - "_build/${CI_JOB_NAME}-report.xml"
+
+# Allow building a flatpak on demand to test out the gnome-software UI
+flatpak bundle:
+  extends: '.flatpak'
+  stage: 'build'
+  dependencies: []
+  variables:
+    MANIFEST_PATH: "contrib/org.gnome.SoftwareDevel.yml"
+    FLATPAK_MODULE: "gnome-software"
+    RUNTIME_REPO: "https://nightly.gnome.org/gnome-nightly.flatpakrepo"
+    APP_ID: "org.gnome.SoftwareDevel"
+  when: manual
+  allow_failure: true
+  script:
+    # Modified from https://gitlab.gnome.org/GNOME/citemplates/-/blob/master/flatpak/flatpak_ci_initiative.yml
+    # to drop the unit tests, since we don’t need them
+    - rewrite-flatpak-manifest ${MANIFEST_PATH} ${FLATPAK_MODULE} ${CONFIG_OPTS}
+    - flatpak-builder --user --disable-rofiles-fuse flatpak_app --repo=repo ${BRANCH:+--default-branch=$BRANCH} ${MANIFEST_PATH}
+    # Generate a Flatpak bundle
+    - flatpak build-bundle repo ${BUNDLE} --runtime-repo=${RUNTIME_REPO} ${APP_ID} ${BRANCH}
+    - tar cf repo.tar repo/
+
+# Due to the `only` clause in .publish_nightly, this will only publish on-demand
+# builds to nightly.gnome.org if they are built from a commit on `master`
+nightly:
+  extends: '.publish_nightly'
+  dependencies:
+    - 'flatpak bundle'
+

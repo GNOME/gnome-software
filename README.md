@@ -31,7 +31,22 @@ Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.
 
 For development discussion, join us on `#gnome-software` on [irc.gnome.org](https://wiki.gnome.org/Community/GettingInTouch/IRC).
 
-# Building
+# Running a nightly build
+
+A [flatpak bundle](https://docs.flatpak.org/en/latest/single-file-bundles.html)
+of Software can be built on demand here by running the ‘flatpak bundle’ CI job.
+It is not fully functional, but is useful for development and testing of
+upcoming UI changes to Software. It may become more functional over time. It
+is not an official or supported release.
+
+The CI job saves the bundle in its artifacts list as `gnome-software-dev.flatpak`.
+This can be installed and run locally by downloading it and running:
+```
+$ flatpak install --bundle ./gnome-software-dev.flatpak
+$ flatpak run org.gnome.SoftwareDevel
+```
+
+# Building locally
 
 Software uses a number of plugins and depending on your operating system you
 may want to disable or enable certain ones. For example on Fedora Silverblue
