@@ -805,14 +805,17 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 {
 	GsShell *shell = data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	gboolean been_overview;
 
 	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
+
+	been_overview = priv->mode == GS_SHELL_MODE_OVERVIEW;
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
-	if (priv->mode == GS_SHELL_MODE_LOADING) {
+	if (priv->mode == GS_SHELL_MODE_LOADING || been_overview) {
 		GsPage *page;
 
 		page = GS_PAGE (gtk_builder_get_object (priv->builder, "overview_page"));
