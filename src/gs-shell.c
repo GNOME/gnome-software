@@ -778,14 +778,17 @@ static void
 initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 {
 	GsShell *shell = data;
+	gboolean been_overview;
 
 	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
+
+	been_overview = gs_shell_get_mode (shell) == GS_SHELL_MODE_OVERVIEW;
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
-	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING) {
+	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING || been_overview) {
 		g_signal_connect (shell->pages[GS_SHELL_MODE_OVERVIEW], "refreshed",
 		                  G_CALLBACK (overview_page_refresh_done), shell);
 		gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_OVERVIEW]));
