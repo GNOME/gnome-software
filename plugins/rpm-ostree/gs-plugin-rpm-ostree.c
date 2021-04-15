@@ -1508,31 +1508,35 @@ find_packages_by_provides (DnfSack *sack,
 
 static gboolean
 resolve_installed_packages_app (GsPlugin *plugin,
-                                GPtrArray *pkglist,
-                                gchar **layered_packages,
-                                gchar **layered_local_packages,
+                                GHashTable *packages,
+                                GHashTable *layered_packages,
+                                GHashTable *layered_local_packages,
                                 GsApp *app)
 {
-	for (guint i = 0; i < pkglist->len; i++) {
-		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, i);
-		if (g_strcmp0 (rpm_ostree_package_get_name (pkg), gs_app_get_source_default (app)) == 0) {
-			gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
-			if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-				gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-			if (g_strv_contains ((const gchar * const *) layered_packages,
-			                     rpm_ostree_package_get_name (pkg)) ||
-			    g_strv_contains ((const gchar * const *) layered_local_packages,
-			                     rpm_ostree_package_get_nevra (pkg))) {
-				/* layered packages can always be removed */
-				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
-			} else {
-				/* can't remove packages that are part of the base system */
-				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
-			}
-			if (gs_app_get_origin (app) == NULL)
-				gs_app_set_origin (app, "rpm-ostree");
-			return TRUE /* found */;
+	RpmOstreePackage *pkg;
+
+	if (!gs_app_get_source_default (app))
+		return FALSE;
+
+	pkg = g_hash_table_lookup (packages, gs_app_get_source_default (app));
+
+	if (pkg) {
+		gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if ((rpm_ostree_package_get_name (pkg) &&
+		     g_hash_table_contains (layered_packages, rpm_ostree_package_get_name (pkg))) ||
+		    (rpm_ostree_package_get_nevra (pkg) &&
+		     g_hash_table_contains (layered_local_packages, rpm_ostree_package_get_nevra (pkg)))) {
+			/* layered packages can always be removed */
+			gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+		} else {
+			/* can't remove packages that are part of the base system */
+			gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 		}
+		if (gs_app_get_origin (app) == NULL)
+			gs_app_set_origin (app, "rpm-ostree");
+		return TRUE /* found */;
 	}
 
 	return FALSE /* not found */;
@@ -1646,6 +1650,9 @@ gs_plugin_refine (GsPlugin *plugin,
                   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GHashTable) packages = NULL;
+	g_autoptr(GHashTable) layered_packages = NULL;
+	g_autoptr(GHashTable) layered_local_packages = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(GVariant) default_deployment = NULL;
@@ -1653,8 +1660,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(DnfContext) dnf_context = NULL;
 	g_autoptr(OstreeRepo) ot_repo = NULL;
-	g_auto(GStrv) layered_packages = NULL;
-	g_auto(GStrv) layered_local_packages = NULL;
+	g_auto(GStrv) layered_packages_strv = NULL;
+	g_auto(GStrv) layered_local_packages_strv = NULL;
 	g_autofree gchar *checksum = NULL;
 
 	locker = g_mutex_locker_new (&priv->mutex);
@@ -1678,10 +1685,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	default_deployment = gs_rpmostree_os_dup_default_deployment (os_proxy);
 	g_assert (g_variant_lookup (default_deployment,
 	                            "packages", "^as",
-	                            &layered_packages));
+	                            &layered_packages_strv));
 	g_assert (g_variant_lookup (default_deployment,
 	                            "requested-local-packages", "^as",
-	                            &layered_local_packages));
+	                            &layered_local_packages_strv));
 	g_assert (g_variant_lookup (default_deployment,
 	                            "checksum", "s",
 	                            &checksum));
@@ -1690,6 +1697,24 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (pkglist == NULL) {
 		gs_rpmostree_error_convert (error);
 		return FALSE;
+	}
+
+	packages = g_hash_table_new (g_str_hash, g_str_equal);
+	layered_packages = g_hash_table_new (g_str_hash, g_str_equal);
+	layered_local_packages = g_hash_table_new (g_str_hash, g_str_equal);
+
+	for (guint ii = 0; ii < pkglist->len; ii++) {
+		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, ii);
+		if (rpm_ostree_package_get_name (pkg))
+			g_hash_table_insert (packages, (gpointer) rpm_ostree_package_get_name (pkg), pkg);
+	}
+
+	for (guint ii = 0; layered_packages_strv && layered_packages_strv[ii]; ii++) {
+		g_hash_table_add (layered_packages, layered_packages_strv[ii]);
+	}
+
+	for (guint ii = 0; layered_local_packages_strv && layered_local_packages_strv[ii]; ii++) {
+		g_hash_table_add (layered_local_packages, layered_local_packages_strv[ii]);
 	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -1721,7 +1746,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 
 		/* first try to resolve from installed packages */
-		found = resolve_installed_packages_app (plugin, pkglist, layered_packages, layered_local_packages, app);
+		found = resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app);
 
 		/* if we didn't find anything, try resolving from available packages */
 		if (!found && dnf_context != NULL)
