@@ -1444,12 +1444,12 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+gs_plugin_flatpak_do_search (GsPlugin *plugin,
+			     gchar **values,
+			     GsAppList *list,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
@@ -1459,7 +1459,28 @@ gs_plugin_add_search (GsPlugin *plugin,
 			return FALSE;
 		}
 	}
+
 	return TRUE;
+}
+
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      gchar **values,
+		      GsAppList *list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	return gs_plugin_flatpak_do_search (plugin, values, list, cancellable, error);
+}
+
+gboolean
+gs_plugin_add_search_what_provides (GsPlugin *plugin,
+				    gchar **search,
+				    GsAppList *list,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	return gs_plugin_flatpak_do_search (plugin, search, list, cancellable, error);
 }
 
 gboolean
