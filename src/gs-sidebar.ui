@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GsSidebar" parent="GtkBox">
+    <property name="visible">True</property>
+
+    <child>
+      <object class="GtkListBox" id="list_box">
+        <property name="visible">True</property>
+        <signal name="row-selected" handler="row_selected_cb"/>
+
+        <!-- Rows and separators inserted in code -->
+
+      </object>
+    </child>
+
+  </template>
+</interface>
