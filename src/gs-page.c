@@ -203,6 +203,13 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 
+	/* the app removal needs system reboot, e.g. for rpm-ostree */
+	if (gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+		g_autoptr(GsAppList) list = gs_app_list_new ();
+		gs_app_list_add (list, helper->app);
+		gs_utils_reboot_notify (list, FALSE);
+	}
+
 	if (!gs_app_is_installed (helper->app) &&
 	    GS_PAGE_GET_CLASS (page)->app_removed != NULL) {
 		GS_PAGE_GET_CLASS (page)->app_removed (page, helper->app);
