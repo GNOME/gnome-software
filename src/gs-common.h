@@ -46,7 +46,8 @@ gchar		*gs_utils_build_unique_id_kind	(AsComponentKind kind,
 						 const gchar	*id);
 gboolean	 gs_utils_list_has_component_fuzzy	(GsAppList	*list,
 						 GsApp		*app);
-void		 gs_utils_reboot_notify		(GsAppList	*list);
+void		 gs_utils_reboot_notify		(GsAppList	*list,
+						 gboolean	 is_install);
 gchar		*gs_utils_time_to_string	(gint64		 unix_time_seconds);
 void		 gs_utils_invoke_reboot_async	(GCancellable	*cancellable,
 						 GAsyncReadyCallback ready_callback,

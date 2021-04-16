@@ -678,16 +678,45 @@ gs_utils_list_has_component_fuzzy (GsAppList *list, GsApp *app)
 }
 
 void
-gs_utils_reboot_notify (GsAppList *list)
+gs_utils_reboot_notify (GsAppList *list,
+			gboolean is_install)
 {
 	g_autoptr(GNotification) n = NULL;
+	g_autofree gchar *tmp = NULL;
+	const gchar *app_name;
 	const gchar *title;
 	const gchar *body;
 
-	/* TRANSLATORS: we've just live-updated some apps */
-	title = ngettext ("An update has been installed",
-	                  "Updates have been installed",
-	                  gs_app_list_length (list));
+	if (gs_app_list_length (list) == 1) {
+		GsApp *app = gs_app_list_index (list, 0);
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP) {
+			app_name = gs_app_get_name (app);
+			if (!*app_name)
+				app_name = NULL;
+		}
+	}
+
+	if (is_install) {
+		if (app_name) {
+			/* TRANSLATORS: The '%s' is replaced with the application name */
+			tmp = g_strdup_printf ("An application “%s” has been installed", app_name);
+			title = tmp;
+		} else {
+			/* TRANSLATORS: we've just live-updated some apps */
+			title = ngettext ("An update has been installed",
+					  "Updates have been installed",
+					  gs_app_list_length (list));
+		}
+	} else if (app_name) {
+		/* TRANSLATORS: The '%s' is replaced with the application name */
+		tmp = g_strdup_printf ("An application “%s” has been removed", app_name);
+		title = tmp;
+	} else {
+		/* TRANSLATORS: we've just removed some apps */
+		title = ngettext ("An application has been removed",
+				  "Applications have been removed",
+				  gs_app_list_length (list));
+	}
 
 	/* TRANSLATORS: the new apps will not be run until we restart */
 	body = ngettext ("A restart is required for it to take effect.",

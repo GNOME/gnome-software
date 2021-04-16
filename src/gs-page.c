@@ -154,7 +154,7 @@ gs_page_app_installed_cb (GObject *source,
 	if (gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
 		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, helper->app);
-		gs_utils_reboot_notify (list);
+		gs_utils_reboot_notify (list, TRUE);
 	}
 
 	/* tell the user what they have to do */

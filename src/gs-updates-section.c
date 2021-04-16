@@ -331,7 +331,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	/* when we are not doing an offline update, show a notification
 	 * if any application requires a reboot */
 	} else if (helper->do_reboot_notification) {
-		gs_utils_reboot_notify (self->list);
+		gs_utils_reboot_notify (self->list, TRUE);
 	}
 
 out:
