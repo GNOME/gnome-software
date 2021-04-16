@@ -1927,6 +1927,21 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	if (h) {
+		const gchar *str;
+
+		str = headerGetString (h, RPMTAG_NAME);
+		if (str && *str)
+			gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, str);
+
+		str = headerGetString (h, RPMTAG_SUMMARY);
+		if (str && *str)
+			gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, str);
+
+		str = headerGetString (h, RPMTAG_DESCRIPTION);
+		if (str && *str)
+			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, str);
+	}
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
