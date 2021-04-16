@@ -1536,6 +1536,8 @@ resolve_installed_packages_app (GsPlugin *plugin,
 		}
 		if (gs_app_get_origin (app) == NULL)
 			gs_app_set_origin (app, "rpm-ostree");
+		if (gs_app_get_name (app) == NULL)
+			gs_app_set_name (app, GS_APP_QUALITY_LOWEST, rpm_ostree_package_get_name (pkg));
 		return TRUE /* found */;
 	}
 
@@ -1642,12 +1644,12 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-                  GsAppList *list,
-                  GsPluginRefineFlags flags,
-                  GCancellable *cancellable,
-                  GError **error)
+static gboolean
+gs_rpm_ostree_refine_apps (GsPlugin *plugin,
+			   GsAppList *list,
+			   GsPluginRefineFlags flags,
+			   GCancellable *cancellable,
+			   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GHashTable) packages = NULL;
@@ -1759,6 +1761,16 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin *plugin,
+                  GsAppList *list,
+                  GsPluginRefineFlags flags,
+                  GCancellable *cancellable,
+                  GError **error)
+{
+	return gs_rpm_ostree_refine_apps (plugin, list, flags, cancellable, error);
 }
 
 gboolean
@@ -1888,6 +1900,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_autofree gchar *evr = NULL;
 	g_autofree gchar *filename = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) tmp_list = NULL;
 
 	filename = g_file_get_path (file);
 	if (!g_str_has_suffix (filename, ".rpm")) {
@@ -1947,7 +1960,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* add default source */
 	name = headerGetString (h, RPMTAG_NAME);
@@ -1983,8 +1995,16 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	add_quirks_from_package_name (app, name);
 
-	gs_app_list_add (list, app);
-	ret = TRUE;
+	tmp_list = gs_app_list_new ();
+	gs_app_list_add (tmp_list, app);
+
+	if (gs_rpm_ostree_refine_apps (plugin, tmp_list, 0, cancellable, error)) {
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
+
+		gs_app_list_add (list, app);
+		ret = TRUE;
+	}
 
 out:
 	if (rpmfd != NULL)
