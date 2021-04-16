@@ -43,6 +43,10 @@ struct _GsAppClass
  * @GS_APP_STATE_UPDATABLE_LIVE:		Application is installed and updatable live
  * @GS_APP_STATE_PURCHASABLE:			Application is available for purchasing
  * @GS_APP_STATE_PURCHASING:			Application is being purchased
+ * @GS_APP_STATE_PENDING_INSTALL:		Application is installed, but may have pending some actions,
+ *						like restart, to finish it
+ * @GS_APP_STATE_PENDING_REMOVE:		Application is removed, but may have pending some actions,
+ *						like restart, to finish it
  *
  * The application state.
  **/
@@ -59,6 +63,8 @@ typedef enum {
 	GS_APP_STATE_UPDATABLE_LIVE,			/* Since: 0.5.4 */
 	GS_APP_STATE_PURCHASABLE,			/* Since: 0.5.17 */
 	GS_APP_STATE_PURCHASING,			/* Since: 0.5.17 */
+	GS_APP_STATE_PENDING_INSTALL,			/* Since: 41 */
+	GS_APP_STATE_PENDING_REMOVE,			/* Since: 41 */
 	GS_APP_STATE_LAST  /*< skip >*/
 } GsAppState;
 

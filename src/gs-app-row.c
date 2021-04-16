@@ -412,6 +412,14 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
 		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+		gtk_widget_set_visible (priv->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending install"));
+		break;
+	case GS_APP_STATE_PENDING_REMOVE:
+		gtk_widget_set_visible (priv->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending remove"));
+		break;
 	default:
 		gtk_widget_set_visible (priv->label, FALSE);
 		break;
