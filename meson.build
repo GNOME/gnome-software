@@ -11,6 +11,16 @@ conf.set_quoted('PACKAGE_NAME', meson.project_name())
 conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 conf.set_quoted('BUILD_TYPE', get_option('buildtype'))
 
+build_profile = get_option('profile')
+if get_option('buildtype') == 'release'
+  build_profile = ''
+endif
+
+conf.set_quoted('BUILD_PROFILE', build_profile)
+
+application_id = 'org.gnome.Software' + build_profile
+conf.set_quoted('APPLICATION_ID', application_id)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 gs_plugin_api_version = '16'

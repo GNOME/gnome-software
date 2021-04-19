@@ -348,6 +348,8 @@ about_activated (GSimpleAction *action,
 	};
 	const gchar *copyright = "Copyright \xc2\xa9 2016-2019 Richard Hughes, Matthias Clasen, Kalev Lember";
 	GtkAboutDialog *dialog;
+	g_autofree gchar *program_name_alloc = NULL;
+	const gchar *program_name;
 
 	dialog = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
 	gtk_about_dialog_set_authors (dialog, authors);
@@ -356,7 +358,15 @@ about_activated (GSimpleAction *action,
 	gtk_about_dialog_set_logo_icon_name (dialog, "org.gnome.Software");
 	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
 	gtk_about_dialog_set_version (dialog, get_version());
-	gtk_about_dialog_set_program_name (dialog, g_get_application_name ());
+
+	if (g_strcmp0 (BUILD_PROFILE, "Devel") == 0) {
+		/* This isn’t translated as it’s never released */
+		program_name = program_name_alloc = g_strdup_printf ("%s (Development Snapshot)",
+								     g_get_application_name ());
+	} else {
+		program_name = g_get_application_name ();
+	}
+	gtk_about_dialog_set_program_name (dialog, program_name);
 
 	/* TRANSLATORS: this is the title of the about window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("About Software"));
@@ -1321,7 +1331,7 @@ GsApplication *
 gs_application_new (GsDebug *debug)
 {
 	return g_object_new (GS_APPLICATION_TYPE,
-			     "application-id", "org.gnome.Software",
+			     "application-id", APPLICATION_ID,
 			     "flags", G_APPLICATION_HANDLES_OPEN,
 			     "inactivity-timeout", 12000,
 			     "debug", debug,
