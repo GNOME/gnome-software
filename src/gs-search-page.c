@@ -342,7 +342,11 @@ gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 	g_free (self->value);
 	self->value = g_strdup (value);
 
-	self->changed = TRUE;
+	/* Load immediately, when the page is active */
+	if (self->value && gs_page_is_active (GS_PAGE (self)))
+		gs_search_page_load (self);
+	else
+		self->changed = TRUE;
 }
 
 static void
