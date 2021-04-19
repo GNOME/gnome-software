@@ -344,6 +344,10 @@ about_activated (GSimpleAction *action,
 		"Allan Day",
 		"Ryan Lerch",
 		"William Jon McCann",
+		"Milan Crha",
+		"Joaquim Rocha",
+		"Robert Ancell",
+		"Philip Withnall",
 		NULL
 	};
 	GtkAboutDialog *dialog;
