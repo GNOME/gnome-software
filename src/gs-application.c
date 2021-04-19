@@ -346,12 +346,11 @@ about_activated (GSimpleAction *action,
 		"William Jon McCann",
 		NULL
 	};
-	const gchar *copyright = "Copyright \xc2\xa9 2016-2019 Richard Hughes, Matthias Clasen, Kalev Lember";
 	GtkAboutDialog *dialog;
 
 	dialog = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
 	gtk_about_dialog_set_authors (dialog, authors);
-	gtk_about_dialog_set_copyright (dialog, copyright);
+	gtk_about_dialog_set_copyright (dialog, _("Copyright \xc2\xa9 2016–2021 GNOME Software contributors"));
 	gtk_about_dialog_set_license_type (dialog, GTK_LICENSE_GPL_2_0);
 	gtk_about_dialog_set_logo_icon_name (dialog, "org.gnome.Software");
 	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
