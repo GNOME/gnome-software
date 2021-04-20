@@ -145,6 +145,7 @@ void
 gs_app_tile_class_init (GsAppTileClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_app_tile_get_property;
 	object_class->set_property = gs_app_tile_set_property;
@@ -166,6 +167,8 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
+	gtk_widget_class_set_css_name (widget_class, "app-tile");
 }
 
 void
