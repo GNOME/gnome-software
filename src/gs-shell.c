@@ -60,7 +60,7 @@ typedef struct {
 
 struct _GsShell
 {
-	GtkApplicationWindow	 parent_object;
+	HdyApplicationWindow	 parent_object;
 
 	GSettings		*settings;
 	GCancellable		*cancellable;
@@ -107,7 +107,7 @@ struct _GsShell
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
-G_DEFINE_TYPE (GsShell, gs_shell, GTK_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE (GsShell, gs_shell, HDY_TYPE_APPLICATION_WINDOW)
 
 enum {
 	SIGNAL_LOADED,
@@ -168,7 +168,7 @@ gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_start (GTK_HEADER_BAR (shell->main_header), widget);
+		hdy_header_bar_pack_start (HDY_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_start_widget = widget;
@@ -191,7 +191,7 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_end (GTK_HEADER_BAR (shell->main_header), widget);
+		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_end_widget = widget;

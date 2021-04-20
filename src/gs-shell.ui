@@ -14,7 +14,7 @@
     </item>
   </menu>
 
-  <template class="GsShell" parent="GtkApplicationWindow">
+  <template class="GsShell" parent="HdyApplicationWindow">
     <property name="visible">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
@@ -27,10 +27,10 @@
     <signal name="key-press-event" handler="window_keypress_handler"/>
     <signal name="button-press-event" handler="window_button_press_event" after="yes"/>
 
-    <child type="titlebar">
-      <object class="HdyTitleBar">
+    <child>
+      <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="HdyLeaflet" id="header_leaflet">
             <property name="visible">True</property>
@@ -41,7 +41,7 @@
             <property name="child-transition-duration" bind-source="main_leaflet" bind-property="child-transition-duration" bind-flags="bidirectional|sync-create"/>
             <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
             <child>
-              <object class="GtkHeaderBar" id="sidebar_header">
+              <object class="HdyHeaderBar" id="sidebar_header">
                 <property name="visible" bind-source="sidebar_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                 <property name="can-focus">False</property>
                 <property name="show-close-button">True</property>
@@ -117,7 +117,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHeaderBar" id="main_header">
+              <object class="HdyHeaderBar" id="main_header">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="hexpand">True</property>
@@ -213,13 +213,7 @@
             </child>
           </object>
         </child>
-      </object>
-    </child>
 
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <child>
           <object class="GtkOverlay" id="overlay">
             <property name="visible">True</property>
