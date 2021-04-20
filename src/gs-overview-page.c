@@ -16,11 +16,11 @@
 #include "gs-shell.h"
 #include "gs-overview-page.h"
 #include "gs-app-list-private.h"
-#include "gs-popular-tile.h"
 #include "gs-featured-carousel.h"
 #include "gs-category-tile.h"
 #include "gs-hiding-box.h"
 #include "gs-common.h"
+#include "gs-summary-tile.h"
 
 #define N_TILES					9
 
@@ -188,7 +188,7 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
-		tile = gs_popular_tile_new (app);
+		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
@@ -238,7 +238,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
-		tile = gs_popular_tile_new (app);
+		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (self->box_recent), tile);
@@ -343,7 +343,7 @@ gs_overview_page_get_category_apps_cb (GObject *source_object,
 	/* add all the apps */
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
-		tile = gs_popular_tile_new (app);
+		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (box), tile);
@@ -842,12 +842,12 @@ gs_overview_page_setup (GsPage *page,
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_overview), adj);
 
 	for (i = 0; i < N_TILES; i++) {
-		tile = gs_popular_tile_new (NULL);
+		tile = gs_summary_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
 	}
 
 	for (i = 0; i < N_TILES; i++) {
-		tile = gs_popular_tile_new (NULL);
+		tile = gs_summary_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (self->box_recent), tile);
 	}
 
