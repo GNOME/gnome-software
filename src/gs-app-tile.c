@@ -103,11 +103,3 @@ gs_app_tile_init (GsAppTile *self)
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
 	priv->app_state_changed_idle_id = 0;
 }
-
-GtkWidget *
-gs_app_tile_new (GsApp *app)
-{
-	GsAppTile *self = g_object_new (GS_TYPE_APP_TILE, NULL);
-	gs_app_tile_set_app (self, app);
-	return GTK_WIDGET (self);
-}

@@ -25,7 +25,6 @@ struct _GsAppTileClass
 	void			 (*refresh)		(GsAppTile	*self);
 };
 
-GtkWidget	*gs_app_tile_new	(GsApp *app);
 GsApp		*gs_app_tile_get_app	(GsAppTile	*self);
 void		 gs_app_tile_set_app	(GsAppTile	*self,
 					 GsApp		*app);
