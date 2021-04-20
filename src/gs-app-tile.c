@@ -14,7 +14,7 @@
 
 typedef struct {
 	GsApp				*app;
-	guint				 app_state_changed_idle_id;
+	guint				 app_notify_idle_id;
 } GsAppTilePrivate;
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)
@@ -83,22 +83,25 @@ gs_app_tile_get_app (GsAppTile *self)
 }
 
 static gboolean
-gs_app_tile_state_changed_idle_cb (gpointer user_data)
+gs_app_tile_app_notify_idle_cb (gpointer user_data)
 {
 	GsAppTile *self = GS_APP_TILE (user_data);
 	GsAppTileClass *klass = GS_APP_TILE_GET_CLASS (self);
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
-	priv->app_state_changed_idle_id = 0;
+
+	priv->app_notify_idle_id = 0;
 	klass->refresh (self);
+
 	return G_SOURCE_REMOVE;
 }
 
 static void
-gs_app_tile_state_changed_cb (GsApp *app, GParamSpec *pspec, GsAppTile *self)
+gs_app_tile_app_notify_cb (GsApp *app, GParamSpec *pspec, GsAppTile *self)
 {
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
-	g_clear_handle_id (&priv->app_state_changed_idle_id, g_source_remove);
-	priv->app_state_changed_idle_id = g_idle_add (gs_app_tile_state_changed_idle_cb, self);
+
+	g_clear_handle_id (&priv->app_notify_idle_id, g_source_remove);
+	priv->app_notify_idle_id = g_idle_add (gs_app_tile_app_notify_idle_cb, self);
 }
 
 /**
@@ -118,23 +121,17 @@ gs_app_tile_set_app (GsAppTile *self, GsApp *app)
 	g_return_if_fail (!app || GS_IS_APP (app));
 
 	/* cancel pending refresh */
-	g_clear_handle_id (&priv->app_state_changed_idle_id, g_source_remove);
+	g_clear_handle_id (&priv->app_notify_idle_id, g_source_remove);
 
 	/* disconnect old app */
 	if (priv->app != NULL)
-		g_signal_handlers_disconnect_by_func (priv->app, gs_app_tile_state_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (priv->app, gs_app_tile_app_notify_cb, self);
 	g_set_object (&priv->app, app);
 
 	/* optional refresh */
 	if (klass->refresh != NULL && priv->app != NULL) {
-		g_signal_connect (app, "notify::state",
-				  G_CALLBACK (gs_app_tile_state_changed_cb), self);
-		g_signal_connect (app, "notify::name",
-				  G_CALLBACK (gs_app_tile_state_changed_cb), self);
-		g_signal_connect (app, "notify::summary",
-				  G_CALLBACK (gs_app_tile_state_changed_cb), self);
-		g_signal_connect (app, "notify::key-colors",
-				  G_CALLBACK (gs_app_tile_state_changed_cb), self);
+		g_signal_connect (app, "notify",
+				  G_CALLBACK (gs_app_tile_app_notify_cb), self);
 		klass->refresh (self);
 	}
 
@@ -175,5 +172,5 @@ void
 gs_app_tile_init (GsAppTile *self)
 {
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
-	priv->app_state_changed_idle_id = 0;
+	priv->app_notify_idle_id = 0;
 }
