@@ -217,6 +217,10 @@
     </child>
 
     <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+    <child>
       <object class="GtkOverlay" id="overlay">
         <property name="visible">True</property>
         <property name="halign">fill</property>
@@ -549,29 +553,19 @@
                     </child>
                   </object>
                 </child>
-
-                <child>
-                  <object class="GtkSeparator">
-                    <property name="visible" bind-source="sidebar_switcher" bind-property="visible" bind-flags="sync-create" />
-                    <property name="can-focus">False</property>
-                    <property name="orientation">horizontal</property>
-                    <style>
-                      <class name="sidebar"/>
-                    </style>
-                  </object>
-                </child>
-
-                <child>
-                  <object class="HdyViewSwitcher" id="sidebar_switcher">
-                    <property name="visible" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
-                    <property name="can-focus">True</property>
-                    <property name="stack">stack_main</property>
-                    <property name="policy">HDY_VIEW_SWITCHER_POLICY_NARROW</property>
-                  </object>
-                </child>
               </object>
             </child>
 
+          </object>
+        </child>
+      </object>
+    </child>
+        <child>
+          <object class="HdyViewSwitcherBar" id="sidebar_switcher">
+            <property name="visible">True</property>
+            <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
+            <property name="can-focus">True</property>
+            <property name="stack">stack_main</property>
           </object>
         </child>
       </object>
