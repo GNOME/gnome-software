@@ -166,11 +166,12 @@ if (get_option('snap'))
 else
   cdata.set('snaphandler', '')
 endif
+cdata.set('application_id', application_id)
 
 # replace @bindir@
 configure_file(
   input : 'org.gnome.Software.service.in',
-  output : 'org.gnome.Software.service',
+  output : application_id + '.service',
   install_dir: join_paths(get_option('datadir'), 'dbus-1/services'),
   configuration : cdata
 )
@@ -191,7 +192,7 @@ i18n.merge_file(
       output : 'org.gnome.Software.desktop.tmp',
       configuration : cdata
     ),
-  output: 'org.gnome.Software.desktop',
+  output: application_id + '.desktop',
   type: 'desktop',
   po_dir: join_paths(meson.source_root(), 'po'),
   install: true,

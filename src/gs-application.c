@@ -355,7 +355,7 @@ about_activated (GSimpleAction *action,
 	gtk_about_dialog_set_authors (dialog, authors);
 	gtk_about_dialog_set_copyright (dialog, copyright);
 	gtk_about_dialog_set_license_type (dialog, GTK_LICENSE_GPL_2_0);
-	gtk_about_dialog_set_logo_icon_name (dialog, "org.gnome.Software");
+	gtk_about_dialog_set_logo_icon_name (dialog, APPLICATION_ID);
 	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
 	gtk_about_dialog_set_version (dialog, get_version());
 
