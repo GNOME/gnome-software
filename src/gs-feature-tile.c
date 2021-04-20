@@ -466,11 +466,8 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 GtkWidget *
 gs_feature_tile_new (GsApp *app)
 {
-	GsFeatureTile *tile;
-	tile = g_object_new (GS_TYPE_FEATURE_TILE,
+	return g_object_new (GS_TYPE_FEATURE_TILE,
 			     "vexpand", FALSE,
+			     "app", app,
 			     NULL);
-	if (app != NULL)
-		gs_app_tile_set_app (GS_APP_TILE (tile), app);
-	return GTK_WIDGET (tile);
 }

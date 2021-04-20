@@ -239,9 +239,9 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 }
 
 GtkWidget *
-gs_summary_tile_new (GsApp *cat)
+gs_summary_tile_new (GsApp *app)
 {
-	GsAppTile *tile = g_object_new (GS_TYPE_SUMMARY_TILE, NULL);
-	gs_app_tile_set_app (tile, cat);
-	return GTK_WIDGET (tile);
+	return g_object_new (GS_TYPE_SUMMARY_TILE,
+			     "app", app,
+			     NULL);
 }
