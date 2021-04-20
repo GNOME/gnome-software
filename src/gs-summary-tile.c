@@ -17,6 +17,7 @@
 struct _GsSummaryTile
 {
 	GsAppTile	 parent_instance;
+
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
@@ -111,7 +112,6 @@ gs_summary_tile_init (GsSummaryTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	tile->preferred_width = -1;
-//	gtk_image_clear (GTK_IMAGE (tile->image));
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 
