@@ -28,10 +28,11 @@ struct _GsSummaryTile
 
 G_DEFINE_TYPE (GsSummaryTile, gs_summary_tile, GS_TYPE_APP_TILE)
 
-enum {
-	PROP_0,
-	PROP_PREFERRED_WIDTH
-};
+typedef enum {
+	PROP_PREFERRED_WIDTH = 1,
+} GsSummaryTileProperty;
+
+static GParamSpec *obj_props[PROP_PREFERRED_WIDTH + 1] = { NULL, };
 
 static void
 gs_summary_tile_refresh (GsAppTile *self)
@@ -130,7 +131,7 @@ gs_summary_tile_get_property (GObject *object,
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
 
-	switch (prop_id) {
+	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		g_value_set_int (value, app_tile->preferred_width);
 		break;
@@ -148,10 +149,11 @@ gs_summary_tile_set_property (GObject *object,
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
 
-	switch (prop_id) {
+	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		app_tile->preferred_width = g_value_get_int (value);
 		gtk_widget_queue_resize (GTK_WIDGET (app_tile));
+		g_object_notify_by_pspec (object, obj_props[PROP_PREFERRED_WIDTH]);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -217,12 +219,14 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 	 * this property to -1 to turn off this feature and return the default
 	 * natural width instead.
 	 */
-	g_object_class_install_property (object_class, PROP_PREFERRED_WIDTH,
-					 g_param_spec_int ("preferred-width",
-							   "Preferred width",
-							   "The preferred width of this widget, its only purpose is to trick the parent container",
-							   -1, G_MAXINT, -1,
-							   G_PARAM_READWRITE));
+	obj_props[PROP_PREFERRED_WIDTH] =
+		g_param_spec_int ("preferred-width",
+				  "Preferred width",
+				  "The preferred width of this widget, its only purpose is to trick the parent container",
+				  -1, G_MAXINT, -1,
+				  G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-summary-tile.ui");
 
