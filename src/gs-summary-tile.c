@@ -23,7 +23,6 @@ struct _GsSummaryTile
 	GtkWidget	*eventbox;
 	GtkWidget	*stack;
 	gint		 preferred_width;
-	GtkCssProvider	*tile_provider;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsSummaryTile, gs_summary_tile, GS_TYPE_APP_TILE)
@@ -45,8 +44,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
-	const gchar *css;
-	g_autofree gchar *modified_css = NULL;
 
 	if (app == NULL)
 		return;
@@ -72,11 +69,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 		gtk_style_context_add_class (context, "icon-dropshadow");
 	else
 		gtk_style_context_remove_class (context, "icon-dropshadow");
-
-	/* perhaps set custom css */
-	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	modified_css = gs_utils_set_key_colors_in_css (css, app);
-	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", modified_css);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
@@ -162,16 +154,6 @@ gs_summary_tile_set_property (GObject *object,
 }
 
 static void
-gs_summary_tile_dispose (GObject *object)
-{
-	GsSummaryTile *tile = GS_SUMMARY_TILE (object);
-
-	g_clear_object (&tile->tile_provider);
-
-	G_OBJECT_CLASS (gs_summary_tile_parent_class)->dispose (object);
-}
-
-static void
 gs_app_get_preferred_width (GtkWidget *widget,
 			    gint *min, gint *nat)
 {
@@ -201,7 +183,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
-	object_class->dispose = gs_summary_tile_dispose;
 
 	widget_class->get_preferred_width = gs_app_get_preferred_width;
 

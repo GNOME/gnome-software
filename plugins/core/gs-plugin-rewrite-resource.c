@@ -26,7 +26,6 @@ refine_app (GsPlugin             *plugin,
 	    GError              **error)
 {
 	const gchar *keys[] = {
-		"GnomeSoftware::AppTile-css",
 		"GnomeSoftware::FeatureTile-css",
 		"GnomeSoftware::UpgradeBanner-css",
 		NULL };
