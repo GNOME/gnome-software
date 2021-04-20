@@ -17,21 +17,22 @@
 struct _GsSummaryTile
 {
 	GsAppTile	 parent_instance;
+
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
 	GtkWidget	*eventbox;
 	GtkWidget	*stack;
 	gint		 preferred_width;
-	GtkCssProvider	*tile_provider;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsSummaryTile, gs_summary_tile, GS_TYPE_APP_TILE)
 
-enum {
-	PROP_0,
-	PROP_PREFERRED_WIDTH
-};
+typedef enum {
+	PROP_PREFERRED_WIDTH = 1,
+} GsSummaryTileProperty;
+
+static GParamSpec *obj_props[PROP_PREFERRED_WIDTH + 1] = { NULL, };
 
 static void
 gs_summary_tile_refresh (GsAppTile *self)
@@ -44,8 +45,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 	const gchar *summary;
-	const gchar *css;
-	g_autofree gchar *modified_css = NULL;
 
 	if (app == NULL)
 		return;
@@ -71,11 +70,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 		gtk_style_context_add_class (context, "icon-dropshadow");
 	else
 		gtk_style_context_remove_class (context, "icon-dropshadow");
-
-	/* perhaps set custom css */
-	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	modified_css = gs_utils_set_key_colors_in_css (css, app);
-	gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "summary-tile", modified_css);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
@@ -118,7 +112,6 @@ gs_summary_tile_init (GsSummaryTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	tile->preferred_width = -1;
-//	gtk_image_clear (GTK_IMAGE (tile->image));
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 
@@ -130,7 +123,7 @@ gs_summary_tile_get_property (GObject *object,
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
 
-	switch (prop_id) {
+	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		g_value_set_int (value, app_tile->preferred_width);
 		break;
@@ -148,25 +141,16 @@ gs_summary_tile_set_property (GObject *object,
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
 
-	switch (prop_id) {
+	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		app_tile->preferred_width = g_value_get_int (value);
 		gtk_widget_queue_resize (GTK_WIDGET (app_tile));
+		g_object_notify_by_pspec (object, obj_props[PROP_PREFERRED_WIDTH]);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static void
-gs_summary_tile_dispose (GObject *object)
-{
-	GsSummaryTile *tile = GS_SUMMARY_TILE (object);
-
-	g_clear_object (&tile->tile_provider);
-
-	G_OBJECT_CLASS (gs_summary_tile_parent_class)->dispose (object);
 }
 
 static void
@@ -199,7 +183,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
-	object_class->dispose = gs_summary_tile_dispose;
 
 	widget_class->get_preferred_width = gs_app_get_preferred_width;
 
@@ -217,13 +200,16 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 	 * this property to -1 to turn off this feature and return the default
 	 * natural width instead.
 	 */
-	g_object_class_install_property (object_class, PROP_PREFERRED_WIDTH,
-					 g_param_spec_int ("preferred-width",
-							   "Preferred width",
-							   "The preferred width of this widget, its only purpose is to trick the parent container",
-							   -1, G_MAXINT, -1,
-							   G_PARAM_READWRITE));
+	obj_props[PROP_PREFERRED_WIDTH] =
+		g_param_spec_int ("preferred-width",
+				  "Preferred width",
+				  "The preferred width of this widget, its only purpose is to trick the parent container",
+				  -1, G_MAXINT, -1,
+				  G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
+	gtk_widget_class_set_css_name (widget_class, "summary-tile");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-summary-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
@@ -239,9 +225,9 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 }
 
 GtkWidget *
-gs_summary_tile_new (GsApp *cat)
+gs_summary_tile_new (GsApp *app)
 {
-	GsAppTile *tile = g_object_new (GS_TYPE_SUMMARY_TILE, NULL);
-	gs_app_tile_set_app (tile, cat);
-	return GTK_WIDGET (tile);
+	return g_object_new (GS_TYPE_SUMMARY_TILE,
+			     "app", app,
+			     NULL);
 }
