@@ -100,7 +100,10 @@ gs_app_tile_app_notify_cb (GsApp *app, GParamSpec *pspec, GsAppTile *self)
 {
 	GsAppTilePrivate *priv = gs_app_tile_get_instance_private (self);
 
-	g_clear_handle_id (&priv->app_notify_idle_id, g_source_remove);
+	/* Already pending */
+	if (priv->app_notify_idle_id != 0)
+		return;
+
 	priv->app_notify_idle_id = g_idle_add (gs_app_tile_app_notify_idle_cb, self);
 }
 
