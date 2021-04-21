@@ -31,13 +31,8 @@ struct _GsCategoryPage
 
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
-	GtkWidget	*subcats_filter_label;
-	GtkWidget	*subcats_filter_button_label;
-	GtkWidget	*subcats_filter_button;
-	GtkWidget	*popover_filter_box;
 	GtkWidget	*featured_grid;
 	GtkWidget	*featured_heading;
-	GtkWidget	*header_filter_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -243,47 +238,15 @@ gs_category_page_reload (GsPage *page)
 }
 
 static void
-gs_category_page_populate_filtered (GsCategoryPage *self, GsCategory *subcategory)
-{
-	g_assert (subcategory != NULL);
-	g_set_object (&self->subcategory, subcategory);
-	gs_category_page_reload (GS_PAGE (self));
-}
-
-static void
-filter_button_activated (GtkWidget *button,  gpointer data)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
-	GsCategory *category;
-
-	category = g_object_get_data (G_OBJECT (button), "category");
-
-	gtk_label_set_text (GTK_LABEL (self->subcats_filter_button_label),
-			    gs_category_get_name (category));
-	gs_category_page_populate_filtered (self, category);
-}
-
-static gboolean
-gs_category_page_should_use_header_filter (GsCategory *category)
-{
-	return g_strcmp0 (gs_category_get_id (category), "addons") == 0;
-}
-
-static void
 gs_category_page_create_filter (GsCategoryPage *self,
 				GsCategory *category)
 {
-	GtkWidget *button = NULL;
-	GsCategory *s;
+	GsCategory *s, *first_subcat = NULL;
 	guint i;
 	GPtrArray *children;
-	GtkWidget *first_subcat = NULL;
 	gboolean featured_category_found = FALSE;
-	gboolean use_header_filter = gs_category_page_should_use_header_filter (category);
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-	gs_container_remove_all (GTK_CONTAINER (self->header_filter_box));
-	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
 
 	children = gs_category_get_children (category);
 	for (i = 0; i < children->len; i++) {
@@ -300,36 +263,13 @@ gs_category_page_create_filter (GsCategoryPage *self,
 			continue;
 		}
 
-		/* create the right button type depending on where it will be used */
-		if (use_header_filter) {
-			if (button == NULL)
-				button = gtk_radio_button_new (NULL);
-			else
-				button = gtk_radio_button_new_from_widget (GTK_RADIO_BUTTON (button));
-			g_object_set (button, "xalign", 0.5, "label", gs_category_get_name (s),
-				      "draw-indicator", FALSE, "relief", GTK_RELIEF_NONE, NULL);
-			gtk_container_add (GTK_CONTAINER (self->header_filter_box), button);
-		} else {
-			button = gtk_model_button_new ();
-			g_object_set (button, "xalign", 0.0, "text", gs_category_get_name (s), NULL);
-			gtk_container_add (GTK_CONTAINER (self->popover_filter_box), button);
-		}
-
-		g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (s), g_object_unref);
-		gtk_widget_show (button);
-		g_signal_connect (button, "clicked", G_CALLBACK (filter_button_activated), self);
-
-		/* make sure the first subcategory gets selected */
 		if (first_subcat == NULL)
-		        first_subcat = button;
+			first_subcat = s;
 	}
-	if (first_subcat != NULL)
-		filter_button_activated (first_subcat, self);
 
-	/* show only the adequate filter */
-	gtk_widget_set_visible (self->subcats_filter_label, !use_header_filter);
-	gtk_widget_set_visible (self->subcats_filter_button, !use_header_filter);
-	gtk_widget_set_visible (self->header_filter_box, use_header_filter);
+	g_set_object (&self->subcategory, first_subcat);
+	if (first_subcat != NULL)
+		gs_category_page_reload (GS_PAGE (self));
 
 	if (featured_category_found) {
 		g_autofree gchar *featured_heading = NULL;
@@ -457,13 +397,8 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_heading);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, header_filter_box);
 }
 
 GsCategoryPage *
