@@ -134,7 +134,7 @@ gs_shell_search_provider_get_app_sort_key (GsApp *app)
 	return g_string_free (key, FALSE);
 }
 
-static gboolean
+static gint
 gs_shell_search_provider_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	g_autofree gchar *key1 = NULL;

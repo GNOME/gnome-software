@@ -46,7 +46,19 @@ G_STATIC_ASSERT (sizeof (GsAppListFilterFlags) == sizeof (guint64));
 
 G_DECLARE_FINAL_TYPE (GsAppList, gs_app_list, GS, APP_LIST, GObject)
 
-typedef gboolean (*GsAppListSortFunc)		(GsApp		*app1,
+/**
+ * GsAppListSortFunc:
+ * @app1:
+ * @app2:
+ * @user_data: user data passed into the sort function
+ *
+ * A version of #GCompareFunc which is specific to #GsApps.
+ *
+ * Returns: zero if @app1 and @app2 are equal, a negative value if @app1 comes
+ *     before @app2, or a positive value if @app1 comes after @app2
+ * Since: 41
+ */
+typedef gint	 (*GsAppListSortFunc)		(GsApp		*app1,
 						 GsApp		*app2,
 						 gpointer	 user_data);
 typedef gboolean (*GsAppListFilterFunc)		(GsApp		*app,

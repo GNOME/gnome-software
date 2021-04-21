@@ -140,10 +140,10 @@ gs_category_page_get_apps_cb (GObject *source_object,
 	g_signal_handler_unblock (self->sort_name_button, self->sort_name_handler_id);
 }
 
-static gboolean
+static gint
 _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	return gs_app_get_rating (app1) < gs_app_get_rating (app2);
+	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
 }
 
 static gint
