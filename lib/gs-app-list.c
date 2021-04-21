@@ -595,7 +595,7 @@ gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 /**
  * gs_app_list_sort:
  * @list: A #GsAppList
- * @func: A #GCompareFunc
+ * @func: A #GsAppListSortFunc
  * @user_data: user data to pass to @func
  *
  * Sorts the application list.
