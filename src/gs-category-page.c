@@ -143,7 +143,7 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 	/* randomize so we show different featured apps every time */
 	gs_app_list_randomize (list);
 
-	for (guint i = 0; i < 3; ++i) {
+	for (guint i = 0; i < gs_app_list_length (list); ++i) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
