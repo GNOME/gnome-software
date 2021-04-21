@@ -269,10 +269,11 @@ gs_plugin_job_get_action (GsPluginJob *self)
 }
 
 void
-gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func)
+gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func, gpointer user_data)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 	self->sort_func = sort_func;
+	self->sort_func_data = user_data;
 }
 
 GsAppListSortFunc
@@ -280,13 +281,6 @@ gs_plugin_job_get_sort_func (GsPluginJob *self)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
 	return self->sort_func;
-}
-
-void
-gs_plugin_job_set_sort_func_data (GsPluginJob *self, gpointer sort_func_data)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->sort_func_data = sort_func_data;
 }
 
 gpointer

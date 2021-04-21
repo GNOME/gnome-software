@@ -180,8 +180,7 @@ execute_search (GsShellSearchProvider  *self,
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					 NULL);
-	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb);
-	gs_plugin_job_set_sort_func_data (plugin_job, self);
+	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb, self);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    search_done_cb,

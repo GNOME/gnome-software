@@ -274,8 +274,7 @@ gs_search_page_load (GsSearchPage *self)
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					 NULL);
-	gs_plugin_job_set_sort_func (plugin_job, gs_search_page_sort_cb);
-	gs_plugin_job_set_sort_func_data (plugin_job, self);
+	gs_plugin_job_set_sort_func (plugin_job, gs_search_page_sort_cb, self);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->search_cancellable,
 					    gs_search_page_get_search_cb,
