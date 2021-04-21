@@ -25,11 +25,12 @@
                     <property name="valign">start</property>
                     <child>
                       <object class="GtkLabel" id="featured_heading">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="featured_grid" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
                         <property name="margin_start">24</property>
                         <property name="margin_top">24</property>
                         <property name="margin_end">24</property>
+                        <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Picks</property>
                         <accessibility>
                           <relation target="featured_grid" type="label-for"/>
                         </accessibility>

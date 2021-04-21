@@ -32,7 +32,6 @@ struct _GsCategoryPage
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*featured_grid;
-	GtkWidget	*featured_heading;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -126,7 +125,6 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 
 	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
 	gtk_widget_hide (self->featured_grid);
-	gtk_widget_hide (self->featured_heading);
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
 						    res,
@@ -155,7 +153,6 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 	}
 
 	gtk_widget_show (self->featured_grid);
-	gtk_widget_show (self->featured_heading);
 }
 
 static void
@@ -272,21 +269,12 @@ gs_category_page_create_filter (GsCategoryPage *self,
 		gs_category_page_reload (GS_PAGE (self));
 
 	if (featured_category_found) {
-		g_autofree gchar *featured_heading = NULL;
-
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
 		gs_category_page_set_featured_placeholders (self);
-
-		/* TRANSLATORS: This is a heading on the categories page. %s gets
-		   replaced by the category name, e.g. 'Graphics & Photography' */
-		featured_heading = g_strdup_printf (_("Featured %s"), gs_category_get_name (self->category));
-		gtk_label_set_label (GTK_LABEL (self->featured_heading), featured_heading);
-		gtk_widget_show (self->featured_heading);
 	} else {
 		gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
 		gtk_widget_hide (self->featured_grid);
-		gtk_widget_hide (self->featured_heading);
 	}
 }
 
@@ -398,7 +386,6 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_heading);
 }
 
 GsCategoryPage *
