@@ -589,7 +589,7 @@ gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 	GsApp *app1 = GS_APP (*(GsApp **) a);
 	GsApp *app2 = GS_APP (*(GsApp **) b);
 	GsAppListSortHelper *helper = (GsAppListSortHelper *) user_data;
-	return helper->func (app1, app2, user_data);
+	return helper->func (app1, app2, helper->user_data);
 }
 
 /**
