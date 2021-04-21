@@ -159,16 +159,9 @@ static void
 gs_category_page_set_featured_apps (GsCategoryPage *self)
 {
 	GsCategory *featured_subcat = NULL;
-	GPtrArray *children = gs_category_get_children (self->category);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	for (guint i = 0; i < children->len; ++i) {
-		GsCategory *sub = GS_CATEGORY (g_ptr_array_index (children, i));
-		if (g_strcmp0 (gs_category_get_id (sub), "featured") == 0) {
-			featured_subcat = sub;
-			break;
-		}
-	}
+	featured_subcat = gs_category_find_child (self->category, "featured");
 
 	if (featured_subcat == NULL)
 		return;
