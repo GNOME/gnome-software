@@ -277,17 +277,12 @@ gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func, gpo
 }
 
 GsAppListSortFunc
-gs_plugin_job_get_sort_func (GsPluginJob *self)
+gs_plugin_job_get_sort_func (GsPluginJob *self, gpointer *user_data_out)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	if (user_data_out != NULL)
+		*user_data_out = self->sort_func_data;
 	return self->sort_func;
-}
-
-gpointer
-gs_plugin_job_get_sort_func_data (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->sort_func_data;
 }
 
 void
