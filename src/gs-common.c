@@ -765,3 +765,58 @@ gs_utils_time_to_string (gint64 unix_time_seconds)
 						  "%d years ago", years_ago),
 					years_ago);
 }
+
+static void
+gs_utils_reboot_call_done_cb (GObject *source,
+			      GAsyncResult *res,
+			      gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+}
+
+/**
+ * gs_utils_invoke_reboot_async:
+ * @cancellable: (nullable): a %GCancellable for the call, or %NULL
+ * @ready_callback: (nullable): a callback to be called after the call is finished, or %NULL
+ * @user_data: user data for the @ready_callback
+ *
+ * Asynchronously invokes a reboot request using D-Bus. The @ready_callback should
+ * use g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
+ * to get the result of the operation.
+ *
+ * When the @ready_callback is %NULL, a default callback is used, which shows
+ * a runtime warning (using g_warning) on the console when the call fails.
+ *
+ * Since: 41
+ **/
+void
+gs_utils_invoke_reboot_async (GCancellable *cancellable,
+			      GAsyncReadyCallback ready_callback,
+			      gpointer user_data)
+{
+	g_autoptr(GDBusConnection) bus = NULL;
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+
+	if (!ready_callback)
+		ready_callback = gs_utils_reboot_call_done_cb;
+
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, cancellable,
+				ready_callback,
+				user_data);
+}

@@ -48,5 +48,8 @@ gboolean	 gs_utils_list_has_component_fuzzy	(GsAppList	*list,
 						 GsApp		*app);
 void		 gs_utils_reboot_notify		(GsAppList	*list);
 gchar		*gs_utils_time_to_string	(gint64		 unix_time_seconds);
+void		 gs_utils_invoke_reboot_async	(GCancellable	*cancellable,
+						 GAsyncReadyCallback ready_callback,
+						 gpointer	 user_data);
 
 G_END_DECLS

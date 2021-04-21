@@ -31,6 +31,7 @@
 #endif
 
 #include "gs-build-ident.h"
+#include "gs-common.h"
 #include "gs-debug.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
@@ -427,42 +428,13 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		   GAsyncResult *res,
 		   GsApplication *app)
 {
-	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
 
-	/* trigger reboot */
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT, NULL,
-				reboot_failed_cb,
-				app);
-}
-
-static void
-gs_application_reboot_failed_cb (GObject *source,
-				 GAsyncResult *res,
-				 gpointer user_data)
-{
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GVariant) retval = NULL;
-
-	/* get result */
-	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (retval != NULL)
-		return;
-	if (error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
-	}
+	gs_utils_invoke_reboot_async (NULL, reboot_failed_cb, app);
 }
 
 static void
@@ -470,17 +442,7 @@ reboot_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
 {
-	g_autoptr(GDBusConnection) bus = NULL;
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT, NULL,
-				gs_application_reboot_failed_cb,
-				NULL);
+	gs_utils_invoke_reboot_async (NULL, NULL, NULL);
 }
 
 static void
