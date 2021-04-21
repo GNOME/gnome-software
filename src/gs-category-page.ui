@@ -25,14 +25,14 @@
                     <property name="valign">start</property>
                     <child>
                       <object class="GtkLabel" id="featured_heading">
-                        <property name="visible" bind-source="featured_grid" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="visible" bind-source="featured_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
                         <property name="margin_start">24</property>
                         <property name="margin_top">24</property>
                         <property name="margin_end">24</property>
                         <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Picks</property>
                         <accessibility>
-                          <relation target="featured_grid" type="label-for"/>
+                          <relation target="featured_flow_box" type="label-for"/>
                         </accessibility>
                         <style>
                           <class name="index-title-alignment-software"/>
@@ -40,11 +40,19 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkGrid" id="featured_grid">
+                      <object class="GtkFlowBox" id="featured_flow_box">
                         <property name="visible">False</property>
                         <property name="column_spacing">14</property>
                         <property name="margin_start">24</property>
                         <property name="margin_end">24</property>
+                        <property name="halign">fill</property>
+                        <property name="row_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="selection-mode">none</property>
                       </object>
                     </child>
 

@@ -31,7 +31,7 @@ struct _GsCategoryPage
 
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
-	GtkWidget	*featured_grid;
+	GtkWidget	*featured_flow_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -100,15 +100,15 @@ _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 static void
 gs_category_page_set_featured_placeholders (GsCategoryPage *self)
 {
-	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
+	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
 	for (guint i = 0; i < 3; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
-		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
+		gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
-	gtk_widget_show (self->featured_grid);
+	gtk_widget_show (self->featured_flow_box);
 }
 
 static void
@@ -123,8 +123,8 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
-	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
-	gtk_widget_hide (self->featured_grid);
+	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+	gtk_widget_hide (self->featured_flow_box);
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
 						    res,
@@ -148,11 +148,11 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
-		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
+		gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
-	gtk_widget_show (self->featured_grid);
+	gtk_widget_show (self->featured_flow_box);
 }
 
 static void
@@ -273,8 +273,8 @@ gs_category_page_create_filter (GsCategoryPage *self,
 		 * indicator that there will be featured apps */
 		gs_category_page_set_featured_placeholders (self);
 	} else {
-		gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
-		gtk_widget_hide (self->featured_grid);
+		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+		gtk_widget_hide (self->featured_flow_box);
 	}
 }
 
@@ -385,7 +385,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
 }
 
 GsCategoryPage *
