@@ -231,37 +231,18 @@ static void
 gs_category_page_create_filter (GsCategoryPage *self,
 				GsCategory *category)
 {
-	GsCategory *s, *first_subcat = NULL;
-	guint i;
-	GPtrArray *children;
-	gboolean featured_category_found = FALSE;
+	GsCategory *featured_subcat = NULL, *all_subcat = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 
-	children = gs_category_get_children (category);
-	for (i = 0; i < children->len; i++) {
-		s = GS_CATEGORY (g_ptr_array_index (children, i));
-		/* don't include the featured subcategory (those will appear as banners) */
-		if (g_strcmp0 (gs_category_get_id (s), "featured") == 0) {
-			featured_category_found = TRUE;
-			continue;
-		}
-		if (gs_category_get_size (s) < 1) {
-			g_debug ("not showing %s/%s as no apps",
-				 gs_category_get_id (category),
-				 gs_category_get_id (s));
-			continue;
-		}
+	featured_subcat = gs_category_find_child (category, "featured");
+	all_subcat = gs_category_find_child (category, "all");
 
-		if (first_subcat == NULL)
-			first_subcat = s;
-	}
-
-	g_set_object (&self->subcategory, first_subcat);
-	if (first_subcat != NULL)
+	g_set_object (&self->subcategory, all_subcat);
+	if (all_subcat != NULL)
 		gs_category_page_reload (GS_PAGE (self));
 
-	if (featured_category_found) {
+	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
 		gs_category_page_set_featured_placeholders (self);

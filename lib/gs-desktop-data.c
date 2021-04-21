@@ -192,6 +192,9 @@ static const GsDesktopMap map_productivity[] = {
 
 /* Addons */
 static const GsDesktopMap map_addons[] = {
+	{ "all",		NC_("Menu of Add-ons", "All"),
+					{ "Addon",
+					  NULL} },
 	{ "fonts",		NC_("Menu of Add-ons", "Fonts"),
 					{ "Addon::Font",
 					  NULL} },
