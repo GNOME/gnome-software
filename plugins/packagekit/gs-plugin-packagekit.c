@@ -132,7 +132,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
 					 PK_FILTER_ENUM_NOT_DEVELOPMENT,
-					 PK_FILTER_ENUM_NOT_SUPPORTED,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
 	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
