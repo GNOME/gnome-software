@@ -232,12 +232,21 @@ gs_category_page_reload (GsPage *page)
 					    self);
 }
 
-static void
-gs_category_page_create_filter (GsCategoryPage *self,
-				GsCategory *category)
+void
+gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 {
+	GtkAdjustment *adj = NULL;
 	GsCategory *featured_subcat = NULL, *all_subcat = NULL;
 
+	/* this means we've come from the app-view -> back */
+	if (self->category == category)
+		return;
+
+	/* save this */
+	g_clear_object (&self->category);
+	self->category = g_object_ref (category);
+
+	/* find apps in this group */
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 
 	featured_subcat = gs_category_find_child (category, "featured");
@@ -255,23 +264,6 @@ gs_category_page_create_filter (GsCategoryPage *self,
 		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
 		gtk_widget_hide (self->featured_flow_box);
 	}
-}
-
-void
-gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
-{
-	GtkAdjustment *adj = NULL;
-
-	/* this means we've come from the app-view -> back */
-	if (self->category == category)
-		return;
-
-	/* save this */
-	g_clear_object (&self->category);
-	self->category = g_object_ref (category);
-
-	/* find apps in this group */
-	gs_category_page_create_filter (self, category);
 
 	/* scroll the list of apps to the beginning, otherwise it will show
 	 * with the previous scroll value */
