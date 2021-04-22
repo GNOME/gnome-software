@@ -252,8 +252,7 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 		return;
 
 	/* save this */
-	g_clear_object (&self->category);
-	self->category = g_object_ref (category);
+	g_set_object (&self->category, category);
 
 	/* find apps in this group */
 	featured_subcat = gs_category_find_child (category, "featured");
