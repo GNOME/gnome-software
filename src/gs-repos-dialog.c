@@ -618,6 +618,7 @@ reload_sources (GsReposDialog *dialog)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
 					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
+					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
