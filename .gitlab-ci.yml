@@ -101,4 +101,4 @@ nightly:
   extends: '.publish_nightly'
   dependencies:
     - 'flatpak bundle'
-
+  needs: ['flatpak bundle']
