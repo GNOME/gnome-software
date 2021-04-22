@@ -187,15 +187,13 @@ gs_category_page_set_featured_apps (GsCategoryPage *self)
 }
 
 static void
-gs_category_page_reload (GsPage *page)
+gs_category_page_load_category (GsCategoryPage *self)
 {
-	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkWidget *tile;
 	guint i, count;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	if (self->subcategory == NULL)
-		return;
+	g_assert (self->subcategory != NULL);
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
@@ -230,6 +228,17 @@ gs_category_page_reload (GsPage *page)
 					    self->cancellable,
 					    gs_category_page_get_apps_cb,
 					    self);
+}
+
+static void
+gs_category_page_reload (GsPage *page)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
+
+	if (self->subcategory == NULL)
+		return;
+
+	gs_category_page_load_category (self);
 }
 
 void
