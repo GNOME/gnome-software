@@ -251,16 +251,16 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	if (self->category == category)
 		return;
 
-	/* save this */
-	g_set_object (&self->category, category);
-
-	/* find apps in this group */
+	/* set the category */
 	featured_subcat = gs_category_find_child (category, "featured");
 	all_subcat = gs_category_find_child (category, "all");
 
+	g_set_object (&self->category, category);
 	g_set_object (&self->subcategory, all_subcat);
+
+	/* load the apps from it */
 	if (all_subcat != NULL)
-		gs_category_page_reload (GS_PAGE (self));
+		gs_category_page_load_category (self);
 
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
