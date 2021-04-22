@@ -37,6 +37,12 @@
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <child>
+              <object class="HdyDeck" id="details_header_deck">
+                <property name="visible">True</property>
+                <child>
+                  <object class="HdyDeck" id="header_deck">
+                    <property name="visible">True</property>
+            <child>
               <object class="HdyLeaflet" id="header_leaflet">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -47,7 +53,7 @@
                 <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
                 <child>
                   <object class="HdyHeaderBar" id="sidebar_header">
-                    <property name="visible" bind-source="sidebar_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                    <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="show-close-button">True</property>
                     <property name="title" translatable="yes">Software</property>
@@ -128,30 +134,8 @@
                     <property name="hexpand">True</property>
                     <property name="show-close-button">True</property>
                     <child>
-                      <object class="GtkButton" id="button_back">
-                        <property name="visible">False</property>
-                        <property name="can_focus">True</property>
-                        <signal name="clicked" handler="gs_shell_back_button_cb"/>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="button_back_accessible">
-                            <property name="accessible-name" translatable="yes">Go back</property>
-                          </object>
-                        </child>
-                        <style>
-                          <class name="image-button"/>
-                        </style>
-                        <child>
-                          <object class="GtkImage" id="back_image">
-                            <property name="visible">True</property>
-                            <property name="icon_name">go-previous-symbolic</property>
-                            <property name="icon_size">1</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkToggleButton" id="search_button_main">
-                        <property name="visible">False</property>
+                        <property name="visible" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
                         <property name="can_focus">True</property>
                         <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
                         <signal name="clicked" handler="search_button_clicked_cb"/>
@@ -178,19 +162,9 @@
                         <property name="pack-type">start</property>
                       </packing>
                     </child>
-                    <child type="title">
-                      <object class="GtkLabel" id="application_details_header">
-                        <property name="visible">True</property>
-                        <property name="selectable">False</property>
-                        <property name="ellipsize">end</property>
-                        <style>
-                          <class name="title"/>
-                        </style>
-                      </object>
-                    </child>
                     <child>
                       <object class="GtkMenuButton" id="menu_button_main">
-                        <property name="visible">False</property>
+                        <property name="visible" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
                         <property name="can_focus">True</property>
                         <property name="sensitive">True</property>
                         <property name="menu_model">primary_menu</property>
@@ -213,6 +187,90 @@
                       <packing>
                         <property name="pack-type">end</property>
                       </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+                    <child>
+                      <object class="HdyHeaderBar" id="sub_header">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="show-close-button">True</property>
+                        <child>
+                          <object class="GtkButton" id="button_back">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <signal name="clicked" handler="gs_shell_back_button_cb"/>
+                            <child internal-child="accessible">
+                              <object class="AtkObject">
+                                <property name="accessible-name" translatable="yes">Go back</property>
+                              </object>
+                            </child>
+                            <style>
+                              <class name="image-button"/>
+                            </style>
+                            <child>
+                              <object class="GtkImage" id="back_image">
+                                <property name="visible">True</property>
+                                <property name="icon_name">go-previous-symbolic</property>
+                                <property name="icon_size">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="title">
+                          <object class="GtkLabel" id="sub_page_header_title">
+                            <property name="visible">True</property>
+                            <property name="selectable">False</property>
+                            <property name="ellipsize">end</property>
+                            <style>
+                              <class name="title"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="HdyHeaderBar" id="details_header">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="show-close-button">True</property>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <signal name="clicked" handler="gs_shell_details_back_button_cb"/>
+                        <child internal-child="accessible">
+                          <object class="AtkObject">
+                            <property name="accessible-name" translatable="yes">Go back</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon_name">go-previous-symbolic</property>
+                            <property name="icon_size">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="title">
+                      <object class="GtkLabel" id="application_details_header">
+                        <property name="visible">True</property>
+                        <property name="selectable">False</property>
+                        <property name="ellipsize">end</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
                     </child>
                   </object>
                 </child>
@@ -325,6 +383,18 @@
                   </object>
                 </child>
 
+                <child>
+                  <object class="HdyDeck" id="details_deck">
+                    <property name="visible">True</property>
+                    <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                    <child>
+                      <object class="HdyDeck" id="main_deck">
+                        <property name="visible">True</property>
+                        <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                 <child>
                   <object class="HdyLeaflet" id="main_leaflet">
                     <property name="visible">True</property>
@@ -489,14 +559,6 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GsModeratePage" id="moderate_page">
-                                <property name="visible">True</property>
-                              </object>
-                              <packing>
-                                <property name="name">moderate</property>
-                              </packing>
-                            </child>
-                            <child>
                               <object class="GsSearchPage" id="search_page">
                                 <property name="visible">True</property>
                               </object>
@@ -515,48 +577,77 @@
                                 <property name="icon-name">view-refresh-symbolic</property>
                               </packing>
                             </child>
-
-                            <child>
-                              <object class="GsDetailsPage" id="details_page">
-                                <property name="visible">True</property>
-                              </object>
-                              <packing>
-                                <property name="name">details</property>
-                              </packing>
-                            </child>
-
-                            <child>
-                              <object class="GsCategoryPage" id="category_page">
-                                <property name="visible">True</property>
-                                <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
-                              </object>
-                              <packing>
-                                <property name="name">category</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GsExtrasPage" id="extras_page">
-                                <property name="visible">True</property>
-                              </object>
-                              <packing>
-                                <property name="name">extras</property>
-                              </packing>
-                            </child>
                           </object>
                         </child>
                       </object>
                     </child>
 
+                          </object>
+                        </child>
+                        <child>
+                          <object class="HdyViewSwitcherBar" id="sidebar_switcher">
+                            <property name="visible">True</property>
+                            <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
+                            <property name="can-focus">True</property>
+                            <property name="stack">stack_main</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">main</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkStack" id="stack_sub">
+                        <property name="visible">True</property>
+                        <property name="homogeneous">False</property>
+                        <property name="transition-type">crossfade</property>
+                        <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                        <child>
+                          <object class="GsModeratePage" id="moderate_page">
+                            <property name="visible">True</property>
+                          </object>
+                          <packing>
+                            <property name="name">moderate</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GsCategoryPage" id="category_page">
+                            <property name="visible">True</property>
+                            <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
+                          </object>
+                          <packing>
+                            <property name="name">category</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GsExtrasPage" id="extras_page">
+                            <property name="visible">True</property>
+                          </object>
+                          <packing>
+                            <property name="name">extras</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="name">sub</property>
+                      </packing>
+                    </child>
                   </object>
+                  <packing>
+                    <property name="name">main</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GsDetailsPage" id="details_page">
+                    <property name="visible">True</property>
+                  </object>
+                  <packing>
+                    <property name="name">details</property>
+                  </packing>
                 </child>
               </object>
             </child>
-            <child>
-              <object class="HdyViewSwitcherBar" id="sidebar_switcher">
-                <property name="visible">True</property>
-                <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
-                <property name="can-focus">True</property>
-                <property name="stack">stack_main</property>
               </object>
             </child>
           </object>
@@ -593,6 +684,20 @@
       </object>
     </child>
   </template>
+
+  <object class="HdySwipeGroup">
+    <swipeables>
+      <swipeable name="header_deck"/>
+      <swipeable name="main_deck"/>
+    </swipeables>
+  </object>
+
+  <object class="HdySwipeGroup">
+    <swipeables>
+      <swipeable name="details_header_deck"/>
+      <swipeable name="details_deck"/>
+    </swipeables>
+  </object>
 
   <object class="HdyHeaderGroup">
     <property name="decorate-all" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
