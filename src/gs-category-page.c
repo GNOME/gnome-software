@@ -107,15 +107,19 @@ _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 }
 
 static void
-gs_category_page_set_featured_placeholders (GsCategoryPage *self)
+gs_category_page_add_placeholders (GsCategoryPage *self,
+                                   GtkFlowBox     *flow_box,
+                                   guint           n_placeholders)
 {
-	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
-	for (guint i = 0; i < 3; ++i) {
+	gs_container_remove_all (GTK_CONTAINER (flow_box));
+
+	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+		gtk_container_add (GTK_CONTAINER (flow_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
-	gtk_widget_show (self->featured_flow_box);
+
+	gtk_widget_show (GTK_WIDGET (flow_box));
 }
 
 static void
@@ -165,8 +169,6 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 static void
 gs_category_page_load_category (GsCategoryPage *self)
 {
-	GtkWidget *tile;
-	guint i, count;
 	GsCategory *featured_subcat = NULL;
 	GtkAdjustment *adj = NULL;
 	g_autoptr(GsPluginJob) featured_plugin_job = NULL;
@@ -184,20 +186,14 @@ gs_category_page_load_category (GsCategoryPage *self)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-
-	count = MIN(30, gs_category_get_size (self->subcategory));
-	for (i = 0; i < count; i++) {
-		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-	}
+	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
+					   MIN (30, gs_category_get_size (self->subcategory)));
 
 	/* load the featured apps */
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
-		gs_category_page_set_featured_placeholders (self);
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
 
 		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 							  "interactive", TRUE,
