@@ -112,8 +112,6 @@ gs_category_page_set_featured_placeholders (GsCategoryPage *self)
 	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
 	for (guint i = 0; i < 3; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
