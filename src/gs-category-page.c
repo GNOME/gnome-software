@@ -161,39 +161,18 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 }
 
 static void
-gs_category_page_set_featured_apps (GsCategoryPage *self)
-{
-	GsCategory *featured_subcat = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	featured_subcat = gs_category_find_child (self->category, "featured");
-
-	if (featured_subcat == NULL)
-		return;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-					 "interactive", TRUE,
-					 "category", featured_subcat,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader,
-					    plugin_job,
-					    self->cancellable,
-					    gs_category_page_get_featured_apps_cb,
-					    self);
-}
-
-static void
 gs_category_page_load_category (GsCategoryPage *self)
 {
 	GtkWidget *tile;
 	guint i, count;
+	GsCategory *featured_subcat = NULL;
+	GtkAdjustment *adj = NULL;
+	g_autoptr(GsPluginJob) featured_plugin_job = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_assert (self->subcategory != NULL);
+
+	featured_subcat = gs_category_find_child (self->category, "featured");
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
@@ -212,8 +191,31 @@ gs_category_page_load_category (GsCategoryPage *self)
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
-	gs_category_page_set_featured_apps (self);
+	/* load the featured apps */
+	if (featured_subcat != NULL) {
+		/* set up the placeholders as having the featured category is a good
+		 * indicator that there will be featured apps */
+		gs_category_page_set_featured_placeholders (self);
 
+		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+							  "interactive", TRUE,
+							  "category", featured_subcat,
+							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+							  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+							  NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader,
+						    featured_plugin_job,
+						    self->cancellable,
+						    gs_category_page_get_featured_apps_cb,
+						    self);
+	} else {
+		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+		gtk_widget_hide (self->featured_flow_box);
+	}
+
+	/* load the other apps */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 					 "category", self->subcategory,
 					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
@@ -228,6 +230,11 @@ gs_category_page_load_category (GsCategoryPage *self)
 					    self->cancellable,
 					    gs_category_page_get_apps_cb,
 					    self);
+
+	/* scroll the list of apps to the beginning, otherwise it will show
+	 * with the previous scroll value */
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
+	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 }
 
 static void
@@ -244,15 +251,13 @@ gs_category_page_reload (GsPage *page)
 void
 gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 {
-	GtkAdjustment *adj = NULL;
-	GsCategory *featured_subcat = NULL, *all_subcat = NULL;
+	GsCategory *all_subcat = NULL;
 
 	/* this means we've come from the app-view -> back */
 	if (self->category == category)
 		return;
 
 	/* set the category */
-	featured_subcat = gs_category_find_child (category, "featured");
 	all_subcat = gs_category_find_child (category, "all");
 
 	g_set_object (&self->category, category);
@@ -261,20 +266,6 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	/* load the apps from it */
 	if (all_subcat != NULL)
 		gs_category_page_load_category (self);
-
-	if (featured_subcat != NULL) {
-		/* set up the placeholders as having the featured category is a good
-		 * indicator that there will be featured apps */
-		gs_category_page_set_featured_placeholders (self);
-	} else {
-		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
-		gtk_widget_hide (self->featured_flow_box);
-	}
-
-	/* scroll the list of apps to the beginning, otherwise it will show
-	 * with the previous scroll value */
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
-	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
 	/* notify of the updated title */
 	g_object_notify (G_OBJECT (self), "title");
