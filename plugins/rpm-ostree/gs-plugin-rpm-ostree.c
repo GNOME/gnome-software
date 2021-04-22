@@ -1398,7 +1398,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* state is known */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
 
 	/* get the new icon from the package */
 	gs_app_set_local_file (app, NULL);
@@ -1468,8 +1468,12 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* state is not known: we don't know if we can re-install this app */
-	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+		gs_app_set_state (app, GS_APP_STATE_PENDING_REMOVE);
+	} else {
+		/* state is not known: we don't know if we can re-install this app */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	}
 
 	return TRUE;
 }
@@ -1507,6 +1511,29 @@ find_packages_by_provides (DnfSack *sack,
 }
 
 static gboolean
+gs_rpm_ostree_has_launchable (GsApp *app)
+{
+	const gchar *desktop_id;
+	GDesktopAppInfo *desktop_appinfo;
+
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE) ||
+	    gs_app_has_quirk (app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE))
+		return FALSE;
+
+	desktop_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	if (!desktop_id)
+		desktop_id = gs_app_get_id (app);
+	if (!desktop_id)
+		return FALSE;
+
+	desktop_appinfo = gs_utils_get_desktop_app_info (desktop_id);
+	if (!desktop_appinfo)
+		return FALSE;
+
+	return TRUE;
+}
+
+static gboolean
 resolve_installed_packages_app (GsPlugin *plugin,
                                 GHashTable *packages,
                                 GHashTable *layered_packages,
@@ -1522,8 +1549,13 @@ resolve_installed_packages_app (GsPlugin *plugin,
 
 	if (pkg) {
 		gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+			/* Kind of hack, pending installs do not have available the desktop file */
+			if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP || gs_rpm_ostree_has_launchable (app))
+				gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			else
+				gs_app_set_state (app, GS_APP_STATE_PENDING_INSTALL);
+		}
 		if ((rpm_ostree_package_get_name (pkg) &&
 		     g_hash_table_contains (layered_packages, rpm_ostree_package_get_name (pkg))) ||
 		    (rpm_ostree_package_get_nevra (pkg) &&

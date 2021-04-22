@@ -381,6 +381,21 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 				     _("Installing"));
 		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_NEEDS_REBOOT))
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Requires restart to finish install"));
+		else
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Pending install"));
+		break;
+	case GS_APP_STATE_PENDING_REMOVE:
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_NEEDS_REBOOT))
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Requires restart to finish remove"));
+		else
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Pending remove"));
+		break;
+
 	default:
 		gtk_widget_set_visible (self->label_progress_status, FALSE);
 		break;
@@ -455,6 +470,12 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		/* align text together with the spinner if we're showing it */
 		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
 		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+	case GS_APP_STATE_PENDING_REMOVE:
+		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
+		gtk_widget_set_visible (self->spinner_remove, FALSE);
+		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
+		break;
 	default:
 		gtk_widget_set_visible (self->spinner_remove, FALSE);
 		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
@@ -466,6 +487,8 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case GS_APP_STATE_REMOVING:
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_PENDING_INSTALL:
+	case GS_APP_STATE_PENDING_REMOVE:
 		gtk_widget_set_visible (self->box_progress, TRUE);
 		break;
 	default:
@@ -1007,6 +1030,15 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+	case GS_APP_STATE_PENDING_REMOVE:
+		if (gs_app_has_quirk (self->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+			gtk_widget_set_visible (self->button_install, TRUE);
+			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Restart"));
+		} else {
+			gtk_widget_set_visible (self->button_install, FALSE);
+		}
+		break;
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->button_install, TRUE);
@@ -1087,6 +1119,8 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case GS_APP_STATE_UNAVAILABLE:
 		case GS_APP_STATE_UNKNOWN:
 		case GS_APP_STATE_QUEUED_FOR_INSTALL:
+		case GS_APP_STATE_PENDING_INSTALL:
+		case GS_APP_STATE_PENDING_REMOVE:
 			gtk_widget_set_visible (self->button_remove, FALSE);
 			break;
 		default:
@@ -2308,6 +2342,16 @@ static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GList) addons = NULL;
+
+	switch (gs_app_get_state (self->app)) {
+	case GS_APP_STATE_PENDING_INSTALL:
+	case GS_APP_STATE_PENDING_REMOVE:
+		g_return_if_fail (gs_app_has_quirk (self->app, GS_APP_QUIRK_NEEDS_REBOOT));
+		gs_utils_invoke_reboot_async (NULL, NULL, NULL);
+		return;
+	default:
+		break;
+	}
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));

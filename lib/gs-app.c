@@ -236,6 +236,10 @@ gs_app_state_to_string (GsAppState state)
 		return "updatable-live";
 	if (state == GS_APP_STATE_UNAVAILABLE)
 		return "unavailable";
+	if (state == GS_APP_STATE_PENDING_INSTALL)
+		return "pending-install";
+	if (state == GS_APP_STATE_PENDING_REMOVE)
+		return "pending-remove";
 	return NULL;
 }
 
@@ -1029,7 +1033,9 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		    state == GS_APP_STATE_AVAILABLE_LOCAL ||
 		    state == GS_APP_STATE_UPDATABLE ||
 		    state == GS_APP_STATE_UPDATABLE_LIVE ||
-		    state == GS_APP_STATE_UNAVAILABLE)
+		    state == GS_APP_STATE_UNAVAILABLE ||
+		    state == GS_APP_STATE_PENDING_INSTALL ||
+		    state == GS_APP_STATE_PENDING_REMOVE)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_INSTALLED:
@@ -1060,7 +1066,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		    state == GS_APP_STATE_INSTALLED ||
 		    state == GS_APP_STATE_UPDATABLE ||
 		    state == GS_APP_STATE_UPDATABLE_LIVE ||
-		    state == GS_APP_STATE_AVAILABLE)
+		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_PENDING_INSTALL)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_REMOVING:
@@ -1068,7 +1075,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_UNAVAILABLE ||
 		    state == GS_APP_STATE_AVAILABLE ||
-		    state == GS_APP_STATE_INSTALLED)
+		    state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_PENDING_REMOVE)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_UPDATABLE:
@@ -1096,6 +1104,10 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		if (state == GS_APP_STATE_UNKNOWN ||
 		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_PENDING_INSTALL:
+	case GS_APP_STATE_PENDING_REMOVE:
+		state_change_ok = TRUE;
 		break;
 	default:
 		g_warning ("state %s unhandled",

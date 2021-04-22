@@ -678,16 +678,45 @@ gs_utils_list_has_component_fuzzy (GsAppList *list, GsApp *app)
 }
 
 void
-gs_utils_reboot_notify (GsAppList *list)
+gs_utils_reboot_notify (GsAppList *list,
+			gboolean is_install)
 {
 	g_autoptr(GNotification) n = NULL;
+	g_autofree gchar *tmp = NULL;
+	const gchar *app_name;
 	const gchar *title;
 	const gchar *body;
 
-	/* TRANSLATORS: we've just live-updated some apps */
-	title = ngettext ("An update has been installed",
-	                  "Updates have been installed",
-	                  gs_app_list_length (list));
+	if (gs_app_list_length (list) == 1) {
+		GsApp *app = gs_app_list_index (list, 0);
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP) {
+			app_name = gs_app_get_name (app);
+			if (!*app_name)
+				app_name = NULL;
+		}
+	}
+
+	if (is_install) {
+		if (app_name) {
+			/* TRANSLATORS: The '%s' is replaced with the application name */
+			tmp = g_strdup_printf ("An application “%s” has been installed", app_name);
+			title = tmp;
+		} else {
+			/* TRANSLATORS: we've just live-updated some apps */
+			title = ngettext ("An update has been installed",
+					  "Updates have been installed",
+					  gs_app_list_length (list));
+		}
+	} else if (app_name) {
+		/* TRANSLATORS: The '%s' is replaced with the application name */
+		tmp = g_strdup_printf ("An application “%s” has been removed", app_name);
+		title = tmp;
+	} else {
+		/* TRANSLATORS: we've just removed some apps */
+		title = ngettext ("An application has been removed",
+				  "Applications have been removed",
+				  gs_app_list_length (list));
+	}
 
 	/* TRANSLATORS: the new apps will not be run until we restart */
 	body = ngettext ("A restart is required for it to take effect.",
@@ -764,4 +793,59 @@ gs_utils_time_to_string (gint64 unix_time_seconds)
 		return g_strdup_printf (ngettext ("%d year ago",
 						  "%d years ago", years_ago),
 					years_ago);
+}
+
+static void
+gs_utils_reboot_call_done_cb (GObject *source,
+			      GAsyncResult *res,
+			      gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+}
+
+/**
+ * gs_utils_invoke_reboot_async:
+ * @cancellable: (nullable): a %GCancellable for the call, or %NULL
+ * @ready_callback: (nullable): a callback to be called after the call is finished, or %NULL
+ * @user_data: user data for the @ready_callback
+ *
+ * Asynchronously invokes a reboot request using D-Bus. The @ready_callback should
+ * use g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
+ * to get the result of the operation.
+ *
+ * When the @ready_callback is %NULL, a default callback is used, which shows
+ * a runtime warning (using g_warning) on the console when the call fails.
+ *
+ * Since: 41
+ **/
+void
+gs_utils_invoke_reboot_async (GCancellable *cancellable,
+			      GAsyncReadyCallback ready_callback,
+			      gpointer user_data)
+{
+	g_autoptr(GDBusConnection) bus = NULL;
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+
+	if (!ready_callback)
+		ready_callback = gs_utils_reboot_call_done_cb;
+
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, cancellable,
+				ready_callback,
+				user_data);
 }
