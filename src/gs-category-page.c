@@ -25,7 +25,6 @@ struct _GsCategoryPage
 
 	GsPluginLoader	*plugin_loader;
 	GCancellable	*cancellable;
-	GsShell		*shell;
 	GsCategory	*category;
 	GsCategory	*subcategory;
 
@@ -40,6 +39,12 @@ typedef enum {
 	PROP_TITLE = 1,
 } GsCategoryPageProperty;
 
+typedef enum {
+	SIGNAL_APP_CLICKED,
+} GsCategoryPageSignal;
+
+static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
+
 static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
 {
@@ -47,7 +52,7 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
-	gs_shell_show_app (self->shell, app);
+	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
 static void
@@ -335,7 +340,6 @@ gs_category_page_setup (GsPage *page,
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->shell = shell;
 
 	return TRUE;
 }
@@ -354,6 +358,21 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	page_class->setup = gs_category_page_setup;
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
+
+	/**
+	 * GsCategoryPage::app-clicked:
+	 * @app: the #GsApp which was clicked on
+	 *
+	 * Emitted when one of the app tiles is clicked. Typically the caller
+	 * should display the details of the given app in the callback.
+	 *
+	 * Since: 41
+	 */
+	obj_signals[SIGNAL_APP_CLICKED] =
+		g_signal_new ("app-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 

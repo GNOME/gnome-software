@@ -532,6 +532,7 @@
                         <child>
                           <object class="GsCategoryPage" id="category_page">
                             <property name="visible">True</property>
+                            <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
                           </object>
                           <packing>
                             <property name="name">category</property>
