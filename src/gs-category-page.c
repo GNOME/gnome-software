@@ -256,8 +256,6 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	self->category = g_object_ref (category);
 
 	/* find apps in this group */
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-
 	featured_subcat = gs_category_find_child (category, "featured");
 	all_subcat = gs_category_find_child (category, "all");
 
