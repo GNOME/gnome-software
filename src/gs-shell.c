@@ -458,14 +458,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	GsShellMode mode;
 	gsize i;
 
-	/* Work out the mode for this child. */
-	for (i = 0; i < G_N_ELEMENTS (page_name); i++) {
-		if (g_strcmp0 (page_name[i], gtk_stack_get_visible_child_name (shell->stack_main)) == 0) {
-			mode = i;
-			break;
-		}
-	}
-	g_assert (i < G_N_ELEMENTS (page_name));
+	mode = gs_shell_get_mode (shell);
 
 	update_header_widgets (shell);
 
@@ -2158,10 +2151,13 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 GsShellMode
 gs_shell_get_mode (GsShell *shell)
 {
-	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++) {
-		if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_main), page_name[i]) == 0)
-			return (GsShellMode) i;
-	}
+	const gchar *name;
+
+	name = gtk_stack_get_visible_child_name (shell->stack_main);
+
+	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
+		if (g_strcmp0 (page_name[i], name) == 0)
+			return i;
 
 	g_assert_not_reached ();
 }
@@ -2169,7 +2165,8 @@ gs_shell_get_mode (GsShell *shell)
 const gchar *
 gs_shell_get_mode_string (GsShell *shell)
 {
-	return gtk_stack_get_visible_child_name (shell->stack_main);
+	GsShellMode mode = gs_shell_get_mode (shell);
+	return page_name[mode];
 }
 
 void
