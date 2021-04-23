@@ -71,6 +71,7 @@ struct _GsShell
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
 	HdyLeaflet		*main_leaflet;
+	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
 	GsPage			*page;
 	GsSidebar		*sidebar;
@@ -551,6 +552,12 @@ gs_shell_change_mode (GsShell *shell,
 	GsPage *page;
 
 	/* switch page */
+	if (mode == GS_SHELL_MODE_LOADING) {
+		gtk_stack_set_visible_child_name (shell->stack_loading, "loading");
+		return;
+	}
+
+	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
 	gtk_stack_set_visible_child_name (GTK_STACK (shell->stack_main), page_name[mode]);
 
 	/* do any mode-specific actions */
@@ -2153,6 +2160,9 @@ gs_shell_get_mode (GsShell *shell)
 {
 	const gchar *name;
 
+	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
+		return GS_SHELL_MODE_LOADING;
+
 	name = gtk_stack_get_visible_child_name (shell->stack_main);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
@@ -2342,6 +2352,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);

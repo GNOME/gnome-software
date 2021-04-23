@@ -28,6 +28,11 @@
     <signal name="button-press-event" handler="window_button_press_event" after="yes"/>
 
     <child>
+      <object class="GtkStack" id="stack_loading">
+        <property name="visible">True</property>
+        <property name="transition-type">crossfade</property>
+        <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+    <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
@@ -492,15 +497,6 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GsLoadingPage" id="loading_page">
-                            <property name="visible">True</property>
-                            <signal name="refreshed" handler="initial_refresh_done"/>
-                          </object>
-                          <packing>
-                            <property name="name">loading</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GsSearchPage" id="search_page">
                             <property name="visible">True</property>
                           </object>
@@ -562,6 +558,37 @@
             <property name="can-focus">True</property>
             <property name="stack">stack_main</property>
           </object>
+        </child>
+      </object>
+      <packing>
+        <property name="name">main</property>
+      </packing>
+    </child>
+        <child>
+          <object class="GtkOverlay">
+            <property name="visible">True</property>
+            <child type="overlay">
+              <object class="GtkHeaderBar">
+                <property name="visible">True</property>
+                <property name="show_close_button">True</property>
+                <property name="valign">start</property>
+              </object>
+            </child>
+            <child>
+              <object class="HdyWindowHandle">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GsLoadingPage" id="loading_page">
+                    <property name="visible">True</property>
+                    <signal name="refreshed" handler="initial_refresh_done"/>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">loading</property>
+          </packing>
         </child>
       </object>
     </child>
