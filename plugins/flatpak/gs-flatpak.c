@@ -658,6 +658,12 @@ fixup_flatpak_appstream_xml (XbBuilderSource *source,
 }
 
 static gboolean
+gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
+				     const gchar *remote_name,
+				     GCancellable *cancellable,
+				     GError **error);
+
+static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  XbBuilder *builder,
 				  FlatpakRemote *xremote,
@@ -673,23 +679,74 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+	const gchar *remote_name = flatpak_remote_get_name (xremote);
+	gboolean did_refresh = FALSE;
 
 	/* get the AppStream data location */
 	appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
 	if (appstream_dir == NULL) {
-		g_debug ("no appstream dir for %s, skipping",
-			 flatpak_remote_get_name (xremote));
-		return TRUE;
+		g_autoptr(GError) error_local = NULL;
+		g_debug ("no appstream dir for %s, trying refresh...",
+			 remote_name);
+
+		if (!gs_flatpak_refresh_appstream_remote (self, remote_name, cancellable, &error_local)) {
+			g_debug ("Failed to refresh appstream data for '%s': %s", remote_name, error_local->message);
+			if (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED)) {
+				g_autoptr(GMutexLocker) locker = NULL;
+
+				locker = g_mutex_locker_new (&self->broken_remotes_mutex);
+
+				/* don't try to fetch this again until refresh() */
+				g_hash_table_insert (self->broken_remotes,
+						     g_strdup (remote_name),
+						     GUINT_TO_POINTER (1));
+			}
+			return TRUE;
+		}
+
+		appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
+		if (appstream_dir == NULL) {
+			g_debug ("no appstream dir for %s even after refresh, skipping",
+				 remote_name);
+			return TRUE;
+		}
+
+		did_refresh = TRUE;
 	}
 
 	/* load the file into a temp silo */
 	appstream_dir_fn = g_file_get_path (appstream_dir);
 	appstream_fn = g_build_filename (appstream_dir_fn, "appstream.xml.gz", NULL);
 	if (!g_file_test (appstream_fn, G_FILE_TEST_EXISTS)) {
-		g_debug ("no %s appstream metadata found: %s",
-			 flatpak_remote_get_name (xremote),
-			 appstream_fn);
-		return TRUE;
+		g_autoptr(GError) error_local = NULL;
+		g_debug ("no appstream metadata found for '%s' (file: %s), %s",
+			 remote_name,
+			 appstream_fn,
+			 did_refresh ? "skipping" : "trying refresh...");
+		if (did_refresh)
+			return TRUE;
+
+		if (!gs_flatpak_refresh_appstream_remote (self, remote_name, cancellable, &error_local)) {
+			g_debug ("Failed to refresh appstream data for '%s': %s", remote_name, error_local->message);
+			if (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED)) {
+				g_autoptr(GMutexLocker) locker = NULL;
+
+				locker = g_mutex_locker_new (&self->broken_remotes_mutex);
+
+				/* don't try to fetch this again until refresh() */
+				g_hash_table_insert (self->broken_remotes,
+						     g_strdup (remote_name),
+						     GUINT_TO_POINTER (1));
+			}
+			return TRUE;
+		}
+
+		if (!g_file_test (appstream_fn, G_FILE_TEST_EXISTS)) {
+			g_debug ("no appstream metadata found for '%s', even after refresh (file: %s), skipping",
+				 remote_name,
+				 appstream_fn);
+			return TRUE;
+		}
 	}
 
 	/* add source */
@@ -701,7 +758,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 					  error))
 		return FALSE;
 
-	fixup_flatpak_appstream_xml (source, flatpak_remote_get_name (xremote));
+	fixup_flatpak_appstream_xml (source, remote_name);
 
 	/* add metadata */
 	icon_prefix = g_build_filename (appstream_dir_fn, "icons", NULL);
@@ -1064,7 +1121,7 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 						      remote_name,
 						      cancellable,
 						      &error_local)) {
-		g_debug ("Failed to update metadata for remote %s: %s\n",
+		g_debug ("Failed to update metadata for remote %s: %s",
 			 remote_name, error_local->message);
 		gs_flatpak_error_convert (&error_local);
 		g_propagate_error (error, g_steal_pointer (&error_local));
