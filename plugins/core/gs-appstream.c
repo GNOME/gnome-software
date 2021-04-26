@@ -168,34 +168,6 @@ gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint
 	return icon;
 }
 
-static AsIcon *
-gs_appstream_get_icon_by_kind (XbNode *component, AsIconKind icon_kind)
-{
-	g_autofree gchar *xpath = NULL;
-	g_autoptr(XbNode) icon = NULL;
-
-	xpath = g_strdup_printf ("icon[@type='%s']",
-				 as_icon_kind_to_string (icon_kind));
-	icon = xb_node_query_first (component, xpath, NULL);
-	if (icon == NULL)
-		return NULL;
-	return gs_appstream_new_icon (component, icon, icon_kind, 0);
-}
-
-static AsIcon *
-gs_appstream_get_icon_by_kind_and_size (XbNode *component, AsIconKind icon_kind, guint sz)
-{
-	g_autofree gchar *xpath = NULL;
-	g_autoptr(XbNode) icon = NULL;
-
-	xpath = g_strdup_printf ("icon[@type='%s'][@height='%u'][@width='%u']",
-				 as_icon_kind_to_string (icon_kind), sz, sz);
-	icon = xb_node_query_first (component, xpath, NULL);
-	if (icon == NULL)
-		return NULL;
-	return gs_appstream_new_icon (component, icon, icon_kind, sz);
-}
-
 static void
 app_add_icon (GsApp  *app,
               AsIcon *as_icon)
@@ -207,65 +179,26 @@ app_add_icon (GsApp  *app,
 static void
 gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 {
-	g_autoptr(AsIcon) icon = NULL;
-	g_autoptr(XbNode) n = NULL;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
 
-	/* try a stock icon first */
-	icon = gs_appstream_get_icon_by_kind (component, AS_ICON_KIND_STOCK);
-	if (icon != NULL) {
-		/* the stock icon referenced by the AppStream data may not be present in the current
-		 * theme (usually more stock icon entries are added to permit huge themes like Papirus
-		 * to style all apps in the software center). Since we can not rely on the icon's presence,
-		 * we also add other icons to the list and do not return here. */
-		app_add_icon (app, icon);
-		g_clear_object (&icon);
-	}
+	icons = xb_node_query (component, "icon", 0, &local_error);
+	if (icons == NULL)
+		return;
 
-	/* cached icon for large uses */
-	icon = gs_appstream_get_icon_by_kind_and_size (component,
-						       AS_ICON_KIND_CACHED,
-						       128 * gs_plugin_get_scale (plugin));
-	if (icon != NULL) {
-		app_add_icon (app, icon);
-		g_clear_object (&icon);
-	}
+	for (guint i = 0; i < icons->len; i++) {
+		XbNode *icon_node = g_ptr_array_index (icons, i);
+		g_autoptr(AsIcon) icon = NULL;
+		const gchar *icon_kind_str = xb_node_get_attr (icon_node, "type");
+		AsIconKind icon_kind = as_icon_kind_from_string (icon_kind_str);
 
-	/* cached icon for normal uses */
-	icon = gs_appstream_get_icon_by_kind_and_size (component,
-						       AS_ICON_KIND_CACHED,
-						       64 * gs_plugin_get_scale (plugin));
-	if (icon != NULL) {
-		app_add_icon (app, icon);
-		g_clear_object (&icon);
-	}
-
-	/* prefer local */
-	icon = gs_appstream_get_icon_by_kind (component, AS_ICON_KIND_LOCAL);
-	if (icon != NULL) {
-		/* does not exist, so try to find using the icon theme */
-		if (as_icon_get_kind (icon) == AS_ICON_KIND_LOCAL &&
-		    as_icon_get_filename (icon) == NULL) {
-			g_debug ("converting missing LOCAL icon %s to STOCK",
-				 as_icon_get_name (icon));
-			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		if (icon_kind == AS_ICON_KIND_UNKNOWN) {
+			g_debug ("unknown icon kind ‘%s’", icon_kind_str);
+			continue;
 		}
-		app_add_icon (app, icon);
-		return;
-	}
 
-	/* remote URL */
-	icon = gs_appstream_get_icon_by_kind (component, AS_ICON_KIND_REMOTE);
-	if (icon != NULL) {
+		icon = gs_appstream_new_icon (component, icon_node, icon_kind, 0);
 		app_add_icon (app, icon);
-		return;
-	}
-
-	/* assume a stock icon */
-	n = xb_node_query_first (component, "icon", NULL);
-	if (n != NULL) {
-		icon = gs_appstream_new_icon (component, n, AS_ICON_KIND_STOCK, 0);
-		app_add_icon (app, icon);
-		g_clear_object (&icon);
 	}
 }
 
