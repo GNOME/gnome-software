@@ -35,9 +35,8 @@ void		 gs_plugin_job_set_timeout		(GsPluginJob	*self,
 void		 gs_plugin_job_set_age			(GsPluginJob	*self,
 							 guint64	 age);
 void		 gs_plugin_job_set_sort_func		(GsPluginJob	*self,
-							 GsAppListSortFunc sort_func);
-void		 gs_plugin_job_set_sort_func_data	(GsPluginJob	*self,
-							 gpointer	 sort_func_data);
+							 GsAppListSortFunc sort_func,
+							 gpointer	 user_data);
 void		 gs_plugin_job_set_search		(GsPluginJob	*self,
 							 const gchar	*search);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,

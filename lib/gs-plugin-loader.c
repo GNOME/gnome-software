@@ -1061,10 +1061,9 @@ gs_plugin_loader_job_sorted_truncation_again (GsPluginLoaderHelper *helper)
 		return;
 
 	/* unset */
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, &sort_func_data);
 	if (sort_func == NULL)
 		return;
-	sort_func_data = gs_plugin_job_get_sort_func_data (helper->plugin_job);
 	gs_app_list_sort (gs_plugin_job_get_list (helper->plugin_job), sort_func, sort_func_data);
 }
 
@@ -1072,6 +1071,7 @@ static void
 gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 {
 	GsAppListSortFunc sort_func;
+	gpointer sort_func_data;
 	guint max_results;
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 
@@ -1091,15 +1091,13 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 	/* nothing set */
 	g_debug ("truncating results to %u from %u",
 		 max_results, gs_app_list_length (list));
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, &sort_func_data);
 	if (sort_func == NULL) {
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		g_debug ("no ->sort_func() set for %s, using random!",
 			 gs_plugin_action_to_string (action));
 		gs_app_list_randomize (list);
 	} else {
-		gpointer sort_func_data;
-		sort_func_data = gs_plugin_job_get_sort_func_data (helper->plugin_job);
 		gs_app_list_sort (list, sort_func, sort_func_data);
 	}
 	gs_app_list_truncate (list, max_results);
@@ -3272,7 +3270,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
 	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
 	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, NULL);
 	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
 		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -3687,33 +3685,33 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	/* sorting fallbacks */
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
-		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_match_value_cb);
+						     gs_plugin_loader_app_sort_match_value_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
-		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_kind_cb);
+						     gs_plugin_loader_app_sort_kind_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_name_cb);
+						     gs_plugin_loader_app_sort_name_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_prio_cb);
+						     gs_plugin_loader_app_sort_prio_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
-		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_version_cb);
+						     gs_plugin_loader_app_sort_version_cb, NULL);
 		}
 		break;
 	default:

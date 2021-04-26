@@ -159,21 +159,21 @@ gs_plugin_job_set_dedupe_flags (GsPluginJob *self, GsAppListFilterFlags dedupe_f
 GsPluginRefineFlags
 gs_plugin_job_get_refine_flags (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_DEFAULT);
 	return self->refine_flags;
 }
 
 GsPluginRefineFlags
 gs_plugin_job_get_filter_flags (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_DEFAULT);
 	return self->filter_flags;
 }
 
 GsAppListFilterFlags
 gs_plugin_job_get_dedupe_flags (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_APP_LIST_FILTER_FLAG_NONE);
 	return self->dedupe_flags;
 }
 
@@ -264,36 +264,25 @@ gs_plugin_job_set_action (GsPluginJob *self, GsPluginAction action)
 GsPluginAction
 gs_plugin_job_get_action (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_ACTION_UNKNOWN);
 	return self->action;
 }
 
 void
-gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func)
+gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func, gpointer user_data)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 	self->sort_func = sort_func;
+	self->sort_func_data = user_data;
 }
 
 GsAppListSortFunc
-gs_plugin_job_get_sort_func (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->sort_func;
-}
-
-void
-gs_plugin_job_set_sort_func_data (GsPluginJob *self, gpointer sort_func_data)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->sort_func_data = sort_func_data;
-}
-
-gpointer
-gs_plugin_job_get_sort_func_data (GsPluginJob *self)
+gs_plugin_job_get_sort_func (GsPluginJob *self, gpointer *user_data_out)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->sort_func_data;
+	if (user_data_out != NULL)
+		*user_data_out = self->sort_func_data;
+	return self->sort_func;
 }
 
 void
