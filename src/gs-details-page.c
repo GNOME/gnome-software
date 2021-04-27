@@ -1194,6 +1194,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	GPtrArray *version_history;
 	guint icon_size;
 
+	if (!gs_page_is_active (GS_PAGE (self)))
+		return;
+
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
 	gs_details_page_set_header_label (self, tmp);
