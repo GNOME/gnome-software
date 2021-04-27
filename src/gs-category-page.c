@@ -59,42 +59,6 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
-static void
-gs_category_page_get_apps_cb (GObject *source_object,
-                              GAsyncResult *res,
-                              gpointer user_data)
-{
-	guint i;
-	GsApp *app;
-	GtkWidget *tile;
-	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	/* show an empty space for no results */
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get apps for category apps: %s", error->message);
-		return;
-	}
-
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		tile = gs_summary_tile_new (app);
-
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-	}
-}
-
 static gint
 _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
@@ -122,48 +86,124 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 	gtk_widget_show (GTK_WIDGET (flow_box));
 }
 
+typedef struct {
+	GsCategoryPage *page;  /* (owned) */
+	GHashTable *featured_app_ids;  /* (owned) (nullable) (element-type utf8 utf8) */
+	gboolean get_featured_apps_finished;
+	GsAppList *apps;  /* (owned) (nullable) */
+	gboolean get_main_apps_finished;
+} LoadCategoryData;
+
+static void
+load_category_data_free (LoadCategoryData *data)
+{
+	g_clear_object (&data->page);
+	g_clear_pointer (&data->featured_app_ids, g_hash_table_unref);
+	g_clear_object (&data->apps);
+	g_free (data);
+}
+
+static void load_category_finish (LoadCategoryData *data);
+
 static void
 gs_category_page_get_featured_apps_cb (GObject *source_object,
 				       GAsyncResult *res,
 				       gpointer user_data)
 {
-	GsApp *app;
-	GtkWidget *tile;
-	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
+	LoadCategoryData *data = user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(GError) error = NULL;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-
-	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
-	gtk_widget_hide (self->featured_flow_box);
+	g_autoptr(GHashTable) featured_app_ids = NULL;
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
 						    res,
-						    &error);
+						    &local_error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get featured apps for category apps: %s", error->message);
-		return;
-	}
-	if (gs_app_list_length (list) < 3) {
-		g_debug ("not enough featured apps for category %s; not showing featured apps!",
-			 gs_category_get_id (self->category));
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get featured apps for category apps: %s", local_error->message);
+		data->get_featured_apps_finished = TRUE;
+		load_category_finish (data);
 		return;
 	}
 
-	/* randomize so we show different featured apps every time */
-	gs_app_list_randomize (list);
+	featured_app_ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-	for (guint i = 0; i < gs_app_list_length (list); ++i) {
-		app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		g_hash_table_add (featured_app_ids, g_strdup (gs_app_get_id (app)));
+	}
+
+	data->featured_app_ids = g_steal_pointer (&featured_app_ids);
+	data->get_featured_apps_finished = TRUE;
+	load_category_finish (data);
+}
+
+static void
+gs_category_page_get_apps_cb (GObject *source_object,
+                              GAsyncResult *res,
+                              gpointer user_data)
+{
+	LoadCategoryData *data = user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &local_error);
+	if (list == NULL) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get apps for category apps: %s", local_error->message);
+		data->get_main_apps_finished = TRUE;
+		load_category_finish (data);
+		return;
+	}
+
+	data->apps = g_steal_pointer (&list);
+	data->get_main_apps_finished = TRUE;
+	load_category_finish (data);
+}
+
+static void
+load_category_finish (LoadCategoryData *data)
+{
+	GsCategoryPage *self = data->page;
+
+	if (!data->get_featured_apps_finished ||
+	    !data->get_main_apps_finished)
+		return;
+
+	/* Remove the loading tiles. */
+	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		gboolean is_featured;
+		GtkWidget *tile;
+
+		is_featured = (data->featured_app_ids != NULL &&
+			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
+
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+
+		if (is_featured)
+			gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+		else
+			gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
+
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
-	gtk_widget_show (self->featured_flow_box);
+	/* Show each of the flow boxes if they have any children. */
+	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
+	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
+
+	load_category_data_free (data);
 }
 
 static void
@@ -172,7 +212,8 @@ gs_category_page_load_category (GsCategoryPage *self)
 	GsCategory *featured_subcat = NULL;
 	GtkAdjustment *adj = NULL;
 	g_autoptr(GsPluginJob) featured_plugin_job = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsPluginJob) main_plugin_job = NULL;
+	LoadCategoryData *load_data = NULL;
 
 	g_assert (self->subcategory != NULL);
 
@@ -189,45 +230,69 @@ gs_category_page_load_category (GsCategoryPage *self)
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 					   MIN (30, gs_category_get_size (self->subcategory)));
 
-	/* load the featured apps */
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
-
-		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-							  "interactive", TRUE,
-							  "category", featured_subcat,
-							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-							  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-							  NULL);
-		gs_plugin_loader_job_process_async (self->plugin_loader,
-						    featured_plugin_job,
-						    self->cancellable,
-						    gs_category_page_get_featured_apps_cb,
-						    self);
 	} else {
 		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
 		gtk_widget_hide (self->featured_flow_box);
 	}
 
-	/* load the other apps */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-					 "category", self->subcategory,
-					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					 NULL);
-	gs_plugin_job_set_sort_func (plugin_job, _max_results_sort_cb, NULL);
+	/* Load the list of apps in the category, and also the list of all
+	 * featured apps, in parallel.
+	 *
+	 * The list of featured apps has to be loaded separately (we can’t just
+	 * query each app for its featured status) since it’s provided by a
+	 * separate appstream file (org.gnome.Software.Featured.xml) and hence
+	 * produces separate `GsApp` instances with stub data. In particular,
+	 * they don’t have enough category data to match the main category
+	 * query.
+	 *
+	 * Once both queries have returned, turn the list of featured apps into
+	 * a filter, and split the main list in three:
+	 *  - Featured apps
+	 *  - Recently updated apps
+	 *  - Everything else
+	 * Then populate the UI.
+	 *
+	 * The `featured_subcat` can be `NULL` when loading the special ‘addons’
+	 * category.
+	 */
+	load_data = g_new0 (LoadCategoryData, 1);
+	load_data->page = g_object_ref (self);
+
+	if (featured_subcat != NULL) {
+		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+							  "interactive", TRUE,
+							  "category", featured_subcat,
+							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+							  NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader,
+						    featured_plugin_job,
+						    self->cancellable,
+						    gs_category_page_get_featured_apps_cb,
+						    load_data);
+	} else {
+		/* Skip it */
+		load_data->get_featured_apps_finished = TRUE;
+	}
+
+	main_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+					      "interactive", TRUE,
+					      "category", self->subcategory,
+					      "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+					      "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							      GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					      NULL);
+	gs_plugin_job_set_sort_func (main_plugin_job, _max_results_sort_cb, NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
-					    plugin_job,
+					    main_plugin_job,
 					    self->cancellable,
 					    gs_category_page_get_apps_cb,
-					    self);
+					    load_data);
 
 	/* scroll the list of apps to the beginning, otherwise it will show
 	 * with the previous scroll value */
