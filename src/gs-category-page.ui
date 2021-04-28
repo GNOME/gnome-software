@@ -57,6 +57,35 @@
                     </child>
 
                     <child>
+                      <object class="GtkLabel" id="recently_updated_heading">
+                        <property name="visible" bind-source="recently_updated_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="xalign">0</property>
+                        <property name="margin_top">24</property>
+                        <property name="label" translatable="yes" comments="Heading for recently updated apps on a category page">Recently Updated</property>
+                        <accessibility>
+                          <relation target="recently_updated_flow_box" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="index-title-alignment-software"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="recently_updated_flow_box">
+                        <property name="visible">False</property>
+                        <property name="column_spacing">14</property>
+                        <property name="halign">fill</property>
+                        <property name="row_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+
+                    <child>
                       <object class="GtkLabel" id="other_heading">
                         <property name="visible" bind-source="category_detail_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>

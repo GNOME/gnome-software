@@ -31,6 +31,7 @@ struct _GsCategoryPage
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*featured_flow_box;
+	GtkWidget	*recently_updated_flow_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -170,6 +171,7 @@ static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
+	guint64 recently_updated_cutoff_secs;
 
 	if (!data->get_featured_apps_finished ||
 	    !data->get_main_apps_finished)
@@ -177,15 +179,20 @@ load_category_finish (LoadCategoryData *data)
 
 	/* Remove the loading tiles. */
 	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+	gs_container_remove_all (GTK_CONTAINER (self->recently_updated_flow_box));
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+
+	/* Last 30 days */
+	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
 
 	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
-		gboolean is_featured;
+		gboolean is_featured, is_recently_updated;
 		GtkWidget *tile;
 
 		is_featured = (data->featured_app_ids != NULL &&
 			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
+		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
 
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -193,6 +200,8 @@ load_category_finish (LoadCategoryData *data)
 
 		if (is_featured)
 			gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+		else if (is_recently_updated)
+			gtk_container_add (GTK_CONTAINER (self->recently_updated_flow_box), tile);
 		else
 			gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
 
@@ -201,6 +210,7 @@ load_category_finish (LoadCategoryData *data)
 
 	/* Show each of the flow boxes if they have any children. */
 	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
+	gtk_widget_set_visible (self->recently_updated_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->recently_updated_flow_box), 0) != NULL);
 	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
 
 	load_category_data_free (data);
@@ -229,6 +239,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 					   MIN (30, gs_category_get_size (self->subcategory)));
+	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), 8);
 
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
@@ -475,6 +486,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, recently_updated_flow_box);
 }
 
 GsCategoryPage *
