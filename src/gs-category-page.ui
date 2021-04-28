@@ -23,13 +23,15 @@
                     <property name="orientation">vertical</property>
                     <property name="spacing">9</property>
                     <property name="valign">start</property>
+                    <property name="margin-start">24</property>
+                    <property name="margin-end">24</property>
+                    <property name="margin-top">0</property><!-- top margin provided by headings -->
+                    <property name="margin-bottom">24</property>
                     <child>
                       <object class="GtkLabel" id="featured_heading">
                         <property name="visible" bind-source="featured_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_start">24</property>
                         <property name="margin_top">24</property>
-                        <property name="margin_end">24</property>
                         <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Picks</property>
                         <accessibility>
                           <relation target="featured_flow_box" type="label-for"/>
@@ -43,8 +45,6 @@
                       <object class="GtkFlowBox" id="featured_flow_box">
                         <property name="visible">False</property>
                         <property name="column_spacing">14</property>
-                        <property name="margin_start">24</property>
-                        <property name="margin_end">24</property>
                         <property name="halign">fill</property>
                         <property name="row_spacing">14</property>
                         <property name="homogeneous">True</property>
@@ -60,9 +60,7 @@
                       <object class="GtkLabel" id="other_heading">
                         <property name="visible" bind-source="category_detail_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>
-                        <property name="margin_start">24</property>
                         <property name="margin_top">24</property>
-                        <property name="margin_end">24</property>
                         <property name="label" translatable="yes" comments="Heading for the rest of the apps on a category page">Other Apps</property>
                         <accessibility>
                           <relation target="category_detail_box" type="label-for"/>
@@ -74,8 +72,6 @@
                     </child>
                     <child>
                       <object class="GtkFlowBox" id="category_detail_box">
-                        <property name="margin_start">24</property>
-                        <property name="margin_end">24</property>
                         <property name="halign">fill</property>
                         <property name="visible">True</property>
                         <property name="row_spacing">14</property>
