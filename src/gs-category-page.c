@@ -15,6 +15,7 @@
 
 #include "gs-app-list-private.h"
 #include "gs-common.h"
+#include "gs-featured-carousel.h"
 #include "gs-summary-tile.h"
 #include "gs-category-page.h"
 #include "gs-utils.h"
@@ -28,6 +29,7 @@ struct _GsCategoryPage
 	GsCategory	*category;
 	GsCategory	*subcategory;
 
+	GtkWidget	*top_carousel;
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*featured_flow_box;
@@ -57,6 +59,16 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
+	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
+}
+
+static void
+top_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
+                             GsApp              *app,
+                             gpointer            user_data)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
+
 	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
@@ -167,11 +179,85 @@ gs_category_page_get_apps_cb (GObject *source_object,
 	load_category_finish (data);
 }
 
+static gboolean
+app_has_hi_res_icon (GsCategoryPage *self,
+		     GsApp *app)
+{
+	g_autoptr(GIcon) icon = NULL;
+
+	/* This is the minimum icon size needed by `GsFeatureTile`. */
+	icon = gs_app_get_icon_for_size (app,
+					 128,
+					 gtk_widget_get_scale_factor (GTK_WIDGET (self)),
+					 NULL);
+
+	/* Returning TRUE means to keep the app in the list */
+	return (icon != NULL);
+}
+
+static GsAppList *
+choose_top_carousel_apps (LoadCategoryData *data,
+                          guint64           recently_updated_cutoff_secs)
+{
+	const guint n_top_carousel_apps = 5;
+	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (NULL);
+	g_autoptr(GsAppList) top_carousel_apps = gs_app_list_new ();
+	guint top_carousel_seed;
+	g_autoptr(GRand) top_carousel_rand = NULL;
+
+	/* The top carousel should contain @n_top_carousel_apps, taken from the
+	 * set of featured or recently updated apps which have hi-res icons.
+	 *
+	 * The apps in the top carousel should be changed on a fixed schedule,
+	 * once a week.
+	 */
+	top_carousel_seed = (g_get_real_time () / G_USEC_PER_SEC) / (7 * 24 * 60 * 60);
+	top_carousel_rand = g_rand_new_with_seed (top_carousel_seed);
+	g_debug ("Top carousel seed: %u", top_carousel_seed);
+
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		gboolean is_featured, is_recently_updated, is_hi_res;
+
+		is_featured = (data->featured_app_ids != NULL &&
+			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
+		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
+		is_hi_res = app_has_hi_res_icon (data->page, app);
+
+		if ((is_featured || is_recently_updated) && is_hi_res)
+			g_ptr_array_add (candidates, app);
+	}
+
+	/* If there aren’t enough candidate apps to populate the top carousel,
+	 * return an empty app list. */
+	if (candidates->len < n_top_carousel_apps) {
+		g_debug ("Only %u candidate apps for top carousel; returning empty", candidates->len);
+		goto out;
+	}
+
+	/* Select @n_top_carousel_apps from @candidates uniformly randomly
+	 * without replacement. */
+	for (guint i = 0; i < n_top_carousel_apps; i++) {
+		guint random_index = g_rand_int_range (top_carousel_rand, 0, candidates->len);
+		GsApp *app = g_ptr_array_index (candidates, random_index);
+
+		gs_app_list_add (top_carousel_apps, app);
+		g_ptr_array_remove_index_fast (candidates, random_index);
+	}
+
+ out:
+	g_assert (gs_app_list_length (top_carousel_apps) == 0 ||
+		  gs_app_list_length (top_carousel_apps) == n_top_carousel_apps);
+
+	return g_steal_pointer (&top_carousel_apps);
+}
+
 static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
+	g_autoptr(GsAppList) top_carousel_apps = NULL;
 
 	if (!data->get_featured_apps_finished ||
 	    !data->get_main_apps_finished)
@@ -185,14 +271,22 @@ load_category_finish (LoadCategoryData *data)
 	/* Last 30 days */
 	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
 
+	/* Apps to go in the top carousel */
+	top_carousel_apps = choose_top_carousel_apps (data, recently_updated_cutoff_secs);
+
 	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
-		gboolean is_featured, is_recently_updated;
+		gboolean is_featured, is_recently_updated, is_top_carousel;
 		GtkWidget *tile;
 
+		is_top_carousel = gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL;
 		is_featured = (data->featured_app_ids != NULL &&
 			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
 		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
+
+		/* To be listed in the top carousel? */
+		if (is_top_carousel)
+			continue;
 
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -207,6 +301,9 @@ load_category_finish (LoadCategoryData *data)
 
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
+
+	gtk_widget_set_visible (self->top_carousel, gs_app_list_length (top_carousel_apps) > 0);
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), top_carousel_apps);
 
 	/* Show each of the flow boxes if they have any children. */
 	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
@@ -237,6 +334,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
+	gtk_widget_hide (self->top_carousel);
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 					   MIN (30, gs_category_get_size (self->subcategory)));
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), 8);
@@ -483,10 +581,13 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, top_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, recently_updated_flow_box);
+
+	gtk_widget_class_bind_template_callback (widget_class, top_carousel_app_clicked_cb);
 }
 
 GsCategoryPage *
