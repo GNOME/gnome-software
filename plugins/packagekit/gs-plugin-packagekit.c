@@ -521,6 +521,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	GPtrArray *source_ids;
+	GsAppList *addons;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	guint i;
 	guint cnt = 0;
@@ -574,6 +575,14 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
+	}
+
+	/* Make sure addons' state is updated as well */
+	addons = gs_app_get_addons (app);
+	for (i = 0; i < gs_app_list_length (addons); i++) {
+		GsApp *addon = gs_app_list_index (addons, i);
+		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED)
+			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
 	}
 
 	/* state is not known: we don't know if we can re-install this app */
