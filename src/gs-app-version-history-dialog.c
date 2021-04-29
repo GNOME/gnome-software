@@ -28,7 +28,7 @@ static void
 populate_version_history (GsAppVersionHistoryDialog *dialog,
 			  GsApp			    *app)
 {
-	GPtrArray *version_history;
+	g_autoptr(GPtrArray) version_history = NULL;
 
 	/* remove previous */
 	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));

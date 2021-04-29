@@ -1191,7 +1191,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 user_integration_bf;
 	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
-	GPtrArray *version_history;
+	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
 
 	if (!gs_page_is_active (GS_PAGE (self)))
