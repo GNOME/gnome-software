@@ -5365,7 +5365,6 @@ gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (version_history != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
 	_g_set_ptr_array (&priv->version_history, version_history);
 }
