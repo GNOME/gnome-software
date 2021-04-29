@@ -184,9 +184,11 @@ _g_set_ptr_array (GPtrArray **array_ptr, GPtrArray *new_array)
 {
 	if (*array_ptr == new_array)
 		return FALSE;
+	if (new_array != NULL)
+		g_ptr_array_ref (new_array);
 	if (*array_ptr != NULL)
 		g_ptr_array_unref (*array_ptr);
-	*array_ptr = g_ptr_array_ref (new_array);
+	*array_ptr = new_array;
 	return TRUE;
 }
 
@@ -195,9 +197,11 @@ _g_set_array (GArray **array_ptr, GArray *new_array)
 {
 	if (*array_ptr == new_array)
 		return FALSE;
+	if (new_array != NULL)
+		g_array_ref (new_array);
 	if (*array_ptr != NULL)
 		g_array_unref (*array_ptr);
-	*array_ptr = g_array_ref (new_array);
+	*array_ptr = new_array;
 	return TRUE;
 }
 
