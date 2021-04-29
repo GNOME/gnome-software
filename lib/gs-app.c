@@ -5353,17 +5353,22 @@ gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
  * Gets the list of past releases for an application (including the latest
  * one).
  *
- * Returns: (element-type AsRelease) (transfer none) (nullable): a list, or
+ * Returns: (element-type AsRelease) (transfer container) (nullable): a list, or
  *     %NULL if the version history is not known
  *
- * Since: 40
+ * Since: 41
  **/
 GPtrArray *
 gs_app_get_version_history (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->version_history;
+
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (priv->version_history == NULL)
+		return NULL;
+	return g_ptr_array_ref (priv->version_history);
 }
 
 /**
