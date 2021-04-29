@@ -129,7 +129,7 @@ typedef struct
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
 	gboolean		 is_update_downloaded;
-	GPtrArray		*version_history; /* (element-type AsRelease) */
+	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 } GsAppPrivate;
 
 enum {
@@ -5349,7 +5349,8 @@ gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
  * Gets the list of past releases for an application (including the latest
  * one).
  *
- * Returns: (element-type AsRelease) (transfer none): a list
+ * Returns: (element-type AsRelease) (transfer none) (nullable): a list, or
+ *     %NULL if the version history is not known
  *
  * Since: 40
  **/
@@ -5364,8 +5365,8 @@ gs_app_get_version_history (GsApp *app)
 /**
  * gs_app_set_version_history:
  * @app: a #GsApp
- * @version_history: (element-type AsRelease): a set of entries representing
- *   the version history
+ * @version_history: (element-type AsRelease) (nullable): a set of entries
+ *   representing the version history, or %NULL if none are known
  *
  * Set the list of past releases for an application (including the latest one).
  *
