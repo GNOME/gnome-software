@@ -28,13 +28,13 @@ static void
 populate_version_history (GsAppVersionHistoryDialog *dialog,
 			  GsApp			    *app)
 {
-	GPtrArray *version_history;
+	g_autoptr(GPtrArray) version_history = NULL;
 
 	/* remove previous */
 	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
 
 	version_history = gs_app_get_version_history (app);
-	if (version_history == NULL) {
+	if (version_history == NULL || version_history->len == 0) {
 		GtkWidget *row;
 		row = gs_app_version_history_row_new ();
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),

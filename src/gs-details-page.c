@@ -1237,7 +1237,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 user_integration_bf;
 	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
-	GPtrArray *version_history;
+	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
 
 	/* change widgets */
@@ -1347,7 +1347,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
-	if (version_history == NULL) {
+	if (version_history == NULL || version_history->len == 0) {
 		const char *version = gs_app_get_version (self->app);
 		if (version == NULL || *version == '\0')
 			gtk_widget_set_visible (self->list_box_version_history, FALSE);

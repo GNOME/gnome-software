@@ -129,7 +129,7 @@ typedef struct
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
 	gboolean		 is_update_downloaded;
-	GPtrArray		*version_history; /* (element-type AsRelease) */
+	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 } GsAppPrivate;
 
 enum {
@@ -184,9 +184,11 @@ _g_set_ptr_array (GPtrArray **array_ptr, GPtrArray *new_array)
 {
 	if (*array_ptr == new_array)
 		return FALSE;
+	if (new_array != NULL)
+		g_ptr_array_ref (new_array);
 	if (*array_ptr != NULL)
 		g_ptr_array_unref (*array_ptr);
-	*array_ptr = g_ptr_array_ref (new_array);
+	*array_ptr = new_array;
 	return TRUE;
 }
 
@@ -195,9 +197,11 @@ _g_set_array (GArray **array_ptr, GArray *new_array)
 {
 	if (*array_ptr == new_array)
 		return FALSE;
+	if (new_array != NULL)
+		g_array_ref (new_array);
 	if (*array_ptr != NULL)
 		g_array_unref (*array_ptr);
-	*array_ptr = g_array_ref (new_array);
+	*array_ptr = new_array;
 	return TRUE;
 }
 
@@ -5349,23 +5353,29 @@ gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
  * Gets the list of past releases for an application (including the latest
  * one).
  *
- * Returns: (element-type AsRelease) (transfer none): a list
+ * Returns: (element-type AsRelease) (transfer container) (nullable): a list, or
+ *     %NULL if the version history is not known
  *
- * Since: 40
+ * Since: 41
  **/
 GPtrArray *
 gs_app_get_version_history (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->version_history;
+
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (priv->version_history == NULL)
+		return NULL;
+	return g_ptr_array_ref (priv->version_history);
 }
 
 /**
  * gs_app_set_version_history:
  * @app: a #GsApp
- * @version_history: (element-type AsRelease): a set of entries representing
- *   the version history
+ * @version_history: (element-type AsRelease) (nullable): a set of entries
+ *   representing the version history, or %NULL if none are known
  *
  * Set the list of past releases for an application (including the latest one).
  *
@@ -5377,7 +5387,10 @@ gs_app_set_version_history (GsApp *app, GPtrArray *version_history)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (version_history != NULL);
+
+	if (version_history != NULL && version_history->len == 0)
+		version_history = NULL;
+
 	locker = g_mutex_locker_new (&priv->mutex);
 	_g_set_ptr_array (&priv->version_history, version_history);
 }
