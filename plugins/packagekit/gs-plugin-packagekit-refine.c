@@ -57,6 +57,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -596,6 +597,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	g_mutex_lock (&priv->client_mutex);
 	cache_age_save = pk_client_get_cache_age (priv->client);
 	pk_client_set_cache_age (priv->client, 60 * 60 * 24 * 7); /* once per week */
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_upgrade_system (priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_version (app),

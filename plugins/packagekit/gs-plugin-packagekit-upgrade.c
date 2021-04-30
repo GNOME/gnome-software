@@ -31,6 +31,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), 60 * 60 * 24);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 }
 
 void
@@ -70,6 +71,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_set_progress_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_task_upgrade_system_sync (priv->task,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,

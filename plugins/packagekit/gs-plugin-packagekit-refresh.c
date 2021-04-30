@@ -36,6 +36,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->task = pk_task_new ();
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* we can return better results than dpkg directly */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
@@ -68,6 +69,7 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
@@ -177,6 +179,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_mutex_lock (&priv->task_mutex);
 	/* cache age of 1 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 1);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 	/* refresh the metadata */
 	results = pk_client_refresh_cache (PK_CLIENT (priv->task),
