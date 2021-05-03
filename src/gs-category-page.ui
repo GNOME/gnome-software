@@ -1,231 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <object class="GtkPopover" id="categories_popover">
-    <property name="visible">False</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox" id="popover_filter_box">
-        <property name="visible">True</property>
-        <property name="margin">10</property>
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="sorting_popover">
-    <property name="visible">False</property>
-    <property name="position">bottom</property>
-    <child>
-      <object class="GtkBox" id="sorting_popover_box">
-        <property name="visible">True</property>
-        <property name="margin">10</property>
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkModelButton" id="sort_rating_button">
-            <property name="visible">True</property>
-            <property name="text" translatable="yes" comments="Translators: A label for a button to sort apps by their rating.">Rating</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkModelButton" id="sort_name_button">
-            <property name="visible">True</property>
-            <property name="text" translatable="yes" comments="Translators: A label for a button to sort apps alphabetically.">Name</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
+
   <template class="GsCategoryPage" parent="GsPage">
     <child>
-      <object class="GtkBox" id="box_category">
+      <object class="GtkScrolledWindow" id="scrolledwindow_category">
         <property name="visible">True</property>
+        <property name="shadow_type">none</property>
+        <property name="hscrollbar_policy">never</property>
+        <property name="vscrollbar_policy">automatic</property>
         <child>
-          <object class="GtkBox" id="box_category_results">
+          <object class="GtkViewport" id="viewport3">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">9</property>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_category">
+              <object class="GsFixedSizeBin" id="gs_fixed_bin">
                 <property name="visible">True</property>
-                <property name="shadow_type">none</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
+                <!-- This is 3*420 plus margins, paddings, CSS borders -->
+                <property name="preferred-width">1338</property>
                 <child>
-                  <object class="GtkViewport" id="viewport3">
+                  <object class="GtkBox">
                     <property name="visible">True</property>
-                    <child>
-                      <object class="GsFixedSizeBin" id="gs_fixed_bin">
-                        <property name="visible">True</property>
-                        <!-- This is 3*420 plus margins, paddings, CSS borders -->
-                        <property name="preferred-width">1338</property>
-                        <child>
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">9</property>
-                            <property name="valign">start</property>
-                            <child>
-                              <object class="GtkBox" id="header_filter_box">
-                                <property name="visible">True</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="homogeneous">True</property>
-                                <style>
-                                  <class name="category_page_header_filter_box"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel" id="featured_heading">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_top">24</property>
-                                <property name="margin_end">24</property>
-                                <accessibility>
-                                  <relation target="featured_grid" type="label-for"/>
-                                </accessibility>
-                                <style>
-                                  <class name="index-title-alignment-software"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkGrid" id="featured_grid">
-                                <property name="visible">False</property>
-                                <property name="column_spacing">14</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="visible">True</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
-                                <property name="margin_top">36</property>
-                                <property name="spacing">9</property>
-                                <child>
-                                  <object class="GtkLabel" id="subcats_filter_label">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes" comments="TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.">Show</property>
-                                    <property name="margin_start">2</property>
-                                    <accessibility>
-                                      <relation target="subcats_filter_button" type="label-for"/>
-                                    </accessibility>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkMenuButton" id="subcats_filter_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="relief">normal</property>
-                                    <property name="popover">categories_popover</property>
-                                    <property name="margin_end">24</property>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject">
-                                        <property name="accessible-name" translatable="yes">Subcategories filter menu</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="grid1">
-                                        <property name="visible">True</property>
-                                        <property name="valign">center</property>
-                                        <property name="spacing">6</property>
-                                        <property name="orientation">horizontal</property>
-                                        <child>
-                                          <object class="GtkLabel" id="subcats_filter_button_label">
-                                            <property name="visible">True</property>
-                                            <property name="xalign">0.0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkArrow" id="arrow1">
-                                            <property name="visible">True</property>
-                                            <property name="arrow_type">down</property>
-                                          </object>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <style>
-                                      <class name="text-button"/>
-                                    </style>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="subcats_sort_label">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes" comments="TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.">Sort</property>
-                                    <property name="margin_start">2</property>
-                                    <accessibility>
-                                      <relation target="subcats_sort_button" type="label-for"/>
-                                    </accessibility>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkMenuButton" id="subcats_sort_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="relief">normal</property>
-                                    <property name="popover">sorting_popover</property>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject">
-                                        <property name="accessible-name" translatable="yes">Subcategories sorting menu</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="grid2">
-                                        <property name="visible">True</property>
-                                        <property name="valign">center</property>
-                                        <property name="spacing">6</property>
-                                        <property name="orientation">horizontal</property>
-                                        <child>
-                                          <object class="GtkLabel" id="subcats_sort_button_label">
-                                            <property name="visible">True</property>
-                                            <property name="xalign">0.0</property>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkArrow" id="arrow2">
-                                            <property name="visible">True</property>
-                                            <property name="arrow_type">down</property>
-                                          </object>
-                                          <packing>
-                                            <property name="pack-type">end</property>
-                                          </packing>
-                                        </child>
-                                      </object>
-                                    </child>
-                                    <style>
-                                      <class name="text-button"/>
-                                    </style>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">9</property>
+                    <property name="valign">start</property>
+                    <property name="margin-start">24</property>
+                    <property name="margin-end">24</property>
+                    <property name="margin-top">0</property><!-- top margin provided by headings -->
+                    <property name="margin-bottom">24</property>
 
-                            <child>
-                              <object class="GtkFlowBox" id="category_detail_box">
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
-                                <property name="margin_top">14</property>
-                                <property name="margin_bottom">21</property>
-                                <property name="halign">fill</property>
-                                <property name="visible">True</property>
-                                <property name="row_spacing">14</property>
-                                <property name="column_spacing">14</property>
-                                <property name="homogeneous">True</property>
-                                <property name="hexpand">True</property>
-                                <property name="vexpand">True</property>
-                                <property name="valign">start</property>
-                                <property name="min-children-per-line">2</property>
-                                <property name="selection-mode">none</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                    <child>
+                      <object class="GsFeaturedCarousel" id="top_carousel">
+                        <property name="visible">False</property>
+                        <property name="height-request">150</property>
+                        <property name="margin_top">24</property>
+                        <signal name="app-clicked" handler="top_carousel_app_clicked_cb"/>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkLabel" id="featured_heading">
+                        <property name="visible" bind-source="featured_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="xalign">0</property>
+                        <property name="margin_top">24</property>
+                        <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Picks</property>
+                        <accessibility>
+                          <relation target="featured_flow_box" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="index-title-alignment-software"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="featured_flow_box">
+                        <property name="visible">False</property>
+                        <property name="column_spacing">14</property>
+                        <property name="halign">fill</property>
+                        <property name="row_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkLabel" id="recently_updated_heading">
+                        <property name="visible" bind-source="recently_updated_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="xalign">0</property>
+                        <property name="margin_top">24</property>
+                        <property name="label" translatable="yes" comments="Heading for recently updated apps on a category page">Recently Updated</property>
+                        <accessibility>
+                          <relation target="recently_updated_flow_box" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="index-title-alignment-software"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="recently_updated_flow_box">
+                        <property name="visible">False</property>
+                        <property name="column_spacing">14</property>
+                        <property name="halign">fill</property>
+                        <property name="row_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkLabel" id="other_heading">
+                        <property name="visible" bind-source="category_detail_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="xalign">0</property>
+                        <property name="margin_top">24</property>
+                        <property name="label" translatable="yes" comments="Heading for the rest of the apps on a category page">Other Apps</property>
+                        <accessibility>
+                          <relation target="category_detail_box" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="index-title-alignment-software"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="category_detail_box">
+                        <property name="halign">fill</property>
+                        <property name="visible">True</property>
+                        <property name="row_spacing">14</property>
+                        <property name="column_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="selection-mode">none</property>
                       </object>
                     </child>
                   </object>
@@ -237,20 +132,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup">
-    <property name="ignore-hidden">False</property>
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="subcats_filter_button_label"/>
-      <widget name="popover_filter_box"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup">
-    <property name="ignore-hidden">False</property>
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="subcats_sort_button_label"/>
-      <widget name="sorting_popover_box"/>
-    </widgets>
-  </object>
 </interface>

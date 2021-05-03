@@ -2071,6 +2071,16 @@ updates_page_notify_counter_cb (GObject    *obj,
 				 NULL);
 }
 
+static void
+category_page_app_clicked_cb (GsCategoryPage *page,
+                              GsApp          *app,
+                              gpointer        user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+
+	gs_shell_show_app (shell, app);
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -2375,6 +2385,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
+	gtk_widget_class_bind_template_callback (widget_class, category_page_app_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);

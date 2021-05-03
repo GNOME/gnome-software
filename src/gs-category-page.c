@@ -15,14 +15,10 @@
 
 #include "gs-app-list-private.h"
 #include "gs-common.h"
+#include "gs-featured-carousel.h"
 #include "gs-summary-tile.h"
 #include "gs-category-page.h"
 #include "gs-utils.h"
-
-typedef enum {
-	SUBCATEGORY_SORT_TYPE_RATING,
-	SUBCATEGORY_SORT_TYPE_NAME
-} SubcategorySortType;
 
 struct _GsCategoryPage
 {
@@ -30,34 +26,31 @@ struct _GsCategoryPage
 
 	GsPluginLoader	*plugin_loader;
 	GCancellable	*cancellable;
-	GsShell		*shell;
 	GsCategory	*category;
 	GsCategory	*subcategory;
-	guint		sort_rating_handler_id;
-	guint		sort_name_handler_id;
-	SubcategorySortType sort_type;
 
+	GtkWidget	*top_carousel;
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
-	GtkWidget	*subcats_filter_label;
-	GtkWidget	*subcats_filter_button_label;
-	GtkWidget	*subcats_filter_button;
-	GtkWidget	*popover_filter_box;
-	GtkWidget	*subcats_sort_label;
-	GtkWidget	*subcats_sort_button;
-	GtkWidget	*subcats_sort_button_label;
-	GtkWidget	*sort_rating_button;
-	GtkWidget	*sort_name_button;
-	GtkWidget	*featured_grid;
-	GtkWidget	*featured_heading;
-	GtkWidget	*header_filter_box;
+	GtkWidget	*featured_flow_box;
+	GtkWidget	*recently_updated_flow_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_TITLE = 1,
+	PROP_CATEGORY = 1,
+	/* Override properties: */
+	PROP_TITLE,
 } GsCategoryPageProperty;
+
+static GParamSpec *obj_props[PROP_CATEGORY + 1] = { NULL, };
+
+typedef enum {
+	SIGNAL_APP_CLICKED,
+} GsCategoryPageSignal;
+
+static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
 
 static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
@@ -66,39 +59,98 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
-	gs_shell_show_app (self->shell, app);
+	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
 static void
-gs_category_page_sort_by_type (GsCategoryPage *self,
-			       SubcategorySortType sort_type)
+top_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
+                             GsApp              *app,
+                             gpointer            user_data)
 {
-	g_autofree gchar *button_label;
+	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
 
-	if (sort_type == SUBCATEGORY_SORT_TYPE_NAME)
-		g_object_get (self->sort_name_button, "text", &button_label, NULL);
-	else
-		g_object_get (self->sort_rating_button, "text", &button_label, NULL);
+	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
+}
 
-	gtk_label_set_text (GTK_LABEL (self->subcats_sort_button_label), button_label);
+static gint
+_max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	gint name_sort = gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
 
-	/* only sort again if the sort type is different */
-	if (self->sort_type == sort_type)
+	if (name_sort != 0)
+		return name_sort;
+
+	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
+}
+
+static void
+gs_category_page_add_placeholders (GsCategoryPage *self,
+                                   GtkFlowBox     *flow_box,
+                                   guint           n_placeholders)
+{
+	gs_container_remove_all (GTK_CONTAINER (flow_box));
+
+	for (guint i = 0; i < n_placeholders; ++i) {
+		GtkWidget *tile = gs_summary_tile_new (NULL);
+		gtk_container_add (GTK_CONTAINER (flow_box), tile);
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+	}
+
+	gtk_widget_show (GTK_WIDGET (flow_box));
+}
+
+typedef struct {
+	GsCategoryPage *page;  /* (owned) */
+	GHashTable *featured_app_ids;  /* (owned) (nullable) (element-type utf8 utf8) */
+	gboolean get_featured_apps_finished;
+	GsAppList *apps;  /* (owned) (nullable) */
+	gboolean get_main_apps_finished;
+} LoadCategoryData;
+
+static void
+load_category_data_free (LoadCategoryData *data)
+{
+	g_clear_object (&data->page);
+	g_clear_pointer (&data->featured_app_ids, g_hash_table_unref);
+	g_clear_object (&data->apps);
+	g_free (data);
+}
+
+static void load_category_finish (LoadCategoryData *data);
+
+static void
+gs_category_page_get_featured_apps_cb (GObject *source_object,
+				       GAsyncResult *res,
+				       gpointer user_data)
+{
+	LoadCategoryData *data = user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GHashTable) featured_app_ids = NULL;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &local_error);
+	if (list == NULL) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get featured apps for category apps: %s", local_error->message);
+		data->get_featured_apps_finished = TRUE;
+		load_category_finish (data);
 		return;
+	}
 
-	self->sort_type = sort_type;
-	gtk_flow_box_invalidate_sort (GTK_FLOW_BOX (self->category_detail_box));
-}
+	featured_app_ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-static void
-sort_button_clicked (GtkButton *button, gpointer data)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 
-	if (button == GTK_BUTTON (self->sort_rating_button))
-		gs_category_page_sort_by_type (self, SUBCATEGORY_SORT_TYPE_RATING);
-	else
-		gs_category_page_sort_by_type (self, SUBCATEGORY_SORT_TYPE_NAME);
+		g_hash_table_add (featured_app_ids, g_strdup (gs_app_get_id (app)));
+	}
+
+	data->featured_app_ids = g_steal_pointer (&featured_app_ids);
+	data->get_featured_apps_finished = TRUE;
+	load_category_finish (data);
 }
 
 static void
@@ -106,175 +158,173 @@ gs_category_page_get_apps_cb (GObject *source_object,
                               GAsyncResult *res,
                               gpointer user_data)
 {
-	guint i;
-	GsApp *app;
-	GtkWidget *tile;
-	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
+	LoadCategoryData *data = user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(GError) error = NULL;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
-	/* show an empty space for no results */
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &local_error);
+	if (list == NULL) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get apps for category apps: %s", local_error->message);
+		data->get_main_apps_finished = TRUE;
+		load_category_finish (data);
+		return;
+	}
+
+	data->apps = g_steal_pointer (&list);
+	data->get_main_apps_finished = TRUE;
+	load_category_finish (data);
+}
+
+static gboolean
+app_has_hi_res_icon (GsCategoryPage *self,
+		     GsApp *app)
+{
+	g_autoptr(GIcon) icon = NULL;
+
+	/* This is the minimum icon size needed by `GsFeatureTile`. */
+	icon = gs_app_get_icon_for_size (app,
+					 128,
+					 gtk_widget_get_scale_factor (GTK_WIDGET (self)),
+					 NULL);
+
+	/* Returning TRUE means to keep the app in the list */
+	return (icon != NULL);
+}
+
+static GsAppList *
+choose_top_carousel_apps (LoadCategoryData *data,
+                          guint64           recently_updated_cutoff_secs)
+{
+	const guint n_top_carousel_apps = 5;
+	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (NULL);
+	g_autoptr(GsAppList) top_carousel_apps = gs_app_list_new ();
+	guint top_carousel_seed;
+	g_autoptr(GRand) top_carousel_rand = NULL;
+
+	/* The top carousel should contain @n_top_carousel_apps, taken from the
+	 * set of featured or recently updated apps which have hi-res icons.
+	 *
+	 * The apps in the top carousel should be changed on a fixed schedule,
+	 * once a week.
+	 */
+	top_carousel_seed = (g_get_real_time () / G_USEC_PER_SEC) / (7 * 24 * 60 * 60);
+	top_carousel_rand = g_rand_new_with_seed (top_carousel_seed);
+	g_debug ("Top carousel seed: %u", top_carousel_seed);
+
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		gboolean is_featured, is_recently_updated, is_hi_res;
+
+		is_featured = (data->featured_app_ids != NULL &&
+			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
+		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
+		is_hi_res = app_has_hi_res_icon (data->page, app);
+
+		if ((is_featured || is_recently_updated) && is_hi_res)
+			g_ptr_array_add (candidates, app);
+	}
+
+	/* If there aren’t enough candidate apps to populate the top carousel,
+	 * return an empty app list. */
+	if (candidates->len < n_top_carousel_apps) {
+		g_debug ("Only %u candidate apps for top carousel; returning empty", candidates->len);
+		goto out;
+	}
+
+	/* Select @n_top_carousel_apps from @candidates uniformly randomly
+	 * without replacement. */
+	for (guint i = 0; i < n_top_carousel_apps; i++) {
+		guint random_index = g_rand_int_range (top_carousel_rand, 0, candidates->len);
+		GsApp *app = g_ptr_array_index (candidates, random_index);
+
+		gs_app_list_add (top_carousel_apps, app);
+		g_ptr_array_remove_index_fast (candidates, random_index);
+	}
+
+ out:
+	g_assert (gs_app_list_length (top_carousel_apps) == 0 ||
+		  gs_app_list_length (top_carousel_apps) == n_top_carousel_apps);
+
+	return g_steal_pointer (&top_carousel_apps);
+}
+
+static void
+load_category_finish (LoadCategoryData *data)
+{
+	GsCategoryPage *self = data->page;
+	guint64 recently_updated_cutoff_secs;
+	g_autoptr(GsAppList) top_carousel_apps = NULL;
+
+	if (!data->get_featured_apps_finished ||
+	    !data->get_main_apps_finished)
+		return;
+
+	/* Remove the loading tiles. */
+	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+	gs_container_remove_all (GTK_CONTAINER (self->recently_updated_flow_box));
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get apps for category apps: %s", error->message);
-		return;
-	}
+	/* Last 30 days */
+	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
 
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		tile = gs_summary_tile_new (app);
+	/* Apps to go in the top carousel */
+	top_carousel_apps = choose_top_carousel_apps (data, recently_updated_cutoff_secs);
 
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-	}
+	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+		GsApp *app = gs_app_list_index (data->apps, i);
+		gboolean is_featured, is_recently_updated, is_top_carousel;
+		GtkWidget *tile;
 
-	g_signal_handler_unblock (self->sort_rating_button, self->sort_rating_handler_id);
-	g_signal_handler_unblock (self->sort_name_button, self->sort_name_handler_id);
-}
+		is_top_carousel = gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL;
+		is_featured = (data->featured_app_ids != NULL &&
+			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
+		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
 
-static gint
-_max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return gs_app_get_rating (app1) - gs_app_get_rating (app2);
-}
+		/* To be listed in the top carousel? */
+		if (is_top_carousel)
+			continue;
 
-static gint
-gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
-					  GtkFlowBoxChild *child2,
-					  gpointer data)
-{
-	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child1))));
-	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child2))));
-	SubcategorySortType sort_type;
-
-	if (!GS_IS_APP (app1) || !GS_IS_APP (app2))
-		return 0;
-
-	sort_type = GS_CATEGORY_PAGE (data)->sort_type;
-
-	if (sort_type == SUBCATEGORY_SORT_TYPE_RATING) {
-		gint rating_app1 = gs_app_get_rating (app1);
-		gint rating_app2 = gs_app_get_rating (app2);
-		if (rating_app1 > rating_app2)
-			return -1;
-		if (rating_app1 < rating_app2)
-			return 1;
-	}
-
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-}
-
-static void
-gs_category_page_set_featured_placeholders (GsCategoryPage *self)
-{
-	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
-	for (guint i = 0; i < 3; ++i) {
-		GtkWidget *tile = gs_summary_tile_new (NULL);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked), self);
-		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-	}
-	gtk_widget_show (self->featured_grid);
-}
-
-static void
-gs_category_page_get_featured_apps_cb (GObject *source_object,
-				       GAsyncResult *res,
-				       gpointer user_data)
-{
-	GsApp *app;
-	GtkWidget *tile;
-	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
-	gtk_widget_hide (self->featured_grid);
-	gtk_widget_hide (self->featured_heading);
-
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get featured apps for category apps: %s", error->message);
-		return;
-	}
-	if (gs_app_list_length (list) < 3) {
-		g_debug ("not enough featured apps for category %s; not showing featured apps!",
-			 gs_category_get_id (self->category));
-		return;
-	}
-
-	/* randomize so we show different featured apps every time */
-	gs_app_list_randomize (list);
-
-	for (guint i = 0; i < 3; ++i) {
-		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
-		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
+
+		if (is_featured)
+			gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+		else if (is_recently_updated)
+			gtk_container_add (GTK_CONTAINER (self->recently_updated_flow_box), tile);
+		else
+			gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
+
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
-	gtk_widget_show (self->featured_grid);
-	gtk_widget_show (self->featured_heading);
+	gtk_widget_set_visible (self->top_carousel, gs_app_list_length (top_carousel_apps) > 0);
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), top_carousel_apps);
+
+	/* Show each of the flow boxes if they have any children. */
+	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
+	gtk_widget_set_visible (self->recently_updated_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->recently_updated_flow_box), 0) != NULL);
+	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
+
+	load_category_data_free (data);
 }
 
 static void
-gs_category_page_set_featured_apps (GsCategoryPage *self)
+gs_category_page_load_category (GsCategoryPage *self)
 {
 	GsCategory *featured_subcat = NULL;
-	GPtrArray *children = gs_category_get_children (self->category);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GtkAdjustment *adj = NULL;
+	g_autoptr(GsPluginJob) featured_plugin_job = NULL;
+	g_autoptr(GsPluginJob) main_plugin_job = NULL;
+	LoadCategoryData *load_data = NULL;
 
-	for (guint i = 0; i < children->len; ++i) {
-		GsCategory *sub = GS_CATEGORY (g_ptr_array_index (children, i));
-		if (g_strcmp0 (gs_category_get_id (sub), "featured") == 0) {
-			featured_subcat = sub;
-			break;
-		}
-	}
+	g_assert (self->subcategory != NULL);
 
-	if (featured_subcat == NULL)
-		return;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-					 "interactive", TRUE,
-					 "category", featured_subcat,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader,
-					    plugin_job,
-					    self->cancellable,
-					    gs_category_page_get_featured_apps_cb,
-					    self);
-}
-
-static void
-gs_category_page_reload (GsPage *page)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
-	GtkWidget *tile;
-	guint i, count;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	if (self->subcategory == NULL)
-		return;
+	featured_subcat = gs_category_find_child (self->category, "featured");
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
@@ -284,179 +334,113 @@ gs_category_page_reload (GsPage *page)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
-	/* don't show the sort button on addons that cannot be rated */
-	if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0) {
-		gtk_widget_set_visible (self->subcats_sort_label, FALSE);
-		gtk_widget_set_visible (self->subcats_sort_button, FALSE);
+	gtk_widget_hide (self->top_carousel);
+	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
+					   MIN (30, gs_category_get_size (self->subcategory)));
+	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), 8);
 
-	} else {
-		gtk_widget_set_visible (self->subcats_sort_label, TRUE);
-		gtk_widget_set_visible (self->subcats_sort_button, TRUE);
-	}
-
-	g_signal_handler_block (self->sort_rating_button, self->sort_rating_handler_id);
-	g_signal_handler_block (self->sort_name_button, self->sort_name_handler_id);
-
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-
-	/* just ensure the sort button has the correct label */
-	gs_category_page_sort_by_type (self, self->sort_type);
-
-	count = MIN(30, gs_category_get_size (self->subcategory));
-	for (i = 0; i < count; i++) {
-		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
-		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-	}
-
-	gs_category_page_set_featured_apps (self);
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-					 "category", self->subcategory,
-					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					 NULL);
-	gs_plugin_job_set_sort_func (plugin_job, _max_results_sort_cb, NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader,
-					    plugin_job,
-					    self->cancellable,
-					    gs_category_page_get_apps_cb,
-					    self);
-}
-
-static void
-gs_category_page_populate_filtered (GsCategoryPage *self, GsCategory *subcategory)
-{
-	g_assert (subcategory != NULL);
-	g_set_object (&self->subcategory, subcategory);
-	gs_category_page_reload (GS_PAGE (self));
-}
-
-static void
-filter_button_activated (GtkWidget *button,  gpointer data)
-{
-	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
-	GsCategory *category;
-
-	category = g_object_get_data (G_OBJECT (button), "category");
-
-	gtk_label_set_text (GTK_LABEL (self->subcats_filter_button_label),
-			    gs_category_get_name (category));
-	gs_category_page_populate_filtered (self, category);
-}
-
-static gboolean
-gs_category_page_should_use_header_filter (GsCategory *category)
-{
-	return g_strcmp0 (gs_category_get_id (category), "addons") == 0;
-}
-
-static void
-gs_category_page_create_filter (GsCategoryPage *self,
-				GsCategory *category)
-{
-	GtkWidget *button = NULL;
-	GsCategory *s;
-	guint i;
-	GPtrArray *children;
-	GtkWidget *first_subcat = NULL;
-	gboolean featured_category_found = FALSE;
-	gboolean use_header_filter = gs_category_page_should_use_header_filter (category);
-
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-	gs_container_remove_all (GTK_CONTAINER (self->header_filter_box));
-	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
-
-	children = gs_category_get_children (category);
-	for (i = 0; i < children->len; i++) {
-		s = GS_CATEGORY (g_ptr_array_index (children, i));
-		/* don't include the featured subcategory (those will appear as banners) */
-		if (g_strcmp0 (gs_category_get_id (s), "featured") == 0) {
-			featured_category_found = TRUE;
-			continue;
-		}
-		if (gs_category_get_size (s) < 1) {
-			g_debug ("not showing %s/%s as no apps",
-				 gs_category_get_id (category),
-				 gs_category_get_id (s));
-			continue;
-		}
-
-		/* create the right button type depending on where it will be used */
-		if (use_header_filter) {
-			if (button == NULL)
-				button = gtk_radio_button_new (NULL);
-			else
-				button = gtk_radio_button_new_from_widget (GTK_RADIO_BUTTON (button));
-			g_object_set (button, "xalign", 0.5, "label", gs_category_get_name (s),
-				      "draw-indicator", FALSE, "relief", GTK_RELIEF_NONE, NULL);
-			gtk_container_add (GTK_CONTAINER (self->header_filter_box), button);
-		} else {
-			button = gtk_model_button_new ();
-			g_object_set (button, "xalign", 0.0, "text", gs_category_get_name (s), NULL);
-			gtk_container_add (GTK_CONTAINER (self->popover_filter_box), button);
-		}
-
-		g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (s), g_object_unref);
-		gtk_widget_show (button);
-		g_signal_connect (button, "clicked", G_CALLBACK (filter_button_activated), self);
-
-		/* make sure the first subcategory gets selected */
-		if (first_subcat == NULL)
-		        first_subcat = button;
-	}
-	if (first_subcat != NULL)
-		filter_button_activated (first_subcat, self);
-
-	/* show only the adequate filter */
-	gtk_widget_set_visible (self->subcats_filter_label, !use_header_filter);
-	gtk_widget_set_visible (self->subcats_filter_button, !use_header_filter);
-	gtk_widget_set_visible (self->header_filter_box, use_header_filter);
-
-	if (featured_category_found) {
-		g_autofree gchar *featured_heading = NULL;
-
+	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
-		gs_category_page_set_featured_placeholders (self);
-
-		/* TRANSLATORS: This is a heading on the categories page. %s gets
-		   replaced by the category name, e.g. 'Graphics & Photography' */
-		featured_heading = g_strdup_printf (_("Featured %s"), gs_category_get_name (self->category));
-		gtk_label_set_label (GTK_LABEL (self->featured_heading), featured_heading);
-		gtk_widget_show (self->featured_heading);
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
 	} else {
-		gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
-		gtk_widget_hide (self->featured_grid);
-		gtk_widget_hide (self->featured_heading);
+		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+		gtk_widget_hide (self->featured_flow_box);
 	}
-}
 
-void
-gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
-{
-	GtkAdjustment *adj = NULL;
+	/* Load the list of apps in the category, and also the list of all
+	 * featured apps, in parallel.
+	 *
+	 * The list of featured apps has to be loaded separately (we can’t just
+	 * query each app for its featured status) since it’s provided by a
+	 * separate appstream file (org.gnome.Software.Featured.xml) and hence
+	 * produces separate `GsApp` instances with stub data. In particular,
+	 * they don’t have enough category data to match the main category
+	 * query.
+	 *
+	 * Once both queries have returned, turn the list of featured apps into
+	 * a filter, and split the main list in three:
+	 *  - Featured apps
+	 *  - Recently updated apps
+	 *  - Everything else
+	 * Then populate the UI.
+	 *
+	 * The `featured_subcat` can be `NULL` when loading the special ‘addons’
+	 * category.
+	 */
+	load_data = g_new0 (LoadCategoryData, 1);
+	load_data->page = g_object_ref (self);
 
-	/* this means we've come from the app-view -> back */
-	if (self->category == category)
-		return;
+	if (featured_subcat != NULL) {
+		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+							  "interactive", TRUE,
+							  "category", featured_subcat,
+							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+							  NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader,
+						    featured_plugin_job,
+						    self->cancellable,
+						    gs_category_page_get_featured_apps_cb,
+						    load_data);
+	} else {
+		/* Skip it */
+		load_data->get_featured_apps_finished = TRUE;
+	}
 
-	/* save this */
-	g_clear_object (&self->category);
-	self->category = g_object_ref (category);
-
-	/* find apps in this group */
-	gs_category_page_create_filter (self, category);
+	main_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+					      "interactive", TRUE,
+					      "category", self->subcategory,
+					      "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+					      "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							      GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					      NULL);
+	gs_plugin_job_set_sort_func (main_plugin_job, _max_results_sort_cb, NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader,
+					    main_plugin_job,
+					    self->cancellable,
+					    gs_category_page_get_apps_cb,
+					    load_data);
 
 	/* scroll the list of apps to the beginning, otherwise it will show
 	 * with the previous scroll value */
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+}
 
-	/* notify of the updated title */
+static void
+gs_category_page_reload (GsPage *page)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
+
+	if (self->subcategory == NULL)
+		return;
+
+	gs_category_page_load_category (self);
+}
+
+void
+gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
+{
+	GsCategory *all_subcat = NULL;
+
+	/* this means we've come from the app-view -> back */
+	if (self->category == category)
+		return;
+
+	/* set the category */
+	all_subcat = gs_category_find_child (category, "all");
+
+	g_set_object (&self->category, category);
+	g_set_object (&self->subcategory, all_subcat);
+
+	/* load the apps from it */
+	if (all_subcat != NULL)
+		gs_category_page_load_category (self);
+
+	/* notify of the updates — the category’s title will have changed too */
+	g_object_notify (G_OBJECT (self), "category");
 	g_object_notify (G_OBJECT (self), "title");
 }
 
@@ -487,6 +471,31 @@ gs_category_page_get_property (GObject    *object,
 		else
 			g_value_set_string (value, NULL);
 		break;
+	case PROP_CATEGORY:
+		g_value_set_object (value, self->category);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_category_page_set_property (GObject      *object,
+                               guint         prop_id,
+                               const GValue *value,
+                               GParamSpec   *pspec)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (object);
+
+	switch ((GsCategoryPageProperty) prop_id) {
+	case PROP_TITLE:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	case PROP_CATEGORY:
+		gs_category_page_set_category (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -500,18 +509,6 @@ gs_category_page_dispose (GObject *object)
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
-
-	if (self->sort_rating_handler_id > 0) {
-		g_signal_handler_disconnect (self->sort_rating_button,
-					     self->sort_rating_handler_id);
-		self->sort_rating_handler_id = 0;
-	}
-
-	if (self->sort_name_handler_id > 0) {
-		g_signal_handler_disconnect (self->sort_name_button,
-					     self->sort_name_handler_id);
-		self->sort_name_handler_id = 0;
-	}
 
 	g_clear_object (&self->category);
 	g_clear_object (&self->subcategory);
@@ -530,20 +527,6 @@ gs_category_page_setup (GsPage *page,
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->shell = shell;
-	self->sort_type = SUBCATEGORY_SORT_TYPE_RATING;
-	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->category_detail_box),
-				    gs_category_page_sort_flow_box_sort_func,
-				    self, NULL);
-
-	self->sort_rating_handler_id = g_signal_connect (self->sort_rating_button,
-							 "clicked",
-							 G_CALLBACK (sort_button_clicked),
-							 self);
-	self->sort_name_handler_id = g_signal_connect (self->sort_name_button,
-						       "clicked",
-						       G_CALLBACK (sort_button_clicked),
-						       self);
 
 	return TRUE;
 }
@@ -556,29 +539,55 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_category_page_get_property;
+	object_class->set_property = gs_category_page_set_property;
 	object_class->dispose = gs_category_page_dispose;
 
 	page_class->reload = gs_category_page_reload;
 	page_class->setup = gs_category_page_setup;
 
+	/**
+	 * GsCategoryPage:category: (nullable)
+	 *
+	 * The category to display the apps from.
+	 *
+	 * This may be %NULL if no category is selected. If so, the behaviour
+	 * of the widget will be safe, but undefined.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_CATEGORY] =
+		g_param_spec_object ("category", NULL, NULL,
+				     GS_TYPE_CATEGORY,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
+
+	/**
+	 * GsCategoryPage::app-clicked:
+	 * @app: the #GsApp which was clicked on
+	 *
+	 * Emitted when one of the app tiles is clicked. Typically the caller
+	 * should display the details of the given app in the callback.
+	 *
+	 * Since: 41
+	 */
+	obj_signals[SIGNAL_APP_CLICKED] =
+		g_signal_new ("app-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, top_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button_label);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_heading);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, header_filter_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, recently_updated_flow_box);
+
+	gtk_widget_class_bind_template_callback (widget_class, top_carousel_app_clicked_cb);
 }
 
 GsCategoryPage *
