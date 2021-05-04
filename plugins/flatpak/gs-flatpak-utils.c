@@ -43,6 +43,9 @@ gs_flatpak_error_convert (GError **perror)
 		case FLATPAK_ERROR_RUNTIME_NOT_FOUND:
 			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
+		case FLATPAK_ERROR_OUT_OF_SPACE:
+			error->code = GS_PLUGIN_ERROR_NO_SPACE;
+			break;
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
