@@ -1248,6 +1248,53 @@ gs_utils_unique_id_compat_convert (const gchar *data_id)
 				parts[5]);
 }
 
+static const gchar *
+_fix_data_id_part (const gchar *value)
+{
+	if (!value || !*value)
+		return "*";
+
+	return value;
+}
+
+/**
+ * gs_utils_build_unique_id:
+ * @scope: Scope of the metadata as #AsComponentScope e.g. %AS_COMPONENT_SCOPE_SYSTEM
+ * @bundle_kind: Bundling system providing this data, e.g. 'package' or 'flatpak'
+ * @origin: Origin string, e.g. 'os' or 'gnome-apps-nightly'
+ * @cid: AppStream component ID, e.g. 'org.freedesktop.appstream.cli'
+ * @branch: Branch, e.g. '3-20' or 'master'
+ *
+ * Builds an identifier string unique to the individual dataset using the supplied information.
+ * It's similar to as_utils_build_data_id(), except it respects the @origin for the packages.
+ *
+ * Returns: (transfer full): a unique ID, free with g_free(), when no longer needed.
+ *
+ * Since: 41
+ */
+gchar *
+gs_utils_build_unique_id (AsComponentScope scope,
+			  AsBundleKind bundle_kind,
+			  const gchar *origin,
+			  const gchar *cid,
+			  const gchar *branch)
+{
+	const gchar *scope_str = NULL;
+	const gchar *bundle_str = NULL;
+
+	if (scope != AS_COMPONENT_SCOPE_UNKNOWN)
+		scope_str = as_component_scope_to_string (scope);
+	if (bundle_kind != AS_BUNDLE_KIND_UNKNOWN)
+		bundle_str = as_bundle_kind_to_string (bundle_kind);
+
+	return g_strdup_printf ("%s/%s/%s/%s/%s",
+				_fix_data_id_part (scope_str),
+				_fix_data_id_part (bundle_str),
+				_fix_data_id_part (origin),
+				_fix_data_id_part (cid),
+				_fix_data_id_part (branch));
+}
+
 static void
 gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *div_kernel_size)
 {

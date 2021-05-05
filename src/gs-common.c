@@ -622,11 +622,11 @@ gs_utils_build_unique_id_kind (AsComponentKind kind, const gchar *id)
 {
 	if (as_utils_data_id_valid (id))
 		return g_strdup (id);
-	return as_utils_build_data_id (AS_COMPONENT_SCOPE_UNKNOWN,
-				       AS_BUNDLE_KIND_UNKNOWN,
-				       NULL,
-				       id,
-				       NULL);
+	return gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
+					 AS_BUNDLE_KIND_UNKNOWN,
+					 NULL,
+					 id,
+					 NULL);
 }
 
 /**
