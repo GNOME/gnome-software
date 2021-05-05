@@ -204,6 +204,28 @@ refine_app_locked (GsPlugin             *plugin,
 		tmp = g_hash_table_lookup (priv->urls, gs_app_get_origin (app));
 		if (tmp != NULL)
 			gs_app_set_origin_hostname (app, tmp);
+		else {
+			GHashTableIter iter;
+			gpointer key, value;
+			const gchar *origin;
+
+			origin = gs_app_get_origin (app);
+
+			/* Some repos, such as rpmfusion, can have set the name with a distribution
+			   number in the appstream file, thus check those specifically */
+			g_hash_table_iter_init (&iter, priv->urls);
+			while (g_hash_table_iter_next (&iter, &key, &value)) {
+				if (g_str_has_prefix (origin, key)) {
+					const gchar *rest = origin + strlen (key);
+					while (*rest == '-' || (*rest >= '0' && *rest <= '9'))
+						rest++;
+					if (!*rest) {
+						gs_app_set_origin_hostname (app, value);
+						break;
+					}
+				}
+			}
+		}
 		break;
 	}
 
