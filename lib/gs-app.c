@@ -331,11 +331,11 @@ gs_app_get_unique_id_unlocked (GsApp *app)
 	/* hmm, do what we can */
 	if (priv->unique_id == NULL || !priv->unique_id_valid) {
 		g_free (priv->unique_id);
-		priv->unique_id = as_utils_build_data_id (priv->scope,
-							  priv->bundle_kind,
-							  priv->origin,
-							  priv->id,
-							  priv->branch);
+		priv->unique_id = gs_utils_build_unique_id (priv->scope,
+							    priv->bundle_kind,
+							    priv->origin,
+							    priv->id,
+							    priv->branch);
 		priv->unique_id_valid = TRUE;
 	}
 	return priv->unique_id;
