@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-04-30 12:09+0000\n"
-"PO-Revision-Date: 2021-05-01 16:38+0300\n"
+"POT-Creation-Date: 2021-05-03 15:24+0000\n"
+"PO-Revision-Date: 2021-05-05 20:40+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -330,12 +330,10 @@ msgid "Pending"
 msgstr "У черзі"
 
 #: src/gs-app-addon-row.c:101 src/gs-app-row.c:417 src/gs-details-page.c:389
-#| msgid "Pending installation…"
 msgid "Pending install"
 msgstr "Очікуємо на встановлення"
 
 #: src/gs-app-addon-row.c:105 src/gs-app-row.c:421 src/gs-details-page.c:396
-#| msgid "Pending"
 msgid "Pending remove"
 msgstr "Очікуємо на вилучення"
 
@@ -473,8 +471,7 @@ msgstr "Показати номер версії"
 
 #: src/gs-application.c:360
 msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr ""
-"© Учасники розробки «Програм GNOME», 2016–2021"
+msgstr "© Учасники розробки «Програм GNOME», 2016–2021"
 
 #: src/gs-application.c:363
 msgid "translator-credits"
@@ -609,41 +606,23 @@ msgstr "Усе"
 msgid "Featured"
 msgstr "Особливе"
 
-#. TRANSLATORS: This is a heading on the categories page. %s gets
-#. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:428
-#, c-format
-msgid "Featured %s"
-msgstr "Рекомендовані у «%s»"
+#. Heading for featured apps on a category page
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: src/gs-category-page.ui:45 src/gs-overview-page.ui:96
+msgid "Editor’s Picks"
+msgstr "Відібране редактором"
 
-#. Translators: A label for a button to sort apps by their rating.
-#: src/gs-category-page.ui:26 src/gs-review-dialog.ui:74
-msgid "Rating"
-msgstr "Рейтинг"
+#. Heading for recently updated apps on a category page
+#: src/gs-category-page.ui:74
+#| msgid "Restart & Update"
+msgid "Recently Updated"
+msgstr "Нещодавно оновлені"
 
-#. Translators: A label for a button to sort apps alphabetically.
-#. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:55
-msgid "Name"
-msgstr "Назва"
-
-#. TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.
-#: src/gs-category-page.ui:111
-msgid "Show"
-msgstr "Показати"
-
-#: src/gs-category-page.ui:128
-msgid "Subcategories filter menu"
-msgstr "Меню фільтрування підкатегорій"
-
-#. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
-#: src/gs-category-page.ui:159
-msgid "Sort"
-msgstr "Критерій упорядковування"
-
-#: src/gs-category-page.ui:175
-msgid "Subcategories sorting menu"
-msgstr "Меню упорядковування за підкатегоріями"
+#. Heading for the rest of the apps on a category page
+#: src/gs-category-page.ui:103
+#| msgid "Other"
+msgid "Other Apps"
+msgstr "Інші програми"
 
 #. TRANSLATORS: the user isn't reading the question
 #: lib/gs-cmd.c:193
@@ -872,180 +851,186 @@ msgid "Word Processor"
 msgstr "Текстовий процесор"
 
 #: lib/gs-desktop-data.c:195
+#| msgid "All"
+msgctxt "Menu of Add-ons"
+msgid "All"
+msgstr "Усі"
+
+#: lib/gs-desktop-data.c:198
 msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Шрифти"
 
-#: lib/gs-desktop-data.c:198
+#: lib/gs-desktop-data.c:201
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Кодеки"
 
-#: lib/gs-desktop-data.c:201
+#: lib/gs-desktop-data.c:204
 msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Джерела введення"
 
-#: lib/gs-desktop-data.c:204
+#: lib/gs-desktop-data.c:207
 msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Мовні пакети"
 
-#: lib/gs-desktop-data.c:207
+#: lib/gs-desktop-data.c:210
 msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Локалізація"
 
-#: lib/gs-desktop-data.c:210
+#: lib/gs-desktop-data.c:213
 msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Драйвери апаратури"
 
-#: lib/gs-desktop-data.c:218
+#: lib/gs-desktop-data.c:221
 msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Усі"
 
-#: lib/gs-desktop-data.c:221
+#: lib/gs-desktop-data.c:224
 msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: lib/gs-desktop-data.c:224
+#: lib/gs-desktop-data.c:227
 msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Спілкування"
 
-#: lib/gs-desktop-data.c:231
+#: lib/gs-desktop-data.c:234
 msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Новини"
 
-#: lib/gs-desktop-data.c:235
+#: lib/gs-desktop-data.c:238
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Переглядачі інтернету"
 
-#: lib/gs-desktop-data.c:243
+#: lib/gs-desktop-data.c:246
 msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Усі"
 
-#: lib/gs-desktop-data.c:246
+#: lib/gs-desktop-data.c:249
 msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: lib/gs-desktop-data.c:249
+#: lib/gs-desktop-data.c:252
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Текстові редактори"
 
-#: lib/gs-desktop-data.c:257
+#: lib/gs-desktop-data.c:260
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Усе"
 
-#: lib/gs-desktop-data.c:260
+#: lib/gs-desktop-data.c:263
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "Особливе"
 
-#: lib/gs-desktop-data.c:263
+#: lib/gs-desktop-data.c:266
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Мистецтво"
 
-#: lib/gs-desktop-data.c:266
+#: lib/gs-desktop-data.c:269
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Біографія"
 
-#: lib/gs-desktop-data.c:269
+#: lib/gs-desktop-data.c:272
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Комікси"
 
-#: lib/gs-desktop-data.c:272
+#: lib/gs-desktop-data.c:275
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Фантастика"
 
-#: lib/gs-desktop-data.c:275
+#: lib/gs-desktop-data.c:278
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Здоров'я"
 
-#: lib/gs-desktop-data.c:278
+#: lib/gs-desktop-data.c:281
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Історія"
 
-#: lib/gs-desktop-data.c:281
+#: lib/gs-desktop-data.c:284
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Стиль життя"
 
-#: lib/gs-desktop-data.c:284
+#: lib/gs-desktop-data.c:287
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Політика"
 
-#: lib/gs-desktop-data.c:287
+#: lib/gs-desktop-data.c:290
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Спорт"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: lib/gs-desktop-data.c:297
+#: lib/gs-desktop-data.c:300
 msgid "Audio & Video"
 msgstr "Відео та звук"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: lib/gs-desktop-data.c:300
+#: lib/gs-desktop-data.c:303
 msgid "Developer Tools"
 msgstr "Засоби розробляння"
 
 #. TRANSLATORS: this is the menu spec main category for Education & Science
-#: lib/gs-desktop-data.c:303
+#: lib/gs-desktop-data.c:306
 msgid "Education & Science"
 msgstr "Освіта та наука"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: lib/gs-desktop-data.c:306
+#: lib/gs-desktop-data.c:309
 msgid "Games"
 msgstr "Ігри"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: lib/gs-desktop-data.c:309
+#: lib/gs-desktop-data.c:312
 msgid "Graphics & Photography"
 msgstr "Фотографія та графіка"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: lib/gs-desktop-data.c:312
+#: lib/gs-desktop-data.c:315
 msgid "Productivity"
 msgstr "Офіс"
 
 #. TRANSLATORS: this is the menu spec main category for Add-ons
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
-#: lib/gs-desktop-data.c:315 src/gs-details-page.ui:410
+#: lib/gs-desktop-data.c:318 src/gs-details-page.ui:410
 #: src/gs-installed-page.c:455
 msgid "Add-ons"
 msgstr "Додатки"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: lib/gs-desktop-data.c:318
+#: lib/gs-desktop-data.c:321
 msgid "Communication & News"
 msgstr "Спілкування та новини"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: lib/gs-desktop-data.c:321
+#: lib/gs-desktop-data.c:324
 msgid "Reference"
 msgstr "Посилання"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: lib/gs-desktop-data.c:324
+#: lib/gs-desktop-data.c:327
 msgid "Utilities"
 msgstr "Засоби"
 
@@ -1174,7 +1159,6 @@ msgstr[3] "Було встановлено оновлення"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:716
-#| msgid "An application"
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
 msgstr[0] "Було вилучено програми"
@@ -1333,12 +1317,10 @@ msgid "Removing…"
 msgstr "Вилучення…"
 
 #: src/gs-details-page.c:387
-#| msgid "Requires Restart"
 msgid "Requires restart to finish install"
 msgstr "Потребує перезапуску системи для завершення встановлення"
 
 #: src/gs-details-page.c:394
-#| msgid "Requires Restart"
 msgid "Requires restart to finish remove"
 msgstr "Потребує перезапуску системи для завершення вилучення"
 
@@ -1372,7 +1354,6 @@ msgid "_Install"
 msgstr "_Встановити"
 
 #: src/gs-details-page.c:1037
-#| msgid "Restart"
 msgid "_Restart"
 msgstr "_Перезапустити"
 
@@ -2177,6 +2158,11 @@ msgstr "Модерувати сторінку"
 msgid "There are no reviews to moderate"
 msgstr "Немає оглядів для модерування"
 
+#. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
+#: src/gs-origin-popover-row.c:55
+msgid "Name"
+msgstr "Назва"
+
 #. TRANSLATORS: the installation location for flatpaks
 #: src/gs-origin-popover-row.c:72
 msgid "system"
@@ -2276,11 +2262,6 @@ msgstr "Сторінка огляду"
 #: src/gs-overview-page.ui:40
 msgid "Enable Third Party Software Repositories?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
-
-#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-overview-page.ui:96
-msgid "Editor’s Picks"
-msgstr "Відібране редактором"
 
 #. Translators: This is a heading for software which has been recently released upstream.
 #: src/gs-overview-page.ui:122
@@ -2607,6 +2588,10 @@ msgstr "Оприлюднити огляд"
 #: src/gs-review-dialog.ui:34
 msgid "_Post"
 msgstr "_Оприлюднити"
+
+#: src/gs-review-dialog.ui:74
+msgid "Rating"
+msgstr "Рейтинг"
 
 #: src/gs-review-dialog.ui:110
 msgid "Summary"
@@ -3251,8 +3236,7 @@ msgstr "Пошук"
 
 #: src/gs-shell.ui:86 src/gs-shell.ui:194
 msgid "Primary Menu"
-msgstr ""
-"Основне меню"
+msgstr "Основне меню"
 
 #: src/gs-shell.ui:132 src/gs-update-dialog.ui:20
 msgid "Go back"
@@ -3282,8 +3266,7 @@ msgstr "Докладніше"
 
 #: src/gs-shell.ui:355
 msgid "Navigation sidebar"
-msgstr ""
-"Бічна панель навігації"
+msgstr "Бічна панель навігації"
 
 #: src/gs-shell.ui:447
 msgid "Find Out _More"
@@ -3305,8 +3288,7 @@ msgstr "Джерело: %s"
 #: src/gs-sidebar.c:271
 #, c-format
 msgid "%s (needs attention)"
-msgstr ""
-"%s (потребує уваги)"
+msgstr "%s (потребує уваги)"
 
 #: src/gs-summary-tile.c:81
 #, c-format
@@ -4086,6 +4068,21 @@ msgstr "Підтримка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
+
+#~ msgid "Featured %s"
+#~ msgstr "Рекомендовані у «%s»"
+
+#~ msgid "Show"
+#~ msgstr "Показати"
+
+#~ msgid "Subcategories filter menu"
+#~ msgstr "Меню фільтрування підкатегорій"
+
+#~ msgid "Sort"
+#~ msgstr "Критерій упорядковування"
+
+#~ msgid "Subcategories sorting menu"
+#~ msgstr "Меню упорядковування за підкатегоріями"
 
 #~ msgid "Select All"
 #~ msgstr "Вибрати все"
