@@ -1183,6 +1183,8 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			continue;
 		}
 
+		g_clear_pointer (&locker, g_mutex_locker_free);
+
 		/* is the timestamp new enough */
 		file_timestamp = flatpak_remote_get_appstream_timestamp (xremote, NULL);
 		tmp = gs_utils_get_file_age (file_timestamp);
@@ -1207,6 +1209,9 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 					     GS_PLUGIN_ERROR_FAILED)) {
 				g_debug ("Failed to get AppStream metadata: %s",
 					 error_local->message);
+
+				locker = g_mutex_locker_new (&self->broken_remotes_mutex);
+
 				/* don't try to fetch this again until refresh() */
 				g_hash_table_insert (self->broken_remotes,
 						     g_strdup (remote_name),
