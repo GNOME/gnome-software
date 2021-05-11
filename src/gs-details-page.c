@@ -792,6 +792,9 @@ app_origin_equal (GsApp *a,
 	g_autofree gchar *a_origin_ui = NULL, *b_origin_ui = NULL;
 	GFile *a_local_file, *b_local_file;
 
+	if (a == b)
+		return TRUE;
+
 	a_origin_ui = gs_app_get_origin_ui (a);
 	b_origin_ui = gs_app_get_origin_ui (b);
 
@@ -872,16 +875,25 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	 * items long. */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *i_app = gs_app_list_index (list, i);
+		gboolean did_remove = FALSE;
 
 		for (guint j = i + 1; j < gs_app_list_length (list);) {
 			GsApp *j_app = gs_app_list_index (list, j);
 
 			if (app_origin_equal (i_app, j_app)) {
 				gs_app_list_remove (list, j_app);
+				did_remove = TRUE;
 			} else {
 				j++;
 			}
 		}
+
+		/* Needed to catch cases when the same pointer is in the array multiple times,
+		   interleaving with another pointer. The removal can skip the first occurrence
+		   due to the g_ptr_array_remove() removing the first instance in the array,
+		   which shifts the array content. */
+		if (did_remove)
+			i--;
 	}
 
 	/* add the local file to the list so that we can carry it over when
