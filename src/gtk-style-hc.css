@@ -357,3 +357,41 @@ clamp.status-page .icon:not(:last-child) {
 clamp.status-page .title:not(:last-child) {
   margin-bottom: 12px;
 }
+
+app-context-bar {
+	border-radius: 8px;
+	border: 1px solid #877b6e;
+	background-color: @theme_base_color;
+}
+
+app-context-bar .context-tile {
+	padding: 24px 12px 21px 12px;
+	border-right: 1px solid #877b6e;
+}
+app-context-bar .context-tile:last-child { border-right: none }
+
+app-context-bar .context-tile-lozenge {
+	font-size: 18px;
+	font-weight: bold;
+	border-radius: 99999px;
+	padding: 9px 12px;
+	min-width: 18px;
+}
+app-context-bar .context-tile-lozenge.wide-image image {
+	/* GtkImage always renders image square, so if we want an image which
+	 * is wide, but still the same height as all the others, we have to
+	 * use this hack to make it zero-height and vertically centred. The
+	 * vertical size group ensures that it does still actually have a
+	 * height. */
+	margin-top: -999px;
+	margin-bottom: -999px
+}
+app-context-bar .context-tile-title { font-weight: bold }
+app-context-bar .context-tile-description { font-size: smaller }
+
+app-context-bar .grey { background-color: #deddda; color: @theme_fg_color }
+app-context-bar .green, app-context-bar .details-rating-0 { background-color: #b6f2c4; color: @theme_fg_color }
+app-context-bar .red, app-context-bar .details-rating-18 { background-color: #fbd3cf; color: @theme_fg_color }
+app-context-bar .details-rating-15 { background-color: #ffd7a5; color: @theme_fg_color }
+app-context-bar .yellow, app-context-bar .details-rating-12 { background-color: #f7eb9f; color: @theme_fg_color }
+app-context-bar .details-rating-5 { background-color: #d1e4fb; color: @theme_fg_color }

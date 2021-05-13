@@ -19,6 +19,7 @@
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
+#include "gs-app-context-bar.h"
 #include "gs-app-version-history-row.h"
 #include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
@@ -109,6 +110,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_progress_percentage;
 	GtkWidget		*label_progress_status;
 	GtkWidget		*label_addons_uninstalled_app;
+	GsAppContextBar		*context_bar;
 	GtkWidget		*label_details_category_title;
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
@@ -1807,6 +1809,8 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	/* save app */
 	g_set_object (&self->app, app);
 
+	gs_app_context_bar_set_app (self->context_bar, app);
+
 	/* title/app name will have changed */
 	g_object_notify (G_OBJECT (self), "title");
 
@@ -2894,6 +2898,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_addons_uninstalled_app);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, context_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_title);

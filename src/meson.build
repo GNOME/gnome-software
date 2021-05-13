@@ -20,6 +20,7 @@ gnome_software_sources = [
   'gs-app-version-history-dialog.c',
   'gs-app-version-history-row.c',
   'gs-application.c',
+  'gs-app-context-bar.c',
   'gs-app-row.c',
   'gs-app-tile.c',
   'gs-basic-auth-dialog.c',
