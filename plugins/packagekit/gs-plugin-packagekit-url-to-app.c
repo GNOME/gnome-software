@@ -29,6 +29,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 }
 
 void
@@ -88,6 +89,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	package_ids[0] = g_strdup (path);
 
 	g_mutex_lock (&priv->client_mutex);
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_resolve (priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,

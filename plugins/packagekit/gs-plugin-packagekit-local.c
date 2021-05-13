@@ -30,6 +30,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_mutex_init (&priv->task_mutex);
 	priv->task = pk_task_new ();
 	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 }
 
 void
@@ -190,6 +191,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	files = g_strsplit (filename, "\t", -1);
 	g_mutex_lock (&priv->task_mutex);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_details_local (PK_CLIENT (priv->task),
 					       files,
 					       cancellable,
