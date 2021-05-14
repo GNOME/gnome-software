@@ -1853,7 +1853,11 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
-	if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
+	if (gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED) {
+		gtk_widget_set_visible (self->button_review, FALSE);
+		gtk_widget_set_sensitive (self->button_review, FALSE);
+		gtk_widget_set_sensitive (self->star_eventbox, FALSE);
+	} else if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
 		gtk_widget_set_sensitive (self->button_review, TRUE);
 		gtk_widget_set_sensitive (self->star_eventbox, TRUE);
 		gtk_widget_set_tooltip_text (self->button_review, NULL);
