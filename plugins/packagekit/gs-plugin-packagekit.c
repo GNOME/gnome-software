@@ -39,6 +39,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->task = pk_task_new ();
 	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 }
 
 void
@@ -72,6 +73,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_packages (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
@@ -135,6 +137,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NOT_SUPPORTED,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
@@ -198,6 +201,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 	                                 repo_id,
 	                                 TRUE,
@@ -244,6 +248,7 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 TRUE,
@@ -485,6 +490,7 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
@@ -634,6 +640,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
@@ -672,6 +679,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_search_files (PK_CLIENT (priv->task),
 	                                  filter,
 	                                  search,
@@ -704,6 +712,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_what_provides (PK_CLIENT (priv->task),
 	                                   filter,
 	                                   search,

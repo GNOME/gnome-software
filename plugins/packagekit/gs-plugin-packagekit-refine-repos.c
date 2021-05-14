@@ -37,6 +37,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->client = pk_client_new ();
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* need repos::repo-filename */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "repos");
@@ -66,6 +67,7 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->client_mutex);
+	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_search_files (priv->client,
 	                                  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 	                                  (gchar **) to_array,
