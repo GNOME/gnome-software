@@ -73,8 +73,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				id = g_strdup_printf ("%s.%s.%s-%s",
 						      split[1],
 						      split[0],
-						      name,
-						      version);
+						      (name != NULL) ? name : "unnamed",
+						      (version != NULL) ? version : "unversioned");
 				gs_app_set_id (priv->app_system, id);
 			}
 		}
