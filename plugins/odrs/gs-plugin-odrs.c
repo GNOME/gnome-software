@@ -77,7 +77,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 					       user_hash,
 					       distro,
 					       ODRS_REVIEW_CACHE_AGE_MAX,
-					       ODRS_REVIEW_NUMBER_RESULTS_MAX);
+					       ODRS_REVIEW_NUMBER_RESULTS_MAX,
+					       gs_plugin_get_soup_session (plugin));
 
 	/* need application IDs and version */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");

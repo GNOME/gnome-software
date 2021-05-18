@@ -12,6 +12,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <libsoup/soup.h>
 
 #include <gs-plugin.h>
 
@@ -25,7 +26,8 @@ GsOdrsProvider	*gs_odrs_provider_new			(const gchar		 *review_server,
 							 const gchar		 *user_hash,
 							 const gchar		 *distro,
 							 guint64		  max_cache_age_secs,
-							 guint			  n_results_max);
+							 guint			  n_results_max,
+							 SoupSession		 *session);
 
 gboolean	 gs_odrs_provider_refresh		(GsOdrsProvider		 *self,
 							 GsPlugin		 *plugin,

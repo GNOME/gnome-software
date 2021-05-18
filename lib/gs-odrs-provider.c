@@ -130,6 +130,7 @@ struct _GsOdrsProvider
 	GsApp		*cached_origin;
 	guint64		 max_cache_age_secs;
 	guint		 n_results_max;
+	SoupSession	*session;  /* (owned) (not nullable) */
 };
 
 G_DEFINE_TYPE (GsOdrsProvider, gs_odrs_provider, G_TYPE_OBJECT)
@@ -140,9 +141,10 @@ typedef enum {
 	PROP_DISTRO,
 	PROP_MAX_CACHE_AGE_SECS,
 	PROP_N_RESULTS_MAX,
+	PROP_SESSION,
 } GsOdrsProviderProperty;
 
-static GParamSpec *obj_props[PROP_N_RESULTS_MAX + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_SESSION + 1] = { NULL, };
 
 static gboolean
 gs_odrs_provider_load_ratings_for_app (JsonObject   *json_app,
@@ -737,7 +739,7 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
 	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
-	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
+	status_code = soup_session_send_message (self->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		if (!gs_odrs_provider_parse_success (plugin,
 						     msg->response_body->data,
@@ -942,8 +944,7 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 		return FALSE;
 
 	/* send to server */
-	if (!gs_odrs_provider_json_post (plugin, gs_plugin_get_soup_session (plugin),
-					 uri, data, error))
+	if (!gs_odrs_provider_json_post (plugin, self->session, uri, data, error))
 		return FALSE;
 
 	/* mark as voted */
@@ -1015,6 +1016,9 @@ gs_odrs_provider_get_property (GObject    *object,
 	case PROP_N_RESULTS_MAX:
 		g_value_set_uint (value, self->n_results_max);
 		break;
+	case PROP_SESSION:
+		g_value_set_object (value, self->session);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1055,6 +1059,11 @@ gs_odrs_provider_set_property (GObject      *object,
 		g_assert (self->n_results_max == 0);
 		self->n_results_max = g_value_get_uint (value);
 		break;
+	case PROP_SESSION:
+		/* Construct-only */
+		g_assert (self->session == NULL);
+		self->session = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1067,6 +1076,7 @@ gs_odrs_provider_dispose (GObject *object)
 	GsOdrsProvider *self = GS_ODRS_PROVIDER (object);
 
 	g_clear_object (&self->cached_origin);
+	g_clear_object (&self->session);
 
 	G_OBJECT_CLASS (gs_odrs_provider_parent_class)->dispose (object);
 }
@@ -1159,6 +1169,17 @@ gs_odrs_provider_class_init (GsOdrsProviderClass *klass)
 				   0, G_MAXUINT, 0,
 				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
+	/**
+	 * GsOdrsProvider:session: (not nullable)
+	 *
+	 * #SoupSession to use for downloading things.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SESSION] =
+		g_param_spec_object ("session", NULL, NULL,
+				     SOUP_TYPE_SESSION,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
@@ -1170,6 +1191,7 @@ gs_odrs_provider_class_init (GsOdrsProviderClass *klass)
  * @distro: (not nullable): value for #GsOdrsProvider:distro
  * @max_cache_age_secs: value for #GsOdrsProvider:max-cache-age-secs
  * @n_results_max: value for #GsOdrsProvider:n-results-max
+ * @session: value for #GsOdrsProvider:session
  *
  * Create a new #GsOdrsProvider. This does no network activity.
  *
@@ -1181,11 +1203,13 @@ gs_odrs_provider_new (const gchar *review_server,
                       const gchar *user_hash,
                       const gchar *distro,
                       guint64      max_cache_age_secs,
-                      guint        n_results_max)
+                      guint        n_results_max,
+                      SoupSession *session)
 {
 	g_return_val_if_fail (review_server != NULL && *review_server != '\0', NULL);
 	g_return_val_if_fail (user_hash != NULL && *user_hash != '\0', NULL);
 	g_return_val_if_fail (distro != NULL && *distro != '\0', NULL);
+	g_return_val_if_fail (SOUP_IS_SESSION (session), NULL);
 
 	return g_object_new (GS_TYPE_ODRS_PROVIDER,
 			     "review-server", review_server,
@@ -1193,6 +1217,7 @@ gs_odrs_provider_new (const gchar *review_server,
 			     "distro", distro,
 			     "max-cache-age-secs", max_cache_age_secs,
 			     "n-results-max", n_results_max,
+			     "session", session,
 			     NULL);
 }
 
@@ -1389,8 +1414,7 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", self->review_server);
-	return gs_odrs_provider_json_post (plugin, gs_plugin_get_soup_session (plugin),
-					   uri, data, error);
+	return gs_odrs_provider_json_post (plugin, self->session, uri, data, error);
 }
 
 /**
@@ -1563,7 +1587,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 			       self->user_hash,
 			       setlocale (LC_MESSAGES, NULL));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
+	status_code = soup_session_send_message (self->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		if (!gs_odrs_provider_parse_success (plugin,
 						     msg->response_body->data,
