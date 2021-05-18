@@ -37,6 +37,7 @@
 #include <gnome-software.h>
 #include <json-glib/json-glib.h>
 #include <libsoup/soup.h>
+#include <locale.h>
 #include <math.h>
 #include <string.h>
 
@@ -708,7 +709,7 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder, gs_app_get_id (app));
 	json_builder_set_member_name (builder, "locale");
-	json_builder_add_string_value (builder, gs_plugin_get_locale (plugin));
+	json_builder_add_string_value (builder, setlocale (LC_MESSAGES, NULL));
 	json_builder_set_member_name (builder, "distro");
 	json_builder_add_string_value (builder, self->distro);
 	json_builder_set_member_name (builder, "version");
@@ -1359,7 +1360,7 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 	json_builder_add_string_value (builder,
 				       as_review_get_metadata_item (review, "app_id"));
 	json_builder_set_member_name (builder, "locale");
-	json_builder_add_string_value (builder, gs_plugin_get_locale (plugin));
+	json_builder_add_string_value (builder, setlocale (LC_MESSAGES, NULL));
 	json_builder_set_member_name (builder, "distro");
 	json_builder_add_string_value (builder, self->distro);
 	json_builder_set_member_name (builder, "version");
@@ -1560,7 +1561,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	uri = g_strdup_printf ("%s/moderate/%s/%s",
 			       self->review_server,
 			       self->user_hash,
-			       gs_plugin_get_locale (plugin));
+			       setlocale (LC_MESSAGES, NULL));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
