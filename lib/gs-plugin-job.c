@@ -22,6 +22,7 @@ struct _GsPluginJob
 	GsPluginRefineFlags	 filter_flags;
 	GsAppListFilterFlags	 dedupe_flags;
 	gboolean		 interactive;
+	gboolean		 propagate_error;
 	guint			 max_results;
 	guint			 timeout;
 	guint64			 age;
@@ -54,6 +55,7 @@ enum {
 	PROP_REVIEW,
 	PROP_MAX_RESULTS,
 	PROP_TIMEOUT,
+	PROP_PROPAGATE_ERROR,
 	PROP_LAST
 };
 
@@ -82,6 +84,8 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	}
 	if (self->interactive)
 		g_string_append_printf (str, " with interactive=True");
+	if (self->propagate_error)
+		g_string_append_printf (str, " with propagate-error=True");
 	if (self->timeout > 0)
 		g_string_append_printf (str, " with timeout=%u", self->timeout);
 	if (self->max_results > 0)
@@ -210,6 +214,20 @@ gs_plugin_job_get_interactive (GsPluginJob *self)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
 	return self->interactive;
+}
+
+void
+gs_plugin_job_set_propagate_error (GsPluginJob *self, gboolean propagate_error)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	self->propagate_error = propagate_error;
+}
+
+gboolean
+gs_plugin_job_get_propagate_error (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
+	return self->propagate_error;
 }
 
 void
@@ -438,6 +456,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_TIMEOUT:
 		g_value_set_uint (value, self->timeout);
 		break;
+	case PROP_PROPAGATE_ERROR:
+		g_value_set_boolean (value, self->propagate_error);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -491,6 +512,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_TIMEOUT:
 		gs_plugin_job_set_timeout (self, g_value_get_uint (value));
+		break;
+	case PROP_PROPAGATE_ERROR:
+		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
@@ -591,6 +615,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   0, G_MAXUINT, 60,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_TIMEOUT, pspec);
+
+	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PROPAGATE_ERROR, pspec);
 }
 
 static void
