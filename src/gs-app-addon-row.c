@@ -141,6 +141,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (row->checkbox, FALSE);
 		gtk_widget_set_visible (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
