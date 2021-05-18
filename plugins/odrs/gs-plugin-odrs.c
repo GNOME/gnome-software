@@ -119,7 +119,7 @@ gs_plugin_refine (GsPlugin             *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_refine (priv->provider, plugin, list, flags, cancellable, error);
+	return gs_odrs_provider_refine (priv->provider, list, flags, cancellable, error);
 }
 
 gboolean
@@ -131,7 +131,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_submit_review (priv->provider, plugin, app,
+	return gs_odrs_provider_submit_review (priv->provider, app,
 					       review, cancellable, error);
 }
 
@@ -144,7 +144,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_report_review (priv->provider, plugin, app,
+	return gs_odrs_provider_report_review (priv->provider, app,
 					       review, cancellable, error);
 }
 
@@ -157,7 +157,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_upvote_review (priv->provider, plugin, app,
+	return gs_odrs_provider_upvote_review (priv->provider, app,
 					       review, cancellable, error);
 }
 
@@ -170,7 +170,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_downvote_review (priv->provider, plugin, app,
+	return gs_odrs_provider_downvote_review (priv->provider, app,
 						 review, cancellable, error);
 }
 
@@ -183,7 +183,7 @@ gs_plugin_review_dismiss (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_dismiss_review (priv->provider, plugin, app,
+	return gs_odrs_provider_dismiss_review (priv->provider, app,
 						review, cancellable, error);
 }
 
@@ -196,7 +196,7 @@ gs_plugin_review_remove (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_remove_review (priv->provider, plugin, app,
+	return gs_odrs_provider_remove_review (priv->provider, app,
 					       review, cancellable, error);
 }
 
@@ -208,6 +208,6 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	return gs_odrs_provider_add_unvoted_reviews (priv->provider, plugin, list,
+	return gs_odrs_provider_add_unvoted_reviews (priv->provider, list,
 						     cancellable, error);
 }

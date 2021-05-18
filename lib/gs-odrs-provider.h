@@ -36,51 +36,43 @@ gboolean	 gs_odrs_provider_refresh		(GsOdrsProvider		 *self,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_refine		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsAppList		 *list,
 							 GsPluginRefineFlags	  flags,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_submit_review		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 gboolean	 gs_odrs_provider_report_review		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 gboolean	 gs_odrs_provider_upvote_review		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 gboolean	 gs_odrs_provider_downvote_review	(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 gboolean	 gs_odrs_provider_dismiss_review	(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 gboolean	 gs_odrs_provider_remove_review		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsApp			 *app,
 							 AsReview		 *review,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_add_unvoted_reviews	(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
 							 GsAppList		 *list,
 							 GCancellable		 *cancellable,
 							 GError			**error);

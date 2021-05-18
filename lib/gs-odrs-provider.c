@@ -309,7 +309,6 @@ gs_odrs_provider_parse_review_object (JsonObject *item)
 
 static GPtrArray *
 gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 const gchar     *data,
                                 gssize           data_len,
                                 GError         **error)
@@ -405,7 +404,9 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 }
 
 static gboolean
-gs_odrs_provider_parse_success (GsPlugin *plugin, const gchar *data, gssize data_len, GError **error)
+gs_odrs_provider_parse_success (const gchar  *data,
+                                gssize        data_len,
+                                GError      **error)
 {
 	JsonNode *json_root;
 	JsonObject *json_item;
@@ -475,8 +476,7 @@ gs_odrs_provider_parse_success (GsPlugin *plugin, const gchar *data, gssize data
 }
 
 static gboolean
-gs_odrs_provider_json_post (GsPlugin     *plugin,
-                            SoupSession  *session,
+gs_odrs_provider_json_post (SoupSession  *session,
                             const gchar  *uri,
                             const gchar  *data,
                             GError      **error)
@@ -504,8 +504,7 @@ gs_odrs_provider_json_post (GsPlugin     *plugin,
 	}
 
 	/* process returned JSON */
-	return gs_odrs_provider_parse_success (plugin,
-					       msg->response_body->data,
+	return gs_odrs_provider_parse_success (msg->response_body->data,
 					       msg->response_body->length,
 					       error);
 }
@@ -654,7 +653,6 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 
 static GPtrArray *
 gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 GsApp           *app,
                                 GError         **error)
 {
@@ -692,7 +690,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id (app), cachefn);
 		return gs_odrs_provider_parse_reviews (self,
-						       plugin,
 						       g_mapped_file_get_contents (mapped_file),
 						       g_mapped_file_get_length (mapped_file),
 						       error);
@@ -741,8 +738,7 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 				  SOUP_MEMORY_COPY, data, strlen (data));
 	status_code = soup_session_send_message (self->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (plugin,
-						     msg->response_body->data,
+		if (!gs_odrs_provider_parse_success (msg->response_body->data,
 						     msg->response_body->length,
 						     error))
 			return NULL;
@@ -755,7 +751,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 		return NULL;
 	}
 	reviews = gs_odrs_provider_parse_reviews (self,
-						  plugin,
 						  msg->response_body->data,
 						  msg->response_body->length,
 						  error);
@@ -775,7 +770,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 
 static gboolean
 gs_odrs_provider_refine_reviews (GsOdrsProvider  *self,
-                                 GsPlugin        *plugin,
                                  GsApp           *app,
                                  GCancellable    *cancellable,
                                  GError         **error)
@@ -784,7 +778,7 @@ gs_odrs_provider_refine_reviews (GsOdrsProvider  *self,
 	g_autoptr(GPtrArray) reviews = NULL;
 
 	/* get from server */
-	reviews = gs_odrs_provider_fetch_for_app (self, plugin, app, error);
+	reviews = gs_odrs_provider_fetch_for_app (self, app, error);
 	if (reviews == NULL)
 		return FALSE;
 	for (guint i = 0; i < reviews->len; i++) {
@@ -813,7 +807,6 @@ gs_odrs_provider_refine_reviews (GsOdrsProvider  *self,
 
 static gboolean
 refine_app (GsOdrsProvider       *self,
-            GsPlugin             *plugin,
             GsApp                *app,
             GsPluginRefineFlags   flags,
             GCancellable         *cancellable,
@@ -829,7 +822,7 @@ refine_app (GsOdrsProvider       *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
 		if (gs_app_get_reviews(app)->len > 0)
 			return TRUE;
-		if (!gs_odrs_provider_refine_reviews (self, plugin, app,
+		if (!gs_odrs_provider_refine_reviews (self, app,
 						      cancellable, error))
 			return FALSE;
 	}
@@ -898,7 +891,6 @@ gs_odrs_provider_invalidate_cache (AsReview *review, GError **error)
 
 static gboolean
 gs_odrs_provider_vote (GsOdrsProvider  *self,
-                       GsPlugin        *plugin,
                        AsReview        *review,
                        const gchar     *uri,
                        GError         **error)
@@ -944,7 +936,7 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 		return FALSE;
 
 	/* send to server */
-	if (!gs_odrs_provider_json_post (plugin, self->session, uri, data, error))
+	if (!gs_odrs_provider_json_post (self->session, uri, data, error))
 		return FALSE;
 
 	/* mark as voted */
@@ -1293,7 +1285,6 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 /**
  * gs_odrs_provider_refine:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @list: list of apps to refine
  * @flags: refine flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1307,7 +1298,6 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_refine (GsOdrsProvider       *self,
-                         GsPlugin             *plugin,
                          GsAppList            *list,
                          GsPluginRefineFlags   flags,
                          GCancellable         *cancellable,
@@ -1322,7 +1312,7 @@ gs_odrs_provider_refine (GsOdrsProvider       *self,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		g_autoptr(GError) local_error = NULL;
-		if (!refine_app (self, plugin, app, flags, cancellable, &local_error)) {
+		if (!refine_app (self, app, flags, cancellable, &local_error)) {
 			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 				g_debug ("failed to refine app %s: %s",
 					 gs_app_get_unique_id (app), local_error->message);
@@ -1340,7 +1330,6 @@ gs_odrs_provider_refine (GsOdrsProvider       *self,
 /**
  * gs_odrs_provider_submit_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app being reviewed
  * @review: the review
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1353,7 +1342,6 @@ gs_odrs_provider_refine (GsOdrsProvider       *self,
  */
 gboolean
 gs_odrs_provider_submit_review (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 GsApp           *app,
                                 AsReview        *review,
                                 GCancellable    *cancellable,
@@ -1414,13 +1402,12 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", self->review_server);
-	return gs_odrs_provider_json_post (plugin, self->session, uri, data, error);
+	return gs_odrs_provider_json_post (self->session, uri, data, error);
 }
 
 /**
  * gs_odrs_provider_report_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app whose review is being reported
  * @review: the review to report
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1434,7 +1421,6 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_report_review (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 GsApp           *app,
                                 AsReview        *review,
                                 GCancellable    *cancellable,
@@ -1442,13 +1428,12 @@ gs_odrs_provider_report_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/report", self->review_server);
-	return gs_odrs_provider_vote (self, plugin, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, error);
 }
 
 /**
  * gs_odrs_provider_upvote_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app whose review is being upvoted
  * @review: the review to upvote
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1461,7 +1446,6 @@ gs_odrs_provider_report_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_upvote_review (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 GsApp           *app,
                                 AsReview        *review,
                                 GCancellable    *cancellable,
@@ -1469,13 +1453,12 @@ gs_odrs_provider_upvote_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/upvote", self->review_server);
-	return gs_odrs_provider_vote (self, plugin, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, error);
 }
 
 /**
  * gs_odrs_provider_downvote_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app whose review is being downvoted
  * @review: the review to downvote
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1488,7 +1471,6 @@ gs_odrs_provider_upvote_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_downvote_review (GsOdrsProvider  *self,
-                                  GsPlugin        *plugin,
                                   GsApp           *app,
                                   AsReview        *review,
                                   GCancellable    *cancellable,
@@ -1496,13 +1478,12 @@ gs_odrs_provider_downvote_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/downvote", self->review_server);
-	return gs_odrs_provider_vote (self, plugin, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, error);
 }
 
 /**
  * gs_odrs_provider_dismiss_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app whose review is being dismissed
  * @review: the review to dismiss
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1515,7 +1496,6 @@ gs_odrs_provider_downvote_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_dismiss_review (GsOdrsProvider  *self,
-                                 GsPlugin        *plugin,
                                  GsApp           *app,
                                  AsReview        *review,
                                  GCancellable    *cancellable,
@@ -1523,13 +1503,12 @@ gs_odrs_provider_dismiss_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/dismiss", self->review_server);
-	return gs_odrs_provider_vote (self, plugin, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, error);
 }
 
 /**
  * gs_odrs_provider_remove_review:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @app: the app whose review is being removed
  * @review: the review to remove
  * @cancellable: (nullable): a #GCancellable, or %NULL
@@ -1542,7 +1521,6 @@ gs_odrs_provider_dismiss_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_remove_review (GsOdrsProvider  *self,
-                                GsPlugin        *plugin,
                                 GsApp           *app,
                                 AsReview        *review,
                                 GCancellable    *cancellable,
@@ -1550,13 +1528,12 @@ gs_odrs_provider_remove_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", self->review_server);
-	return gs_odrs_provider_vote (self, plugin, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, error);
 }
 
 /**
  * gs_odrs_provider_add_unvoted_reviews:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @list: list of apps to add unvoted reviews to
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError
@@ -1568,7 +1545,6 @@ gs_odrs_provider_remove_review (GsOdrsProvider  *self,
  */
 gboolean
 gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
-                                      GsPlugin        *plugin,
                                       GsAppList       *list,
                                       GCancellable    *cancellable,
                                       GError         **error)
@@ -1589,8 +1565,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (self->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (plugin,
-						     msg->response_body->data,
+		if (!gs_odrs_provider_parse_success (msg->response_body->data,
 						     msg->response_body->length,
 						     error))
 			return FALSE;
@@ -1604,7 +1579,6 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	}
 	g_debug ("odrs returned: %s", msg->response_body->data);
 	reviews = gs_odrs_provider_parse_reviews (self,
-						  plugin,
 						  msg->response_body->data,
 						  msg->response_body->length,
 						  error);
