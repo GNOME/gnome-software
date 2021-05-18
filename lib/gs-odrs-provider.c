@@ -323,7 +323,7 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 
 	/* nothing */
 	if (data == NULL) {
-		if (!gs_plugin_get_network_available (plugin))
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NO_NETWORK,
@@ -414,7 +414,7 @@ gs_odrs_provider_parse_success (GsPlugin *plugin, const gchar *data, gssize data
 
 	/* nothing */
 	if (data == NULL) {
-		if (!gs_plugin_get_network_available (plugin))
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NO_NETWORK,
