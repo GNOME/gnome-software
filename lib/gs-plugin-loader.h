@@ -63,6 +63,8 @@ gboolean	 gs_plugin_loader_get_network_metered	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*function_name);
 
+void		 gs_plugin_loader_add_event		(GsPluginLoader *plugin_loader,
+							 GsPluginEvent	*event);
 GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
