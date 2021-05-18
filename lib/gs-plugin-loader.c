@@ -3887,6 +3887,23 @@ gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
 }
 
 /**
+ * gs_plugin_loader_get_soup_session:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the internal #SoupSession which is used to download things.
+ *
+ * Returns: (transfer none) (not nullable): a #SoupSession
+ * Since: 41
+ */
+SoupSession *
+gs_plugin_loader_get_soup_session (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->soup_session;
+}
+
+/**
  * gs_plugin_loader_set_max_parallel_ops:
  * @plugin_loader: a #GsPluginLoader
  * @max_ops: the maximum number of parallel operations

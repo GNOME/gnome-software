@@ -72,6 +72,7 @@ void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
 							 const gchar	*unique_id);
 GsApp		*gs_plugin_loader_get_system_app	(GsPluginLoader	*plugin_loader);
+SoupSession	*gs_plugin_loader_get_soup_session	(GsPluginLoader	*plugin_loader);
 
 /* only useful from the self tests */
 void		 gs_plugin_loader_setup_again		(GsPluginLoader	*plugin_loader);
