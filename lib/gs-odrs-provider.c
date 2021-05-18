@@ -1402,7 +1402,13 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", self->review_server);
-	return gs_odrs_provider_json_post (self->session, uri, data, error);
+	if (!gs_odrs_provider_json_post (self->session, uri, data, error))
+		return FALSE;
+
+	/* modify the local app */
+	gs_app_add_review (app, review);
+
+	return TRUE;
 }
 
 /**
@@ -1528,7 +1534,13 @@ gs_odrs_provider_remove_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, error);
+	if (!gs_odrs_provider_vote (self, review, uri, error))
+		return FALSE;
+
+	/* update the local app */
+	gs_app_remove_review (app, review);
+
+	return TRUE;
 }
 
 /**

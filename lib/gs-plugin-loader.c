@@ -140,11 +140,6 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 AsReview	*review,
-							 GCancellable	*cancellable,
-							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GsPluginRefineFlags refine_flags,
@@ -616,19 +611,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
-		{
-			GsPluginReviewFunc plugin_func = func;
-			ret = plugin_func (plugin, app,
-					   gs_plugin_job_get_review (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		{
 			GsPluginGetRecentFunc plugin_func = func;
@@ -640,7 +622,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
-	case GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
@@ -3259,18 +3240,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	/* modify the local app */
-	switch (action) {
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-		gs_app_add_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-		gs_app_remove_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
-		break;
-	default:
-		break;
-	}
-
 	/* refine with enough data so that the sort_func in
 	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
 	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
@@ -3668,20 +3637,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						 GS_PLUGIN_ERROR,
 						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 						 "no valid search terms");
-			return;
-		}
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
-		if (gs_plugin_job_get_review (plugin_job) == NULL) {
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "no valid review object");
 			return;
 		}
 		break;

@@ -1627,18 +1627,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 {
 	if (action == GS_PLUGIN_ACTION_REFRESH)
 		return "gs_plugin_refresh";
-	if (action == GS_PLUGIN_ACTION_REVIEW_SUBMIT)
-		return "gs_plugin_review_submit";
-	if (action == GS_PLUGIN_ACTION_REVIEW_UPVOTE)
-		return "gs_plugin_review_upvote";
-	if (action == GS_PLUGIN_ACTION_REVIEW_DOWNVOTE)
-		return "gs_plugin_review_downvote";
-	if (action == GS_PLUGIN_ACTION_REVIEW_REPORT)
-		return "gs_plugin_review_report";
-	if (action == GS_PLUGIN_ACTION_REVIEW_REMOVE)
-		return "gs_plugin_review_remove";
-	if (action == GS_PLUGIN_ACTION_REVIEW_DISMISS)
-		return "gs_plugin_review_dismiss";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
@@ -1671,8 +1659,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_distro_upgrades";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
-	if (action == GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS)
-		return "gs_plugin_add_unvoted_reviews";
 	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
 		return "gs_plugin_add_installed";
 	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
@@ -1745,24 +1731,10 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "add-shortcut";
 	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
 		return "remove-shortcut";
-	if (action == GS_PLUGIN_ACTION_REVIEW_SUBMIT)
-		return "review-submit";
-	if (action == GS_PLUGIN_ACTION_REVIEW_UPVOTE)
-		return "review-upvote";
-	if (action == GS_PLUGIN_ACTION_REVIEW_DOWNVOTE)
-		return "review-downvote";
-	if (action == GS_PLUGIN_ACTION_REVIEW_REPORT)
-		return "review-report";
-	if (action == GS_PLUGIN_ACTION_REVIEW_REMOVE)
-		return "review-remove";
-	if (action == GS_PLUGIN_ACTION_REVIEW_DISMISS)
-		return "review-dismiss";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "get-updates";
 	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
 		return "get-distro-updates";
-	if (action == GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS)
-		return "get-unvoted-reviews";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "get-sources";
 	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
@@ -1841,24 +1813,10 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_ADD_SHORTCUT;
 	if (g_strcmp0 (action, "remove-shortcut") == 0)
 		return GS_PLUGIN_ACTION_REMOVE_SHORTCUT;
-	if (g_strcmp0 (action, "review-submit") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_SUBMIT;
-	if (g_strcmp0 (action, "review-upvote") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_UPVOTE;
-	if (g_strcmp0 (action, "review-downvote") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_DOWNVOTE;
-	if (g_strcmp0 (action, "review-report") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_REPORT;
-	if (g_strcmp0 (action, "review-remove") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_REMOVE;
-	if (g_strcmp0 (action, "review-dismiss") == 0)
-		return GS_PLUGIN_ACTION_REVIEW_DISMISS;
 	if (g_strcmp0 (action, "get-updates") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
 	if (g_strcmp0 (action, "get-distro-updates") == 0)
 		return GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
-	if (g_strcmp0 (action, "get-unvoted-reviews") == 0)
-		return GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
 	if (g_strcmp0 (action, "get-sources") == 0)
 		return GS_PLUGIN_ACTION_GET_SOURCES;
 	if (g_strcmp0 (action, "get-installed") == 0)
