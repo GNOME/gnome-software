@@ -10,6 +10,8 @@
 
 #include "config.h"
 
+#include <glib.h>
+#include <glib/gi18n.h>
 #include <string.h>
 
 #include "gs-app-row.h"
@@ -29,6 +31,7 @@ struct _GsModeratePage
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
+	GsOdrsProvider		*odrs_provider;
 
 	GtkWidget		*list_box_install;
 	GtkWidget		*scrolledwindow_install;
@@ -37,20 +40,6 @@ struct _GsModeratePage
 };
 
 G_DEFINE_TYPE (GsModeratePage, gs_moderate_page, GS_TYPE_PAGE)
-
-static void
-gs_moderate_page_app_set_review_cb (GObject *source,
-                                    GAsyncResult *res,
-                                    gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set review: %s", error->message);
-		return;
-	}
-}
 
 static void
 gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
@@ -87,24 +76,56 @@ gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
 
 static void
 gs_moderate_page_review_clicked_cb (GsReviewRow *row,
-                                    GsPluginAction action,
+                                    GsReviewAction action,
                                     GsModeratePage *self)
 {
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	plugin_job = gs_plugin_job_newv (action,
-					 "interactive", TRUE,
-					 "app", app,
-					 "review", gs_review_row_get_review (row),
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_moderate_page_app_set_review_cb,
-					    self);
+	AsReview *review = gs_review_row_get_review (row);
+	g_autoptr(GError) local_error = NULL;
+
+	g_assert (self->odrs_provider != NULL);
+
+	/* FIXME: Make this async */
+	switch (action) {
+	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
+		gs_odrs_provider_upvote_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
+		gs_odrs_provider_downvote_review (self->odrs_provider, app,
+						  review, self->cancellable,
+						  &local_error);
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_REPORT:
+		gs_odrs_provider_report_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
+		gs_odrs_provider_dismiss_review (self->odrs_provider, app,
+						 review, self->cancellable,
+						 &local_error);
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
+		gs_odrs_provider_remove_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 
 	/* if there are no more visible rows, hide the app */
 	gs_moderate_page_perhaps_hide_app_row (self, app);
+
+	if (local_error != NULL) {
+		g_warning ("failed to set review on %s: %s",
+			   gs_app_get_id (app), local_error->message);
+		return;
+	}
 }
 
 static void
@@ -160,9 +181,9 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 }
 
 static void
-gs_moderate_page_get_unvoted_reviews_cb (GObject *source_object,
-                                         GAsyncResult *res,
-                                         gpointer user_data)
+gs_moderate_page_refine_unvoted_reviews_cb (GObject      *source_object,
+                                            GAsyncResult *res,
+                                            gpointer      user_data)
 {
 	guint i;
 	GsApp *app;
@@ -200,12 +221,23 @@ static void
 gs_moderate_page_load (GsModeratePage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
 
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
 
 	/* get unvoted reviews as apps */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
+	if (!gs_odrs_provider_add_unvoted_reviews (self->odrs_provider, list,
+						   self->cancellable, &local_error)) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get moderate apps: %s", local_error->message);
+		return;
+	}
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "list", list,
+					 "interactive", TRUE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -216,7 +248,7 @@ gs_moderate_page_load (GsModeratePage *self)
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
-					    gs_moderate_page_get_unvoted_reviews_cb,
+					    gs_moderate_page_refine_unvoted_reviews_cb,
 					    self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
@@ -268,6 +300,15 @@ gs_moderate_page_setup (GsPage *page,
                         GError **error)
 {
 	GsModeratePage *self = GS_MODERATE_PAGE (page);
+	g_autoptr(GSettings) settings = NULL;
+	const gchar *review_server;
+	g_autofree gchar *user_hash = NULL;
+	const gchar *distro;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
+	const guint odrs_review_n_results_max = 20;
+
 	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), TRUE);
 
 	self->shell = shell;
@@ -277,6 +318,42 @@ gs_moderate_page_setup (GsPage *page,
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_install),
 				      gs_moderate_page_list_header_func,
 				      self, NULL);
+
+	/* set up the ODRS provider */
+
+	/* get the machine+user ID hash value */
+	/* TODO: deduplicate this with the identical code in GsDetailsPage */
+	user_hash = gs_utils_get_user_hash (&local_error);
+	if (user_hash == NULL) {
+		g_warning ("Failed to get machine+user hash: %s", local_error->message);
+		self->odrs_provider = NULL;
+	} else {
+		/* get the distro name (e.g. 'Fedora') but allow a fallback */
+		os_release = gs_os_release_new (&local_error);
+		if (os_release != NULL) {
+			distro = gs_os_release_get_name (os_release);
+			if (distro == NULL)
+				g_warning ("no distro name specified");
+		} else {
+			g_warning ("failed to get distro name: %s", local_error->message);
+		}
+
+		/* Fallback */
+		if (distro == NULL)
+			distro = C_("Distribution name", "Unknown");
+
+		settings = g_settings_new ("org.gnome.software");
+		review_server = g_settings_get_string (settings, "review-server");
+
+		if (review_server != NULL && *review_server != '\0')
+			self->odrs_provider = gs_odrs_provider_new (review_server,
+								    user_hash,
+								    distro,
+								    odrs_review_max_cache_age_secs,
+								    odrs_review_n_results_max,
+								    gs_plugin_loader_get_soup_session (plugin_loader));
+	}
+
 	return TRUE;
 }
 
@@ -292,6 +369,7 @@ gs_moderate_page_dispose (GObject *object)
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
+	g_clear_object (&self->odrs_provider);
 
 	G_OBJECT_CLASS (gs_moderate_page_parent_class)->dispose (object);
 }
