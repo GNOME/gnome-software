@@ -1520,7 +1520,7 @@ static void gs_details_page_refresh_reviews (GsDetailsPage *self);
 
 static void
 gs_details_page_review_button_clicked_cb (GsReviewRow *row,
-                                          GsPluginAction action,
+                                          GsReviewAction action,
                                           GsDetailsPage *self)
 {
 	AsReview *review = gs_review_row_get_review (row);
@@ -1530,27 +1530,27 @@ gs_details_page_review_button_clicked_cb (GsReviewRow *row,
 
 	/* FIXME: Make this async */
 	switch (action) {
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
+	case GS_REVIEW_ACTION_UPVOTE:
 		gs_odrs_provider_upvote_review (self->odrs_provider, self->app,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
+	case GS_REVIEW_ACTION_DOWNVOTE:
 		gs_odrs_provider_downvote_review (self->odrs_provider, self->app,
 						  review, self->cancellable,
 						  &local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
+	case GS_REVIEW_ACTION_REPORT:
 		gs_odrs_provider_report_review (self->odrs_provider, self->app,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
+	case GS_REVIEW_ACTION_REMOVE:
 		gs_odrs_provider_remove_review (self->odrs_provider, self->app,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
+	case GS_REVIEW_ACTION_DISMISS:
 		/* The dismiss action is only used from the moderate page. */
 	default:
 		g_assert_not_reached ();
@@ -1575,12 +1575,11 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	guint n_reviews = 0;
 	guint64 possible_actions = 0;
 	guint i;
-	GsPluginAction all_actions[] = {
-		GS_PLUGIN_ACTION_REVIEW_UPVOTE,
-		GS_PLUGIN_ACTION_REVIEW_DOWNVOTE,
-		GS_PLUGIN_ACTION_REVIEW_REPORT,
-		GS_PLUGIN_ACTION_REVIEW_SUBMIT,
-		GS_PLUGIN_ACTION_REVIEW_REMOVE,
+	GsReviewAction all_actions[] = {
+		GS_REVIEW_ACTION_UPVOTE,
+		GS_REVIEW_ACTION_DOWNVOTE,
+		GS_REVIEW_ACTION_REPORT,
+		GS_REVIEW_ACTION_REMOVE,
 	};
 
 	/* nothing to show */
@@ -1661,10 +1660,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_details_page_review_button_clicked_cb), self);
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE;
+			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
 			show_review_button = FALSE;
 		} else {
-			actions = possible_actions & ~(1u << GS_PLUGIN_ACTION_REVIEW_REMOVE);
+			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);

@@ -87,27 +87,27 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
 
 	/* FIXME: Make this async */
 	switch (action) {
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
+	case GS_REVIEW_ACTION_UPVOTE:
 		gs_odrs_provider_upvote_review (self->odrs_provider, app,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
+	case GS_REVIEW_ACTION_DOWNVOTE:
 		gs_odrs_provider_downvote_review (self->odrs_provider, app,
 						  review, self->cancellable,
 						  &local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
+	case GS_REVIEW_ACTION_REPORT:
 		gs_odrs_provider_report_review (self->odrs_provider, app,
 						review, self->cancellable,
 						&local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
+	case GS_REVIEW_ACTION_DISMISS:
 		gs_odrs_provider_dismiss_review (self->odrs_provider, app,
 						 review, self->cancellable,
 						 &local_error);
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
+	case GS_REVIEW_ACTION_REMOVE:
 		gs_odrs_provider_remove_review (self->odrs_provider, app,
 						review, self->cancellable,
 						&local_error);
@@ -166,10 +166,10 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 		gtk_widget_set_margin_start (row, 250);
 		gtk_widget_set_margin_end (row, 250);
 		gs_review_row_set_actions (GS_REVIEW_ROW (row),
-					   1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
-					   1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
-					   1 << GS_PLUGIN_ACTION_REVIEW_DISMISS |
-					   1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+					   1 << GS_REVIEW_ACTION_UPVOTE |
+					   1 << GS_REVIEW_ACTION_DOWNVOTE |
+					   1 << GS_REVIEW_ACTION_DISMISS |
+					   1 << GS_REVIEW_ACTION_REPORT);
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_moderate_page_review_clicked_cb), self);
 		g_object_set_data_full (G_OBJECT (row), "GsApp",
