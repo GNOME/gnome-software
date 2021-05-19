@@ -908,7 +908,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* not us */
 		if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE &&
 		    gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_UNKNOWN)
-			return TRUE;
+			continue;
 
 		/* find by ID then fall back to package name */
 		if (!gs_plugin_refine_from_id (plugin, app, flags, &found, error))
