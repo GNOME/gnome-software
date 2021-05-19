@@ -13,7 +13,6 @@ endif
 shared_module(
   'gs_plugin_flatpak',
   sources : [
-    'gs-appstream.c',
     'gs-flatpak-app.c',
     'gs-flatpak.c',
     'gs-flatpak-transaction.c',

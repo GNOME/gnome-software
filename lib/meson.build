@@ -6,6 +6,7 @@ libgnomesoftware_public_headers = [
   'gs-app.h',
   'gs-app-collation.h',
   'gs-app-list.h',
+  'gs-appstream.h',
   'gs-autocleanups.h',
   'gs-category.h',
   'gs-category-manager.h',
@@ -42,6 +43,7 @@ librarydeps = [
   libm,
   libsoup,
   libsysprof_capture_dep,
+  libxmlb,
   valgrind,
 ]
 
@@ -74,6 +76,7 @@ libgnomesoftware = library(
   sources : [
     'gs-app.c',
     'gs-app-list.c',
+    'gs-appstream.c',
     'gs-category.c',
     'gs-category-manager.c',
     'gs-debug.c',
