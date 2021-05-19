@@ -10,6 +10,7 @@
 #include "config.h"
 
 #include <gnome-software.h>
+#include <locale.h>
 
 #include "gs-appstream.h"
 
@@ -1037,7 +1038,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* add kudos */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) {
 		g_autoptr(GPtrArray) kudos = NULL;
-		tmp = gs_plugin_get_locale (plugin);
+		tmp = setlocale (LC_MESSAGES, NULL);
 		if (!_gs_utils_locale_has_translations (tmp)) {
 			gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 		} else {
