@@ -92,6 +92,7 @@ enum {
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_RELOAD,
 	SIGNAL_BASIC_AUTH_START,
+	SIGNAL_SEARCH_MATCH,
 	SIGNAL_LAST
 };
 
@@ -1175,6 +1176,12 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 }
 
 static gboolean
+gs_plugin_loader_report_partial_search_results (GsPluginLoaderHelper *helper,
+						guint last_n_new,
+						GCancellable *cancellable,
+						GError **error);
+
+static gboolean
 gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GCancellable *cancellable,
 			      GError **error)
@@ -1184,6 +1191,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+	guint last_list_length = 0;
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (action != GS_PLUGIN_ACTION_REFINE);
@@ -1211,6 +1219,18 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 						  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						  cancellable, error)) {
 			return FALSE;
+		}
+		if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_SEARCH) {
+			GsAppList *app_list = gs_plugin_job_get_list (helper->plugin_job);
+			guint list_length = gs_app_list_length (app_list);
+
+			/* Notify with the partial result only if the list changed */
+			if (last_list_length < list_length) {
+				if (!gs_plugin_loader_report_partial_search_results (helper, list_length - last_list_length, cancellable, error))
+					return FALSE;
+
+				last_list_length = list_length;
+			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
@@ -2917,6 +2937,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
+	signals [SIGNAL_SEARCH_MATCH] =
+		g_signal_new ("search-match",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 2, G_TYPE_STRING, GS_TYPE_APP_LIST);
 }
 
 static void
@@ -3628,6 +3653,108 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+}
+
+typedef struct _SearchResultsData {
+	GWeakRef plugin_loader_weakref;
+	GsAppList *list;
+	gchar *search;
+} SearchResultsData;
+
+static void
+search_results_data_free (gpointer ptr)
+{
+	SearchResultsData *srd = ptr;
+
+	if (srd) {
+		g_weak_ref_clear (&srd->plugin_loader_weakref);
+		g_clear_object (&srd->list);
+		g_free (srd->search);
+		g_slice_free (SearchResultsData, srd);
+	}
+}
+
+static gboolean
+gs_plugin_loader_search_results_idle_cb (gpointer user_data)
+{
+	SearchResultsData *srd = user_data;
+	g_autoptr(GsPluginLoader) plugin_loader = NULL;
+
+	plugin_loader = g_weak_ref_get (&srd->plugin_loader_weakref);
+	if (plugin_loader)
+		g_signal_emit (plugin_loader, signals[SIGNAL_SEARCH_MATCH], 0, srd->search, srd->list);
+
+	return G_SOURCE_REMOVE;
+}
+
+static gboolean
+gs_plugin_loader_report_partial_search_results (GsPluginLoaderHelper *helper,
+						guint last_n_new,
+						GCancellable *cancellable,
+						GError **error)
+{
+	GsPluginLoader *plugin_loader = helper->plugin_loader;
+	GsAppListFilterFlags dedupe_flags;
+	GsPluginRefineFlags filter_flags;
+	guint max_results;
+	GsAppListSortFunc sort_func;
+	SearchResultsData *srd;
+	GsAppList *job_list;
+	g_autoptr(GsAppList) list = NULL;
+
+	job_list = gs_plugin_job_get_list (helper->plugin_job);
+	list = gs_app_list_copy_range (job_list, gs_app_list_length (job_list) - last_n_new, last_n_new);
+
+	/* refine with enough data so that the sort_func in
+	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
+	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
+	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, NULL);
+	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
+		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+						 "list", list,
+						 "refine-flags", filter_flags,
+						 NULL);
+		helper2 = gs_plugin_loader_helper_new (helper->plugin_loader, plugin_job);
+		helper2->function_name_parent = helper->function_name;
+		g_debug ("running filter flags with early refine");
+		if (!gs_plugin_loader_run_refine_filter (helper2, list,
+							 filter_flags,
+							 cancellable, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+	}
+
+	/* filter to reduce to a sane set */
+	gs_plugin_loader_job_sorted_truncation (helper);
+
+	gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+	gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+	gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0) {
+		if (!gs_plugin_loader_run_refine (helper, list, cancellable, error)) {
+			return FALSE;
+		}
+	}
+	gs_app_list_filter (list, gs_plugin_loader_app_set_prio, plugin_loader);
+	dedupe_flags = gs_plugin_job_get_dedupe_flags (helper->plugin_job);
+	if (dedupe_flags != GS_APP_LIST_FILTER_FLAG_NONE)
+		gs_app_list_filter_duplicates (list, dedupe_flags);
+
+	/* sort these again as the refine may have added useful metadata */
+	gs_plugin_loader_job_sorted_truncation_again (helper);
+
+	srd = g_slice_new0 (SearchResultsData);
+	g_weak_ref_init (&srd->plugin_loader_weakref, plugin_loader);
+	srd->search = g_strdup (gs_plugin_job_get_search (helper->plugin_job));
+	srd->list = g_steal_pointer (&list);
+
+	g_idle_add_full (G_PRIORITY_DEFAULT, gs_plugin_loader_search_results_idle_cb, srd, search_results_data_free);
+
+	return TRUE;
 }
 
 static void

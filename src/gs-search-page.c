@@ -37,6 +37,7 @@ struct _GsSearchPage
 	guint			 waiting_id;
 	guint			 max_results;
 	gboolean		 changed;
+	GHashTable		*known_results; /* GsApp * as pointer ~> nothing */
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -99,15 +100,59 @@ gs_search_page_app_to_show_created_cb (GObject *source_object,
 }
 
 static void
+gs_search_page_claim_results (GsSearchPage *self,
+			      GsAppList *list)
+{
+	guint i;
+
+	/* don't do the delayed spinner */
+	gs_search_page_waiting_cancel (self);
+
+	if (gs_app_list_length (list) == 0)
+		return;
+
+	if (!g_hash_table_size (self->known_results)) {
+		/* remove old entries */
+		gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
+	}
+
+	gs_stop_spinner (GTK_SPINNER (self->spinner_search));
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GtkWidget *app_row;
+		GsApp *app;
+
+		app = gs_app_list_index (list, i);
+		if (g_hash_table_contains (self->known_results, app))
+			continue;
+		g_hash_table_add (self->known_results, app);
+
+		app_row = gs_app_row_new (app);
+		gs_app_row_set_show_rating (GS_APP_ROW (app_row), TRUE);
+		g_signal_connect (app_row, "button-clicked",
+				  G_CALLBACK (gs_search_page_app_row_clicked_cb),
+				  self);
+		gtk_container_add (GTK_CONTAINER (self->list_box_search), app_row);
+		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
+					    self->sizegroup_image,
+					    self->sizegroup_name,
+					    self->sizegroup_desc,
+					    self->sizegroup_button_label,
+					    self->sizegroup_button_image);
+		gtk_widget_show (app_row);
+
+		if (g_hash_table_size (self->known_results) >= self->max_results)
+			break;
+	}
+}
+
+static void
 gs_search_page_get_search_cb (GObject *source_object,
                               GAsyncResult *res,
                               gpointer user_data)
 {
-	guint i;
-	GsApp *app;
 	GsSearchPage *self = GS_SEARCH_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkWidget *app_row;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -139,27 +184,9 @@ gs_search_page_get_search_cb (GObject *source_object,
 		return;
 	}
 
-	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
-
-	gs_stop_spinner (GTK_SPINNER (self->spinner_search));
-	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		app_row = gs_app_row_new (app);
-		gs_app_row_set_show_rating (GS_APP_ROW (app_row), TRUE);
-		g_signal_connect (app_row, "button-clicked",
-				  G_CALLBACK (gs_search_page_app_row_clicked_cb),
-				  self);
-		gtk_container_add (GTK_CONTAINER (self->list_box_search), app_row);
-		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-					    self->sizegroup_image,
-					    self->sizegroup_name,
-					    self->sizegroup_desc,
-					    self->sizegroup_button_label,
-					    self->sizegroup_button_image);
-		gtk_widget_show (app_row);
-	}
+	/* This will show the precise data */
+	g_hash_table_remove_all (self->known_results);
+	gs_search_page_claim_results (self, list);
 
 	/* too many results */
 	if (gs_app_list_has_flag (list, GS_APP_LIST_FLAG_IS_TRUNCATED)) {
@@ -168,7 +195,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		g_autofree gchar *str = NULL;
 
 		/* TRANSLATORS: this is when there are too many search results
-		 * to show in in the search page */
+		 * to show in the search page */
 		str = g_strdup_printf (ngettext("%u more match",
 		                                "%u more matches",
 		                                gs_app_list_get_size_peak (list) - gs_app_list_length (list)),
@@ -277,6 +304,7 @@ gs_search_page_load (GsSearchPage *self)
 	/* search for apps */
 	gs_search_page_waiting_cancel (self);
 	self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
+	g_hash_table_remove_all (self->known_results);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", self->value,
 					 "max-results", self->max_results,
@@ -410,6 +438,26 @@ gs_search_page_app_removed (GsPage *page, GsApp *app)
 	gs_search_page_reload (page);
 }
 
+static void
+gs_search_page_search_match_cb (GsPluginLoader *plugin_loader,
+				const gchar *search_term,
+				GsAppList *list,
+				GsSearchPage *self)
+{
+	g_return_if_fail (GS_IS_SEARCH_PAGE (self));
+	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	if (g_strcmp0 (search_term, self->value) != 0)
+		return;
+
+	gs_app_list_sort (list, gs_search_page_sort_cb, self);
+
+	if (gs_app_list_length (list) > self->max_results)
+		gs_app_list_truncate (list, self->max_results);
+
+	gs_search_page_claim_results (self, list);
+}
+
 static gboolean
 gs_search_page_setup (GsPage *page,
                       GsShell *shell,
@@ -433,6 +481,10 @@ gs_search_page_setup (GsPage *page,
 	/* setup search */
 	g_signal_connect (self->list_box_search, "row-activated",
 			  G_CALLBACK (gs_search_page_app_row_activated_cb), self);
+
+	g_signal_connect_object (plugin_loader, "search-match",
+		G_CALLBACK (gs_search_page_search_match_cb), self, 0);
+
 	return TRUE;
 }
 
@@ -494,6 +546,7 @@ gs_search_page_finalize (GObject *object)
 {
 	GsSearchPage *self = GS_SEARCH_PAGE (object);
 
+	g_hash_table_destroy (self->known_results);
 	g_free (self->appid_to_show);
 	g_free (self->value);
 
@@ -539,6 +592,7 @@ gs_search_page_init (GsSearchPage *self)
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->known_results = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;
 }
