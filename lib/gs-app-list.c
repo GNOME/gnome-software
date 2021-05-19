@@ -882,6 +882,46 @@ gs_app_list_copy (GsAppList *list)
 	return new;
 }
 
+/**
+ * gs_app_list_copy_range:
+ * @list: A #GsAppList
+ * @index_from: the range index to copy from, inclusive
+ * @n_elements: number of elements to copy
+ *
+ * Return a deep copy of the application list with applications
+ * in the given range. When the @n_elements is 0, the list is copied
+ * from the @index_from until the end.
+ *
+ * Returns: (transfer full): A newly allocated #GsAppList
+ *
+ * Since: 41
+ **/
+GsAppList *
+gs_app_list_copy_range (GsAppList *list,
+			guint index_from,
+			guint n_elements)
+{
+	GsAppList *copy;
+	guint ii, up_to;
+
+	g_return_val_if_fail (GS_IS_APP_LIST (list), NULL);
+
+	if (n_elements == 0)
+		up_to = gs_app_list_length (list);
+	else
+		up_to = index_from + n_elements;
+
+	if (up_to > gs_app_list_length (list))
+		up_to = gs_app_list_length (list);
+
+	copy = gs_app_list_new ();
+	for (ii = index_from; ii < up_to; ii++) {
+		GsApp *app = gs_app_list_index (list, ii);
+		gs_app_list_add_safe (copy, app, GS_APP_LIST_ADD_FLAG_NONE);
+	}
+	return copy;
+}
+
 static void
 gs_app_list_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
