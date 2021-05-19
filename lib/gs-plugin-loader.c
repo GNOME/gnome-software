@@ -23,6 +23,7 @@
 #include "gs-app-list-private.h"
 #include "gs-category-manager.h"
 #include "gs-category-private.h"
+#include "gs-external-appstream-utils.h"
 #include "gs-ioprio.h"
 #include "gs-os-release.h"
 #include "gs-plugin-loader.h"
@@ -1112,6 +1113,18 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (action != GS_PLUGIN_ACTION_REFINE);
+
+	/* Download updated external appstream before anything else */
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+	if (action == GS_PLUGIN_ACTION_REFRESH) {
+		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; see
+		 * comment below for details. */
+		if (!gs_external_appstream_refresh (plugin_loader->plugins->pdata[0],
+						    gs_plugin_job_get_age (helper->plugin_job),
+						    cancellable, error))
+			return FALSE;
+	}
+#endif
 
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
