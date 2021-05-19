@@ -3,7 +3,6 @@ plugin_libs = [
   appstream,
   gio_unix,
   goa,
-  gtk,
   json_glib,
   libsoup,
   libgnomesoftware_dep,
