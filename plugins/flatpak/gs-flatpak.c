@@ -3580,7 +3580,7 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_category_apps (self->plugin, self->silo,
+	return gs_appstream_add_category_apps (self->silo,
 					       category, list,
 					       cancellable, error);
 }
@@ -3597,7 +3597,7 @@ gs_flatpak_add_categories (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_categories (self->plugin, self->silo,
+	return gs_appstream_add_categories (self->silo,
 					    list, cancellable, error);
 }
 
@@ -3614,7 +3614,7 @@ gs_flatpak_add_popular (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	if (!gs_appstream_add_popular (self->plugin, self->silo, list_tmp,
+	if (!gs_appstream_add_popular (self->silo, list_tmp,
 				       cancellable, error))
 		return FALSE;
 
@@ -3636,7 +3636,7 @@ gs_flatpak_add_featured (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	if (!gs_appstream_add_featured (self->plugin, self->silo, list_tmp,
+	if (!gs_appstream_add_featured (self->silo, list_tmp,
 					cancellable, error))
 		return FALSE;
 
@@ -3659,7 +3659,7 @@ gs_flatpak_add_alternates (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	if (!gs_appstream_add_alternates (self->plugin, self->silo, app, list_tmp,
+	if (!gs_appstream_add_alternates (self->silo, app, list_tmp,
 					  cancellable, error))
 		return FALSE;
 

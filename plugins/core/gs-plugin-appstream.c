@@ -107,10 +107,9 @@ gs_plugin_appstream_add_icons_cb (XbBuilderFixup *self,
 				  gpointer user_data,
 				  GError **error)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
 	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") != 0)
 		return TRUE;
-	gs_appstream_component_add_extra_info (plugin, bn);
+	gs_appstream_component_add_extra_info (bn);
 	return TRUE;
 }
 
@@ -1012,8 +1011,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_category_apps (plugin,
-					       priv->silo,
+	return gs_appstream_add_category_apps (priv->silo,
 					       category,
 					       list,
 					       cancellable,
@@ -1087,7 +1085,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_categories (plugin, priv->silo, list,
+	return gs_appstream_add_categories (priv->silo, list,
 					    cancellable, error);
 }
 
@@ -1104,7 +1102,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_popular (plugin, priv->silo, list, cancellable, error);
+	return gs_appstream_add_popular (priv->silo, list, cancellable, error);
 }
 
 gboolean
@@ -1120,7 +1118,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_featured (plugin, priv->silo, list, cancellable, error);
+	return gs_appstream_add_featured (priv->silo, list, cancellable, error);
 }
 
 gboolean
@@ -1155,7 +1153,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_alternates (plugin, priv->silo, app, list,
+	return gs_appstream_add_alternates (priv->silo, app, list,
 					    cancellable, error);
 }
 
