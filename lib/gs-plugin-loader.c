@@ -24,6 +24,7 @@
 #include "gs-category-manager.h"
 #include "gs-category-private.h"
 #include "gs-ioprio.h"
+#include "gs-os-release.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-plugin-event.h"
@@ -72,6 +73,7 @@ struct _GsPluginLoader
 	gulong			 network_metered_notify_handler;
 
 	GsCategoryManager	*category_manager;
+	GsOdrsProvider		*odrs_provider;  /* (owned) (nullable) */
 
 #ifdef HAVE_SYSPROF
 	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
@@ -2707,6 +2709,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->settings);
 	g_clear_pointer (&plugin_loader->pending_apps, g_ptr_array_unref);
 	g_clear_object (&plugin_loader->category_manager);
+	g_clear_object (&plugin_loader->odrs_provider);
 
 #ifdef HAVE_SYSPROF
 	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
@@ -2831,6 +2834,13 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
+	const gchar *review_server;
+	g_autofree gchar *user_hash = NULL;
+	const gchar *distro;
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
+	const guint odrs_review_n_results_max = 20;
 
 #ifdef HAVE_SYSPROF
 	plugin_loader->sysprof_writer = sysprof_capture_writer_new_from_env (0);
@@ -2870,6 +2880,39 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
+
+	/* set up the ODRS provider */
+
+	/* get the machine+user ID hash value */
+	user_hash = gs_utils_get_user_hash (&local_error);
+	if (user_hash == NULL) {
+		g_warning ("Failed to get machine+user hash: %s", local_error->message);
+		plugin_loader->odrs_provider = NULL;
+	} else {
+		/* get the distro name (e.g. 'Fedora') but allow a fallback */
+		os_release = gs_os_release_new (&local_error);
+		if (os_release != NULL) {
+			distro = gs_os_release_get_name (os_release);
+			if (distro == NULL)
+				g_warning ("no distro name specified");
+		} else {
+			g_warning ("failed to get distro name: %s", local_error->message);
+		}
+
+		/* Fallback */
+		if (distro == NULL)
+			distro = C_("Distribution name", "Unknown");
+
+		review_server = g_settings_get_string (plugin_loader->settings, "review-server");
+
+		if (review_server != NULL && *review_server != '\0')
+			plugin_loader->odrs_provider = gs_odrs_provider_new (review_server,
+									     user_hash,
+									     distro,
+									     odrs_review_max_cache_age_secs,
+									     odrs_review_n_results_max,
+									     gs_plugin_loader_get_soup_session (plugin_loader));
+	}
 
 	/* the settings key sets the initial override */
 	plugin_loader->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -3856,6 +3899,24 @@ gs_plugin_loader_get_soup_session (GsPluginLoader *plugin_loader)
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 
 	return plugin_loader->soup_session;
+}
+
+/**
+ * gs_plugin_loader_get_odrs_provider:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the singleton #GsOdrsProvider which provides access to ratings and
+ * reviews data from ODRS.
+ *
+ * Returns: (transfer none) (nullable): a #GsOdrsProvider, or %NULL if disabled
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_plugin_loader_get_odrs_provider (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->odrs_provider;
 }
 
 /**

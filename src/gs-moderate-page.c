@@ -41,6 +41,12 @@ struct _GsModeratePage
 
 G_DEFINE_TYPE (GsModeratePage, gs_moderate_page, GS_TYPE_PAGE)
 
+typedef enum {
+	PROP_ODRS_PROVIDER = 1,
+} GsModeratePageProperty;
+
+static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
+
 static void
 gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
 {
@@ -300,14 +306,6 @@ gs_moderate_page_setup (GsPage *page,
                         GError **error)
 {
 	GsModeratePage *self = GS_MODERATE_PAGE (page);
-	g_autoptr(GSettings) settings = NULL;
-	const gchar *review_server;
-	g_autofree gchar *user_hash = NULL;
-	const gchar *distro;
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
-	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
-	const guint odrs_review_n_results_max = 20;
 
 	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), TRUE);
 
@@ -319,42 +317,43 @@ gs_moderate_page_setup (GsPage *page,
 				      gs_moderate_page_list_header_func,
 				      self, NULL);
 
-	/* set up the ODRS provider */
-
-	/* get the machine+user ID hash value */
-	/* TODO: deduplicate this with the identical code in GsDetailsPage */
-	user_hash = gs_utils_get_user_hash (&local_error);
-	if (user_hash == NULL) {
-		g_warning ("Failed to get machine+user hash: %s", local_error->message);
-		self->odrs_provider = NULL;
-	} else {
-		/* get the distro name (e.g. 'Fedora') but allow a fallback */
-		os_release = gs_os_release_new (&local_error);
-		if (os_release != NULL) {
-			distro = gs_os_release_get_name (os_release);
-			if (distro == NULL)
-				g_warning ("no distro name specified");
-		} else {
-			g_warning ("failed to get distro name: %s", local_error->message);
-		}
-
-		/* Fallback */
-		if (distro == NULL)
-			distro = C_("Distribution name", "Unknown");
-
-		settings = g_settings_new ("org.gnome.software");
-		review_server = g_settings_get_string (settings, "review-server");
-
-		if (review_server != NULL && *review_server != '\0')
-			self->odrs_provider = gs_odrs_provider_new (review_server,
-								    user_hash,
-								    distro,
-								    odrs_review_max_cache_age_secs,
-								    odrs_review_n_results_max,
-								    gs_plugin_loader_get_soup_session (plugin_loader));
-	}
-
 	return TRUE;
+}
+
+static void
+gs_moderate_page_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsModeratePage *self = GS_MODERATE_PAGE (object);
+
+	switch ((GsModeratePageProperty) prop_id) {
+	case PROP_ODRS_PROVIDER:
+		g_value_set_object (value, gs_moderate_page_get_odrs_provider (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_moderate_page_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsModeratePage *self = GS_MODERATE_PAGE (object);
+
+	switch ((GsModeratePageProperty) prop_id) {
+	case PROP_ODRS_PROVIDER:
+		gs_moderate_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -381,10 +380,30 @@ gs_moderate_page_class_init (GsModeratePageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_moderate_page_get_property;
+	object_class->set_property = gs_moderate_page_set_property;
 	object_class->dispose = gs_moderate_page_dispose;
 	page_class->switch_to = gs_moderate_page_switch_to;
 	page_class->reload = gs_moderate_page_reload;
 	page_class->setup = gs_moderate_page_setup;
+
+	/**
+	 * GsModeratePage:odrs-provider: (nullable)
+	 *
+	 * An ODRS provider to give access to ratings and reviews information
+	 * for the apps being displayed.
+	 *
+	 * If this is %NULL, ratings and reviews will be disabled and the page
+	 * will be effectively useless.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_ODRS_PROVIDER] =
+		g_param_spec_object ("odrs-provider", NULL, NULL,
+				     GS_TYPE_ODRS_PROVIDER,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-moderate-page.ui");
 
@@ -414,4 +433,43 @@ gs_moderate_page_new (void)
 	GsModeratePage *self;
 	self = g_object_new (GS_TYPE_MODERATE_PAGE, NULL);
 	return GS_MODERATE_PAGE (self);
+}
+
+/**
+ * gs_moderate_page_get_odrs_provider:
+ * @self: a #GsModeratePage
+ *
+ * Get the value of #GsModeratePage:odrs-provider.
+ *
+ * Returns: (nullable) (transfer none): a #GsOdrsProvider, or %NULL if unset
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_moderate_page_get_odrs_provider (GsModeratePage *self)
+{
+	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), NULL);
+
+	return self->odrs_provider;
+}
+
+/**
+ * gs_moderate_page_set_odrs_provider:
+ * @self: a #GsModeratePage
+ * @odrs_provider: (nullable) (transfer none): new #GsOdrsProvider or %NULL
+ *
+ * Set the value of #GsModeratePage:odrs-provider.
+ *
+ * Since: 41
+ */
+void
+gs_moderate_page_set_odrs_provider (GsModeratePage *self,
+                                    GsOdrsProvider *odrs_provider)
+{
+	g_return_if_fail (GS_IS_MODERATE_PAGE (self));
+	g_return_if_fail (odrs_provider == NULL || GS_IS_ODRS_PROVIDER (odrs_provider));
+
+	if (g_set_object (&self->odrs_provider, odrs_provider)) {
+		gs_moderate_page_reload (GS_PAGE (self));
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
+	}
 }

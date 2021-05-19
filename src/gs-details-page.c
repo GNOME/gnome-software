@@ -182,8 +182,12 @@ struct _GsDetailsPage
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_TITLE = 1,
+	PROP_ODRS_PROVIDER = 1,
+	/* Override properties: */
+	PROP_TITLE,
 } GsDetailsPageProperty;
+
+static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -2655,14 +2659,6 @@ gs_details_page_setup (GsPage *page,
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
-	g_autoptr(GSettings) settings = NULL;
-	const gchar *review_server;
-	g_autofree gchar *user_hash = NULL;
-	const gchar *distro;
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
-	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
-	const guint odrs_review_n_results_max = 20;
 
 	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
 
@@ -2670,40 +2666,6 @@ gs_details_page_setup (GsPage *page,
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
-
-	/* set up the ODRS provider */
-
-	/* get the machine+user ID hash value */
-	user_hash = gs_utils_get_user_hash (&local_error);
-	if (user_hash == NULL) {
-		g_warning ("Failed to get machine+user hash: %s", local_error->message);
-		self->odrs_provider = NULL;
-	} else {
-		/* get the distro name (e.g. 'Fedora') but allow a fallback */
-		os_release = gs_os_release_new (&local_error);
-		if (os_release != NULL) {
-			distro = gs_os_release_get_name (os_release);
-			if (distro == NULL)
-				g_warning ("no distro name specified");
-		} else {
-			g_warning ("failed to get distro name: %s", local_error->message);
-		}
-
-		/* Fallback */
-		if (distro == NULL)
-			distro = C_("Distribution name", "Unknown");
-
-		settings = g_settings_new ("org.gnome.software");
-		review_server = g_settings_get_string (settings, "review-server");
-
-		if (review_server != NULL && *review_server != '\0')
-			self->odrs_provider = gs_odrs_provider_new (review_server,
-								    user_hash,
-								    distro,
-								    odrs_review_max_cache_age_secs,
-								    odrs_review_n_results_max,
-								    gs_plugin_loader_get_soup_session (plugin_loader));
-	}
 
 	g_signal_connect (self->button_review, "clicked",
 			  G_CALLBACK (gs_details_page_write_review_cb),
@@ -2808,6 +2770,31 @@ gs_details_page_get_property (GObject    *object,
 			g_assert_not_reached ();
 		}
 		break;
+	case PROP_ODRS_PROVIDER:
+		g_value_set_object (value, gs_details_page_get_odrs_provider (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_details_page_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (object);
+
+	switch ((GsDetailsPageProperty) prop_id) {
+	case PROP_TITLE:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	case PROP_ODRS_PROVIDER:
+		gs_details_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2846,6 +2833,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_details_page_get_property;
+	object_class->set_property = gs_details_page_set_property;
 	object_class->dispose = gs_details_page_dispose;
 
 	page_class->app_installed = gs_details_page_app_installed;
@@ -2853,6 +2841,23 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	page_class->switch_to = gs_details_page_switch_to;
 	page_class->reload = gs_details_page_reload;
 	page_class->setup = gs_details_page_setup;
+
+	/**
+	 * GsDetailsPage:odrs-provider: (nullable)
+	 *
+	 * An ODRS provider to give access to ratings and reviews information
+	 * for the app being displayed.
+	 *
+	 * If this is %NULL, ratings and reviews will be disabled.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_ODRS_PROVIDER] =
+		g_param_spec_object ("odrs-provider", NULL, NULL,
+				     GS_TYPE_ODRS_PROVIDER,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
@@ -2992,4 +2997,43 @@ GsDetailsPage *
 gs_details_page_new (void)
 {
 	return GS_DETAILS_PAGE (g_object_new (GS_TYPE_DETAILS_PAGE, NULL));
+}
+
+/**
+ * gs_details_page_get_odrs_provider:
+ * @self: a #GsDetailsPage
+ *
+ * Get the value of #GsDetailsPage:odrs-provider.
+ *
+ * Returns: (nullable) (transfer none): a #GsOdrsProvider, or %NULL if unset
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_details_page_get_odrs_provider (GsDetailsPage *self)
+{
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), NULL);
+
+	return self->odrs_provider;
+}
+
+/**
+ * gs_details_page_set_odrs_provider:
+ * @self: a #GsDetailsPage
+ * @odrs_provider: (nullable) (transfer none): new #GsOdrsProvider or %NULL
+ *
+ * Set the value of #GsDetailsPage:odrs-provider.
+ *
+ * Since: 41
+ */
+void
+gs_details_page_set_odrs_provider (GsDetailsPage  *self,
+                                   GsOdrsProvider *odrs_provider)
+{
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+	g_return_if_fail (odrs_provider == NULL || GS_IS_ODRS_PROVIDER (odrs_provider));
+
+	if (g_set_object (&self->odrs_provider, odrs_provider)) {
+		gs_details_page_refresh_reviews (self);
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
+	}
 }
