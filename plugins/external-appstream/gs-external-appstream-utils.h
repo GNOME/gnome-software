@@ -10,8 +10,14 @@
 
 #pragma once
 
-#include <config.h>
+#include "config.h"
+
 #include <glib.h>
+#include <gnome-software.h>
 
 const gchar	*gs_external_appstream_utils_get_system_dir (void);
 gchar		*gs_external_appstream_utils_get_file_cache_path (const gchar	*file_name);
+gboolean	 gs_external_appstream_refresh (GsPlugin	 *plugin,
+						guint		  cache_age,
+						GCancellable	 *cancellable,
+						GError		**error);
