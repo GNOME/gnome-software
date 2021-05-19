@@ -81,7 +81,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
 }
 
 void
