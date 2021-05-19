@@ -104,7 +104,8 @@ libgnomesoftware = library(
 
 libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
   sources : libgnomesoftware_enums,
-  include_directories : libgnomesoftware_include_directories
+  include_directories : libgnomesoftware_include_directories,
+  dependencies: librarydeps,
 )
 
 pkg = import('pkgconfig')
