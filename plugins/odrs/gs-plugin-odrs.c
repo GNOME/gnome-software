@@ -90,18 +90,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_set_enabled (plugin, review_server && *review_server);
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	return gs_odrs_provider_refresh (priv->provider, plugin, cache_age,
-					 cancellable, error);
-}
-
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {

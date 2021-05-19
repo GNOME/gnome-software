@@ -1129,6 +1129,21 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
+	if (action == GS_PLUGIN_ACTION_REFRESH &&
+	    plugin_loader->odrs_provider != NULL) {
+		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; the
+		 * GsOdrsProvider needs access to a GsPlugin to access global
+		 * state for gs_plugin_download_file(), but it doesn’t really
+		 * matter which plugin it’s accessed through. In lieu of
+		 * refactoring gs_plugin_download_file(), use the first plugin
+		 * in the list for now. */
+		if (!gs_odrs_provider_refresh (plugin_loader->odrs_provider,
+					       plugin_loader->plugins->pdata[0],
+					       gs_plugin_job_get_age (helper->plugin_job),
+					       cancellable, error))
+			return FALSE;
+	}
+
 #ifdef HAVE_SYSPROF
 	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = NULL;
