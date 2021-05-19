@@ -505,7 +505,6 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *locale;
 	const gchar *test_xml;
 	g_autofree gchar *blobfn = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
@@ -515,7 +514,7 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
-
+	const gchar *const *locales = g_get_language_names ();
 
 	reader_locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	/* everything is okay */
@@ -535,14 +534,8 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	}
 
 	/* add current locales */
-	locale = g_getenv ("GS_SELF_TEST_LOCALE");
-	if (locale == NULL) {
-		const gchar *const *locales = g_get_language_names ();
-		for (guint i = 0; locales[i] != NULL; i++)
-			xb_builder_add_locale (builder, locales[i]);
-	} else {
-		xb_builder_add_locale (builder, locale);
-	}
+	for (guint i = 0; locales[i] != NULL; i++)
+		xb_builder_add_locale (builder, locales[i]);
 
 	/* only when in self test */
 	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");

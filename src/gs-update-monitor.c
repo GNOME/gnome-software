@@ -13,6 +13,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
+#include <locale.h>
 
 #include "gs-update-monitor.h"
 #include "gs-common.h"
@@ -855,7 +856,7 @@ check_language_pack (GsUpdateMonitor *monitor) {
 	const gchar *locale;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	locale = gs_plugin_loader_get_locale (monitor->plugin_loader);
+	locale = setlocale (LC_MESSAGES, NULL);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_LANGPACKS,
 					 "search", locale,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,

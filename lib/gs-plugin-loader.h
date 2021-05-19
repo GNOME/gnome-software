@@ -84,8 +84,6 @@ GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_loader,
                                                         guint           max_ops);
 
-const gchar	*gs_plugin_loader_get_locale		(GsPluginLoader *plugin_loader);
-
 GsCategoryManager *gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader);
 
 G_END_DECLS

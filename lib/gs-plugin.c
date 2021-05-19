@@ -61,7 +61,6 @@ typedef struct
 	gboolean		 enabled;
 	guint			 interactive_cnt;
 	GMutex			 interactive_mutex;
-	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
 	gchar			*name;
 	gchar			*appstream_id;
@@ -210,7 +209,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->appstream_id);
 	g_free (priv->data);
-	g_free (priv->locale);
 	g_free (priv->language);
 	if (priv->soup_session != NULL)
 		g_object_unref (priv->soup_session);
@@ -532,32 +530,6 @@ gs_plugin_set_priority (GsPlugin *plugin, guint priority)
 }
 
 /**
- * gs_plugin_get_locale:
- * @plugin: a #GsPlugin
- *
- * Gets the user locale. This is in the form documented in `man 3 setlocale`:
- * ```
- * language[_territory][.codeset][@modifier]
- * ```
- * where `language` is an
- * [ISO 639 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
- * `territory` is an
- * [ISO 3166 country code](https://en.wikipedia.org/wiki/ISO_3166-1), and
- * `codeset` is a character set or encoding identifier like `ISO-8859-1` or
- * `UTF-8`. For a list of all supported locales, run `locale -a`.
- *
- * Returns: the locale string, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
- *
- * Since: 3.22
- **/
-const gchar *
-gs_plugin_get_locale (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->locale;
-}
-
-/**
  * gs_plugin_get_language:
  * @plugin: a #GsPlugin
  *
@@ -576,23 +548,6 @@ gs_plugin_get_language (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	return priv->language;
-}
-
-/**
- * gs_plugin_set_locale:
- * @plugin: a #GsPlugin
- * @locale: a locale string, e.g. "en_GB"
- *
- * Sets the plugin locale.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_free (priv->locale);
-	priv->locale = g_strdup (locale);
 }
 
 /**

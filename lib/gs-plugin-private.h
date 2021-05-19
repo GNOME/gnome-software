@@ -35,8 +35,6 @@ void		 gs_plugin_set_priority			(GsPlugin	*plugin,
 							 guint		 priority);
 void		 gs_plugin_set_name			(GsPlugin	*plugin,
 							 const gchar	*name);
-void		 gs_plugin_set_locale			(GsPlugin	*plugin,
-							 const gchar	*locale);
 void		 gs_plugin_set_language			(GsPlugin	*plugin,
 							 const gchar	*language);
 void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
