@@ -842,6 +842,15 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
+	/* Add ODRS data if needed */
+	if (plugin_loader->odrs_provider != NULL) {
+		if (refine_flags == GS_PLUGIN_REFINE_FLAGS_DEFAULT)
+			refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
+
+		if (!gs_odrs_provider_refine (plugin_loader->odrs_provider,
+					      list, refine_flags, cancellable, error))
+			return FALSE;
+	}
 
 	/* filter any wildcard apps left in the list */
 	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
@@ -1097,9 +1106,13 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GError **error)
 {
 	GsPluginLoader *plugin_loader = helper->plugin_loader;
+	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+
+	/* Refining is done separately as it’s a special action */
+	g_assert (action != GS_PLUGIN_ACTION_REFINE);
 
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {

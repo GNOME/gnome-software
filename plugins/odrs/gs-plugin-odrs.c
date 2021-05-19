@@ -109,15 +109,3 @@ gs_plugin_destroy (GsPlugin *plugin)
 
 	g_clear_object (&priv->provider);
 }
-
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	return gs_odrs_provider_refine (priv->provider, list, flags, cancellable, error);
-}
