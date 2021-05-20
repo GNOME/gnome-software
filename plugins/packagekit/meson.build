@@ -32,6 +32,7 @@ shared_module(
     'gs-plugin-packagekit.c',
     'gs-packagekit-helper.c',
     'packagekit-common.c',
+    'gs-markdown.c',
   ],
   include_directories : [
     include_directories('../..'),
@@ -41,24 +42,6 @@ shared_module(
   install_dir: plugin_dir,
   c_args : cargs,
   dependencies : deps,
-)
-
-shared_module(
-  'gs_plugin_packagekit-refine',
-  sources : [
-    'gs-plugin-packagekit-refine.c',
-    'gs-markdown.c',
-    'gs-packagekit-helper.c',
-    'packagekit-common.c',
-  ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : [ plugin_libs, packagekit ],
 )
 
 shared_module(
