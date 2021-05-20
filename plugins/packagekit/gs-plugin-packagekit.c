@@ -4,15 +4,17 @@
  * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  * Copyright (C) 2017 Canonical Ltd
+ * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
 
 #include <config.h>
 
-#include <packagekit-glib2/packagekit.h>
-
 #include <gnome-software.h>
+#include <gsettings-desktop-schemas/gdesktop-enums.h>
+#include <packagekit-glib2/packagekit.h>
+#include <string.h>
 
 #include "packagekit-common.h"
 #include "gs-markdown.h"
@@ -23,6 +25,8 @@
  * Uses the system PackageKit instance to return installed packages,
  * sources and the ability to add and remove packages. Supports package history
  * and converting URIs to apps.
+ *
+ * Supports setting the session proxy on the system PackageKit instance.
  *
  * Requires:    | [source-id]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
@@ -45,6 +49,13 @@ struct GsPluginData {
 
 	PkClient		*client_url_to_app;
 	GMutex			 client_mutex_url_to_app;
+
+	PkControl		*control_proxy;
+	GSettings		*settings_proxy;
+	GSettings		*settings_http;
+	GSettings		*settings_https;
+	GSettings		*settings_ftp;
+	GSettings		*settings_socks;
 };
 
 static void gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin);
@@ -53,6 +64,10 @@ static gboolean gs_plugin_packagekit_refine_history (GsPlugin      *plugin,
                                                      GsAppList     *list,
                                                      GCancellable  *cancellable,
                                                      GError       **error);
+static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
+                                                   const gchar *key,
+                                                   GsPlugin    *plugin);
+static void reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable);
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
@@ -92,6 +107,25 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_cache_age (priv->client_url_to_app, G_MAXUINT);
 	pk_client_set_interactive (priv->client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
+	/* proxy */
+	priv->control_proxy = pk_control_new ();
+	priv->settings_proxy = g_settings_new ("org.gnome.system.proxy");
+	g_signal_connect (priv->settings_proxy, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+
+	priv->settings_http = g_settings_new ("org.gnome.system.proxy.http");
+	priv->settings_https = g_settings_new ("org.gnome.system.proxy.https");
+	priv->settings_ftp = g_settings_new ("org.gnome.system.proxy.ftp");
+	priv->settings_socks = g_settings_new ("org.gnome.system.proxy.socks");
+	g_signal_connect (priv->settings_http, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+	g_signal_connect (priv->settings_https, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+	g_signal_connect (priv->settings_ftp, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+	g_signal_connect (priv->settings_socks, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
@@ -121,6 +155,14 @@ gs_plugin_destroy (GsPlugin *plugin)
 	/* url-to-app */
 	g_mutex_clear (&priv->client_mutex_url_to_app);
 	g_object_unref (priv->client_url_to_app);
+
+	/* proxy */
+	g_object_unref (priv->control_proxy);
+	g_object_unref (priv->settings_proxy);
+	g_object_unref (priv->settings_http);
+	g_object_unref (priv->settings_https);
+	g_object_unref (priv->settings_ftp);
+	g_object_unref (priv->settings_socks);
 }
 
 static gboolean
@@ -1694,10 +1736,16 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	priv->connection_history = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
 						   error);
-	return priv->connection_history != NULL;
+	if (priv->connection_history == NULL)
+		return FALSE;
+
+	reload_proxy_settings (plugin, cancellable);
+
+	return TRUE;
 }
 
 static gboolean
@@ -2287,4 +2335,249 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+static gchar *
+get_proxy_http (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	gboolean ret;
+	GString *string = NULL;
+	gint port;
+	GDesktopProxyMode proxy_mode;
+	g_autofree gchar *host = NULL;
+	g_autofree gchar *password = NULL;
+	g_autofree gchar *username = NULL;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
+		return NULL;
+
+	host = g_settings_get_string (priv->settings_http, "host");
+	if (host == NULL || host[0] == '\0')
+		return NULL;
+
+	port = g_settings_get_int (priv->settings_http, "port");
+
+	ret = g_settings_get_boolean (priv->settings_http,
+				      "use-authentication");
+	if (ret) {
+		username = g_settings_get_string (priv->settings_http,
+						  "authentication-user");
+		password = g_settings_get_string (priv->settings_http,
+						  "authentication-password");
+	}
+
+	/* make PackageKit proxy string */
+	string = g_string_new ("");
+	if (username != NULL || password != NULL) {
+		if (username != NULL)
+			g_string_append_printf (string, "%s", username);
+		if (password != NULL)
+			g_string_append_printf (string, ":%s", password);
+		g_string_append (string, "@");
+	}
+	g_string_append (string, host);
+	if (port > 0)
+		g_string_append_printf (string, ":%i", port);
+	return g_string_free (string, FALSE);
+}
+
+static gchar *
+get_proxy_https (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GString *string = NULL;
+	gint port;
+	GDesktopProxyMode proxy_mode;
+	g_autofree gchar *host = NULL;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
+		return NULL;
+
+	host = g_settings_get_string (priv->settings_https, "host");
+	if (host == NULL || host[0] == '\0')
+		return NULL;
+	port = g_settings_get_int (priv->settings_https, "port");
+	if (port == 0)
+		return NULL;
+
+	/* make PackageKit proxy string */
+	string = g_string_new (host);
+	if (port > 0)
+		g_string_append_printf (string, ":%i", port);
+	return g_string_free (string, FALSE);
+}
+
+static gchar *
+get_proxy_ftp (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GString *string = NULL;
+	gint port;
+	GDesktopProxyMode proxy_mode;
+	g_autofree gchar *host = NULL;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
+		return NULL;
+
+	host = g_settings_get_string (priv->settings_ftp, "host");
+	if (host == NULL || host[0] == '\0')
+		return NULL;
+	port = g_settings_get_int (priv->settings_ftp, "port");
+	if (port == 0)
+		return NULL;
+
+	/* make PackageKit proxy string */
+	string = g_string_new (host);
+	if (port > 0)
+		g_string_append_printf (string, ":%i", port);
+	return g_string_free (string, FALSE);
+}
+
+static gchar *
+get_proxy_socks (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GString *string = NULL;
+	gint port;
+	GDesktopProxyMode proxy_mode;
+	g_autofree gchar *host = NULL;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
+		return NULL;
+
+	host = g_settings_get_string (priv->settings_socks, "host");
+	if (host == NULL || host[0] == '\0')
+		return NULL;
+	port = g_settings_get_int (priv->settings_socks, "port");
+	if (port == 0)
+		return NULL;
+
+	/* make PackageKit proxy string */
+	string = g_string_new (host);
+	if (port > 0)
+		g_string_append_printf (string, ":%i", port);
+	return g_string_free (string, FALSE);
+}
+
+static gchar *
+get_no_proxy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GString *string = NULL;
+	GDesktopProxyMode proxy_mode;
+	g_autofree gchar **hosts = NULL;
+	guint i;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
+		return NULL;
+
+	hosts = g_settings_get_strv (priv->settings_proxy, "ignore-hosts");
+	if (hosts == NULL)
+		return NULL;
+
+	/* make PackageKit proxy string */
+	string = g_string_new ("");
+	for (i = 0; hosts[i] != NULL; i++) {
+		if (i == 0)
+			g_string_assign (string, hosts[i]);
+		else
+			g_string_append_printf (string, ",%s", hosts[i]);
+		g_free (hosts[i]);
+	}
+
+	return g_string_free (string, FALSE);
+}
+
+static gchar *
+get_pac (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GDesktopProxyMode proxy_mode;
+	gchar *url = NULL;
+
+	proxy_mode = g_settings_get_enum (priv->settings_proxy, "mode");
+	if (proxy_mode != G_DESKTOP_PROXY_MODE_AUTO)
+		return NULL;
+
+	url = g_settings_get_string (priv->settings_proxy, "autoconfig-url");
+	if (url == NULL)
+		return NULL;
+
+	return url;
+}
+
+static void
+set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+	if (!pk_control_set_proxy_finish (PK_CONTROL (object), res, &error)) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to set proxies: %s", error->message);
+	}
+}
+
+static void
+reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *proxy_http = NULL;
+	g_autofree gchar *proxy_https = NULL;
+	g_autofree gchar *proxy_ftp = NULL;
+	g_autofree gchar *proxy_socks = NULL;
+	g_autofree gchar *no_proxy = NULL;
+	g_autofree gchar *pac = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GPermission) permission = NULL;
+
+	/* only if we can achieve the action *without* an auth dialog */
+	permission = gs_utils_get_permission ("org.freedesktop.packagekit."
+					      "system-network-proxy-configure",
+					      cancellable, &error);
+	if (permission == NULL) {
+		g_debug ("not setting proxy as no permission: %s", error->message);
+		return;
+	}
+	if (!g_permission_get_allowed (permission)) {
+		g_debug ("not setting proxy as no auth requested");
+		return;
+	}
+
+	proxy_http = get_proxy_http (plugin);
+	proxy_https = get_proxy_https (plugin);
+	proxy_ftp = get_proxy_ftp (plugin);
+	proxy_socks = get_proxy_socks (plugin);
+	no_proxy = get_no_proxy (plugin);
+	pac = get_pac (plugin);
+
+	g_debug ("Setting proxies (http: %s, https: %s, ftp: %s, socks: %s, "
+	         "no_proxy: %s, pac: %s)",
+	         proxy_http, proxy_https, proxy_ftp, proxy_socks,
+	         no_proxy, pac);
+
+	pk_control_set_proxy2_async (priv->control_proxy,
+				     proxy_http,
+				     proxy_https,
+				     proxy_ftp,
+				     proxy_socks,
+				     no_proxy,
+				     pac,
+				     cancellable,
+				     set_proxy_cb,
+				     plugin);
+}
+
+static void
+gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
+				       const gchar *key,
+				       GsPlugin *plugin)
+{
+	if (!gs_plugin_get_enabled (plugin))
+		return;
+	reload_proxy_settings (plugin, NULL);
 }
