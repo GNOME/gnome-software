@@ -56,6 +56,9 @@ struct GsPluginData {
 	GSettings		*settings_https;
 	GSettings		*settings_ftp;
 	GSettings		*settings_socks;
+
+	PkTask			*task_upgrade;
+	GMutex			 task_mutex_upgrade;
 };
 
 static void gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin);
@@ -126,6 +129,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_signal_connect (priv->settings_socks, "changed",
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
 
+	/* upgrade */
+	g_mutex_init (&priv->task_mutex_upgrade);
+	priv->task_upgrade = pk_task_new ();
+	pk_task_set_only_download (priv->task_upgrade, TRUE);
+	pk_client_set_background (PK_CLIENT (priv->task_upgrade), TRUE);
+	pk_client_set_cache_age (PK_CLIENT (priv->task_upgrade), 60 * 60 * 24);
+	pk_client_set_interactive (PK_CLIENT (priv->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
@@ -163,6 +174,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->settings_https);
 	g_object_unref (priv->settings_ftp);
 	g_object_unref (priv->settings_socks);
+
+	/* upgrade */
+	g_mutex_clear (&priv->task_mutex_upgrade);
+	g_object_unref (priv->task_upgrade);
 }
 
 static gboolean
@@ -889,6 +904,8 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		return;
+	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+		gs_app_set_management_plugin (app, "packagekit");
 	}
 }
 
@@ -2580,4 +2597,44 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
 	if (!gs_plugin_get_enabled (plugin))
 		return;
 	reload_proxy_settings (plugin, NULL);
+}
+
+gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin,
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
+
+	/* check is distro-upgrade */
+	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
+		return TRUE;
+
+	/* ask PK to download enough packages to upgrade the system */
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_packagekit_helper_set_progress_app (helper, app);
+	g_mutex_lock (&priv->task_mutex_upgrade);
+	pk_client_set_interactive (PK_CLIENT (priv->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results = pk_task_upgrade_system_sync (priv->task_upgrade,
+					       gs_app_get_version (app),
+					       PK_UPGRADE_KIND_ENUM_COMPLETE,
+					       cancellable,
+					       gs_packagekit_helper_cb, helper,
+					       error);
+	g_mutex_unlock (&priv->task_mutex_upgrade);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	return TRUE;
 }
