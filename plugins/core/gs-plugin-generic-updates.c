@@ -11,9 +11,20 @@
 #include <glib/gi18n.h>
 #include <gnome-software.h>
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+#include "gs-plugin-generic-updates.h"
+
+struct _GsPluginGenericUpdates
 {
+	GsPlugin		 parent;
+};
+
+G_DEFINE_TYPE (GsPluginGenericUpdates, gs_plugin_generic_updates, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_generic_updates_init (GsPluginGenericUpdates *self)
+{
+	GsPlugin *plugin = GS_PLUGIN (self);
+
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
@@ -101,4 +112,15 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 	gs_app_list_add (list, app);
 	return TRUE;
+}
+
+static void
+gs_plugin_generic_updates_class_init (GsPluginGenericUpdatesClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_GENERIC_UPDATES;
 }
