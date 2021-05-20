@@ -175,7 +175,8 @@ typedef enum {
  * @GS_PLUGIN_RULE_BETTER_THAN:		Results are better than another
  *
  * The rules used for ordering plugins.
- * Plugins are expected to add rules in gs_plugin_initialize().
+ * Plugins are expected to add rules in the init function for their #GsPlugin
+ * subclass.
  **/
 typedef enum {
 	GS_PLUGIN_RULE_CONFLICTS,
@@ -216,8 +217,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
- * @GS_PLUGIN_ACTION_INITIALIZE:		Initialize the plugin
- * @GS_PLUGIN_ACTION_DESTROY:			Destroy the plugin
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
  * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
@@ -258,8 +257,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_RECENT,
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
-	GS_PLUGIN_ACTION_INITIALIZE,
-	GS_PLUGIN_ACTION_DESTROY,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
 	GS_PLUGIN_ACTION_GET_LANGPACKS,
