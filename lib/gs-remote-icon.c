@@ -339,8 +339,16 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 		return FALSE;
 
 	/* Already in cache? */
-	if (g_file_test (cache_filename, G_FILE_TEST_IS_REGULAR))
+	if (g_file_test (cache_filename, G_FILE_TEST_IS_REGULAR)) {
+		gint width = 0, height = 0;
+		/* Ensure the downloaded image dimensions are stored on the icon */
+		if (!g_object_get_data (G_OBJECT (self), "width") &&
+		    gdk_pixbuf_get_file_info (cache_filename, &width, &height)) {
+			g_object_set_data (G_OBJECT (self), "width", GINT_TO_POINTER (width));
+			g_object_set_data (G_OBJECT (self), "height", GINT_TO_POINTER (height));
+		}
 		return TRUE;
+	}
 
 	cached_pixbuf = gs_icon_download (soup_session, uri, cache_filename, maximum_icon_size, cancellable, error);
 	if (cached_pixbuf == NULL)
