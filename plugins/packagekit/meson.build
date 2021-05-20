@@ -96,22 +96,6 @@ shared_module(
 )
 
 shared_module(
-  'gs_plugin_packagekit-history',
-  sources : [
-    'gs-plugin-packagekit-history.c',
-    'packagekit-common.c',
-  ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : [ plugin_libs, packagekit ],
-)
-
-shared_module(
   'gs_plugin_packagekit-upgrade',
   sources : [
     'gs-plugin-packagekit-upgrade.c',
