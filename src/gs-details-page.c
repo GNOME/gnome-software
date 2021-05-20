@@ -1374,6 +1374,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 						     as_release_get_description (latest_version));
 	}
 
+	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
+
 	/* refresh size information */
 	gs_details_page_refresh_size (self);
 
