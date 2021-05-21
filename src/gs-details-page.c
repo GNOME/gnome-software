@@ -543,10 +543,10 @@ gs_details_page_switch_to_idle (gpointer user_data)
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
 		gs_page_switch_to (GS_PAGE (self));
 		gs_page_scroll_up (GS_PAGE (self));
-	}
 
-	/* update widgets */
-	gs_details_page_refresh_all (self);
+		/* update widgets */
+		gs_details_page_refresh_all (self);
+	}
 
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -2261,7 +2261,7 @@ static void
 gs_details_page_reload (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	if (self->app != NULL)
+	if (self->app != NULL && gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
 		gs_details_page_load_stage1 (self);
 }
 
