@@ -55,7 +55,6 @@
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION
 
 static void gs_details_page_refresh_all (GsDetailsPage *self);
-static void gs_details_page_refresh_buttons (GsDetailsPage *self);
 
 typedef enum {
 	GS_DETAILS_PAGE_STATE_LOADING,
@@ -994,9 +993,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	gtk_widget_show (self->origin_box);
 
-	/* The other parts of the app are the same, only the state/buttons could change */
 	if (instance_changed)
-		gs_details_page_refresh_buttons (self);
+		gs_details_page_refresh_all (self);
 }
 
 static gboolean
