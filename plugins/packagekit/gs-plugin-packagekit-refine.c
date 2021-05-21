@@ -439,6 +439,25 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 		pkg = pk_package_sack_find_by_id (sack, package_id);
 		if (pkg == NULL)
 			continue;
+		#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
+		switch (pk_package_get_update_severity (pkg)) {
+		case PK_INFO_ENUM_LOW:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+			break;
+		case PK_INFO_ENUM_NORMAL:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
+			break;
+		case PK_INFO_ENUM_IMPORTANT:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+			break;
+		case PK_INFO_ENUM_CRITICAL:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
+			break;
+		default:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+			break;
+		}
+		#else
 		switch (pk_package_get_info (pkg)) {
 		case PK_INFO_ENUM_AVAILABLE:
 		case PK_INFO_ENUM_NORMAL:
@@ -461,6 +480,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 				   pk_info_enum_to_string (pk_package_get_info (pkg)));
 			break;
 		}
+		#endif
 	}
 	return TRUE;
 }
