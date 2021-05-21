@@ -642,6 +642,17 @@ gs_screenshot_image_is_showing (GsScreenshotImage *ssimg)
 	return ssimg->showing_image;
 }
 
+void
+gs_screenshot_image_set_description (GsScreenshotImage *ssimg,
+				     const gchar *description)
+{
+	AtkImage *atk_image;
+	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image1));
+	atk_image_set_image_description (atk_image, description);
+	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image2));
+	atk_image_set_image_description (atk_image, description);
+}
+
 static void
 gs_screenshot_image_destroy (GtkWidget *widget)
 {
