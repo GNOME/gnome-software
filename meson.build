@@ -189,6 +189,9 @@ if get_option('packagekit')
   if meson.get_compiler('c').has_function('pk_package_get_update_severity', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
       conf.set('HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY', '1')
   endif
+  if meson.get_compiler('c').has_function('pk_details_get_download_size', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
+      conf.set('HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE', '1')
+  endif
 endif
 
 if get_option('eos_updater')
