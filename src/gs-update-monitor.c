@@ -98,8 +98,7 @@ check_updates_kind (GsAppList *apps,
 		app = gs_app_list_index (apps, ii);
 
 		has_important = has_important ||
-				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL ||
-				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_HIGH;
+				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
 
 		/* took from gs-updates-section.c: _all_offline_updates_downloaded();
 		   the app is considered downloaded, when its download size is 0 */
