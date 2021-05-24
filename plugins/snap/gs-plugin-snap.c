@@ -83,7 +83,7 @@ get_auth_data (GsPlugin *plugin)
 
 		discharge_array = json_object_get_array_member (object, "discharges");
 		for (guint i = 0; i < json_array_get_length (discharge_array); i++)
-			g_ptr_array_add (discharges, json_array_get_string_element (discharge_array, i));
+			g_ptr_array_add (discharges, (gpointer) json_array_get_string_element (discharge_array, i));
 	}
 	g_ptr_array_add (discharges, NULL);
 
@@ -1318,7 +1318,7 @@ gs_plugin_update (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		/* Get the name of the snap to refresh */
 		GsApp *app = gs_app_list_index (list, i);
-		gchar *name = gs_app_get_metadata_item (app, "snap::name");
+		const gchar *name = gs_app_get_metadata_item (app, "snap::name");
 
 		/* Refresh the snap */
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
