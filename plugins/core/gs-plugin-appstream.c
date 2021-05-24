@@ -346,9 +346,16 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 		return NULL;
 	}
 
-	xml = as_metadata_components_to_collection (mdata, AS_FORMAT_KIND_XML, error);
-	if (xml == NULL)
-		return NULL;
+	xml = as_metadata_components_to_collection (mdata, AS_FORMAT_KIND_XML, &tmp_error);
+	if (xml == NULL) {
+		if (tmp_error != NULL) {
+			g_propagate_error (error, g_steal_pointer (&tmp_error));
+			return NULL;
+		}
+
+		xml = g_strdup("");
+	}
+
 	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
