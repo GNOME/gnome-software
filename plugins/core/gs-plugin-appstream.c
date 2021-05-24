@@ -348,6 +348,10 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 
 	xml = as_metadata_components_to_collection (mdata, AS_FORMAT_KIND_XML, &tmp_error);
 	if (xml == NULL) {
+		// This API currently returns NULL if there is nothing to serialize, so we
+		// have to test if this is an error or not.
+		// See https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/763
+		// for discussion about changing this API.
 		if (tmp_error != NULL) {
 			g_propagate_error (error, g_steal_pointer (&tmp_error));
 			return NULL;
