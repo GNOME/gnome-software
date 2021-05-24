@@ -186,6 +186,9 @@ if get_option('packagekit')
   else
       conf.set('GS_PACKAGEKIT_AUTOREMOVE', 'FALSE')
   endif
+  if meson.get_compiler('c').has_function('pk_package_get_update_severity', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
+      conf.set('HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY', '1')
+  endif
 endif
 
 if get_option('eos_updater')
