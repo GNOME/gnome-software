@@ -1175,6 +1175,12 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		remove_schedule_entry (schedule_entry_handle);
 		return FALSE;
+	} else {
+		/* Reset the state to have it updated */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		}
 	}
 
 	remove_schedule_entry (schedule_entry_handle);
