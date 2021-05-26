@@ -33,8 +33,28 @@
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4
 
+#define GS_DETAILS_PAGE_REFINE_FLAGS	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL | \
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION
+
 static void gs_details_page_refresh_all (GsDetailsPage *self);
-static void gs_details_page_refresh_buttons (GsDetailsPage *self);
 
 typedef enum {
 	GS_DETAILS_PAGE_STATE_LOADING,
@@ -973,9 +993,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	gtk_widget_show (self->origin_box);
 
-	/* The other parts of the app are the same, only the state/buttons could change */
 	if (instance_changed)
-		gs_details_page_refresh_buttons (self);
+		gs_details_page_refresh_all (self);
 }
 
 static gboolean
@@ -2038,8 +2057,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
 					  "interactive", TRUE,
 					  "app", self->app,
-					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+					  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					  NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job1,
@@ -2154,24 +2172,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_clear_object (&self->app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
+					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -2188,24 +2189,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	g_clear_object (&self->app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING |
+					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS |
 							 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
@@ -2228,25 +2212,7 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	/* get extra details about the app */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
+					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
