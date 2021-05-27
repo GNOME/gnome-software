@@ -153,9 +153,11 @@ typedef enum {
 	PROP_URL_MISSING,
 	PROP_CONTENT_RATING,
 	PROP_LICENSE,
+	PROP_SIZE_DOWNLOAD,
+	PROP_SIZE_INSTALLED,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_LICENSE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_SIZE_INSTALLED + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -3449,12 +3451,9 @@ gs_app_add_provided_item (GsApp *app, AsProvidedKind kind, const gchar *item)
  * gs_app_get_size_download:
  * @app: A #GsApp
  *
- * Gets the size of the total download needed to either install an available
- * application, or update an already installed one.
+ * Get the value of #GsApp:size-download.
  *
- * If there is a runtime not yet installed then this is also added.
- *
- * Returns: number of bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ * Returns: number of bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
  *
  * Since: 3.22
  **/
@@ -3502,16 +3501,16 @@ gs_app_set_size_download (GsApp *app, guint64 size_download)
 	if (size_download == priv->size_download)
 		return;
 	priv->size_download = size_download;
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
 }
 
 /**
  * gs_app_get_size_installed:
  * @app: a #GsApp
  *
- * Gets the size on disk, either for an existing application of one that could
- * be installed.
+ * Get the value of #GsApp:size-installed.
  *
- * Returns: size in bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
+ * Returns: size in bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
  *
  * Since: 3.22
  **/
@@ -3552,6 +3551,7 @@ gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 	if (size_installed == priv->size_installed)
 		return;
 	priv->size_installed = size_installed;
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
 }
 
 /**
@@ -3779,6 +3779,10 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 		priv->state = priv2->state;
 
 	gs_app_list_add (priv->related, app2);
+
+	/* The related apps add to the main app’s sizes. */
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
 }
 
 /**
@@ -4720,6 +4724,12 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_LICENSE:
 		g_value_set_string (value, priv->license);
 		break;
+	case PROP_SIZE_DOWNLOAD:
+		g_value_set_uint64 (value, gs_app_get_size_download (app));
+		break;
+	case PROP_SIZE_INSTALLED:
+		g_value_set_uint64 (value, gs_app_get_size_installed (app));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4800,6 +4810,12 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_LICENSE:
 		/* Read-only */
 		g_assert_not_reached ();
+	case PROP_SIZE_DOWNLOAD:
+		gs_app_set_size_download (app, g_value_get_uint64 (value));
+		break;
+	case PROP_SIZE_INSTALLED:
+		gs_app_set_size_installed (app, g_value_get_uint64 (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -5064,6 +5080,44 @@ gs_app_class_init (GsAppClass *klass)
 		g_param_spec_string ("license", NULL, NULL,
 				     NULL,
 				     G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:size-download
+	 *
+	 * The size of the total download needed to either install or update
+	 * this application, in bytes. If the app is partially downloaded, this
+	 * is the number of bytes remaining to download.
+	 *
+	 * This is `0` if the download size is unknown, and
+	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 *
+	 * If there is a runtime not yet installed then this is also added.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SIZE_DOWNLOAD] =
+		g_param_spec_uint64 ("size-download", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:size-installed
+	 *
+	 * The size of the application on disk, in bytes. If the application is
+	 * not yet installed, this is the size it would need, once installed.
+	 *
+	 * This is `0` if the download size is unknown, and
+	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 *
+	 * If the application has a runtime or extensions, their size
+	 * requirements are also added.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SIZE_INSTALLED] =
+		g_param_spec_uint64 ("size-installed", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
