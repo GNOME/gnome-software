@@ -132,7 +132,7 @@ typedef struct
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 } GsAppPrivate;
 
-enum {
+typedef enum {
 	PROP_ID = 1,
 	PROP_NAME,
 	PROP_VERSION,
@@ -152,7 +152,7 @@ enum {
 	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URL_MISSING,
 	PROP_LAST
-};
+} GsAppProperty;
 
 static GParamSpec *obj_props[PROP_LAST] = { NULL, };
 
@@ -4656,7 +4656,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	GsApp *app = GS_APP (object);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	switch (prop_id) {
+	switch ((GsAppProperty) prop_id) {
 	case PROP_ID:
 		g_value_set_string (value, priv->id);
 		break;
@@ -4723,7 +4723,7 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	GsApp *app = GS_APP (object);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	switch (prop_id) {
+	switch ((GsAppProperty) prop_id) {
 	case PROP_ID:
 		gs_app_set_id (app, g_value_get_string (value));
 		break;
