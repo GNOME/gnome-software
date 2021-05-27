@@ -133,8 +133,7 @@ typedef struct
 } GsAppPrivate;
 
 enum {
-	PROP_0,
-	PROP_ID,
+	PROP_ID = 1,
 	PROP_NAME,
 	PROP_VERSION,
 	PROP_SUMMARY,
