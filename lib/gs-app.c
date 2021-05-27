@@ -4871,42 +4871,42 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_ID] = g_param_spec_string ("id", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:name:
 	 */
 	obj_props[PROP_NAME] = g_param_spec_string ("name", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:version:
 	 */
 	obj_props[PROP_VERSION] = g_param_spec_string ("version", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:summary:
 	 */
 	obj_props[PROP_SUMMARY] = g_param_spec_string ("summary", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:description:
 	 */
 	obj_props[PROP_DESCRIPTION] = g_param_spec_string ("description", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:rating:
 	 */
 	obj_props[PROP_RATING] = g_param_spec_int ("rating", NULL, NULL,
 				  -1, 100, -1,
-				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:kind:
@@ -4916,7 +4916,7 @@ gs_app_class_init (GsAppClass *klass)
 				   AS_COMPONENT_KIND_UNKNOWN,
 				   AS_COMPONENT_KIND_LAST,
 				   AS_COMPONENT_KIND_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:special-kind:
@@ -4937,7 +4937,7 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_STATE] = g_param_spec_enum ("state", NULL, NULL,
 				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:progress:
@@ -4949,21 +4949,21 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_PROGRESS] = g_param_spec_uint ("progress", NULL, NULL,
 				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:allow-cancel:
 	 */
 	obj_props[PROP_CAN_CANCEL_INSTALLATION] =
 		g_param_spec_boolean ("allow-cancel", NULL, NULL, TRUE,
-				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:install-date:
 	 */
 	obj_props[PROP_INSTALL_DATE] = g_param_spec_uint64 ("install-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:release-date:
@@ -4975,34 +4975,34 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_RELEASE_DATE] = g_param_spec_uint64 ("release-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:quirk:
 	 */
 	obj_props[PROP_QUIRK] = g_param_spec_flags ("quirk", NULL, NULL,
 				     GS_TYPE_APP_QUIRK, GS_APP_QUIRK_NONE,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:pending-action:
 	 */
 	obj_props[PROP_PENDING_ACTION] = g_param_spec_enum ("pending-action", NULL, NULL,
 				     GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				     G_PARAM_READABLE);
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:key-colors:
 	 */
 	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
-				    G_TYPE_ARRAY, G_PARAM_READWRITE);
+				    G_TYPE_ARRAY, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:is-update-downloaded:
 	 */
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
-					       G_PARAM_READWRITE);
+					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:url-missing:
@@ -5014,7 +5014,7 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_URL_MISSING] = g_param_spec_string ("url-missing", NULL, NULL,
 					NULL,
-					G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+					G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
