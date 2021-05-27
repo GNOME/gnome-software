@@ -4850,12 +4850,9 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->categories);
 	g_clear_pointer (&priv->key_colors, g_array_unref);
 	g_clear_object (&priv->cancellable);
-	if (priv->local_file != NULL)
-		g_object_unref (priv->local_file);
-	if (priv->content_rating != NULL)
-		g_object_unref (priv->content_rating);
-	if (priv->action_screenshot != NULL)
-		g_object_unref (priv->action_screenshot);
+	g_clear_object (&priv->local_file);
+	g_clear_object (&priv->content_rating);
+	g_clear_object (&priv->action_screenshot);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
