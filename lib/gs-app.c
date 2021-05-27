@@ -151,10 +151,9 @@ typedef enum {
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URL_MISSING,
-	PROP_LAST
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_LAST] = { NULL, };
+static GParamSpec *obj_props[PROP_URL_MISSING + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -5020,7 +5019,7 @@ gs_app_class_init (GsAppClass *klass)
 					NULL,
 					G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-	g_object_class_install_properties (object_class, PROP_LAST, obj_props);
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 static void
