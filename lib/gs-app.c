@@ -155,9 +155,10 @@ typedef enum {
 	PROP_LICENSE,
 	PROP_SIZE_DOWNLOAD,
 	PROP_SIZE_INSTALLED,
+	PROP_PERMISSIONS,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_SIZE_INSTALLED + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_PERMISSIONS + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -4730,6 +4731,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_SIZE_INSTALLED:
 		g_value_set_uint64 (value, gs_app_get_size_installed (app));
 		break;
+	case PROP_PERMISSIONS:
+		g_value_set_flags (value, priv->permissions);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4815,6 +4819,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_SIZE_INSTALLED:
 		gs_app_set_size_installed (app, g_value_get_uint64 (value));
+		break;
+	case PROP_PERMISSIONS:
+		gs_app_set_permissions (app, g_value_get_flags (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -5118,6 +5125,20 @@ gs_app_class_init (GsAppClass *klass)
 		g_param_spec_uint64 ("size-installed", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:permissions
+	 *
+	 * The permissions the app requires to run.
+	 *
+	 * This is %GS_APP_PERMISSIONS_UNKNOWN if the permissions are unknown.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_PERMISSIONS] =
+		g_param_spec_flags ("permissions", NULL, NULL,
+				    GS_TYPE_APP_PERMISSIONS, GS_APP_PERMISSIONS_UNKNOWN,
+				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
@@ -5425,7 +5446,11 @@ gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
+
+	if (priv->permissions == permissions)
+		return;
 	priv->permissions = permissions;
+	gs_app_queue_notify (app, obj_props[PROP_PERMISSIONS]);
 }
 
 GsAppPermissions
