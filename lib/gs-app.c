@@ -151,9 +151,10 @@ typedef enum {
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URL_MISSING,
+	PROP_CONTENT_RATING,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_URL_MISSING + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_CONTENT_RATING + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -2147,7 +2148,8 @@ gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->content_rating, content_rating);
+	if (g_set_object (&priv->content_rating, content_rating))
+		gs_app_queue_notify (app, obj_props[PROP_CONTENT_RATING]);
 }
 
 /**
@@ -4710,6 +4712,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_URL_MISSING:
 		g_value_set_string (value, priv->url_missing);
 		break;
+	case PROP_CONTENT_RATING:
+		g_value_set_object (value, priv->content_rating);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4783,6 +4788,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_URL_MISSING:
 		gs_app_set_url_missing (app, g_value_get_string (value));
+		break;
+	case PROP_CONTENT_RATING:
+		gs_app_set_content_rating (app, g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -5015,6 +5023,23 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_URL_MISSING] = g_param_spec_string ("url-missing", NULL, NULL,
 					NULL,
 					G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:content-rating: (nullable)
+	 *
+	 * The content rating for the app, which gives information on how
+	 * suitable it is for different age ranges of user.
+	 *
+	 * This is %NULL if no content rating information is available.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_CONTENT_RATING] =
+		g_param_spec_object ("content-rating", NULL, NULL,
+				     /* FIXME: Use the get_type() function directly here to work
+				      * around https://github.com/ximion/appstream/pull/318 */
+				     as_content_rating_get_type (),
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
