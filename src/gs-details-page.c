@@ -159,13 +159,6 @@ struct _GsDetailsPage
 	GtkWidget		*popover_license_free;
 	GtkWidget		*popover_license_nonfree;
 	GtkWidget		*popover_license_unknown;
-	GtkWidget		*popover_content_rating;
-	GtkWidget		*label_content_rating_title;
-	GtkWidget		*label_content_rating_message;
-	GtkWidget		*label_content_rating_none;
-	GtkWidget		*button_details_rating_value;
-	GtkStyleProvider	*button_details_rating_style_provider;
-	GtkWidget		*label_details_rating_title;
 	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
@@ -1556,74 +1549,6 @@ gs_details_page_app_refine_cb (GObject *source,
 }
 
 static void
-gs_details_page_content_rating_set_css (GsDetailsPage *page, guint age)
-{
-	GtkStyleContext *style_context;
-	const gchar *classes[] =  {
-		"details-rating-18",
-		"details-rating-15",
-		"details-rating-12",
-		"details-rating-5",
-		"details-rating-0"
-	};
-	guint age_index, ii;
-
-	if (age >= 18)
-		age_index = 0;
-	else if (age >= 15)
-		age_index = 1;
-	else if (age >= 12)
-		age_index = 2;
-	else if (age >= 5)
-		age_index = 3;
-	else
-		age_index = 4;
-
-	style_context = gtk_widget_get_style_context (page->button_details_rating_value);
-	for (ii = 0; ii < G_N_ELEMENTS (classes); ii++) {
-		if (ii == age_index) {
-			if (!gtk_style_context_has_class (style_context, classes[ii]))
-				gtk_style_context_add_class (style_context, classes[ii]);
-		} else {
-			gtk_style_context_remove_class (style_context, classes[ii]);
-		}
-	}
-}
-
-static void
-gs_details_page_refresh_content_rating (GsDetailsPage *self)
-{
-	AsContentRating *content_rating;
-	AsContentRatingSystem system;
-	guint age = 0;
-	g_autofree gchar *display = NULL;
-	const gchar *locale;
-
-	/* get the content rating system from the locale */
-	locale = setlocale (LC_MESSAGES, NULL);
-	system = as_content_rating_system_from_locale (locale);
-	g_debug ("content rating system is guessed as %s from %s",
-		 as_content_rating_system_to_string (system),
-		 locale);
-
-	/* only show the button if a game and has a content rating */
-	content_rating = gs_app_get_content_rating (self->app);
-	if (content_rating != NULL) {
-		age = as_content_rating_get_minimum_age (content_rating);
-		display = as_content_rating_system_format_age (system, age);
-	}
-	if (display != NULL) {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
-		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
-		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
-		gs_details_page_content_rating_set_css (self, age);
-	} else {
-		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
-		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
-	}
-}
-
-static void
 _set_app (GsDetailsPage *self, GsApp *app)
 {
 	/* do not show all the reviews by default */
@@ -1696,7 +1621,6 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
-	gs_details_page_refresh_content_rating (self);
 
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
@@ -2188,136 +2112,6 @@ gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
-static guint
-content_rating_get_age (AsContentRating *content_rating, const gchar *id)
-{
-	AsContentRatingValue value = as_content_rating_get_value (content_rating, id);
-	return as_content_rating_attribute_to_csm_age (id, value);
-}
-
-static void
-gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	AsContentRating *cr;
-	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
-	guint age_bad = 0;
-	const gchar *tmp;
-	g_autofree const gchar **ids = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
-
-	/* Ordered from worst to best */
-	const gchar *violence_group[] = {
-		"violence-bloodshed",
-		"violence-realistic",
-		"violence-fantasy",
-		"violence-cartoon",
-		NULL
-	};
-	const gchar *social_group[] = {
-		"social-audio",
-		"social-chat",
-		"social-contacts",
-		"social-info",
-		NULL
-	};
-	const gchar *coalesce_groups[] = {
-		"sex-themes",
-		"sex-homosexuality",
-		NULL
-	};
-
-	cr = gs_app_get_content_rating (self->app);
-	if (cr == NULL)
-		return;
-
-	ids = as_content_rating_get_all_rating_ids ();
-
-	/* get the worst thing */
-	for (gsize i = 0; ids[i] != NULL; i++) {
-		guint age;
-		AsContentRatingValue value;
-		value = as_content_rating_get_value (cr, ids[i]);
-		age = content_rating_get_age (cr, ids[i]);
-		if (age > age_bad)
-			age_bad = age;
-		if (value > value_bad)
-			value_bad = value;
-	}
-
-	/* if the worst thing is nothing, great! show a more specific message
-	 * than a big listing of all the groups */
-	if (value_bad == AS_CONTENT_RATING_VALUE_NONE) {
-		/* set the labels */
-		gtk_label_set_label (GTK_LABEL (self->label_content_rating_message),
-				     _("The application contains no age-inappropriate content."));
-		gtk_widget_set_visible (self->label_content_rating_title, FALSE);
-		gtk_widget_set_visible (self->label_content_rating_message, TRUE);
-		gtk_widget_set_visible (self->label_content_rating_none, FALSE);
-
-		/* show popover */
-		gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
-		gtk_widget_show (self->popover_content_rating);
-
-		return;
-	}
-
-	/* get the content rating description for the worst things about the app;
-	 * handle the groups separately. intentionally coalesce some categories
-	 * if they have the same values, to avoid confusion */
-	for (gsize i = 0; ids[i] != NULL; i++) {
-		if (!g_strv_contains (violence_group, ids[i]) &&
-		    !g_strv_contains (social_group, ids[i])) {
-			guint age;
-			age = content_rating_get_age (cr, ids[i]);
-			if (age < age_bad)
-				continue;
-
-			/* coalesce down to the first element in @coalesce_groups,
-			 * unless this group’s value differs. currently only one
-			 * coalesce group is supported */
-			if (g_strv_contains (coalesce_groups + 1, ids[i]) &&
-			    content_rating_get_age (cr, coalesce_groups[0]) == age)
-				continue;
-
-			tmp = as_content_rating_attribute_get_description (ids[i], as_content_rating_get_value (cr, ids[i]));
-			g_string_append_printf (str, "• %s\n", tmp);
-		}
-	}
-
-	for (gsize i = 0; violence_group[i] != NULL; i++) {
-		guint age;
-		age = content_rating_get_age (cr, violence_group[i]);
-		if (age < age_bad)
-			continue;
-		tmp = as_content_rating_attribute_get_description (violence_group[i], as_content_rating_get_value (cr, violence_group[i]));
-		g_string_append_printf (str, "• %s\n", tmp);
-		break;
-	}
-
-	for (gsize i = 0; social_group[i] != NULL; i++) {
-		guint age;
-		age = content_rating_get_age (cr, social_group[i]);
-		if (age < age_bad)
-			continue;
-		tmp = as_content_rating_attribute_get_description (social_group[i], as_content_rating_get_value (cr, social_group[i]));
-		g_string_append_printf (str, "• %s\n", tmp);
-		break;
-	}
-
-	if (str->len > 0)
-		g_string_truncate (str, str->len - 1);
-
-	/* enable the details if there are any */
-	gtk_label_set_label (GTK_LABEL (self->label_content_rating_message), str->str);
-	gtk_widget_set_visible (self->label_content_rating_title, str->len > 0);
-	gtk_widget_set_visible (self->label_content_rating_message, str->len > 0);
-	gtk_widget_set_visible (self->label_content_rating_none, str->len == 0);
-
-	/* show popover */
-	gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
-	gtk_widget_show (self->popover_content_rating);
-}
-
 static gboolean
 gs_details_page_activate_link_cb (GtkLabel *label,
                                   const gchar *uri,
@@ -2526,9 +2320,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
-	g_signal_connect (self->button_details_rating_value, "clicked",
-			  G_CALLBACK (gs_details_page_content_rating_button_cb),
-			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
 			  G_CALLBACK (gs_details_page_history_cb),
 			  self);
@@ -2647,7 +2438,6 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->app_cancellable);
 	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
-	g_clear_object (&self->button_details_rating_style_provider);
 	g_clear_object (&self->odrs_provider);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
@@ -2770,12 +2560,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_unknown);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_license_nonfree_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_licenses_intro);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_content_rating);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_message);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
