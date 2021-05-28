@@ -135,12 +135,10 @@ struct _GsDetailsPage
 	GtkWidget		*stack_details;
 	GtkWidget		*grid_details_kudo;
 	GtkWidget		*image_details_kudo_docs;
-	GtkWidget		*image_details_kudo_sandboxed;
 	GtkWidget		*image_details_kudo_integration;
 	GtkWidget		*image_details_kudo_translated;
 	GtkWidget		*image_details_kudo_updated;
 	GtkWidget		*label_details_kudo_docs;
-	GtkWidget		*label_details_kudo_sandboxed;
 	GtkWidget		*label_details_kudo_integration;
 	GtkWidget		*label_details_kudo_translated;
 	GtkWidget		*label_details_kudo_updated;
@@ -1115,11 +1113,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
 	gs_details_page_set_sensitive (self->label_details_kudo_docs, ret);
-
-	/* set sandboxed kudo */
-	ret = (kudos & GS_APP_KUDO_SANDBOXED) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_sandboxed, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_sandboxed, ret);
 
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
@@ -2315,12 +2308,10 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, grid_details_kudo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_sandboxed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_sandboxed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_updated);
