@@ -819,45 +819,6 @@
                                     <property name="top_attach">10</property>
                                   </packing>
                                 </child>
-
-                                <child>
-                                  <object class="GtkLabel" id="label_details_permissions_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Permissions</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">11</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="button_details_permissions_value">
-                                    <property name="visible">True</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="label">Details</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="halign">start</property>
-                                    <style>
-                                      <class name="content-rating"/>
-                                    </style>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_permissions_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">11</property>
-                                  </packing>
-                                </child>
-
                                 <child>
                                   <object class="GtkLabel" id="label_details_updated_title">
                                     <property name="visible">True</property>
@@ -1362,35 +1323,6 @@
           <object class="GtkLabel" id="label_content_rating_none">
             <property name="visible">True</property>
             <property name="label" translatable="yes">No details were available for this rating.</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="popover_permissions">
-    <property name="visible">False</property>
-    <property name="border_width">21</property>
-    <property name="relative_to">button_details_permissions_value</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">18</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">center</property>
-            <property name="label" translatable="yes">Permissions</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_permissions_details">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">12</property>
           </object>
         </child>
       </object>
