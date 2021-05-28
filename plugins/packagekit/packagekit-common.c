@@ -484,7 +484,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	 * repository, on the order of 400 or 700 apps */
 	source_ids = gs_app_get_source_ids (app);
 	for (j = 0; j < source_ids->len; j++) {
-		#if HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
+		#ifdef HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
 		guint64 download_sz;
 		#endif
 		package_id = g_ptr_array_index (source_ids, j);
