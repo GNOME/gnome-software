@@ -126,10 +126,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_channel_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
-	GtkWidget		*label_details_size_installed_title;
-	GtkWidget		*label_details_size_installed_value;
-	GtkWidget		*label_details_size_download_title;
-	GtkWidget		*label_details_size_download_value;
 	GtkWidget		*label_details_updated_title;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_permissions_title;
@@ -631,36 +627,6 @@ gs_details_page_history_cb (GtkLabel *label,
 				  G_CALLBACK (gtk_widget_destroy), dialog);
 
 	return TRUE;
-}
-
-static void
-gs_details_page_refresh_size (GsDetailsPage *self)
-{
-	/* set the installed size */
-	if (gs_app_get_size_installed (self->app) != GS_APP_SIZE_UNKNOWABLE &&
-	    gs_app_get_size_installed (self->app) != 0) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_installed (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_installed_value), size);
-		gtk_widget_show (self->label_details_size_installed_title);
-		gtk_widget_show (self->label_details_size_installed_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_installed_title);
-		gtk_widget_hide (self->label_details_size_installed_value);
-	}
-
-	/* set the download size */
-	if (!gs_app_is_installed (self->app) &&
-	    gs_app_get_size_download (self->app) != GS_APP_SIZE_UNKNOWABLE) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_download (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
-		gtk_widget_show (self->label_details_size_download_title);
-		gtk_widget_show (self->label_details_size_download_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_download_title);
-		gtk_widget_hide (self->label_details_size_download_value);
-	}
 }
 
 static gboolean
@@ -1226,9 +1192,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
 
-	/* refresh size information */
-	gs_details_page_refresh_size (self);
-
 	/* set the updated date */
 	updated = gs_app_get_install_date (self->app);
 	if (updated == GS_APP_INSTALL_DATE_UNSET) {
@@ -1719,7 +1682,6 @@ gs_details_page_app_refine_cb (GObject *source,
 			   error->message);
 		return;
 	}
-	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_addons (self);
 }
@@ -2916,10 +2878,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
