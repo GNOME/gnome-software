@@ -461,6 +461,36 @@ _ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin
 	return gs_plugin_flatpak_find_app_by_ref (plugin, ref, NULL, NULL);
 }
 
+static void
+_group_apps_by_installation_recurse (GsPlugin *plugin,
+				     GsAppList *list,
+				     GHashTable *applist_by_flatpaks)
+{
+	if (!list)
+		return;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+		if (flatpak != NULL) {
+			GsAppList *list_tmp = g_hash_table_lookup (applist_by_flatpaks, flatpak);
+			GsAppList *related_list;
+			if (list_tmp == NULL) {
+				list_tmp = gs_app_list_new ();
+				g_hash_table_insert (applist_by_flatpaks,
+						     g_object_ref (flatpak),
+						     list_tmp);
+			}
+			gs_app_list_add (list_tmp, app);
+
+			/* Add also related apps, which can be those recognized for update,
+			   while the 'app' is already up to date. */
+			related_list = gs_app_get_related (app);
+			_group_apps_by_installation_recurse (plugin, related_list, applist_by_flatpaks);
+		}
+	}
+}
+
 /*
  * Returns: (transfer full) (element-type GsFlatpak GsAppList):
  *  a map from GsFlatpak to non-empty lists of apps from @list associated
@@ -478,20 +508,7 @@ _group_apps_by_installation (GsPlugin *plugin,
 						     (GDestroyNotify) g_object_unref);
 
 	/* put each app into the correct per-GsFlatpak list */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-		if (flatpak != NULL) {
-			GsAppList *list_tmp = g_hash_table_lookup (applist_by_flatpaks, flatpak);
-			if (list_tmp == NULL) {
-				list_tmp = gs_app_list_new ();
-				g_hash_table_insert (applist_by_flatpaks,
-						     g_object_ref (flatpak),
-						     list_tmp);
-			}
-			gs_app_list_add (list_tmp, app);
-		}
-	}
+	_group_apps_by_installation_recurse (plugin, list, applist_by_flatpaks);
 
 	return g_steal_pointer (&applist_by_flatpaks);
 }
@@ -1175,6 +1192,12 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		remove_schedule_entry (schedule_entry_handle);
 		return FALSE;
+	} else {
+		/* Reset the state to have it updated */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		}
 	}
 
 	remove_schedule_entry (schedule_entry_handle);
