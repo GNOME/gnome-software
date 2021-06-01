@@ -51,6 +51,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 
 	widget = gtk_label_new (gs_app_get_name (app));
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
+	gtk_widget_set_tooltip_text (widget, gs_app_get_name (app));
 	gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
 	gtk_container_add (GTK_CONTAINER (box), widget);
 
