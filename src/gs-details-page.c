@@ -1968,13 +1968,19 @@ gs_details_page_file_to_app_cb (GObject *source,
 	}
 }
 
+typedef struct _UrlToAppHelper {
+	GsDetailsPage *self;
+	gchar *url;
+} UrlToAppHelper;
+
 static void
 gs_details_page_url_to_app_cb (GObject *source,
                                GAsyncResult *res,
                                gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	UrlToAppHelper *helper = user_data;
+	GsDetailsPage *self = helper->self;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -1982,14 +1988,38 @@ gs_details_page_url_to_app_cb (GObject *source,
 						    res,
 						    &error);
 	if (list == NULL) {
-		g_warning ("failed to convert URL to GsApp: %s", error->message);
-		/* go back to the overview */
-		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+		g_autofree gchar *scheme = NULL;
+
+		g_debug ("failed to convert URL to GsApp: %s", error->message);
+
+		scheme = gs_utils_get_url_scheme (helper->url);
+		if (g_strcmp0 (scheme, "appstream") == 0) {
+			g_autofree gchar *path = gs_utils_get_url_path (helper->url);
+			gs_shell_show_search_result (self->shell, path, path);
+		} else {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			/* create event which is handled by the GsShell */
+			event = gs_plugin_event_new ();
+			gs_plugin_event_set_error (event, error);
+			gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_URL_TO_APP);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+
+			/* add event to queue */
+			gs_plugin_loader_add_event (plugin_loader, event);
+
+			/* go back to the overview */
+			gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+		}
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		_set_app (self, app);
 		gs_details_page_load_stage2 (self);
 	}
+
+	g_free (helper->url);
+	g_slice_free (UrlToAppHelper, helper);
 }
 
 void
@@ -2013,18 +2043,23 @@ void
 gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	UrlToAppHelper *helper;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
+	helper = g_slice_new (UrlToAppHelper);
+	helper->self = self;
+	helper->url = g_strdup (url);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS |
 							 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+					 "propagate-error", TRUE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_url_to_app_cb,
-					    self);
+					    helper);
 }
 
 /* refines a GsApp */
