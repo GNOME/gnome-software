@@ -151,13 +151,6 @@ check_if_timestamp_more_than_days_ago (GsUpdateMonitor *monitor, const gchar *ti
 }
 
 static gboolean
-no_notification_for_days (GsUpdateMonitor *monitor,
-			  guint days)
-{
-	return check_if_timestamp_more_than_days_ago (monitor, "update-notification-timestamp", days);
-}
-
-static gboolean
 should_download_updates (GsUpdateMonitor *monitor)
 {
 #ifdef HAVE_MOGWAI
@@ -521,7 +514,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	if (should_download &&
 	    (security_timestamp_old != security_timestamp ||
-	    no_notification_for_days (monitor, 14))) {
+	    check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14))) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
 		/* download any updates; individual plugins are responsible for deciding
