@@ -1028,8 +1028,19 @@ populate_permission_details (GsDetailsPage *self, GsAppPermissions permissions)
 		gtk_widget_show (label);
 		gtk_container_add (GTK_CONTAINER (self->box_permissions_details), label);
 	} else {
-		for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-			GtkWidget *row, *image, *box, *label;
+		gboolean with_icons = FALSE;
+		gsize i;
+
+		for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
+			if ((permissions & permission_display_data[i].permission) != 0 &&
+			    (permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
+				with_icons = TRUE;
+				break;
+			}
+		}
+
+		for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
+			GtkWidget *row, *box, *label;
 
 			if ((permissions & permission_display_data[i].permission) == 0)
 				continue;
@@ -1037,12 +1048,16 @@ populate_permission_details (GsDetailsPage *self, GsAppPermissions permissions)
 			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
 			gtk_widget_show (row);
 
-			image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
-			if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
-				gtk_widget_set_opacity (image, 0);
+			if (with_icons) {
+				GtkWidget *image;
 
-			gtk_widget_show (image);
-			gtk_container_add (GTK_CONTAINER (row), image);
+				image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
+				if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
+					gtk_widget_set_opacity (image, 0);
+
+				gtk_widget_show (image);
+				gtk_container_add (GTK_CONTAINER (row), image);
+			}
 
 			box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 			gtk_widget_show (box);
