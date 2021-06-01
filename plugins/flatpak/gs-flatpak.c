@@ -1686,6 +1686,8 @@ get_real_app_for_update (GsFlatpak *self,
 			 "setting the latter's state instead.", gs_app_get_unique_id (app),
 			 gs_app_get_unique_id (main_app));
 		gs_app_set_state (main_app, GS_APP_STATE_UPDATABLE_LIVE);
+		/* Make sure the 'app' is not forgotten, it'll be added into the transaction later */
+		gs_app_add_related (main_app, app);
 	}
 
 	return main_app;
