@@ -316,7 +316,7 @@ gs_plugin_loader_notify_idle_cb (gpointer user_data)
 	return FALSE;
 }
 
-static void
+void
 gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->events_by_id_mutex);
@@ -398,6 +398,11 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 			    gs_plugin_get_name (plugin),
 			    helper->function_name);
 		return TRUE;
+	}
+
+	if (gs_plugin_job_get_propagate_error (helper->plugin_job)) {
+		g_propagate_error (error, g_error_copy (error_local));
+		return FALSE;
 	}
 
 	/* this is only ever informational */
@@ -3419,13 +3424,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		if (gs_app_list_length (list) == 0) {
 			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
 			g_autoptr(GError) error_local = NULL;
-			g_autoptr(GsPluginEvent) event = NULL;
 			g_set_error (&error_local,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no application was created for %s", str);
-			event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
-			gs_plugin_loader_add_event (plugin_loader, event);
+			if (!gs_plugin_job_get_propagate_error (helper->plugin_job)) {
+				g_autoptr(GsPluginEvent) event = NULL;
+				event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
+				gs_plugin_loader_add_event (plugin_loader, event);
+			}
 			g_task_return_error (task, g_steal_pointer (&error_local));
 			return;
 		}
