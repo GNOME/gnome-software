@@ -268,7 +268,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 		if (key_colors != tile->key_colors_cache) {
 			g_autoptr(GArray) colors = NULL;
 			GdkRGBA fg_rgba;
-			gboolean fg_rgba_valid;
 			GsHSBC fg_hsbc;
 
 			/* Look up the foreground colour for the feature tile,
@@ -283,8 +282,17 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * @min_abs_contrast contrast with the foreground, so
 			 * that the text is legible.
 			 */
-			fg_rgba_valid = gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba);
-			g_assert (fg_rgba_valid);
+			if (!gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba)) {
+				static gboolean i_know = FALSE;
+				if (!i_know) {
+					i_know = TRUE;
+					g_warning ("The theme doesn't provide 'theme_fg_color', fallbacking to black");
+				}
+				fg_rgba.red = 0.0;
+				fg_rgba.green = 0.0;
+				fg_rgba.blue = 0.0;
+				fg_rgba.alpha = 1.0;
+			}
 
 			gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
 					&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
