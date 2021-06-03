@@ -12,9 +12,9 @@
  * @stability: Stable
  * @short_description: Show description text in a way that can show more/less lines
  *
- * Show a description in an expandable form with "Read More" button when
+ * Show a description in an expandable form with "Show More" button when
  * there are too many lines to be shown. The button is hidden when
- * the description is short enough. The button changes to "Read Less"
+ * the description is short enough. The button changes to "Show Less"
  * to be able to collapse it.
  */
 
@@ -61,7 +61,7 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	box->last_width = allocation.width;
 	box->last_height = allocation.height;
 
-	gtk_button_set_label (box->button, box->is_collapsed ? _("_Read More") : _("_Read Less"));
+	gtk_button_set_label (box->button, box->is_collapsed ? _("_Show More") : _("_Show Less"));
 
 	gtk_label_set_text (box->label, box->text);
 	gtk_label_set_lines (box->label, -1);
@@ -164,7 +164,7 @@ gs_description_box_init (GsDescriptionBox *box)
 
 	box->label = GTK_LABEL (widget);
 
-	widget = gtk_button_new_with_mnemonic (_("_Read More"));
+	widget = gtk_button_new_with_mnemonic (_("_Show More"));
 
 	g_object_set (G_OBJECT (widget),
 		"hexpand", FALSE,
