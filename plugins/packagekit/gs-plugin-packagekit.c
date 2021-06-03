@@ -419,11 +419,23 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 error);
 		g_mutex_unlock (&priv->task_mutex);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
+			for (i = 0; i < gs_app_list_length (addons); i++) {
+				GsApp *addon = gs_app_list_index (addons, i);
+				if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
+					gs_app_set_state_recover (addon);
+			}
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 
 		/* state is known */
+		for (i = 0; i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
+			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING) {
+				gs_app_set_state (addon, GS_APP_STATE_INSTALLED);
+				gs_app_clear_source_ids (addon);
+			}
+		}
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 		break;
@@ -587,8 +599,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	addons = gs_app_get_addons (app);
 	for (i = 0; i < gs_app_list_length (addons); i++) {
 		GsApp *addon = gs_app_list_index (addons, i);
-		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED)
+		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
 			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
+			gs_app_clear_source_ids (addon);
+		}
 	}
 
 	/* state is not known: we don't know if we can re-install this app */

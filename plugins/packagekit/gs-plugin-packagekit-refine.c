@@ -59,8 +59,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
+	/* appstream can set "installed" state, which might not be accurate */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
 	/* need pkgname and ID */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
