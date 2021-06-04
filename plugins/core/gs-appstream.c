@@ -1008,12 +1008,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
-	/* set origin for flatpaks */
-	if (gs_app_get_origin (app) == NULL &&
-	    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
-		g_autoptr(XbNode) parent = xb_node_get_parent (component);
-		if (parent != NULL) {
-			tmp = xb_node_get_attr (parent, "origin");
+	/* set origin */
+	tmp = xb_node_query_attr (component, "..", "origin", NULL);
+	if (gs_appstream_origin_valid (tmp)) {
+		gs_app_set_origin_appstream (app, tmp);
+
+		if (gs_app_get_origin (app) == NULL && (
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK ||
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE)) {
 			gs_app_set_origin (app, tmp);
 		}
 	}
@@ -1469,8 +1471,13 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 	for (guint i = 0; i < ids->len; i++) {
 		XbNode *n = g_ptr_array_index (ids, i);
 		g_autoptr(GsApp) app2 = NULL;
+		const gchar *tmp;
 		app2 = gs_app_new (xb_node_get_text (n));
 		gs_app_add_quirk (app2, GS_APP_QUIRK_IS_WILDCARD);
+
+		tmp = xb_node_query_attr (n, "../..", "origin", NULL);
+		if (gs_appstream_origin_valid (tmp))
+			gs_app_set_origin_appstream (app2, tmp);
 		gs_app_list_add (list, app2);
 	}
 	return TRUE;

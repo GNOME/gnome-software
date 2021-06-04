@@ -96,6 +96,12 @@ void		 gs_utils_set_online_updates_timestamp (GSettings *settings);
 
 gchar		*gs_utils_unique_id_compat_convert	(const gchar	*data_id);
 
+gchar		*gs_utils_build_unique_id	(AsComponentScope scope,
+						 AsBundleKind bundle_kind,
+						 const gchar *origin,
+						 const gchar *cid,
+						 const gchar *branch);
+
 void		 gs_utils_pixbuf_blur		(GdkPixbuf	*src,
 						 guint		radius,
 						 guint		iterations);

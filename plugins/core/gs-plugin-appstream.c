@@ -809,7 +809,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *id;
+	const gchar *id, *origin;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
@@ -822,9 +822,16 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
+	origin = gs_app_get_origin_appstream (app);
+
 	/* look in AppStream then fall back to AppData */
-	xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
-	xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
+	if (origin && *origin) {
+		xb_string_append_union (xpath, "components[@origin='%s']/component/id[text()='%s']/../pkgname/..", origin, id);
+		xb_string_append_union (xpath, "components[@origin='%s']/component[@type='webapp']/id[text()='%s']/..", origin, id);
+	} else {
+		xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
+		xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
+	}
 	xb_string_append_union (xpath, "component/id[text()='%s']/..", id);
 	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
 	if (components == NULL) {

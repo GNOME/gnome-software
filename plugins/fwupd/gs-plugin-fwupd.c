@@ -285,11 +285,11 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 		return NULL;
 
 	/* get from cache */
-	id = as_utils_build_data_id (AS_COMPONENT_SCOPE_SYSTEM,
-				     AS_BUNDLE_KIND_UNKNOWN,
-				     NULL, /* origin */
-				     fwupd_release_get_appstream_id (rel),
-				     NULL);
+	id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_SYSTEM,
+				       AS_BUNDLE_KIND_UNKNOWN,
+				       NULL, /* origin */
+				       fwupd_release_get_appstream_id (rel),
+				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
 		app = gs_app_new (id);
