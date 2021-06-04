@@ -46,6 +46,35 @@
    Validate with `appstreamcli validate *.appdata.xml`
   -->
   <releases>
+    <release date="2021-06-04" version="40.2">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Avoid spurious polkit prompts by the PackageKit plugin for background operations</li>
+          <li>Handle NULL OS name or version</li>
+          <li>Fix a crash related to version history gathering</li>
+          <li>Fix a crash when a Flatpak component had been renamed</li>
+          <li>Improve error reporting when low on disk space for Flatpak</li>
+          <li>Fix a deadlock after Flatpak changes from the command line</li>
+          <li>Fix list of alternative application sources to not show duplicates</li>
+          <li>Fix application icon loading for already cached icons</li>
+          <li>Fix crash loading empty DEP-11 data</li>
+          <li>Fix update of related Flatpak runtimes</li>
+          <li>Fix automatic download of pending updates</li>
+          <li>Consider only critical updates as important</li>
+        </ul>
+        <p>Translation updates:</p>
+        <ul>
+          <li>Basque</li>
+          <li>Bokmål, Norwegian</li>
+          <li>Catalan</li>
+          <li>Friulian</li>
+          <li>Occitan (post 1500)</li>
+        </ul>
+      </description>
+    </release>
     <release date="2021-04-30" version="40.1">
       <description>
         <p>

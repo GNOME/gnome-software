@@ -1,3 +1,28 @@
+Version 40.2
+~~~~~~~~~~~~
+Released: 2021-06-04
+
+This is a stable release with the following changes:
+ * Avoid spurious polkit prompts by the PackageKit plugin for background operations
+ * Handle NULL OS name or version
+ * Fix a crash related to version history gathering
+ * Fix a crash when a Flatpak component had been renamed
+ * Improve error reporting when low on disk space for Flatpak
+ * Fix a deadlock after Flatpak changes from the command line
+ * Fix list of alternative application sources to not show duplicates
+ * Fix application icon loading for already cached icons
+ * Fix crash loading empty DEP-11 data
+ * Fix update of related Flatpak runtimes
+ * Fix automatic download of pending updates
+ * Consider only critical updates as important
+
+Translation updates:
+ * Basque
+ * Bokmål, Norwegian
+ * Catalan
+ * Friulian
+ * Occitan (post 1500)
+
 Version 40.1
 ~~~~~~~~~~~~
 Released: 2021-04-30
