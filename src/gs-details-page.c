@@ -500,11 +500,12 @@ gs_details_page_switch_to_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
-	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
+	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
 		gs_page_switch_to (GS_PAGE (self), TRUE);
 
-	/* update widgets */
-	gs_details_page_refresh_all (self);
+		/* update widgets */
+		gs_details_page_refresh_all (self);
+	}
 
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -2227,7 +2228,7 @@ static void
 gs_details_page_reload (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	if (self->app != NULL)
+	if (self->app != NULL && gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
 		gs_details_page_load_stage1 (self);
 }
 
