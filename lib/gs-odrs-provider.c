@@ -1599,7 +1599,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 
 	/* look at all the reviews; faking application objects */
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
-				      g_free, (GDestroyNotify) g_object_unref);
+				      g_free, g_object_unref);
 	for (i = 0; i < reviews->len; i++) {
 		GsApp *app;
 		AsReview *review;
