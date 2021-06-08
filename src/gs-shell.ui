@@ -32,350 +32,86 @@
         <property name="visible">True</property>
         <property name="transition-type">crossfade</property>
         <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <child>
-          <object class="HdyLeaflet" id="header_leaflet">
+          <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">horizontal</property>
-            <property name="visible-child">main_header</property>
-            <property name="mode-transition-duration" bind-source="main_leaflet" bind-property="mode-transition-duration" bind-flags="bidirectional|sync-create"/>
-            <property name="child-transition-duration" bind-source="main_leaflet" bind-property="child-transition-duration" bind-flags="bidirectional|sync-create"/>
-            <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
+            <property name="orientation">vertical</property>
             <child>
-              <object class="HdyHeaderBar" id="sidebar_header">
-                <property name="visible" bind-source="sidebar_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
-                <property name="can-focus">False</property>
-                <property name="show-close-button">True</property>
-                <property name="title" translatable="yes">Software</property>
-                <child>
-                  <object class="GtkToggleButton" id="search_button_sidebar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
-                    <signal name="clicked" handler="search_button_clicked_cb"/>
-                    <child internal-child="accessible">
-                      <object class="AtkObject">
-                        <property name="accessible-name" translatable="yes">Search</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="visible">True</property>
-                        <property name="icon_name">edit-find-symbolic</property>
-                        <property name="icon_size">1</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">start</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="menu_button_sidebar">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="sensitive">True</property>
-                    <property name="menu_model">primary_menu</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject">
-                        <property name="accessible-name" translatable="yes">Primary Menu</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="visible">True</property>
-                        <property name="icon_name">open-menu-symbolic</property>
-                        <property name="icon_size">1</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">end</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="header_separator">
-                <property name="visible" bind-source="sidebar_header" bind-property="visible" bind-flags="sync-create" />
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <style>
-                  <class name="sidebar"/>
-                </style>
-              </object>
-              <packing>
-                <property name="navigatable">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="HdyHeaderBar" id="main_header">
+              <object class="HdyLeaflet" id="header_leaflet">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="hexpand">True</property>
-                <property name="show-close-button">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="visible-child">main_header</property>
+                <property name="mode-transition-duration" bind-source="main_leaflet" bind-property="mode-transition-duration" bind-flags="bidirectional|sync-create"/>
+                <property name="child-transition-duration" bind-source="main_leaflet" bind-property="child-transition-duration" bind-flags="bidirectional|sync-create"/>
+                <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
                 <child>
-                  <object class="GtkButton" id="button_back">
-                    <property name="visible">False</property>
-                    <property name="can_focus">True</property>
-                    <signal name="clicked" handler="gs_shell_back_button_cb"/>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="button_back_accessible">
-                        <property name="accessible-name" translatable="yes">Go back</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
+                  <object class="HdyHeaderBar" id="sidebar_header">
+                    <property name="visible" bind-source="sidebar_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                    <property name="can-focus">False</property>
+                    <property name="show-close-button">True</property>
+                    <property name="title" translatable="yes">Software</property>
                     <child>
-                      <object class="GtkImage" id="back_image">
+                      <object class="GtkToggleButton" id="search_button_sidebar">
                         <property name="visible">True</property>
-                        <property name="icon_name">go-previous-symbolic</property>
-                        <property name="icon_size">1</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="search_button_main">
-                    <property name="visible">False</property>
-                    <property name="can_focus">True</property>
-                    <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
-                    <signal name="clicked" handler="search_button_clicked_cb"/>
-                    <child internal-child="accessible">
-                      <object class="AtkObject">
-                        <property name="accessible-name" translatable="yes">Search</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="visible">True</property>
-                        <property name="icon_name">edit-find-symbolic</property>
-                        <property name="icon_size">1</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">start</property>
-                  </packing>
-                </child>
-                <child type="title">
-                  <object class="GtkLabel" id="application_details_header">
-                    <property name="visible">True</property>
-                    <property name="selectable">False</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="title"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="menu_button_main">
-                    <property name="visible">False</property>
-                    <property name="can_focus">True</property>
-                    <property name="sensitive">True</property>
-                    <property name="menu_model">primary_menu</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject">
-                        <property name="accessible-name" translatable="yes">Primary Menu</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="visible">True</property>
-                        <property name="icon_name">open-menu-symbolic</property>
-                        <property name="icon_size">1</property>
-                      </object>
-                    </child>
-                    <style>
-                      <class name="image-button"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">end</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-
-        <child>
-          <object class="GtkOverlay" id="overlay">
-            <property name="visible">True</property>
-            <property name="halign">fill</property>
-            <property name="valign">fill</property>
-            <property name="vexpand">True</property>
-            <child type="overlay">
-              <object class="GtkRevealer" id="notification_event">
-                <property name="visible">True</property>
-                <property name="halign">GTK_ALIGN_CENTER</property>
-                <property name="valign">GTK_ALIGN_START</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="orientation">horizontal</property>
-                    <property name="spacing">6</property>
-                    <property name="visible">True</property>
-                    <style>
-                      <class name="app-notification"/>
-                    </style>
-                    <child>
-                      <object class="GtkLabel" id="label_events">
-                        <property name="visible">True</property>
-                        <property name="halign">start</property>
-                        <property name="label">Some Title</property>
-                        <property name="wrap">True</property>
-                        <property name="wrap_mode">word-char</property>
-                        <property name="max_width_chars">60</property>
-                        <property name="margin_start">9</property>
-                        <property name="margin_end">9</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButtonBox">
-                        <property name="layout_style">end</property>
-                        <property name="visible">True</property>
-                        <child>
-                          <object class="GtkButton" id="button_events_sources">
-                            <property name="visible">False</property>
-                            <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
+                        <property name="can_focus">True</property>
+                        <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
+                        <signal name="clicked" handler="search_button_clicked_cb"/>
+                        <child internal-child="accessible">
+                          <object class="AtkObject">
+                            <property name="accessible-name" translatable="yes">Search</property>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkButton" id="button_events_no_space">
-                            <property name="visible">False</property>
-                            <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="button_events_network_settings">
-                            <property name="visible">False</property>
-                            <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="button_events_restart_required">
-                            <property name="visible">False</property>
-                            <property name="label" translatable="yes" comments="button in the info bar">Restart Now</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="button_events_more_info">
-                            <property name="visible">False</property>
-                            <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_events_dismiss">
-                        <property name="visible">True</property>
-                        <property name="valign">start</property>
-                        <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
                         <style>
-                          <class name="flat"/>
+                          <class name="image-button"/>
                         </style>
                         <child>
                           <object class="GtkImage">
                             <property name="visible">True</property>
-                            <property name="icon_name">window-close-symbolic</property>
+                            <property name="icon_name">edit-find-symbolic</property>
+                            <property name="icon_size">1</property>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-
-            <child>
-              <object class="HdyLeaflet" id="main_leaflet">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="visible-child">main_box</property>
-                <property name="transition-type">slide</property>
-                <signal name="notify::folded" handler="main_leaflet_notify_folded_cb"/>
-
-                <child>
-                  <object class="GtkBox" id="sidebar_box">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="hexpand">False</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkScrolledWindow">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="vexpand">True</property>
-                        <property name="width-request">200</property>
-                        <property name="hscrollbar_policy">never</property>
                         <style>
-                          <class name="view"/>
+                          <class name="image-button"/>
                         </style>
-                        <child>
-                          <object class="GsSidebar" id="sidebar">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="stack">stack_main</property>
-                            <signal name="category-selected" handler="sidebar_category_selected_cb"/>
-                            <child internal-child="accessible">
-                              <object class="AtkObject">
-                                <property name="accessible-description" translatable="yes">Navigation sidebar</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="pack-type">start</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkMenuButton" id="menu_button_sidebar">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="sensitive">True</property>
+                        <property name="menu_model">primary_menu</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject">
+                            <property name="accessible-name" translatable="yes">Primary Menu</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon_name">open-menu-symbolic</property>
+                            <property name="icon_size">1</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="pack-type">end</property>
                       </packing>
                     </child>
                   </object>
                 </child>
-
                 <child>
-                  <object class="GtkSeparator" id="panel_separator">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                  <object class="GtkSeparator" id="header_separator">
+                    <property name="visible" bind-source="sidebar_header" bind-property="visible" bind-flags="sync-create" />
+                    <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <style>
                       <class name="sidebar"/>
@@ -385,185 +121,449 @@
                     <property name="navigatable">False</property>
                   </packing>
                 </child>
-
                 <child>
-                  <object class="GtkBox" id="main_box">
+                  <object class="HdyHeaderBar" id="main_header">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="show-close-button">True</property>
                     <child>
-                      <object class="GtkSearchBar" id="search_bar">
-                        <property name="visible">True</property>
+                      <object class="GtkButton" id="button_back">
+                        <property name="visible">False</property>
+                        <property name="can_focus">True</property>
+                        <signal name="clicked" handler="gs_shell_back_button_cb"/>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="button_back_accessible">
+                            <property name="accessible-name" translatable="yes">Go back</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
                         <child>
-                          <object class="GtkSearchEntry" id="entry_search">
+                          <object class="GtkImage" id="back_image">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="activates_default">True</property>
-                            <property name="width_request">500</property>
-                            <property name="max_length">100</property>
-                            <property name="hexpand">True</property>
-                            <property name="halign">center</property>
-                            <signal name="search-changed" handler="search_changed_handler"/>
+                            <property name="icon_name">go-previous-symbolic</property>
+                            <property name="icon_size">1</property>
                           </object>
                         </child>
                       </object>
                     </child>
-
                     <child>
-                      <object class="GtkInfoBar" id="metered_updates_bar">
+                      <object class="GtkToggleButton" id="search_button_main">
+                        <property name="visible">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
+                        <signal name="clicked" handler="search_button_clicked_cb"/>
+                        <child internal-child="accessible">
+                          <object class="AtkObject">
+                            <property name="accessible-name" translatable="yes">Search</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon_name">edit-find-symbolic</property>
+                            <property name="icon_size">1</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="pack-type">start</property>
+                      </packing>
+                    </child>
+                    <child type="title">
+                      <object class="GtkLabel" id="application_details_header">
                         <property name="visible">True</property>
+                        <property name="selectable">False</property>
+                        <property name="ellipsize">end</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuButton" id="menu_button_main">
+                        <property name="visible">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="sensitive">True</property>
+                        <property name="menu_model">primary_menu</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject">
+                            <property name="accessible-name" translatable="yes">Primary Menu</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon_name">open-menu-symbolic</property>
+                            <property name="icon_size">1</property>
+                          </object>
+                        </child>
+                        <style>
+                          <class name="image-button"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="pack-type">end</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkOverlay" id="overlay">
+                <property name="visible">True</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="vexpand">True</property>
+                <child type="overlay">
+                  <object class="GtkRevealer" id="notification_event">
+                    <property name="visible">True</property>
+                    <property name="halign">GTK_ALIGN_CENTER</property>
+                    <property name="valign">GTK_ALIGN_START</property>
+                    <child>
+                      <object class="GtkBox">
                         <property name="orientation">horizontal</property>
-                        <property name="spacing">12</property>
-                        <property name="message-type">GTK_MESSAGE_INFO</property>
-                        <property name="show-close-button">False</property>
-                        <property name="revealed">False</property>
-                        <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
-                        <child internal-child="content_area">
-                          <object class="GtkBox">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">6</property>
-                            <property name="margin_top">6</property>
-                            <property name="margin_left">6</property>
-                            <property name="margin_bottom">6</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Automatic Updates Paused</property>
-                                <property name="xalign">0.0</property>
-                                <attributes>
-                                  <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
-                                </attributes>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child internal-child="action_area">
-                          <object class="GtkButtonBox">
-                            <property name="visible">True</property>
-                            <property name="margin_right">6</property>
-                            <child>
-                              <object class="GtkButton" id="metered_updates_button">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="can_default">True</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes">Find Out _More</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <action-widgets>
-                          <action-widget response="GTK_RESPONSE_OK">metered_updates_button</action-widget>
-                        </action-widgets>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GtkStack" id="stack_main">
+                        <property name="spacing">6</property>
                         <property name="visible">True</property>
-                        <property name="homogeneous">False</property>
-                        <property name="transition-type">crossfade</property>
-                        <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                        <style>
+                          <class name="app-notification"/>
+                        </style>
                         <child>
-                          <object class="GsOverviewPage" id="overview_page">
+                          <object class="GtkLabel" id="label_events">
                             <property name="visible">True</property>
+                            <property name="halign">start</property>
+                            <property name="label">Some Title</property>
+                            <property name="wrap">True</property>
+                            <property name="wrap_mode">word-char</property>
+                            <property name="max_width_chars">60</property>
+                            <property name="margin_start">9</property>
+                            <property name="margin_end">9</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
                           </object>
-                          <packing>
-                            <property name="name">overview</property>
-                            <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">Explore</property>
-                            <property name="icon-name">non-starred-symbolic</property>
-                          </packing>
                         </child>
                         <child>
-                          <object class="GsInstalledPage" id="installed_page">
+                          <object class="GtkButtonBox">
+                            <property name="layout_style">end</property>
                             <property name="visible">True</property>
+                            <child>
+                              <object class="GtkButton" id="button_events_sources">
+                                <property name="visible">False</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_events_no_space">
+                                <property name="visible">False</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_events_network_settings">
+                                <property name="visible">False</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_events_restart_required">
+                                <property name="visible">False</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">Restart Now</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_events_more_info">
+                                <property name="visible">False</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
+                              </object>
+                            </child>
                           </object>
-                          <packing>
-                            <property name="name">installed</property>
-                            <!-- FIXME: Add mnemonics support when it’s supported in GTK (same for the other pages).
-                                 See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
-                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">Installed</property>
-                            <property name="icon-name">view-list-symbolic</property>
-                          </packing>
                         </child>
                         <child>
-                          <object class="GsModeratePage" id="moderate_page">
+                          <object class="GtkButton" id="button_events_dismiss">
                             <property name="visible">True</property>
+                            <property name="valign">start</property>
+                            <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
+                            <style>
+                              <class name="flat"/>
+                            </style>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="icon_name">window-close-symbolic</property>
+                              </object>
+                            </child>
                           </object>
-                          <packing>
-                            <property name="name">moderate</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GsSearchPage" id="search_page">
-                            <property name="visible">True</property>
-                          </object>
-                          <packing>
-                            <property name="name">search</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GsUpdatesPage" id="updates_page">
-                            <property name="visible">True</property>
-                            <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
-                          </object>
-                          <packing>
-                            <property name="name">updates</property>
-                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">Updates</property>
-                            <property name="icon-name">view-refresh-symbolic</property>
-                          </packing>
-                        </child>
-
-                        <child>
-                          <object class="GsDetailsPage" id="details_page">
-                            <property name="visible">True</property>
-                          </object>
-                          <packing>
-                            <property name="name">details</property>
-                          </packing>
-                        </child>
-
-                        <child>
-                          <object class="GsCategoryPage" id="category_page">
-                            <property name="visible">True</property>
-                            <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
-                          </object>
-                          <packing>
-                            <property name="name">category</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GsExtrasPage" id="extras_page">
-                            <property name="visible">True</property>
-                          </object>
-                          <packing>
-                            <property name="name">extras</property>
-                          </packing>
                         </child>
                       </object>
                     </child>
                   </object>
                 </child>
 
+                <child>
+                  <object class="HdyLeaflet" id="main_leaflet">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="visible-child">main_box</property>
+                    <property name="transition-type">slide</property>
+                    <signal name="notify::folded" handler="main_leaflet_notify_folded_cb"/>
+
+                    <child>
+                      <object class="GtkBox" id="sidebar_box">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="hexpand">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="vexpand">True</property>
+                            <property name="width-request">200</property>
+                            <property name="hscrollbar_policy">never</property>
+                            <style>
+                              <class name="view"/>
+                            </style>
+                            <child>
+                              <object class="GsSidebar" id="sidebar">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="stack">stack_main</property>
+                                <signal name="category-selected" handler="sidebar_category_selected_cb"/>
+                                <child internal-child="accessible">
+                                  <object class="AtkObject">
+                                    <property name="accessible-description" translatable="yes">Navigation sidebar</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkSeparator" id="panel_separator">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <style>
+                          <class name="sidebar"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="navigatable">False</property>
+                      </packing>
+                    </child>
+
+                    <child>
+                      <object class="GtkBox" id="main_box">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+
+                        <child>
+                          <object class="GtkSearchBar" id="search_bar">
+                            <property name="visible">True</property>
+                            <child>
+                              <object class="GtkSearchEntry" id="entry_search">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="activates_default">True</property>
+                                <property name="width_request">500</property>
+                                <property name="max_length">100</property>
+                                <property name="hexpand">True</property>
+                                <property name="halign">center</property>
+                                <signal name="search-changed" handler="search_changed_handler"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkInfoBar" id="metered_updates_bar">
+                            <property name="visible">True</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">12</property>
+                            <property name="message-type">GTK_MESSAGE_INFO</property>
+                            <property name="show-close-button">False</property>
+                            <property name="revealed">False</property>
+                            <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
+                            <child internal-child="content_area">
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">6</property>
+                                <property name="margin_top">6</property>
+                                <property name="margin_left">6</property>
+                                <property name="margin_bottom">6</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Automatic Updates Paused</property>
+                                    <property name="xalign">0.0</property>
+                                    <attributes>
+                                      <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                                    </attributes>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child internal-child="action_area">
+                              <object class="GtkButtonBox">
+                                <property name="visible">True</property>
+                                <property name="margin_right">6</property>
+                                <child>
+                                  <object class="GtkButton" id="metered_updates_button">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="can_default">True</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="label" translatable="yes">Find Out _More</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <action-widgets>
+                              <action-widget response="GTK_RESPONSE_OK">metered_updates_button</action-widget>
+                            </action-widgets>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkStack" id="stack_main">
+                            <property name="visible">True</property>
+                            <property name="homogeneous">False</property>
+                            <property name="transition-type">crossfade</property>
+                            <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
+                            <child>
+                              <object class="GsOverviewPage" id="overview_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">overview</property>
+                                <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">Explore</property>
+                                <property name="icon-name">non-starred-symbolic</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GsInstalledPage" id="installed_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">installed</property>
+                                <!-- FIXME: Add mnemonics support when it’s supported in GTK (same for the other pages).
+                                     See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
+                                <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">Installed</property>
+                                <property name="icon-name">view-list-symbolic</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GsModeratePage" id="moderate_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">moderate</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GsSearchPage" id="search_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">search</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GsUpdatesPage" id="updates_page">
+                                <property name="visible">True</property>
+                                <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
+                              </object>
+                              <packing>
+                                <property name="name">updates</property>
+                                <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">Updates</property>
+                                <property name="icon-name">view-refresh-symbolic</property>
+                              </packing>
+                            </child>
+
+                            <child>
+                              <object class="GsDetailsPage" id="details_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">details</property>
+                              </packing>
+                            </child>
+
+                            <child>
+                              <object class="GsCategoryPage" id="category_page">
+                                <property name="visible">True</property>
+                                <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
+                              </object>
+                              <packing>
+                                <property name="name">category</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GsExtrasPage" id="extras_page">
+                                <property name="visible">True</property>
+                              </object>
+                              <packing>
+                                <property name="name">extras</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="HdyViewSwitcherBar" id="sidebar_switcher">
+                <property name="visible">True</property>
+                <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
+                <property name="can-focus">True</property>
+                <property name="stack">stack_main</property>
               </object>
             </child>
           </object>
+          <packing>
+            <property name="name">main</property>
+          </packing>
         </child>
-        <child>
-          <object class="HdyViewSwitcherBar" id="sidebar_switcher">
-            <property name="visible">True</property>
-            <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
-            <property name="can-focus">True</property>
-            <property name="stack">stack_main</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="name">main</property>
-      </packing>
-    </child>
         <child>
           <object class="GtkOverlay">
             <property name="visible">True</property>
