@@ -20,7 +20,7 @@ variables:
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v5
+  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v6
   stage: build
   except:
     - tags
@@ -48,7 +48,7 @@ fedora-x86_64:
 
 debian-stable-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v5
+  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v6
   stage: build
   except:
     - tags
