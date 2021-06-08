@@ -1649,7 +1649,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	/* find what the plugins support */
 	for (i = 0; i < G_N_ELEMENTS (all_actions); i++) {
 		if (self->odrs_provider != NULL) {
-			possible_actions |= 1u << all_actions[i];
+			possible_actions |= (1u << all_actions[i]);
 		}
 	}
 
@@ -1664,7 +1664,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_details_page_review_button_clicked_cb), self);
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
+			actions = possible_actions & (1 << GS_REVIEW_ACTION_REMOVE);
 			show_review_button = FALSE;
 		} else {
 			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
