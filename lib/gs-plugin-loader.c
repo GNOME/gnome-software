@@ -2864,9 +2864,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	guint i;
 	const gchar *review_server;
 	g_autofree gchar *user_hash = NULL;
-	const gchar *distro;
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
 	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
 	const guint odrs_review_n_results_max = 20;
 
@@ -2917,29 +2915,33 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		g_warning ("Failed to get machine+user hash: %s", local_error->message);
 		plugin_loader->odrs_provider = NULL;
 	} else {
-		/* get the distro name (e.g. 'Fedora') but allow a fallback */
-		os_release = gs_os_release_new (&local_error);
-		if (os_release != NULL) {
-			distro = gs_os_release_get_name (os_release);
-			if (distro == NULL)
-				g_warning ("no distro name specified");
-		} else {
-			g_warning ("failed to get distro name: %s", local_error->message);
-		}
-
-		/* Fallback */
-		if (distro == NULL)
-			distro = C_("Distribution name", "Unknown");
-
 		review_server = g_settings_get_string (plugin_loader->settings, "review-server");
 
-		if (review_server != NULL && *review_server != '\0')
+		if (review_server != NULL && *review_server != '\0') {
+			const gchar *distro = NULL;
+			g_autoptr(GsOsRelease) os_release = NULL;
+
+			/* get the distro name (e.g. 'Fedora') but allow a fallback */
+			os_release = gs_os_release_new (&local_error);
+			if (os_release != NULL) {
+				distro = gs_os_release_get_name (os_release);
+				if (distro == NULL)
+					g_warning ("no distro name specified");
+			} else {
+				g_warning ("failed to get distro name: %s", local_error->message);
+			}
+
+			/* Fallback */
+			if (distro == NULL)
+				distro = C_("Distribution name", "Unknown");
+
 			plugin_loader->odrs_provider = gs_odrs_provider_new (review_server,
 									     user_hash,
 									     distro,
 									     odrs_review_max_cache_age_secs,
 									     odrs_review_n_results_max,
 									     gs_plugin_loader_get_soup_session (plugin_loader));
+		}
 	}
 
 	/* the settings key sets the initial override */
