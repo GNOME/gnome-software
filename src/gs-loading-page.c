@@ -22,7 +22,7 @@ typedef struct {
 	GsShell			*shell;
 
 	GtkWidget		*progressbar;
-	GtkWidget		*label;
+	GtkWidget		*status_page;
 	guint			 progress_pulse_id;
 } GsLoadingPagePrivate;
 
@@ -53,7 +53,7 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 	const gchar *str = NULL;
 
-	/* update label */
+	/* update title */
 	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
 		if (app != NULL)
 			str = gs_app_get_summary_missing (app);
@@ -66,8 +66,8 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 		str = _("Software catalog is being downloaded");
 	}
 
-	/* update label */
-	gtk_label_set_label (GTK_LABEL (priv->label), str);
+	/* update title */
+	hdy_status_page_set_title (HDY_STATUS_PAGE (priv->status_page), str);
 
 	/* update progresbar */
 	if (app != NULL) {
@@ -215,7 +215,7 @@ gs_loading_page_class_init (GsLoadingPageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-loading-page.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsLoadingPage, progressbar);
-	gtk_widget_class_bind_template_child_private (widget_class, GsLoadingPage, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsLoadingPage, status_page);
 }
 
 static void
