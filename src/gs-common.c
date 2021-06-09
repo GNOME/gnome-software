@@ -683,7 +683,7 @@ gs_utils_reboot_notify (GsAppList *list,
 {
 	g_autoptr(GNotification) n = NULL;
 	g_autofree gchar *tmp = NULL;
-	const gchar *app_name;
+	const gchar *app_name = NULL;
 	const gchar *title;
 	const gchar *body;
 

@@ -378,7 +378,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 #if FWUPD_CHECK_VERSION(1,5,6)
 	GPtrArray *locations = fwupd_release_get_locations (rel);
 #endif
-	const gchar *update_uri;
+	const gchar *update_uri = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *filename_cache = NULL;
 	g_autoptr(GFile) file = NULL;
