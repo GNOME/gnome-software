@@ -81,7 +81,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
 }
 
 void
@@ -868,64 +867,5 @@ gboolean
 gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 			 GCancellable *cancellable, GError **error)
 {
-	return TRUE;
-}
-
-gboolean
-gs_plugin_review_submit (GsPlugin *plugin,
-			 GsApp *app,
-			 AsReview *review,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	g_debug ("Submitting dummy review");
-	return TRUE;
-}
-
-gboolean
-gs_plugin_review_report (GsPlugin *plugin,
-			 GsApp *app,
-			 AsReview *review,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	g_debug ("Reporting dummy review");
-	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
-	return TRUE;
-}
-
-gboolean
-gs_plugin_review_upvote (GsPlugin *plugin,
-			 GsApp *app,
-			 AsReview *review,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	g_debug ("Upvoting dummy review");
-	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
-	return TRUE;
-}
-
-gboolean
-gs_plugin_review_downvote (GsPlugin *plugin,
-			   GsApp *app,
-			   AsReview *review,
-			   GCancellable *cancellable,
-			   GError **error)
-{
-	g_debug ("Downvoting dummy review");
-	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
-	return TRUE;
-}
-
-gboolean
-gs_plugin_review_remove (GsPlugin *plugin,
-			 GsApp *app,
-			 AsReview *review,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	/* all okay */
-	g_debug ("Removing dummy self-review");
 	return TRUE;
 }

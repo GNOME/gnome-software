@@ -14,6 +14,27 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsReviewAction:
+ * @GS_REVIEW_ACTION_UPVOTE: Add a vote to the review.
+ * @GS_REVIEW_ACTION_DOWNVOTE: Remove a vote from the review.
+ * @GS_REVIEW_ACTION_DISMISS: Dismiss (ignore) the review when moderating.
+ * @GS_REVIEW_ACTION_REPORT: Report the review for inappropriate content.
+ * @GS_REVIEW_ACTION_REMOVE: Remove one of your own reviews.
+ *
+ * Actions which can be performed on a review.
+ *
+ * Since: 41
+ */
+typedef enum
+{
+	GS_REVIEW_ACTION_UPVOTE,
+	GS_REVIEW_ACTION_DOWNVOTE,
+	GS_REVIEW_ACTION_DISMISS,
+	GS_REVIEW_ACTION_REPORT,
+	GS_REVIEW_ACTION_REMOVE,
+} GsReviewAction;
+
 #define GS_TYPE_REVIEW_ROW (gs_review_row_get_type ())
 
 G_DECLARE_DERIVABLE_TYPE (GsReviewRow, gs_review_row, GS, REVIEW_ROW, GtkListBoxRow)

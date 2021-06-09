@@ -73,10 +73,10 @@ struct _GsDetailsPage
 	GsApp			*app_local_file;
 	GsShell			*shell;
 	SoupSession		*session;
-	gboolean		 enable_reviews;
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
 	GtkSizeGroup		*size_group_origin_popover;
+	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -182,8 +182,12 @@ struct _GsDetailsPage
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_TITLE = 1,
+	PROP_ODRS_PROVIDER = 1,
+	/* Override properties: */
+	PROP_TITLE,
 } GsDetailsPageProperty;
+
+static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -1520,62 +1524,51 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 
 static void gs_details_page_refresh_reviews (GsDetailsPage *self);
 
-typedef struct {
-	GsDetailsPage		*self;
-	AsReview		*review;
-	GsApp			*app;
-	GsPluginAction		 action;
-} GsDetailsPageReviewHelper;
-
-static void
-gs_details_page_review_helper_free (GsDetailsPageReviewHelper *helper)
-{
-	g_object_unref (helper->self);
-	g_object_unref (helper->review);
-	g_object_unref (helper->app);
-	g_free (helper);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDetailsPageReviewHelper, gs_details_page_review_helper_free);
-
-static void
-gs_details_page_app_set_review_cb (GObject *source,
-                                   GAsyncResult *res,
-                                   gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set review on %s: %s",
-			   gs_app_get_id (helper->app), error->message);
-		return;
-	}
-	gs_details_page_refresh_reviews (helper->self);
-}
-
 static void
 gs_details_page_review_button_clicked_cb (GsReviewRow *row,
-                                          GsPluginAction action,
+                                          GsReviewAction action,
                                           GsDetailsPage *self)
 {
-	GsDetailsPageReviewHelper *helper = g_new0 (GsDetailsPageReviewHelper, 1);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
+	AsReview *review = gs_review_row_get_review (row);
+	g_autoptr(GError) local_error = NULL;
 
-	helper->self = g_object_ref (self);
-	helper->app = g_object_ref (self->app);
-	helper->review = g_object_ref (gs_review_row_get_review (row));
-	helper->action = action;
-	plugin_job = gs_plugin_job_newv (helper->action,
-					 "interactive", TRUE,
-					 "app", helper->app,
-					 "review", helper->review,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_details_page_app_set_review_cb,
-					    helper);
+	g_assert (self->odrs_provider != NULL);
+
+	/* FIXME: Make this async */
+	switch (action) {
+	case GS_REVIEW_ACTION_UPVOTE:
+		gs_odrs_provider_upvote_review (self->odrs_provider, self->app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_REVIEW_ACTION_DOWNVOTE:
+		gs_odrs_provider_downvote_review (self->odrs_provider, self->app,
+						  review, self->cancellable,
+						  &local_error);
+		break;
+	case GS_REVIEW_ACTION_REPORT:
+		gs_odrs_provider_report_review (self->odrs_provider, self->app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_REVIEW_ACTION_REMOVE:
+		gs_odrs_provider_remove_review (self->odrs_provider, self->app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_REVIEW_ACTION_DISMISS:
+		/* The dismiss action is only used from the moderate page. */
+	default:
+		g_assert_not_reached ();
+	}
+
+	if (local_error != NULL) {
+		g_warning ("failed to set review on %s: %s",
+			   gs_app_get_id (self->app), local_error->message);
+		return;
+	}
+
+	gs_details_page_refresh_reviews (self);
 }
 
 static void
@@ -1588,16 +1581,11 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	guint n_reviews = 0;
 	guint64 possible_actions = 0;
 	guint i;
-	struct {
-		GsPluginAction action;
-		const gchar *plugin_func;
-	} plugin_vfuncs[] = {
-		{ GS_PLUGIN_ACTION_REVIEW_UPVOTE,	"gs_plugin_review_upvote" },
-		{ GS_PLUGIN_ACTION_REVIEW_DOWNVOTE,	"gs_plugin_review_downvote" },
-		{ GS_PLUGIN_ACTION_REVIEW_REPORT,	"gs_plugin_review_report" },
-		{ GS_PLUGIN_ACTION_REVIEW_SUBMIT,	"gs_plugin_review_submit" },
-		{ GS_PLUGIN_ACTION_REVIEW_REMOVE,	"gs_plugin_review_remove" },
-		{ GS_PLUGIN_ACTION_LAST,	NULL }
+	GsReviewAction all_actions[] = {
+		GS_REVIEW_ACTION_UPVOTE,
+		GS_REVIEW_ACTION_DOWNVOTE,
+		GS_REVIEW_ACTION_REPORT,
+		GS_REVIEW_ACTION_REMOVE,
 	};
 
 	/* nothing to show */
@@ -1612,7 +1600,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	case AS_COMPONENT_KIND_WEB_APP:
 		/* don't show a missing rating on a local file */
 		if (gs_app_get_state (self->app) != GS_APP_STATE_AVAILABLE_LOCAL &&
-		    self->enable_reviews)
+		    self->odrs_provider != NULL)
 			show_reviews = TRUE;
 		break;
 	default:
@@ -1661,10 +1649,9 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		return;
 
 	/* find what the plugins support */
-	for (i = 0; plugin_vfuncs[i].action != GS_PLUGIN_ACTION_LAST; i++) {
-		if (gs_plugin_loader_get_plugin_supported (self->plugin_loader,
-							   plugin_vfuncs[i].plugin_func)) {
-			possible_actions |= 1u << plugin_vfuncs[i].action;
+	for (i = 0; i < G_N_ELEMENTS (all_actions); i++) {
+		if (self->odrs_provider != NULL) {
+			possible_actions |= (1u << all_actions[i]);
 		}
 	}
 
@@ -1679,10 +1666,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_details_page_review_button_clicked_cb), self);
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE;
+			actions = possible_actions & (1 << GS_REVIEW_ACTION_REMOVE);
 			show_review_button = FALSE;
 		} else {
-			actions = possible_actions & ~(1u << GS_PLUGIN_ACTION_REVIEW_REMOVE);
+			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
@@ -2278,9 +2265,8 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(AsReview) review = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	GsDetailsPageReviewHelper *helper;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
+	g_autoptr(GError) local_error = NULL;
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {
@@ -2298,20 +2284,19 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	as_review_set_date (review, now);
 
 	/* call into the plugins to set the new value */
-	helper = g_new0 (GsDetailsPageReviewHelper, 1);
-	helper->self = g_object_ref (self);
-	helper->app = g_object_ref (self->app);
-	helper->review = g_object_ref (review);
-	helper->action = GS_PLUGIN_ACTION_REVIEW_SUBMIT;
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_SUBMIT,
-					 "interactive", TRUE,
-					 "app", helper->app,
-					 "review", helper->review,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_details_page_app_set_review_cb,
-					    helper);
+	/* FIXME: Make this async */
+	g_assert (self->odrs_provider != NULL);
+
+	gs_odrs_provider_submit_review (self->odrs_provider, self->app, review,
+					self->cancellable, &local_error);
+
+	if (local_error != NULL) {
+		g_warning ("failed to set review on %s: %s",
+			   gs_app_get_id (self->app), local_error->message);
+		return;
+	}
+
+	gs_details_page_refresh_reviews (self);
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -2684,10 +2669,6 @@ gs_details_page_setup (GsPage *page,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
 
-	/* show review widgets if we have plugins that provide them */
-	self->enable_reviews =
-		gs_plugin_loader_get_plugin_supported (plugin_loader,
-						       "gs_plugin_review_submit");
 	g_signal_connect (self->button_review, "clicked",
 			  G_CALLBACK (gs_details_page_write_review_cb),
 			  self);
@@ -2791,6 +2772,31 @@ gs_details_page_get_property (GObject    *object,
 			g_assert_not_reached ();
 		}
 		break;
+	case PROP_ODRS_PROVIDER:
+		g_value_set_object (value, gs_details_page_get_odrs_provider (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_details_page_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (object);
+
+	switch ((GsDetailsPageProperty) prop_id) {
+	case PROP_TITLE:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	case PROP_ODRS_PROVIDER:
+		gs_details_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2816,6 +2822,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->button_details_rating_style_provider);
+	g_clear_object (&self->odrs_provider);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
@@ -2828,6 +2835,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_details_page_get_property;
+	object_class->set_property = gs_details_page_set_property;
 	object_class->dispose = gs_details_page_dispose;
 
 	page_class->app_installed = gs_details_page_app_installed;
@@ -2835,6 +2843,23 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	page_class->switch_to = gs_details_page_switch_to;
 	page_class->reload = gs_details_page_reload;
 	page_class->setup = gs_details_page_setup;
+
+	/**
+	 * GsDetailsPage:odrs-provider: (nullable)
+	 *
+	 * An ODRS provider to give access to ratings and reviews information
+	 * for the app being displayed.
+	 *
+	 * If this is %NULL, ratings and reviews will be disabled.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_ODRS_PROVIDER] =
+		g_param_spec_object ("odrs-provider", NULL, NULL,
+				     GS_TYPE_ODRS_PROVIDER,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
@@ -2974,4 +2999,43 @@ GsDetailsPage *
 gs_details_page_new (void)
 {
 	return GS_DETAILS_PAGE (g_object_new (GS_TYPE_DETAILS_PAGE, NULL));
+}
+
+/**
+ * gs_details_page_get_odrs_provider:
+ * @self: a #GsDetailsPage
+ *
+ * Get the value of #GsDetailsPage:odrs-provider.
+ *
+ * Returns: (nullable) (transfer none): a #GsOdrsProvider, or %NULL if unset
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_details_page_get_odrs_provider (GsDetailsPage *self)
+{
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), NULL);
+
+	return self->odrs_provider;
+}
+
+/**
+ * gs_details_page_set_odrs_provider:
+ * @self: a #GsDetailsPage
+ * @odrs_provider: (nullable) (transfer none): new #GsOdrsProvider or %NULL
+ *
+ * Set the value of #GsDetailsPage:odrs-provider.
+ *
+ * Since: 41
+ */
+void
+gs_details_page_set_odrs_provider (GsDetailsPage  *self,
+                                   GsOdrsProvider *odrs_provider)
+{
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+	g_return_if_fail (odrs_provider == NULL || GS_IS_ODRS_PROVIDER (odrs_provider));
+
+	if (g_set_object (&self->odrs_provider, odrs_provider)) {
+		gs_details_page_refresh_reviews (self);
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
+	}
 }

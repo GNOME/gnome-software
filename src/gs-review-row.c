@@ -76,23 +76,23 @@ gs_review_row_refresh (GsReviewRow *row)
 		priv->actions = 0;
 
 	/* set actions up */
-	if ((priv->actions & (1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
-			1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
-			1 << GS_PLUGIN_ACTION_REVIEW_DISMISS)) == 0) {
+	if ((priv->actions & (1 << GS_REVIEW_ACTION_UPVOTE |
+			1 << GS_REVIEW_ACTION_DOWNVOTE |
+			1 << GS_REVIEW_ACTION_DISMISS)) == 0) {
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
 		gtk_widget_set_visible (priv->button_yes,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE);
+					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
+					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
 		gtk_widget_set_visible (priv->button_dismiss,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DISMISS);
+					priv->actions & 1 << GS_REVIEW_ACTION_DISMISS);
 	}
 	gtk_widget_set_visible (priv->button_remove,
-				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE);
+				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
 	gtk_widget_set_visible (priv->button_report,
-				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+				priv->actions & 1 << GS_REVIEW_ACTION_REPORT);
 
 	/* mark insensitive if no network */
 	if (priv->network_available) {
@@ -189,14 +189,14 @@ static void
 gs_review_row_button_clicked_upvote_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_PLUGIN_ACTION_REVIEW_UPVOTE);
+		       GS_REVIEW_ACTION_UPVOTE);
 }
 
 static void
 gs_review_row_button_clicked_downvote_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
+		       GS_REVIEW_ACTION_DOWNVOTE);
 }
 
 static void
@@ -204,7 +204,7 @@ gs_review_row_confirm_cb (GtkDialog *dialog, gint response_id, GsReviewRow *row)
 {
 	if (response_id == GTK_RESPONSE_YES) {
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-			       GS_PLUGIN_ACTION_REVIEW_REPORT);
+			       GS_REVIEW_ACTION_REPORT);
 	}
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -258,14 +258,14 @@ static void
 gs_review_row_button_clicked_dismiss_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_PLUGIN_ACTION_REVIEW_DISMISS);
+		       GS_REVIEW_ACTION_DISMISS);
 }
 
 static void
 gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_PLUGIN_ACTION_REVIEW_REMOVE);
+		       GS_REVIEW_ACTION_REMOVE);
 }
 
 AsReview *

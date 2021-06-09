@@ -10,6 +10,8 @@
 
 #include "config.h"
 
+#include <glib.h>
+#include <glib/gi18n.h>
 #include <string.h>
 
 #include "gs-app-row.h"
@@ -29,6 +31,7 @@ struct _GsModeratePage
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
+	GsOdrsProvider		*odrs_provider;
 
 	GtkWidget		*list_box_install;
 	GtkWidget		*scrolledwindow_install;
@@ -38,19 +41,11 @@ struct _GsModeratePage
 
 G_DEFINE_TYPE (GsModeratePage, gs_moderate_page, GS_TYPE_PAGE)
 
-static void
-gs_moderate_page_app_set_review_cb (GObject *source,
-                                    GAsyncResult *res,
-                                    gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GError) error = NULL;
+typedef enum {
+	PROP_ODRS_PROVIDER = 1,
+} GsModeratePageProperty;
 
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set review: %s", error->message);
-		return;
-	}
-}
+static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
 
 static void
 gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
@@ -87,24 +82,56 @@ gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
 
 static void
 gs_moderate_page_review_clicked_cb (GsReviewRow *row,
-                                    GsPluginAction action,
+                                    GsReviewAction action,
                                     GsModeratePage *self)
 {
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	plugin_job = gs_plugin_job_newv (action,
-					 "interactive", TRUE,
-					 "app", app,
-					 "review", gs_review_row_get_review (row),
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_moderate_page_app_set_review_cb,
-					    self);
+	AsReview *review = gs_review_row_get_review (row);
+	g_autoptr(GError) local_error = NULL;
+
+	g_assert (self->odrs_provider != NULL);
+
+	/* FIXME: Make this async */
+	switch (action) {
+	case GS_REVIEW_ACTION_UPVOTE:
+		gs_odrs_provider_upvote_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_REVIEW_ACTION_DOWNVOTE:
+		gs_odrs_provider_downvote_review (self->odrs_provider, app,
+						  review, self->cancellable,
+						  &local_error);
+		break;
+	case GS_REVIEW_ACTION_REPORT:
+		gs_odrs_provider_report_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	case GS_REVIEW_ACTION_DISMISS:
+		gs_odrs_provider_dismiss_review (self->odrs_provider, app,
+						 review, self->cancellable,
+						 &local_error);
+		break;
+	case GS_REVIEW_ACTION_REMOVE:
+		gs_odrs_provider_remove_review (self->odrs_provider, app,
+						review, self->cancellable,
+						&local_error);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 
 	/* if there are no more visible rows, hide the app */
 	gs_moderate_page_perhaps_hide_app_row (self, app);
+
+	if (local_error != NULL) {
+		g_warning ("failed to set review on %s: %s",
+			   gs_app_get_id (app), local_error->message);
+		return;
+	}
 }
 
 static void
@@ -145,10 +172,10 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 		gtk_widget_set_margin_start (row, 250);
 		gtk_widget_set_margin_end (row, 250);
 		gs_review_row_set_actions (GS_REVIEW_ROW (row),
-					   1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
-					   1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
-					   1 << GS_PLUGIN_ACTION_REVIEW_DISMISS |
-					   1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+					   1 << GS_REVIEW_ACTION_UPVOTE |
+					   1 << GS_REVIEW_ACTION_DOWNVOTE |
+					   1 << GS_REVIEW_ACTION_DISMISS |
+					   1 << GS_REVIEW_ACTION_REPORT);
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_moderate_page_review_clicked_cb), self);
 		g_object_set_data_full (G_OBJECT (row), "GsApp",
@@ -160,9 +187,9 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 }
 
 static void
-gs_moderate_page_get_unvoted_reviews_cb (GObject *source_object,
-                                         GAsyncResult *res,
-                                         gpointer user_data)
+gs_moderate_page_refine_unvoted_reviews_cb (GObject      *source_object,
+                                            GAsyncResult *res,
+                                            gpointer      user_data)
 {
 	guint i;
 	GsApp *app;
@@ -200,12 +227,23 @@ static void
 gs_moderate_page_load (GsModeratePage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
 
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
 
 	/* get unvoted reviews as apps */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
+	if (!gs_odrs_provider_add_unvoted_reviews (self->odrs_provider, list,
+						   self->cancellable, &local_error)) {
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get moderate apps: %s", local_error->message);
+		return;
+	}
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "list", list,
+					 "interactive", TRUE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -216,7 +254,7 @@ gs_moderate_page_load (GsModeratePage *self)
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
-					    gs_moderate_page_get_unvoted_reviews_cb,
+					    gs_moderate_page_refine_unvoted_reviews_cb,
 					    self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
@@ -268,6 +306,7 @@ gs_moderate_page_setup (GsPage *page,
                         GError **error)
 {
 	GsModeratePage *self = GS_MODERATE_PAGE (page);
+
 	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), TRUE);
 
 	self->shell = shell;
@@ -277,7 +316,44 @@ gs_moderate_page_setup (GsPage *page,
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_install),
 				      gs_moderate_page_list_header_func,
 				      self, NULL);
+
 	return TRUE;
+}
+
+static void
+gs_moderate_page_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsModeratePage *self = GS_MODERATE_PAGE (object);
+
+	switch ((GsModeratePageProperty) prop_id) {
+	case PROP_ODRS_PROVIDER:
+		g_value_set_object (value, gs_moderate_page_get_odrs_provider (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_moderate_page_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsModeratePage *self = GS_MODERATE_PAGE (object);
+
+	switch ((GsModeratePageProperty) prop_id) {
+	case PROP_ODRS_PROVIDER:
+		gs_moderate_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -292,6 +368,7 @@ gs_moderate_page_dispose (GObject *object)
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
+	g_clear_object (&self->odrs_provider);
 
 	G_OBJECT_CLASS (gs_moderate_page_parent_class)->dispose (object);
 }
@@ -303,10 +380,30 @@ gs_moderate_page_class_init (GsModeratePageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_moderate_page_get_property;
+	object_class->set_property = gs_moderate_page_set_property;
 	object_class->dispose = gs_moderate_page_dispose;
 	page_class->switch_to = gs_moderate_page_switch_to;
 	page_class->reload = gs_moderate_page_reload;
 	page_class->setup = gs_moderate_page_setup;
+
+	/**
+	 * GsModeratePage:odrs-provider: (nullable)
+	 *
+	 * An ODRS provider to give access to ratings and reviews information
+	 * for the apps being displayed.
+	 *
+	 * If this is %NULL, ratings and reviews will be disabled and the page
+	 * will be effectively useless.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_ODRS_PROVIDER] =
+		g_param_spec_object ("odrs-provider", NULL, NULL,
+				     GS_TYPE_ODRS_PROVIDER,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-moderate-page.ui");
 
@@ -336,4 +433,43 @@ gs_moderate_page_new (void)
 	GsModeratePage *self;
 	self = g_object_new (GS_TYPE_MODERATE_PAGE, NULL);
 	return GS_MODERATE_PAGE (self);
+}
+
+/**
+ * gs_moderate_page_get_odrs_provider:
+ * @self: a #GsModeratePage
+ *
+ * Get the value of #GsModeratePage:odrs-provider.
+ *
+ * Returns: (nullable) (transfer none): a #GsOdrsProvider, or %NULL if unset
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_moderate_page_get_odrs_provider (GsModeratePage *self)
+{
+	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), NULL);
+
+	return self->odrs_provider;
+}
+
+/**
+ * gs_moderate_page_set_odrs_provider:
+ * @self: a #GsModeratePage
+ * @odrs_provider: (nullable) (transfer none): new #GsOdrsProvider or %NULL
+ *
+ * Set the value of #GsModeratePage:odrs-provider.
+ *
+ * Since: 41
+ */
+void
+gs_moderate_page_set_odrs_provider (GsModeratePage *self,
+                                    GsOdrsProvider *odrs_provider)
+{
+	g_return_if_fail (GS_IS_MODERATE_PAGE (self));
+	g_return_if_fail (odrs_provider == NULL || GS_IS_ODRS_PROVIDER (odrs_provider));
+
+	if (g_set_object (&self->odrs_provider, odrs_provider)) {
+		gs_moderate_page_reload (GS_PAGE (self));
+		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
+	}
 }

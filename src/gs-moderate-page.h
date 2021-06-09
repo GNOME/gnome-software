@@ -19,4 +19,8 @@ G_DECLARE_FINAL_TYPE (GsModeratePage, gs_moderate_page, GS, MODERATE_PAGE, GsPag
 
 GsModeratePage	*gs_moderate_page_new		(void);
 
+GsOdrsProvider	*gs_moderate_page_get_odrs_provider	(GsModeratePage	*self);
+void		 gs_moderate_page_set_odrs_provider	(GsModeratePage	*self,
+							 GsOdrsProvider	*odrs_provider);
+
 G_END_DECLS

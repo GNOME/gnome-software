@@ -2086,6 +2086,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 {
 	g_autoptr(GtkAccelGroup) accel_group = NULL;
 	GClosure *closure;
+	GsOdrsProvider *odrs_provider;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
 
@@ -2122,6 +2123,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* set up the metered data info bar and mogwai */
 	g_signal_connect (shell->settings, "changed::download-updates",
 			  (GCallback) gs_shell_download_updates_changed_cb, shell);
+
+	odrs_provider = gs_plugin_loader_get_odrs_provider (shell->plugin_loader);
+	gs_details_page_set_odrs_provider (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]), odrs_provider);
+	gs_moderate_page_set_odrs_provider (GS_MODERATE_PAGE (shell->pages[GS_SHELL_MODE_MODERATE]), odrs_provider);
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);

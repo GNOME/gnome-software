@@ -24,6 +24,7 @@
 #include "gs-category-manager.h"
 #include "gs-category-private.h"
 #include "gs-ioprio.h"
+#include "gs-os-release.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-plugin-event.h"
@@ -72,6 +73,7 @@ struct _GsPluginLoader
 	gulong			 network_metered_notify_handler;
 
 	GsCategoryManager	*category_manager;
+	GsOdrsProvider		*odrs_provider;  /* (owned) (nullable) */
 
 #ifdef HAVE_SYSPROF
 	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
@@ -138,11 +140,6 @@ typedef gboolean	 (*GsPluginCategoriesFunc)	(GsPlugin	*plugin,
 							 GError		**error);
 typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
@@ -616,19 +613,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
-		{
-			GsPluginReviewFunc plugin_func = func;
-			ret = plugin_func (plugin, app,
-					   gs_plugin_job_get_review (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		{
 			GsPluginGetRecentFunc plugin_func = func;
@@ -640,7 +624,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
-	case GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
@@ -859,6 +842,15 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
+	/* Add ODRS data if needed */
+	if (plugin_loader->odrs_provider != NULL) {
+		if (refine_flags == GS_PLUGIN_REFINE_FLAGS_DEFAULT)
+			refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
+
+		if (!gs_odrs_provider_refine (plugin_loader->odrs_provider,
+					      list, refine_flags, cancellable, error))
+			return FALSE;
+	}
 
 	/* filter any wildcard apps left in the list */
 	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
@@ -1114,9 +1106,13 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GError **error)
 {
 	GsPluginLoader *plugin_loader = helper->plugin_loader;
+	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+
+	/* Refining is done separately as it’s a special action */
+	g_assert (action != GS_PLUGIN_ACTION_REFINE);
 
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
@@ -1131,6 +1127,21 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			return FALSE;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	if (action == GS_PLUGIN_ACTION_REFRESH &&
+	    plugin_loader->odrs_provider != NULL) {
+		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; the
+		 * GsOdrsProvider needs access to a GsPlugin to access global
+		 * state for gs_plugin_download_file(), but it doesn’t really
+		 * matter which plugin it’s accessed through. In lieu of
+		 * refactoring gs_plugin_download_file(), use the first plugin
+		 * in the list for now. */
+		if (!gs_odrs_provider_refresh (plugin_loader->odrs_provider,
+					       plugin_loader->plugins->pdata[0],
+					       gs_plugin_job_get_age (helper->plugin_job),
+					       cancellable, error))
+			return FALSE;
 	}
 
 #ifdef HAVE_SYSPROF
@@ -2726,6 +2737,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->settings);
 	g_clear_pointer (&plugin_loader->pending_apps, g_ptr_array_unref);
 	g_clear_object (&plugin_loader->category_manager);
+	g_clear_object (&plugin_loader->odrs_provider);
 
 #ifdef HAVE_SYSPROF
 	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
@@ -2850,6 +2862,11 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
+	const gchar *review_server;
+	g_autofree gchar *user_hash = NULL;
+	g_autoptr(GError) local_error = NULL;
+	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
+	const guint odrs_review_n_results_max = 20;
 
 #ifdef HAVE_SYSPROF
 	plugin_loader->sysprof_writer = sysprof_capture_writer_new_from_env (0);
@@ -2889,6 +2906,43 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
+
+	/* set up the ODRS provider */
+
+	/* get the machine+user ID hash value */
+	user_hash = gs_utils_get_user_hash (&local_error);
+	if (user_hash == NULL) {
+		g_warning ("Failed to get machine+user hash: %s", local_error->message);
+		plugin_loader->odrs_provider = NULL;
+	} else {
+		review_server = g_settings_get_string (plugin_loader->settings, "review-server");
+
+		if (review_server != NULL && *review_server != '\0') {
+			const gchar *distro = NULL;
+			g_autoptr(GsOsRelease) os_release = NULL;
+
+			/* get the distro name (e.g. 'Fedora') but allow a fallback */
+			os_release = gs_os_release_new (&local_error);
+			if (os_release != NULL) {
+				distro = gs_os_release_get_name (os_release);
+				if (distro == NULL)
+					g_warning ("no distro name specified");
+			} else {
+				g_warning ("failed to get distro name: %s", local_error->message);
+			}
+
+			/* Fallback */
+			if (distro == NULL)
+				distro = C_("Distribution name", "Unknown");
+
+			plugin_loader->odrs_provider = gs_odrs_provider_new (review_server,
+									     user_hash,
+									     distro,
+									     odrs_review_max_cache_age_secs,
+									     odrs_review_n_results_max,
+									     gs_plugin_loader_get_soup_session (plugin_loader));
+		}
+	}
 
 	/* the settings key sets the initial override */
 	plugin_loader->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -3257,18 +3311,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_to_be_installed (addon, FALSE);
 		}
-	}
-
-	/* modify the local app */
-	switch (action) {
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-		gs_app_add_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-		gs_app_remove_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
-		break;
-	default:
-		break;
 	}
 
 	/* refine with enough data so that the sort_func in
@@ -3671,20 +3713,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 			return;
 		}
 		break;
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
-		if (gs_plugin_job_get_review (plugin_job) == NULL) {
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "no valid review object");
-			return;
-		}
-		break;
 	default:
 		break;
 	}
@@ -3884,6 +3912,41 @@ GsApp *
 gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
 {
 	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/system/*");
+}
+
+/**
+ * gs_plugin_loader_get_soup_session:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the internal #SoupSession which is used to download things.
+ *
+ * Returns: (transfer none) (not nullable): a #SoupSession
+ * Since: 41
+ */
+SoupSession *
+gs_plugin_loader_get_soup_session (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->soup_session;
+}
+
+/**
+ * gs_plugin_loader_get_odrs_provider:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the singleton #GsOdrsProvider which provides access to ratings and
+ * reviews data from ODRS.
+ *
+ * Returns: (transfer none) (nullable): a #GsOdrsProvider, or %NULL if disabled
+ * Since: 41
+ */
+GsOdrsProvider *
+gs_plugin_loader_get_odrs_provider (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->odrs_provider;
 }
 
 /**

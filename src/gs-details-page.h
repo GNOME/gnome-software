@@ -26,4 +26,8 @@ void		 gs_details_page_set_url	(GsDetailsPage		*self,
 						 const gchar		*url);
 GsApp		*gs_details_page_get_app	(GsDetailsPage		*self);
 
+GsOdrsProvider	*gs_details_page_get_odrs_provider	(GsDetailsPage	*self);
+void		 gs_details_page_set_odrs_provider	(GsDetailsPage	*self,
+							 GsOdrsProvider	*odrs_provider);
+
 G_END_DECLS

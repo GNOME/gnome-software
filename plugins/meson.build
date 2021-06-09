@@ -30,9 +30,6 @@ endif
 if get_option('malcontent')
   subdir('malcontent')
 endif
-if get_option('odrs')
-  subdir('odrs')
-endif
 if get_option('packagekit')
   subdir('packagekit')
 endif
