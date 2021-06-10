@@ -755,7 +755,7 @@ main (int argc, char **argv)
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);
 
 	/* set all the things required as a dummy test harness */
-	setlocale (LC_MESSAGES, "en_GB");
+	setlocale (LC_MESSAGES, "en_GB.UTF-8");
 	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
