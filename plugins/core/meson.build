@@ -56,7 +56,6 @@ shared_module(
 shared_module(
   'gs_plugin_appstream',
   sources : [
-    'gs-appstream.c',
     'gs-plugin-appstream.c'
   ],
   include_directories : [
@@ -134,7 +133,6 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c',
-      'gs-appstream.c'
     ],
     include_directories : [
       include_directories('../..'),

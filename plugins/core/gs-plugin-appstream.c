@@ -107,10 +107,9 @@ gs_plugin_appstream_add_icons_cb (XbBuilderFixup *self,
 				  gpointer user_data,
 				  GError **error)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
 	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") != 0)
 		return TRUE;
-	gs_appstream_component_add_extra_info (plugin, bn);
+	gs_appstream_component_add_extra_info (bn);
 	return TRUE;
 }
 
@@ -506,7 +505,6 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *locale;
 	const gchar *test_xml;
 	g_autofree gchar *blobfn = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
@@ -516,7 +514,7 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
-
+	const gchar *const *locales = g_get_language_names ();
 
 	reader_locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	/* everything is okay */
@@ -536,14 +534,8 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	}
 
 	/* add current locales */
-	locale = g_getenv ("GS_SELF_TEST_LOCALE");
-	if (locale == NULL) {
-		const gchar *const *locales = g_get_language_names ();
-		for (guint i = 0; locales[i] != NULL; i++)
-			xb_builder_add_locale (builder, locales[i]);
-	} else {
-		xb_builder_add_locale (builder, locale);
-	}
+	for (guint i = 0; locales[i] != NULL; i++)
+		xb_builder_add_locale (builder, locales[i]);
 
 	/* only when in self test */
 	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
@@ -1012,8 +1004,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_category_apps (plugin,
-					       priv->silo,
+	return gs_appstream_add_category_apps (priv->silo,
 					       category,
 					       list,
 					       cancellable,
@@ -1087,7 +1078,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_categories (plugin, priv->silo, list,
+	return gs_appstream_add_categories (priv->silo, list,
 					    cancellable, error);
 }
 
@@ -1104,7 +1095,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_popular (plugin, priv->silo, list, cancellable, error);
+	return gs_appstream_add_popular (priv->silo, list, cancellable, error);
 }
 
 gboolean
@@ -1120,7 +1111,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_featured (plugin, priv->silo, list, cancellable, error);
+	return gs_appstream_add_featured (priv->silo, list, cancellable, error);
 }
 
 gboolean
@@ -1155,7 +1146,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	return gs_appstream_add_alternates (plugin, priv->silo, app, list,
+	return gs_appstream_add_alternates (priv->silo, app, list,
 					    cancellable, error);
 }
 

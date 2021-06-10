@@ -29,29 +29,24 @@ gboolean	 gs_appstream_search			(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_appstream_add_categories		(GsPlugin	*plugin,
-							 XbSilo		*silo,
+gboolean	 gs_appstream_add_categories		(XbSilo		*silo,
 							 GPtrArray	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_appstream_add_category_apps		(GsPlugin	*plugin,
-							 XbSilo		*silo,
+gboolean	 gs_appstream_add_category_apps		(XbSilo		*silo,
 							 GsCategory	*category,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_appstream_add_popular		(GsPlugin	*plugin,
-							 XbSilo		*silo,
+gboolean	 gs_appstream_add_popular		(XbSilo		*silo,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_appstream_add_featured		(GsPlugin	*plugin,
-							 XbSilo		*silo,
+gboolean	 gs_appstream_add_featured		(XbSilo		*silo,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_appstream_add_alternates		(GsPlugin	*plugin,
-							 XbSilo		*silo,
+gboolean	 gs_appstream_add_alternates		(XbSilo		*silo,
 							 GsApp		*app,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -62,8 +57,7 @@ gboolean	 gs_appstream_add_recent		(GsPlugin	*plugin,
 							 guint64	 age,
 							 GCancellable	*cancellable,
 							 GError		**error);
-void		 gs_appstream_component_add_extra_info	(GsPlugin	*plugin,
-							 XbBuilderNode	*component);
+void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);
 void		 gs_appstream_component_add_category	(XbBuilderNode	*component,

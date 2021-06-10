@@ -261,6 +261,7 @@ conf.set_quoted('LOCALSTATEDIR',
 conf.set_quoted('LIBEXECDIR',
                 join_paths(get_option('prefix'),
                            get_option('libexecdir')))
+conf.set('ENABLE_EXTERNAL_APPSTREAM', get_option('external_appstream'))
 configure_file(
   output : 'config.h',
   configuration : conf
@@ -281,6 +282,9 @@ subdir('data')
 subdir('lib')
 subdir('plugins')
 subdir('src')
+if get_option('external_appstream')
+  subdir('gs-install-appstream')
+endif
 subdir('po')
 subdir('doc')
 

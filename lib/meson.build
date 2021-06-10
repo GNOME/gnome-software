@@ -6,10 +6,12 @@ libgnomesoftware_public_headers = [
   'gs-app.h',
   'gs-app-collation.h',
   'gs-app-list.h',
+  'gs-appstream.h',
   'gs-autocleanups.h',
   'gs-category.h',
   'gs-category-manager.h',
   'gs-desktop-data.h',
+  'gs-external-appstream-utils.h',
   'gs-icon.h',
   'gs-ioprio.h',
   'gs-key-colors.h',
@@ -42,6 +44,7 @@ librarydeps = [
   libm,
   libsoup,
   libsysprof_capture_dep,
+  libxmlb,
   valgrind,
 ]
 
@@ -74,10 +77,12 @@ libgnomesoftware = library(
   sources : [
     'gs-app.c',
     'gs-app-list.c',
+    'gs-appstream.c',
     'gs-category.c',
     'gs-category-manager.c',
     'gs-debug.c',
     'gs-desktop-data.c',
+    'gs-external-appstream-utils.c',
     'gs-icon.c',
     'gs-ioprio.c',
     'gs-ioprio.h',
@@ -104,7 +109,8 @@ libgnomesoftware = library(
 
 libgnomesoftware_dep = declare_dependency(link_with : libgnomesoftware,
   sources : libgnomesoftware_enums,
-  include_directories : libgnomesoftware_include_directories
+  include_directories : libgnomesoftware_include_directories,
+  dependencies: librarydeps,
 )
 
 pkg = import('pkgconfig')

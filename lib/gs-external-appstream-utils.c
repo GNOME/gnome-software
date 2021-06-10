@@ -1,47 +1,37 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
- * Copyright (C) 2016-2018 Endless Mobile, Inc.
+ * Copyright (C) 2018 Endless Mobile, Inc.
  *
  * Authors: Joaquim Rocha <jrocha@endlessm.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#include <config.h>
+#include <glib.h>
 #include <glib/gi18n.h>
 
-#include <gnome-software.h>
 #include "gs-external-appstream-utils.h"
 
-struct GsPluginData {
-	GSettings *settings;
-};
+#define APPSTREAM_SYSTEM_DIR LOCALSTATEDIR "/cache/app-info/xmls"
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+gchar *
+gs_external_appstream_utils_get_file_cache_path (const gchar *file_name)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	const gchar *system_dir = gs_external_appstream_utils_get_system_dir ();
-
-	priv->settings = g_settings_new ("org.gnome.software");
-
-	/* run it before the appstream plugin */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
-
-	g_debug ("appstream system dir: %s", system_dir);
+	g_autofree gchar *prefixed_file_name = g_strdup_printf ("org.gnome.Software-%s",
+								file_name);
+	return g_build_filename (APPSTREAM_SYSTEM_DIR, prefixed_file_name, NULL);
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+const gchar *
+gs_external_appstream_utils_get_system_dir (void)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_object_unref (priv->settings);
+	return APPSTREAM_SYSTEM_DIR;
 }
 
 static gboolean
-gs_plugin_external_appstream_check (const gchar *appstream_path,
-					    guint cache_age)
+gs_external_appstream_check (const gchar *appstream_path,
+                             guint        cache_age)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (appstream_path);
 	guint appstream_file_age = gs_utils_get_file_age (file);
@@ -49,9 +39,9 @@ gs_plugin_external_appstream_check (const gchar *appstream_path,
 }
 
 static gboolean
-gs_plugin_external_appstream_install (const gchar *appstream_file,
-				      GCancellable *cancellable,
-				      GError **error)
+gs_external_appstream_install (const gchar   *appstream_file,
+                               GCancellable  *cancellable,
+                               GError       **error)
 {
 	g_autoptr(GSubprocess) subprocess = NULL;
 	const gchar *argv[] = { "pkexec",
@@ -68,7 +58,7 @@ gs_plugin_external_appstream_install (const gchar *appstream_file,
 }
 
 static gchar *
-gs_plugin_external_appstream_get_modification_date (const gchar *file_path)
+gs_external_appstream_get_modification_date (const gchar *file_path)
 {
 #ifndef GLIB_VERSION_2_62
 	GTimeVal time_val;
@@ -95,11 +85,11 @@ gs_plugin_external_appstream_get_modification_date (const gchar *file_path)
 }
 
 static gboolean
-gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
-					  const gchar *url,
-					  guint cache_age,
-					  GCancellable *cancellable,
-					  GError **error)
+gs_external_appstream_refresh_sys (GsPlugin      *plugin,
+                                   const gchar   *url,
+                                   guint          cache_age,
+                                   GCancellable  *cancellable,
+                                   GError       **error)
 {
 	GOutputStream *outstream = NULL;
 	SoupSession *soup_session;
@@ -116,7 +106,7 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 	/* check age */
 	file_name = g_path_get_basename (url);
 	target_file_path = gs_external_appstream_utils_get_file_cache_path (file_name);
-	if (!gs_plugin_external_appstream_check (target_file_path, cache_age)) {
+	if (!gs_external_appstream_check (target_file_path, cache_age)) {
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",
 			 target_file_path);
@@ -126,7 +116,7 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 	msg = soup_message_new (SOUP_METHOD_GET, url);
 
 	/* Set the If-Modified-Since header if the target file exists */
-	local_mod_date = gs_plugin_external_appstream_get_modification_date (target_file_path);
+	local_mod_date = gs_external_appstream_get_modification_date (target_file_path);
 	if (local_mod_date != NULL) {
 		g_debug ("Requesting contents of %s if modified since %s",
 			 url, local_mod_date);
@@ -189,9 +179,9 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 
 	/* install file systemwide */
 	if (file_written) {
-		if (gs_plugin_external_appstream_install (tmp_file_path,
-							  cancellable,
-							  error)) {
+		if (gs_external_appstream_install (tmp_file_path,
+						   cancellable,
+						   error)) {
 			g_debug ("Installed appstream file %s", tmp_file_path);
 		} else {
 			file_written = FALSE;
@@ -204,11 +194,11 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_external_appstream_refresh_user (GsPlugin *plugin,
-					   const gchar *url,
-					   guint cache_age,
-					   GCancellable *cancellable,
-					   GError **error)
+gs_external_appstream_refresh_user (GsPlugin      *plugin,
+                                    const gchar   *url,
+                                    guint          cache_age,
+                                    GCancellable  *cancellable,
+                                    GError       **error)
 {
 	guint file_age;
 	g_autofree gchar *basename = NULL;
@@ -239,33 +229,47 @@ gs_plugin_external_appstream_refresh_user (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
-					  const gchar *url,
-					  guint cache_age,
-					  GCancellable *cancellable,
-					  GError **error)
+gs_external_appstream_refresh_url (GsPlugin      *plugin,
+                                   GSettings     *settings,
+                                   const gchar   *url,
+                                   guint          cache_age,
+                                   GCancellable  *cancellable,
+                                   GError       **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (g_settings_get_strv (priv->settings, "external-appstream-urls")) {
-		return gs_plugin_external_appstream_refresh_sys (plugin, url,
-								 cache_age,
-								 cancellable,
-								 error);
+	if (g_settings_get_strv (settings, "external-appstream-urls")) {
+		return gs_external_appstream_refresh_sys (plugin, url,
+							  cache_age,
+							  cancellable,
+							  error);
 	}
-	return gs_plugin_external_appstream_refresh_user (plugin, url, cache_age,
-							  cancellable, error);
+	return gs_external_appstream_refresh_user (plugin, url, cache_age,
+						   cancellable, error);
 }
 
+/**
+ * gs_external_appstream_refresh:
+ * @plugin: the #GsPlugin calling this refresh operation
+ * @cache_age: as passed to gs_plugin_refresh()
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @error: return location for a #GError
+ *
+ * Refresh any configured external appstream files, if the cache is too old.
+ * This is intended to be called from a gs_plugin_refresh() function.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 41
+ */
 gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+gs_external_appstream_refresh (GsPlugin      *plugin,
+                               guint          cache_age,
+                               GCancellable  *cancellable,
+                               GError       **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GSettings) settings = NULL;
 	g_auto(GStrv) appstream_urls = NULL;
 
-	appstream_urls = g_settings_get_strv (priv->settings,
+	settings = g_settings_new ("org.gnome.software");
+	appstream_urls = g_settings_get_strv (settings,
 					      "external-appstream-urls");
 	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
 		g_autoptr(GError) error_local = NULL;
@@ -275,11 +279,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 				   appstream_urls[i]);
 			continue;
 		}
-		if (!gs_plugin_external_appstream_refresh_url (plugin,
-							       appstream_urls[i],
-							       cache_age,
-							       cancellable,
-							       &error_local)) {
+		if (!gs_external_appstream_refresh_url (plugin,
+							settings,
+							appstream_urls[i],
+							cache_age,
+							cancellable,
+							&error_local)) {
 			g_warning ("Failed to update external appstream file: %s",
 				   error_local->message);
 		}

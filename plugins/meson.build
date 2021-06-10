@@ -2,8 +2,6 @@ plugin_dir = join_paths(gs_private_libdir, 'plugins-' + gs_plugin_api_version)
 plugin_libs = [
   appstream,
   gio_unix,
-  goa,
-  gtk,
   json_glib,
   libsoup,
   libgnomesoftware_dep,
@@ -39,7 +37,4 @@ if get_option('rpm_ostree')
 endif
 if get_option('snap')
   subdir('snap')
-endif
-if get_option('external_appstream')
-  subdir('external-appstream')
 endif

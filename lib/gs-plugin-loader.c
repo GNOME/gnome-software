@@ -23,6 +23,7 @@
 #include "gs-app-list-private.h"
 #include "gs-category-manager.h"
 #include "gs-category-private.h"
+#include "gs-external-appstream-utils.h"
 #include "gs-ioprio.h"
 #include "gs-os-release.h"
 #include "gs-plugin-loader.h"
@@ -41,7 +42,6 @@ struct _GsPluginLoader
 
 	GPtrArray		*plugins;
 	GPtrArray		*locations;
-	gchar			*locale;
 	gchar			*language;
 	gboolean		 plugin_dir_dirty;
 	SoupSession		*soup_session;
@@ -1113,6 +1113,18 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (action != GS_PLUGIN_ACTION_REFINE);
+
+	/* Download updated external appstream before anything else */
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+	if (action == GS_PLUGIN_ACTION_REFRESH) {
+		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; see
+		 * comment below for details. */
+		if (!gs_external_appstream_refresh (plugin_loader->plugins->pdata[0],
+						    gs_plugin_job_get_age (helper->plugin_job),
+						    cancellable, error))
+			return FALSE;
+	}
+#endif
 
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
@@ -2189,7 +2201,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  G_CALLBACK (gs_plugin_loader_repository_changed_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, plugin_loader->soup_session);
-	gs_plugin_set_locale (plugin, plugin_loader->locale);
 	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
 	gs_plugin_set_network_monitor (plugin, plugin_loader->network_monitor);
@@ -2753,7 +2764,6 @@ gs_plugin_loader_finalize (GObject *object)
 
 	g_strfreev (plugin_loader->compatible_projects);
 	g_ptr_array_unref (plugin_loader->locations);
-	g_free (plugin_loader->locale);
 	g_free (plugin_loader->language);
 	g_ptr_array_unref (plugin_loader->file_monitors);
 	g_hash_table_unref (plugin_loader->events_by_id);
@@ -2867,6 +2877,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) local_error = NULL;
 	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
 	const guint odrs_review_n_results_max = 20;
+	const gchar *locale;
 
 #ifdef HAVE_SYSPROF
 	plugin_loader->sysprof_writer = sysprof_capture_writer_new_from_env (0);
@@ -2894,15 +2905,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
-
-	/* get the locale */
-	tmp = g_getenv ("GS_SELF_TEST_LOCALE");
-	if (tmp != NULL) {
-		g_debug ("using self test locale of %s", tmp);
-		plugin_loader->locale = g_strdup (tmp);
-	} else {
-		plugin_loader->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-	}
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
@@ -2950,12 +2952,13 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	/* get the language from the locale (i.e. strip the territory, codeset
 	 * and modifier) */
-	plugin_loader->language = g_strdup (plugin_loader->locale);
+	locale = setlocale (LC_MESSAGES, NULL);
+	plugin_loader->language = g_strdup (locale);
 	match = strpbrk (plugin_loader->language, "._@");
 	if (match != NULL)
 		*match = '\0';
 
-	g_debug ("Using locale = %s, language = %s", plugin_loader->locale, plugin_loader->language);
+	g_debug ("Using locale = %s, language = %s", locale, plugin_loader->language);
 
 	g_mutex_init (&plugin_loader->pending_apps_mutex);
 	g_mutex_init (&plugin_loader->events_by_id_mutex);
@@ -3967,12 +3970,6 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 	if (!g_thread_pool_set_max_threads (plugin_loader->queued_ops_pool, max_ops, &error))
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
-}
-
-const gchar *
-gs_plugin_loader_get_locale (GsPluginLoader *plugin_loader)
-{
-	return plugin_loader->locale;
 }
 
 /**

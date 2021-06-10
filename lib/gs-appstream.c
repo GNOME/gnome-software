@@ -10,6 +10,7 @@
 #include "config.h"
 
 #include <gnome-software.h>
+#include <locale.h>
 
 #include "gs-appstream.h"
 
@@ -177,7 +178,7 @@ app_add_icon (GsApp  *app,
 }
 
 static void
-gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
+gs_appstream_refine_icon (GsApp *app, XbNode *component)
 {
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
@@ -431,8 +432,7 @@ gs_appstream_copy_metadata (GsApp *app, XbNode *component, GError **error)
 }
 
 static gboolean
-gs_appstream_refine_app_updates (GsPlugin *plugin,
-				 GsApp *app,
+gs_appstream_refine_app_updates (GsApp *app,
 				 XbSilo *silo,
 				 XbNode *component,
 				 GError **error)
@@ -664,8 +664,7 @@ gs_appstream_is_valid_project_group (const gchar *project_group)
 }
 
 static gboolean
-gs_appstream_refine_app_content_rating (GsPlugin *plugin,
-					GsApp *app,
+gs_appstream_refine_app_content_rating (GsApp *app,
 					XbNode *content_rating,
 					GError **error)
 {
@@ -713,8 +712,7 @@ gs_appstream_refine_app_content_rating (GsPlugin *plugin,
 }
 
 static gboolean
-gs_appstream_refine_app_content_ratings (GsPlugin *plugin,
-					 GsApp *app,
+gs_appstream_refine_app_content_ratings (GsApp *app,
 					 XbNode *component,
 					 GError **error)
 {
@@ -733,7 +731,7 @@ gs_appstream_refine_app_content_ratings (GsPlugin *plugin,
 	}
 	for (guint i = 0; i < content_ratings->len; i++) {
 		XbNode *content_rating = g_ptr_array_index (content_ratings, i);
-		if (!gs_appstream_refine_app_content_rating (plugin, app, content_rating, error))
+		if (!gs_appstream_refine_app_content_rating (app, content_rating, error))
 			return FALSE;
 	}
 	return TRUE;
@@ -830,7 +828,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set content rating */
 	if (TRUE) {
-		if (!gs_appstream_refine_app_content_ratings (plugin, app, component, error))
+		if (!gs_appstream_refine_app_content_ratings (app, component, error))
 			return FALSE;
 	}
 
@@ -901,7 +899,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
 	    gs_app_get_icons (app) == NULL)
-		gs_appstream_refine_icon (plugin, app, component);
+		gs_appstream_refine_icon (app, component);
 
 	/* set categories */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) {
@@ -1040,7 +1038,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* add kudos */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS) {
 		g_autoptr(GPtrArray) kudos = NULL;
-		tmp = gs_plugin_get_locale (plugin);
+		tmp = setlocale (LC_MESSAGES, NULL);
 		if (!_gs_utils_locale_has_translations (tmp)) {
 			gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 		} else {
@@ -1088,8 +1086,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* is there any update information */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) {
-		if (!gs_appstream_refine_app_updates (plugin,
-						      app,
+		if (!gs_appstream_refine_app_updates (app,
 						      silo,
 						      component,
 						      error))
@@ -1222,8 +1219,7 @@ gs_appstream_search (GsPlugin *plugin,
 }
 
 gboolean
-gs_appstream_add_category_apps (GsPlugin *plugin,
-				XbSilo *silo,
+gs_appstream_add_category_apps (XbSilo *silo,
 				GsCategory *category,
 				GsAppList *list,
 				GCancellable *cancellable,
@@ -1281,7 +1277,8 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 }
 
 static guint
-gs_appstream_count_component_for_groups (GsPlugin *plugin, XbSilo *silo, const gchar *desktop_group)
+gs_appstream_count_component_for_groups (XbSilo      *silo,
+                                         const gchar *desktop_group)
 {
 	guint limit = 10;
 	g_autofree gchar *xpath = NULL;
@@ -1317,8 +1314,7 @@ gs_appstream_count_component_for_groups (GsPlugin *plugin, XbSilo *silo, const g
 /* we're not actually adding categories here, we're just setting the number of
  * applications available in each category */
 gboolean
-gs_appstream_add_categories (GsPlugin *plugin,
-			     XbSilo *silo,
+gs_appstream_add_categories (XbSilo *silo,
 			     GPtrArray *list,
 			     GCancellable *cancellable,
 			     GError **error)
@@ -1332,7 +1328,7 @@ gs_appstream_add_categories (GsPlugin *plugin,
 			GPtrArray *groups = gs_category_get_desktop_groups (cat);
 			for (guint k = 0; k < groups->len; k++) {
 				const gchar *group = g_ptr_array_index (groups, k);
-				guint cnt = gs_appstream_count_component_for_groups (plugin, silo, group);
+				guint cnt = gs_appstream_count_component_for_groups (silo, group);
 				for (guint l = 0; l < cnt; l++) {
 					gs_category_increment_size (parent);
 					if (children->len > 1) {
@@ -1349,8 +1345,7 @@ gs_appstream_add_categories (GsPlugin *plugin,
 }
 
 gboolean
-gs_appstream_add_popular (GsPlugin *plugin,
-			  XbSilo *silo,
+gs_appstream_add_popular (XbSilo *silo,
 			  GsAppList *list,
 			  GCancellable *cancellable,
 			  GError **error)
@@ -1421,8 +1416,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 }
 
 gboolean
-gs_appstream_add_alternates (GsPlugin *plugin,
-			     XbSilo *silo,
+gs_appstream_add_alternates (XbSilo *silo,
 			     GsApp *app,
 			     GsAppList *list,
 			     GCancellable *cancellable,
@@ -1484,8 +1478,7 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 }
 
 gboolean
-gs_appstream_add_featured (GsPlugin *plugin,
-			   XbSilo *silo,
+gs_appstream_add_featured (XbSilo *silo,
 			   GsAppList *list,
 			   GCancellable *cancellable,
 			   GError **error)
@@ -1594,7 +1587,7 @@ gs_appstream_component_add_icon (XbBuilderNode *component, const gchar *str)
 }
 
 void
-gs_appstream_component_add_extra_info (GsPlugin *plugin, XbBuilderNode *component)
+gs_appstream_component_add_extra_info (XbBuilderNode *component)
 {
 	const gchar *kind = xb_builder_node_get_attr (component, "type");
 
