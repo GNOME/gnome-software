@@ -70,12 +70,18 @@ struct _GsShell
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
+	HdyDeck			*main_deck;
 	HdyLeaflet		*main_leaflet;
+	HdyDeck			*details_deck;
+	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
+	GtkStack		*stack_sub;
 	GsPage			*page;
 	GsSidebar		*sidebar;
 
+	GBinding		*main_header_title_binding;
 	GBinding		*application_details_header_binding;
+	GBinding		*sub_page_header_title_binding;
 
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
@@ -86,8 +92,6 @@ struct _GsShell
 	GtkWidget		*sidebar_box;
 	GtkWidget		*main_header;
 	GtkWidget		*metered_updates_bar;
-	GtkWidget		*menu_button_main;
-	GtkWidget		*menu_button_sidebar;
 	GtkWidget		*search_button_main;
 	GtkWidget		*search_button_sidebar;
 	GtkWidget		*entry_search;
@@ -103,6 +107,7 @@ struct _GsShell
 	GtkWidget		*label_events;
 	GtkWidget		*primary_menu;
 	GtkWidget		*application_details_header;
+	GtkWidget		*sub_page_header_title;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
@@ -402,6 +407,26 @@ gs_shell_clean_back_entry_stack (GsShell *shell)
 	}
 }
 
+static gboolean
+gs_shell_get_mode_is_main (GsShellMode mode)
+{
+	switch (mode) {
+	case GS_SHELL_MODE_OVERVIEW:
+	case GS_SHELL_MODE_INSTALLED:
+	case GS_SHELL_MODE_SEARCH:
+	case GS_SHELL_MODE_UPDATES:
+	case GS_SHELL_MODE_LOADING:
+		return TRUE;
+	case GS_SHELL_MODE_DETAILS:
+	case GS_SHELL_MODE_CATEGORY:
+	case GS_SHELL_MODE_EXTRAS:
+	case GS_SHELL_MODE_MODERATE:
+		return FALSE;
+	default:
+		return TRUE;
+	}
+}
+
 static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell);
 static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
 
@@ -409,35 +434,10 @@ static void
 update_header_widgets (GsShell *shell)
 {
 	GsShellMode mode = gs_shell_get_mode (shell);
-	gboolean mode_needs_sidebar;
-	gboolean sidebar_visible;
-	gboolean mode_needs_menu;
-	gboolean mode_needs_search;
-
-	/* update the visibility of various shell widgets */
-	mode_needs_sidebar = (mode == GS_SHELL_MODE_OVERVIEW ||
-			      mode == GS_SHELL_MODE_INSTALLED ||
-			      mode == GS_SHELL_MODE_UPDATES ||
-			      mode == GS_SHELL_MODE_SEARCH);
-	gtk_widget_set_visible (shell->sidebar_box, mode_needs_sidebar);
-	sidebar_visible = mode_needs_sidebar && !hdy_leaflet_get_folded (shell->main_leaflet);
-
-	mode_needs_menu = (mode == GS_SHELL_MODE_OVERVIEW ||
-			   mode == GS_SHELL_MODE_INSTALLED ||
-			   mode == GS_SHELL_MODE_UPDATES ||
-			   mode == GS_SHELL_MODE_SEARCH);
-	gtk_widget_set_visible (shell->menu_button_main, mode_needs_menu && !sidebar_visible);
-	gtk_widget_set_visible (shell->menu_button_sidebar, mode_needs_menu && sidebar_visible);
 
 	/* only show the search button in overview and search pages */
 	g_signal_handlers_block_by_func (shell->search_button_main, search_button_clicked_cb, shell);
 	g_signal_handlers_block_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
-
-	mode_needs_search = (mode == GS_SHELL_MODE_OVERVIEW ||
-			     mode == GS_SHELL_MODE_SEARCH ||
-			     mode == GS_SHELL_MODE_INSTALLED);
-	gtk_widget_set_visible (shell->search_button_main, mode_needs_search && !sidebar_visible);
-	gtk_widget_set_visible (shell->search_button_sidebar, mode_needs_search && sidebar_visible);
 
 	/* hide unless we're going to search */
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
@@ -455,17 +455,8 @@ stack_notify_visible_child_cb (GObject    *object,
 	GsShell *shell = GS_SHELL (user_data);
 	GsPage *page;
 	GtkWidget *widget;
-	GsShellMode mode;
+	GsShellMode mode = gs_shell_get_mode (shell);
 	gsize i;
-
-	/* Work out the mode for this child. */
-	for (i = 0; i < G_N_ELEMENTS (page_name); i++) {
-		if (g_strcmp0 (page_name[i], gtk_stack_get_visible_child_name (shell->stack_main)) == 0) {
-			mode = i;
-			break;
-		}
-	}
-	g_assert (i < G_N_ELEMENTS (page_name));
 
 	update_header_widgets (shell);
 
@@ -480,11 +471,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	    mode == GS_SHELL_MODE_UPDATES)
 		gs_shell_clean_back_entry_stack (shell);
 
-	/* show the back button if needed */
-	gtk_widget_set_visible (shell->button_back,
-				mode != GS_SHELL_MODE_SEARCH &&
-				!g_queue_is_empty (shell->back_entry_stack));
-
 	if (shell->page != NULL)
 		gs_page_switch_from (shell->page);
 	g_set_object (&shell->page, page);
@@ -497,10 +483,20 @@ stack_notify_visible_child_cb (GObject    *object,
 	widget = gs_page_get_header_end_widget (page);
 	gs_shell_set_header_end_widget (shell, widget);
 
+	g_clear_object (&shell->main_header_title_binding);
+	shell->main_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_main), "title",
+								   shell->main_header, "title",
+								   G_BINDING_SYNC_CREATE);
+
 	g_clear_object (&shell->application_details_header_binding);
-	shell->application_details_header_binding = g_object_bind_property (page, "title",
+	shell->application_details_header_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
 									    shell->application_details_header, "label",
 									    G_BINDING_SYNC_CREATE);
+
+	g_clear_object (&shell->sub_page_header_title_binding);
+	shell->sub_page_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
+								       shell->sub_page_header_title, "label",
+								       G_BINDING_SYNC_CREATE);
 
 	/* refresh the updates bar when moving out of the loading mode, but only
 	 * if the Mogwai scheduler state is already known, to avoid spuriously
@@ -556,9 +552,27 @@ gs_shell_change_mode (GsShell *shell,
 {
 	GsApp *app;
 	GsPage *page;
+	gboolean mode_is_main = gs_shell_get_mode_is_main (mode);
+
+	if (gs_shell_get_mode (shell) == mode)
+		return;
 
 	/* switch page */
-	gtk_stack_set_visible_child_name (GTK_STACK (shell->stack_main), page_name[mode]);
+	if (mode == GS_SHELL_MODE_LOADING) {
+		gtk_stack_set_visible_child_name (shell->stack_loading, "loading");
+		return;
+	}
+
+	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
+	if (mode == GS_SHELL_MODE_DETAILS) {
+		hdy_deck_set_visible_child_name (shell->details_deck, "details");
+	} else {
+		hdy_deck_set_visible_child_name (shell->details_deck, "main");
+		/* We only change the main deck when not reaching the details
+		 * page to preserve the navigation history in the UI's state. */
+		hdy_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
+		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
+	}
 
 	/* do any mode-specific actions */
 	page = shell->pages[mode];
@@ -748,6 +762,12 @@ gs_shell_go_back (GsShell *shell)
 }
 
 static void
+gs_shell_details_back_button_cb (GtkWidget *widget, GsShell *shell)
+{
+	gs_shell_go_back (shell);
+}
+
+static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
 	gs_shell_go_back (shell);
@@ -876,9 +896,6 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	GdkModifierType state;
 	gboolean is_rtl;
 
-	if (!gtk_widget_is_visible (shell->button_back) || !gtk_widget_is_sensitive (shell->button_back))
-	    	return GDK_EVENT_PROPAGATE;
-
 	state = event->state;
 	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (win));
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
@@ -900,9 +917,6 @@ window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell
 {
 	/* Mouse hardware back button is 8 */
 	if (event->button != 8)
-		return GDK_EVENT_PROPAGATE;
-
-	if (!gtk_widget_is_visible (shell->button_back) || !gtk_widget_is_sensitive (shell->button_back))
 		return GDK_EVENT_PROPAGATE;
 
 	gtk_widget_activate (shell->button_back);
@@ -2163,10 +2177,22 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 GsShellMode
 gs_shell_get_mode (GsShell *shell)
 {
-	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++) {
-		if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_main), page_name[i]) == 0)
-			return (GsShellMode) i;
-	}
+	const gchar *name;
+
+	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
+		return GS_SHELL_MODE_LOADING;
+
+	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->details_deck), "details") == 0)
+		return GS_SHELL_MODE_DETAILS;
+
+	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->main_deck), "main") == 0)
+		name = gtk_stack_get_visible_child_name (shell->stack_main);
+	else
+		name = gtk_stack_get_visible_child_name (shell->stack_sub);
+
+	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
+		if (g_strcmp0 (page_name[i], name) == 0)
+			return i;
 
 	g_assert_not_reached ();
 }
@@ -2174,7 +2200,8 @@ gs_shell_get_mode (GsShell *shell)
 const gchar *
 gs_shell_get_mode_string (GsShell *shell)
 {
-	return gtk_stack_get_visible_child_name (shell->stack_main);
+	GsShellMode mode = gs_shell_get_mode (shell);
+	return page_name[mode];
 }
 
 void
@@ -2297,7 +2324,9 @@ gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 
+	g_clear_object (&shell->main_header_title_binding);
 	g_clear_object (&shell->application_details_header_binding);
+	g_clear_object (&shell->sub_page_header_title_binding);
 
 	if (shell->back_entry_stack != NULL) {
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);
@@ -2349,12 +2378,14 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button_main);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button_sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
@@ -2370,6 +2401,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, application_details_header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
 	gtk_widget_class_bind_template_child_full (widget_class, "updates_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_UPDATES]));
@@ -2387,6 +2419,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, window_key_press_event);
 	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
 	gtk_widget_class_bind_template_callback (widget_class, window_button_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
