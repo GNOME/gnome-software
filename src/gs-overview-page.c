@@ -59,16 +59,10 @@ struct _GsOverviewPage
 	GtkWidget		*stack_overview;
 };
 
-static void gs_overview_page_scrollable_init (GtkScrollable *iface);
-
-G_DEFINE_TYPE_WITH_CODE (GsOverviewPage, gs_overview_page, GS_TYPE_PAGE,
-			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_overview_page_scrollable_init))
+G_DEFINE_TYPE (GsOverviewPage, gs_overview_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_HADJUSTMENT = 1,
-	PROP_VADJUSTMENT,
-	PROP_HSCROLL_POLICY,
-	PROP_VSCROLL_POLICY,
+	PROP_VADJUSTMENT = 1,
 	PROP_TITLE,
 } GsOverviewPageProperty;
 
@@ -883,17 +877,8 @@ gs_overview_page_get_property (GObject    *object,
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (object);
 
 	switch ((GsOverviewPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview)));
-		break;
 	case PROP_VADJUSTMENT:
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview)));
-		break;
-	case PROP_HSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
-		break;
-	case PROP_VSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
 	case PROP_TITLE:
 		/* Translators: This is the title of the main page of the UI. */
@@ -911,22 +896,8 @@ gs_overview_page_set_property (GObject      *object,
                                const GValue *value,
                                GParamSpec   *pspec)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (object);
-
 	switch ((GsOverviewPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview),
-						     g_value_get_object (value));
-		break;
 	case PROP_VADJUSTMENT:
-		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview),
-						     g_value_get_object (value));
-		break;
-	case PROP_HSCROLL_POLICY:
-	case PROP_VSCROLL_POLICY:
-		/* Not supported yet */
-		g_assert_not_reached ();
-		break;
 	case PROP_TITLE:
 		/* Read only. */
 		g_assert_not_reached ();
@@ -967,10 +938,7 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	page_class->reload = gs_overview_page_reload;
 	page_class->setup = gs_overview_page_setup;
 
-	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
-	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
-	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	signals [SIGNAL_REFRESHED] =
@@ -995,12 +963,6 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, stack_overview);
 	gtk_widget_class_bind_template_callback (widget_class, featured_carousel_app_clicked_cb);
-}
-
-static void
-gs_overview_page_scrollable_init (GtkScrollable *iface)
-{
-	/* Nothing to do here; all defined in properties */
 }
 
 GsOverviewPage *
