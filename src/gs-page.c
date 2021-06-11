@@ -31,9 +31,10 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 typedef enum {
 	PROP_TITLE = 1,
 	PROP_COUNTER,
+	PROP_VADJUSTMENT,
 } GsPageProperty;
 
-static GParamSpec *obj_props[PROP_COUNTER + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_VADJUSTMENT + 1] = { NULL, };
 
 GsShell *
 gs_page_get_shell (GsPage *page)
@@ -674,6 +675,30 @@ gs_page_get_counter (GsPage *page)
 }
 
 /**
+ * gs_page_get_vadjustment:
+ * @page: a #GsPage
+ *
+ * Get the #GtkAdjustment used for vertical scrolling.
+ *
+ * Returns: (nullable) (transfer none): the #GtkAdjustment used for vertical scrolling
+ *
+ * Since: 41
+ */
+GtkAdjustment *
+gs_page_get_vadjustment (GsPage *page)
+{
+	g_auto(GValue) value = G_VALUE_INIT;
+
+	g_return_val_if_fail (GS_IS_PAGE (page), NULL);
+
+	/* The property is typically overridden by subclasses; the
+	 * implementation in #GsPage itself is just a placeholder. */
+	g_object_get_property (G_OBJECT (page), "vadjustment", &value);
+
+	return g_value_get_object (&value);
+}
+
+/**
  * gs_page_switch_to:
  *
  * Pure virtual method that subclasses have to override to show page specific
@@ -718,13 +743,13 @@ gs_page_switch_from (GsPage *page)
 void
 gs_page_scroll_up (GsPage *page)
 {
+	GtkAdjustment *adj;
+
 	g_return_if_fail (GS_IS_PAGE (page));
 
-	if (GTK_IS_SCROLLABLE (page)) {
-		GtkAdjustment *adj;
-		adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (page));
+	adj = gs_page_get_vadjustment (page);
+	if (adj)
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 }
 
 void
@@ -772,6 +797,10 @@ gs_page_get_property (GObject    *object,
 	case PROP_COUNTER:
 		/* Should be overridden by subclasses. */
 		g_value_set_uint (value, 0);
+		break;
+	case PROP_VADJUSTMENT:
+		/* Should be overridden by subclasses. */
+		g_value_set_object (value, NULL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -830,6 +859,19 @@ gs_page_class_init (GsPageClass *klass)
 		g_param_spec_uint ("counter", NULL, NULL,
 				   0, G_MAXUINT, 0,
 				   G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsPage:vadjustment: (nullable)
+	 *
+	 * The #GtkAdjustment used for vertical scrolling.
+	 * This will be %NULL if the page is not vertically scrollable.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_VADJUSTMENT] =
+		g_param_spec_object ("vadjustment", NULL, NULL,
+				     GTK_TYPE_ADJUSTMENT,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }

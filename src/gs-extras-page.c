@@ -65,16 +65,10 @@ struct _GsExtrasPage
 	GtkWidget		 *stack;
 };
 
-static void gs_extras_page_scrollable_init (GtkScrollable *iface);
-
-G_DEFINE_TYPE_WITH_CODE (GsExtrasPage, gs_extras_page, GS_TYPE_PAGE,
-			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_extras_page_scrollable_init))
+G_DEFINE_TYPE (GsExtrasPage, gs_extras_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_HADJUSTMENT = 1,
-	PROP_VADJUSTMENT,
-	PROP_HSCROLL_POLICY,
-	PROP_VSCROLL_POLICY,
+	PROP_VADJUSTMENT = 1,
 	PROP_TITLE,
 } GsExtrasPageProperty;
 
@@ -1213,17 +1207,8 @@ gs_extras_page_get_property (GObject    *object,
 	GsExtrasPage *self = GS_EXTRAS_PAGE (object);
 
 	switch ((GsExtrasPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow)));
-		break;
 	case PROP_VADJUSTMENT:
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow)));
-		break;
-	case PROP_HSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
-		break;
-	case PROP_VSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
 	case PROP_TITLE:
 		switch (self->state) {
@@ -1252,22 +1237,8 @@ gs_extras_page_set_property (GObject      *object,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-	GsExtrasPage *self = GS_EXTRAS_PAGE (object);
-
 	switch ((GsExtrasPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow),
-						     g_value_get_object (value));
-		break;
 	case PROP_VADJUSTMENT:
-		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow),
-						     g_value_get_object (value));
-		break;
-	case PROP_HSCROLL_POLICY:
-	case PROP_VSCROLL_POLICY:
-		/* Not supported yet */
-		g_assert_not_reached ();
-		break;
 	case PROP_TITLE:
 		/* Read-only */
 		g_assert_not_reached ();
@@ -1337,10 +1308,7 @@ gs_extras_page_class_init (GsExtrasPageClass *klass)
 	page_class->reload = gs_extras_page_reload;
 	page_class->setup = gs_extras_page_setup;
 
-	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
-	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
-	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-extras-page.ui");
@@ -1351,12 +1319,6 @@ gs_extras_page_class_init (GsExtrasPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, scrolledwindow);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, stack);
-}
-
-static void
-gs_extras_page_scrollable_init (GtkScrollable *iface)
-{
-	/* Nothing to do here; all defined in properties */
 }
 
 GsExtrasPage *

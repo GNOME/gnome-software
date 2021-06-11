@@ -75,5 +75,6 @@ gboolean	 gs_page_is_active			(GsPage		*page);
 
 const gchar	*gs_page_get_title			(GsPage		*page);
 guint		 gs_page_get_counter			(GsPage		*page);
+GtkAdjustment	*gs_page_get_vadjustment		(GsPage		*page);
 
 G_END_DECLS

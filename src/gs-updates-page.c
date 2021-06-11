@@ -93,16 +93,10 @@ enum {
 	COLUMN_UPDATE_LAST
 };
 
-static void gs_updates_page_scrollable_init (GtkScrollable *iface);
-
-G_DEFINE_TYPE_WITH_CODE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE,
-			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_updates_page_scrollable_init))
+G_DEFINE_TYPE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_HADJUSTMENT = 1,
-	PROP_VADJUSTMENT,
-	PROP_HSCROLL_POLICY,
-	PROP_VSCROLL_POLICY,
+	PROP_VADJUSTMENT = 1,
 	PROP_TITLE,
 	PROP_COUNTER,
 } GsUpdatesPageProperty;
@@ -1288,17 +1282,8 @@ gs_updates_page_get_property (GObject    *object,
 	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
 
 	switch ((GsUpdatesPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
-		break;
 	case PROP_VADJUSTMENT:
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
-		break;
-	case PROP_HSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
-		break;
-	case PROP_VSCROLL_POLICY:
-		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
 	case PROP_TITLE:
 		g_value_set_string (value, _("Updates"));
@@ -1318,22 +1303,8 @@ gs_updates_page_set_property (GObject      *object,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
-	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
-
 	switch ((GsUpdatesPageProperty) prop_id) {
-	case PROP_HADJUSTMENT:
-		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates),
-						     g_value_get_object (value));
-		break;
 	case PROP_VADJUSTMENT:
-		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates),
-						     g_value_get_object (value));
-		break;
-	case PROP_HSCROLL_POLICY:
-	case PROP_VSCROLL_POLICY:
-		/* Not supported yet */
-		g_assert_not_reached ();
-		break;
 	case PROP_TITLE:
 	case PROP_COUNTER:
 		/* Read only */
@@ -1391,10 +1362,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	page_class->reload = gs_updates_page_reload;
 	page_class->setup = gs_updates_page_setup;
 
-	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
-	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
-	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 	g_object_class_override_property (object_class, PROP_COUNTER, "counter");
 
@@ -1412,12 +1380,6 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, box_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
-}
-
-static void
-gs_updates_page_scrollable_init (GtkScrollable *iface)
-{
-	/* Nothing to do here; all defined in properties */
 }
 
 static void
