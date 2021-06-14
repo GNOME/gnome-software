@@ -440,7 +440,7 @@ update_header_widgets (GsShell *shell)
 	g_signal_handlers_block_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
-	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
+	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
 	g_signal_handlers_unblock_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
@@ -847,18 +847,18 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 		GdkEventKey *e = (GdkEventKey *) event;
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
-			if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
-				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
+			if (!hdy_search_bar_get_search_mode (HDY_SEARCH_BAR (shell->search_bar))) {
+				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), TRUE);
 				gtk_widget_grab_focus (shell->entry_search);
 			} else {
-				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), FALSE);
+				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), FALSE);
 			}
 			return GDK_EVENT_STOP;
 		}
 	}
 
 	/* pass to search bar */
-	return gtk_search_bar_handle_event (GTK_SEARCH_BAR (shell->search_bar), event);
+	return hdy_search_bar_handle_event (HDY_SEARCH_BAR (shell->search_bar), event);
 }
 
 static void

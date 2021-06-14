@@ -462,18 +462,23 @@
                                     <property name="orientation">vertical</property>
 
                                     <child>
-                                      <object class="GtkSearchBar" id="search_bar">
+                                      <object class="HdySearchBar" id="search_bar">
                                         <property name="visible">True</property>
                                         <child>
-                                          <object class="GtkSearchEntry" id="entry_search">
+                                          <object class="HdyClamp">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="activates_default">True</property>
-                                            <property name="width_request">500</property>
-                                            <property name="max_length">100</property>
                                             <property name="hexpand">True</property>
-                                            <property name="halign">center</property>
-                                            <signal name="search-changed" handler="search_changed_handler"/>
+                                            <property name="maximum_size">500</property>
+                                            <property name="tightening_threshold">500</property>
+                                            <child>
+                                              <object class="GtkSearchEntry" id="entry_search">
+                                                <property name="visible">True</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="activates_default">True</property>
+                                                <property name="max_length">100</property>
+                                                <signal name="search-changed" handler="search_changed_handler"/>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                       </object>
