@@ -68,8 +68,8 @@ struct _GsUpdatesPage
 	GtkWidget		*updates_box;
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
-	GtkWidget		*label_updates_failed;
-	GtkWidget		*label_updates_last_checked;
+	GtkWidget		*updates_failed_page;
+	GtkWidget		*updates_uptodate_page;
 	GtkWidget		*label_updates_spinner;
 	GtkWidget		*scrolledwindow_updates;
 	GtkWidget		*spinner_updates;
@@ -364,10 +364,12 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 
 			/* TRANSLATORS: This is the time when we last checked for updates */
 			last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
-			gtk_label_set_label (GTK_LABEL (self->label_updates_last_checked),
-					     last_checked);
+			hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
+							 last_checked);
+		} else {
+			hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
+							 NULL);
 		}
-		gtk_widget_set_visible (self->label_updates_last_checked, checked_str != NULL);
 	}
 
 	/* update the counter in headerbar */
@@ -425,8 +427,8 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
-		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
-				     error->message);
+		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_failed_page),
+						 error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		refresh_headerbar_updates_counter (self);
 		return;
@@ -665,8 +667,8 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 			return;
 		}
 		g_warning ("failed to refresh: %s", error->message);
-		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
-				     error->message);
+		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_failed_page),
+						 error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		return;
 	}
@@ -1371,8 +1373,8 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_mobile);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_failed);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_last_checked);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_failed_page);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_uptodate_page);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
