@@ -29,22 +29,22 @@ typedef enum {
 	GS_UPDATES_SECTION_KIND_LAST
 } GsUpdatesSectionKind;
 
-GtkListBox	*gs_updates_section_new			(GsUpdatesSectionKind	 kind,
-							 GsPluginLoader		*plugin_loader,
-							 GsPage			*page);
-GsAppList	*gs_updates_section_get_list		(GsUpdatesSection	*self);
-void		 gs_updates_section_add_app		(GsUpdatesSection	*self,
-							 GsApp			*app);
-void		 gs_updates_section_remove_all		(GsUpdatesSection	*self);
-void		 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
-							 GtkSizeGroup		*image,
-							 GtkSizeGroup		*name,
-							 GtkSizeGroup		*desc,
-							 GtkSizeGroup		*button_label,
-							 GtkSizeGroup		*button_image,
-							 GtkSizeGroup		*header);
-gboolean	 gs_updates_section_get_is_narrow	(GsUpdatesSection	*self);
-void		 gs_updates_section_set_is_narrow	(GsUpdatesSection	*self,
-							 gboolean		 is_narrow);
+GsUpdatesSection	*gs_updates_section_new			(GsUpdatesSectionKind	 kind,
+								 GsPluginLoader		*plugin_loader,
+								 GsPage			*page);
+GsAppList		*gs_updates_section_get_list		(GsUpdatesSection	*self);
+void			 gs_updates_section_add_app		(GsUpdatesSection	*self,
+								 GsApp			*app);
+void			 gs_updates_section_remove_all		(GsUpdatesSection	*self);
+void			 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
+								 GtkSizeGroup		*image,
+								 GtkSizeGroup		*name,
+								 GtkSizeGroup		*desc,
+								 GtkSizeGroup		*button_label,
+								 GtkSizeGroup		*button_image,
+								 GtkSizeGroup		*header);
+gboolean		 gs_updates_section_get_is_narrow	(GsUpdatesSection	*self);
+void			 gs_updates_section_set_is_narrow	(GsUpdatesSection	*self,
+								 gboolean		 is_narrow);
 
 G_END_DECLS

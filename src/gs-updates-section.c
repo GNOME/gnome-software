@@ -773,7 +773,7 @@ gs_updates_section_set_is_narrow (GsUpdatesSection *self, gboolean is_narrow)
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
-GtkListBox *
+GsUpdatesSection *
 gs_updates_section_new (GsUpdatesSectionKind kind,
 			GsPluginLoader *plugin_loader,
 			GsPage *page)
@@ -791,5 +791,5 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 					 self, 0);
 	}
 
-	return GTK_LIST_BOX (self);
+	return self;
 }
