@@ -295,3 +295,41 @@ overlay > headerbar {
   background: none;
   border: none;
 }
+
+/* The following style are taken from libhandy's HdyPreferencesPage style, which
+ * implements the style for titled lists of lists.
+ * FIXME: Drop these styles if the pages using it are ported to
+ * HdyPreferencesPage or its successor in Libadwaita, if their clamp size can be
+ * set as a property. */
+
+scrolledwindow.list-page > viewport > clamp {
+  margin: 0 12px; transition: margin-bottom 200ms ease;
+}
+
+scrolledwindow.list-page > viewport > clamp > box > preferencesgroup {
+  transition: margin-top 200ms ease;
+}
+
+scrolledwindow.list-page > viewport > clamp.small {
+  margin-bottom: 18px;
+}
+
+scrolledwindow.list-page > viewport > clamp.small > box > preferencesgroup {
+  margin-top: 18px;
+}
+
+scrolledwindow.list-page > viewport > clamp.medium {
+  margin-bottom: 24px;
+}
+
+scrolledwindow.list-page > viewport > clamp.medium > box > preferencesgroup {
+  margin-top: 24px;
+}
+
+scrolledwindow.list-page > viewport > clamp.large {
+  margin-bottom: 30px;
+}
+
+scrolledwindow.list-page > viewport > clamp.large > box > preferencesgroup {
+  margin-top: 30px;
+}
