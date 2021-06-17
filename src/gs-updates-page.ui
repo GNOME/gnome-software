@@ -66,33 +66,37 @@
           <object class="GtkStack" id="stack_updates">
             <property name="visible">True</property>
             <child>
-              <object class="GtkBox" id="updates_spinner_box">
+              <object class="HdyClamp">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">36</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
                 <child>
-                  <object class="GtkSpinner" id="spinner_updates">
+                  <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="width_request">128</property>
-                    <property name="height_request">128</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">36</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_updates_spinner">
-                    <property name="visible">True</property>
-                    <property name="label"/>
-                    <property name="justify">center</property>
-                    <style>
-                      <class name="large-title"/>
-                    </style>
+                    <child>
+                      <object class="GtkSpinner" id="spinner_updates">
+                        <property name="visible">True</property>
+                        <property name="width_request">128</property>
+                        <property name="height_request">128</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_updates_spinner">
+                        <property name="visible">True</property>
+                        <property name="justify">center</property>
+                        <style>
+                          <class name="large-title"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
