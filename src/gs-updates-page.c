@@ -186,13 +186,6 @@ gs_updates_page_last_checked_time_string (GsUpdatesPage *self)
 	return gs_utils_time_to_string (last_checked);
 }
 
-static const gchar *
-gs_updates_page_get_state_string (GsPluginStatus status)
-{
-	/* TRANSLATORS: the update panel is doing *something* vague */
-	return _("Looking for new updates…");
-}
-
 static void
 refresh_headerbar_updates_counter (GsUpdatesPage *self)
 {
@@ -215,7 +208,6 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 {
 	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
-	g_autofree gchar *spinner_str = NULL;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		return;
@@ -246,18 +238,14 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	/* spinner text */
 	switch (self->state) {
 	case GS_UPDATES_PAGE_STATE_STARTUP:
-		spinner_str = g_strdup_printf ("%s\n%s",
-				       /* TRANSLATORS: the updates panel is starting up */
-				       _("Setting up updates…"),
-				       _("(This could take a while)"));
-		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), spinner_str);
+		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner),
+				     /* TRANSLATORS: the updates panel is starting up */
+				     _("Setting Up Updates…"));
 		break;
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
-		spinner_str = g_strdup_printf ("%s\n%s",
-				       gs_updates_page_get_state_string (self->last_status),
-				       /* TRANSLATORS: the updates panel is starting up */
-				       _("(This could take a while)"));
-		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), spinner_str);
+		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner),
+				     /* TRANSLATORS: the update panel is doing *something* vague */
+				     _("Looking for New Updates…"));
 		break;
 	default:
 		break;
