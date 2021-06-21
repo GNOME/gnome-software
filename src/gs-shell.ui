@@ -158,7 +158,7 @@
                                         <property name="show-close-button">True</property>
                                         <property name="centering-policy">strict</property>
                                         <child>
-                                          <object class="GtkToggleButton" id="search_button_main">
+                                          <object class="GtkToggleButton" id="search_button">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
@@ -187,7 +187,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkMenuButton" id="menu_button_main">
+                                          <object class="GtkMenuButton" id="menu_button">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="sensitive">True</property>

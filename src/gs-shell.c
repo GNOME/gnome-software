@@ -91,7 +91,7 @@ struct _GsShell
 	GtkWidget		*main_header;
 	GtkWidget		*details_header;
 	GtkWidget		*metered_updates_bar;
-	GtkWidget		*search_button_main;
+	GtkWidget		*search_button;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
@@ -466,13 +466,13 @@ update_header_widgets (GsShell *shell)
 	GsShellMode mode = gs_shell_get_mode (shell);
 
 	/* only show the search button in overview and search pages */
-	g_signal_handlers_block_by_func (shell->search_button_main, search_button_clicked_cb, shell);
+	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
 	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
-	g_signal_handlers_unblock_by_func (shell->search_button_main, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
 }
 
 static void
@@ -2507,7 +2507,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
