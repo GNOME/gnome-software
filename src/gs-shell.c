@@ -79,7 +79,6 @@ struct _GsShell
 	GtkStack		*stack_sub;
 	GsPage			*page;
 
-	GBinding		*main_header_title_binding;
 	GBinding		*application_details_header_binding;
 	GBinding		*sub_page_header_title_binding;
 
@@ -489,9 +488,6 @@ stack_notify_visible_child_cb (GObject    *object,
 
 	update_header_widgets (shell);
 
-	/* set the window title back to default */
-	gtk_window_set_title (GTK_WINDOW (shell), g_get_application_name ());
-
 	/* do action for mode */
 	page = shell->pages[mode];
 
@@ -532,11 +528,6 @@ stack_notify_visible_child_cb (GObject    *object,
 		g_assert (widget == NULL);
 		break;
 	}
-
-	g_clear_object (&shell->main_header_title_binding);
-	shell->main_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_main), "title",
-								   shell->main_header, "title",
-								   G_BINDING_SYNC_CREATE);
 
 	g_clear_object (&shell->application_details_header_binding);
 	shell->application_details_header_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
@@ -2401,7 +2392,6 @@ gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 
-	g_clear_object (&shell->main_header_title_binding);
 	g_clear_object (&shell->application_details_header_binding);
 	g_clear_object (&shell->sub_page_header_title_binding);
 
