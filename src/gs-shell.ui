@@ -133,6 +133,7 @@
                             <property name="can-focus">False</property>
                             <property name="hexpand">True</property>
                             <property name="show-close-button">True</property>
+                            <property name="centering-policy">strict</property>
                             <child>
                               <object class="GtkToggleButton" id="search_button_main">
                                 <property name="visible" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
@@ -187,6 +188,13 @@
                               <packing>
                                 <property name="pack-type">end</property>
                               </packing>
+                            </child>
+                            <child type="title">
+                              <object class="HdyViewSwitcherTitle" id="title_switcher">
+                                <property name="visible">True</property>
+                                <property name="stack">stack_main</property>
+                                <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
+                              </object>
                             </child>
                           </object>
                         </child>
@@ -593,8 +601,7 @@
                             <child>
                               <object class="HdyViewSwitcherBar" id="sidebar_switcher">
                                 <property name="visible">True</property>
-                                <property name="reveal" bind-source="header_leaflet" bind-property="folded" bind-flags="sync-create"/>
-                                <property name="can-focus">True</property>
+                                <property name="reveal" bind-source="title_switcher" bind-property="title-visible" bind-flags="sync-create"/>
                                 <property name="stack">stack_main</property>
                               </object>
                             </child>
