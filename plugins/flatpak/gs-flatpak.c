@@ -2287,13 +2287,15 @@ static GsApp *
 gs_flatpak_create_runtime (GsFlatpak   *self,
                            GsApp       *parent,
                            const gchar *runtime,
-                           gboolean     interactive)
+                           gboolean     interactive,
+                           GCancellable *cancellable)
 {
 	g_autofree gchar *source = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GsApp) app_cache = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) local_error = NULL;
+	const gchar *origin;
 
 	/* get the name/arch/branch */
 	split = g_strsplit (runtime, "/", -1);
@@ -2307,6 +2309,24 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 	gs_app_add_source (app, source);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_RUNTIME);
 	gs_app_set_branch (app, split[2]);
+
+	origin = gs_app_get_origin (parent);
+	if (origin != NULL) {
+		g_autoptr(FlatpakRemoteRef) xref = NULL;
+
+		xref = flatpak_installation_fetch_remote_ref_sync (gs_flatpak_get_installation (self, interactive),
+								   origin,
+								   FLATPAK_REF_KIND_RUNTIME,
+								   gs_app_get_id (app),
+								   gs_flatpak_app_get_ref_arch (parent),
+								   gs_app_get_branch (app),
+								   cancellable,
+								   NULL);
+
+		/* Prefer runtime from the same origin as the parent application */
+		if (xref)
+			gs_app_set_origin (app, origin);
+	}
 
 	/* search in the cache */
 	app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
@@ -2346,6 +2366,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 			     const gchar *data,
 			     gsize length,
 			     gboolean interactive,
+			     GCancellable *cancellable,
 			     GError **error)
 {
 	gboolean secure = TRUE;
@@ -2399,7 +2420,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);
 
 	/* create runtime */
-	app_runtime = gs_flatpak_create_runtime (self, app, runtime, interactive);
+	app_runtime = gs_flatpak_create_runtime (self, app, runtime, interactive, cancellable);
 	if (app_runtime != NULL) {
 		gs_plugin_refine_item_scope (self, app_runtime);
 		gs_app_set_runtime (app, app_runtime);
@@ -2505,7 +2526,7 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	}
 
 	/* parse key file */
-	if (!gs_flatpak_set_app_metadata (self, app, str, len, interactive, error))
+	if (!gs_flatpak_set_app_metadata (self, app, str, len, interactive, cancellable, error))
 		return FALSE;
 	return TRUE;
 }
@@ -3477,6 +3498,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 					  g_bytes_get_data (metadata, NULL),
 					  g_bytes_get_size (metadata),
 					  interactive,
+					  cancellable,
 					  error))
 		return NULL;
 
