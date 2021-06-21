@@ -67,6 +67,7 @@ struct _GsShell
 	GsPluginLoader		*plugin_loader;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
+	GtkWidget		*details_header_end_widget;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
@@ -91,6 +92,7 @@ struct _GsShell
 
 	GtkWidget		*sidebar_box;
 	GtkWidget		*main_header;
+	GtkWidget		*details_header;
 	GtkWidget		*metered_updates_bar;
 	GtkWidget		*search_button_main;
 	GtkWidget		*search_button_sidebar;
@@ -203,6 +205,29 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (old_widget != NULL) {
 		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
+		g_object_unref (old_widget);
+	}
+}
+
+static void
+gs_shell_set_details_header_end_widget (GsShell *shell, GtkWidget *widget)
+{
+	GtkWidget *old_widget;
+
+	old_widget = shell->details_header_end_widget;
+
+	if (shell->details_header_end_widget == widget)
+		return;
+
+	if (widget != NULL) {
+		g_object_ref (widget);
+		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->details_header), widget);
+	}
+
+	shell->details_header_end_widget = widget;
+
+	if (old_widget != NULL) {
+		gtk_container_remove (GTK_CONTAINER (shell->details_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -478,10 +503,31 @@ stack_notify_visible_child_cb (GObject    *object,
 
 	/* update header bar widgets */
 	widget = gs_page_get_header_start_widget (page);
-	gs_shell_set_header_start_widget (shell, widget);
+	switch (mode) {
+	case GS_SHELL_MODE_OVERVIEW:
+	case GS_SHELL_MODE_INSTALLED:
+	case GS_SHELL_MODE_UPDATES:
+		gs_shell_set_header_start_widget (shell, widget);
+		break;
+	default:
+		g_assert (widget == NULL);
+		break;
+	}
 
 	widget = gs_page_get_header_end_widget (page);
-	gs_shell_set_header_end_widget (shell, widget);
+	switch (mode) {
+	case GS_SHELL_MODE_OVERVIEW:
+	case GS_SHELL_MODE_INSTALLED:
+	case GS_SHELL_MODE_UPDATES:
+		gs_shell_set_header_end_widget (shell, widget);
+		break;
+	case GS_SHELL_MODE_DETAILS:
+		gs_shell_set_details_header_end_widget (shell, widget);
+		break;
+	default:
+		g_assert (widget == NULL);
+		break;
+	}
 
 	g_clear_object (&shell->main_header_title_binding);
 	shell->main_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_main), "title",
@@ -2380,6 +2426,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
