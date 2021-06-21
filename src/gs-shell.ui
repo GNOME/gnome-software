@@ -52,82 +52,6 @@
                         <property name="child-transition-duration" bind-source="main_leaflet" bind-property="child-transition-duration" bind-flags="bidirectional|sync-create"/>
                         <property name="transition-type" bind-source="main_leaflet" bind-property="transition-type" bind-flags="bidirectional|sync-create"/>
                         <child>
-                          <object class="HdyHeaderBar" id="sidebar_header">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="show-close-button">True</property>
-                            <property name="title" translatable="yes">Software</property>
-                            <child>
-                              <object class="GtkToggleButton" id="search_button_sidebar">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
-                                <signal name="clicked" handler="search_button_clicked_cb"/>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject">
-                                    <property name="accessible-name" translatable="yes">Search</property>
-                                  </object>
-                                </child>
-                                <style>
-                                  <class name="image-button"/>
-                                </style>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="visible">True</property>
-                                    <property name="icon_name">edit-find-symbolic</property>
-                                    <property name="icon_size">1</property>
-                                  </object>
-                                </child>
-                                <style>
-                                  <class name="image-button"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="pack-type">start</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkMenuButton" id="menu_button_sidebar">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="sensitive">True</property>
-                                <property name="menu_model">primary_menu</property>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject">
-                                    <property name="accessible-name" translatable="yes">Primary Menu</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="visible">True</property>
-                                    <property name="icon_name">open-menu-symbolic</property>
-                                    <property name="icon_size">1</property>
-                                  </object>
-                                </child>
-                                <style>
-                                  <class name="image-button"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="pack-type">end</property>
-                              </packing>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator" id="header_separator">
-                            <property name="visible" bind-source="sidebar_header" bind-property="visible" bind-flags="sync-create" />
-                            <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <style>
-                              <class name="sidebar"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="navigatable">False</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="HdyHeaderBar" id="main_header">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
@@ -193,7 +117,7 @@
                               <object class="HdyViewSwitcherTitle" id="title_switcher">
                                 <property name="visible">True</property>
                                 <property name="stack">stack_main</property>
-                                <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
+                                <property name="title" bind-source="main_header" bind-property="title" bind-flags="sync-create"/>
                               </object>
                             </child>
                           </object>
@@ -410,60 +334,6 @@
                                 <property name="visible-child">main_box</property>
                                 <property name="transition-type">slide</property>
                                 <signal name="notify::folded" handler="main_leaflet_notify_folded_cb"/>
-
-                                <child>
-                                  <object class="GtkBox" id="sidebar_box">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="hexpand">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkScrolledWindow">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="vexpand">True</property>
-                                        <property name="width-request">200</property>
-                                        <property name="hscrollbar_policy">never</property>
-                                        <style>
-                                          <class name="view"/>
-                                        </style>
-                                        <child>
-                                          <object class="GsSidebar" id="sidebar">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">True</property>
-                                            <property name="stack">stack_main</property>
-                                            <signal name="category-selected" handler="sidebar_category_selected_cb"/>
-                                            <child internal-child="accessible">
-                                              <object class="AtkObject">
-                                                <property name="accessible-description" translatable="yes">Navigation sidebar</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                </child>
-
-                                <child>
-                                  <object class="GtkSeparator" id="panel_separator">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <style>
-                                      <class name="sidebar"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="navigatable">False</property>
-                                  </packing>
-                                </child>
-
                                 <child>
                                   <object class="GtkBox" id="main_box">
                                     <property name="visible">True</property>
@@ -562,7 +432,7 @@
                                         <child>
                                           <object class="GsInstalledPage" id="installed_page">
                                             <property name="visible">True</property>
-                                            <property name="is-narrow" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
+                                            <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                           </object>
                                           <packing>
                                             <property name="name">installed</property>
@@ -718,32 +588,5 @@
       <headerbar name="sidebar_header"/>
       <headerbar name="main_header"/>
     </headerbars>
-  </object>
-
-  <!-- Synchronize width of sidebar widgets -->
-  <object class="GtkSizeGroup">
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="sidebar_header"/>
-      <widget name="sidebar_box"/>
-    </widgets>
-  </object>
-
-  <!-- Synchronize separators -->
-  <object class="GtkSizeGroup">
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="header_separator"/>
-      <widget name="panel_separator"/>
-    </widgets>
-  </object>
-
-  <!-- Synchronize width of main widgets -->
-  <object class="GtkSizeGroup">
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="main_header"/>
-      <widget name="main_box"/>
-    </widgets>
   </object>
 </interface>

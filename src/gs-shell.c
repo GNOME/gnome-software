@@ -33,7 +33,6 @@
 #include "gs-extras-page.h"
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
-#include "gs-sidebar.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
@@ -74,13 +73,11 @@ struct _GsShell
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
 	HdyDeck			*main_deck;
-	HdyLeaflet		*main_leaflet;
 	HdyDeck			*details_deck;
 	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
 	GtkStack		*stack_sub;
 	GsPage			*page;
-	GsSidebar		*sidebar;
 
 	GBinding		*main_header_title_binding;
 	GBinding		*application_details_header_binding;
@@ -92,12 +89,10 @@ struct _GsShell
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
 
-	GtkWidget		*sidebar_box;
 	GtkWidget		*main_header;
 	GtkWidget		*details_header;
 	GtkWidget		*metered_updates_bar;
 	GtkWidget		*search_button_main;
-	GtkWidget		*search_button_sidebar;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
@@ -473,13 +468,11 @@ update_header_widgets (GsShell *shell)
 
 	/* only show the search button in overview and search pages */
 	g_signal_handlers_block_by_func (shell->search_button_main, search_button_clicked_cb, shell);
-	g_signal_handlers_block_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
 	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
-	g_signal_handlers_unblock_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
 	g_signal_handlers_unblock_by_func (shell->search_button_main, search_button_clicked_cb, shell);
 }
 
@@ -579,26 +572,6 @@ stack_notify_visible_child_cb (GObject    *object,
 		}
 		g_ptr_array_set_size (shell->modal_dialogs, 0);
 	}
-}
-
-static void
-sidebar_category_selected_cb (GsSidebar  *sidebar,
-                              GsCategory *category,
-                              gpointer    user_data)
-{
-	GsShell *shell = GS_SHELL (user_data);
-
-	gs_shell_show_category (shell, category);
-}
-
-static void
-main_leaflet_notify_folded_cb (GObject    *obj,
-                               GParamSpec *pspec,
-                               gpointer    user_data)
-{
-	GsShell *shell = GS_SHELL (user_data);
-
-	update_header_widgets (shell);
 }
 
 void
@@ -2182,8 +2155,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	shell->settings = g_settings_new ("org.gnome.software");
 
-	gs_sidebar_set_category_manager (shell->sidebar, gs_plugin_loader_get_category_manager (plugin_loader));
-
 	/* get UI */
 	accel_group = gtk_accel_group_new ();
 	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
@@ -2538,19 +2509,15 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_main);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
@@ -2598,8 +2565,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
-	gtk_widget_class_bind_template_callback (widget_class, main_leaflet_notify_folded_cb);
-	gtk_widget_class_bind_template_callback (widget_class, sidebar_category_selected_cb);
 }
 
 static void
