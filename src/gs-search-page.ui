@@ -75,19 +75,21 @@
             <property name="hscrollbar_policy">never</property>
             <property name="vscrollbar_policy">automatic</property>
             <property name="shadow_type">none</property>
+            <style>
+              <class name="list-page"/>
+            </style>
             <child>
-              <object class="GsFixedSizeBin" id="gs_fixed_bin">
+              <object class="HdyClamp" id="gs_fixed_bin">
                 <property name="visible">True</property>
-                <property name="preferred-width">860</property>
-                <property name="valign">start</property>
-                <property name="border-width">24</property>
+                <property name="maximum-size">860</property>
+                <property name="tightening-threshold">860</property>
                 <child>
                   <object class="GtkListBox" id="list_box_search">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selection_mode">none</property>
                     <style>
-                      <class name="full-page-app-list"/>
+                      <class name="content"/>
                     </style>
                   </object>
                 </child>

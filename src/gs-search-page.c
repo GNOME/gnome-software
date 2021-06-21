@@ -367,29 +367,6 @@ gs_search_page_switch_from (GsPage *page)
 }
 
 static void
-gs_search_page_list_header_func (GtkListBoxRow *row,
-                                 GtkListBoxRow *before,
-                                 gpointer user_data)
-{
-	GtkWidget *header;
-
-	/* first entry */
-	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
-		return;
-	}
-
-	/* already set */
-	if (header != NULL)
-		return;
-
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-static void
 gs_search_page_cancel_cb (GCancellable *cancellable,
                           GsSearchPage *self)
 {
@@ -431,9 +408,6 @@ gs_search_page_setup (GsPage *page,
 	/* setup search */
 	g_signal_connect (self->list_box_search, "row-activated",
 			  G_CALLBACK (gs_search_page_app_row_activated_cb), self);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_search),
-				      gs_search_page_list_header_func,
-				      self, NULL);
 	return TRUE;
 }
 
