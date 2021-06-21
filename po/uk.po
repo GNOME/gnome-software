@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-06-16 10:10+0000\n"
-"PO-Revision-Date: 2021-06-16 18:47+0300\n"
+"POT-Creation-Date: 2021-06-21 10:40+0000\n"
+"PO-Revision-Date: 2021-06-21 19:03+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -369,7 +369,7 @@ msgstr "Очікуємо на вилучення"
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:606 src/gs-shell.ui:557
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:577 src/gs-shell.ui:562
 msgid "Installed"
 msgstr "Встановлено"
 
@@ -1038,10 +1038,8 @@ msgid "Productivity"
 msgstr "Офіс"
 
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
 #: lib/gs-desktop-data.c:318 src/gs-details-page.ui:365
-#: src/gs-installed-page.c:449
+#: src/gs-installed-page.ui:111
 msgid "Add-ons"
 msgstr "Додатки"
 
@@ -2108,28 +2106,21 @@ msgstr "Невідомо"
 msgid "History"
 msgstr "Історія"
 
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the system ones
-#: src/gs-installed-page.c:444
-msgid "System Applications"
-msgstr "Системні програми"
-
-#. TRANSLATORS: This is the header dividing the normal
-#. * installed applications and the applications which are
-#. * currently being installed or removed.
-#: src/gs-installed-page.c:455
-msgid "In Progress"
-msgstr "Обробка"
-
-#. TRANSLATORS: This is the header above normal installed
-#. * applications on the installed page.
-#: src/gs-installed-page.c:460
-msgid "Applications"
-msgstr "Програми"
-
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
 msgstr "Сторінка встановлених"
+
+#: src/gs-installed-page.ui:54
+msgid "In Progress"
+msgstr "Обробка"
+
+#: src/gs-installed-page.ui:73
+msgid "Applications"
+msgstr "Програми"
+
+#: src/gs-installed-page.ui:92
+msgid "System Applications"
+msgstr "Системні програми"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:62 src/gs-loading-page.c:66
@@ -2145,7 +2136,7 @@ msgid "Starting up…"
 msgstr "Запускається…"
 
 #: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
-#: src/gs-shell.ui:503
+#: src/gs-shell.ui:508
 msgid "Automatic Updates Paused"
 msgstr "Автоматичне оновлення призупинено"
 
@@ -2283,7 +2274,7 @@ msgstr "Увімкнути"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:885 src/gs-shell.ui:545
+#: src/gs-overview-page.c:885 src/gs-shell.ui:550
 msgid "Explore"
 msgstr "Ознайомлення"
 
@@ -3301,7 +3292,7 @@ msgstr "Вивчити диск"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:339 src/gs-updates-page.c:822
+#: src/gs-shell.ui:339 src/gs-updates-page.c:810
 msgid "Network Settings"
 msgstr "Параметри мережі"
 
@@ -3319,14 +3310,14 @@ msgstr "Докладніше"
 msgid "Navigation sidebar"
 msgstr "Бічна панель навігації"
 
-#: src/gs-shell.ui:522
+#: src/gs-shell.ui:527
 msgid "Find Out _More"
 msgstr "З'ясувати _більше"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-shell.ui:576 src/gs-update-dialog.c:566 src/gs-updates-page.c:1291
+#: src/gs-shell.ui:581 src/gs-update-dialog.c:566 src/gs-updates-page.c:1279
 msgid "Updates"
 msgstr "Оновлення"
 
@@ -3628,57 +3619,54 @@ msgstr ""
 "спробуйте ще раз. Якщо проблема повториться, зв'яжіться з постачальником "
 "програм."
 
-#. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:193
-msgid "Looking for new updates…"
-msgstr "Пошук нових оновлень…"
-
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:251
-msgid "Setting up updates…"
+#: src/gs-updates-page.c:243
+#| msgid "Setting up updates…"
+msgid "Setting Up Updates…"
 msgstr "Підготування оновлень…"
 
-#. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:252 src/gs-updates-page.c:259
-msgid "(This could take a while)"
-msgstr "(Це може зайняти трохи часу)"
+#. TRANSLATORS: the update panel is doing *something* vague
+#: src/gs-updates-page.c:248
+#| msgid "Looking for new updates…"
+msgid "Looking for New Updates…"
+msgstr "Пошук нових оновлень…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:366
+#: src/gs-updates-page.c:354
 #, c-format
 msgid "Last checked: %s"
 msgstr "Востаннє перевірено: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:529
+#: src/gs-updates-page.c:517
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "Підтримку %s %s припинено."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:534
+#: src/gs-updates-page.c:522
 msgid "Your OS is no longer supported."
 msgstr "Підтримку вашої операційної системи припинено."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:539
+#: src/gs-updates-page.c:527
 msgid "This means that it does not receive security updates."
 msgstr "Це означає, що система не отримує оновлень захисту."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:543
+#: src/gs-updates-page.c:531
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Рекомендуємо вам оновитися до сучаснішої версії."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:790
+#: src/gs-updates-page.c:778
 msgid "Charges May Apply"
 msgstr "Може стягуватися сплата за обмін даними"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:794
+#: src/gs-updates-page.c:782
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3688,27 +3676,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:798
+#: src/gs-updates-page.c:786
 msgid "Check _Anyway"
 msgstr "Перевірити поп_ри це"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:814
+#: src/gs-updates-page.c:802
 msgid "No Network"
 msgstr "Немає мережі"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:818
+#: src/gs-updates-page.c:806
 msgid "Internet access is required to check for updates."
 msgstr "Потрібен інтернет, щоб перевірити оновлення."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1239
+#: src/gs-updates-page.c:1227
 msgid "Checking…"
 msgstr "Перевіряємо…"
 
-#: src/gs-updates-page.c:1252
+#: src/gs-updates-page.c:1240
 msgid "Check for updates"
 msgstr "Перевірити на оновлення"
 
@@ -3716,21 +3704,22 @@ msgstr "Перевірити на оновлення"
 msgid "Updates page"
 msgstr "Сторінка оновлень"
 
+#. TRANSLATORS: the updates panel is starting up.
+#: src/gs-updates-page.ui:107
+#| msgid "(This could take a while)"
+msgid "This could take a while."
+msgstr "Дія може бути досить тривалою."
+
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:160
+#: src/gs-updates-page.ui:178
 msgid "Up To Date"
-msgstr ""
-"Актуальні"
+msgstr "Актуальні"
 
-#: src/gs-updates-page.ui:176
+#: src/gs-updates-page.ui:194
 msgid "Use Mobile Data?"
-msgstr ""
-"Використовувати мобільне з'єднання?"
+msgstr "Використовувати мобільне з'єднання?"
 
-#: src/gs-updates-page.ui:177
-#| msgid ""
-#| "Checking for updates when using mobile broadband could cause you to incur "
-#| "charges"
+#: src/gs-updates-page.ui:195
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
@@ -3738,31 +3727,27 @@ msgstr ""
 "Перевіряння на оновлення, коли використання мобільного інтернету може "
 "прискорити розрядження батареї."
 
-#: src/gs-updates-page.ui:180
+#: src/gs-updates-page.ui:198
 msgid "_Check Anyway"
 msgstr "_Однаково перевіряти"
 
-#: src/gs-updates-page.ui:195
+#: src/gs-updates-page.ui:213
 msgid "No Connection"
-msgstr ""
-"Немає з'єднання"
+msgstr "Немає з'єднання"
 
-#: src/gs-updates-page.ui:196
-#| msgid "Go online to check for updates"
+#: src/gs-updates-page.ui:214
 msgid "Go online to check for updates."
 msgstr "З'єднатися з інтернетом для пошуку оновлень."
 
-#: src/gs-updates-page.ui:199
+#: src/gs-updates-page.ui:217
 msgid "_Network Settings"
 msgstr "Параметри _мережі"
 
-#: src/gs-updates-page.ui:225
+#: src/gs-updates-page.ui:243
 msgid "Error"
-msgstr ""
-"Помилка"
+msgstr "Помилка"
 
-#: src/gs-updates-page.ui:226
-#| msgid "Updates are automatically managed"
+#: src/gs-updates-page.ui:244
 msgid "Updates are automatically managed."
 msgstr "Оновлення автоматично опрацьовуються."
 
