@@ -63,6 +63,7 @@ gnome_software_sources = [
   'gs-shell.c',
   'gs-shell-search-provider.c',
   'gs-sidebar.c',
+  'gs-star-image.c',
   'gs-star-widget.c',
   'gs-summary-tile.c',
   'gs-third-party-repo-row.c',

@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "gs-common.h"
+#include "gs-star-image.h"
 #include "gs-star-widget.h"
 
 typedef struct
@@ -20,7 +21,7 @@ typedef struct
 	gint		 rating;
 	guint		 icon_size;
 	GtkWidget	*box1;
-	GtkImage	*images[5];
+	GtkWidget	*images[5];
 } GsStarWidgetPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
@@ -94,15 +95,18 @@ gs_star_widget_refresh_rating (GsStarWidget *star)
 
 	for (guint i = 0; i < G_N_ELEMENTS (priv->images); i++) {
 		GtkWidget *im = GTK_WIDGET (priv->images[i]);
-		gboolean enabled;
+		gdouble fraction;
 
-		/* add fudge factor so we can actually get 5 stars in reality */
-		enabled = priv->rating >= rate_to_star[i] - 10;
+		if (priv->rating >= rate_to_star[i])
+			fraction = 1.0;
+		else if (!i)
+			fraction = priv->rating / 20.0;
+		else if (priv->rating > rate_to_star[i - 1])
+			fraction = (priv->rating - rate_to_star[i - 1]) / 20.0;
+		else
+			fraction = 0.0;
 
-		gtk_style_context_add_class (gtk_widget_get_style_context (im),
-					     enabled ? "star-enabled" : "star-disabled");
-		gtk_style_context_remove_class (gtk_widget_get_style_context (im),
-						enabled ? "star-disabled" : "star-enabled");
+		gs_star_image_set_fraction (GS_STAR_IMAGE (im), fraction);
 	}
 }
 
@@ -122,10 +126,10 @@ gs_star_widget_refresh (GsStarWidget *star)
 		GtkWidget *im;
 
 		/* create image */
-		im = gtk_image_new_from_icon_name ("starred-symbolic",
-						   GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size (GTK_IMAGE (im), (gint) priv->icon_size);
-		priv->images[i] = GTK_IMAGE (im);
+		im = gs_star_image_new ();
+		gtk_widget_set_size_request (im, (gint) priv->icon_size, (gint) priv->icon_size);
+
+		priv->images[i] = im;
 
 		/* create button */
 		if (priv->interactive) {
@@ -274,7 +278,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 				    "Icon Size",
 				    "Size of icons to use, in pixels",
 				    0, G_MAXUINT, 12,
-				    G_PARAM_READWRITE);
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	/**
 	 * GsStarWidget:interactive:
