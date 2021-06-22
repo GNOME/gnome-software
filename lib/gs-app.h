@@ -483,4 +483,10 @@ void		gs_app_ensure_icons_downloaded	(GsApp		*app,
 						 guint		 maximum_icon_size,
 						 GCancellable	*cancellable);
 
+GPtrArray	*gs_app_get_relations		(GsApp		*app);
+void		 gs_app_add_relation		(GsApp		*app,
+						 AsRelation	*relation);
+void		 gs_app_set_relations		(GsApp		*app,
+						 GPtrArray	*relations);
+
 G_END_DECLS
