@@ -529,20 +529,22 @@ stack_notify_visible_child_cb (GObject    *object,
 		break;
 	}
 
-	g_clear_object (&shell->main_header_title_binding);
-	shell->main_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_main), "title",
-								   shell->main_header, "title",
-								   G_BINDING_SYNC_CREATE);
+	if (gs_shell_get_mode_is_main (mode)) {
+		g_clear_object (&shell->main_header_title_binding);
+		shell->main_header_title_binding = g_object_bind_property (page, "title",
+									   shell->main_header, "title",
+									   G_BINDING_SYNC_CREATE);
+	} else {
+		g_clear_object (&shell->application_details_header_binding);
+		shell->application_details_header_binding = g_object_bind_property (page, "title",
+										    shell->application_details_header, "label",
+										    G_BINDING_SYNC_CREATE);
 
-	g_clear_object (&shell->application_details_header_binding);
-	shell->application_details_header_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
-									    shell->application_details_header, "label",
-									    G_BINDING_SYNC_CREATE);
-
-	g_clear_object (&shell->sub_page_header_title_binding);
-	shell->sub_page_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
-								       shell->sub_page_header_title, "label",
-								       G_BINDING_SYNC_CREATE);
+		g_clear_object (&shell->sub_page_header_title_binding);
+		shell->sub_page_header_title_binding = g_object_bind_property (page, "title",
+									       shell->sub_page_header_title, "label",
+									       G_BINDING_SYNC_CREATE);
+	}
 
 	/* refresh the updates bar when moving out of the loading mode, but only
 	 * if the Mogwai scheduler state is already known, to avoid spuriously
