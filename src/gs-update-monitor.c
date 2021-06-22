@@ -475,6 +475,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	gboolean should_download;
 
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -509,7 +510,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
-	if (should_download_updates (monitor) &&
+	should_download = should_download_updates (monitor);
+
+	if (should_download &&
 	    (security_timestamp_old != security_timestamp ||
 	    check_if_timestamp_more_than_days_ago (monitor, "install-timestamp", 14))) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -528,8 +531,48 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    download_finished_cb,
 						    monitor);
 	} else {
-		notify_about_pending_updates (monitor, apps);
+		g_autoptr(GsAppList) update_online = NULL;
+		g_autoptr(GsAppList) update_offline = NULL;
+		GsAppList *notify_list;
 
+		update_online = gs_app_list_new ();
+		update_offline = gs_app_list_new ();
+		for (guint i = 0; i < gs_app_list_length (apps); i++) {
+			GsApp *app = gs_app_list_index (apps, i);
+			if (_should_auto_update (app)) {
+				g_debug ("download for auto-update %s", gs_app_get_unique_id (app));
+				gs_app_list_add (update_online, app);
+			} else {
+				gs_app_list_add (update_offline, app);
+			}
+		}
+
+		g_debug ("Received %u apps to update, %u are online and %u offline updates; will%s download online updates",
+			gs_app_list_length (apps),
+			gs_app_list_length (update_online),
+			gs_app_list_length (update_offline),
+			should_download ? "" : " not");
+
+		if (should_download && gs_app_list_length (update_online) > 0) {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
+							 "list", update_online,
+							 NULL);
+			g_debug ("Getting %u online updates", gs_app_list_length (update_online));
+			gs_plugin_loader_job_process_async (monitor->plugin_loader,
+							    plugin_job,
+							    monitor->cancellable,
+							    download_finished_cb,
+							    monitor);
+		}
+
+		if (should_download)
+			notify_list = update_offline;
+		else
+			notify_list = apps;
+
+		notify_about_pending_updates (monitor, notify_list);
 		reset_update_notification_timestamp (monitor);
 	}
 }
