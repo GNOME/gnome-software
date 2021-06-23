@@ -161,6 +161,8 @@ k_means (GArray    *colors,
 	const ClusterPixel8 *pixels_end;
 	Pixel8 cluster_centres[n_clusters];
 	CentroidAccumulator cluster_accumulators[n_clusters];
+	gboolean used_clusters[n_clusters];
+	guint covered_clusters = 0;
 	guint n_assignments_changed;
 	guint n_iterations = 0;
 	guint assignments_termination_limit;
@@ -180,6 +182,8 @@ k_means (GArray    *colors,
 	pixels = (ClusterPixel8 *) raw_pixels;
 	pixels_end = &pixels[height * width];
 
+	memset (used_clusters, 0, sizeof (used_clusters));
+
 	/* Initialise the clusters using the Random Partition method: randomly
 	 * assign a starting cluster to each pixel.
 	 *
@@ -191,8 +195,17 @@ k_means (GArray    *colors,
 	for (ClusterPixel8 *p = pixels; p < pixels_end; p++) {
 		if (p->alpha < minimum_alpha)
 			p->cluster = G_N_ELEMENTS (cluster_centres);
-		else
+		else {
 			p->cluster = g_random_int_range (0, G_N_ELEMENTS (cluster_centres));
+
+			if (covered_clusters < n_clusters) {
+				while (used_clusters[p->cluster])
+					p->cluster = (p->cluster + 1) % n_clusters;
+
+				used_clusters[p->cluster] = TRUE;
+				covered_clusters++;
+			}
+		}
 	}
 
 	/* Iterate until every cluster is relatively settled. This is determined
@@ -214,6 +227,10 @@ k_means (GArray    *colors,
 		/* Update step. Re-calculate the centroid of each cluster from
 		 * the colors which are in it. */
 		memset (cluster_accumulators, 0, sizeof (cluster_accumulators));
+
+		/* Also make sure all clusters are covered */
+		memset (used_clusters, 0, sizeof (used_clusters));
+		covered_clusters = 0;
 
 		for (const ClusterPixel8 *p = pixels; p < pixels_end; p++) {
 			if (p->cluster >= G_N_ELEMENTS (cluster_centres))
@@ -237,15 +254,25 @@ k_means (GArray    *colors,
 		/* Update assignments of colors to clusters. */
 		n_assignments_changed = 0;
 		for (ClusterPixel8 *p = pixels; p < pixels_end; p++) {
-			gsize new_cluster;
-
 			if (p->cluster >= G_N_ELEMENTS (cluster_centres))
 				continue;
 
-			new_cluster = nearest_cluster (&p->color, cluster_centres, G_N_ELEMENTS (cluster_centres));
-			if (new_cluster != p->cluster)
-				n_assignments_changed++;
-			p->cluster = new_cluster;
+			if (covered_clusters < n_clusters && !used_clusters[p->cluster]) {
+				used_clusters[p->cluster] = TRUE;
+				covered_clusters++;
+			} else {
+				gsize new_cluster;
+
+				new_cluster = nearest_cluster (&p->color, cluster_centres, G_N_ELEMENTS (cluster_centres));
+				if (new_cluster != p->cluster)
+					n_assignments_changed++;
+				p->cluster = new_cluster;
+
+				if (!used_clusters[p->cluster]) {
+					used_clusters[p->cluster] = TRUE;
+					covered_clusters++;
+				}
+			}
 		}
 
 		n_iterations++;
