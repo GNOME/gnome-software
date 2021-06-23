@@ -292,7 +292,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		if (tmp != NULL) {
 			g_autofree gchar *origin_tmp = NULL;
 			/* TRANSLATORS: this refers to where the app came from */
-			origin_tmp = g_strdup_printf ("%s: %s", _("Source"), tmp);
+			origin_tmp = g_strdup_printf (_("Source: %s"), tmp);
 			gtk_label_set_label (GTK_LABEL (priv->label_origin), origin_tmp);
 		}
 		gtk_widget_set_visible (priv->label_origin, tmp != NULL);
