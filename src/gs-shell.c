@@ -2491,6 +2491,8 @@ gs_shell_init (GsShell *shell)
 {
 	gtk_widget_init_template (GTK_WIDGET (shell));
 
+	hdy_search_bar_connect_entry (HDY_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
+
 	shell->back_entry_stack = g_queue_new ();
 	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
