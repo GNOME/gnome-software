@@ -87,8 +87,6 @@ search_done_cb (GObject *source,
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE)
-			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_unique_id (app));
 
 		/* cache this in case we need the app in GetResultMetas */
