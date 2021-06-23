@@ -18,7 +18,6 @@
 #include "gs-app-list-private.h"
 #include "gs-featured-carousel.h"
 #include "gs-category-tile.h"
-#include "gs-hiding-box.h"
 #include "gs-common.h"
 #include "gs-summary-tile.h"
 
@@ -327,11 +326,15 @@ gs_overview_page_get_category_apps_cb (GObject *source_object,
 	gtk_container_add (GTK_CONTAINER (headerbox), button);
 	gtk_container_add (GTK_CONTAINER (self->box_popular_rotating), headerbox);
 
-	/* add hiding box */
-	box = gs_hiding_box_new ();
-	gs_hiding_box_set_spacing (GS_HIDING_BOX (box), 14);
-	gtk_widget_set_visible (box, TRUE);
-	gtk_widget_set_valign (box, GTK_ALIGN_START);
+	/* add the box */
+	box = gtk_flow_box_new ();
+	g_object_set (G_OBJECT (box),
+		"visible", TRUE,
+		"homogeneous", TRUE,
+		"column-spacing", 14,
+		"row-spacing", 14,
+		"valign", GTK_ALIGN_START,
+		NULL);
 	gtk_container_add (GTK_CONTAINER (self->box_popular_rotating), box);
 
 	/* add all the apps */

@@ -106,9 +106,11 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GsHidingBox" id="box_popular">
+                              <object class="GtkFlowBox" id="box_popular">
                                 <property name="visible">True</property>
-                                <property name="spacing">14</property>
+                                <property name="homogeneous">True</property>
+                                <property name="column-spacing">14</property>
+                                <property name="row-spacing">14</property>
                                 <property name="valign">start</property>
                                 <accessibility>
                                   <relation target="popular_heading" type="labelled-by"/>
@@ -132,9 +134,11 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GsHidingBox" id="box_recent">
+                              <object class="GtkFlowBox" id="box_recent">
                                 <property name="visible">True</property>
-                                <property name="spacing">14</property>
+                                <property name="homogeneous">True</property>
+                                <property name="column-spacing">14</property>
+                                <property name="row-spacing">14</property>
                                 <property name="valign">start</property>
                                 <accessibility>
                                   <relation target="recent_heading" type="labelled-by"/>
