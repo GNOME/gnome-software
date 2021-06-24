@@ -96,6 +96,7 @@
             <property name="valign">center</property>
             <child>
               <object class="GtkLabel" id="description_label">
+                <property name="visible" bind-source="GsAppRow" bind-property="show-description" bind-flags="sync-create"/>
                 <property name="visible">True</property>
                 <property name="valign">start</property>
                 <property name="vexpand">True</property>

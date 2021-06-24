@@ -34,6 +34,9 @@ void		 gs_app_row_set_show_buttons		(GsAppRow	*app_row,
 							 gboolean	 show_buttons);
 void		 gs_app_row_set_show_rating		(GsAppRow	*app_row,
 							 gboolean	 show_rating);
+gboolean	 gs_app_row_get_show_description	(GsAppRow	*app_row);
+void		 gs_app_row_set_show_description	(GsAppRow	*app_row,
+							 gboolean	 show_description);
 void		 gs_app_row_set_show_source		(GsAppRow	*app_row,
 							 gboolean	 show_source);
 void		 gs_app_row_set_show_update		(GsAppRow	*app_row,
