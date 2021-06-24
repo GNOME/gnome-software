@@ -15,7 +15,6 @@ RUN dnf -y install \
     gettext \
     git \
     glib2-devel \
-    gnome-online-accounts-devel \
     gobject-introspection \
     gobject-introspection-devel \
     gperf \
