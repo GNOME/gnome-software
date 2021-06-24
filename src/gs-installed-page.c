@@ -244,6 +244,8 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 				    self->sizegroup_desc,
 				    self->sizegroup_button);
 
+	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
+
 	/* only show if is an actual application */
 	gtk_widget_set_visible (app_row, gs_installed_page_is_actual_app (app));
 }
