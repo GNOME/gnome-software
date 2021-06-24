@@ -8,12 +8,17 @@
         <property name="visible">True</property>
         <property name="row-spacing">6</property>
         <property name="column-spacing">6</property>
+        <property name="margin">6</property>
 	<child>
-          <object class="GtkLabel" id="label_count5">
-	    <property name="halign">end</property>
+          <object class="GtkLabel" id="label_value">
+	    <property name="halign">start</property>
+	    <property name="valign">center</property>
             <property name="visible">True</property>
             <property name="label">0</property>
-            <property name="margin-left">5</property>
+            <attributes>
+              <attribute name="scale" value="5.0"/>
+              <attribute name="weight" value="light"/>
+            </attributes>
           </object>
           <packing>
             <property name="left-attach">0</property>
@@ -22,14 +27,82 @@
             <property name="height">1</property>
           </packing>
         </child>
-        <child>
-          <object class="GsReviewBar" id="bar5">
+	<child>
+          <object class="GtkBox" id="value_vbox">
             <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <property name="width-request">120</property>
-            <style>
-              <class name="reviewbar"/>
-            </style>
+            <property name="orientation">vertical</property>
+            <property name="spacing">8</property>
+            <property name="halign">start</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="margin-start">6</property>
+            <property name="margin-top">8</property>
+	    <child>
+              <object class="GtkBox" id="star_value_box">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">6</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <style>
+                  <class name="reviewstarvalue"/>
+                </style>
+                <child>
+                  <object class="GsStarImage" id="star_value_1">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="height-request">24</property>
+                    <property name="width-request">24</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GsStarImage" id="star_value_2">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="height-request">24</property>
+                    <property name="width-request">24</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GsStarImage" id="star_value_3">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="height-request">24</property>
+                    <property name="width-request">24</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GsStarImage" id="star_value_4">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="height-request">24</property>
+                    <property name="width-request">24</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GsStarImage" id="star_value_5">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="height-request">24</property>
+                    <property name="width-request">24</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+	    <child>
+              <object class="GtkLabel" id="label_n_stars">
+	        <property name="halign">start</property>
+	        <property name="valign">center</property>
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">out of 5 stars</property>
+                <attributes>
+                  <attribute name="scale" value="0.8"/>
+                </attributes>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="left-attach">1</property>
@@ -39,321 +112,323 @@
           </packing>
         </child>
 	<child>
-          <object class="GtkBox" id="histogram_star5_box">
+          <object class="GtkGrid" id="grid2">
             <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="spacing">6</property>
-            <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <property name="row-spacing">2</property>
+            <property name="column-spacing">2</property>
+            <style>
+              <class name="review-histogram"/>
+            </style>
+	    <child>
+              <object class="GsReviewBar" id="bar5">
+                <property name="visible">True</property>
+                <property name="margin-end">5</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="valign">center</property>
+                <property name="height-request">8</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GsStarImage" id="star5_1">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star5_2">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star5_3">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star5_4">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">4</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star5_5">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">5</property>
+                <property name="top-attach">0</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_count4">
-	    <property name="halign">end</property>
-            <property name="visible">True</property>
-            <property name="label">0</property>
-            <property name="margin-left">5</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">1</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GsReviewBar" id="bar4">
-            <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <style>
-              <class name="reviewbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">1</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-	<child>
-          <object class="GtkBox" id="histogram_star4_box">
-            <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="spacing">6</property>
-            <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <child>
+              <object class="GsReviewBar" id="bar4">
+                <property name="visible">True</property>
+                <property name="margin-end">5</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="valign">center</property>
+                <property name="height-request">8</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GsStarImage" id="star4_1">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star4_2">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star4_3">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star4_4">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">4</property>
+                <property name="top-attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">1</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_count3">
-	    <property name="halign">end</property>
-            <property name="visible">True</property>
-            <property name="label">0</property>
-            <property name="margin-left">5</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">2</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GsReviewBar" id="bar3">
-            <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <style>
-              <class name="reviewbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">2</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="histogram_star3_box">
-            <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="spacing">6</property>
-            <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <child>
+              <object class="GsReviewBar" id="bar3">
+                <property name="visible">True</property>
+                <property name="margin-end">5</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="valign">center</property>
+                <property name="height-request">8</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GsStarImage" id="star3_1">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star3_2">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star3_3">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">3</property>
+                <property name="top-attach">2</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">2</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_count2">
-	    <property name="halign">end</property>
-            <property name="visible">True</property>
-            <property name="label">0</property>
-            <property name="margin-left">5</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">3</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GsReviewBar" id="bar2">
-            <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <style>
-              <class name="reviewbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">3</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-	<child>
-          <object class="GtkBox" id="histogram_star2_box">
-            <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="spacing">6</property>
-            <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <child>
+              <object class="GsReviewBar" id="bar2">
+                <property name="visible">True</property>
+                <property name="margin-end">5</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="valign">center</property>
+                <property name="height-request">8</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GsStarImage" id="star2_1">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">3</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
             <child>
               <object class="GsStarImage" id="star2_2">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">3</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">3</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_count1">
-	    <property name="halign">end</property>
-            <property name="visible">True</property>
-            <property name="label">0</property>
-            <property name="margin-left">5</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">4</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GsReviewBar" id="bar1">
-            <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <style>
-              <class name="reviewbar"/>
-            </style>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">4</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="histogram_star1_box">
-            <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="spacing">6</property>
-            <property name="halign">start</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
+            <child>
+              <object class="GsReviewBar" id="bar1">
+                <property name="visible">True</property>
+                <property name="margin-end">5</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">true</property>
+                <property name="valign">center</property>
+                <property name="height-request">8</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
             <child>
               <object class="GsStarImage" id="star1_1">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
+                <property name="height-request">10</property>
+                <property name="width-request">10</property>
               </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
           </object>
           <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">4</property>
-            <property name="width">1</property>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+            <property name="width">2</property>
             <property name="height">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label_total">
             <property name="visible">True</property>
+            <property name="halign">start</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
             <property name="label">0</property>
-            <property name="margin-left">5</property>
-            <property name="margin-top">5</property>
+            <property name="margin-top">10</property>
           </object>
           <packing>
             <property name="left-attach">0</property>
-            <property name="top-attach">5</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-	<child>
-          <object class="GtkLabel" id="label_1">
-            <property name="visible">True</property>
-            <property name="margin-left">5</property>
-            <property name="halign">start</property>
-            <property name="margin-top">5</property>
-	    <property name="label" translatable="yes" comments="Translators: A label for the total number of reviews.">ratings in total</property>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">5</property>
+            <property name="top-attach">2</property>
             <property name="width">2</property>
             <property name="height">1</property>
           </packing>

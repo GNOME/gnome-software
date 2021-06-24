@@ -8,8 +8,11 @@
 
 #include "config.h"
 
+#include <math.h>
+
 #include "gs-review-histogram.h"
 #include "gs-review-bar.h"
+#include "gs-star-image.h"
 
 typedef struct
 {
@@ -18,32 +21,27 @@ typedef struct
 	GtkWidget	*bar3;
 	GtkWidget	*bar4;
 	GtkWidget	*bar5;
-	GtkWidget	*label_count1;
-	GtkWidget	*label_count2;
-	GtkWidget	*label_count3;
-	GtkWidget	*label_count4;
-	GtkWidget	*label_count5;
+	GtkWidget	*label_value;
 	GtkWidget	*label_total;
+	GtkWidget	*star_value_1;
+	GtkWidget	*star_value_2;
+	GtkWidget	*star_value_3;
+	GtkWidget	*star_value_4;
+	GtkWidget	*star_value_5;
 } GsReviewHistogramPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_BIN)
-
-static void
-set_label (GtkWidget *label, gint value)
-{
-	g_autofree gchar *text = NULL;
-	text = g_strdup_printf ("%i", value);
-	gtk_label_set_text (GTK_LABEL (label), text);
-}
 
 void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 				 GArray *review_ratings)
 {
 	GsReviewHistogramPrivate *priv = gs_review_histogram_get_instance_private (histogram);
+	g_autofree gchar *text = NULL;
 	gdouble fraction[6] = { 0.0f };
 	guint32 max = 0;
 	guint32 total = 0;
+	guint32 star_count = 0;
 
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
 
@@ -57,6 +55,7 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	for (guint i = 1; i < review_ratings->len; i++) {
 		guint32 c = g_array_index (review_ratings, guint32, i);
 		max = MAX (c, max);
+		star_count += i * c;
 	}
 	for (guint i = 1; i < review_ratings->len; i++) {
 		guint32 c = g_array_index (review_ratings, guint32, i);
@@ -65,16 +64,27 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	}
 
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar5), fraction[5]);
-	set_label (priv->label_count5, g_array_index (review_ratings, guint, 5));
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar4), fraction[4]);
-	set_label (priv->label_count4, g_array_index (review_ratings, guint, 4));
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar3), fraction[3]);
-	set_label (priv->label_count3, g_array_index (review_ratings, guint, 3));
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar2), fraction[2]);
-	set_label (priv->label_count2, g_array_index (review_ratings, guint, 2));
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar1), fraction[1]);
-	set_label (priv->label_count1, g_array_index (review_ratings, guint, 1));
-	set_label (priv->label_total, total);
+
+	text = g_strdup_printf (g_dngettext (GETTEXT_PACKAGE, "%u reviews total", "%u reviews total", total), total);
+	gtk_label_set_text (GTK_LABEL (priv->label_total), text);
+
+	g_clear_pointer (&text, g_free);
+
+	/* Round explicitly, to avoid rounding inside the printf() call and to use
+	   the same value also for the stars fraction. */
+	fraction[0] = total > 0 ? round (((gdouble) star_count / (gdouble) total) * 10.0) / 10.0 : 0.0;
+	text = g_strdup_printf ("%.01f", fraction[0]);
+	gtk_label_set_text (GTK_LABEL (priv->label_value), text);
+
+	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_1), CLAMP (fraction[0], 0.0, 1.0));
+	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_2), CLAMP (fraction[0], 1.0, 2.0) - 1.0);
+	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_3), CLAMP (fraction[0], 2.0, 3.0) - 2.0);
+	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_4), CLAMP (fraction[0], 3.0, 4.0) - 3.0);
+	gs_star_image_set_fraction (GS_STAR_IMAGE (priv->star_value_5), CLAMP (fraction[0], 4.0, 5.0) - 4.0);
 }
 
 static void
@@ -95,12 +105,13 @@ gs_review_histogram_class_init (GsReviewHistogramClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar3);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar1);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_count5);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_count4);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_count3);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_count2);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_count1);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_total);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_1);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_2);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_3);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_4);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, star_value_5);
 }
 
 GtkWidget *
