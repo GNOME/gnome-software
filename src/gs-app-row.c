@@ -124,37 +124,37 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Visit website"));
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed.
 			 * The ellipsis indicates that further steps are required */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install…"));
 		}
 		break;
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows to cancel a queued install of the application */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Cancel"));
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install"));
 		break;
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (priv->show_update) {
 			/* TRANSLATORS: this is a button in the updates panel
 			 * that allows the app to be easily updated live */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Update"));
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily removed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstall"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
 		}
 		break;
 	case GS_APP_STATE_UPDATABLE:
@@ -163,19 +163,19 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstall"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Installing"));
 		break;
 	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being erased */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstalling"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstalling"));
 		break;
 	default:
 		break;
