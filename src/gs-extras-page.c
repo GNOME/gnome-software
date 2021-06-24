@@ -557,7 +557,7 @@ search_files_cb (GObject *source_object,
 			return;
 		}
 		g_warning ("failed to find any search results: %s", error->message);
-		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
+		str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
 		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
@@ -613,7 +613,7 @@ file_to_app_cb (GObject *source_object,
 			g_autofree gchar *str = NULL;
 
 			g_warning ("failed to find any search results: %s", error->message);
-			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
+			str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
 			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
 			gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 			return;
@@ -652,7 +652,7 @@ get_search_what_provides_cb (GObject *source_object,
 			return;
 		}
 		g_warning ("failed to find any search results: %s", error->message);
-		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
+		str = g_strdup_printf (_("Failed to find any search results: %s"), error->message);
 		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;

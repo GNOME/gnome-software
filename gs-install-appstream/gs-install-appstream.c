@@ -162,7 +162,8 @@ main (int argc, char *argv[])
 	file = g_file_new_for_path (argv[1]);
 	if (!gs_install_appstream_check_content_type (file, &error)) {
 		/* TRANSLATORS: error details */
-		g_print ("%s: %s\n", _("Failed to validate content type"), error->message);
+		g_print (_("Failed to validate content type: %s"), error->message);
+		g_print ("\n");
 		return EXIT_FAILURE;
 	}
 
@@ -172,7 +173,8 @@ main (int argc, char *argv[])
 	/* do the copy */
 	if (!gs_install_appstream_copy_file (file, &error)) {
 		/* TRANSLATORS: error details */
-		g_print ("%s: %s\n", _("Failed to copy"), error->message);
+		g_print (_("Failed to copy: %s"), error->message);
+		g_print ("\n");
 		return EXIT_FAILURE;
 	}
 
