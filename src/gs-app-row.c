@@ -46,6 +46,7 @@ typedef struct
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
 	guint		 pending_refresh_id;
+	gboolean	 is_narrow;
 } GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
@@ -63,9 +64,10 @@ typedef enum {
 	PROP_SHOW_SOURCE,
 	PROP_SHOW_BUTTONS,
 	PROP_SHOW_INSTALLED_SIZE,
+	PROP_IS_NARROW,
 } GsAppRowProperty;
 
-static GParamSpec *obj_props[PROP_SHOW_INSTALLED_SIZE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 /**
  * gs_app_row_get_description:
@@ -619,6 +621,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_SHOW_INSTALLED_SIZE:
 		g_value_set_boolean (value, priv->show_installed_size);
 		break;
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_app_row_get_is_narrow (app_row));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -642,6 +647,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_IS_NARROW:
+		gs_app_row_set_is_narrow (app_row, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -724,6 +732,22 @@ gs_app_row_class_init (GsAppRowClass *klass)
 		g_param_spec_boolean ("show-installed-size", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsAppRow:is-narrow:
+	 *
+	 * Whether the row is in narrow mode.
+	 *
+	 * In narrow mode, the row will take up less horizontal space, doing so
+	 * by e.g. using icons rather than labels in buttons. This is needed to
+	 * keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
@@ -841,6 +865,51 @@ gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 	priv->show_installed_size = show_size;
 	g_object_notify (G_OBJECT (app_row), "show-installed-size");
 	gs_app_row_schedule_refresh (app_row);
+}
+
+/**
+ * gs_app_row_get_is_narrow:
+ * @app_row: a #GsAppRow
+ *
+ * Get the value of #GsAppRow:is-narrow.
+ *
+ * Retruns: %TRUE if the row is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_app_row_get_is_narrow (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_val_if_fail (GS_IS_APP_ROW (app_row), FALSE);
+
+	return priv->is_narrow;
+}
+
+/**
+ * gs_app_row_set_is_narrow:
+ * @app_row: a #GsAppRow
+ * @is_narrow: %TRUE to set the row in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsAppRow:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_app_row_set_is_narrow (GsAppRow *app_row, gboolean is_narrow)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	is_narrow = !!is_narrow;
+
+	if (priv->is_narrow == is_narrow)
+		return;
+
+	priv->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_IS_NARROW]);
 }
 
 /**

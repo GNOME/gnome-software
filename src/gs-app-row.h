@@ -46,5 +46,8 @@ void		 gs_app_row_set_size_groups		(GsAppRow	*app_row,
 							 GtkSizeGroup	*button);
 void		 gs_app_row_set_show_installed_size	(GsAppRow	*app_row,
 							 gboolean	 show_size);
+gboolean	 gs_app_row_get_is_narrow		(GsAppRow	*app_row);
+void		 gs_app_row_set_is_narrow		(GsAppRow	*app_row,
+							 gboolean	 is_narrow);
 
 G_END_DECLS
