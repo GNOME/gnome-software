@@ -484,6 +484,34 @@ build_age_rating_description (AsContentRating *content_rating)
 	return g_strjoinv (_("; "), (gchar **) descriptions->pdata);
 }
 
+/* Wrapper around as_content_rating_system_format_age() which returns the short
+ * form of the content rating. This doesn’t make a difference for most ratings
+ * systems, but it does for ESRB which normally produces quite long strings.
+ *
+ * FIXME: This should probably be upstreamed into libappstream once it’s been in
+ * the GNOME 41 release and stabilised. */
+static gchar *
+content_rating_system_format_age_short (AsContentRatingSystem system,
+                                        guint                 age)
+{
+	if (system == AS_CONTENT_RATING_SYSTEM_ESRB) {
+		if (age >= 18)
+			return g_strdup ("AO");
+		if (age >= 17)
+			return g_strdup ("M");
+		if (age >= 13)
+			return g_strdup ("T");
+		if (age >= 10)
+			return g_strdup ("E10+");
+		if (age >= 6)
+			return g_strdup ("E");
+
+		return g_strdup ("EC");
+	}
+
+	return as_content_rating_system_format_age (system, age);
+}
+
 static void
 update_age_rating_tile (GsAppContextBar *self)
 {
@@ -517,7 +545,7 @@ update_age_rating_tile (GsAppContextBar *self)
 		age = as_content_rating_get_minimum_age (content_rating);
 
 	if (age != G_MAXUINT)
-		age_text = as_content_rating_system_format_age (system, age);
+		age_text = content_rating_system_format_age_short (system, age);
 
 	/* Some ratings systems (PEGI) don’t start at age 0 */
 	if (content_rating != NULL && age_text == NULL && age == 0)
