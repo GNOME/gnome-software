@@ -66,6 +66,8 @@ gs_review_bar_class_init (GsReviewBarClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	widget_class->draw = gs_review_bar_draw;
+
+	gtk_widget_class_set_css_name (widget_class, "review-bar");
 }
 
 GtkWidget *

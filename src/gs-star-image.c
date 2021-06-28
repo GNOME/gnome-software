@@ -161,7 +161,10 @@ gs_star_image_draw (GtkWidget *widget,
 		cairo_fill (cr);
 
 		gdk_cairo_set_source_rgba (cr, &star_fg);
-		cairo_rectangle (cr, min_x, -radius, (max_x - min_x) * fraction, 2 * radius);
+		if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+			cairo_rectangle (cr, max_x - (max_x - min_x) * fraction, -radius, (max_x - min_x) * fraction, 2 * radius);
+		else
+			cairo_rectangle (cr, min_x, -radius, (max_x - min_x) * fraction, 2 * radius);
 		cairo_fill (cr);
 		cairo_restore (cr);
 
