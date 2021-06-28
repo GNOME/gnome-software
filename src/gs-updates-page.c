@@ -84,6 +84,8 @@ struct _GsUpdatesPage
 	GtkSizeGroup		*sizegroup_button;
 	GtkSizeGroup		*sizegroup_header;
 	GtkListBox		*sections[GS_UPDATES_SECTION_KIND_LAST];
+
+	guint			 refresh_last_checked_id;
 };
 
 enum {
@@ -178,12 +180,20 @@ _get_num_updates (GsUpdatesPage *self)
 }
 
 static gchar *
-gs_updates_page_last_checked_time_string (GsUpdatesPage *self)
+gs_updates_page_last_checked_time_string (GsUpdatesPage *self,
+					  gint *out_hours_ago,
+					  gint *out_days_ago)
 {
 	gint64 last_checked;
+	gchar *res;
 
 	g_settings_get (self->settings, "check-timestamp", "x", &last_checked);
-	return gs_utils_time_to_string (last_checked);
+	res = gs_utils_time_to_string (last_checked);
+	if (res) {
+		g_assert (gs_utils_split_time_difference (last_checked, NULL, out_hours_ago, out_days_ago, NULL, NULL, NULL));
+	}
+
+	return res;
 }
 
 static void
@@ -204,10 +214,63 @@ refresh_headerbar_updates_counter (GsUpdatesPage *self)
 }
 
 static void
+gs_updates_page_remove_last_checked_timeout (GsUpdatesPage *self)
+{
+	if (self->refresh_last_checked_id) {
+		g_source_remove (self->refresh_last_checked_id);
+		self->refresh_last_checked_id = 0;
+	}
+}
+
+static void
+gs_updates_page_refresh_last_checked (GsUpdatesPage *self);
+
+static gboolean
+gs_updates_page_refresh_last_checked_cb (gpointer user_data)
+{
+	GsUpdatesPage *self = user_data;
+	gs_updates_page_refresh_last_checked (self);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
+{
+	g_autofree gchar *checked_str = NULL;
+	gint hours_ago, days_ago;
+	checked_str = gs_updates_page_last_checked_time_string (self, &hours_ago, &days_ago);
+	if (checked_str != NULL) {
+		g_autofree gchar *last_checked = NULL;
+		guint interval;
+
+		/* TRANSLATORS: This is the time when we last checked for updates */
+		last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
+		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
+						 last_checked);
+
+		if (hours_ago < 1)
+			interval = 60;
+		else if (days_ago < 7)
+			interval = 60 * 60;
+		else
+			interval = 60 * 60 * 24;
+
+		gs_updates_page_remove_last_checked_timeout (self);
+
+		self->refresh_last_checked_id = g_timeout_add_seconds (interval,
+			gs_updates_page_refresh_last_checked_cb, self);
+	} else {
+		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
+						 NULL);
+	}
+}
+
+static void
 gs_updates_page_update_ui_state (GsUpdatesPage *self)
 {
 	gboolean allow_mobile_refresh = TRUE;
-	g_autofree gchar *checked_str = NULL;
+
+	gs_updates_page_remove_last_checked_timeout (self);
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		return;
@@ -345,20 +408,8 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 				self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 
 	/* last checked label */
-	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0) {
-		checked_str = gs_updates_page_last_checked_time_string (self);
-		if (checked_str != NULL) {
-			g_autofree gchar *last_checked = NULL;
-
-			/* TRANSLATORS: This is the time when we last checked for updates */
-			last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
-			hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
-							 last_checked);
-		} else {
-			hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
-							 NULL);
-		}
-	}
+	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0)
+		gs_updates_page_refresh_last_checked (self);
 
 	/* update the counter in headerbar */
 	refresh_headerbar_updates_counter (self);
@@ -633,6 +684,13 @@ gs_updates_page_switch_to (GsPage *page)
 		return;
 	}
 	gs_updates_page_load (self);
+}
+
+static void
+gs_updates_page_switch_from (GsPage *page)
+{
+	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
+	gs_updates_page_remove_last_checked_timeout (self);
 }
 
 static void
@@ -1311,6 +1369,8 @@ gs_updates_page_dispose (GObject *object)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
 
+	gs_updates_page_remove_last_checked_timeout (self);
+
 	g_cancellable_cancel (self->cancellable_refresh);
 	g_clear_object (&self->cancellable_refresh);
 	g_cancellable_cancel (self->cancellable_upgrade_download);
@@ -1349,6 +1409,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	object_class->dispose = gs_updates_page_dispose;
 
 	page_class->switch_to = gs_updates_page_switch_to;
+	page_class->switch_from = gs_updates_page_switch_from;
 	page_class->reload = gs_updates_page_reload;
 	page_class->setup = gs_updates_page_setup;
 

@@ -735,6 +735,68 @@ gs_utils_reboot_notify (GsAppList *list,
 }
 
 /**
+ * gs_utils_split_time_difference:
+ * @unix_time_seconds: Time since the epoch in seconds
+ * @out_minutes_ago: (out) (nullable): how many minutes elapsed
+ * @out_hours_ago: (out) (nullable): how many hours elapsed
+ * @out_days_ago: (out) (nullable): how many days elapsed
+ * @out_weeks_ago: (out) (nullable): how many weeks elapsed
+ * @out_months_ago: (out) (nullable): how many months elapsed
+ * @out_years_ago: (out) (nullable): how many years elapsed
+ *
+ * Calculates the difference between the @unix_time_seconds and the current time
+ * and splits it into separate values.
+ *
+ * Returns: whether the out parameters had been set
+ *
+ * Since: 41
+ **/
+gboolean
+gs_utils_split_time_difference (gint64 unix_time_seconds,
+				gint *out_minutes_ago,
+				gint *out_hours_ago,
+				gint *out_days_ago,
+				gint *out_weeks_ago,
+				gint *out_months_ago,
+				gint *out_years_ago)
+{
+	gint minutes_ago, hours_ago, days_ago;
+	gint weeks_ago, months_ago, years_ago;
+	g_autoptr(GDateTime) date_time = NULL;
+	g_autoptr(GDateTime) now = NULL;
+	GTimeSpan timespan;
+
+	if (unix_time_seconds <= 0)
+		return FALSE;
+
+	date_time = g_date_time_new_from_unix_local (unix_time_seconds);
+	now = g_date_time_new_now_local ();
+	timespan = g_date_time_difference (now, date_time);
+
+	minutes_ago = (gint) (timespan / G_TIME_SPAN_MINUTE);
+	hours_ago = (gint) (timespan / G_TIME_SPAN_HOUR);
+	days_ago = (gint) (timespan / G_TIME_SPAN_DAY);
+	weeks_ago = days_ago / 7;
+	months_ago = days_ago / 30;
+	years_ago = weeks_ago / 52;
+
+	if (out_minutes_ago)
+		*out_minutes_ago = minutes_ago;
+	if (out_hours_ago)
+		*out_hours_ago = hours_ago;
+	if (out_days_ago)
+		*out_days_ago = days_ago;
+	if (out_weeks_ago)
+		*out_weeks_ago = weeks_ago;
+	if (out_months_ago)
+		*out_months_ago = months_ago;
+	if (out_years_ago)
+		*out_years_ago = years_ago;
+
+	return TRUE;
+}
+
+/**
  * gs_utils_time_to_string:
  * @unix_time_seconds: Time since the epoch in seconds
  *
@@ -748,23 +810,11 @@ gs_utils_time_to_string (gint64 unix_time_seconds)
 {
 	gint minutes_ago, hours_ago, days_ago;
 	gint weeks_ago, months_ago, years_ago;
-	g_autoptr(GDateTime) date_time = NULL;
-	g_autoptr(GDateTime) now = NULL;
-	GTimeSpan timespan;
 
-	if (unix_time_seconds <= 0)
+	if (!gs_utils_split_time_difference (unix_time_seconds,
+		&minutes_ago, &hours_ago, &days_ago,
+		&weeks_ago, &months_ago, &years_ago))
 		return NULL;
-
-	date_time = g_date_time_new_from_unix_local (unix_time_seconds);
-	now = g_date_time_new_now_local ();
-	timespan = g_date_time_difference (now, date_time);
-
-	minutes_ago = (gint) (timespan / G_TIME_SPAN_MINUTE);
-	hours_ago = (gint) (timespan / G_TIME_SPAN_HOUR);
-	days_ago = (gint) (timespan / G_TIME_SPAN_DAY);
-	weeks_ago = days_ago / 7;
-	months_ago = days_ago / 30;
-	years_ago = weeks_ago / 52;
 
 	if (minutes_ago < 5) {
 		/* TRANSLATORS: something happened less than 5 minutes ago */
