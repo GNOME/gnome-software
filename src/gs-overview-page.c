@@ -698,6 +698,8 @@ gs_overview_page_load (GsOverviewPage *self)
 				self->category_of_day = g_strdup (cat_id);
 			}
 			category = gs_category_manager_lookup (gs_plugin_loader_get_category_manager (self->plugin_loader), cat_id);
+			g_assert (category != NULL);
+
 			featured_category = gs_category_find_child (category, "featured");
 
 			load_data = g_slice_new0 (LoadData);
