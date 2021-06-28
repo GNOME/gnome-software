@@ -48,5 +48,12 @@ gboolean	 gs_utils_list_has_component_fuzzy	(GsAppList	*list,
 						 GsApp		*app);
 void		 gs_utils_reboot_notify		(GsAppList	*list);
 gchar		*gs_utils_time_to_string	(gint64		 unix_time_seconds);
+gboolean	gs_utils_split_time_difference	(gint64 unix_time_seconds,
+						 gint *out_minutes_ago,
+						 gint *out_hours_ago,
+						 gint *out_days_ago,
+						 gint *out_weeks_ago,
+						 gint *out_months_ago,
+						 gint *out_years_ago);
 
 G_END_DECLS
