@@ -472,25 +472,20 @@ out:
 static const gchar *
 gs_overview_page_get_category_label (const gchar *id)
 {
-	if (g_strcmp0 (id, "audio-video") == 0) {
-		/* TRANSLATORS: this is a heading for audio applications which
-		 * have been featured ('recommended') by the distribution */
-		return _("Recommended Audio & Video Applications");
-	}
-	if (g_strcmp0 (id, "games") == 0) {
+	if (g_strcmp0 (id, "play") == 0) {
 		/* TRANSLATORS: this is a heading for games which have been
 		 * featured ('recommended') by the distribution */
 		return _("Recommended Games");
 	}
-	if (g_strcmp0 (id, "graphics") == 0) {
+	if (g_strcmp0 (id, "create") == 0) {
 		/* TRANSLATORS: this is a heading for graphics applications
 		 * which have been featured ('recommended') by the distribution */
-		return _("Recommended Graphics Applications");
+		return _("Recommended Creation Applications");
 	}
-	if (g_strcmp0 (id, "productivity") == 0) {
+	if (g_strcmp0 (id, "work") == 0) {
 		/* TRANSLATORS: this is a heading for office applications which
 		 * have been featured ('recommended') by the distribution */
-		return _("Recommended Productivity Applications");
+		return _("Recommended Work Applications");
 	}
 	return NULL;
 }
@@ -502,10 +497,10 @@ gs_overview_page_get_random_categories (void)
 	guint i;
 	g_autoptr(GDateTime) date = NULL;
 	g_autoptr(GRand) rand = NULL;
-	const gchar *ids[] = { "audio-video",
-			       "games",
-			       "graphics",
-			       "productivity",
+	const gchar *ids[] = { "create",
+			       "play",
+			       "socialize",
+			       "work",
 			       NULL };
 
 	date = g_date_time_new_now_utc ();

@@ -465,24 +465,18 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	 * entertainment
 	 */
 
-	if (strcmp (id->str, "games/featured") == 0)
+	if (strcmp (id->str, "play/featured") == 0)
 		sections = "games";
-	else if (strcmp (id->str, "audio-video/featured") == 0)
-		sections = "music-and-audio";
-	else if (strcmp (id->str, "graphics/featured") == 0)
-		sections = "photo-and-video;art-and-design";
-	else if (strcmp (id->str, "communication/featured") == 0)
+	else if (strcmp (id->str, "create/featured") == 0)
+		sections = "photo-and-video;art-and-design;music-and-video";
+	else if (strcmp (id->str, "socialize/featured") == 0)
 		sections = "social;news-and-weather";
-	else if (strcmp (id->str, "productivity/featured") == 0)
-		sections = "productivity;finance";
-	else if (strcmp (id->str, "developer-tools/featured") == 0)
+	else if (strcmp (id->str, "work/featured") == 0)
+		sections = "productivity;finance;utilities";
+	else if (strcmp (id->str, "develop/featured") == 0)
 		sections = "development";
-	else if (strcmp (id->str, "utilities/featured") == 0)
-		sections = "utilities";
-	else if (strcmp (id->str, "education-science/featured") == 0)
-		sections = "education;science";
-	else if (strcmp (id->str, "reference/featured") == 0)
-		sections = "books-and-reference";
+	else if (strcmp (id->str, "learn/featured") == 0)
+		sections = "education;science;books-and-reference";
 
 	if (sections != NULL) {
 		g_auto(GStrv) tokens = NULL;
