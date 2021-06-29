@@ -615,9 +615,11 @@ gs_shell_change_mode (GsShell *shell,
 	} else {
 		hdy_deck_set_visible_child_name (shell->details_deck, "main");
 		/* We only change the main deck when not reaching the details
-		 * page to preserve the navigation history in the UI's state. */
-		hdy_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
+		 * page to preserve the navigation history in the UI's state.
+		 * First change the page, then the deck, to avoid load of
+		 * the previously shown page, which will be changed shortly after. */
 		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
+		hdy_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
 	}
 
 	/* do any mode-specific actions */
