@@ -243,6 +243,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 				     _("Setting Up Updates…"));
 		break;
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
+	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner),
 				     /* TRANSLATORS: the update panel is doing *something* vague */
 				     _("Looking for New Updates…"));
