@@ -19,6 +19,7 @@
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
+#include "gs-app-context-bar.h"
 #include "gs-app-version-history-row.h"
 #include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
@@ -91,7 +92,6 @@ struct _GsDetailsPage
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
 	GtkWidget		*screenshot_carousel;
-	GtkWidget		*box_details_license_list;
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
@@ -109,32 +109,18 @@ struct _GsDetailsPage
 	GtkWidget		*label_progress_percentage;
 	GtkWidget		*label_progress_status;
 	GtkWidget		*label_addons_uninstalled_app;
-	GtkWidget		*label_details_category_title;
-	GtkWidget		*label_details_category_value;
+	GsAppContextBar		*context_bar;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
 	GtkWidget		*box_details_developer;
 	GtkWidget		*image_details_developer_verified;
-	GtkWidget		*button_details_license_free;
-	GtkWidget		*button_details_license_nonfree;
-	GtkWidget		*button_details_license_unknown;
-	GtkWidget		*label_details_license_title;
-	GtkWidget		*box_details_license_value;
 	GtkWidget		*label_details_channel_title;
 	GtkWidget		*label_details_channel_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
-	GtkWidget		*label_details_size_installed_title;
-	GtkWidget		*label_details_size_installed_value;
-	GtkWidget		*label_details_size_download_title;
-	GtkWidget		*label_details_size_download_value;
 	GtkWidget		*label_details_updated_title;
 	GtkWidget		*label_details_updated_value;
-	GtkWidget		*label_details_permissions_title;
-	GtkWidget		*button_details_permissions_value;
 	GtkWidget		*label_failed;
-	GtkWidget		*label_license_nonfree_details;
-	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
 	GtkWidget		*row_latest_version;
@@ -149,29 +135,15 @@ struct _GsDetailsPage
 	GtkWidget		*stack_details;
 	GtkWidget		*grid_details_kudo;
 	GtkWidget		*image_details_kudo_docs;
-	GtkWidget		*image_details_kudo_sandboxed;
 	GtkWidget		*image_details_kudo_integration;
 	GtkWidget		*image_details_kudo_translated;
 	GtkWidget		*image_details_kudo_updated;
 	GtkWidget		*label_details_kudo_docs;
-	GtkWidget		*label_details_kudo_sandboxed;
 	GtkWidget		*label_details_kudo_integration;
 	GtkWidget		*label_details_kudo_translated;
 	GtkWidget		*label_details_kudo_updated;
 	GtkWidget		*progressbar_top;
 	guint			 progress_pulse_id;
-	GtkWidget		*popover_license_free;
-	GtkWidget		*popover_license_nonfree;
-	GtkWidget		*popover_license_unknown;
-	GtkWidget		*popover_content_rating;
-	GtkWidget		*label_content_rating_title;
-	GtkWidget		*label_content_rating_message;
-	GtkWidget		*label_content_rating_none;
-	GtkWidget		*button_details_rating_value;
-	GtkStyleProvider	*button_details_rating_style_provider;
-	GtkWidget		*label_details_rating_title;
-	GtkWidget		*popover_permissions;
-	GtkWidget		*box_permissions_details;
 	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
@@ -631,36 +603,6 @@ gs_details_page_history_cb (GtkLabel *label,
 	return TRUE;
 }
 
-static void
-gs_details_page_refresh_size (GsDetailsPage *self)
-{
-	/* set the installed size */
-	if (gs_app_get_size_installed (self->app) != GS_APP_SIZE_UNKNOWABLE &&
-	    gs_app_get_size_installed (self->app) != 0) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_installed (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_installed_value), size);
-		gtk_widget_show (self->label_details_size_installed_title);
-		gtk_widget_show (self->label_details_size_installed_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_installed_title);
-		gtk_widget_hide (self->label_details_size_installed_value);
-	}
-
-	/* set the download size */
-	if (!gs_app_is_installed (self->app) &&
-	    gs_app_get_size_download (self->app) != GS_APP_SIZE_UNKNOWABLE) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_download (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
-		gtk_widget_show (self->label_details_size_download_title);
-		gtk_widget_show (self->label_details_size_download_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_download_title);
-		gtk_widget_hide (self->label_details_size_download_value);
-	}
-}
-
 static gboolean
 app_origin_equal (GsApp *a,
                   GsApp *b)
@@ -983,106 +925,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	}
 }
 
-static struct {
-	GsAppPermissions permission;
-	const char *title;
-	const char *subtitle;
-} permission_display_data[] = {
-  { GS_APP_PERMISSIONS_NETWORK, N_("Network"), N_("Can communicate over the network") },
-  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
-  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
-  { GS_APP_PERMISSIONS_DEVICES, N_("Devices"), N_("Can access system device files") },
-  { GS_APP_PERMISSIONS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
-  { GS_APP_PERMISSIONS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
-  { GS_APP_PERMISSIONS_ESCAPE_SANDBOX, N_("Sandbox escape"), N_("Can escape the sandbox and circumvent any other restrictions") },
-};
-
-static void
-populate_permission_details (GsDetailsPage *self, GsAppPermissions permissions)
-{
-	GList *children;
-
-	children = gtk_container_get_children (GTK_CONTAINER (self->box_permissions_details));
-	for (GList *l = children; l != NULL; l = l->next)
-		gtk_widget_destroy (GTK_WIDGET (l->data));
-	g_list_free (children);
-
-	if (permissions == GS_APP_PERMISSIONS_NONE) {
-		GtkWidget *label;
-		label = gtk_label_new (_("This application is fully sandboxed."));
-		gtk_label_set_xalign (GTK_LABEL (label), 0);
-		gtk_label_set_max_width_chars (GTK_LABEL (label), 40);
-		gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (self->box_permissions_details), label);
-	} else if (permissions == GS_APP_PERMISSIONS_UNKNOWN) {
-		GtkWidget *label;
-		label = gtk_label_new (_("Unable to determine which parts of the system "
-		                         "this application accesses. This is typical for "
-		                         "older applications."));
-		gtk_label_set_xalign (GTK_LABEL (label), 0);
-		gtk_label_set_max_width_chars (GTK_LABEL (label), 40);
-		gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (self->box_permissions_details), label);
-	} else {
-		gboolean with_icons = FALSE;
-		gsize i;
-
-		for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-			if ((permissions & permission_display_data[i].permission) != 0 &&
-			    (permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
-				with_icons = TRUE;
-				break;
-			}
-		}
-
-		for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-			GtkWidget *row, *box, *label;
-
-			if ((permissions & permission_display_data[i].permission) == 0)
-				continue;
-
-			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-			gtk_widget_show (row);
-
-			if (with_icons) {
-				GtkWidget *image;
-
-				image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
-				if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
-					gtk_widget_set_opacity (image, 0);
-
-				gtk_widget_show (image);
-				gtk_container_add (GTK_CONTAINER (row), image);
-			}
-
-			box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-			gtk_widget_show (box);
-			gtk_container_add (GTK_CONTAINER (row), box);
-
-			label = gtk_label_new (_(permission_display_data[i].title));
-			gtk_label_set_xalign (GTK_LABEL (label), 0);
-			gtk_widget_show (label);
-			gtk_container_add (GTK_CONTAINER (box), label);
-
-			label = gtk_label_new (_(permission_display_data[i].subtitle));
-			gtk_label_set_xalign (GTK_LABEL (label), 0);
-			gtk_style_context_add_class (gtk_widget_get_style_context (label), "dim-label");
-			gtk_widget_show (label);
-			gtk_container_add (GTK_CONTAINER (box), label);
-
-			gtk_container_add (GTK_CONTAINER (self->box_permissions_details), row);
-		}
-	}
-}
-
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
@@ -1091,7 +933,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	GList *addons;
 	const gchar *tmp;
 	gboolean ret;
-	gchar **menu_path;
 	guint64 kudos;
 	guint64 updated;
 	guint64 user_integration_bf;
@@ -1179,22 +1020,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 	gtk_widget_set_visible (self->image_details_developer_verified, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
 
-	/* set the license buttons */
-	tmp = gs_app_get_license (self->app);
-	if (tmp == NULL) {
-		gtk_widget_set_visible (self->button_details_license_free, FALSE);
-		gtk_widget_set_visible (self->button_details_license_nonfree, FALSE);
-		gtk_widget_set_visible (self->button_details_license_unknown, TRUE);
-	} else if (gs_app_get_license_is_free (self->app)) {
-		gtk_widget_set_visible (self->button_details_license_free, TRUE);
-		gtk_widget_set_visible (self->button_details_license_nonfree, FALSE);
-		gtk_widget_set_visible (self->button_details_license_unknown, FALSE);
-	} else {
-		gtk_widget_set_visible (self->button_details_license_free, FALSE);
-		gtk_widget_set_visible (self->button_details_license_nonfree, TRUE);
-		gtk_widget_set_visible (self->button_details_license_unknown, FALSE);
-	}
-
 	/* set channel for snaps */
 	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_SNAP) {
 		gtk_label_set_label (GTK_LABEL (self->label_details_channel_value), gs_app_get_branch (self->app));
@@ -1223,9 +1048,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
-
-	/* refresh size information */
-	gs_details_page_refresh_size (self);
 
 	/* set the updated date */
 	updated = gs_app_get_install_date (self->app);
@@ -1257,22 +1079,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		}
 		gtk_widget_set_visible (self->label_details_updated_title, TRUE);
 		gtk_widget_set_visible (self->label_details_updated_value, TRUE);
-	}
-
-	/* set the category */
-	menu_path = gs_app_get_menu_path (self->app);
-	if (menu_path == NULL || menu_path[0] == NULL || menu_path[0][0] == '\0') {
-		gtk_widget_set_visible (self->label_details_category_title, FALSE);
-		gtk_widget_set_visible (self->label_details_category_value, FALSE);
-	} else {
-		g_autofree gchar *path = NULL;
-		if (gtk_widget_get_direction (self->label_details_category_value) == GTK_TEXT_DIR_RTL)
-			path = g_strjoinv (" ← ", menu_path);
-		else
-			path = g_strjoinv (" → ", menu_path);
-		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), path);
-		gtk_widget_set_visible (self->label_details_category_title, TRUE);
-		gtk_widget_set_visible (self->label_details_category_value, TRUE);
 	}
 
 	/* set the origin */
@@ -1308,11 +1114,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
 	gs_details_page_set_sensitive (self->label_details_kudo_docs, ret);
 
-	/* set sandboxed kudo */
-	ret = (kudos & GS_APP_KUDO_SANDBOXED) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_sandboxed, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_sandboxed, ret);
-
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
 			      GS_APP_KUDO_USES_NOTIFICATIONS |
@@ -1329,33 +1130,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	default:
 		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
 		break;
-	}
-
-	/* only show permissions for flatpak apps */
-	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_FLATPAK &&
-	    gs_app_get_kind (self->app) == AS_COMPONENT_KIND_DESKTOP_APP) {
-		GsAppPermissions permissions = gs_app_get_permissions (self->app);
-
-		populate_permission_details (self, permissions);
-
-		if (permissions != GS_APP_PERMISSIONS_UNKNOWN) {
-			if (permissions == GS_APP_PERMISSIONS_NONE)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "None"));
-			else if ((permissions & ~LIMITED_PERMISSIONS) == 0)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Low"));
-			else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Medium"));
-			else
-				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "High"));
-		} else {
-			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), C_("App permissions", "Unknown"));
-		}
-
-		gtk_widget_set_visible (self->label_details_permissions_title, TRUE);
-		gtk_widget_set_visible (self->button_details_permissions_value, TRUE);
-	} else {
-		gtk_widget_set_visible (self->label_details_permissions_title, FALSE);
-		gtk_widget_set_visible (self->button_details_permissions_value, FALSE);
 	}
 
 	/* are we trying to replace something in the baseos */
@@ -1412,18 +1186,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->label_addons_uninstalled_app, TRUE);
-		break;
-	}
-
-	/* hide fields that don't make sense for sources */
-	switch (gs_app_get_kind (self->app)) {
-	case AS_COMPONENT_KIND_REPOSITORY:
-		gtk_widget_set_visible (self->label_details_license_title, FALSE);
-		gtk_widget_set_visible (self->box_details_license_value, FALSE);
-		break;
-	default:
-		gtk_widget_set_visible (self->label_details_license_title, TRUE);
-		gtk_widget_set_visible (self->box_details_license_value, TRUE);
 		break;
 	}
 
@@ -1717,77 +1479,8 @@ gs_details_page_app_refine_cb (GObject *source,
 			   error->message);
 		return;
 	}
-	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_addons (self);
-}
-
-static void
-gs_details_page_content_rating_set_css (GsDetailsPage *page, guint age)
-{
-	GtkStyleContext *style_context;
-	const gchar *classes[] =  {
-		"details-rating-18",
-		"details-rating-15",
-		"details-rating-12",
-		"details-rating-5",
-		"details-rating-0"
-	};
-	guint age_index, ii;
-
-	if (age >= 18)
-		age_index = 0;
-	else if (age >= 15)
-		age_index = 1;
-	else if (age >= 12)
-		age_index = 2;
-	else if (age >= 5)
-		age_index = 3;
-	else
-		age_index = 4;
-
-	style_context = gtk_widget_get_style_context (page->button_details_rating_value);
-	for (ii = 0; ii < G_N_ELEMENTS (classes); ii++) {
-		if (ii == age_index) {
-			if (!gtk_style_context_has_class (style_context, classes[ii]))
-				gtk_style_context_add_class (style_context, classes[ii]);
-		} else {
-			gtk_style_context_remove_class (style_context, classes[ii]);
-		}
-	}
-}
-
-static void
-gs_details_page_refresh_content_rating (GsDetailsPage *self)
-{
-	AsContentRating *content_rating;
-	AsContentRatingSystem system;
-	guint age = 0;
-	g_autofree gchar *display = NULL;
-	const gchar *locale;
-
-	/* get the content rating system from the locale */
-	locale = setlocale (LC_MESSAGES, NULL);
-	system = as_content_rating_system_from_locale (locale);
-	g_debug ("content rating system is guessed as %s from %s",
-		 as_content_rating_system_to_string (system),
-		 locale);
-
-	/* only show the button if a game and has a content rating */
-	content_rating = gs_app_get_content_rating (self->app);
-	if (content_rating != NULL) {
-		age = as_content_rating_get_minimum_age (content_rating);
-		display = as_content_rating_system_format_age (system, age);
-	}
-	if (display != NULL) {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
-		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
-		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
-		gs_details_page_content_rating_set_css (self, age);
-	} else {
-		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
-		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
-	}
 }
 
 static void
@@ -1807,6 +1500,8 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	/* save app */
 	g_set_object (&self->app, app);
 
+	gs_app_context_bar_set_app (self->context_bar, app);
+
 	/* title/app name will have changed */
 	g_object_notify (G_OBJECT (self), "title");
 
@@ -1820,9 +1515,6 @@ _set_app (GsDetailsPage *self, GsApp *app)
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::size",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::license",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::quirk",
@@ -1861,7 +1553,6 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
-	gs_details_page_refresh_content_rating (self);
 
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
@@ -2353,291 +2044,6 @@ gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
-static guint
-content_rating_get_age (AsContentRating *content_rating, const gchar *id)
-{
-	AsContentRatingValue value = as_content_rating_get_value (content_rating, id);
-	return as_content_rating_attribute_to_csm_age (id, value);
-}
-
-static void
-gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	AsContentRating *cr;
-	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
-	guint age_bad = 0;
-	const gchar *tmp;
-	g_autofree const gchar **ids = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
-
-	/* Ordered from worst to best */
-	const gchar *violence_group[] = {
-		"violence-bloodshed",
-		"violence-realistic",
-		"violence-fantasy",
-		"violence-cartoon",
-		NULL
-	};
-	const gchar *social_group[] = {
-		"social-audio",
-		"social-chat",
-		"social-contacts",
-		"social-info",
-		NULL
-	};
-	const gchar *coalesce_groups[] = {
-		"sex-themes",
-		"sex-homosexuality",
-		NULL
-	};
-
-	cr = gs_app_get_content_rating (self->app);
-	if (cr == NULL)
-		return;
-
-	ids = as_content_rating_get_all_rating_ids ();
-
-	/* get the worst thing */
-	for (gsize i = 0; ids[i] != NULL; i++) {
-		guint age;
-		AsContentRatingValue value;
-		value = as_content_rating_get_value (cr, ids[i]);
-		age = content_rating_get_age (cr, ids[i]);
-		if (age > age_bad)
-			age_bad = age;
-		if (value > value_bad)
-			value_bad = value;
-	}
-
-	/* if the worst thing is nothing, great! show a more specific message
-	 * than a big listing of all the groups */
-	if (value_bad == AS_CONTENT_RATING_VALUE_NONE) {
-		/* set the labels */
-		gtk_label_set_label (GTK_LABEL (self->label_content_rating_message),
-				     _("The application contains no age-inappropriate content."));
-		gtk_widget_set_visible (self->label_content_rating_title, FALSE);
-		gtk_widget_set_visible (self->label_content_rating_message, TRUE);
-		gtk_widget_set_visible (self->label_content_rating_none, FALSE);
-
-		/* show popover */
-		gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
-		gtk_widget_show (self->popover_content_rating);
-
-		return;
-	}
-
-	/* get the content rating description for the worst things about the app;
-	 * handle the groups separately. intentionally coalesce some categories
-	 * if they have the same values, to avoid confusion */
-	for (gsize i = 0; ids[i] != NULL; i++) {
-		if (!g_strv_contains (violence_group, ids[i]) &&
-		    !g_strv_contains (social_group, ids[i])) {
-			guint age;
-			age = content_rating_get_age (cr, ids[i]);
-			if (age < age_bad)
-				continue;
-
-			/* coalesce down to the first element in @coalesce_groups,
-			 * unless this group’s value differs. currently only one
-			 * coalesce group is supported */
-			if (g_strv_contains (coalesce_groups + 1, ids[i]) &&
-			    content_rating_get_age (cr, coalesce_groups[0]) == age)
-				continue;
-
-			tmp = as_content_rating_attribute_get_description (ids[i], as_content_rating_get_value (cr, ids[i]));
-			g_string_append_printf (str, "• %s\n", tmp);
-		}
-	}
-
-	for (gsize i = 0; violence_group[i] != NULL; i++) {
-		guint age;
-		age = content_rating_get_age (cr, violence_group[i]);
-		if (age < age_bad)
-			continue;
-		tmp = as_content_rating_attribute_get_description (violence_group[i], as_content_rating_get_value (cr, violence_group[i]));
-		g_string_append_printf (str, "• %s\n", tmp);
-		break;
-	}
-
-	for (gsize i = 0; social_group[i] != NULL; i++) {
-		guint age;
-		age = content_rating_get_age (cr, social_group[i]);
-		if (age < age_bad)
-			continue;
-		tmp = as_content_rating_attribute_get_description (social_group[i], as_content_rating_get_value (cr, social_group[i]));
-		g_string_append_printf (str, "• %s\n", tmp);
-		break;
-	}
-
-	if (str->len > 0)
-		g_string_truncate (str, str->len - 1);
-
-	/* enable the details if there are any */
-	gtk_label_set_label (GTK_LABEL (self->label_content_rating_message), str->str);
-	gtk_widget_set_visible (self->label_content_rating_title, str->len > 0);
-	gtk_widget_set_visible (self->label_content_rating_message, str->len > 0);
-	gtk_widget_set_visible (self->label_content_rating_none, str->len == 0);
-
-	/* show popover */
-	gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
-	gtk_widget_show (self->popover_content_rating);
-}
-
-static void
-gs_details_page_permissions_button_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	gtk_widget_show (self->popover_permissions);
-}
-
-static gboolean
-gs_details_page_activate_link_cb (GtkLabel *label,
-                                  const gchar *uri,
-                                  GsDetailsPage *self)
-{
-	gs_shell_show_uri (self->shell, uri);
-	return TRUE;
-}
-
-static GtkWidget *
-gs_details_page_label_widget (GsDetailsPage *self,
-                              const gchar *title,
-                              const gchar *url)
-{
-	GtkWidget *w;
-	g_autofree gchar *markup = NULL;
-
-	markup = g_strdup_printf ("<a href=\"%s\">%s</a>", url, title);
-	w = gtk_label_new (markup);
-	g_signal_connect (w, "activate-link",
-			  G_CALLBACK (gs_details_page_activate_link_cb),
-			  self);
-	gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
-	gtk_label_set_xalign (GTK_LABEL (w), 0.f);
-	gtk_widget_set_visible (w, TRUE);
-	return w;
-}
-
-static GtkWidget *
-gs_details_page_license_widget_for_token (GsDetailsPage *self, const gchar *token)
-{
-	/* public domain */
-	if (g_strcmp0 (token, "@LicenseRef-public-domain") == 0) {
-		/* TRANSLATORS: see the wikipedia page */
-		return gs_details_page_label_widget (self, _("Public domain"),
-			/* TRANSLATORS: Replace the link with a version in your language,
-			 * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit */
-			_("https://en.wikipedia.org/wiki/Public_domain"));
-	}
-
-	/* free software, license unspecified */
-	if (g_str_has_prefix (token, "@LicenseRef-free")) {
-		/* TRANSLATORS: Replace the link with a version in your language,
-		 * e.g. https://www.gnu.org/philosophy/free-sw.de */
-		const gchar *url = _("https://www.gnu.org/philosophy/free-sw");
-		gchar *tmp;
-
-		/* we support putting a custom URL in the
-		 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
-		tmp = g_strstr_len (token, -1, "=");
-		if (tmp != NULL)
-			url = tmp + 1;
-
-		/* TRANSLATORS: see GNU page */
-		return gs_details_page_label_widget (self, _("Free Software"), url);
-	}
-
-	/* SPDX value */
-	if (g_str_has_prefix (token, "@")) {
-		g_autofree gchar *uri = NULL;
-		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
-				       token + 1);
-		return gs_details_page_label_widget (self, token + 1, uri);
-	}
-
-	/* new SPDX value the extractor didn't know about */
-	if (as_is_spdx_license_id (token)) {
-		g_autofree gchar *uri = NULL;
-		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
-				       token);
-		return gs_details_page_label_widget (self, token, uri);
-	}
-
-	/* nothing to show */
-	return NULL;
-}
-
-static void
-gs_details_page_license_free_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	guint cnt = 0;
-	guint i;
-	g_auto(GStrv) tokens = NULL;
-
-	/* URLify any SPDX IDs */
-	gs_container_remove_all (GTK_CONTAINER (self->box_details_license_list));
-	tokens = as_spdx_license_tokenize (gs_app_get_license (self->app));
-	for (i = 0; tokens[i] != NULL; i++) {
-		GtkWidget *w = NULL;
-
-		/* translated join */
-		if (g_strcmp0 (tokens[i], "&") == 0)
-			continue;
-		if (g_strcmp0 (tokens[i], "|") == 0)
-			continue;
-		if (g_strcmp0 (tokens[i], "+") == 0)
-			continue;
-
-		/* add widget */
-		w = gs_details_page_license_widget_for_token (self, tokens[i]);
-		if (w == NULL)
-			continue;
-		gtk_container_add (GTK_CONTAINER (self->box_details_license_list), w);
-
-		/* one more license */
-		cnt++;
-	}
-
-	/* use the correct plural */
-	gtk_label_set_label (GTK_LABEL (self->label_licenses_intro),
-			     /* TRANSLATORS: for the free software popover */
-			     ngettext ("Users are bound by the following license:",
-				       "Users are bound by the following licenses:",
-				       cnt));
-	gtk_widget_set_visible (self->label_licenses_intro, cnt > 0);
-
-	gtk_widget_show (self->popover_license_free);
-}
-
-static void
-gs_details_page_license_nonfree_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	g_autofree gchar *str = NULL;
-	g_autofree gchar *uri = NULL;
-	g_auto(GStrv) tokens = NULL;
-
-	/* license specified as a link */
-	tokens = as_spdx_license_tokenize (gs_app_get_license (self->app));
-	for (guint i = 0; tokens[i] != NULL; i++) {
-		if (g_str_has_prefix (tokens[i], "@LicenseRef-proprietary=")) {
-			uri = g_strdup (tokens[i] + 24);
-			break;
-		}
-	}
-	if (uri == NULL)
-		uri = g_settings_get_string (self->settings, "nonfree-software-uri");
-	str = g_strdup_printf ("<a href=\"%s\">%s</a>",
-			       uri,
-			       _("More information"));
-	gtk_label_set_label (GTK_LABEL (self->label_license_nonfree_details), str);
-	gtk_widget_show (self->popover_license_nonfree);
-}
-
-static void
-gs_details_page_license_unknown_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	gtk_widget_show (self->popover_license_unknown);
-}
-
 static void
 gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
                                              GParamSpec *pspec,
@@ -2697,12 +2103,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
-	g_signal_connect (self->button_details_rating_value, "clicked",
-			  G_CALLBACK (gs_details_page_content_rating_button_cb),
-			  self);
-	g_signal_connect (self->button_details_permissions_value, "clicked",
-			  G_CALLBACK (gs_details_page_permissions_button_cb),
-			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
 			  G_CALLBACK (gs_details_page_history_cb),
 			  self);
@@ -2720,18 +2120,6 @@ gs_details_page_setup (GsPage *page,
 			  self);
 	g_signal_connect (self->button_donate, "clicked",
 			  G_CALLBACK (gs_details_page_donate_cb),
-			  self);
-	g_signal_connect (self->button_details_license_free, "clicked",
-			  G_CALLBACK (gs_details_page_license_free_cb),
-			  self);
-	g_signal_connect (self->button_details_license_nonfree, "clicked",
-			  G_CALLBACK (gs_details_page_license_nonfree_cb),
-			  self);
-	g_signal_connect (self->button_details_license_unknown, "clicked",
-			  G_CALLBACK (gs_details_page_license_unknown_cb),
-			  self);
-	g_signal_connect (self->label_license_nonfree_details, "activate-link",
-			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
@@ -2821,7 +2209,6 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->app_cancellable);
 	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
-	g_clear_object (&self->button_details_rating_style_provider);
 	g_clear_object (&self->odrs_provider);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
@@ -2878,7 +2265,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_list);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
@@ -2894,31 +2280,19 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_addons_uninstalled_app);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, context_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_developer);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_free);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_nonfree);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_unknown);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_license_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_permissions_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
@@ -2934,29 +2308,14 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, grid_details_kudo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_sandboxed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_sandboxed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_free);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_nonfree);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_unknown);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_license_nonfree_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_licenses_intro);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_content_rating);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_message);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_permissions);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_permissions_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
@@ -2991,8 +2350,6 @@ gs_details_page_init (GsDetailsPage *self)
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
 
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
-
-	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_details_permissions_value), "content-rating-permissions");
 }
 
 GsDetailsPage *

@@ -401,6 +401,18 @@
                         <property name="visible">True</property>
                         <property name="preferred-width">860</property>
                         <child>
+                          <object class="GsAppContextBar" id="context_bar">
+                            <property name="visible">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
+                        <child>
                           <object class="GtkListBox" id="list_box_version_history">
                             <property name="visible">True</property>
                             <property name="selection_mode">none</property>
@@ -656,21 +668,6 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkImage" id="image_details_kudo_sandboxed">
-                                    <property name="visible">True</property>
-                                    <property name="pixel_size">16</property>
-                                    <property name="icon_name">security-medium-symbolic</property>
-                                    <property name="icon_size">0</property>
-                                    <style>
-                                      <class name="kudo-pill"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkLabel" id="label_details_kudo_translated">
                                     <property name="visible">True</property>
                                     <property name="label" translatable="yes">Localized in your Language</property>
@@ -712,17 +709,6 @@
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_kudo_sandboxed">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Sandboxed</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                               </object>
@@ -771,82 +757,6 @@
                                 </child>
 
                                 <child>
-                                  <object class="GtkLabel" id="label_details_rating_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Age Rating</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">10</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="button_details_rating_value">
-                                    <property name="visible">False</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="label">18</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="halign">start</property>
-                                    <style>
-                                      <class name="content-rating"/>
-                                    </style>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_rating_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">10</property>
-                                  </packing>
-                                </child>
-
-                                <child>
-                                  <object class="GtkLabel" id="label_details_permissions_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Permissions</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">11</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="button_details_permissions_value">
-                                    <property name="visible">True</property>
-                                    <property name="use_underline">True</property>
-                                    <property name="label">Details</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="vexpand">False</property>
-                                    <property name="halign">start</property>
-                                    <style>
-                                      <class name="content-rating"/>
-                                    </style>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_permissions_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">11</property>
-                                  </packing>
-                                </child>
-
-                                <child>
                                   <object class="GtkLabel" id="label_details_updated_title">
                                     <property name="visible">True</property>
                                     <property name="label" translatable="yes">Updated</property>
@@ -878,104 +788,6 @@
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_category_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Category</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_category_value">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">Photos &amp; Video</property>
-                                    <property name="wrap">True</property>
-                                    <property name="selectable">True</property>
-                                    <property name="max_width_chars">10</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_category_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-
-                                <child>
-                                  <object class="GtkLabel" id="label_details_size_installed_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Installed Size</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">8</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_size_installed_value">
-                                    <property name="visible">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">30 MB</property>
-                                    <property name="selectable">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">8</property>
-                                  </packing>
-                                </child>
-
-                                <child>
-                                  <object class="GtkLabel" id="label_details_size_download_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Download Size</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">9</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_size_download_value">
-                                    <property name="visible">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">30 MB</property>
-                                    <property name="selectable">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">9</property>
                                   </packing>
                                 </child>
 
@@ -1054,68 +866,6 @@
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">6</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_license_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">License</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">5</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="box_details_license_value">
-                                    <property name="visible">True</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkButton" id="button_details_license_free">
-                                        <property name="label" translatable="yes" comments="This refers to the license of the application">Free</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="halign">start</property>
-                                        <style>
-                                          <class name="details-license-free"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="button_details_license_nonfree">
-                                        <property name="label" translatable="yes" comments="This refers to the license of the application">Proprietary</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="halign">start</property>
-                                        <style>
-                                          <class name="details-license-nonfree"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="button_details_license_unknown">
-                                        <property name="label" translatable="yes" comments="This refers to the license of the application" context="Application license">Unknown</property>
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="halign">start</property>
-                                        <style>
-                                          <class name="details-license-unknown"/>
-                                        </style>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">5</property>
                                   </packing>
                                 </child>
                               </object>
@@ -1251,200 +1001,6 @@
     <widgets>
       <widget name="button_details_website"/>
     </widgets>
-  </object>
-  <object class="GtkSizeGroup" id="sizegroup_button_details_license">
-    <widgets>
-      <widget name="button_details_license_free"/>
-      <widget name="button_details_license_nonfree"/>
-      <widget name="button_details_license_unknown"/>
-    </widgets>
-  </object>
-  <object class="GtkPopover" id="popover_license_free">
-    <property name="visible">False</property>
-    <property name="border_width">21</property>
-    <property name="relative_to">button_details_license_free</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="label" translatable="yes">Free Software</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="max_width_chars">34</property>
-            <property name="label" translatable="yes">This means that the software can be freely run, copied, distributed, studied and modified.</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_licenses_intro">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="label">Users are bound by the following licenses:</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_details_license_list">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="popover_license_nonfree">
-    <property name="visible">False</property>
-    <property name="border_width">21</property>
-    <property name="relative_to">button_details_license_nonfree</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="label" translatable="yes">Proprietary Software</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="max_width_chars">34</property>
-            <property name="label" translatable="yes">This means that the software is owned by an individual or a company. There are often restrictions on its use and its source code cannot usually be accessed.</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_license_nonfree_details">
-            <property name="visible">True</property>
-            <property name="use-markup">True</property>
-            <property name="halign">start</property>
-            <property name="label" translatable="yes">More information</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="popover_license_unknown">
-    <property name="visible">False</property>
-    <property name="name">popover_license_unknown</property>
-    <property name="border_width">21</property>
-    <property name="relative_to">button_details_license_unknown</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="label" translatable="yes">Unknown Software License</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="max_width_chars">34</property>
-            <property name="label" translatable="yes">The license terms of this software are unknown.</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-
-  <object class="GtkPopover" id="popover_content_rating">
-    <property name="visible">False</property>
-    <child>
-      <object class="GtkBox" id="box_content_rating">
-        <property name="visible">True</property>
-        <property name="border_width">24</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
-        <child>
-          <object class="GtkLabel" id="label_content_rating_title">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">The application was rated this way because it features:</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_content_rating_message">
-            <property name="visible">True</property>
-            <property name="label">• Use of alcoholic beverages</property>
-            <property name="xalign">0</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_content_rating_none">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">No details were available for this rating.</property>
-          </object>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkPopover" id="popover_permissions">
-    <property name="visible">False</property>
-    <property name="border_width">21</property>
-    <property name="relative_to">button_details_permissions_value</property>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">18</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="halign">center</property>
-            <property name="label" translatable="yes">Permissions</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_permissions_details">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">12</property>
-          </object>
-        </child>
-      </object>
-    </child>
   </object>
 
   <object class="GtkBox" id="origin_box">

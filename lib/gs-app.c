@@ -132,9 +132,8 @@ typedef struct
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 } GsAppPrivate;
 
-enum {
-	PROP_0,
-	PROP_ID,
+typedef enum {
+	PROP_ID = 1,
 	PROP_NAME,
 	PROP_VERSION,
 	PROP_SUMMARY,
@@ -152,10 +151,14 @@ enum {
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_URL_MISSING,
-	PROP_LAST
-};
+	PROP_CONTENT_RATING,
+	PROP_LICENSE,
+	PROP_SIZE_DOWNLOAD,
+	PROP_SIZE_INSTALLED,
+	PROP_PERMISSIONS,
+} GsAppProperty;
 
-static GParamSpec *obj_props[PROP_LAST] = { NULL, };
+static GParamSpec *obj_props[PROP_PERMISSIONS + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -2149,7 +2152,8 @@ gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->content_rating, content_rating);
+	if (g_set_object (&priv->content_rating, content_rating))
+		gs_app_queue_notify (app, obj_props[PROP_CONTENT_RATING]);
 }
 
 /**
@@ -2677,7 +2681,8 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 
 	priv->license_is_free = as_license_is_free_license (license);
 
-	_g_set_str (&priv->license, license);
+	if (_g_set_str (&priv->license, license))
+		gs_app_queue_notify (app, obj_props[PROP_LICENSE]);
 }
 
 /**
@@ -3447,12 +3452,9 @@ gs_app_add_provided_item (GsApp *app, AsProvidedKind kind, const gchar *item)
  * gs_app_get_size_download:
  * @app: A #GsApp
  *
- * Gets the size of the total download needed to either install an available
- * application, or update an already installed one.
+ * Get the value of #GsApp:size-download.
  *
- * If there is a runtime not yet installed then this is also added.
- *
- * Returns: number of bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ * Returns: number of bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
  *
  * Since: 3.22
  **/
@@ -3500,16 +3502,16 @@ gs_app_set_size_download (GsApp *app, guint64 size_download)
 	if (size_download == priv->size_download)
 		return;
 	priv->size_download = size_download;
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
 }
 
 /**
  * gs_app_get_size_installed:
  * @app: a #GsApp
  *
- * Gets the size on disk, either for an existing application of one that could
- * be installed.
+ * Get the value of #GsApp:size-installed.
  *
- * Returns: size in bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
+ * Returns: size in bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
  *
  * Since: 3.22
  **/
@@ -3550,6 +3552,7 @@ gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 	if (size_installed == priv->size_installed)
 		return;
 	priv->size_installed = size_installed;
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
 }
 
 /**
@@ -3777,6 +3780,10 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 		priv->state = priv2->state;
 
 	gs_app_list_add (priv->related, app2);
+
+	/* The related apps add to the main app’s sizes. */
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
 }
 
 /**
@@ -4657,7 +4664,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	GsApp *app = GS_APP (object);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	switch (prop_id) {
+	switch ((GsAppProperty) prop_id) {
 	case PROP_ID:
 		g_value_set_string (value, priv->id);
 		break;
@@ -4712,6 +4719,21 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_URL_MISSING:
 		g_value_set_string (value, priv->url_missing);
 		break;
+	case PROP_CONTENT_RATING:
+		g_value_set_object (value, priv->content_rating);
+		break;
+	case PROP_LICENSE:
+		g_value_set_string (value, priv->license);
+		break;
+	case PROP_SIZE_DOWNLOAD:
+		g_value_set_uint64 (value, gs_app_get_size_download (app));
+		break;
+	case PROP_SIZE_INSTALLED:
+		g_value_set_uint64 (value, gs_app_get_size_installed (app));
+		break;
+	case PROP_PERMISSIONS:
+		g_value_set_flags (value, priv->permissions);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4724,7 +4746,7 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	GsApp *app = GS_APP (object);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	switch (prop_id) {
+	switch ((GsAppProperty) prop_id) {
 	case PROP_ID:
 		gs_app_set_id (app, g_value_get_string (value));
 		break;
@@ -4785,6 +4807,21 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_URL_MISSING:
 		gs_app_set_url_missing (app, g_value_get_string (value));
+		break;
+	case PROP_CONTENT_RATING:
+		gs_app_set_content_rating (app, g_value_get_object (value));
+		break;
+	case PROP_LICENSE:
+		/* Read-only */
+		g_assert_not_reached ();
+	case PROP_SIZE_DOWNLOAD:
+		gs_app_set_size_download (app, g_value_get_uint64 (value));
+		break;
+	case PROP_SIZE_INSTALLED:
+		gs_app_set_size_installed (app, g_value_get_uint64 (value));
+		break;
+	case PROP_PERMISSIONS:
+		gs_app_set_permissions (app, g_value_get_flags (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -4852,12 +4889,9 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->categories);
 	g_clear_pointer (&priv->key_colors, g_array_unref);
 	g_clear_object (&priv->cancellable);
-	if (priv->local_file != NULL)
-		g_object_unref (priv->local_file);
-	if (priv->content_rating != NULL)
-		g_object_unref (priv->content_rating);
-	if (priv->action_screenshot != NULL)
-		g_object_unref (priv->action_screenshot);
+	g_clear_object (&priv->local_file);
+	g_clear_object (&priv->content_rating);
+	g_clear_object (&priv->action_screenshot);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
@@ -4876,42 +4910,42 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_ID] = g_param_spec_string ("id", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:name:
 	 */
 	obj_props[PROP_NAME] = g_param_spec_string ("name", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:version:
 	 */
 	obj_props[PROP_VERSION] = g_param_spec_string ("version", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:summary:
 	 */
 	obj_props[PROP_SUMMARY] = g_param_spec_string ("summary", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:description:
 	 */
 	obj_props[PROP_DESCRIPTION] = g_param_spec_string ("description", NULL, NULL,
 				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:rating:
 	 */
 	obj_props[PROP_RATING] = g_param_spec_int ("rating", NULL, NULL,
 				  -1, 100, -1,
-				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:kind:
@@ -4921,7 +4955,7 @@ gs_app_class_init (GsAppClass *klass)
 				   AS_COMPONENT_KIND_UNKNOWN,
 				   AS_COMPONENT_KIND_LAST,
 				   AS_COMPONENT_KIND_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:special-kind:
@@ -4942,7 +4976,7 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_STATE] = g_param_spec_enum ("state", NULL, NULL,
 				   GS_TYPE_APP_STATE,
 				   GS_APP_STATE_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:progress:
@@ -4954,21 +4988,21 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_PROGRESS] = g_param_spec_uint ("progress", NULL, NULL,
 				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:allow-cancel:
 	 */
 	obj_props[PROP_CAN_CANCEL_INSTALLATION] =
 		g_param_spec_boolean ("allow-cancel", NULL, NULL, TRUE,
-				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:install-date:
 	 */
 	obj_props[PROP_INSTALL_DATE] = g_param_spec_uint64 ("install-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:release-date:
@@ -4980,34 +5014,34 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_RELEASE_DATE] = g_param_spec_uint64 ("release-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:quirk:
 	 */
 	obj_props[PROP_QUIRK] = g_param_spec_flags ("quirk", NULL, NULL,
 				     GS_TYPE_APP_QUIRK, GS_APP_QUIRK_NONE,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:pending-action:
 	 */
 	obj_props[PROP_PENDING_ACTION] = g_param_spec_enum ("pending-action", NULL, NULL,
 				     GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
-				     G_PARAM_READABLE);
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:key-colors:
 	 */
 	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
-				    G_TYPE_ARRAY, G_PARAM_READWRITE);
+				    G_TYPE_ARRAY, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:is-update-downloaded:
 	 */
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
-					       G_PARAM_READWRITE);
+					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:url-missing:
@@ -5019,9 +5053,94 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_URL_MISSING] = g_param_spec_string ("url-missing", NULL, NULL,
 					NULL,
-					G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+					G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
 
-	g_object_class_install_properties (object_class, PROP_LAST, obj_props);
+	/**
+	 * GsApp:content-rating: (nullable)
+	 *
+	 * The content rating for the app, which gives information on how
+	 * suitable it is for different age ranges of user.
+	 *
+	 * This is %NULL if no content rating information is available.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_CONTENT_RATING] =
+		g_param_spec_object ("content-rating", NULL, NULL,
+				     /* FIXME: Use the get_type() function directly here to work
+				      * around https://github.com/ximion/appstream/pull/318 */
+				     as_content_rating_get_type (),
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:license: (nullable)
+	 *
+	 * The license for the app, which is typically its source code license.
+	 *
+	 * Use gs_app_set_license() to set this.
+	 *
+	 * This is %NULL if no licensing information is available.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_LICENSE] =
+		g_param_spec_string ("license", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:size-download
+	 *
+	 * The size of the total download needed to either install or update
+	 * this application, in bytes. If the app is partially downloaded, this
+	 * is the number of bytes remaining to download.
+	 *
+	 * This is `0` if the download size is unknown, and
+	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 *
+	 * If there is a runtime not yet installed then this is also added.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SIZE_DOWNLOAD] =
+		g_param_spec_uint64 ("size-download", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:size-installed
+	 *
+	 * The size of the application on disk, in bytes. If the application is
+	 * not yet installed, this is the size it would need, once installed.
+	 *
+	 * This is `0` if the download size is unknown, and
+	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 *
+	 * If the application has a runtime or extensions, their size
+	 * requirements are also added.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SIZE_INSTALLED] =
+		g_param_spec_uint64 ("size-installed", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:permissions
+	 *
+	 * The permissions the app requires to run.
+	 *
+	 * This is %GS_APP_PERMISSIONS_UNKNOWN if the permissions are unknown.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_PERMISSIONS] =
+		g_param_spec_flags ("permissions", NULL, NULL,
+				    GS_TYPE_APP_PERMISSIONS, GS_APP_PERMISSIONS_UNKNOWN,
+				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 static void
@@ -5327,7 +5446,11 @@ gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
+
+	if (priv->permissions == permissions)
+		return;
 	priv->permissions = permissions;
+	gs_app_queue_notify (app, obj_props[PROP_PERMISSIONS]);
 }
 
 GsAppPermissions
