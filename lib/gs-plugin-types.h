@@ -23,7 +23,7 @@ G_BEGIN_DECLS
  * @GS_PLUGIN_STATUS_INSTALLING:	Installing in progress
  * @GS_PLUGIN_STATUS_REMOVING:		Removing in progress
  *
- * The ststus of the plugin.
+ * The status of the plugin.
  **/
 typedef enum {
 	GS_PLUGIN_STATUS_UNKNOWN,
