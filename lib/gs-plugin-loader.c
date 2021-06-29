@@ -335,38 +335,126 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
 }
 
-static GsPluginEvent *
-gs_plugin_job_to_failed_event (GsPluginJob *plugin_job, const GError *error)
+/**
+ * gs_plugin_loader_claim_error:
+ * @plugin_loader: a #GsPluginLoader
+ * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
+ * @action: a #GsPluginAction associated with the @error
+ * @app: (nullable): a #GsApp for the event, or %NULL
+ * @interactive: whether to set interactive flag
+ * @error: a #GError to claim
+ *
+ * Convert the @error into a plugin event and add it to the queue.
+ *
+ * The @plugin is used only if the @error contains a reference
+ * to a concrete application, in which case any cached application
+ * overrides the passed in @app.
+ *
+ * The 'cancelled' errors are automatically ignored.
+ *
+ * Since: 41
+ **/
+void
+gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
+			      GsPlugin *plugin,
+			      GsPluginAction action,
+			      GsApp *app,
+			      gboolean interactive,
+			      const GError *error)
 {
-	GsPluginEvent *event;
 	g_autoptr(GError) error_copy = NULL;
+	g_autofree gchar *app_id = NULL;
+	g_autofree gchar *origin_id = NULL;
+	g_autoptr(GsPluginEvent) event = NULL;
 
-	g_return_val_if_fail (error != NULL, NULL);
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (error != NULL);
 
-	/* invalid */
-	if (error->domain != GS_PLUGIN_ERROR) {
-		g_warning ("not GsPlugin error %s:%i: %s",
-			   g_quark_to_string (error->domain),
-			   error->code,
-			   error->message);
-		g_set_error_literal (&error_copy,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     error->message);
-	} else {
-		error_copy = g_error_copy (error);
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		return;
+
+	/* find and strip any unique IDs from the error message */
+	error_copy = g_error_copy (error);
+
+	for (guint i = 0; i < 2; i++) {
+		if (app_id == NULL)
+			app_id = gs_utils_error_strip_app_id (error_copy);
+		if (origin_id == NULL)
+			origin_id = gs_utils_error_strip_origin_id (error_copy);
 	}
 
-	/* create plugin event */
+	/* invalid */
+	if (error_copy->domain != GS_PLUGIN_ERROR) {
+		g_warning ("not GsPlugin error %s:%i: %s",
+			   g_quark_to_string (error_copy->domain),
+			   error_copy->code,
+			   error_copy->message);
+		error_copy->domain = GS_PLUGIN_ERROR;
+		error_copy->code = GS_PLUGIN_ERROR_FAILED;
+	}
+
+	/* create event which is handled by the GsShell */
 	event = gs_plugin_event_new ();
 	gs_plugin_event_set_error (event, error_copy);
-	gs_plugin_event_set_action (event, gs_plugin_job_get_action (plugin_job));
-	if (gs_plugin_job_get_app (plugin_job) != NULL)
-		gs_plugin_event_set_app (event, gs_plugin_job_get_app (plugin_job));
-	if (gs_plugin_job_get_interactive (plugin_job))
+	gs_plugin_event_set_action (event, action);
+	if (app != NULL)
+		gs_plugin_event_set_app (event, app);
+	if (interactive)
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-	return event;
+
+	/* set the app and origin IDs if we managed to scrape them from the error above */
+	if (plugin != NULL && as_utils_data_id_valid (app_id)) {
+		g_autoptr(GsApp) cached_app = gs_plugin_cache_lookup (plugin, app_id);
+		if (cached_app != NULL) {
+			g_debug ("found app %s in error", app_id);
+			gs_plugin_event_set_app (event, cached_app);
+		} else {
+			g_debug ("no unique ID found for app %s", app_id);
+		}
+	}
+	if (plugin != NULL && as_utils_data_id_valid (origin_id)) {
+		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
+		if (origin != NULL) {
+			g_debug ("found origin %s in error", origin_id);
+			gs_plugin_event_set_origin (event, origin);
+		} else {
+			g_debug ("no unique ID found for origin %s", origin_id);
+		}
+	}
+
+	/* add event to the queue */
+	gs_plugin_loader_add_event (plugin_loader, event);
+}
+
+/**
+ * gs_plugin_loader_claim_job_error:
+ * @plugin_loader: a #GsPluginLoader
+ * @plugin: (nullable): a #GsPlugin to get an application from, or %NULL
+ * @job: a #GsPluginJob for the @error
+ * @error: a #GError to claim
+ *
+ * The same as gs_plugin_loader_claim_error(), only reads the information
+ * from the @job.
+ *
+ * Since: 41
+ **/
+void
+gs_plugin_loader_claim_job_error (GsPluginLoader *plugin_loader,
+				  GsPlugin *plugin,
+				  GsPluginJob *job,
+				  const GError *error)
+{
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_PLUGIN_JOB (job));
+	g_return_if_fail (error != NULL);
+
+	gs_plugin_loader_claim_error (plugin_loader, plugin,
+		gs_plugin_job_get_action (job),
+		gs_plugin_job_get_app (job),
+		gs_plugin_job_get_interactive (job),
+		error);
 }
 
 static gboolean
@@ -431,31 +519,8 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 		return FALSE;
 	}
 
-	/* create event which is handled by the GsShell */
-	event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local_copy);
+	gs_plugin_loader_claim_job_error (helper->plugin_loader, plugin, helper->plugin_job, error_local);
 
-	/* set the app and origin IDs if we managed to scrape them from the error above */
-	if (as_utils_data_id_valid (app_id)) {
-		g_autoptr(GsApp) app = gs_plugin_cache_lookup (plugin, app_id);
-		if (app != NULL) {
-			g_debug ("found app %s in error", origin_id);
-			gs_plugin_event_set_app (event, app);
-		} else {
-			g_debug ("no unique ID found for app %s", app_id);
-		}
-	}
-	if (as_utils_data_id_valid (origin_id)) {
-		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
-		if (origin != NULL) {
-			g_debug ("found origin %s in error", origin_id);
-			gs_plugin_event_set_origin (event, origin);
-		} else {
-			g_debug ("no unique ID found for origin %s", origin_id);
-		}
-	}
-
-	/* add event to queue */
-	gs_plugin_loader_add_event (helper->plugin_loader, event);
 	return TRUE;
 }
 
@@ -3430,11 +3495,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no application was created for %s", str);
-			if (!gs_plugin_job_get_propagate_error (helper->plugin_job)) {
-				g_autoptr(GsPluginEvent) event = NULL;
-				event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
-				gs_plugin_loader_add_event (plugin_loader, event);
-			}
+			if (!gs_plugin_job_get_propagate_error (helper->plugin_job))
+				gs_plugin_loader_claim_job_error (plugin_loader, NULL, helper->plugin_job, error_local);
 			g_task_return_error (task, g_steal_pointer (&error_local));
 			return;
 		}
