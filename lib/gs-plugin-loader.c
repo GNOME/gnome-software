@@ -350,7 +350,8 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
  * to a concrete application, in which case any cached application
  * overrides the passed in @app.
  *
- * The 'cancelled' errors are automatically ignored.
+ * The %GS_PLUGIN_ERROR_CANCELLED and %G_IO_ERROR_CANCELLED errors
+ * are automatically ignored.
  *
  * Since: 41
  **/

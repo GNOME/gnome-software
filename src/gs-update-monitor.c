@@ -384,14 +384,19 @@ static void
 update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get result */
-	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed update application: %s", error->message);
+		gs_plugin_loader_claim_error (plugin_loader,
+					      NULL,
+					      GS_PLUGIN_ACTION_UPDATE,
+					      NULL,
+					      TRUE,
+					      error);
 		return;
 	}
 
@@ -423,16 +428,21 @@ static void
 download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) update_online = NULL;
 	g_autoptr(GsAppList) update_offline = NULL;
 
 	/* get result */
-	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get updates: %s", error->message);
+		gs_plugin_loader_claim_error (plugin_loader,
+					      NULL,
+					      GS_PLUGIN_ACTION_DOWNLOAD,
+					      NULL,
+					      TRUE,
+					      error);
 		return;
 	}
 
@@ -453,6 +463,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 						 "list", update_online,
+						 "propagate-error", TRUE,
 						 NULL);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
@@ -523,6 +534,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		 * preferences */
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
 						 "list", apps,
+						 "propagate-error", TRUE,
 						 NULL);
 		g_debug ("Getting updates");
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
@@ -558,6 +570,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
 							 "list", update_online,
+							 "propagate-error", TRUE,
 							 NULL);
 			g_debug ("Getting %u online updates", gs_app_list_length (update_online));
 			gs_plugin_loader_job_process_async (monitor->plugin_loader,
