@@ -50,17 +50,33 @@ gs_star_image_outline_star (cairo_t *cr,
 	 * and will be scaled to @radius when drawn. */
 	const struct _points {
 		gdouble x, y;
-	} points[] = {
+	} small_points[] = {
 		{  0.000000, -1.000000 },
 		{ -1.000035, -0.424931 },
 		{ -0.668055,  0.850680 },
 		{  0.668055,  0.850680 },
 		{  1.000035, -0.424931 }
-	};
-	gint ii, nn = G_N_ELEMENTS (points), xx, yy;
+	}, large_points[] = {
+		{  0.000000, -1.000000 },
+		{ -1.000035, -0.325033 },
+		{ -0.618249,  0.850948 },
+		{  0.618249,  0.850948 },
+		{  1.000035, -0.325033 }
+	}, *points;
+	gint ii, nn = G_N_ELEMENTS (small_points), xx, yy;
+
+	/* Safety check */
+	G_STATIC_ASSERT (G_N_ELEMENTS (small_points) == G_N_ELEMENTS (large_points));
 
 	if (radius <= 0)
 		return;
+
+	/* An arbitrary number, since which the math-precise star looks fine,
+	 * while it looks odd for lower sizes. */
+	if (radius * 2 > 20)
+		points = large_points;
+	else
+		points = small_points;
 
 	cairo_translate (cr, radius, radius);
 
