@@ -146,19 +146,12 @@ gs_page_app_installed_cb (GObject *source,
 	}
 	if (!ret) {
 		if (helper->propagate_error) {
-			g_autoptr(GsPluginEvent) event = NULL;
-
-			/* create event which is handled by the GsShell */
-			event = gs_plugin_event_new ();
-			gs_plugin_event_set_error (event, error);
-			gs_plugin_event_set_action (event, helper->action);
-			gs_plugin_event_set_app (event, helper->app);
-			if (helper->interaction == GS_SHELL_INTERACTION_FULL)
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-
-			/* add event to queue */
-			gs_plugin_loader_add_event (plugin_loader, event);
+			gs_plugin_loader_claim_error (plugin_loader,
+						      NULL,
+						      helper->action,
+						      helper->app,
+						      helper->interaction == GS_SHELL_INTERACTION_FULL,
+						      error);
 		} else {
 			g_warning ("failed to install %s: %s", gs_app_get_id (helper->app), error->message);
 		}
