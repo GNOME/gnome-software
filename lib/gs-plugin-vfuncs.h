@@ -707,7 +707,7 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
  * there's enough metadata to start the application, for example lists of
  * available applications.
  *
- * All functions can block, but should sent progress notifications, e.g. using
+ * All functions can block, but should send progress notifications, e.g. using
  * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
