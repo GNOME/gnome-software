@@ -1024,6 +1024,13 @@ gs_application_constructed (GObject *object)
 
 	G_OBJECT_CLASS (gs_application_parent_class)->constructed (object);
 
+	/* This is needed when the the application's ID isn't
+	 * org.gnome.Software, e.g. for the development profile (when
+	 * `BUILD_PROFILE` is defined). Without this, icon resources can't
+	 * be loaded appropriately. */
+	g_application_set_resource_base_path (G_APPLICATION (self),
+					      "/org/gnome/Software");
+
 	/* Check on our construct-only properties */
 	g_assert (self->debug != NULL);
 }
