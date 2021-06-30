@@ -202,10 +202,16 @@
 		<property name="halign">end</property>
 		<property name="valign">center</property>
 		<child>
-		  <object class="GsProgressButton" id="button">
-                    <property name="visible">False</property>
-                    <property name="halign">end</property>
-                    <property name="show-icon" bind-source="GsAppRow" bind-property="is-narrow" bind-flags="sync-create"/>
+                  <object class="GtkRevealer" id="button_revealer">
+                    <property name="visible">True</property>
+                    <property name="reveal-child">True</property>
+                    <child>
+                      <object class="GsProgressButton" id="button">
+                        <property name="visible">False</property>
+                        <property name="halign">end</property>
+                        <property name="show-icon" bind-source="GsAppRow" bind-property="is-narrow" bind-flags="sync-create"/>
+                      </object>
+                    </child>
 		  </object>
 		  <packing>
                     <property name="pack_type">end</property>

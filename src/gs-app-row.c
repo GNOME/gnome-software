@@ -32,6 +32,7 @@ typedef struct
 	GtkWidget	*description_box;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
+	GtkWidget	*button_revealer;
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
@@ -110,6 +111,15 @@ gs_app_row_get_description (GsAppRow *app_row)
 }
 
 static void
+gs_app_row_update_button_reveal (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+	gboolean sensitive = gtk_widget_get_sensitive (priv->button);
+
+	gtk_widget_set_visible (priv->button_revealer, sensitive || !priv->is_narrow);
+}
+
+static void
 gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
@@ -117,6 +127,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 
 	/* disabled */
 	if (!priv->show_buttons) {
+		gs_app_row_update_button_reveal (app_row);
 		gtk_widget_set_visible (priv->button, FALSE);
 		return;
 	}
@@ -248,6 +259,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
 	}
+
+	gs_app_row_update_button_reveal (app_row);
 }
 
 static void
@@ -807,6 +820,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_revealer);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
@@ -986,6 +1000,7 @@ gs_app_row_set_is_narrow (GsAppRow *app_row, gboolean is_narrow)
 		return;
 
 	priv->is_narrow = is_narrow;
+	gs_app_row_update_button_reveal (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_IS_NARROW]);
 }
 
