@@ -42,6 +42,18 @@
     </screenshot>
   </screenshots>
 
+  <recommends>
+    <!-- Works on desktops or touchscreen devices -->
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </recommends>
+
+  <requires>
+    <!-- Adaptive -->
+    <display_length compare="ge">small</display_length>
+  </requires>
+
   <!--
    Validate with `appstreamcli validate *.appdata.xml`
   -->

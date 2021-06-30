@@ -352,13 +352,296 @@ update_safety_tile (GsAppContextBar *self)
 	gtk_style_context_add_class (context, css_class);
 }
 
+typedef struct {
+	guint min;
+	guint max;
+} Range;
+
 static void
 update_hardware_support_tile (GsAppContextBar *self)
 {
-	/* FIXME: This will eventually use as_component_get_requires() and
-	 * as_component_get_recommends() to see what hardware components are
-	 * required/recommended for the application. However, that’s not exposed
-	 * in #GsApp at the moment. */
+	g_autoptr(GPtrArray) relations = NULL;
+	AsRelationKind control_relations[AS_CONTROL_KIND_LAST] = { AS_RELATION_KIND_UNKNOWN, };
+	GdkDisplay *display;
+	GdkMonitor *monitor = NULL;
+	GdkRectangle current_screen_size;
+	gboolean any_control_relations_set;
+	const gchar *icon_name = NULL, *title = NULL, *description = NULL, *css_class = NULL;
+	gboolean has_touchscreen = FALSE, has_keyboard = FALSE, has_mouse = FALSE;
+	GtkStyleContext *context;
+
+	g_assert (self->app != NULL);
+
+	relations = gs_app_get_relations (self->app);
+
+	/* Extract the %AS_RELATION_ITEM_KIND_CONTROL relations and summarise
+	 * them. */
+	any_control_relations_set = FALSE;
+
+	for (gsize i = 0; relations != NULL && i < relations->len; i++) {
+		AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
+		AsRelationKind kind = as_relation_get_kind (relation);
+
+		if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_CONTROL) {
+			AsControlKind control_kind = as_relation_get_value_control_kind (relation);
+			control_relations[control_kind] = MAX (control_relations[control_kind], kind);
+
+			if (kind == AS_RELATION_KIND_REQUIRES ||
+			    kind == AS_RELATION_KIND_RECOMMENDS)
+				any_control_relations_set = TRUE;
+		}
+	}
+
+	display = gtk_widget_get_display (GTK_WIDGET (self));
+
+	/* Work out what input devices are available. */
+	if (display != NULL) {
+		GdkSeat *seat = gdk_display_get_default_seat (display);
+		GdkSeatCapabilities seat_capabilities = gdk_seat_get_capabilities (seat);
+
+		has_touchscreen = (seat_capabilities & GDK_SEAT_CAPABILITY_TOUCH);
+		has_keyboard = (seat_capabilities & GDK_SEAT_CAPABILITY_KEYBOARD);
+		has_mouse = (seat_capabilities & GDK_SEAT_CAPABILITY_POINTER);
+	}
+
+	/* Warn about screen size mismatches. Compare against the largest
+	 * monitor associated with this widget’s #GdkDisplay, defaulting to
+	 * the primary monitor.
+	 *
+	 * See https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length
+	 * for the semantics of the display length relations.*/
+	if (display != NULL) {
+		int n_monitors = gdk_display_get_n_monitors (display);
+		int monitor_max_dimension;
+
+		monitor = NULL;
+		monitor_max_dimension = 0;
+
+		for (int i = 0; i < n_monitors; i++) {
+			GdkMonitor *monitor2 = gdk_display_get_monitor (display, i);
+			GdkRectangle monitor_geometry;
+			int monitor2_max_dimension;
+
+			if (monitor2 == NULL)
+				continue;
+
+			gdk_monitor_get_geometry (monitor2, &monitor_geometry);
+			monitor2_max_dimension = MAX (monitor_geometry.width, monitor_geometry.height);
+
+			if (monitor2_max_dimension > monitor_max_dimension ||
+			    (gdk_monitor_is_primary (monitor2) &&
+			     monitor2_max_dimension == monitor_max_dimension)) {
+				monitor = monitor2;
+				monitor_max_dimension = monitor2_max_dimension;
+				continue;
+			}
+		}
+	}
+
+	if (monitor != NULL) {
+		gdk_monitor_get_geometry (monitor, &current_screen_size);
+
+		for (gsize i = 0; relations != NULL && i < relations->len; i++) {
+			AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
+			guint comparand1;
+			Range comparand2;
+			gboolean match = TRUE;
+
+			/* All lengths here are in logical/application pixels,
+			 * not device pixels. */
+			if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_DISPLAY_LENGTH &&
+			    as_relation_get_kind (relation) == AS_RELATION_KIND_REQUIRES) {
+				AsRelationCompare comparator = as_relation_get_compare (relation);
+
+				/* From https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
+				Range display_lengths[] = {
+					[AS_DISPLAY_LENGTH_KIND_XSMALL] = { 0, 360 },
+					[AS_DISPLAY_LENGTH_KIND_SMALL] = { 360, 768 },
+					[AS_DISPLAY_LENGTH_KIND_MEDIUM] = { 768, 1024 },
+					[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
+					[AS_DISPLAY_LENGTH_KIND_XLARGE] = { 3840, G_MAXUINT },
+				};
+
+				switch (as_relation_get_display_side_kind (relation)) {
+				case AS_DISPLAY_SIDE_KIND_SHORTEST:
+					comparand1 = MIN (current_screen_size.width, current_screen_size.height);
+					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
+					break;
+				case AS_DISPLAY_SIDE_KIND_LONGEST:
+					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
+					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
+					break;
+				case AS_DISPLAY_SIDE_KIND_UNKNOWN:
+				case AS_DISPLAY_SIDE_KIND_LAST:
+				default:
+					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
+					comparand2.min = display_lengths[as_relation_get_value_display_length_kind (relation)].min;
+					comparand2.max = display_lengths[as_relation_get_value_display_length_kind (relation)].max;
+					break;
+				}
+
+				switch (comparator) {
+				case AS_RELATION_COMPARE_EQ:
+					match = (comparand1 >= comparand2.min &&
+						 comparand1 <= comparand2.max);
+					break;
+				case AS_RELATION_COMPARE_NE:
+					match = (comparand1 < comparand2.min ||
+						 comparand1 > comparand2.max);
+					break;
+				case AS_RELATION_COMPARE_LT:
+					match = (comparand1 < comparand2.min);
+					break;
+				case AS_RELATION_COMPARE_GT:
+					match = (comparand1 > comparand2.max);
+					break;
+				case AS_RELATION_COMPARE_LE:
+					match = (comparand1 <= comparand2.max);
+					break;
+				case AS_RELATION_COMPARE_GE:
+					match = (comparand1 >= comparand2.min);
+					break;
+				case AS_RELATION_COMPARE_UNKNOWN:
+				case AS_RELATION_COMPARE_LAST:
+				default:
+					g_assert_not_reached ();
+				}
+
+				/* If the current screen size is not supported,
+				 * try and summarise the restrictions into a
+				 * single context tile. */
+				if (!match) {
+					if ((comparator == AS_RELATION_COMPARE_LE ||
+					     comparator == AS_RELATION_COMPARE_LT) &&
+					     comparand1 >= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
+						icon_name = "phone-symbolic";
+						title = _("Mobile Only");
+						description = _("Only works on a small screen");
+						css_class = "red";
+					} else if ((comparator == AS_RELATION_COMPARE_GE ||
+						    comparator == AS_RELATION_COMPARE_GT) &&
+						   comparand1 <= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
+						icon_name = "desktop-symbolic";
+						title = _("Desktop Only");
+						description = _("Only works on a large screen");
+						css_class = "red";
+					} else {
+						icon_name = "desktop-symbolic";
+						title = _("Screen Size Mismatch");
+						description = _("Requires a specific screen size");
+						css_class = "red";
+					}
+				}
+			}
+		}
+	}
+
+	/* Warn about missing touchscreen or keyboard support. There are some
+	 * assumptions here that certain input devices are only available on
+	 * certain platforms; they can change in future.
+	 *
+	 * As with the rest of the tile contents in this function, tile contents
+	 * which are checked lower down in the function are only used if nothing
+	 * more important has already been set earlier.
+	 *
+	 * The available information is being summarised to quite an extreme
+	 * degree here, and it’s likely this code will have to evolve for
+	 * corner cases in future. */
+	if (icon_name == NULL &&
+	    control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_REQUIRES &&
+	    !has_touchscreen) {
+		icon_name = "phone-symbolic";
+		title = _("Mobile Only");
+		description = _("Requires a touchscreen");
+		css_class = "red";
+	} else if (icon_name == NULL &&
+		   control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_REQUIRES &&
+		   !has_keyboard) {
+		icon_name = "input-keyboard-symbolic";
+		title = _("Desktop Only");
+		description = _("Requires a keyboard");
+		css_class = "red";
+	} else if (icon_name == NULL &&
+		   control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_REQUIRES &&
+		   !has_mouse) {
+		icon_name = "input-mouse-symbolic";
+		title = _("Desktop Only");
+		description = _("Requires a mouse");
+		css_class = "red";
+	} else if (icon_name == NULL && !any_control_relations_set) {
+		icon_name = "desktop-symbolic";
+		title = _("Desktop Only");
+		description = _("Not optimized for touch devices or phones");
+		css_class = "grey";
+	}
+
+	/* Say if the app requires a gamepad. We can’t reliably detect whether
+	 * the computer has a gamepad, as it might be unplugged unless the user
+	 * is currently playing a game. So this might be shown even if the user
+	 * has a gamepad available. */
+	if (icon_name == NULL &&
+	    control_relations[AS_CONTROL_KIND_GAMEPAD] == AS_RELATION_KIND_REQUIRES) {
+		icon_name = "input-gaming-symbolic";
+		title = _("Gamepad Needed");
+		description = _("Requires a gamepad to play");
+		css_class = "yellow";
+	}
+
+	/* Otherwise, is it adaptive? Note that %AS_RELATION_KIND_RECOMMENDS
+	 * means more like ‘supports’ than ‘recommends’. */
+	if (icon_name == NULL &&
+	    control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_RECOMMENDS &&
+	    control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_RECOMMENDS &&
+	    control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_RECOMMENDS) {
+		icon_name = "adaptive-symbolic";
+		/* Translators: This is used in a context tile to indicate that
+		 * an app works on phones, tablets *and* desktops. It should be
+		 * short and in title case. */
+		title = _("Adaptive");
+		description = _("Works on phones, tablets and desktops");
+		css_class = "green";
+	}
+
+	/* Fallback. At the moment (June 2021) almost no apps have any metadata
+	 * about hardware support, so this case will be hit most of the time.
+	 *
+	 * So in the absence of any other information, assume that all apps
+	 * support desktop, and none support mobile. */
+	if (icon_name == NULL) {
+		if (!has_keyboard || !has_mouse) {
+			icon_name = "desktop-symbolic";
+			title = _("Desktop Only");
+			description = _("Probably requires a keyboard or mouse");
+			css_class = "yellow";
+		} else {
+			icon_name = "desktop-symbolic";
+			title = _("Desktop Only");
+			description = _("Not optimized for touch devices or phones");
+			css_class = "grey";
+		}
+	}
+
+	/* Update the UI. The `adaptive-symbolic` icon needs a special size to
+	 * be set, as it is wider than it is tall. Setting the size ensures it’s
+	 * rendered at the right height. */
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name, GTK_ICON_SIZE_BUTTON);
+	gtk_image_set_pixel_size (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
+
+	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);
+	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].description, description);
+
+	context = gtk_widget_get_style_context (self->tiles[HARDWARE_SUPPORT_TILE].lozenge);
+
+	gtk_style_context_remove_class (context, "green");
+	gtk_style_context_remove_class (context, "yellow");
+	gtk_style_context_remove_class (context, "red");
+
+	gtk_style_context_add_class (context, css_class);
+
+	if (g_str_equal (icon_name, "adaptive-symbolic"))
+		gtk_style_context_add_class (context, "wide-image");
+	else
+		gtk_style_context_remove_class (context, "wide-image");
 }
 
 static gchar *

@@ -737,6 +737,105 @@ gs_appstream_refine_app_content_ratings (GsApp *app,
 	return TRUE;
 }
 
+static gboolean
+gs_appstream_refine_app_relation (GsPlugin        *plugin,
+                                  GsApp           *app,
+                                  XbNode          *relation_node,
+                                  AsRelationKind   kind,
+                                  GError         **error)
+{
+	/* Iterate over the children, which might be any combination of zero or
+	 * more <id/>, <modalias/>, <kernel/>, <memory/>, <firmware/>,
+	 * <control/> or <display_length/> elements. For the moment, we only
+	 * support some of these. */
+	for (g_autoptr(XbNode) child = xb_node_get_child (relation_node); child != NULL; child = xb_node_get_next (child)) {
+		const gchar *item_kind = xb_node_get_element (child);
+		g_autoptr(AsRelation) relation = as_relation_new ();
+
+		as_relation_set_kind (relation, kind);
+
+		if (g_str_equal (item_kind, "control")) {
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-control */
+			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_CONTROL);
+			as_relation_set_value_control_kind (relation, as_control_kind_from_string (xb_node_get_text (child)));
+		} else if (g_str_equal (item_kind, "display_length")) {
+			AsDisplayLengthKind display_length_kind;
+			const gchar *compare;
+
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
+			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_DISPLAY_LENGTH);
+
+			compare = xb_node_get_attr (child, "compare");
+			as_relation_set_compare (relation, (compare != NULL) ? as_relation_compare_from_string (compare) : AS_RELATION_COMPARE_GE);
+
+			display_length_kind = as_display_length_kind_from_string (xb_node_get_text (child));
+			if (display_length_kind != AS_DISPLAY_LENGTH_KIND_UNKNOWN) {
+				/* Ignore the `side` attribute */
+				as_relation_set_value_display_length_kind (relation, display_length_kind);
+			} else {
+				const gchar *side = xb_node_get_attr (child, "side");
+				as_relation_set_display_side_kind (relation, (side != NULL) ? as_display_side_kind_from_string (side) : AS_DISPLAY_SIDE_KIND_SHORTEST);
+				as_relation_set_value_px (relation, xb_node_get_text_as_uint (child));
+			}
+		} else {
+			g_debug ("Relation type ‘%s’ not currently supported for %s; ignoring",
+				 item_kind, gs_app_get_id (app));
+			continue;
+		}
+
+		gs_app_add_relation (app, relation);
+	}
+
+	return TRUE;
+}
+
+static gboolean
+gs_appstream_refine_app_relations (GsPlugin  *plugin,
+                                   GsApp     *app,
+                                   XbNode    *component,
+                                   GError   **error)
+{
+	g_autoptr(GPtrArray) recommends = NULL;
+	g_autoptr(GPtrArray) requires = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	/* find any recommends */
+	recommends = xb_node_query (component, "recommends", 0, &error_local);
+	if (recommends == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	for (guint i = 0; i < recommends->len; i++) {
+		XbNode *recommend = g_ptr_array_index (recommends, i);
+		if (!gs_appstream_refine_app_relation (plugin, app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
+			return FALSE;
+	}
+
+	/* find any requires */
+	requires = xb_node_query (component, "requires", 0, &error_local);
+	if (requires == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+
+	for (guint i = 0; i < requires->len; i++) {
+		XbNode *require = g_ptr_array_index (requires, i);
+		if (!gs_appstream_refine_app_relation (plugin, app, require, AS_RELATION_KIND_REQUIRES, error))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -829,6 +928,16 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set content rating */
 	if (TRUE) {
 		if (!gs_appstream_refine_app_content_ratings (app, component, error))
+			return FALSE;
+	}
+
+	/* recommends/requires
+	 * FIXME: Technically this could do with a more specific refine flag,
+	 * but essentially the relations are used on the details page and so
+	 * are the permissions. It would be good to eliminate refine flags at
+	 * some point in the future. */
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+		if (!gs_appstream_refine_app_relations (plugin, app, component, error))
 			return FALSE;
 	}
 

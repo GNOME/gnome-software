@@ -130,6 +130,7 @@ typedef struct
 	GsAppPermissions         permissions;
 	gboolean		 is_update_downloaded;
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
+	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
 } GsAppPrivate;
 
 typedef enum {
@@ -156,9 +157,10 @@ typedef enum {
 	PROP_SIZE_DOWNLOAD,
 	PROP_SIZE_INSTALLED,
 	PROP_PERMISSIONS,
+	PROP_RELATIONS,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_PERMISSIONS + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_RELATIONS + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -722,6 +724,13 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, key, val_str);
 	}
 	g_list_free (keys);
+
+	for (i = 0; priv->relations != NULL && i < priv->relations->len; i++) {
+		AsRelation *relation = g_ptr_array_index (priv->relations, i);
+		gs_app_kv_printf (str, "relation", "%s, %s",
+				  as_relation_kind_to_string (as_relation_get_kind (relation)),
+				  as_relation_item_kind_to_string (as_relation_get_item_kind (relation)));
+	}
 
 	/* add subclassed info */
 	if (klass->to_string != NULL)
@@ -4734,6 +4743,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_PERMISSIONS:
 		g_value_set_flags (value, priv->permissions);
 		break;
+	case PROP_RELATIONS:
+		g_value_take_boxed (value, gs_app_get_relations (app));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4823,6 +4835,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_PERMISSIONS:
 		gs_app_set_permissions (app, g_value_get_flags (value));
 		break;
+	case PROP_RELATIONS:
+		gs_app_set_relations (app, g_value_get_boxed (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4846,6 +4861,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->provided, g_ptr_array_unref);
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
 	g_clear_pointer (&priv->version_history, g_ptr_array_unref);
+	g_clear_pointer (&priv->relations, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -5138,6 +5154,26 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_PERMISSIONS] =
 		g_param_spec_flags ("permissions", NULL, NULL,
 				    GS_TYPE_APP_PERMISSIONS, GS_APP_PERMISSIONS_UNKNOWN,
+				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:relations: (nullable) (element-type AsRelation)
+	 *
+	 * Relations between this app and other things. For example,
+	 * requirements or recommendations that the computer have certain input
+	 * devices to use the app (the app requires a touchscreen or gamepad),
+	 * or that the screen is a certain size.
+	 *
+	 * %NULL is equivalent to an empty array. Relations of kind
+	 * %AS_RELATION_KIND_REQUIRES are conjunctive, so each additional
+	 * relation further restricts the set of computers which can run the
+	 * app. Relations of kind %AS_RELATION_KIND_RECOMMENDS are disjunctive.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_RELATIONS] =
+		g_param_spec_boxed ("relations", NULL, NULL,
+				    G_TYPE_PTR_ARRAY,
 				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
@@ -5567,4 +5603,92 @@ gs_app_ensure_icons_downloaded (GsApp *app,
 				 error_local->message);
 		}
 	}
+}
+
+/**
+ * gs_app_get_relations:
+ * @app: a #GsApp
+ *
+ * Gets the value of #GsApp:relations. %NULL is equivalent to an empty array.
+ *
+ * The returned array should not be modified.
+ *
+ * Returns: (transfer container) (element-type AsRelation) (nullable): the value of
+ *     #GsApp:relations, or %NULL
+ * Since: 41
+ */
+GPtrArray *
+gs_app_get_relations (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	locker = g_mutex_locker_new (&priv->mutex);
+	return (priv->relations != NULL) ? g_ptr_array_ref (priv->relations) : NULL;
+}
+
+/**
+ * gs_app_add_relation:
+ * @app: a #GsApp
+ * @relation: (transfer none) (not nullable): a new #AsRelation to add to the app
+ *
+ * Adds @relation to #GsApp:relations. @relation must have all its properties
+ * set already.
+ *
+ * Since: 41
+ */
+void
+gs_app_add_relation (GsApp      *app,
+                     AsRelation *relation)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (AS_IS_RELATION (relation));
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->relations == NULL)
+		priv->relations = g_ptr_array_new_with_free_func (g_object_unref);
+	g_ptr_array_add (priv->relations, g_object_ref (relation));
+
+	gs_app_queue_notify (app, obj_props[PROP_RELATIONS]);
+}
+
+/**
+ * gs_app_set_relations:
+ * @app: a #GsApp
+ * @relations: (element-type AsRelation) (nullable) (transfer none): a new set
+ *     of relations for #GsApp:relations; %NULL represents an empty array
+ *
+ * Set #GsApp:relations to @relations, replacing its previous value. %NULL is
+ * equivalent to an empty array.
+ *
+ * Since: 41
+ */
+void
+gs_app_set_relations (GsApp     *app,
+                      GPtrArray *relations)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GPtrArray) old_relations = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (relations == NULL && priv->relations == NULL)
+		return;
+
+	if (priv->relations != NULL)
+		old_relations = g_steal_pointer (&priv->relations);
+
+	if (relations != NULL)
+		priv->relations = g_ptr_array_ref (relations);
+
+	gs_app_queue_notify (app, obj_props[PROP_RELATIONS]);
 }
