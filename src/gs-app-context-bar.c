@@ -410,7 +410,7 @@ build_age_rating_description (AsContentRating *content_rating)
 		/* Translators: This indicates that the content rating for an
 		 * app says it can be used by all ages of people, as it contains
 		 * no objectionable content. */
-		return g_strdup (_("The application contains no age-inappropriate content"));
+		return g_strdup (_("Contains no age-inappropriate content"));
 
 	/* Add a description for each rating category which contributes to the
 	 * @age_bad being as it is. Handle the groups separately.
