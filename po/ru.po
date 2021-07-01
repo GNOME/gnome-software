@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-06-29 14:17+0000\n"
-"PO-Revision-Date: 2021-06-29 18:25+0300\n"
+"POT-Creation-Date: 2021-06-30 12:48+0000\n"
+"PO-Revision-Date: 2021-06-30 16:26+0300\n"
 "Last-Translator: Alexey Rubtsov <rushills@gmail.com>\n"
 "Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -72,7 +72,7 @@ msgstr "Панель обновлений"
 msgid "The update details"
 msgstr "Подробности об обновлении"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1678
+#: data/appdata/org.gnome.Software.appdata.xml.in:1690
 msgid "The GNOME Project"
 msgstr "Проект GNOME"
 
@@ -348,19 +348,19 @@ msgstr "Установка приложений"
 msgid "Install selected software on the system"
 msgstr "Установить выбранное программное обеспечение"
 
-#: lib/gs-app.c:5308
+#: lib/gs-app.c:5344
 msgid "Local file"
 msgstr "Локальный файл"
 
 #. TRANSLATORS: the first %s is replaced with an origin name;
 #. the second %s is replaced with the packaging format.
 #. Example string: "Local file (RPM)"
-#: lib/gs-app.c:5324
+#: lib/gs-app.c:5360
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5392
+#: lib/gs-app.c:5428
 msgid "Package"
 msgstr "Пакет"
 
@@ -558,7 +558,7 @@ msgstr "Объём загрузки"
 #. * similarly short punctuation character, word or acronym which
 #. * will be widely understood in your region, in this context.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:108 src/gs-app-context-bar.c:572
+#: src/gs-app-context-bar.c:108 src/gs-app-context-bar.c:855
 msgid "?"
 msgstr "?"
 
@@ -685,7 +685,7 @@ msgstr "Разработчик приложения проверен"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:313 src/gs-app-context-bar.c:484
+#: src/gs-app-context-bar.c:313 src/gs-app-context-bar.c:767
 msgid "; "
 msgstr "; "
 
@@ -707,22 +707,87 @@ msgstr "Потенциально небезопасно"
 msgid "Unsafe"
 msgstr "Небезопасно"
 
+#: src/gs-app-context-bar.c:518 src/gs-app-context-bar.c:554
+msgid "Mobile Only"
+msgstr "Только мобильные"
+
+#: src/gs-app-context-bar.c:519
+msgid "Only works on a small screen"
+msgstr "Работает только на небольших экранах"
+
+#: src/gs-app-context-bar.c:525 src/gs-app-context-bar.c:561
+#: src/gs-app-context-bar.c:568 src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:613 src/gs-app-context-bar.c:618
+msgid "Desktop Only"
+msgstr "Только для настольных компьютеров"
+
+#: src/gs-app-context-bar.c:526
+msgid "Only works on a large screen"
+msgstr "Работает только на больших экранах"
+
+#: src/gs-app-context-bar.c:530
+msgid "Screen Size Mismatch"
+msgstr "Ошибка с размером экрана"
+
+#: src/gs-app-context-bar.c:531
+msgid "Requires a specific screen size"
+msgstr "Требуется конкретный размер экрана"
+
+#: src/gs-app-context-bar.c:555
+msgid "Requires a touchscreen"
+msgstr "Требуется сенсорный экран"
+
+#: src/gs-app-context-bar.c:562
+msgid "Requires a keyboard"
+msgstr "Требуется клавиатура"
+
+#: src/gs-app-context-bar.c:569
+msgid "Requires a mouse"
+msgstr "Требуется мышь"
+
+#: src/gs-app-context-bar.c:574 src/gs-app-context-bar.c:619
+msgid "Not optimized for touch devices or phones"
+msgstr "Не оптимизировано для сенсорных экранов и телефонов"
+
+#: src/gs-app-context-bar.c:585
+msgid "Gamepad Needed"
+msgstr "Требуется Игровой манипулятор"
+
+#: src/gs-app-context-bar.c:586
+msgid "Requires a gamepad to play"
+msgstr "Для игры требуется игровой манипулятор"
+
+#. Translators: This is used in a context tile to indicate that
+#. * an app works on phones, tablets *and* desktops. It should be
+#. * short and in title case.
+#: src/gs-app-context-bar.c:600
+msgid "Adaptive"
+msgstr "Настраивающийся"
+
+#: src/gs-app-context-bar.c:601
+msgid "Works on phones, tablets and desktops"
+msgstr "Работает на телефонах, планшетах и компьютерах"
+
+#: src/gs-app-context-bar.c:614
+msgid "Probably requires a keyboard or mouse"
+msgstr "Возможно требуется мышь или клавиатура"
+
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:413
-msgid "The application contains no age-inappropriate content"
-msgstr "Приложение не содержит несоответствующего возрасту контента"
+#: src/gs-app-context-bar.c:696
+msgid "Contains no age-inappropriate content"
+msgstr "Не содержит несоответствующего возрасту контента"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: src/gs-app-context-bar.c:554 lib/gs-category.c:214
+#: src/gs-app-context-bar.c:837 lib/gs-category.c:214
 msgid "All"
 msgstr "Все"
 
-#: src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:856
 msgid "No age rating information available"
 msgstr "Информация о возрастной категории отсутствует"
 
@@ -754,7 +819,7 @@ msgstr "Отменить"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:368
+#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:361
 msgid "Install"
 msgstr "Установить"
 
@@ -767,7 +832,7 @@ msgstr "Обновить"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:526
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:519
 msgid "Uninstall"
 msgstr "Удалить"
 
@@ -2262,20 +2327,20 @@ msgstr "Файлы приложения не найдены"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:359
+#: src/gs-page.c:352
 #, c-format
 msgid "Prepare %s"
 msgstr "Подготовка %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:495
+#: src/gs-page.c:488
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Уверены, что хотите удалить репозиторий %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:499
+#: src/gs-page.c:492
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2286,13 +2351,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:507
+#: src/gs-page.c:500
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Уверены, что хотите удалить %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:510
+#: src/gs-page.c:503
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -2300,7 +2365,7 @@ msgstr ""
 "Приложение %s будет удалено, для повторного использования приложения "
 "потребуется его установка."
 
-#: lib/gs-plugin-loader.c:2938
+#: lib/gs-plugin-loader.c:3004
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Неизвестный"
@@ -3518,57 +3583,57 @@ msgid "Includes %s, %s and %s."
 msgstr "Включая  %s, %s и %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:616 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:629 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Обновления операционной системы недоступны"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:618
+#: src/gs-update-monitor.c:631
 msgid "Upgrade to continue receiving security updates."
 msgstr ""
 "Выполните обновление, чтобы продолжить получать обновления безопасности."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:673
+#: src/gs-update-monitor.c:686
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Для установки доступна новая версия %s"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:677
+#: src/gs-update-monitor.c:690
 msgid "Software Upgrade Available"
 msgstr "Доступно обновление на новую версию ОС"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1071
+#: src/gs-update-monitor.c:1084
 msgid "Software Updates Failed"
 msgstr "Не удалось обновить программное обеспечение"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1073
+#: src/gs-update-monitor.c:1086
 msgid "An important OS update failed to be installed."
 msgstr "Не удалось установить важное обновление ОС."
 
-#: src/gs-update-monitor.c:1074
+#: src/gs-update-monitor.c:1087
 msgid "Show Details"
 msgstr "Показать подробности"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1097
+#: src/gs-update-monitor.c:1110
 msgid "System Upgrade Complete"
 msgstr "Обновление системы завершено"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1102
+#: src/gs-update-monitor.c:1115
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Добро пожаловать в %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1108
+#: src/gs-update-monitor.c:1121
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Установлено обновление программного обеспечения"
@@ -3576,7 +3641,7 @@ msgstr[1] "Установлены обновления программного 
 msgstr[2] "Установлены обновления программного обеспечения"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1112
+#: src/gs-update-monitor.c:1125
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Установлено важное обновление ОС."
@@ -3588,30 +3653,30 @@ msgstr[2] "Установлены важные обновления ОС."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1123
+#: src/gs-update-monitor.c:1136
 msgctxt "updates"
 msgid "Review"
 msgstr "Просмотреть"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1172
+#: src/gs-update-monitor.c:1185
 msgid "Failed To Update"
 msgstr "Сбой обновления"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1178
+#: src/gs-update-monitor.c:1191
 msgid "The system was already up to date."
 msgstr "Система уже обновлена."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1183
+#: src/gs-update-monitor.c:1196
 msgid "The update was cancelled."
 msgstr "Обновление отменено."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1189
+#: src/gs-update-monitor.c:1202
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3620,7 +3685,7 @@ msgstr ""
 "доступ в Интернет и попробуйте ещё раз."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1195
+#: src/gs-update-monitor.c:1208
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3629,13 +3694,13 @@ msgstr ""
 "программного обеспечения для получения более подробной информации."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1201
+#: src/gs-update-monitor.c:1214
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Недостаточно места на диске. Освободите место и повторите попытку."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1206
+#: src/gs-update-monitor.c:1219
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
