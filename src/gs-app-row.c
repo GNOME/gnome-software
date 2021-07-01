@@ -36,6 +36,7 @@ typedef struct
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
+	GtkWidget	*box_tag;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
 	GtkWidget	*label_installed;
@@ -520,6 +521,15 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			gtk_widget_show (priv->label_warning);
 		}
 	}
+
+	gtk_widget_set_visible (priv->box_tag,
+				gtk_widget_get_visible (priv->label_origin) ||
+				gtk_widget_get_visible (priv->label_installed) ||
+				gtk_widget_get_visible (priv->label_warning));
+
+	gtk_widget_set_visible (priv->description_box,
+				gtk_widget_get_visible (priv->box_tag) ||
+				gtk_widget_get_visible (priv->description_label));
 }
 
 static void
@@ -824,6 +834,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_tag);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
