@@ -38,6 +38,8 @@ struct _GsCategoryPage
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
+#define MAX_RECENTLY_UPDATED_APPS 18
+
 typedef enum {
 	PROP_CATEGORY = 1,
 	/* Override properties: */
@@ -252,11 +254,29 @@ choose_top_carousel_apps (LoadCategoryData *data,
 	return g_steal_pointer (&top_carousel_apps);
 }
 
+static gint
+compare_release_date_cb (gconstpointer aa,
+			 gconstpointer bb)
+{
+	GsApp *app_a = gs_app_tile_get_app ((GsAppTile *) aa);
+	GsApp *app_b = gs_app_tile_get_app ((GsAppTile *) bb);
+	guint64 release_date_a = gs_app_get_release_date (app_a);
+	guint64 release_date_b = gs_app_get_release_date (app_b);
+
+	if (release_date_a == release_date_b)
+		return g_utf8_collate (gs_app_get_name (app_a), gs_app_get_name (app_b));
+
+	return release_date_a < release_date_b ? -1 : 1;
+}
+
 static void
 load_category_finish (LoadCategoryData *data)
 {
 	GsCategoryPage *self = data->page;
 	guint64 recently_updated_cutoff_secs;
+	guint64 n_recently_updated = 0;
+	guint64 min_release_date = G_MAXUINT64;
+	GSList *recently_updated = NULL, *link;
 	g_autoptr(GsAppList) top_carousel_apps = NULL;
 
 	if (!data->get_featured_apps_finished ||
@@ -276,31 +296,54 @@ load_category_finish (LoadCategoryData *data)
 
 	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
-		gboolean is_featured, is_recently_updated, is_top_carousel;
+		gboolean is_featured, is_recently_updated;
+		guint64 release_date;
+		GtkWidget *flow_box = self->category_detail_box;
 		GtkWidget *tile;
 
-		is_top_carousel = gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL;
+		/* To be listed in the top carousel? */
+		if (gs_app_list_lookup (top_carousel_apps, gs_app_get_unique_id (app)) != NULL)
+			continue;
+
+		release_date = gs_app_get_release_date (app);
 		is_featured = (data->featured_app_ids != NULL &&
 			       g_hash_table_contains (data->featured_app_ids, gs_app_get_id (app)));
-		is_recently_updated = (gs_app_get_release_date (app) > recently_updated_cutoff_secs);
-
-		/* To be listed in the top carousel? */
-		if (is_top_carousel)
-			continue;
+		is_recently_updated = (release_date > recently_updated_cutoff_secs);
 
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
 
-		if (is_featured)
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->featured_flow_box), tile, -1);
-		else if (is_recently_updated)
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
-		else
-			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
+		if (is_featured) {
+			flow_box = self->featured_flow_box;
+		} else if (is_recently_updated) {
+			if (n_recently_updated < MAX_RECENTLY_UPDATED_APPS) {
+				recently_updated = g_slist_insert_sorted (recently_updated, tile, compare_release_date_cb);
+				n_recently_updated++;
+				if (min_release_date > release_date)
+					min_release_date = release_date;
+				flow_box = NULL;
+			} else if (release_date >= min_release_date) {
+				recently_updated = g_slist_insert_sorted (recently_updated, tile, compare_release_date_cb);
+				tile = recently_updated->data;
+				recently_updated = g_slist_remove (recently_updated, tile);
+				min_release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (recently_updated->data)));
+			}
+		}
 
+		if (flow_box != NULL) {
+			gtk_flow_box_insert (GTK_FLOW_BOX (flow_box), tile, -1);
+			gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		}
+	}
+
+	for (link = recently_updated; link != NULL; link = g_slist_next (link)) {
+		GtkWidget *tile = link->data;
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
+
+	g_slist_free (recently_updated);
 
 	gtk_widget_set_visible (self->top_carousel, gs_app_list_length (top_carousel_apps) > 0);
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), top_carousel_apps);
