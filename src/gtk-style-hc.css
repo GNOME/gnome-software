@@ -1,19 +1,6 @@
-.details-page {
-  margin: 24px 0px;
-}
+@import url("resource:///org/gnome/Software/gtk-style.css");
 
 .installed-overlay-box {
-	font-size: smaller;
-	background-color: @theme_selected_bg_color;
-	border-radius: 4px;
-	color: @theme_selected_fg_color;
-}
-
-.popular-installed-overlay-box {
-	font-size: smaller;
-	background-color: @theme_selected_bg_color;
-	border-radius: 0;
-	color: @theme_selected_fg_color;
 	text-shadow: none;
 }
 
@@ -21,79 +8,16 @@
 	color: #999999;
 }
 
-.index-title-alignment-software {
-	font-weight: bold;
-	font-size: 125%;
-}
-
-/* Adapted from Adwaita’s .needs-attention class for stacksidebar */
-sidebar row.needs-attention > box > label {
-	animation: needs_attention 150ms ease-in;
-	background-image: -gtk-gradient(radial,
-					center center, 0,
-					center center, 0.5,
-					to(@theme_selected_bg_color),
-					to(transparent)),
-			  -gtk-gradient(radial,
-					center center, 0,
-					center center, 0.5,
-					to(alpha(@theme_text_color, 0.5)),
-					to(transparent));
-	background-size: 6px 6px, 0 0;
-	background-repeat: no-repeat;
-	background-position: right 3px, right 4px;
-}
-
-sidebar row.needs-attention > box > label:dir(rtl) {
-	background-position: left 3px, left 4px;
-}
-
-sidebar row.needs-attention:selected > box > label {
-	animation: needs_attention 150ms ease-out;
-	background-image: none;
-}
-
-screenshot-carousel > box {
-	border-width: 1px 0;
-}
-
-screenshot-carousel button {
-	margin: 12px;
-}
-
-.screenshot-image-main .image1, .screenshot-image-main .image2 {
-	margin-top: 6px;
-	margin-bottom: 12px;
-	margin-left: 6px;
-	margin-right: 6px;
-}
-
-.app-tile-label {
-	font-size: 105%;
-}
-
 .app-row-tag {
-	text-shadow: none;
 	color: white;
 	background-color: #999999;
-	font-size: smaller;
-	border-radius: 4px;
-	padding: 2px 10px;
-}
-
-summary-tile {
-	border-radius: 6px;
-	min-width: 280px;
 }
 
 .view.tile {
 	padding: 0;
-	background-image: none;
-	background-color: mix(@theme_base_color,@theme_bg_color,0.3);
-}
-
-.view.tile:hover {
-	background-color: @theme_base_color;
+	border: 1px solid @theme_bg_color;
+	box-shadow: none;
+	background: mix(@theme_base_color,@theme_bg_color,0.3);
 }
 
 .view.tile:active {
@@ -107,112 +31,25 @@ summary-tile {
 	border-color: @unfocused_borders;
 }
 
-/* The rest of the featured-tile CSS is loaded at runtime in gs-feature-tile.c */
-.featured-tile {
-	all: unset;
-	padding: 0;
-	border-radius: 3px;
-	border-width: 1px;
-	border-image: none;
-}
-
 .application-details-infobar.info {
 	background-color: #d3d7cf;
-	color: @theme_fg_color;
 	border-color: darker(#d3d7cf);
-	border-style: solid;
-	border-width: 1px;
-	text-shadow: none;
 }
 
 .application-details-infobar.warning {
-	background-color: #fcaf3e;
 	color: @theme_fg_color;
-	border-color: darker(#fcaf3e);
-	border-style: solid;
-	border-width: 1px;
-	text-shadow: none;
-}
-
-.application-details-title {
-	font-weight: bold;
-	font-size: 125%;
-}
-
-.application-details-summary {
-}
-
-.review-summary {
-	font-weight: bold;
 }
 
 .application-details-description {
 }
 
-@keyframes install-progress-unknown-move {
-	0% { background-position: 0%; }
-	50% { background-position: 100%; }
-	100% { background-position: 0%; }
-}
-
-.application-details-description .button {
-	padding-left:24px;
-	padding-right:24px;
-}
-
-.install-progress {
-	background-image: linear-gradient(to top, @theme_selected_bg_color 2px, alpha(@theme_selected_bg_color, 0) 2px);
-	background-repeat: no-repeat;
-	background-position: 0 bottom;
-	background-size: 0;
-	transition: none;
-}
-
-.install-progress:dir(rtl) { background-position: 100% bottom; }
-
-.error-label {
-	text-shadow: none;
-}
-
-.app-row-origin-text {
-	font-size: smaller;
-}
-
 .app-listbox-header {
-	padding: 6px;
-	background-image: none;
 	background-color: #babdb6;
 	border-color: #000000;
 }
 
 .app-updates-section {
-	border-radius: 4px;
-	border: 1px solid #000000;
-}
-
-.app-listbox-header-title {
-	font-size: larger;
-}
-
-.image-list {
-	background-color: transparent;
-}
-
-box.star, GtkBox.star {
-	background-color: transparent;
-	background-image: none;
-}
-
-button.star, .button.star {
-	outline-offset: 0;
-	background-color: transparent;
-	background-image: none;
-	border-image: none;
-	border-radius: 0;
-	border-width: 0px;
-	padding: 0;
-	box-shadow: none;
-	outline-offset: -1px;
+	border-color: #000000;
 }
 
 star-image {
@@ -220,174 +57,13 @@ star-image {
 	-GsStarImage-star-bg: #777777;
 }
 
-.counter-label {
-	text-shadow: none;
-	color: @theme_selected_fg_color;
-	background-color: mix(@theme_selected_bg_color, @theme_selected_fg_color, 0.3);
-	font-size: smaller;
-	border-radius: 4px;
-	padding: 0px 4px;
-}
-
-/* the following two selectors are to color the small gap before the list inside the scrolled window
-   setting a background on the scrolled window affects the undershoot and the overshoot so explicitelly
-   excluding with :not() */
-.category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
-
-.category-sidebar:backdrop:not(.undershoot):not(.overshoot) { background-color: @theme_unfocused_base_color; }
-
-/* Superfluous borders removal */
-.category-sidebar {
-	border-style: none;
-}
-
-.category-sidebar:dir(rtl) {
-	border-left-style: solid;
-}
-
-.category-sidebar:dir(ltr) {
-	border-right-style: solid;
-}
-
-.dimmer-label {
-	opacity: 0.25;
-	text-shadow: none;
-}
-
-.update-failed-details {
-	font-family: Monospace;
-	font-size: 90%;
-	padding: 16px;
-}
-
-.upgrade-banner {
-	background-color: #1c5288;
-	padding: 0px;
-	border-radius: 4px;
-	border: 1px solid darker(@theme_bg_color);
-	color: @theme_selected_fg_color;
-}
-
-.upgrade-buttons {
-	padding: 18px;
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-
-.upgrade-progressbar {
-	box-shadow: none
-}
-
-.eol-box {
-	background-color: @theme_selected_bg_color;
-	border: 1px solid shade(@theme_selected_bg_color, 0.8);
-	color: @theme_selected_fg_color;
-}
-
-/* the loading page headerbar */
-overlay > headerbar {
-  background: none;
-  border: none;
-}
-
-/* The following style are taken from libhandy's HdyPreferencesPage style, which
- * implements the style for titled lists of lists.
- * FIXME: Drop these styles if the pages using it are ported to
- * HdyPreferencesPage or its successor in Libadwaita, if their clamp size can be
- * set as a property. */
-
-scrolledwindow.list-page > viewport > clamp {
-  margin: 0 12px; transition: margin-bottom 200ms ease;
-}
-
-scrolledwindow.list-page > viewport > clamp > list,
-scrolledwindow.list-page > viewport > clamp > box > preferencesgroup {
-  transition: margin-top 200ms ease;
-}
-
-scrolledwindow.list-page > viewport > clamp.small {
-  margin-bottom: 18px;
-}
-
-scrolledwindow.list-page > viewport > clamp.small > list,
-scrolledwindow.list-page > viewport > clamp.small > box > preferencesgroup {
-  margin-top: 18px;
-}
-
-scrolledwindow.list-page > viewport > clamp.medium {
-  margin-bottom: 24px;
-}
-
-scrolledwindow.list-page > viewport > clamp.medium > list,
-scrolledwindow.list-page > viewport > clamp.medium > box > preferencesgroup {
-  margin-top: 24px;
-}
-
-scrolledwindow.list-page > viewport > clamp.large {
-  margin-bottom: 30px;
-}
-
-scrolledwindow.list-page > viewport > clamp.large > list,
-scrolledwindow.list-page > viewport > clamp.large > box > preferencesgroup {
-  margin-top: 30px;
-}
-
-/* The following style is taken from libhandy's HdyStatusPage style.
- * FIXME: Drop this style if HdyStatusPage or its GTK 4 successor allows setting
- * a spinner and the updates spinner page can be ported to it. */
-
-clamp.status-page {
-  margin: 36px 12px;
-}
-
-clamp.status-page .icon {
-  color: alpha(@theme_fg_color, 0.5);
-  min-height: 128px;
-  min-width: 128px;
-}
-
-clamp.status-page .icon:backdrop {
-  color: alpha(@theme_unfocused_fg_color, 0.5);
-}
-
-clamp.status-page .icon:not(:last-child) {
-  margin-bottom: 36px;
-}
-
-clamp.status-page .title:not(:last-child) {
-  margin-bottom: 12px;
-}
-
 app-context-bar {
-	border-radius: 8px;
 	border: 1px solid #877b6e;
-	background-color: @theme_base_color;
 }
 
 app-context-bar .context-tile {
-	padding: 24px 12px 21px 12px;
 	border-right: 1px solid #877b6e;
 }
-app-context-bar .context-tile:last-child { border-right: none }
-
-app-context-bar .context-tile-lozenge {
-	font-size: 18px;
-	font-weight: bold;
-	border-radius: 99999px;
-	padding: 9px 12px;
-	min-width: 18px;
-}
-app-context-bar .context-tile-lozenge.wide-image image {
-	/* GtkImage always renders image square, so if we want an image which
-	 * is wide, but still the same height as all the others, we have to
-	 * use this hack to make it zero-height and vertically centred. The
-	 * vertical size group ensures that it does still actually have a
-	 * height. */
-	margin-top: -999px;
-	margin-bottom: -999px
-}
-app-context-bar .context-tile-title { font-weight: bold }
-app-context-bar .context-tile-description { font-size: smaller }
 
 app-context-bar .grey { background-color: #deddda; color: @theme_fg_color }
 app-context-bar .green, app-context-bar .details-rating-0 { background-color: #b6f2c4; color: @theme_fg_color }
