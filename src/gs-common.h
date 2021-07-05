@@ -52,5 +52,12 @@ gchar		*gs_utils_time_to_string	(gint64		 unix_time_seconds);
 void		 gs_utils_invoke_reboot_async	(GCancellable	*cancellable,
 						 GAsyncReadyCallback ready_callback,
 						 gpointer	 user_data);
+gboolean	gs_utils_split_time_difference	(gint64 unix_time_seconds,
+						 gint *out_minutes_ago,
+						 gint *out_hours_ago,
+						 gint *out_days_ago,
+						 gint *out_weeks_ago,
+						 gint *out_months_ago,
+						 gint *out_years_ago);
 
 G_END_DECLS
