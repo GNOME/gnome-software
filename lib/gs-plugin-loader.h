@@ -84,5 +84,15 @@ void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_l
 const gchar	*gs_plugin_loader_get_locale		(GsPluginLoader *plugin_loader);
 
 GsCategoryManager *gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader);
+void		 gs_plugin_loader_claim_error		(GsPluginLoader *plugin_loader,
+							 GsPlugin *plugin,
+							 GsPluginAction action,
+							 GsApp *app,
+							 gboolean interactive,
+							 const GError *error);
+void		 gs_plugin_loader_claim_job_error	(GsPluginLoader *plugin_loader,
+							 GsPlugin *plugin,
+							 GsPluginJob *job,
+							 const GError *error);
 
 G_END_DECLS
