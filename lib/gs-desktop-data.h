@@ -38,6 +38,6 @@ const GsDesktopData	*gs_desktop_get_data		(void);
  *
  * Since: 40
  */
-#define GS_DESKTOP_DATA_N_ENTRIES 10
+#define GS_DESKTOP_DATA_N_ENTRIES 6
 
 G_END_DECLS

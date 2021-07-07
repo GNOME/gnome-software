@@ -12,13 +12,29 @@
 
 #include "gs-desktop-data.h"
 
-/* AudioVideo */
-static const GsDesktopMap map_audiovisual[] = {
-	{ "all",		NC_("Menu of Audio & Video", "All"),
-					{ "AudioVideo",
+static const GsDesktopMap map_create[] = {
+	{ "all",		NC_("Menu of Graphics & Photography", "All"),
+					{ "Graphics",
+					  "AudioVideo",
 					  NULL } },
-	{ "featured",		NC_("Menu of Audio & Video", "Featured"),
-					{ "AudioVideo::Featured",
+	{ "featured",		NC_("Menu of Graphics & Photography", "Featured"),
+					{ "Graphics::Featured",
+					  "AudioVideo::Featured",
+					  NULL} },
+	{ "3d",			NC_("Menu of Graphics & Photography", "3D Graphics"),
+					{ "Graphics::3DGraphics",
+					  NULL} },
+	{ "photography",	NC_("Menu of Graphics & Photography", "Photography"),
+					{ "Graphics::Photography",
+					  NULL} },
+	{ "scanning",		NC_("Menu of Graphics & Photography", "Scanning"),
+					{ "Graphics::Scanning",
+					  NULL} },
+	{ "vector",		NC_("Menu of Graphics & Photography", "Vector Graphics"),
+					{ "Graphics::VectorGraphics",
+					  NULL} },
+	{ "viewers",		NC_("Menu of Graphics & Photography", "Viewers"),
+					{ "Graphics::Viewer",
 					  NULL} },
 	{ "creation-editing",	NC_("Menu of Audio & Video", "Audio Creation & Editing"),
 					{ "AudioVideo::AudioVideoEditing",
@@ -26,77 +42,67 @@ static const GsDesktopMap map_audiovisual[] = {
 					  "AudioVideo::DiscBurning",
 					  "AudioVideo::Sequencer",
 					  NULL} },
+	{ "fonts",		NC_("Menu of Add-ons", "Fonts"),
+					{ "Addon::Font",
+					  NULL} },
+	{ NULL }
+};
+
+static const GsDesktopMap map_work[] = {
+	{ "all",		NC_("Menu of Productivity", "All"),
+					{ "Office",
+					  "Utility",
+					  "Addon",
+					  NULL } },
+	{ "featured",		NC_("Menu of Productivity", "Featured"),
+					{ "Office::Featured",
+					  "Utility::Featured",
+					  NULL} },
+	{ "calendar",		NC_("Menu of Productivity", "Calendar"),
+					{ "Office::Calendar",
+					  "Office::ProjectManagement",
+					  NULL} },
+	{ "database",		NC_("Menu of Productivity", "Database"),
+					{ "Office::Database",
+					  NULL} },
+	{ "finance",		NC_("Menu of Productivity", "Finance"),
+					{ "Office::Finance",
+					  "Office::Spreadsheet",
+					  NULL} },
+	{ "word-processor",	NC_("Menu of Productivity", "Word Processor"),
+					{ "Office::WordProcessor",
+					  "Office::Dictionary",
+					  NULL} },
+	{ "text-editors",	NC_("Menu of Utilities", "Text Editors"),
+					{ "Utility::TextEditor",
+					  NULL} },
+	{ "input-sources",	NC_("Menu of Add-ons", "Input Sources"),
+					{ "Addon::InputSource",
+					  NULL} },
+	{ "language-packs",	NC_("Menu of Add-ons", "Language Packs"),
+					{ "Addon::LanguagePack",
+					  NULL} },
+	{ "localization",	NC_("Menu of Add-ons", "Localization"),
+					{ "Addon::Localization",
+					  NULL} },
+	{ "drivers",		NC_("Menu of Add-ons", "Hardware Drivers"),
+					{ "Addon::Driver",
+					  NULL} },
+	{ NULL }
+};
+
+static const GsDesktopMap map_play[] = {
+	{ "all",		NC_("Menu of Audio & Video", "All"),
+					{ "AudioVideo",
+					  "Game",
+					  NULL } },
+	{ "featured",		NC_("Menu of Audio & Video", "Featured"),
+					{ "AudioVideo::Featured",
+					  "Game::Featured",
+					  NULL} },
 	{ "music-players",	NC_("Menu of Audio & Video", "Music Players"),
 					{ "AudioVideo::Music",
 					  "AudioVideo::Player",
-					  NULL} },
-	{ NULL }
-};
-
-/* Development */
-static const GsDesktopMap map_developertools[] = {
-	{ "all",		NC_("Menu of Developer Tools", "All"),
-					{ "Development",
-					  NULL } },
-	{ "featured",		NC_("Menu of Developer Tools", "Featured"),
-					{ "Development::Featured",
-					  NULL} },
-	{ "debuggers",		NC_("Menu of Developer Tools", "Debuggers"),
-					{ "Development::Debugger",
-					  NULL} },
-	{ "ide",		NC_("Menu of Developer Tools", "IDEs"),
-					{ "Development::IDE",
-					  "Development::GUIDesigner",
-					  NULL} },
-	{ NULL }
-};
-
-/* Education & Science */
-static const GsDesktopMap map_education_science[] = {
-	{ "all",		NC_("Menu of Education & Science", "All"),
-					{ "Education",
-					  "Science",
-					  NULL } },
-	{ "featured",		NC_("Menu of Education & Science", "Featured"),
-					{ "Education::Featured",
-					  "Science::Featured",
-					  NULL} },
-	{ "artificial-intelligence", NC_("Menu of Education & Science", "Artificial Intelligence"),
-					{ "Science::ArtificialIntelligence",
-					  NULL} },
-	{ "astronomy",		NC_("Menu of Education & Science", "Astronomy"),
-					{ "Education::Astronomy",
-					  "Science::Astronomy",
-					  NULL} },
-	{ "chemistry",		NC_("Menu of Education & Science", "Chemistry"),
-					{ "Education::Chemistry",
-					  "Science::Chemistry",
-					  NULL} },
-	{ "languages",		NC_("Menu of Education & Science", "Languages"),
-					{ "Education::Languages",
-					  "Education::Literature",
-					  NULL} },
-	{ "math",		NC_("Menu of Education & Science", "Math"),
-					{ "Education::Math",
-					  "Education::NumericalAnalysis",
-					  "Science::Math",
-					  "Science::Physics",
-					  "Science::NumericalAnalysis",
-					  NULL} },
-	{ "robotics",		NC_("Menu of Education & Science", "Robotics"),
-					{ "Science::Robotics",
-					  NULL} },
-
-	{ NULL }
-};
-
-/* Games */
-static const GsDesktopMap map_games[] = {
-	{ "all",		NC_("Menu of Games", "All"),
-					{ "Game",
-					  NULL } },
-	{ "featured",		NC_("Menu of Games", "Featured"),
-					{ "Game::Featured",
 					  NULL} },
 	{ "action",		NC_("Menu of Games", "Action"),
 					{ "Game::ActionGame",
@@ -135,89 +141,13 @@ static const GsDesktopMap map_games[] = {
 	{ "strategy",		NC_("Menu of Games", "Strategy"),
 					{ "Game::StrategyGame",
 					  NULL} },
-	{ NULL }
-};
-
-/* Graphics */
-static const GsDesktopMap map_graphics[] = {
-	{ "all",		NC_("Menu of Graphics & Photography", "All"),
-					{ "Graphics",
-					  NULL } },
-	{ "featured",		NC_("Menu of Graphics & Photography", "Featured"),
-					{ "Graphics::Featured",
-					  NULL} },
-	{ "3d",			NC_("Menu of Graphics & Photography", "3D Graphics"),
-					{ "Graphics::3DGraphics",
-					  NULL} },
-	{ "photography",	NC_("Menu of Graphics & Photography", "Photography"),
-					{ "Graphics::Photography",
-					  NULL} },
-	{ "scanning",		NC_("Menu of Graphics & Photography", "Scanning"),
-					{ "Graphics::Scanning",
-					  NULL} },
-	{ "vector",		NC_("Menu of Graphics & Photography", "Vector Graphics"),
-					{ "Graphics::VectorGraphics",
-					  NULL} },
-	{ "viewers",		NC_("Menu of Graphics & Photography", "Viewers"),
-					{ "Graphics::Viewer",
-					  NULL} },
-	{ NULL }
-};
-
-/* Office */
-static const GsDesktopMap map_productivity[] = {
-	{ "all",		NC_("Menu of Productivity", "All"),
-					{ "Office",
-					  NULL } },
-	{ "featured",		NC_("Menu of Productivity", "Featured"),
-					{ "Office::Featured",
-					  NULL} },
-	{ "calendar",		NC_("Menu of Productivity", "Calendar"),
-					{ "Office::Calendar",
-					  "Office::ProjectManagement",
-					  NULL} },
-	{ "database",		NC_("Menu of Productivity", "Database"),
-					{ "Office::Database",
-					  NULL} },
-	{ "finance",		NC_("Menu of Productivity", "Finance"),
-					{ "Office::Finance",
-					  "Office::Spreadsheet",
-					  NULL} },
-	{ "word-processor",	NC_("Menu of Productivity", "Word Processor"),
-					{ "Office::WordProcessor",
-					  "Office::Dictionary",
-					  NULL} },
-	{ NULL }
-};
-
-/* Addons */
-static const GsDesktopMap map_addons[] = {
-	{ "all",		NC_("Menu of Add-ons", "All"),
-					{ "Addon",
-					  NULL} },
-	{ "fonts",		NC_("Menu of Add-ons", "Fonts"),
-					{ "Addon::Font",
-					  NULL} },
 	{ "codecs",		NC_("Menu of Add-ons", "Codecs"),
 					{ "Addon::Codec",
 					  NULL} },
-	{ "input-sources",	NC_("Menu of Add-ons", "Input Sources"),
-					{ "Addon::InputSource",
-					  NULL} },
-	{ "language-packs",	NC_("Menu of Add-ons", "Language Packs"),
-					{ "Addon::LanguagePack",
-					  NULL} },
-	{ "localization",	NC_("Menu of Add-ons", "Localization"),
-					{ "Addon::Localization",
-					  NULL} },
-	{ "drivers",		NC_("Menu of Add-ons", "Hardware Drivers"),
-					{ "Addon::Driver",
-					  NULL} },
 	{ NULL }
 };
 
-/* Communication */
-static const GsDesktopMap map_communication[] = {
+static const GsDesktopMap map_socialize[] = {
 	{ "all",		NC_("Menu of Communication & News", "All"),
 					{ "Network",
 					  NULL } },
@@ -241,27 +171,41 @@ static const GsDesktopMap map_communication[] = {
 	{ NULL }
 };
 
-/* Utility */
-static const GsDesktopMap map_utilities[] = {
-	{ "all",		NC_("Menu of Utilities", "All"),
-					{ "Utility",
+static const GsDesktopMap map_learn[] = {
+	{ "all",		NC_("Menu of Education & Science", "All"),
+					{ "Education",
+					  "Science",
+					  "Reference",
 					  NULL } },
-	{ "featured",		NC_("Menu of Utilities", "Featured"),
-					{ "Utility::Featured",
+	{ "featured",		NC_("Menu of Education & Science", "Featured"),
+					{ "Education::Featured",
+					  "Science::Featured",
+					  "Reference::Featured",
 					  NULL} },
-	{ "text-editors",	NC_("Menu of Utilities", "Text Editors"),
-					{ "Utility::TextEditor",
+	{ "artificial-intelligence", NC_("Menu of Education & Science", "Artificial Intelligence"),
+					{ "Science::ArtificialIntelligence",
 					  NULL} },
-	{ NULL }
-};
-
-/* Reference */
-static const GsDesktopMap map_reference[] = {
-	{ "all",		NC_("Menu of Reference", "All"),
-					{ "Reference",
-					  NULL } },
-	{ "featured",		NC_("Menu of Reference", "Featured"),
-					{ "Reference::Featured",
+	{ "astronomy",		NC_("Menu of Education & Science", "Astronomy"),
+					{ "Education::Astronomy",
+					  "Science::Astronomy",
+					  NULL} },
+	{ "chemistry",		NC_("Menu of Education & Science", "Chemistry"),
+					{ "Education::Chemistry",
+					  "Science::Chemistry",
+					  NULL} },
+	{ "languages",		NC_("Menu of Education & Science", "Languages"),
+					{ "Education::Languages",
+					  "Education::Literature",
+					  NULL} },
+	{ "math",		NC_("Menu of Education & Science", "Math"),
+					{ "Education::Math",
+					  "Education::NumericalAnalysis",
+					  "Science::Math",
+					  "Science::Physics",
+					  "Science::NumericalAnalysis",
+					  NULL} },
+	{ "robotics",		NC_("Menu of Education & Science", "Robotics"),
+					{ "Science::Robotics",
 					  NULL} },
 	{ "art",		NC_("Menu of Art", "Art"),
 					{ "Reference::Art",
@@ -293,39 +237,39 @@ static const GsDesktopMap map_reference[] = {
 	{ NULL }
 };
 
+static const GsDesktopMap map_develop[] = {
+	{ "all",		NC_("Menu of Developer Tools", "All"),
+					{ "Development",
+					  NULL } },
+	{ "featured",		NC_("Menu of Developer Tools", "Featured"),
+					{ "Development::Featured",
+					  NULL} },
+	{ "debuggers",		NC_("Menu of Developer Tools", "Debuggers"),
+					{ "Development::Debugger",
+					  NULL} },
+	{ "ide",		NC_("Menu of Developer Tools", "IDEs"),
+					{ "Development::IDE",
+					  "Development::GUIDesigner",
+					  NULL} },
+	{ NULL }
+};
+
 /* main categories */
 /* Please keep category name and subcategory context synchronized!!! */
 static const GsDesktopData msdata[] = {
-	/* TRANSLATORS: this is the menu spec main category for Audio & Video */
-	{ "audio-video",	map_audiovisual,	N_("Audio & Video"),
-				"folder-music-symbolic", 100 },
-	/* TRANSLATORS: this is the menu spec main category for Development */
-	{ "developer-tools",	map_developertools,	N_("Developer Tools"),
-				"applications-engineering-symbolic", 40 },
-	/* TRANSLATORS: this is the menu spec main category for Education & Science */
-	{ "education-science",		map_education_science,	N_("Education & Science"),
-				"system-help-symbolic", 30 },
-	/* TRANSLATORS: this is the menu spec main category for Game */
-	{ "games",		map_games,		N_("Games"),
-				"applications-games-symbolic", 70 },
-	/* TRANSLATORS: this is the menu spec main category for Graphics */
-	{ "graphics",		map_graphics,		N_("Graphics & Photography"),
-				"applications-graphics-symbolic", 60 },
-	/* TRANSLATORS: this is the menu spec main category for Office */
-	{ "productivity",	map_productivity,	N_("Productivity"),
-				"text-editor-symbolic", 80 },
-	/* TRANSLATORS: this is the menu spec main category for Add-ons */
-	{ "addons",		map_addons,		N_("Add-ons"),
-				"application-x-addon-symbolic", 50 },
-	/* TRANSLATORS: this is the menu spec main category for Communication */
-	{ "communication",	map_communication,	N_("Communication & News"),
-				"user-available-symbolic", 90 },
-	/* TRANSLATORS: this is the menu spec main category for Reference */
-	{ "reference",		map_reference,		N_("Reference"),
-				"view-dual-symbolic", 0 },
-	/* TRANSLATORS: this is the menu spec main category for Utilities */
-	{ "utilities",		map_utilities,		N_("Utilities"),
-				"applications-utilities-symbolic", 10 },
+	/* Translators: this is a menu category */
+	{ "create", map_create, N_("Create"), "applications-graphics-symbolic", 100 },
+	/* Translators: this is a menu category */
+	{ "work", map_work, N_("Work"), "checkbox-checked-symbolic", 90 },
+	/* Translators: this is a menu category */
+	{ "play", map_play, N_("Play"), "applications-games-symbolic", 80 },
+	/* Translators: this is a menu category */
+	{ "socialize", map_socialize, N_("Socialize"), "face-smile-big-symbolic", 70 },
+	/* Translators: this is a menu category */
+	{ "learn", map_learn, N_("Learn"), "user-bookmarks-symbolic", 60 },
+	/* Translators: this is a menu category */
+	{ "develop", map_develop, N_("Develop"), "utilities-terminal-symbolic", 50 },
+
 	{ NULL }
 };
 
