@@ -3309,6 +3309,24 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
+
+		if (action == GS_PLUGIN_ACTION_URL_TO_APP) {
+			const gchar *search = gs_plugin_job_get_search (helper->plugin_job);
+			if (search && g_ascii_strncasecmp (search, "file://", 7) == 0 && (
+			    gs_plugin_job_get_list (helper->plugin_job) == NULL ||
+			    gs_app_list_length (gs_plugin_job_get_list (helper->plugin_job)) == 0)) {
+				g_autoptr(GError) local_error = NULL;
+				g_autoptr(GFile) file = NULL;
+				file = g_file_new_for_uri (search);
+				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_FILE_TO_APP);
+				gs_plugin_job_set_file (helper->plugin_job, file);
+				helper->function_name = gs_plugin_action_to_function_name (GS_PLUGIN_ACTION_FILE_TO_APP);
+				if (!gs_plugin_loader_run_results (helper, cancellable, &local_error))
+					g_debug ("Failed to convert file:// URI to app using file-to-app action: %s", local_error->message);
+				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_URL_TO_APP);
+				gs_plugin_job_set_file (helper->plugin_job, NULL);
+			}
+		}
 	}
 
 	/* run per-app version */
