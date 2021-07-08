@@ -361,7 +361,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 	/* Don't add NULL origin apps to the cache. If the app is later set to
 	 * origin x the cache may return it as a match for origin y since the cache
 	 * hash table uses as_utils_data_id_equal() as the equal func and a NULL
-	 * origin becomes a "*" in as_utils_build_data_id().
+	 * origin becomes a "*" in gs_utils_build_unique_id().
 	 */
 	if (origin != NULL)
 		gs_plugin_cache_add (self->plugin, NULL, app);

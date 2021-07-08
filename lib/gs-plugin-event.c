@@ -26,6 +26,7 @@
 
 #include "gs-plugin-private.h"
 #include "gs-plugin-event.h"
+#include "gs-utils.h"
 
 struct _GsPluginEvent
 {
@@ -173,11 +174,11 @@ gs_plugin_event_get_unique_id (GsPluginEvent *event)
 			g_autofree gchar *id = NULL;
 			id = g_strdup_printf ("%s.error",
 					      gs_plugin_error_to_string (event->error->code));
-			event->unique_id = as_utils_build_data_id (AS_COMPONENT_SCOPE_UNKNOWN,
-								   AS_BUNDLE_KIND_UNKNOWN,
-								   NULL,
-								   id,
-								   NULL);
+			event->unique_id = gs_utils_build_unique_id (AS_COMPONENT_SCOPE_UNKNOWN,
+								     AS_BUNDLE_KIND_UNKNOWN,
+								     NULL,
+								     id,
+								     NULL);
 		}
 		return event->unique_id;
 	}
