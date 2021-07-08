@@ -2782,11 +2782,11 @@ get_renamed_component (GsFlatpak *self,
 {
 	const gchar *origin = gs_app_get_origin (app);
 	const gchar *renamed_to;
-	g_autofree gchar *xpath = NULL;
 #if LIBXMLB_CHECK_VERSION(0, 3, 0)
 	g_autoptr(XbQuery) query = NULL;
 	g_auto(XbQueryContext) context = XB_QUERY_CONTEXT_INIT ();
 #else
+	g_autofree gchar *xpath = NULL;
 	g_autofree gchar *source_safe = NULL;
 #endif
 	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;

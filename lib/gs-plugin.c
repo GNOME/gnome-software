@@ -640,7 +640,7 @@ gs_plugin_get_network_available (GsPlugin *plugin)
 /**
  * gs_plugin_has_flags:
  * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_RUNNING_SELF
+ * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
  *
  * Finds out if a plugin has a specific flag set.
  *
@@ -658,7 +658,7 @@ gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
 /**
  * gs_plugin_add_flags:
  * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_RUNNING_SELF
+ * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
  *
  * Adds specific flags to the plugin.
  *
@@ -674,7 +674,7 @@ gs_plugin_add_flags (GsPlugin *plugin, GsPluginFlags flags)
 /**
  * gs_plugin_remove_flags:
  * @plugin: a #GsPlugin
- * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_RUNNING_SELF
+ * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_INTERACTIVE
  *
  * Removes specific flags from the plugin.
  *
