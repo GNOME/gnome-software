@@ -9,8 +9,8 @@
 msgid ""
 msgstr "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-06-24 09:55+0000\n"
-"PO-Revision-Date: 2021-06-27 16:00+0100\n"
+"POT-Creation-Date: 2021-07-09 10:57+0000\n"
+"PO-Revision-Date: 2021-07-09 16:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asiersarasua@ni.eus>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -61,7 +61,7 @@ msgstr "Eguneratzeen panela"
 msgid "The update details"
 msgstr "Eguneratzeen xehetasunak"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1678
+#: data/appdata/org.gnome.Software.appdata.xml.in:1690
 msgid "The GNOME Project"
 msgstr "GNOME proiektua"
 
@@ -300,19 +300,19 @@ msgstr "Softwarea instalatzea"
 msgid "Install selected software on the system"
 msgstr "Instalatu hautatutako softwarea sisteman"
 
-#: lib/gs-app.c:5189
+#: lib/gs-app.c:5344
 msgid "Local file"
 msgstr "Fitxategi lokala"
 
 #. TRANSLATORS: the first %s is replaced with an origin name;
 #. the second %s is replaced with the packaging format.
 #. Example string: "Local file (RPM)"
-#: lib/gs-app.c:5205
+#: lib/gs-app.c:5360
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5273
+#: lib/gs-app.c:5428
 msgid "Package"
 msgstr "Paketea"
 
@@ -320,11 +320,11 @@ msgstr "Paketea"
 msgid "Pending"
 msgstr "Zain"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:417 src/gs-details-page.c:409
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:417 src/gs-details-page.c:381
 msgid "Pending install"
 msgstr "Instalazioaren zain"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:421 src/gs-details-page.c:416
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:421 src/gs-details-page.c:388
 msgid "Pending remove"
 msgstr "Kentzearen zain"
 
@@ -339,7 +339,7 @@ msgstr "Instalatuta"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:172 src/gs-details-page.c:402
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:172 src/gs-details-page.c:374
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Instalatzen"
@@ -352,12 +352,12 @@ msgid "Removing"
 msgstr "Kentzen"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:958
+#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:900
 #: src/gs-details-page.ui:209
 msgid "_Uninstall"
 msgstr "_Desinstalatu"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:432
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:444
 msgid "Version History"
 msgstr "Bertsioen historia"
 
@@ -467,7 +467,7 @@ msgstr "translator-credits"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:376 src/gs-shell.c:2098
+#: src/gs-application.c:376 src/gs-shell.c:2100
 msgid "About Software"
 msgstr "Software aplikazioari buruz"
 
@@ -480,6 +480,264 @@ msgstr "Sisteman softwarea kudeatzeko modu dotorea."
 #: src/gs-application.c:568
 msgid "Sorry! There are no details for that application."
 msgstr "Barkatu! Ez dago xehetasunik aplikazio horretarako."
+
+#. Translators: The disk usage of an application when installed.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:88
+msgid "Installed Size"
+msgstr "Instalatutako tamaina"
+
+#. Translators: The download size of an application.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:97
+msgid "Download Size"
+msgstr "Deskargaren tamaina"
+
+#. Translators: This is displayed for the download size in an
+#. * app’s context tile if the size is unknown. It should be short
+#. * (at most a couple of characters wide).
+#. Translators: This app has no age rating information available.
+#. * This string is displayed like an icon. Please use any
+#. * similarly short punctuation character, word or acronym which
+#. * will be widely understood in your region, in this context.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:108 src/gs-app-context-bar.c:855
+msgid "?"
+msgstr "?"
+
+#. Translators: Displayed if the download or installed size of
+#. * an app could not be determined.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:112
+msgid "Size is unknown"
+msgstr "Tamaina ezezaguna da"
+
+#. Translators: This indicates an app requires no permissions to run.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:176
+msgid "No permissions"
+msgstr "Baimenik ez"
+
+#. Translators: This indicates an app uses the network.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:183
+msgid "Has network access"
+msgstr "Sarea atzitu dezake"
+
+#. Translators: This indicates an app uses D-Bus system services.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:190
+msgid "Uses system services"
+msgstr "Sistema-zerbitzuak erabiltzen ditu"
+
+#. Translators: This indicates an app uses D-Bus session services.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:197
+msgid "Uses session services"
+msgstr "Saio-zerbitzuak erabiltzen ditu"
+
+#. Translators: This indicates an app can access arbitrary hardware devices.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:204
+msgid "Can access hardware devices"
+msgstr "Hardware-gailuak atzitu ditzake"
+
+#. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:212
+msgid "Can read/write all your data"
+msgstr "Zure datu guztiak irakurri/idatzi ditzake"
+
+#. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:220
+msgid "Can read all your data"
+msgstr "Zure datu guztiak irakurri ditzake"
+
+#. Translators: This indicates an app can read/write to the user’s Downloads directory.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:227
+msgid "Can read/write your downloads"
+msgstr "Zure deskargak irakurri/idatzi ditzake"
+
+#. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:234
+msgid "Can read your downloads"
+msgstr "Zure deskargak irakurri ditzake"
+
+#. Translators: This indicates an app can access or change user settings.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:241
+msgid "Can access and change user settings"
+msgstr "Erabiltzaile-ezarpenak atzitu eta aldatu ditzake"
+
+#. Translators: This indicates an app uses the X11 windowing system.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:248
+msgid "Uses a legacy windowing system"
+msgstr "Leiho-sisema zaharkitua erabiltzen du"
+
+#. Translators: This indicates an app can escape its sandbox.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:255
+msgid "Can acquire arbitrary permissions"
+msgstr "Ausazko baimenak eskuratu ditzake"
+
+#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:267
+msgid "App has unknown permissions"
+msgstr "Aplikazioak baimen ezezagunak ditu"
+
+#. Translators: This indicates an app is not licensed under a free software license.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:279
+msgid "Proprietary code"
+msgstr "Kode jabeduna"
+
+#. Translators: This indicates an app’s source code is freely available, so can be audited for security.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:285
+msgid "Auditable code"
+msgstr "Kode ikuskagarria"
+
+#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:294
+msgid "App comes from a trusted source"
+msgstr "Aplikazioa iturburu fidagarri batetik dator"
+
+#. Translators: This indicates an app was written and released by a developer who has been verified.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:301
+msgid "App developer is verified"
+msgstr "Aplikazioaren garatzailea egiaztatuta dago"
+
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been marked as
+#. * ‘safe’, ‘potentially safe’ or ‘unsafe’. For example:
+#. * “App comes from a trusted source; Auditable code; No permissions”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been given a
+#. * certain content rating. For example:
+#. * “References to alcoholic beverages; Moderated chat functionality between users”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#: src/gs-app-context-bar.c:313 src/gs-app-context-bar.c:767
+msgid "; "
+msgstr "; "
+
+#. Translators: The app is considered safe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:321
+msgid "Safe"
+msgstr "Segurua"
+
+#. Translators: The app is considered potentially unsafe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:328
+msgid "Potentially Unsafe"
+msgstr "Arriskutsua izan daiteke"
+
+#. Translators: The app is considered unsafe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:335
+msgid "Unsafe"
+msgstr "Arriskutsua"
+
+#: src/gs-app-context-bar.c:518 src/gs-app-context-bar.c:554
+msgid "Mobile Only"
+msgstr "Mugikorra soilik"
+
+#: src/gs-app-context-bar.c:519
+msgid "Only works on a small screen"
+msgstr "Pantaila txikietan soilik funtzionatzen du"
+
+#: src/gs-app-context-bar.c:525 src/gs-app-context-bar.c:561
+#: src/gs-app-context-bar.c:568 src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:613 src/gs-app-context-bar.c:618
+msgid "Desktop Only"
+msgstr "Mahaigaina soilik"
+
+#: src/gs-app-context-bar.c:526
+msgid "Only works on a large screen"
+msgstr "Pantaila handi batean soilik funtzionatzen du"
+
+#: src/gs-app-context-bar.c:530
+msgid "Screen Size Mismatch"
+msgstr "Pantaila-tamaina ez dator bat"
+
+#: src/gs-app-context-bar.c:531
+msgid "Requires a specific screen size"
+msgstr "Pantaila-tamaina zehatza behar du"
+
+#: src/gs-app-context-bar.c:555
+msgid "Requires a touchscreen"
+msgstr "Ukipen-pantaila behar du"
+
+#: src/gs-app-context-bar.c:562
+msgid "Requires a keyboard"
+msgstr "Teklatua behar du"
+
+#: src/gs-app-context-bar.c:569
+msgid "Requires a mouse"
+msgstr "Sagua behar du"
+
+#: src/gs-app-context-bar.c:574 src/gs-app-context-bar.c:619
+msgid "Not optimized for touch devices or phones"
+msgstr "Ez dago optimizatuta ukipen-pantailetarako edo telefonoetarako"
+
+#: src/gs-app-context-bar.c:585
+msgid "Gamepad Needed"
+msgstr "Joko-agintea behar du"
+
+#: src/gs-app-context-bar.c:586
+msgid "Requires a gamepad to play"
+msgstr "Joko-agintea behar du jokatzeko"
+
+#. Translators: This is used in a context tile to indicate that
+#. * an app works on phones, tablets *and* desktops. It should be
+#. * short and in title case.
+#: src/gs-app-context-bar.c:600
+msgid "Adaptive"
+msgstr "Moldakorra"
+
+#: src/gs-app-context-bar.c:601
+msgid "Works on phones, tablets and desktops"
+msgstr "Telefonoetan, tabletetan eta mahaigainetan funtzionatzen du"
+
+#: src/gs-app-context-bar.c:614
+msgid "Probably requires a keyboard or mouse"
+msgstr "Ziur aski teklatua edo sagua beharko du"
+
+#. Translators: This indicates that the content rating for an
+#. * app says it can be used by all ages of people, as it contains
+#. * no objectionable content.
+#: src/gs-app-context-bar.c:696
+msgid "Contains no age-inappropriate content"
+msgstr "Ez dauka adinagatik desegokia izan daitekeen edukirik"
+
+#. Translators: The app is considered suitable to be run by all ages of people.
+#. * This is displayed in a context tile, so the string should be short.
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: src/gs-app-context-bar.c:837 lib/gs-category.c:214
+msgid "All"
+msgstr "Denak"
+
+#: src/gs-app-context-bar.c:856
+msgid "No age rating information available"
+msgstr "Ez dago adinaren informaziorik eskuragarri"
+
+#. this one’s not a placeholder
+#: src/gs-app-context-bar.ui:274
+msgid "Age Rating"
+msgstr "Balorazioa adinaren arabera"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
@@ -504,7 +762,7 @@ msgstr "Utzi"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:368
+#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:361
 msgid "Install"
 msgstr "Instalatu"
 
@@ -517,7 +775,7 @@ msgstr "Eguneratu"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:526
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:519
 msgid "Uninstall"
 msgstr "Desinstalatu"
 
@@ -583,12 +841,6 @@ msgstr "_Pasahitza"
 msgid "Other"
 msgstr "Bestelakoa"
 
-#. TRANSLATORS: this is a subcategory matching all the
-#. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:214
-msgid "All"
-msgstr "Denak"
-
 #. TRANSLATORS: this is a subcategory of featured apps
 #: lib/gs-category.c:218
 msgid "Featured"
@@ -601,12 +853,12 @@ msgid "Editor’s Picks"
 msgstr "Editorearen hautaketa"
 
 #. Heading for recently updated apps on a category page
-#: src/gs-category-page.ui:74
+#: src/gs-category-page.ui:73
 msgid "Recently Updated"
 msgstr "Azken aldian eguneratua"
 
 #. Heading for the rest of the apps on a category page
-#: src/gs-category-page.ui:103
+#: src/gs-category-page.ui:101
 msgid "Other Apps"
 msgstr "Beste aplikazio batzuk"
 
@@ -621,401 +873,345 @@ msgstr "Sartu zenbakia 1 eta %u artean: "
 msgid "Choose an application:"
 msgstr "Aukeratu aplikazio bat:"
 
-#: lib/gs-desktop-data.c:17
-msgctxt "Menu of Audio & Video"
+#: lib/gs-desktop-data.c:16
+msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Denak"
 
 #: lib/gs-desktop-data.c:20
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:23
-msgctxt "Menu of Audio & Video"
-msgid "Audio Creation & Editing"
-msgstr "Audioaren sorrera eta edizioa"
-
-#: lib/gs-desktop-data.c:29
-msgctxt "Menu of Audio & Video"
-msgid "Music Players"
-msgstr "Musika erreproduzigailuak"
-
-#: lib/gs-desktop-data.c:38
-msgctxt "Menu of Developer Tools"
-msgid "All"
-msgstr "Denak"
-
-#: lib/gs-desktop-data.c:41
-msgctxt "Menu of Developer Tools"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:44
-msgctxt "Menu of Developer Tools"
-msgid "Debuggers"
-msgstr "Araztaileak"
-
-#: lib/gs-desktop-data.c:47
-msgctxt "Menu of Developer Tools"
-msgid "IDEs"
-msgstr "IDEak"
-
-#: lib/gs-desktop-data.c:56
-msgctxt "Menu of Education & Science"
-msgid "All"
-msgstr "Denak"
-
-#: lib/gs-desktop-data.c:60
-msgctxt "Menu of Education & Science"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:64
-msgctxt "Menu of Education & Science"
-msgid "Artificial Intelligence"
-msgstr "Adimen artifiziala"
-
-#: lib/gs-desktop-data.c:67
-msgctxt "Menu of Education & Science"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: lib/gs-desktop-data.c:71
-msgctxt "Menu of Education & Science"
-msgid "Chemistry"
-msgstr "Kimika"
-
-#: lib/gs-desktop-data.c:75
-msgctxt "Menu of Education & Science"
-msgid "Languages"
-msgstr "Hizkuntzak"
-
-#: lib/gs-desktop-data.c:79
-msgctxt "Menu of Education & Science"
-msgid "Math"
-msgstr "Matematikak"
-
-#: lib/gs-desktop-data.c:86
-msgctxt "Menu of Education & Science"
-msgid "Robotics"
-msgstr "Robotika"
-
-#: lib/gs-desktop-data.c:95
-msgctxt "Menu of Games"
-msgid "All"
-msgstr "Denak"
-
-#: lib/gs-desktop-data.c:98
-msgctxt "Menu of Games"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:101
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "Ekintza"
-
-#: lib/gs-desktop-data.c:104
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "Abentura"
-
-#: lib/gs-desktop-data.c:107
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "Arkade-jokoak"
-
-#: lib/gs-desktop-data.c:110
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "Bloke-jokoak"
-
-#: lib/gs-desktop-data.c:113
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "Mahai-jokoak"
-
-#: lib/gs-desktop-data.c:116
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "Kartak"
-
-#: lib/gs-desktop-data.c:119
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "Emulatzaileak"
-
-#: lib/gs-desktop-data.c:122
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "Umeentzako"
-
-#: lib/gs-desktop-data.c:125
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "Logika-jokoak"
-
-#: lib/gs-desktop-data.c:129
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "Rol-jokoak"
-
-#: lib/gs-desktop-data.c:132
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "Kirolak"
-
-#: lib/gs-desktop-data.c:135
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "Estrategia"
-
-#: lib/gs-desktop-data.c:143
-msgctxt "Menu of Graphics & Photography"
-msgid "All"
-msgstr "Denak"
-
-#: lib/gs-desktop-data.c:146
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Nabarmendua"
 
-#: lib/gs-desktop-data.c:149
+#: lib/gs-desktop-data.c:24
 msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "3D grafikoak"
 
-#: lib/gs-desktop-data.c:152
+#: lib/gs-desktop-data.c:27
 msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Argazkigintza"
 
-#: lib/gs-desktop-data.c:155
+#: lib/gs-desktop-data.c:30
 msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Eskaneatzea"
 
-#: lib/gs-desktop-data.c:158
+#: lib/gs-desktop-data.c:33
 msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Bektore grafikoak"
 
-#: lib/gs-desktop-data.c:161
+#: lib/gs-desktop-data.c:36
 msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Ikustaileak"
 
-#: lib/gs-desktop-data.c:169
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "Denak"
+#: lib/gs-desktop-data.c:39
+msgctxt "Menu of Audio & Video"
+msgid "Audio Creation & Editing"
+msgstr "Audioaren sorrera eta edizioa"
 
-#: lib/gs-desktop-data.c:172
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:175
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "Egutegia"
-
-#: lib/gs-desktop-data.c:179
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "Datu-basea"
-
-#: lib/gs-desktop-data.c:182
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "Finantzak"
-
-#: lib/gs-desktop-data.c:186
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "Testu-prozesadorea"
-
-#: lib/gs-desktop-data.c:195
-msgctxt "Menu of Add-ons"
-msgid "All"
-msgstr "Dena"
-
-#: lib/gs-desktop-data.c:198
+#: lib/gs-desktop-data.c:45
 msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Letra-tipoak"
 
-#: lib/gs-desktop-data.c:201
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "Kodekak"
-
-#: lib/gs-desktop-data.c:204
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Sarrerako iturburuak"
-
-#: lib/gs-desktop-data.c:207
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Hizkuntza-paketeak"
-
-#: lib/gs-desktop-data.c:210
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Itzulpengintza"
-
-#: lib/gs-desktop-data.c:213
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Hardwarearen kontrolatzaileak"
-
-#: lib/gs-desktop-data.c:221
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:52
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Denak"
 
-#: lib/gs-desktop-data.c:224
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:57
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Nabarmendua"
 
-#: lib/gs-desktop-data.c:227
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "Berriketa"
+#: lib/gs-desktop-data.c:61
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "Egutegia"
 
-#: lib/gs-desktop-data.c:234
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "Berriak"
+#: lib/gs-desktop-data.c:65
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "Datu-basea"
 
-#: lib/gs-desktop-data.c:238
-msgctxt "Menu of Communication & News"
-msgid "Web Browsers"
-msgstr "Web nabigatzaileak"
+#: lib/gs-desktop-data.c:68
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "Finantzak"
 
-#: lib/gs-desktop-data.c:246
-msgctxt "Menu of Utilities"
-msgid "All"
-msgstr "Denak"
+#: lib/gs-desktop-data.c:72
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "Testu-prozesadorea"
 
-#: lib/gs-desktop-data.c:249
-msgctxt "Menu of Utilities"
-msgid "Featured"
-msgstr "Nabarmendua"
-
-#: lib/gs-desktop-data.c:252
+#: lib/gs-desktop-data.c:76
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Testu-editoreak"
 
-#: lib/gs-desktop-data.c:260
-msgctxt "Menu of Reference"
+#: lib/gs-desktop-data.c:79
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Sarrerako iturburuak"
+
+#: lib/gs-desktop-data.c:82
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Hizkuntza-paketeak"
+
+#: lib/gs-desktop-data.c:85
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Itzulpengintza"
+
+#: lib/gs-desktop-data.c:88
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Hardwarearen kontrolatzaileak"
+
+#: lib/gs-desktop-data.c:95
+msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Denak"
 
-#: lib/gs-desktop-data.c:263
-msgctxt "Menu of Reference"
+#: lib/gs-desktop-data.c:99
+msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Nabarmendua"
 
-#: lib/gs-desktop-data.c:266
+#: lib/gs-desktop-data.c:103
+msgctxt "Menu of Audio & Video"
+msgid "Music Players"
+msgstr "Musika erreproduzigailuak"
+
+#: lib/gs-desktop-data.c:107
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Ekintza"
+
+#: lib/gs-desktop-data.c:110
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Abentura"
+
+#: lib/gs-desktop-data.c:113
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Arkade-jokoak"
+
+#: lib/gs-desktop-data.c:116
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Bloke-jokoak"
+
+#: lib/gs-desktop-data.c:119
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Mahai-jokoak"
+
+#: lib/gs-desktop-data.c:122
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Kartak"
+
+#: lib/gs-desktop-data.c:125
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Emulatzaileak"
+
+#: lib/gs-desktop-data.c:128
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Umeentzako"
+
+#: lib/gs-desktop-data.c:131
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Logika-jokoak"
+
+#: lib/gs-desktop-data.c:135
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Rol-jokoak"
+
+#: lib/gs-desktop-data.c:138
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Kirolak"
+
+#: lib/gs-desktop-data.c:141
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Estrategia"
+
+#: lib/gs-desktop-data.c:144
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "Kodekak"
+
+#: lib/gs-desktop-data.c:151
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "Denak"
+
+#: lib/gs-desktop-data.c:154
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "Nabarmendua"
+
+#: lib/gs-desktop-data.c:157
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "Berriketa"
+
+#: lib/gs-desktop-data.c:164
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "Berriak"
+
+#: lib/gs-desktop-data.c:168
+msgctxt "Menu of Communication & News"
+msgid "Web Browsers"
+msgstr "Web nabigatzaileak"
+
+#: lib/gs-desktop-data.c:175
+msgctxt "Menu of Education & Science"
+msgid "All"
+msgstr "Denak"
+
+#: lib/gs-desktop-data.c:180
+msgctxt "Menu of Education & Science"
+msgid "Featured"
+msgstr "Nabarmendua"
+
+#: lib/gs-desktop-data.c:185
+msgctxt "Menu of Education & Science"
+msgid "Artificial Intelligence"
+msgstr "Adimen artifiziala"
+
+#: lib/gs-desktop-data.c:188
+msgctxt "Menu of Education & Science"
+msgid "Astronomy"
+msgstr "Astronomia"
+
+#: lib/gs-desktop-data.c:192
+msgctxt "Menu of Education & Science"
+msgid "Chemistry"
+msgstr "Kimika"
+
+#: lib/gs-desktop-data.c:196
+msgctxt "Menu of Education & Science"
+msgid "Languages"
+msgstr "Hizkuntzak"
+
+#: lib/gs-desktop-data.c:200
+msgctxt "Menu of Education & Science"
+msgid "Math"
+msgstr "Matematikak"
+
+#: lib/gs-desktop-data.c:207
+msgctxt "Menu of Education & Science"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: lib/gs-desktop-data.c:210
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Artea"
 
-#: lib/gs-desktop-data.c:269
+#: lib/gs-desktop-data.c:213
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Bibliografia"
 
-#: lib/gs-desktop-data.c:272
+#: lib/gs-desktop-data.c:216
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Komikiak"
 
-#: lib/gs-desktop-data.c:275
+#: lib/gs-desktop-data.c:219
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Fikzioa"
 
-#: lib/gs-desktop-data.c:278
+#: lib/gs-desktop-data.c:222
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Osasuna"
 
-#: lib/gs-desktop-data.c:281
+#: lib/gs-desktop-data.c:225
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Historia"
 
-#: lib/gs-desktop-data.c:284
+#: lib/gs-desktop-data.c:228
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Bizimodua"
 
-#: lib/gs-desktop-data.c:287
+#: lib/gs-desktop-data.c:231
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Politika"
 
-#: lib/gs-desktop-data.c:290
+#: lib/gs-desktop-data.c:234
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Kirolak"
 
-#. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: lib/gs-desktop-data.c:300
-msgid "Audio & Video"
-msgstr "Audioa eta bideoa"
+#: lib/gs-desktop-data.c:241
+msgctxt "Menu of Developer Tools"
+msgid "All"
+msgstr "Denak"
 
-#. TRANSLATORS: this is the menu spec main category for Development
-#: lib/gs-desktop-data.c:303
-msgid "Developer Tools"
-msgstr "Garapeneko tresnak"
+#: lib/gs-desktop-data.c:244
+msgctxt "Menu of Developer Tools"
+msgid "Featured"
+msgstr "Nabarmendua"
 
-#. TRANSLATORS: this is the menu spec main category for Education & Science
-#: lib/gs-desktop-data.c:306
-msgid "Education & Science"
-msgstr "Hezkuntza eta zientzia"
+#: lib/gs-desktop-data.c:247
+msgctxt "Menu of Developer Tools"
+msgid "Debuggers"
+msgstr "Araztaileak"
 
-#. TRANSLATORS: this is the menu spec main category for Game
-#: lib/gs-desktop-data.c:309
-msgid "Games"
-msgstr "Jokoak"
+#: lib/gs-desktop-data.c:250
+msgctxt "Menu of Developer Tools"
+msgid "IDEs"
+msgstr "IDEak"
 
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: lib/gs-desktop-data.c:312
-msgid "Graphics & Photography"
-msgstr "Grafikoak eta argazkigintza"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:261
+msgid "Create"
+msgstr "Sortu"
 
-#. TRANSLATORS: this is the menu spec main category for Office
-#: lib/gs-desktop-data.c:315
-msgid "Productivity"
-msgstr "Ekoizpena"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:263
+msgid "Work"
+msgstr "Egin lan"
 
-#. TRANSLATORS: this is the menu spec main category for Add-ons
-#: lib/gs-desktop-data.c:318 src/gs-details-page.ui:366
-#: src/gs-installed-page.ui:111
-msgid "Add-ons"
-msgstr "Gehigarriak"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:265
+msgid "Play"
+msgstr "Jolastu"
 
-#. TRANSLATORS: this is the menu spec main category for Communication
-#: lib/gs-desktop-data.c:321
-msgid "Communication & News"
-msgstr "Komunikazioa eta albisteak"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:267
+msgid "Socialize"
+msgstr "Sozializatu"
 
-#. TRANSLATORS: this is the menu spec main category for Reference
-#: lib/gs-desktop-data.c:324
-msgid "Reference"
-msgstr "Erreferentzia"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:269
+msgid "Learn"
+msgstr "Ikasi"
 
-#. TRANSLATORS: this is the menu spec main category for Utilities
-#: lib/gs-desktop-data.c:327
-msgid "Utilities"
-msgstr "Tresnak"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:271
+msgid "Develop"
+msgstr "Garatu"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -1121,7 +1317,7 @@ msgstr "Gaitu eta instalatu"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Pakete-kudeatzaileak emandako erroreen xehetasunak:"
 
-#: src/gs-common.c:524 src/gs-details-page.ui:575
+#: src/gs-common.c:524 src/gs-details-page.ui:587
 msgid "Details"
 msgstr "Xehetasunak"
 
@@ -1152,46 +1348,46 @@ msgid "Not Now"
 msgstr "Orain ez"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:771
+#: src/gs-common.c:821
 msgid "Just now"
 msgstr "Orain"
 
-#: src/gs-common.c:773
+#: src/gs-common.c:823
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "Duela minutu %d"
 msgstr[1] "Duela %d minutu"
 
-#: src/gs-common.c:777
+#: src/gs-common.c:827
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "Duela ordu %d"
 msgstr[1] "Duela %d ordu"
 
-#: src/gs-common.c:781
+#: src/gs-common.c:831
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "Duela egun %d"
 msgstr[1] "Duela %d egun"
 
-#: src/gs-common.c:785
+#: src/gs-common.c:835
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "Duela aste %d"
 msgstr[1] "Duela %d aste"
 
-#: src/gs-common.c:789
+#: src/gs-common.c:839
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "Duela hilabete %d"
 msgstr[1] "Duela %d hilabete"
 
-#: src/gs-common.c:793
+#: src/gs-common.c:843
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1271,32 +1467,32 @@ msgstr "_Irakurri gehiago"
 msgid "_Read Less"
 msgstr "_Irakurri gutxiago"
 
-#: src/gs-details-page.c:397
+#: src/gs-details-page.c:369
 msgid "Removing…"
 msgstr "Kentzen…"
 
-#: src/gs-details-page.c:407
+#: src/gs-details-page.c:379
 msgid "Requires restart to finish install"
 msgstr "Berrabiarazi behar da instalazioa amaitzeko"
 
-#: src/gs-details-page.c:414
+#: src/gs-details-page.c:386
 msgid "Requires restart to finish remove"
 msgstr "Berrabiarazi behar da kentzea amaitzeko"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:431
+#: src/gs-details-page.c:403
 msgid "Pending installation…"
 msgstr "Zain dagoen instalazioa…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:438
+#: src/gs-details-page.c:410
 msgid "Pending update…"
 msgstr "Zain dagoen eguneratzea…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:452
+#: src/gs-details-page.c:424
 msgid "Preparing…"
 msgstr "Prestatzen…"
 
@@ -1306,13 +1502,13 @@ msgstr "Prestatzen…"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:866 src/gs-details-page.c:892
+#: src/gs-details-page.c:808 src/gs-details-page.c:834
 #: src/gs-details-page.ui:184 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Instalatu"
 
-#: src/gs-details-page.c:882
+#: src/gs-details-page.c:824
 msgid "_Restart"
 msgstr "_Berrabiarazi"
 
@@ -1323,196 +1519,41 @@ msgstr "_Berrabiarazi"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:906 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:848 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Instalatu…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:934
+#: src/gs-details-page.c:876
 msgid "_Launch"
 msgstr "_Abiarazi"
 
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:93
-msgid "Network"
-msgstr "Sarea"
-
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:93
-msgid "Can communicate over the network"
-msgstr "Sarean zehar komunikatu daiteke"
-
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:94
-msgid "System Services"
-msgstr "Sistema-zerbitzuak"
-
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:94
-msgid "Can access D-Bus services on the system bus"
-msgstr "Sistemako bus-aren D-Bus zerbitzuak atzi ditzake"
-
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:95
-msgid "Session Services"
-msgstr "Saio-zerbitzuak"
-
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:95
-msgid "Can access D-Bus services on the session bus"
-msgstr "Saioko bus-aren D-Bus zerbitzuak atzi ditzake"
-
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:96
-msgid "Devices"
-msgstr "Gailuak"
-
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:96
-msgid "Can access system device files"
-msgstr "Sistemaren gailu-fitxategiak atzi ditzake"
-
-#: src/gs-details-page.c:995 src/gs-details-page.c:996
-#: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
-msgid "Home folder"
-msgstr "Karpeta nagusia"
-
-#: src/gs-details-page.c:995 src/gs-details-page.c:997
-#: src/gs-details-page.c:999 src/gs-update-dialog.c:97
-#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
-msgid "Can view, edit and create files"
-msgstr "Fitxategiak ikusi, editatu eta sortu ditzake"
-
-#: src/gs-details-page.c:996 src/gs-details-page.c:998
-#: src/gs-details-page.c:1000 src/gs-update-dialog.c:98
-#: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
-msgid "Can view files"
-msgstr "Fitxategiak ikusi ditzake"
-
-#: src/gs-details-page.c:997 src/gs-details-page.c:998
-#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
-msgid "File system"
-msgstr "Fitxategi-sistema"
-
-#: src/gs-details-page.c:999 src/gs-details-page.c:1000
-#: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
-msgid "Downloads folder"
-msgstr "Deskargen karpeta"
-
-#: src/gs-details-page.c:1001 src/gs-update-dialog.c:103
-msgid "Settings"
-msgstr "Ezarpenak"
-
-#: src/gs-details-page.c:1001 src/gs-update-dialog.c:103
-msgid "Can view and change any settings"
-msgstr "Edozein ezarpen ikusi eta aldatu dezake"
-
-#: src/gs-details-page.c:1002 src/gs-update-dialog.c:104
-msgid "Legacy display system"
-msgstr "Bistaratze-sistema zaharra"
-
-#: src/gs-details-page.c:1002 src/gs-update-dialog.c:104
-msgid "Uses an old, insecure display system"
-msgstr "Bistaratze-sistema zaharra eta segurtasun gutxikoa darabil"
-
-#: src/gs-details-page.c:1003 src/gs-update-dialog.c:105
-msgid "Sandbox escape"
-msgstr "Egin ihes isolamendutik"
-
-#: src/gs-details-page.c:1003 src/gs-update-dialog.c:105
-msgid "Can escape the sandbox and circumvent any other restrictions"
-msgstr "Isolamendutik ihes egin dezake eta beste muga batzuk saihestu ditzake"
-
-#: src/gs-details-page.c:1018
-msgid "This application is fully sandboxed."
-msgstr "Aplikazio hau osorik isolatuta dago."
-
-#: src/gs-details-page.c:1026
-msgid ""
-"Unable to determine which parts of the system this application accesses. "
-"This is typical for older applications."
-msgstr "Ezin izan da zehaztu sistemaren zein zati atzitzen duen aplikazio honek. Hori arrunta da aplikazio zaharrenetan."
-
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1237
+#: src/gs-details-page.c:1059
 msgctxt "updated"
 msgid "Never"
 msgstr "Inoiz ere ez"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1290
+#: src/gs-details-page.c:1096
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Ezezaguna"
 
-#: src/gs-details-page.c:1343
-msgctxt "App permissions"
-msgid "None"
-msgstr "Bat ere ez"
-
-#: src/gs-details-page.c:1345
-msgctxt "App permissions"
-msgid "Low"
-msgstr "Baxua"
-
-#: src/gs-details-page.c:1347
-msgctxt "App permissions"
-msgid "Medium"
-msgstr "Tartekoa"
-
-#: src/gs-details-page.c:1349
-msgctxt "App permissions"
-msgid "High"
-msgstr "Altua"
-
-#: src/gs-details-page.c:1351
-msgctxt "App permissions"
-msgid "Unknown"
-msgstr "Ezezaguna"
-
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1702
+#: src/gs-details-page.c:1464
 msgid "You need internet access to write a review"
 msgstr "Interneterako sarbidea behar duzu iritzia idazteko"
 
-#: src/gs-details-page.c:1909 src/gs-details-page.c:1925
+#: src/gs-details-page.c:1600 src/gs-details-page.c:1616
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Ezin da \"%s” aurkitu"
 
-#: src/gs-details-page.c:2417
-msgid "The application contains no age-inappropriate content."
-msgstr "Aplikazioak ez du adinagatik desegokia den edukirik."
-
-#. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2526
-msgid "Public domain"
-msgstr "Domeinu Publikoa"
-
-#. TRANSLATORS: Replace the link with a version in your language,
-#. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2529
-msgid "https://en.wikipedia.org/wiki/Public_domain"
-msgstr "https://eu.wikipedia.org/wiki/Software_jabedun"
-
-#. TRANSLATORS: Replace the link with a version in your language,
-#. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2536
-msgid "https://www.gnu.org/philosophy/free-sw"
-msgstr "https://www.gnu.org/philosophy/free-sw"
-
-#. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2546 src/gs-details-page.ui:1275
-msgid "Free Software"
-msgstr "Software librea"
-
-#. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2603
-msgid "Users are bound by the following license:"
-msgid_plural "Users are bound by the following licenses:"
-msgstr[0] "Erabiltzaileak honako lizentziarekin lotuta daude:"
-msgstr[1] "Erabiltzaileak honako lizentziekin lotuta daude:"
-
-#: src/gs-details-page.c:2630 src/gs-details-page.ui:1347
-msgid "More information"
-msgstr "Informazio gehiago"
-
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2763
+#: src/gs-details-page.c:2151
 msgid "Loading…"
 msgstr "Kargatzen…"
 
@@ -1542,190 +1583,117 @@ msgstr "_Gehitu lasterbidea"
 msgid "Re_move shortcut"
 msgstr "_Kendu lasterbidea"
 
+#: src/gs-details-page.ui:366 src/gs-installed-page.ui:111
+msgid "Add-ons"
+msgstr "Gehigarriak"
+
 #: src/gs-details-page.ui:378
 msgid "Selected add-ons will be installed with the application."
 msgstr "Hautatutako gehigarriak aplikazioarekin instalatuko dira."
 
-#: src/gs-details-page.ui:462
+#: src/gs-details-page.ui:474
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Aplikazio hau soilik erabil daiteke interneterako konexio aktibo batekin."
 
-#: src/gs-details-page.ui:479
+#: src/gs-details-page.ui:491
 msgid "Software Repository Included"
 msgstr "Software-biltegia sartu da"
 
-#: src/gs-details-page.ui:480
+#: src/gs-details-page.ui:492
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
 msgstr "Aplikazio honek software-biltegi bat du eguneratzeak eskaintzeko, bai eta beste software batzuetarako sarbidea emateko ere."
 
-#: src/gs-details-page.ui:494
+#: src/gs-details-page.ui:506
 msgid "No Software Repository Included"
 msgstr "Ez da software-biltegia sartu"
 
-#: src/gs-details-page.ui:495
+#: src/gs-details-page.ui:507
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr "Aplikazio honek ez du software-biltegirik sartzen. Ez da eguneratuko bertsio berriak daudenean."
 
-#: src/gs-details-page.ui:510
+#: src/gs-details-page.ui:522
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr "Uneko banaketak jadanik software hau hau dauka, eta ez litzateke ordeztu behar."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:524
+#: src/gs-details-page.ui:536
 msgid "Software Repository Identified"
 msgstr "Software-biltegia identifikatu da"
 
-#: src/gs-details-page.ui:525
+#: src/gs-details-page.ui:537
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr "Software-biltegi hau gehitzean, beste software batzuk eta bertsio-berritze gehigarriak eskuratuko dituzu."
 
-#: src/gs-details-page.ui:526
+#: src/gs-details-page.ui:538
 msgid "Only use software repositories that you trust."
 msgstr "Erabili zuretzat fidagarriak diren software-biltegiak soilik."
 
-#: src/gs-details-page.ui:543
+#: src/gs-details-page.ui:555
 msgid "_Website"
 msgstr "_Webgunea"
 
-#: src/gs-details-page.ui:552
+#: src/gs-details-page.ui:564
 msgid "_Donate"
 msgstr "_Eman dirua"
 
-#: src/gs-details-page.ui:676
+#: src/gs-details-page.ui:673
 msgid "Localized in your Language"
 msgstr "Zure hizkuntzara itzulita"
 
-#: src/gs-details-page.ui:687
+#: src/gs-details-page.ui:684
 msgid "Documentation"
 msgstr "Dokumentazioa"
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:695
 msgid "Release Activity"
 msgstr "Argitalpenaren jarduera"
 
-#: src/gs-details-page.ui:709
+#: src/gs-details-page.ui:706
 msgid "System Integration"
 msgstr "Sistemaren integrazioa"
 
-#: src/gs-details-page.ui:720
-msgid "Sandboxed"
-msgstr "Isolatua"
-
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:740 src/gs-origin-popover-row.c:91
+#: src/gs-details-page.ui:726 src/gs-origin-popover-row.c:91
 msgid "Channel"
 msgstr "Kanala"
 
-#: src/gs-details-page.ui:776
-msgid "Age Rating"
-msgstr "Balorazioa adinaren arabera"
-
-#: src/gs-details-page.ui:814 src/gs-details-page.ui:1433
-msgid "Permissions"
-msgstr "Baimenak"
-
-#: src/gs-details-page.ui:852
+#: src/gs-details-page.ui:762
 msgid "Updated"
 msgstr "Eguneratuta"
 
-#: src/gs-details-page.ui:886
-msgid "Category"
-msgstr "Kategoria"
-
-#: src/gs-details-page.ui:923
-msgid "Installed Size"
-msgstr "Instalatutako tamaina"
-
-#: src/gs-details-page.ui:954
-msgid "Download Size"
-msgstr "Deskargaren tamaina"
-
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
-#: src/gs-details-page.ui:985 src/gs-details-page.ui:1457
+#: src/gs-details-page.ui:797 src/gs-details-page.ui:1013
 msgid "Source"
 msgstr "Iturburua"
 
-#: src/gs-details-page.ui:1016
+#: src/gs-details-page.ui:828
 msgid "Developer"
 msgstr "Garatzailea"
 
-#: src/gs-details-page.ui:1062
-msgid "License"
-msgstr "Lizentzia"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1081
-msgid "Free"
-msgstr "Librea"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1093
-msgid "Proprietary"
-msgstr "Pribatua"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1105
-msgctxt "Application license"
-msgid "Unknown"
-msgstr "Ezezaguna"
-
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1144
+#: src/gs-details-page.ui:894
 msgid "Reviews"
 msgstr "Berrikuspenak"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1162
+#: src/gs-details-page.ui:912
 msgid "_Write a Review"
 msgstr "_Idatzi iritzia"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1183
+#: src/gs-details-page.ui:933
 msgid "_Show More"
 msgstr "Erakutsi _gehiago"
-
-#: src/gs-details-page.ui:1286
-msgid ""
-"This means that the software can be freely run, copied, distributed, studied "
-"and modified."
-msgstr "Softwarea libreki exekutatu, kopiatu, banatu, ikertu eta eraldatu daitekeela adierazten du."
-
-#: src/gs-details-page.ui:1326
-msgid "Proprietary Software"
-msgstr "Software jabeduna"
-
-#: src/gs-details-page.ui:1337
-msgid ""
-"This means that the software is owned by an individual or a company. There "
-"are often restrictions on its use and its source code cannot usually be "
-"accessed."
-msgstr "Horrek esan nahi du softwarearen jabea banakako bat edo enpresa bat dela. Murriztapen asko egon ohi dira hura erabiltzeko, eta bere kode-iturburua ezin ohi da atzitu."
-
-#: src/gs-details-page.ui:1369
-msgid "Unknown Software License"
-msgstr "Softwarearen lizentzia ezezaguna"
-
-#: src/gs-details-page.ui:1380
-msgid "The license terms of this software are unknown."
-msgstr "Software honen lizentziaren terminoak ezezagunak dira."
-
-#: src/gs-details-page.ui:1400
-msgid "The application was rated this way because it features:"
-msgstr "Aplikazioa honela baloratu da, ezaugarri hauek dituelako:"
-
-#: src/gs-details-page.ui:1414
-msgid "No details were available for this rating."
-msgstr "Ez dago balorazio honen xehetasunik eskuragarri."
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:226
@@ -2100,37 +2068,31 @@ msgstr "Bertsioa"
 msgid "More…"
 msgstr "Gehiago…"
 
-#. TRANSLATORS: this is a heading for audio applications which
-#. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:478
-msgid "Recommended Audio & Video Applications"
-msgstr "Gomendatutako audioen eta bideoen aplikazioak"
-
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:483
+#: src/gs-overview-page.c:478
 msgid "Recommended Games"
 msgstr "Gomendatutako jokoak"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:488
-msgid "Recommended Graphics Applications"
-msgstr "Gomendatutako grafikoen aplikazioak"
+#: src/gs-overview-page.c:483
+msgid "Recommended Creation Applications"
+msgstr "Gomendatutako sorrera-aplikazioak"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:493
-msgid "Recommended Productivity Applications"
-msgstr "Gomendatutako ekoizpenerako aplikazioak"
+#: src/gs-overview-page.c:488
+msgid "Recommended Work Applications"
+msgstr "Gomendatutako laneko aplikazioak"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:814 src/gs-repos-dialog.c:815
+#: src/gs-overview-page.c:811 src/gs-repos-dialog.c:815
 msgid "Access additional software from selected third party sources."
 msgstr "Atzitu software gehigarria hautatutako hirugarrenen iturburuetatik."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:818 src/gs-repos-dialog.c:819
+#: src/gs-overview-page.c:815 src/gs-repos-dialog.c:819
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2138,19 +2100,19 @@ msgstr "Software horietako batzuk jabedunak dira, eta ondorioz, murriztapenak di
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:823 src/gs-repos-dialog.c:824
+#: src/gs-overview-page.c:820 src/gs-repos-dialog.c:824
 msgid "Find out more…"
 msgstr "Bilatu gehiago…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:831 src/gs-repos-dialog.c:239
+#: src/gs-overview-page.c:828 src/gs-repos-dialog.c:239
 msgid "Enable"
 msgstr "Gaitu"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:888 src/gs-shell.ui:550
+#: src/gs-overview-page.c:885 src/gs-shell.ui:550
 msgid "Explore"
 msgstr "Arakatu"
 
@@ -2177,20 +2139,20 @@ msgstr "Ez da aplikazioaren daturik aurkitu"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:359
+#: src/gs-page.c:352
 #, c-format
 msgid "Prepare %s"
 msgstr "Prestatu %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:495
+#: src/gs-page.c:488
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Ziur zaude %s biltegia kendu nahi duzula?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:499
+#: src/gs-page.c:492
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2199,19 +2161,19 @@ msgstr "%s biltegiko aplikazio guztiak desinstalatuko dira, eta biltegia berriro
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:507
+#: src/gs-page.c:500
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Ziur zaude %s desinstalatu nahi duzula?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:510
+#: src/gs-page.c:503
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
 msgstr "%s desinstalatu egingo da, eta instalatu egin beharko da berriro erabiltzeko."
 
-#: lib/gs-plugin-loader.c:2938
+#: lib/gs-plugin-loader.c:3004
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Ezezaguna"
@@ -2504,10 +2466,9 @@ msgid ""
 "\">privacy policy</a>."
 msgstr "Aurkitu zein datu bidaltzen den gure <a href=\"https://odrs.gnome.org/privacy\">pribatutasun-politikan</a>."
 
-#. Translators: A label for the total number of reviews.
-#: src/gs-review-histogram.ui:352
-msgid "ratings in total"
-msgstr "balorazio guztira"
+#: src/gs-review-histogram.ui:100
+msgid "out of 5 stars"
+msgstr "5 izarretik"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #: src/gs-review-row.c:58
@@ -2643,81 +2604,81 @@ msgstr "Ez da aplikaziorik aurkitu"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1116 src/gs-shell.c:1121 src/gs-shell.c:1136
-#: src/gs-shell.c:1140
+#: src/gs-shell.c:1118 src/gs-shell.c:1123 src/gs-shell.c:1138
+#: src/gs-shell.c:1142
 #, c-format
 msgid "“%s”"
 msgstr "\"%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1186
+#: src/gs-shell.c:1188
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Ezin dira firmwarearen eguneratzeak %s(e)ndik deskargatu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1192
+#: src/gs-shell.c:1194
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Ezin dira eguneratzeak %s(e)nik deskargatu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1199 src/gs-shell.c:1244
+#: src/gs-shell.c:1201 src/gs-shell.c:1246
 msgid "Unable to download updates"
 msgstr "Ezin dira eguneratzeak deskargatu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1205
+#: src/gs-shell.c:1207
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr "Ezin dira eguneratzeak deskargatu: sareko sarbidea behar da, baina ez dago erabilgarri."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1216
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Ezin dira eguneratzeak %s(e)nik deskargatu: ez dago nahikoa leku librerik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1219
+#: src/gs-shell.c:1221
 msgid "Unable to download updates: not enough disk space"
 msgstr "Ezin dira eguneratzeak deskargatu: ez dago nahikoa leku librerik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1226
+#: src/gs-shell.c:1228
 msgid "Unable to download updates: authentication was required"
 msgstr "Ezin dira eguneratzeak deskargatu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1231
+#: src/gs-shell.c:1233
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Ezin dira eguneratzeak deskargatu: autentifikazioa baliogabekoa da"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1236
+#: src/gs-shell.c:1238
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Ezin dira eguneratzeak deskargatu: ez daukazu nahikoa baimen softwareak instalatzeko"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1247
+#: src/gs-shell.c:1249
 msgid "Unable to get list of updates"
 msgstr "Ezin da eguneratzeen zerrenda eskuratu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1289
+#: src/gs-shell.c:1291
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Ezin da %s instalatu, deskargak huts egin baitu %s(e)ndik"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1295
+#: src/gs-shell.c:1297
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Ezin da %s instalatu, deskargak huts egin baitu"
@@ -2726,72 +2687,72 @@ msgstr "Ezin da %s instalatu, deskargak huts egin baitu"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1310
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Ezin da %s instalatu exekuzio-denborako %s ez dagoelako erabilgarri"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1314
+#: src/gs-shell.c:1316
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Ezin da `%s' instalatu ez baitago onartuta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1321
+#: src/gs-shell.c:1323
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Ezin da instalatu: interneteko sarbidea behar da, baina ez dago erabilgarri."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1329
 msgid "Unable to install: the application has an invalid format"
 msgstr "Ezin da instalatu: aplikazioak baliogabeko formatu bat du"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1332
+#: src/gs-shell.c:1334
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Ezin da %s instalatu: ez dago nahikoa leku librerik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1339
+#: src/gs-shell.c:1341
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Ezin da %s instalatu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1346
+#: src/gs-shell.c:1348
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Ezin da %s instalatu: autentifikazioa baliogabea da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Ezin da %s instalatu: ez daukazu nahikoa baimen softwarea instalatzeko"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1361
+#: src/gs-shell.c:1363
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Ezin da %s instalatu: entxufatuta egotea behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1368
+#: src/gs-shell.c:1370
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Ezin da %s instalatu: bateria-maila baxuegia da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1377
+#: src/gs-shell.c:1379
 #, c-format
 msgid "Unable to install %s"
 msgstr "Ezin da %s instalatu"
@@ -2800,14 +2761,14 @@ msgstr "Ezin da %s instalatu"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1423
+#: src/gs-shell.c:1425
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Ezin da %s eguneratu %s biltegitik, deskargak huts egin baitu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1430
+#: src/gs-shell.c:1432
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Ezin da %s eguneratu, deskargak huts egin baitu"
@@ -2815,70 +2776,70 @@ msgstr "Ezin da %s eguneratu, deskargak huts egin baitu"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1437
+#: src/gs-shell.c:1439
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Ezin da %s biltegiko eguneratzerik instalatu, deskargak huts egin baitu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1441
+#: src/gs-shell.c:1443
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Ezin da eguneratzerik instalatu, deskargak huts egin baitu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1447
+#: src/gs-shell.c:1449
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Ezin da eguneratu: interneteko sarbidea behar da, baina ez dago erabilgarri."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1457
+#: src/gs-shell.c:1459
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Ezin da %s eguneratu: ez dago nahikoa leku librerik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1462
+#: src/gs-shell.c:1464
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Ezin da eguneratzerik instalatu: ez dago nahikoa lekurik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1472
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Ezin da %s eguneratu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1477
+#: src/gs-shell.c:1479
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Ezin dira eguneratzeak instalatu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1486
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Ezin da %s eguneratu: autentifikazioa baliogabea da"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1491
+#: src/gs-shell.c:1493
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Ezin dira eguneratzeak instalatu: autentifikazioa baliogabea da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1500
+#: src/gs-shell.c:1502
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Ezin da %s eguneratu: ez daukazu nahikoa baimen softwarea eguneratzeko"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1506
+#: src/gs-shell.c:1508
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -2886,41 +2847,41 @@ msgstr "Ezin dira eguneratzeak instalatu: ez daukazu nahikoa baimen softwarea in
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1516
+#: src/gs-shell.c:1518
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Ezin da %s eguneratu: entxufatuta egotea behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1522
+#: src/gs-shell.c:1524
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Ezin dira eguneratzeak instalatu: entxufatuta egotea behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1531
+#: src/gs-shell.c:1533
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Ezin da %s eguneratu: bateria-maila baxuegia da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1537
+#: src/gs-shell.c:1539
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Ezin dira eguneratzeak instalatu: bateria-maila baxuegia da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1548
+#: src/gs-shell.c:1550
 #, c-format
 msgid "Unable to update %s"
 msgstr "Ezin da %s eguneratu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1551
+#: src/gs-shell.c:1553
 #, c-format
 msgid "Unable to install updates"
 msgstr "Ezin dira eguneratzeak instalatu"
@@ -2928,21 +2889,21 @@ msgstr "Ezin dira eguneratzeak instalatu"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1593
+#: src/gs-shell.c:1595
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Ezin da %2$s(e)ndik %1$s(e)ra bertsio-berritu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1598
+#: src/gs-shell.c:1600
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Ezin da %s bertsiora berritu: deskargak huts egin du"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1607
+#: src/gs-shell.c:1609
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -2950,91 +2911,91 @@ msgstr "Ezin da %s bertsiora berritu: interneteko sarbidea behar da, baina ez da
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1616
+#: src/gs-shell.c:1618
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Ezin da %s bertsiora berritu: ez dago nahikoa leku diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1624
+#: src/gs-shell.c:1626
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Ezin da %s bertsiora berritu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1631
+#: src/gs-shell.c:1633
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Ezin da %s bertsiora berritu: autentifikazioa baliogabea da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1638
+#: src/gs-shell.c:1640
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Ezin da %s bertsiora berritu: ez daukazu nahikoa baimen bertsio-berritzeko"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1645
+#: src/gs-shell.c:1647
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Ezin da %s bertsiora berritu: entxufatuta egotea behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1652
+#: src/gs-shell.c:1654
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Ezin da %s bertsiora berritu: bateria-maila baxuegia da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1661
+#: src/gs-shell.c:1663
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Ezin da %s bertsiora berritu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1698
+#: src/gs-shell.c:1700
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Ezin da %s kendu: autentifikazioa behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1704
+#: src/gs-shell.c:1706
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Ezin da %s kendu: autentifikazioa baliogabea da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1710
+#: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Ezin da %s kendu: ez daukazu nahikoa baimen softwarea kentzeko"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1717
+#: src/gs-shell.c:1719
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Ezin da %s kendu: entxufatuta egotea behar da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1724
+#: src/gs-shell.c:1726
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Ezin da %s kendu: bateria-maila baxuegia da"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1736
+#: src/gs-shell.c:1738
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Ezin da %s kendu"
@@ -3043,63 +3004,63 @@ msgstr "Ezin da %s kendu"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1778
+#: src/gs-shell.c:1780
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Ezin da %s abiarazi: %s ez dago instalatuta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1785 src/gs-shell.c:1836 src/gs-shell.c:1877
-#: src/gs-shell.c:1922
+#: src/gs-shell.c:1787 src/gs-shell.c:1838 src/gs-shell.c:1879
+#: src/gs-shell.c:1924
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Ez dago nahikoa leku diskoan — Askatu leku piskat eta saiatu berriro."
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1796 src/gs-shell.c:1847 src/gs-shell.c:1888
-#: src/gs-shell.c:1946
+#: src/gs-shell.c:1798 src/gs-shell.c:1849 src/gs-shell.c:1890
+#: src/gs-shell.c:1948
 msgid "Sorry, something went wrong"
 msgstr "Zerbait gaizki irten da"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1828
+#: src/gs-shell.c:1830
 msgid "Failed to install file: not supported"
 msgstr "Fitxategiaren instalazioak huts egin du: ez dago onartuta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1832
+#: src/gs-shell.c:1834
 msgid "Failed to install file: authentication failed"
 msgstr "Huts egin du fitxategia instalatzean: autentifikazioak huts egin du"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1869
+#: src/gs-shell.c:1871
 msgid "Failed to install: not supported"
 msgstr "Instalazioak huts egin du: ez dago onartuta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1873
+#: src/gs-shell.c:1875
 msgid "Failed to install: authentication failed"
 msgstr "Instalazioak huts egin du: autentifikazioak huts egin du"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1916
+#: src/gs-shell.c:1918
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Ezin da %s kontaktatu"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1928
+#: src/gs-shell.c:1930
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Software aplikazioa berrabiarazi behar da plugin berriak erabiltzeko."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1933
+#: src/gs-shell.c:1935
 msgid "AC power is required"
 msgstr "Entxufatuta egon behar du"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1937
+#: src/gs-shell.c:1939
 msgid "The battery level is too low"
 msgstr "Bateria-maila baxuegia da"
 
@@ -3135,7 +3096,7 @@ msgstr "Aztertu diskoa"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:339 src/gs-updates-page.c:810
+#: src/gs-shell.ui:339 src/gs-updates-page.c:868
 msgid "Network Settings"
 msgstr "Sarearen ezarpenak"
 
@@ -3160,7 +3121,7 @@ msgstr "Aurkitu _gehiago"
 #. Translators: A label for a button to show only updates which are available to install.
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-shell.ui:581 src/gs-update-dialog.c:566 src/gs-updates-page.c:1279
+#: src/gs-shell.ui:581 src/gs-update-dialog.c:566 src/gs-updates-page.c:1337
 msgid "Updates"
 msgstr "Eguneratzeak"
 
@@ -3189,6 +3150,84 @@ msgstr "%s (kentzen)"
 #: src/gs-third-party-repo-row.c:93
 msgid "_Remove All"
 msgstr "_Kendu dena"
+
+#: src/gs-update-dialog.c:93
+msgid "Network"
+msgstr "Sarea"
+
+#: src/gs-update-dialog.c:93
+msgid "Can communicate over the network"
+msgstr "Sarean zehar komunikatu daiteke"
+
+#: src/gs-update-dialog.c:94
+msgid "System Services"
+msgstr "Sistema-zerbitzuak"
+
+#: src/gs-update-dialog.c:94
+msgid "Can access D-Bus services on the system bus"
+msgstr "Sistemako bus-aren D-Bus zerbitzuak atzi ditzake"
+
+#: src/gs-update-dialog.c:95
+msgid "Session Services"
+msgstr "Saio-zerbitzuak"
+
+#: src/gs-update-dialog.c:95
+msgid "Can access D-Bus services on the session bus"
+msgstr "Saioko bus-aren D-Bus zerbitzuak atzi ditzake"
+
+#: src/gs-update-dialog.c:96
+msgid "Devices"
+msgstr "Gailuak"
+
+#: src/gs-update-dialog.c:96
+msgid "Can access system device files"
+msgstr "Sistemaren gailu-fitxategiak atzi ditzake"
+
+#: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
+msgid "Home folder"
+msgstr "Karpeta nagusia"
+
+#: src/gs-update-dialog.c:97 src/gs-update-dialog.c:99
+#: src/gs-update-dialog.c:101
+msgid "Can view, edit and create files"
+msgstr "Fitxategiak ikusi, editatu eta sortu ditzake"
+
+#: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
+#: src/gs-update-dialog.c:102
+msgid "Can view files"
+msgstr "Fitxategiak ikusi ditzake"
+
+#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
+msgid "File system"
+msgstr "Fitxategi-sistema"
+
+#: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
+msgid "Downloads folder"
+msgstr "Deskargen karpeta"
+
+#: src/gs-update-dialog.c:103
+msgid "Settings"
+msgstr "Ezarpenak"
+
+#: src/gs-update-dialog.c:103
+msgid "Can view and change any settings"
+msgstr "Edozein ezarpen ikusi eta aldatu dezake"
+
+#: src/gs-update-dialog.c:104
+msgid "Legacy display system"
+msgstr "Bistaratze-sistema zaharra"
+
+#: src/gs-update-dialog.c:104
+msgid "Uses an old, insecure display system"
+msgstr "Bistaratze-sistema zaharra eta segurtasun gutxikoa darabil"
+
+#: src/gs-update-dialog.c:105
+msgid "Sandbox escape"
+msgstr "Egin ihes isolamendutik"
+
+#: src/gs-update-dialog.c:105
+msgid "Can escape the sandbox and circumvent any other restrictions"
+msgstr "Isolamendutik ihes egin dezake eta beste muga batzuk saihestu ditzake"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
@@ -3320,63 +3359,63 @@ msgid "Includes %s, %s and %s."
 msgstr "%s, %s eta %s barne hartzen ditu."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:616 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:629 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Sistema Eragilearen eguneratzeak eskuragaitz"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:618
+#: src/gs-update-monitor.c:631
 msgid "Upgrade to continue receiving security updates."
 msgstr "Bertsio-berritu segurtasun-eguneratzeak jasotzen jarraitzeko."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:673
+#: src/gs-update-monitor.c:686
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s(r)en bertsio berria eskuragarri dago instalatzeko"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:677
+#: src/gs-update-monitor.c:690
 msgid "Software Upgrade Available"
 msgstr "Software-eguneratzeak eskuragarri"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1071
+#: src/gs-update-monitor.c:1084
 msgid "Software Updates Failed"
 msgstr "Huts egin du softwareak eguneratzean"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1073
+#: src/gs-update-monitor.c:1086
 msgid "An important OS update failed to be installed."
 msgstr "Huts egin du SEren eguneratze garrantzitsu bat instalatzean."
 
-#: src/gs-update-monitor.c:1074
+#: src/gs-update-monitor.c:1087
 msgid "Show Details"
 msgstr "Erakutsi xehetasunak"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1097
+#: src/gs-update-monitor.c:1110
 msgid "System Upgrade Complete"
 msgstr "Sistemaren eguneratzea osatu da"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1102
+#: src/gs-update-monitor.c:1115
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Ongi etorri %s %s sistemara!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1108
+#: src/gs-update-monitor.c:1121
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Softwarearen eguneratzea instalatuta"
 msgstr[1] "Software-eguneratzeak instalatuta"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1112
+#: src/gs-update-monitor.c:1125
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "SEren eguneratze garrantzitsu bat instalatu da."
@@ -3387,101 +3426,101 @@ msgstr[1] "SEren eguneratze garrantzitsuak instalatu dira."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1123
+#: src/gs-update-monitor.c:1136
 msgctxt "updates"
 msgid "Review"
 msgstr "Berrikuspena"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1172
+#: src/gs-update-monitor.c:1185
 msgid "Failed To Update"
 msgstr "Huts egin du eguneratzeak"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1178
+#: src/gs-update-monitor.c:1191
 msgid "The system was already up to date."
 msgstr "Sistema jadanik eguneratuta dago."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1183
+#: src/gs-update-monitor.c:1196
 msgid "The update was cancelled."
 msgstr "Eguneratzea bertan behera utzi da."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1189
+#: src/gs-update-monitor.c:1202
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr "Interneteko sarbidea behar da, baina ez dago erabilgarri. Ziurtatu Interneterako sarbidea duzula eta saiatu berriro."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1195
+#: src/gs-update-monitor.c:1208
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "Segurtasun-arazoak daude eguneratzearekin. Kontsultatu softwarearen hornitzailearekin xehetasun gehiagorako."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1201
+#: src/gs-update-monitor.c:1214
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Ez dago nahikoa leku librerik. Askatu leku pixka bat eta saiatu berriro."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1206
+#: src/gs-update-monitor.c:1219
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr "Sentitzen dugu: eguneratzea ezin izan da instalatu. Itxaron beste eguneratze bati eta saiatu berriro. Arazoak jarraitzen badu, jarri harremanetan software-hornitzailearekin."
 
-#. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:243
-msgid "Setting Up Updates…"
-msgstr "Eguneratzeak konfiguratzen…"
-
-#. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:248
-msgid "Looking for New Updates…"
-msgstr "Eguneratze berriak bilatzen…"
-
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:354
+#: src/gs-updates-page.c:247
 #, c-format
 msgid "Last checked: %s"
 msgstr "Azken egiaztaketa: %s"
 
+#. TRANSLATORS: the updates panel is starting up
+#: src/gs-updates-page.c:306
+msgid "Setting Up Updates…"
+msgstr "Eguneratzeak konfiguratzen…"
+
+#. TRANSLATORS: the update panel is doing *something* vague
+#: src/gs-updates-page.c:311
+msgid "Looking for New Updates…"
+msgstr "Eguneratze berriak bilatzen…"
+
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:517
+#: src/gs-updates-page.c:568
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s ez da gehiago sostengatuko."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:522
+#: src/gs-updates-page.c:573
 msgid "Your OS is no longer supported."
 msgstr "SE ez da gehiago sostengatuko"
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:527
+#: src/gs-updates-page.c:578
 msgid "This means that it does not receive security updates."
 msgstr "Segurtasun-eguneratzerik ez duela jasoko adierazten du honek."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:531
+#: src/gs-updates-page.c:582
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Bertsio berriago batera eguneratzea gomendatzen da."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:778
+#: src/gs-updates-page.c:836
 msgid "Charges May Apply"
 msgstr "Gastu gehigarriak sor daitezke"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:782
+#: src/gs-updates-page.c:840
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3489,27 +3528,27 @@ msgstr "Bandazabal mugikorra erabiliz eguneratzeak dauden egiaztatzeak zure fakt
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:786
+#: src/gs-updates-page.c:844
 msgid "Check _Anyway"
 msgstr "Egiaztatu _dena den"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:802
+#: src/gs-updates-page.c:860
 msgid "No Network"
 msgstr "Ez dago sarerik"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:806
+#: src/gs-updates-page.c:864
 msgid "Internet access is required to check for updates."
 msgstr "Interneterako sarbidea behar da eguneratzeak egiaztatzeko."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1227
+#: src/gs-updates-page.c:1285
 msgid "Checking…"
 msgstr "Egiaztatzen…"
 
-#: src/gs-updates-page.c:1240
+#: src/gs-updates-page.c:1298
 msgid "Check for updates"
 msgstr "Egiaztatu eguneratzeak dauden"
 
@@ -3876,6 +3915,167 @@ msgstr "Snap euskarria"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap Linuxeko pakete unibertsal bat da"
+
+#~ msgctxt "Menu of Games"
+#~ msgid "All"
+#~ msgstr "Denak"
+
+#~ msgctxt "Menu of Games"
+#~ msgid "Featured"
+#~ msgstr "Nabarmendua"
+
+#~ msgctxt "Menu of Add-ons"
+#~ msgid "All"
+#~ msgstr "Dena"
+
+#~ msgctxt "Menu of Utilities"
+#~ msgid "All"
+#~ msgstr "Denak"
+
+#~ msgctxt "Menu of Utilities"
+#~ msgid "Featured"
+#~ msgstr "Nabarmendua"
+
+#~ msgctxt "Menu of Reference"
+#~ msgid "All"
+#~ msgstr "Denak"
+
+#~ msgctxt "Menu of Reference"
+#~ msgid "Featured"
+#~ msgstr "Nabarmendua"
+
+#~ msgid "Audio & Video"
+#~ msgstr "Audioa eta bideoa"
+
+#~ msgid "Developer Tools"
+#~ msgstr "Garapeneko tresnak"
+
+#~ msgid "Education & Science"
+#~ msgstr "Hezkuntza eta zientzia"
+
+#~ msgid "Games"
+#~ msgstr "Jokoak"
+
+#~ msgid "Graphics & Photography"
+#~ msgstr "Grafikoak eta argazkigintza"
+
+#~ msgid "Productivity"
+#~ msgstr "Ekoizpena"
+
+#~ msgid "Communication & News"
+#~ msgstr "Komunikazioa eta albisteak"
+
+#~ msgid "Reference"
+#~ msgstr "Erreferentzia"
+
+#~ msgid "Utilities"
+#~ msgstr "Tresnak"
+
+#~ msgid "This application is fully sandboxed."
+#~ msgstr "Aplikazio hau osorik isolatuta dago."
+
+#~ msgid ""
+#~ "Unable to determine which parts of the system this application accesses. "
+#~ "This is typical for older applications."
+#~ msgstr ""
+#~ "Ezin izan da zehaztu sistemaren zein zati atzitzen duen aplikazio honek. "
+#~ "Hori arrunta da aplikazio zaharrenetan."
+
+#~ msgctxt "App permissions"
+#~ msgid "None"
+#~ msgstr "Bat ere ez"
+
+#~ msgctxt "App permissions"
+#~ msgid "Low"
+#~ msgstr "Baxua"
+
+#~ msgctxt "App permissions"
+#~ msgid "Medium"
+#~ msgstr "Tartekoa"
+
+#~ msgctxt "App permissions"
+#~ msgid "High"
+#~ msgstr "Altua"
+
+#~ msgctxt "App permissions"
+#~ msgid "Unknown"
+#~ msgstr "Ezezaguna"
+
+#~ msgid "Public domain"
+#~ msgstr "Domeinu Publikoa"
+
+#~ msgid "https://en.wikipedia.org/wiki/Public_domain"
+#~ msgstr "https://eu.wikipedia.org/wiki/Software_jabedun"
+
+#~ msgid "https://www.gnu.org/philosophy/free-sw"
+#~ msgstr "https://www.gnu.org/philosophy/free-sw"
+
+#~ msgid "Free Software"
+#~ msgstr "Software librea"
+
+#~ msgid "Users are bound by the following license:"
+#~ msgid_plural "Users are bound by the following licenses:"
+#~ msgstr[0] "Erabiltzaileak honako lizentziarekin lotuta daude:"
+#~ msgstr[1] "Erabiltzaileak honako lizentziekin lotuta daude:"
+
+#~ msgid "More information"
+#~ msgstr "Informazio gehiago"
+
+#~ msgid "Sandboxed"
+#~ msgstr "Isolatua"
+
+#~ msgid "Category"
+#~ msgstr "Kategoria"
+
+#~ msgid "License"
+#~ msgstr "Lizentzia"
+
+#~ msgid "Free"
+#~ msgstr "Librea"
+
+#~ msgctxt "Application license"
+#~ msgid "Unknown"
+#~ msgstr "Ezezaguna"
+
+#~ msgid ""
+#~ "This means that the software can be freely run, copied, distributed, "
+#~ "studied and modified."
+#~ msgstr ""
+#~ "Softwarea libreki exekutatu, kopiatu, banatu, ikertu eta eraldatu "
+#~ "daitekeela adierazten du."
+
+#~ msgid "Proprietary Software"
+#~ msgstr "Software jabeduna"
+
+#~ msgid ""
+#~ "This means that the software is owned by an individual or a company. "
+#~ "There are often restrictions on its use and its source code cannot "
+#~ "usually be accessed."
+#~ msgstr ""
+#~ "Horrek esan nahi du softwarearen jabea banakako bat edo enpresa bat dela. "
+#~ "Murriztapen asko egon ohi dira hura erabiltzeko, eta bere kode-iturburua "
+#~ "ezin ohi da atzitu."
+
+#~ msgid "Unknown Software License"
+#~ msgstr "Softwarearen lizentzia ezezaguna"
+
+#~ msgid "The license terms of this software are unknown."
+#~ msgstr "Software honen lizentziaren terminoak ezezagunak dira."
+
+#~ msgid "The application was rated this way because it features:"
+#~ msgstr "Aplikazioa honela baloratu da, ezaugarri hauek dituelako:"
+
+#~ msgid "No details were available for this rating."
+#~ msgstr "Ez dago balorazio honen xehetasunik eskuragarri."
+
+#~ msgid "Recommended Audio & Video Applications"
+#~ msgstr "Gomendatutako audioen eta bideoen aplikazioak"
+
+#~ msgid "Recommended Productivity Applications"
+#~ msgstr "Gomendatutako ekoizpenerako aplikazioak"
+
+#~ msgid "ratings in total"
+#~ msgstr "balorazio guztira"
 
 #~ msgid "Select All"
 #~ msgstr "Hautatu dena"
