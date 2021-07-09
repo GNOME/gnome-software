@@ -790,10 +790,14 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
-	gtk_size_group_add_widget (image, priv->image);
-	gtk_size_group_add_widget (name, priv->name_box);
-	gtk_size_group_add_widget (desc, priv->description_box);
-	gtk_size_group_add_widget (button, priv->button);
+	if (image != NULL)
+		gtk_size_group_add_widget (image, priv->image);
+	if (name != NULL)
+		gtk_size_group_add_widget (name, priv->name_box);
+	if (desc != NULL)
+		gtk_size_group_add_widget (desc, priv->description_box);
+	if (button != NULL)
+		gtk_size_group_add_widget (button, priv->button);
 }
 
 void
