@@ -19,6 +19,7 @@
 #include "packagekit-common.h"
 #include "gs-markdown.h"
 #include "gs-packagekit-helper.h"
+#include "gs-packagekit-task.h"
 
 /*
  * SECTION:
@@ -79,7 +80,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* core */
 	g_mutex_init (&priv->task_mutex);
-	priv->task = pk_task_new ();
+	priv->task = gs_packagekit_task_new (plugin);
 	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
@@ -98,7 +99,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* local */
 	g_mutex_init (&priv->task_mutex_local);
-	priv->task_local = pk_task_new ();
+	priv->task_local = gs_packagekit_task_new (plugin);
 	pk_client_set_background (PK_CLIENT (priv->task_local), FALSE);
 	pk_client_set_interactive (PK_CLIENT (priv->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
@@ -131,7 +132,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* upgrade */
 	g_mutex_init (&priv->task_mutex_upgrade);
-	priv->task_upgrade = pk_task_new ();
+	priv->task_upgrade = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (priv->task_upgrade, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task_upgrade), TRUE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task_upgrade), 60 * 60 * 24);
@@ -203,7 +204,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_GET_SOURCES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_packages (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
@@ -267,7 +268,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NOT_SUPPORTED,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_GET_SOURCES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
@@ -331,7 +332,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 	                                 repo_id,
 	                                 TRUE,
@@ -378,7 +379,7 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 TRUE,
@@ -465,6 +466,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* actually install the package */
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
 							 cancellable,
@@ -542,6 +544,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_packages_sync (priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
@@ -583,6 +586,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_INSTALL, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_files_sync (priv->task,
 						      package_ids,
 						      cancellable,
@@ -632,7 +636,7 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_REMOVE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
@@ -713,6 +717,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_REMOVE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_task_remove_packages_sync (priv->task,
 						package_ids,
 						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
@@ -784,7 +789,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_GET_UPDATES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
@@ -823,7 +828,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_SEARCH_FILES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_search_files (PK_CLIENT (priv->task),
 	                                  filter,
 	                                  search,
@@ -856,7 +861,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task), GS_PLUGIN_ACTION_SEARCH_PROVIDES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_what_provides (PK_CLIENT (priv->task),
 	                                   filter,
 	                                   search,
@@ -1442,7 +1447,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	g_mutex_lock (&priv->client_mutex_refine);
 	cache_age_save = pk_client_get_cache_age (priv->client_refine);
 	pk_client_set_cache_age (priv->client_refine, 60 * 60 * 24 * 7); /* once per week */
-	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->client_refine), GS_PLUGIN_ACTION_REFINE, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_upgrade_system (priv->client_refine,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_version (app),
@@ -2030,7 +2035,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	files = g_strsplit (filename, "\t", -1);
 	g_mutex_lock (&priv->task_mutex_local);
 	pk_client_set_cache_age (PK_CLIENT (priv->task_local), G_MAXUINT);
-	pk_client_set_interactive (PK_CLIENT (priv->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_details_local (PK_CLIENT (priv->task_local),
 					       files,
 					       cancellable,
@@ -2317,7 +2322,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	package_ids[0] = g_strdup (path);
 
 	g_mutex_lock (&priv->client_mutex_url_to_app);
-	pk_client_set_interactive (priv->client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->client_url_to_app), GS_PLUGIN_ACTION_URL_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_resolve (priv->client_url_to_app,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,
@@ -2621,7 +2626,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_set_progress_app (helper, app);
 	g_mutex_lock (&priv->task_mutex_upgrade);
-	pk_client_set_interactive (PK_CLIENT (priv->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (priv->task_upgrade), GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_task_upgrade_system_sync (priv->task_upgrade,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,
