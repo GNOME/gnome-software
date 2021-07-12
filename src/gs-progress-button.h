@@ -18,6 +18,15 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsProgressButton, gs_progress_button, GS, PROGRESS_BUTTON, GtkButton)
 
 GtkWidget	*gs_progress_button_new			(void);
+const gchar	*gs_progress_button_get_label		(GsProgressButton	*button);
+void		 gs_progress_button_set_label		(GsProgressButton	*button,
+							 const gchar		*label);
+const gchar	*gs_progress_button_get_icon_name	(GsProgressButton	*button);
+void		 gs_progress_button_set_icon_name	(GsProgressButton	*button,
+							 const gchar		*icon_name);
+gboolean	 gs_progress_button_get_show_icon	(GsProgressButton	*button);
+void		 gs_progress_button_set_show_icon	(GsProgressButton	*button,
+							 gboolean		 show_icon);
 void		 gs_progress_button_set_progress	(GsProgressButton	*button,
 							 guint			 percentage);
 void		 gs_progress_button_set_show_progress	(GsProgressButton	*button,

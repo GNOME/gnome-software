@@ -17,6 +17,10 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsInstalledPage, gs_installed_page, GS, INSTALLED_PAGE, GsPage)
 
-GsInstalledPage	*gs_installed_page_new	(void);
+GsInstalledPage	*gs_installed_page_new			(void);
+
+gboolean	 gs_installed_page_get_is_narrow	(GsInstalledPage	*self);
+void		 gs_installed_page_set_is_narrow	(GsInstalledPage	*self,
+							 gboolean		 is_narrow);
 
 G_END_DECLS

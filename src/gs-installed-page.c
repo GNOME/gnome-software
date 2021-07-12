@@ -34,6 +34,7 @@ struct _GsInstalledPage
 	GsShell			*shell;
 	GSettings		*settings;
 	guint			 pending_apps_counter;
+	gboolean		 is_narrow;
 
 	GtkWidget		*list_box_install_in_progress;
 	GtkWidget		*list_box_install_apps;
@@ -47,9 +48,13 @@ struct _GsInstalledPage
 G_DEFINE_TYPE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_VADJUSTMENT = 1,
+	PROP_IS_NARROW = 1,
+	/* Overriddes: */
+	PROP_VADJUSTMENT,
 	PROP_TITLE,
 } GsInstalledPageProperty;
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static void gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                                        GsInstalledPage *self);
@@ -243,6 +248,10 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
 				    self->sizegroup_button);
+
+	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
+	gs_app_row_set_show_source (GS_APP_ROW (app_row), FALSE);
+	g_object_bind_property (self, "is-narrow", app_row, "is-narrow", G_BINDING_SYNC_CREATE);
 
 	/* only show if is an actual application */
 	gtk_widget_set_visible (app_row, gs_installed_page_is_actual_app (app));
@@ -569,6 +578,9 @@ gs_installed_page_get_property (GObject    *object,
 	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
 
 	switch ((GsInstalledPageProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_installed_page_get_is_narrow (self));
+		break;
 	case PROP_VADJUSTMENT:
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install)));
 		break;
@@ -588,7 +600,12 @@ gs_installed_page_set_property (GObject      *object,
                                 const GValue *value,
                                 GParamSpec   *pspec)
 {
+	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
+
 	switch ((GsInstalledPageProperty) prop_id) {
+	case PROP_IS_NARROW:
+		gs_installed_page_set_is_narrow (self, g_value_get_boolean (value));
+		break;
 	case PROP_VADJUSTMENT:
 	case PROP_TITLE:
 		/* Read only. */
@@ -642,6 +659,24 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	page_class->reload = gs_installed_page_reload;
 	page_class->setup = gs_installed_page_setup;
 
+	/**
+	 * GsAppRow:is-narrow:
+	 *
+	 * Whether the page is in narrow mode.
+	 *
+	 * In narrow mode, the page will take up less horizontal space, doing so
+	 * by e.g. using icons rather than labels in buttons. This is needed to
+	 * keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
@@ -670,6 +705,47 @@ gs_installed_page_init (GsInstalledPage *self)
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	self->settings = g_settings_new ("org.gnome.software");
+}
+
+/**
+ * gs_installed_page_get_is_narrow:
+ * @self: a #GsInstalledPage
+ *
+ * Get the value of #GsInstalledPage:is-narrow.
+ *
+ * Returns: %TRUE if the page is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_installed_page_get_is_narrow (GsInstalledPage *self)
+{
+	g_return_val_if_fail (GS_IS_INSTALLED_PAGE (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_installed_page_set_is_narrow:
+ * @self: a #GsInstalledPage
+ * @is_narrow: %TRUE to set the page in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsInstalledPage:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_installed_page_set_is_narrow (GsInstalledPage *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_INSTALLED_PAGE (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
 GsInstalledPage *

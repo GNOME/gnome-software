@@ -32,9 +32,11 @@ typedef struct
 	GtkWidget	*description_box;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
+	GtkWidget	*button_revealer;
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
+	GtkWidget	*box_tag;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
 	GtkWidget	*label_installed;
@@ -42,10 +44,12 @@ typedef struct
 	gboolean	 colorful;
 	gboolean	 show_buttons;
 	gboolean	 show_rating;
+	gboolean	 show_description;
 	gboolean	 show_source;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
 	guint		 pending_refresh_id;
+	gboolean	 is_narrow;
 } GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
@@ -60,12 +64,14 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 typedef enum {
 	PROP_APP = 1,
+	PROP_SHOW_DESCRIPTION,
 	PROP_SHOW_SOURCE,
 	PROP_SHOW_BUTTONS,
 	PROP_SHOW_INSTALLED_SIZE,
+	PROP_IS_NARROW,
 } GsAppRowProperty;
 
-static GParamSpec *obj_props[PROP_SHOW_INSTALLED_SIZE + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 /**
  * gs_app_row_get_description:
@@ -106,6 +112,15 @@ gs_app_row_get_description (GsAppRow *app_row)
 }
 
 static void
+gs_app_row_update_button_reveal (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+	gboolean sensitive = gtk_widget_get_sensitive (priv->button);
+
+	gtk_widget_set_visible (priv->button_revealer, sensitive || !priv->is_narrow);
+}
+
+static void
 gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
@@ -113,6 +128,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 
 	/* disabled */
 	if (!priv->show_buttons) {
+		gs_app_row_update_button_reveal (app_row);
 		gtk_widget_set_visible (priv->button, FALSE);
 		return;
 	}
@@ -124,37 +140,43 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Visit website"));
+			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed.
 			 * The ellipsis indicates that further steps are required */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install…"));
+			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		}
 		break;
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows to cancel a queued install of the application */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Cancel"));
+		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "edit-delete-symbolic");
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install"));
+		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "list-add-symbolic");
 		break;
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (priv->show_update) {
 			/* TRANSLATORS: this is a button in the updates panel
 			 * that allows the app to be easily updated live */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Update"));
+			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "software-update-available-symbolic");
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily removed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstall"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
+			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "app-remove-symbolic");
 		}
 		break;
 	case GS_APP_STATE_UPDATABLE:
@@ -163,19 +185,22 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstall"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
+		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "app-remove-symbolic");
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Installing"));
+		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		break;
 	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being erased */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Uninstalling"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstalling"));
+		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		break;
 	default:
 		break;
@@ -235,6 +260,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
 	}
+
+	gs_app_row_update_button_reveal (app_row);
 }
 
 static void
@@ -494,6 +521,21 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			gtk_widget_show (priv->label_warning);
 		}
 	}
+
+	gtk_widget_set_visible (priv->box_tag,
+				gtk_widget_get_visible (priv->label_origin) ||
+				gtk_widget_get_visible (priv->label_installed) ||
+				gtk_widget_get_visible (priv->label_warning));
+
+	gtk_widget_set_visible (priv->description_box,
+				gtk_widget_get_visible (priv->box_tag) ||
+				gtk_widget_get_visible (priv->description_label));
+
+	gtk_widget_set_hexpand (priv->name_box,
+				!gtk_widget_get_visible (priv->description_box));
+
+	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
+				       gtk_widget_get_visible (priv->description_box) ? 20 : -1);
 }
 
 static void
@@ -610,6 +652,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_APP:
 		g_value_set_object (value, priv->app);
 		break;
+	case PROP_SHOW_DESCRIPTION:
+		g_value_set_boolean (value, gs_app_row_get_show_description (app_row));
+		break;
 	case PROP_SHOW_SOURCE:
 		g_value_set_boolean (value, priv->show_source);
 		break;
@@ -618,6 +663,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		g_value_set_boolean (value, priv->show_installed_size);
+		break;
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_app_row_get_is_narrow (app_row));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -634,6 +682,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	case PROP_APP:
 		gs_app_row_set_app (app_row, g_value_get_object (value));
 		break;
+	case PROP_SHOW_DESCRIPTION:
+		gs_app_row_set_show_description (app_row, g_value_get_boolean (value));
+		break;
 	case PROP_SHOW_SOURCE:
 		gs_app_row_set_show_source (app_row, g_value_get_boolean (value));
 		break;
@@ -642,6 +693,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_IS_NARROW:
+		gs_app_row_set_is_narrow (app_row, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -690,6 +744,18 @@ gs_app_row_class_init (GsAppRowClass *klass)
 				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsAppRow:show-description:
+	 *
+	 * Show the description of the app in the row.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_SHOW_DESCRIPTION] =
+		g_param_spec_boolean ("show-description", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
 	 * GsAppRow:show-source:
 	 *
 	 * Show the source of the app in the row.
@@ -725,6 +791,22 @@ gs_app_row_class_init (GsAppRowClass *klass)
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * GsAppRow:is-narrow:
+	 *
+	 * Whether the row is in narrow mode.
+	 *
+	 * In narrow mode, the row will take up less horizontal space, doing so
+	 * by e.g. using icons rather than labels in buttons. This is needed to
+	 * keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_BUTTON_CLICKED] =
@@ -754,9 +836,11 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_revealer);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_tag);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
@@ -773,6 +857,8 @@ static void
 gs_app_row_init (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_description = TRUE;
 
 	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
@@ -828,6 +914,52 @@ gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
 	gs_app_row_schedule_refresh (app_row);
 }
 
+/**
+ * gs_app_row_get_show_description:
+ * @app_row: a #GsAppRow
+ *
+ * Get the value of #GsAppRow:show-description.
+ *
+ * Returns: %TRUE if the description is shown, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_app_row_get_show_description (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_val_if_fail (GS_IS_APP_ROW (app_row), FALSE);
+
+	return priv->show_description;
+}
+
+/**
+ * gs_app_row_set_show_description:
+ * @app_row: a #GsAppRow
+ * @show_description: %TRUE to show the description, %FALSE otherwise
+ *
+ * Set the value of #GsAppRow:show-description.
+ *
+ * Since: 41
+ */
+void
+gs_app_row_set_show_description (GsAppRow *app_row, gboolean show_description)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	show_description = !!show_description;
+
+	if (priv->show_description == show_description)
+		return;
+
+	priv->show_description = show_description;
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_DESCRIPTION]);
+	gs_app_row_schedule_refresh (app_row);
+}
+
 void
 gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 {
@@ -845,6 +977,52 @@ gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 	priv->show_installed_size = show_size;
 	g_object_notify (G_OBJECT (app_row), "show-installed-size");
 	gs_app_row_schedule_refresh (app_row);
+}
+
+/**
+ * gs_app_row_get_is_narrow:
+ * @app_row: a #GsAppRow
+ *
+ * Get the value of #GsAppRow:is-narrow.
+ *
+ * Retruns: %TRUE if the row is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_app_row_get_is_narrow (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_val_if_fail (GS_IS_APP_ROW (app_row), FALSE);
+
+	return priv->is_narrow;
+}
+
+/**
+ * gs_app_row_set_is_narrow:
+ * @app_row: a #GsAppRow
+ * @is_narrow: %TRUE to set the row in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsAppRow:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_app_row_set_is_narrow (GsAppRow *app_row, gboolean is_narrow)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	is_narrow = !!is_narrow;
+
+	if (priv->is_narrow == is_narrow)
+		return;
+
+	priv->is_narrow = is_narrow;
+	gs_app_row_update_button_reveal (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_IS_NARROW]);
 }
 
 /**

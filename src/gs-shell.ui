@@ -554,6 +554,7 @@
                                         <child>
                                           <object class="GsInstalledPage" id="installed_page">
                                             <property name="visible">True</property>
+                                            <property name="is-narrow" bind-source="main_leaflet" bind-property="folded" bind-flags="sync-create"/>
                                           </object>
                                           <packing>
                                             <property name="name">installed</property>
