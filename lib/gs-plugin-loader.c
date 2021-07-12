@@ -92,6 +92,7 @@ enum {
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_RELOAD,
 	SIGNAL_BASIC_AUTH_START,
+	SIGNAL_ASK_USER_ACCEPTS,
 	SIGNAL_LAST
 };
 
@@ -2160,6 +2161,22 @@ gs_plugin_loader_basic_auth_start_cb (GsPlugin *plugin,
 }
 
 static gboolean
+gs_plugin_loader_ask_user_accepts_cb (GsPlugin *plugin,
+				      const gchar *title,
+				      const gchar *msg,
+				      const gchar *details,
+				      const gchar *accept_label,
+				      GsPluginLoader *plugin_loader)
+{
+	gboolean accepts = FALSE;
+	g_debug ("emitting ask-user-accepts title:'%s', msg:'%s' details:'%s'", title, msg, details);
+	g_signal_emit (plugin_loader,
+		       signals[SIGNAL_ASK_USER_ACCEPTS], 0,
+		       title, msg, details, accept_label, &accepts);
+	return accepts;
+}
+
+static gboolean
 gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
@@ -2265,6 +2282,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "repository-changed",
 			  G_CALLBACK (gs_plugin_loader_repository_changed_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "ask-user-accepts",
+			  G_CALLBACK (gs_plugin_loader_ask_user_accepts_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, plugin_loader->soup_session);
 	gs_plugin_set_language (plugin, plugin_loader->language);
@@ -2898,6 +2918,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      0, NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
+	signals [SIGNAL_ASK_USER_ACCEPTS] =
+		g_signal_new ("ask-user-accepts",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_BOOLEAN, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 static void

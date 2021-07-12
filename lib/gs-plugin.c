@@ -90,6 +90,7 @@ enum {
 	SIGNAL_ALLOW_UPDATES,
 	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_REPOSITORY_CHANGED,
+	SIGNAL_ASK_USER_ACCEPTS,
 	SIGNAL_LAST
 };
 
@@ -1987,6 +1988,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, repository_changed),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
+	signals [SIGNAL_ASK_USER_ACCEPTS] =
+		g_signal_new ("ask-user-accepts",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, ask_user_accepts),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_BOOLEAN, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 static void
@@ -2118,4 +2126,39 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 			gs_app_set_state (app, repo_state == GS_APP_STATE_INSTALLED ? GS_APP_STATE_AVAILABLE : GS_APP_STATE_UNAVAILABLE);
 		}
 	}
+}
+
+/**
+ * gs_plugin_ask_user_accepts:
+ * @plugin: a #GsPlugin
+ * @title: the title for the question
+ * @msg: the message for the question
+ * @details: (nullable): the detailed error message, or %NULL for none
+ * @accept_label: (nullable): a label of the 'accept' button, or %NULL to use 'Accept'
+ *
+ * Asks the user whether he/she accepts what is described by @title and @msg,
+ * eventually with the @details.
+ *
+ * Note: This is a blocking call and can be called only from the main/GUI thread.
+ *
+ * Returns: whether the user accepted the question
+ *
+ * Since: 41
+ **/
+gboolean
+gs_plugin_ask_user_accepts (GsPlugin *plugin,
+			    const gchar *title,
+			    const gchar *msg,
+			    const gchar *details,
+			    const gchar *accept_label)
+{
+	gboolean accepts = FALSE;
+	g_signal_emit (plugin,
+		       signals[SIGNAL_ASK_USER_ACCEPTS], 0,
+		       title,
+		       msg,
+		       details,
+		       accept_label,
+		       &accepts);
+	return accepts;
 }

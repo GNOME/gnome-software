@@ -42,6 +42,11 @@ void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details);
+gboolean	 gs_utils_ask_user_accepts	(GtkWindow	*parent,
+						 const gchar	*title,
+						 const gchar	*msg,
+						 const gchar	*details,
+						 const gchar	*accept_label);
 gchar		*gs_utils_build_unique_id_kind	(AsComponentKind kind,
 						 const gchar	*id);
 gboolean	 gs_utils_list_has_component_fuzzy	(GsAppList	*list,

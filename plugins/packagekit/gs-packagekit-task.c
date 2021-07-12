@@ -19,137 +19,23 @@ typedef struct _GsPackageKitTaskPrivate {
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPackageKitTask, gs_packagekit_task, PK_TYPE_TASK)
 
-static void
-do_not_expand (GtkWidget *child,
-	       gpointer data)
-{
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
-				 child, "expand", FALSE, "fill", FALSE, NULL);
-}
-
 static gboolean
-unset_focus (GtkWidget *widget,
-	     GdkEvent *event,
-	     gpointer data)
-{
-	if (GTK_IS_WINDOW (widget))
-		gtk_window_set_focus (GTK_WINDOW (widget), NULL);
-	return FALSE;
-}
-
-static void
-insert_details_widget (GtkMessageDialog *dialog,
-		       const gchar *details)
-{
-	GtkWidget *message_area, *sw, *label;
-	GtkWidget *box, *tv;
-	GtkTextBuffer *buffer;
-	GList *children;
-	GtkStyleContext *style_context;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GtkCssProvider) css_provider = NULL;
-	PangoAttrList *attr_list;
-
-	g_assert (GTK_IS_MESSAGE_DIALOG (dialog));
-	g_assert (details != NULL);
-
-	gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
-
-	message_area = gtk_message_dialog_get_message_area (dialog);
-	g_assert (GTK_IS_BOX (message_area));
-	/* make the hbox expand */
-	box = gtk_widget_get_parent (message_area);
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
-	                         "expand", TRUE, "fill", TRUE, NULL);
-	/* make the labels not expand */
-	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
-
-	/* Find the secondary label and set its width_chars.   */
-	/* Otherwise the label will tend to expand vertically. */
-	children = gtk_container_get_children (GTK_CONTAINER (message_area));
-	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
-		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
-	}
-
-	label = gtk_label_new (_("Details"));
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_visible (label, TRUE);
-	attr_list = pango_attr_list_new ();
-	pango_attr_list_insert (attr_list, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-	gtk_label_set_attributes (GTK_LABEL (label), attr_list);
-	pango_attr_list_unref (attr_list);
-	gtk_container_add (GTK_CONTAINER (message_area), label);
-
-	sw = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
-	                                     GTK_SHADOW_IN);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
-	                                GTK_POLICY_NEVER,
-	                                GTK_POLICY_AUTOMATIC);
-	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (sw), 150);
-	gtk_widget_set_visible (sw, TRUE);
-
-	tv = gtk_text_view_new ();
-	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
-	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
-	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
-	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
-	                             "gs-packagekit-question-details");
-	style_context = gtk_widget_get_style_context (tv);
-	css_provider = gtk_css_provider_new ();
-	gtk_css_provider_load_from_data (css_provider,
-		".gs-packagekit-question-details {\n"
-		"	font-family: Monospace;\n"
-		"	font-size: smaller;\n"
-		"	padding: 16px;\n"
-		"}", -1, &error);
-	if (error)
-		g_warning ("GsPackageKitTask: Failed to parse CSS: %s", error->message);
-	gtk_style_context_add_provider (style_context, GTK_STYLE_PROVIDER (css_provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-	gtk_text_buffer_set_text (buffer, details, -1);
-	gtk_widget_set_visible (tv, TRUE);
-
-	gtk_container_add (GTK_CONTAINER (sw), tv);
-	gtk_widget_set_vexpand (sw, TRUE);
-	gtk_container_add (GTK_CONTAINER (message_area), sw);
-	gtk_container_child_set (GTK_CONTAINER (message_area), sw, "pack-type", GTK_PACK_END, NULL);
-
-	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
-}
-
-static gboolean
-gs_packagekit_task_user_accepted (const gchar *title,
+gs_packagekit_task_user_accepted (PkTask *task,
+				  const gchar *title,
 				  const gchar *msg,
 				  const gchar *details,
-				  const gchar *ok_label)
+				  const gchar *accept_label)
 {
-	GtkWidget *dialog;
-	GtkWindow *parent = NULL;
-	GApplication *application = g_application_get_default ();
-	gint response;
+	GsPackageKitTask *gs_task = GS_PACKAGEKIT_TASK (task);
+	GsPackageKitTaskPrivate *priv = gs_packagekit_task_get_instance_private (gs_task);
+	g_autoptr(GsPlugin) plugin = NULL;
+	gboolean accepts = FALSE;
 
-	if (application && GTK_IS_APPLICATION (application))
-		parent = gtk_application_get_active_window (GTK_APPLICATION (application));
+	plugin = g_weak_ref_get (&priv->plugin_weakref);
+	if (plugin)
+		accepts = gs_plugin_ask_user_accepts (plugin, title, msg, details, accept_label);
 
-	dialog = gtk_message_dialog_new_with_markup (parent,
-	                                             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-	                                             GTK_MESSAGE_QUESTION,
-	                                             GTK_BUTTONS_NONE,
-	                                             "<big><b>%s</b></big>", title);
-	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-	                                          "%s", msg);
-	if (details != NULL)
-		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details);
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Cancel"), GTK_RESPONSE_CANCEL);
-	gtk_dialog_add_button (GTK_DIALOG (dialog), ok_label, GTK_RESPONSE_OK);
-
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-
-	gtk_widget_destroy (dialog);
-
-	return response == GTK_RESPONSE_OK;
+	return accepts;
 }
 
 typedef struct _QuestionData {
@@ -158,7 +44,7 @@ typedef struct _QuestionData {
 	gchar *title;
 	gchar *msg;
 	gchar *details;
-	gchar *ok_label;
+	gchar *accept_label;
 } QuestionData;
 
 static QuestionData *
@@ -167,7 +53,7 @@ question_data_new (GsPackageKitTask *task,
 		   const gchar *title,
 		   const gchar *msg,
 		   const gchar *details,
-		   const gchar *ok_label)
+		   const gchar *accept_label)
 {
 	QuestionData *qd;
 
@@ -177,7 +63,7 @@ question_data_new (GsPackageKitTask *task,
 	qd->title = g_strdup (title);
 	qd->msg = g_strdup (msg);
 	qd->details = g_strdup (details);
-	qd->ok_label = g_strdup (ok_label);
+	qd->accept_label = g_strdup (accept_label);
 
 	return qd;
 }
@@ -192,7 +78,7 @@ question_data_free (gpointer ptr)
 		g_free (qd->title);
 		g_free (qd->msg);
 		g_free (qd->details);
-		g_free (qd->ok_label);
+		g_free (qd->accept_label);
 		g_slice_free (QuestionData, qd);
 	}
 }
@@ -201,15 +87,14 @@ static gboolean
 gs_packagekit_task_question_idle_cb (gpointer user_data)
 {
 	QuestionData *qd = user_data;
-	PkTask *task;
+	g_autoptr(PkTask) task = NULL;
 
 	task = g_weak_ref_get (&qd->task_weakref);
 	if (task) {
-		if (gs_packagekit_task_user_accepted (qd->title, qd->msg, qd->details, qd->ok_label))
+		if (gs_packagekit_task_user_accepted (task, qd->title, qd->msg, qd->details, qd->accept_label))
 			pk_task_user_accepted (task, qd->request);
 		else
 			pk_task_user_declined (task, qd->request);
-		g_object_unref (task);
 	}
 
 	return G_SOURCE_REMOVE;
@@ -221,11 +106,11 @@ gs_packagekit_task_schedule_question (GsPackageKitTask *task,
 				      const gchar *title,
 				      const gchar *msg,
 				      const gchar *details,
-				      const gchar *ok_label)
+				      const gchar *accept_label)
 {
 	QuestionData *qd;
 
-	qd = question_data_new (task, request, title, msg, details, ok_label);
+	qd = question_data_new (task, request, title, msg, details, accept_label);
 	g_idle_add_full (G_PRIORITY_HIGH_IDLE, gs_packagekit_task_question_idle_cb, qd, question_data_free);
 }
 
@@ -240,19 +125,23 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	const gchar *title;
 	const gchar *msg;
 	const gchar *details;
-	const gchar *ok_label;
+	const gchar *accept_label;
 
 	switch (priv->action) {
 	case GS_PLUGIN_ACTION_INSTALL:
 		title = _("Install Unsigned Software?");
 		msg = _("Software that is to be installed is not signed. It will not be possible to verify the origin of updates to this software, or whether updates have been tampered with.");
-		ok_label = _("_Install");
+		accept_label = _("_Install");
 		break;
 	case GS_PLUGIN_ACTION_DOWNLOAD:
+		title = _("Download Unsigned Software?");
+		msg = _("Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been tampered with.");
+		accept_label = _("_Download");
+		break;
 	case GS_PLUGIN_ACTION_UPDATE:
 		title = _("Update Unsigned Software?");
 		msg = _("Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been tampered with. Software updates will be disabled until unsigned updates are either removed or updated.");
-		ok_label = _("_Update");
+		accept_label = _("_Update");
 		break;
 	default:
 		pk_task_user_declined (task, request);
@@ -265,7 +154,7 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	else
 		details = NULL;
 
-	gs_packagekit_task_schedule_question (gs_task, request, title, msg, details, ok_label);
+	gs_packagekit_task_schedule_question (gs_task, request, title, msg, details, accept_label);
 }
 
 static void
