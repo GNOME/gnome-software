@@ -16,6 +16,8 @@ Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorne
 These instructions use the following variables:
  - `new_version`: the version number of the release you are making, for example 3.38.1
  - `previous_version`: the version number of the most-recently released version in the same release series, for example 3.38.0
+ - `branch`: the branch which the release is based on, for example gnome-40 or master
+ - `key_id`: the ID of your GPG key, see the output of `gpg --list-keys` and the note at the end of this file
 
 Make sure your repository is up to date and doesn’t contain local changes:
 ```
@@ -61,8 +63,8 @@ ninja -C build/ dist
 
 Tag, sign and push the release (see below for information about `git evtag`):
 ```
-git evtag sign ${new_version}
-git push --atomic origin master ${new_version}
+git evtag sign -u ${key_id} ${new_version}
+git push --atomic origin ${branch} ${new_version}
 ```
 To use a specific key add an option `-u ${keyid|email}` after the `sign` argument.
 
@@ -70,8 +72,8 @@ Use `Tag ${new_version} release` as the tag message.
 
 Upload the release tarball:
 ```
-scp build/meson-dist/*.tar.xz master.gnome.org:
-ssh master.gnome.org ftpadmin install gnome-software-*.tar.xz
+scp build/meson-dist/gnome-software-${new_version}.tar.xz master.gnome.org:
+ssh master.gnome.org ftpadmin install gnome-software-${new_version}.tar.xz
 ```
 
 Add the release notes to GitLab and close the milestone:
