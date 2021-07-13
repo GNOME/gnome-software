@@ -206,7 +206,7 @@ enable_repo (GsReposDialog *dialog, GsApp *repo)
 	g_autoptr(InstallRemoveData) install_data = NULL;
 
 	install_data = g_slice_new0 (InstallRemoveData);
-	install_data->action = GS_PLUGIN_ACTION_INSTALL;
+	install_data->action = GS_PLUGIN_ACTION_ENABLE_REPO;
 	install_data->repo = g_object_ref (repo);
 	install_data->dialog = g_object_ref (dialog);
 
@@ -291,16 +291,17 @@ remove_confirm_repo (GsReposDialog *dialog, GsApp *repo)
 	GtkStyleContext *context;
 
 	remove_data = g_slice_new0 (InstallRemoveData);
-	remove_data->action = GS_PLUGIN_ACTION_REMOVE;
 	remove_data->repo = g_object_ref (repo);
 	remove_data->dialog = g_object_ref (dialog);
 
 	if (repo_supports_removal (repo)) {
+		remove_data->action = GS_PLUGIN_ACTION_REMOVE_REPO;
 		/* TRANSLATORS: this is a prompt message, and '%s' is a
 		 * repository name, e.g. 'GNOME Nightly' */
 		title = g_strdup_printf (_("Remove “%s”?"),
 		                         gs_app_get_name (repo));
 	} else {
+		remove_data->action = GS_PLUGIN_ACTION_DISABLE_REPO;
 		/* TRANSLATORS: this is a prompt message, and '%s' is a
 		 * repository name, e.g. 'GNOME Nightly' */
 		title = g_strdup_printf (_("Disable “%s”?"),

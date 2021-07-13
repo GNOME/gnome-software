@@ -1285,8 +1285,12 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		 * actions that usually change the state, we assign it to the
 		 * appropriate action here */
 		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
-		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL)
-			action = GS_PLUGIN_ACTION_INSTALL;
+		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+			if (priv->kind == AS_COMPONENT_KIND_REPOSITORY)
+				action = GS_PLUGIN_ACTION_INSTALL_REPO;
+			else
+				action = GS_PLUGIN_ACTION_INSTALL;
+		}
 		gs_app_set_pending_action_internal (app, action);
 
 		gs_app_queue_notify (app, obj_props[PROP_STATE]);
