@@ -239,6 +239,10 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
+	case GS_PLUGIN_ACTION_REMOVE_REPO:
+	case GS_PLUGIN_ACTION_ENABLE_REPO:
+	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
 			GsApp *app;
 			GsAppList *list;
@@ -674,6 +678,10 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
 	case GS_PLUGIN_ACTION_ADD_SHORTCUT:
 	case GS_PLUGIN_ACTION_REMOVE_SHORTCUT:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
+	case GS_PLUGIN_ACTION_REMOVE_REPO:
+	case GS_PLUGIN_ACTION_ENABLE_REPO:
+	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
 			GsPluginActionFunc plugin_func = func;
 			ret = plugin_func (plugin, app, cancellable, &error_local);
@@ -807,7 +815,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	}
 
 	/* add app to the pending installation queue if necessary */
-	if (action == GS_PLUGIN_ACTION_INSTALL &&
+	if ((action == GS_PLUGIN_ACTION_INSTALL || action == GS_PLUGIN_ACTION_INSTALL_REPO) &&
 	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 	        add_app_to_install_queue (plugin_loader, app);
 	}
@@ -3126,8 +3134,9 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 		for (guint i = 0; i < gs_app_list_length (queue); i++) {
 			GsApp *app = gs_app_list_index (queue, i);
+			GsPluginAction action = gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY ? GS_PLUGIN_ACTION_INSTALL_REPO : GS_PLUGIN_ACTION_INSTALL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+			plugin_job = gs_plugin_job_newv (action,
 							 "app", app,
 							 NULL);
 			gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
@@ -3369,6 +3378,10 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SETUP:
 	case GS_PLUGIN_ACTION_UPDATE:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
+	case GS_PLUGIN_ACTION_REMOVE_REPO:
+	case GS_PLUGIN_ACTION_ENABLE_REPO:
+	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
 				     GS_PLUGIN_ERROR,
@@ -3443,6 +3456,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
+	case GS_PLUGIN_ACTION_REMOVE_REPO:
 		gs_plugin_job_add_refine_flags (helper->plugin_job,
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
@@ -3716,7 +3731,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* deal with the install queue */
-	if (action == GS_PLUGIN_ACTION_REMOVE) {
+	if (action == GS_PLUGIN_ACTION_REMOVE || action == GS_PLUGIN_ACTION_REMOVE_REPO) {
 		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
 			task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -3897,6 +3912,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		/* these actions must be performed by the thread pool because we

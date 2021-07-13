@@ -1646,6 +1646,14 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
+	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
+		return "gs_plugin_repo_install";
+	if (action == GS_PLUGIN_ACTION_REMOVE_REPO)
+		return "gs_plugin_repo_remove";
+	if (action == GS_PLUGIN_ACTION_ENABLE_REPO)
+		return "gs_plugin_repo_enable";
+	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
+		return "gs_plugin_repo_disable";
 	return NULL;
 }
 
@@ -1728,6 +1736,14 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "get-langpacks";
+	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
+		return "repo-install";
+	if (action == GS_PLUGIN_ACTION_REMOVE_REPO)
+		return "repo-remove";
+	if (action == GS_PLUGIN_ACTION_ENABLE_REPO)
+		return "repo-enable";
+	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
+		return "repo-disable";
 	return NULL;
 }
 
@@ -1810,6 +1826,14 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_ALTERNATES;
 	if (g_strcmp0 (action, "get-langpacks") == 0)
 		return GS_PLUGIN_ACTION_GET_LANGPACKS;
+	if (g_strcmp0 (action, "repo-install") == 0)
+		return GS_PLUGIN_ACTION_INSTALL_REPO;
+	if (g_strcmp0 (action, "repo-remove") == 0)
+		return GS_PLUGIN_ACTION_REMOVE_REPO;
+	if (g_strcmp0 (action, "repo-enable") == 0)
+		return GS_PLUGIN_ACTION_ENABLE_REPO;
+	if (g_strcmp0 (action, "repo-disable") == 0)
+		return GS_PLUGIN_ACTION_DISABLE_REPO;
 	return GS_PLUGIN_ACTION_UNKNOWN;
 }
 

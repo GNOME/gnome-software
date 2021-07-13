@@ -78,10 +78,12 @@ gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GError			**error);
 gboolean	gs_flatpak_app_remove_source	(GsFlatpak		*self,
 						 GsApp			*app,
+						 gboolean		 is_remove,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_app_install_source	(GsFlatpak		*self,
 						 GsApp			*app,
+						 gboolean		 is_install,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_file_to_app_ref	(GsFlatpak		*self,
