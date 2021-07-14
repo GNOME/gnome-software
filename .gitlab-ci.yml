@@ -96,7 +96,7 @@ flatpak bundle:
     - tar cf repo.tar repo/
 
 # Due to the `only` clause in .publish_nightly, this will only publish on-demand
-# builds to nightly.gnome.org if they are built from a commit on `master`
+# builds to nightly.gnome.org if they are built from a commit on `main`
 nightly:
   extends: '.publish_nightly'
   dependencies:

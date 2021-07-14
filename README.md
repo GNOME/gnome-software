@@ -1,4 +1,4 @@
-[![Build Status](https://gitlab.gnome.org/GNOME/gnome-software/badges/master/build.svg)](https://gitlab.gnome.org/GNOME/gnome-software/pipelines)
+[![Build Status](https://gitlab.gnome.org/GNOME/gnome-software/badges/main/pipeline.svg)](https://gitlab.gnome.org/GNOME/gnome-software/pipelines)
 
 # Software
 
@@ -63,6 +63,19 @@ $ killall gnome-software
 $ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS LD_LIBRARY_PATH=install/lib64/:$LD_LIBRARY_PATH ./install/bin/gnome-software
 # On Debian, Ubuntu, etc:
 $ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS LD_LIBRARY_PATH=install/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH ./install/bin/gnome-software
+```
+
+## Default branch renamed to `main`
+
+The default development branch of gnome-software has been renamed to `main`. To
+update your local checkout, use:
+```sh
+git checkout master
+git branch -m master main
+git fetch
+git branch --unset-upstream
+git branch -u origin/main
+git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main
 ```
 
 # Debugging
