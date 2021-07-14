@@ -16,7 +16,7 @@ Adapted from the [GNOME release process](https://wiki.gnome.org/MaintainersCorne
 These instructions use the following variables:
  - `new_version`: the version number of the release you are making, for example 3.38.1
  - `previous_version`: the version number of the most-recently released version in the same release series, for example 3.38.0
- - `branch`: the branch which the release is based on, for example gnome-40 or master
+ - `branch`: the branch which the release is based on, for example gnome-40 or main
  - `key_id`: the ID of your GPG key, see the output of `gpg --list-keys` and the note at the end of this file
 
 Make sure your repository is up to date and doesn’t contain local changes:

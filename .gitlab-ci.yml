@@ -1,4 +1,4 @@
-include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/master/flatpak/flatpak_ci_initiative.yml'
+include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/HEAD/flatpak/flatpak_ci_initiative.yml'
 
 stages:
   - build
@@ -87,7 +87,7 @@ flatpak bundle:
   when: manual
   allow_failure: true
   script:
-    # Modified from https://gitlab.gnome.org/GNOME/citemplates/-/blob/master/flatpak/flatpak_ci_initiative.yml
+    # Modified from https://gitlab.gnome.org/GNOME/citemplates/-/blob/HEAD/flatpak/flatpak_ci_initiative.yml
     # to drop the unit tests, since we don’t need them
     - rewrite-flatpak-manifest ${MANIFEST_PATH} ${FLATPAK_MODULE} ${CONFIG_OPTS}
     - flatpak-builder --user --disable-rofiles-fuse flatpak_app --repo=repo ${BRANCH:+--default-branch=$BRANCH} ${MANIFEST_PATH}
@@ -96,7 +96,7 @@ flatpak bundle:
     - tar cf repo.tar repo/
 
 # Due to the `only` clause in .publish_nightly, this will only publish on-demand
-# builds to nightly.gnome.org if they are built from a commit on `master`
+# builds to nightly.gnome.org if they are built from a commit on `main`
 nightly:
   extends: '.publish_nightly'
   dependencies:
