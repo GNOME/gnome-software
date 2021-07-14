@@ -87,7 +87,7 @@ update_storage_tile (GsAppContextBar *self)
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Installed Size");
 		/* FIXME: Calculate data and cache usage so we can set the text
-		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/master/adaptive/context-tiles.png
+		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/HEAD/adaptive/context-tiles.png
 		description = "Includes 230 MB of data and 1.8 GB of cache"; */
 		description = "";
 	} else {
@@ -96,7 +96,7 @@ update_storage_tile (GsAppContextBar *self)
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Download Size");
 		/* FIXME: Calculate data and cache usage so we can set the text
-		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/master/adaptive/context-tiles.png
+		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/HEAD/adaptive/context-tiles.png
 		description = "Needs 150 MB of additional system downloads"; */
 		description = "";
 	}

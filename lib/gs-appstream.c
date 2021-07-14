@@ -687,7 +687,7 @@ gs_appstream_refine_app_content_rating (GsApp *app,
 	/* get attributes; no attributes being found (i.e.
 	 * `<content_rating type="*"/>`) is OK: it means that all attributes have
 	 * value `none`, as per the
-	 * [OARS semantics](https://github.com/hughsie/oars/blob/master/specification/oars-1.1.md) */
+	 * [OARS semantics](https://github.com/hughsie/oars/blob/HEAD/specification/oars-1.1.md) */
 	content_attributes = xb_node_query (content_rating, "content_attribute", 0, &error_local);
 	if (content_attributes == NULL &&
 	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {

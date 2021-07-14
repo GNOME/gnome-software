@@ -14,7 +14,7 @@
  *
  * To test this plugin locally you will probably want to build and run the
  * `odrs-web` container, following the instructions in the
- * [`odrs-web` repository](https://gitlab.gnome.org/Infrastructure/odrs-web/-/blob/master/README.md),
+ * [`odrs-web` repository](https://gitlab.gnome.org/Infrastructure/odrs-web/-/blob/HEAD/app_data/README.md),
  * and then get gnome-software to use your local review server by running:
  * ```
  * gsettings set org.gnome.software review-server 'http://127.0.0.1:5000/1.0/reviews/api'

@@ -93,7 +93,7 @@ app_is_expected_to_have_content_rating (GsApp *app)
  * the app. If so, we have to assume the most restrictive ratings. However, if
  * @rating is provided but is empty, we assume that every section in it has
  * value %AS_CONTENT_RATING_VALUE_NONE. See
- * https://github.com/hughsie/oars/blob/master/specification/oars-1.1.md */
+ * https://github.com/hughsie/oars/blob/HEAD/specification/oars-1.1.md */
 static gboolean
 app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 {
