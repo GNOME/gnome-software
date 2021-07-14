@@ -11,6 +11,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n-lib.h>
 #include <gnome-software.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 #include <packagekit-glib2/packagekit.h>
@@ -294,6 +295,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_LOWEST,
 				    pk_repo_detail_get_description (rd));
+		gs_plugin_packagekit_set_packaging_format (plugin, app);
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
+		gs_app_set_origin_ui (app, _("Packages"));
 		gs_app_list_add (list, app);
 		g_hash_table_insert (hash,
 				     g_strdup (id),

@@ -14,6 +14,7 @@
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
+#include <glib/gi18n-lib.h>
 #include <libdnf/libdnf.h>
 #include <ostree.h>
 #include <rpm/rpmdb.h>
@@ -2145,6 +2146,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		description = dnf_repo_get_description (repo);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
+
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
+		gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
 
 		gs_app_list_add (list, app);
 	}

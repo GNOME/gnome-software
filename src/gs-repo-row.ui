@@ -2,118 +2,94 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsRepoRow" parent="GtkListBoxRow">
+    <property name="visible">True</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkGrid">
         <property name="visible">True</property>
-        <property name="margin-top">18</property>
-        <property name="margin-bottom">18</property>
-        <property name="margin-start">18</property>
-        <property name="margin-end">18</property>
-        <property name="orientation">horizontal</property>
-        <property name="spacing">16</property>
+        <property name="margin">16</property>
+        <property name="row-spacing">6</property>
+        <property name="column-spacing">4</property>
         <child>
-          <object class="GtkBox" id="vbox">
+          <object class="GtkLabel" id="name_label">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="halign">start</property>
             <property name="hexpand">True</property>
-            <child>
-              <object class="GtkBox" id="hbox">
-                <property name="visible">True</property>
-                <property name="orientation">horizontal</property>
-                <property name="spacing">4</property>
-                <child>
-                  <object class="GtkLabel" id="name_label">
-                    <property name="visible">True</property>
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="status_label">
-                    <property name="visible">False</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="pack-type">end</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="comment_label">
-                <property name="visible">False</property>
-                <property name="halign">start</property>
-                <property name="xalign">0</property>
-                <property name="wrap">True</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkRevealer" id="details_revealer">
-                <property name="visible">True</property>
-                <property name="transition-type">slide-down</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
-                    <child>
-                      <object class="GtkBox" id="url_box">
-                        <property name="visible">True</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">8</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="halign">start</property>
-                            <property name="valign">start</property>
-                            <property name="label" translatable="yes">URL</property>
-                            <style>
-                              <class name="dim-label"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="url_label">
-                            <property name="visible">True</property>
-                            <property name="halign">start</property>
-                            <property name="valign">start</property>
-                            <property name="ellipsize">end</property>
-                            <style>
-                              <class name="dim-label"/>
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="visible">True</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">8</property>
-                        <child>
-                          <object class="GtkButton" id="button">
-                            <property name="visible">True</property>
-                            <property name="use_underline">True</property>
-                            <property name="width_request">105</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="halign">start</property>
-                            <property name="valign">start</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+            <property name="ellipsize">end</property>
           </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="hostname_label">
+            <property name="visible">True</property>
+            <property name="halign">start</property>
+            <property name="hexpand">True</property>
+            <property name="ellipsize">end</property>
+            <attributes>
+              <attribute name="scale" value="0.8"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="comment_label">
+            <property name="visible">True</property>
+            <property name="halign">start</property>
+            <property name="hexpand">True</property>
+            <property name="ellipsize">end</property>
+            <attributes>
+              <attribute name="scale" value="0.8"/>
+            </attributes>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">2</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="remove_button">
+            <property name="visible">False</property>
+            <property name="can_focus">True</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="hexpand">False</property>
+            <property name="always-show-image">True</property>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">0</property>
+            <property name="width">1</property>
+            <property name="height">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSwitch" id="disable_switch">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="hexpand">False</property>
+          </object>
+          <packing>
+            <property name="left-attach">2</property>
+            <property name="top-attach">0</property>
+            <property name="width">1</property>
+            <property name="height">3</property>
+          </packing>
         </child>
       </object>
     </child>

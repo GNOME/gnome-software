@@ -9,6 +9,8 @@
 #include <config.h>
 #include <ostree.h>
 
+#include <glib/gi18n.h>
+
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
 #include "gs-flatpak-utils.h"
@@ -62,7 +64,9 @@ gs_flatpak_error_convert (GError **perror)
 }
 
 GsApp *
-gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
+gs_flatpak_app_new_from_remote (GsPlugin *plugin,
+				FlatpakRemote *xremote,
+				gboolean is_user)
 {
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *url = NULL;
@@ -77,13 +81,23 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 			 flatpak_remote_get_name (xremote));
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_app_set_scope (app, is_user ? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM);
+
+	gs_app_set_metadata (app, "GnomeSoftware::SortKey", "100");
+	gs_app_set_metadata (app, "GnomeSoftware::InstallationKind",
+		is_user ? _("User Installation") : _("System Installation"));
+	if (!is_user)
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
-	if (title != NULL) {
+	if (title != NULL)
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, title);
-		gs_app_set_origin_ui (app, title);
-	}
+
+	/* origin_ui on a remote is the repo dialogue section name,
+	 * not the remote title */
+	gs_app_set_origin_ui (app, _("Applications"));
 
 	/* url */
 	url = flatpak_remote_get_url (xremote);

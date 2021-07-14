@@ -379,7 +379,7 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	g_autoptr(GsApp) app = NULL;
 
 	/* create a temp GsApp */
-	app = gs_flatpak_app_new_from_remote (xremote);
+	app = gs_flatpak_app_new_from_remote (self->plugin, xremote, flatpak_installation_get_is_user (self->installation));
 	gs_flatpak_claim_app (self, app);
 
 	/* we already have one, returned the ref'd cached copy */

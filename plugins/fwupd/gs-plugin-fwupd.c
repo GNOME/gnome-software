@@ -1175,6 +1175,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_metadata (app, "fwupd::remote-id",
 				     fwupd_remote_get_id (remote));
 		gs_app_set_management_plugin (app, "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
+		gs_app_set_origin_ui (app, _("Firmware"));
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
