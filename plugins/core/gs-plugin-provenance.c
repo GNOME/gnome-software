@@ -99,6 +99,13 @@ refine_app (GsPlugin             *plugin,
 		return TRUE;
 	}
 
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY &&
+	    gs_utils_strv_fnmatch (sources, gs_app_get_id (app))) {
+		if (gs_app_get_scope (app) != AS_COMPONENT_SCOPE_USER)
+			gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
+		return TRUE;
+	}
+
 	/* this only works for packages */
 	origin = gs_app_get_source_id_default (app);
 	if (origin == NULL)
