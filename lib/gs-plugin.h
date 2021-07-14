@@ -136,5 +136,7 @@ void		gs_plugin_repository_changed		(GsPlugin	*plugin,
 void		gs_plugin_update_cache_state_for_repository
 							(GsPlugin *plugin,
 							 GsApp *repository);
+gboolean	gs_plugin_get_action_supported		(GsPlugin	*plugin,
+							 GsPluginAction	 action);
 
 G_END_DECLS

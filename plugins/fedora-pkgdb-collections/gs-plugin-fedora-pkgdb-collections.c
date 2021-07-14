@@ -157,6 +157,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_origin_hostname (priv->cached_origin,
 				    FEDORA_PKGDB_COLLECTIONS_API_URI);
+	gs_app_set_management_plugin (priv->cached_origin, gs_plugin_get_name (plugin));
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */

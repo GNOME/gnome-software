@@ -248,6 +248,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
+	gs_app_set_management_plugin (priv->cached_origin, gs_plugin_get_name (plugin));
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -1187,6 +1188,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_metadata (app, "fwupd::remote-id",
 				     fwupd_remote_get_id (remote));
 		gs_app_set_management_plugin (app, "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
+		gs_app_set_origin_ui (app, _("Firmware"));
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

@@ -13,7 +13,9 @@ G_BEGIN_DECLS
 #include <gnome-software.h>
 
 void		 gs_flatpak_error_convert		(GError		**perror);
-GsApp		*gs_flatpak_app_new_from_remote		(FlatpakRemote	*xremote);
+GsApp		*gs_flatpak_app_new_from_remote		(GsPlugin	*plugin,
+							 FlatpakRemote	*xremote,
+							 gboolean	 is_user);
 GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
