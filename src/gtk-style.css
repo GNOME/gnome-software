@@ -623,14 +623,22 @@ app-context-bar .context-tile {
 }
 app-context-bar .context-tile:last-child { border-right: none }
 
-app-context-bar .context-tile-lozenge {
+.context-tile-lozenge {
 	font-size: 18px;
 	font-weight: bold;
 	border-radius: 99999px;
-	padding: 9px 12px;
+	padding: 9px 11px;
 	min-width: 18px;
+	min-height: 22px;
 }
-app-context-bar .context-tile-lozenge.wide-image image {
+
+.context-tile-lozenge.large {
+	font-size: 24px;
+	padding: 15px 18px;
+	min-height: 30px;
+}
+
+.context-tile-lozenge.wide-image image {
 	/* GtkImage always renders image square, so if we want an image which
 	 * is wide, but still the same height as all the others, we have to
 	 * use this hack to make it zero-height and vertically centred. The
@@ -639,12 +647,13 @@ app-context-bar .context-tile-lozenge.wide-image image {
 	margin-top: -999px;
 	margin-bottom: -999px
 }
-app-context-bar .context-tile-title { font-weight: bold }
+
+.context-tile-title { font-weight: bold }
 app-context-bar .context-tile-description { font-size: smaller }
 
-app-context-bar .grey { background-color: #deddda; color: #5e5c64 }
-app-context-bar .green, app-context-bar .details-rating-0 { background-color: #b6f2c4; color: #208255 }
-app-context-bar .red, app-context-bar .details-rating-18 { background-color: #fbd3cf; color: #ab3342 }
-app-context-bar .details-rating-15 { background-color: #ffd7a5; color: #c75400 }
-app-context-bar .yellow, app-context-bar .details-rating-12 { background-color: #f7eb9f; color: #9c7107 }
-app-context-bar .details-rating-5 { background-color: #d1e4fb; color: #294d7a }
+.context-tile-lozenge.grey { background-color: #deddda; color: #5e5c64 }
+.context-tile-lozenge.green, .context-tile-lozenge.details-rating-0 { background-color: #b6f2c4; color: #208255 }
+.context-tile-lozenge.red, .context-tile-lozenge.details-rating-18 { background-color: #fbd3cf; color: #ab3342 }
+.context-tile-lozenge.details-rating-15 { background-color: #ffd7a5; color: #c75400 }
+.context-tile-lozenge.yellow, .context-tile-lozenge.details-rating-12 { background-color: #f7eb9f; color: #9c7107 }
+.context-tile-lozenge.details-rating-5 { background-color: #d1e4fb; color: #294d7a }

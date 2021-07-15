@@ -15,6 +15,13 @@ gdbus_src = gnome.gdbus_codegen(
   namespace : 'Gs'
 )
 
+enums = gnome.mkenums_simple('gs-enums',
+  sources : [
+    'gs-context-dialog-row.h',
+  ],
+  install_header : false,
+)
+
 gnome_software_sources = [
   'gs-app-addon-row.c',
   'gs-app-version-history-dialog.c',
@@ -27,6 +34,7 @@ gnome_software_sources = [
   'gs-category-page.c',
   'gs-category-tile.c',
   'gs-common.c',
+  'gs-context-dialog-row.c',
   'gs-css.c',
   'gs-description-box.c',
   'gs-details-page.c',
@@ -125,7 +133,7 @@ executable(
   'gnome-software',
   resources_src,
   gdbus_src,
-  sources : gnome_software_sources,
+  sources : gnome_software_sources + enums,
   include_directories : [
     include_directories('..'),
     include_directories('../lib'),
