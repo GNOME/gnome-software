@@ -1240,12 +1240,16 @@ gs_plugin_update (GsPlugin *plugin,
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		GsFlatpak *flatpak = GS_FLATPAK (key);
 		GsAppList *list_tmp = GS_APP_LIST (value);
+		gboolean success;
 
 		g_assert (GS_IS_FLATPAK (flatpak));
 		g_assert (list_tmp != NULL);
 		g_assert (gs_app_list_length (list_tmp) > 0);
 
-		if (!gs_plugin_flatpak_update (plugin, flatpak, list_tmp, cancellable, error))
+		gs_flatpak_set_busy (flatpak, TRUE);
+		success = gs_plugin_flatpak_update (plugin, flatpak, list_tmp, cancellable, error);
+		gs_flatpak_set_busy (flatpak, FALSE);
+		if (!success)
 			return FALSE;
 	}
 	return TRUE;
