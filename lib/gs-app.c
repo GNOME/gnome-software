@@ -3481,7 +3481,7 @@ gs_app_get_size_download (GsApp *app)
 	/* add the runtime if this is not installed */
 	if (priv->runtime != NULL) {
 		if (gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE)
-			sz += gs_app_get_size_installed (priv->runtime);
+			sz += gs_app_get_size_download (priv->runtime);
 	}
 
 	/* add related apps */
