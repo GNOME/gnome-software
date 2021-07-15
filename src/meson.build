@@ -23,6 +23,7 @@ enums = gnome.mkenums_simple('gs-enums',
 )
 
 gnome_software_sources = [
+  'gs-age-rating-context-dialog.c',
   'gs-app-addon-row.c',
   'gs-app-version-history-dialog.c',
   'gs-app-version-history-row.c',
