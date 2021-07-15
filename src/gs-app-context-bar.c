@@ -33,11 +33,15 @@
 #include <handy.h>
 #include <locale.h>
 
+#include "gs-age-rating-context-dialog.h"
 #include "gs-app.h"
 #include "gs-app-context-bar.h"
+#include "gs-hardware-support-context-dialog.h"
+#include "gs-safety-context-dialog.h"
 
 typedef struct
 {
+	GtkWidget	*tile;
 	GtkWidget	*lozenge;
 	GtkWidget	*lozenge_content;
 	GtkLabel	*title;
@@ -906,6 +910,29 @@ app_notify_cb (GObject    *obj,
 }
 
 static void
+tile_clicked_cb (GtkWidget *widget,
+                 gpointer   user_data)
+{
+	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
+	GtkWindow *dialog;
+	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+
+	if (GTK_IS_WINDOW (toplevel)) {
+		if (widget == self->tiles[SAFETY_TILE].tile)
+			dialog = GTK_WINDOW (gs_safety_context_dialog_new (self->app));
+		else if (widget == self->tiles[HARDWARE_SUPPORT_TILE].tile)
+			dialog = GTK_WINDOW (gs_hardware_support_context_dialog_new (self->app));
+		else if (widget == self->tiles[AGE_RATING_TILE].tile)
+			dialog = GTK_WINDOW (gs_age_rating_context_dialog_new (self->app));
+		else
+			g_assert_not_reached ();
+
+		gtk_window_set_transient_for (dialog, GTK_WINDOW (toplevel));
+		gtk_widget_show (GTK_WIDGET (dialog));
+	}
+}
+
+static void
 gs_app_context_bar_init (GsAppContextBar *self)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
@@ -992,22 +1019,27 @@ gs_app_context_bar_class_init (GsAppContextBarClass *klass)
 	gtk_widget_class_set_css_name (widget_class, "app-context-bar");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-context-bar.ui");
 
+	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].description));
+	gtk_widget_class_bind_template_callback (widget_class, tile_clicked_cb);
 }
 
 /**
