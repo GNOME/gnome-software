@@ -368,7 +368,6 @@ update_hardware_support_tile (GsAppContextBar *self)
 	AsRelationKind control_relations[AS_CONTROL_KIND_LAST] = { AS_RELATION_KIND_UNKNOWN, };
 	GdkDisplay *display;
 	GdkMonitor *monitor = NULL;
-	GdkRectangle current_screen_size;
 	gboolean any_control_relations_set;
 	const gchar *icon_name = NULL, *title = NULL, *description = NULL, *css_class = NULL;
 	gboolean has_touchscreen = FALSE, has_keyboard = FALSE, has_mouse = FALSE;
@@ -380,33 +379,13 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	/* Extract the %AS_RELATION_ITEM_KIND_CONTROL relations and summarise
 	 * them. */
-	any_control_relations_set = FALSE;
-
-	for (gsize i = 0; relations != NULL && i < relations->len; i++) {
-		AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
-		AsRelationKind kind = as_relation_get_kind (relation);
-
-		if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_CONTROL) {
-			AsControlKind control_kind = as_relation_get_value_control_kind (relation);
-			control_relations[control_kind] = MAX (control_relations[control_kind], kind);
-
-			if (kind == AS_RELATION_KIND_REQUIRES ||
-			    kind == AS_RELATION_KIND_RECOMMENDS)
-				any_control_relations_set = TRUE;
-		}
-	}
-
 	display = gtk_widget_get_display (GTK_WIDGET (self));
-
-	/* Work out what input devices are available. */
-	if (display != NULL) {
-		GdkSeat *seat = gdk_display_get_default_seat (display);
-		GdkSeatCapabilities seat_capabilities = gdk_seat_get_capabilities (seat);
-
-		has_touchscreen = (seat_capabilities & GDK_SEAT_CAPABILITY_TOUCH);
-		has_keyboard = (seat_capabilities & GDK_SEAT_CAPABILITY_KEYBOARD);
-		has_mouse = (seat_capabilities & GDK_SEAT_CAPABILITY_POINTER);
-	}
+	gs_hardware_support_context_dialog_get_control_support (display, relations,
+								&any_control_relations_set,
+								control_relations,
+								&has_touchscreen,
+								&has_keyboard,
+								&has_mouse);
 
 	/* Warn about screen size mismatches. Compare against the largest
 	 * monitor associated with this widget’s #GdkDisplay, defaulting to
@@ -414,129 +393,38 @@ update_hardware_support_tile (GsAppContextBar *self)
 	 *
 	 * See https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length
 	 * for the semantics of the display length relations.*/
-	if (display != NULL) {
-		int n_monitors = gdk_display_get_n_monitors (display);
-		int monitor_max_dimension;
-
-		monitor = NULL;
-		monitor_max_dimension = 0;
-
-		for (int i = 0; i < n_monitors; i++) {
-			GdkMonitor *monitor2 = gdk_display_get_monitor (display, i);
-			GdkRectangle monitor_geometry;
-			int monitor2_max_dimension;
-
-			if (monitor2 == NULL)
-				continue;
-
-			gdk_monitor_get_geometry (monitor2, &monitor_geometry);
-			monitor2_max_dimension = MAX (monitor_geometry.width, monitor_geometry.height);
-
-			if (monitor2_max_dimension > monitor_max_dimension ||
-			    (gdk_monitor_is_primary (monitor2) &&
-			     monitor2_max_dimension == monitor_max_dimension)) {
-				monitor = monitor2;
-				monitor_max_dimension = monitor2_max_dimension;
-				continue;
-			}
-		}
-	}
+	if (display != NULL)
+		monitor = gs_hardware_support_context_dialog_get_largest_monitor (display);
 
 	if (monitor != NULL) {
-		gdk_monitor_get_geometry (monitor, &current_screen_size);
+		AsRelationKind desktop_relation_kind, mobile_relation_kind, current_relation_kind;
+		gboolean desktop_match, mobile_match, current_match;
 
-		for (gsize i = 0; relations != NULL && i < relations->len; i++) {
-			AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
-			guint comparand1;
-			Range comparand2;
-			gboolean match = TRUE;
+		gs_hardware_support_context_dialog_get_display_support (monitor, relations,
+									NULL,
+									&desktop_match, &desktop_relation_kind,
+									&mobile_match, &mobile_relation_kind,
+									&current_match, &current_relation_kind);
 
-			/* All lengths here are in logical/application pixels,
-			 * not device pixels. */
-			if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_DISPLAY_LENGTH &&
-			    as_relation_get_kind (relation) == AS_RELATION_KIND_REQUIRES) {
-				AsRelationCompare comparator = as_relation_get_compare (relation);
-
-				/* From https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
-				Range display_lengths[] = {
-					[AS_DISPLAY_LENGTH_KIND_XSMALL] = { 0, 360 },
-					[AS_DISPLAY_LENGTH_KIND_SMALL] = { 360, 768 },
-					[AS_DISPLAY_LENGTH_KIND_MEDIUM] = { 768, 1024 },
-					[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
-					[AS_DISPLAY_LENGTH_KIND_XLARGE] = { 3840, G_MAXUINT },
-				};
-
-				switch (as_relation_get_display_side_kind (relation)) {
-				case AS_DISPLAY_SIDE_KIND_SHORTEST:
-					comparand1 = MIN (current_screen_size.width, current_screen_size.height);
-					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
-					break;
-				case AS_DISPLAY_SIDE_KIND_LONGEST:
-					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
-					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
-					break;
-				case AS_DISPLAY_SIDE_KIND_UNKNOWN:
-				case AS_DISPLAY_SIDE_KIND_LAST:
-				default:
-					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
-					comparand2.min = display_lengths[as_relation_get_value_display_length_kind (relation)].min;
-					comparand2.max = display_lengths[as_relation_get_value_display_length_kind (relation)].max;
-					break;
-				}
-
-				switch (comparator) {
-				case AS_RELATION_COMPARE_EQ:
-					match = (comparand1 >= comparand2.min &&
-						 comparand1 <= comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_NE:
-					match = (comparand1 < comparand2.min ||
-						 comparand1 > comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_LT:
-					match = (comparand1 < comparand2.min);
-					break;
-				case AS_RELATION_COMPARE_GT:
-					match = (comparand1 > comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_LE:
-					match = (comparand1 <= comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_GE:
-					match = (comparand1 >= comparand2.min);
-					break;
-				case AS_RELATION_COMPARE_UNKNOWN:
-				case AS_RELATION_COMPARE_LAST:
-				default:
-					g_assert_not_reached ();
-				}
-
-				/* If the current screen size is not supported,
-				 * try and summarise the restrictions into a
-				 * single context tile. */
-				if (!match) {
-					if ((comparator == AS_RELATION_COMPARE_LE ||
-					     comparator == AS_RELATION_COMPARE_LT) &&
-					     comparand1 >= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
-						icon_name = "phone-symbolic";
-						title = _("Mobile Only");
-						description = _("Only works on a small screen");
-						css_class = "red";
-					} else if ((comparator == AS_RELATION_COMPARE_GE ||
-						    comparator == AS_RELATION_COMPARE_GT) &&
-						   comparand1 <= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
-						icon_name = "desktop-symbolic";
-						title = _("Desktop Only");
-						description = _("Only works on a large screen");
-						css_class = "red";
-					} else {
-						icon_name = "desktop-symbolic";
-						title = _("Screen Size Mismatch");
-						description = _("Requires a specific screen size");
-						css_class = "red";
-					}
-				}
-			}
+		/* If the current screen size is not supported, try and
+		 * summarise the restrictions into a single context tile. */
+		if (!current_match &&
+		    !mobile_match && mobile_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "phone-symbolic";
+			title = _("Mobile Only");
+			description = _("Only works on a small screen");
+			css_class = "red";
+		} else if (!current_match &&
+			   !desktop_match && desktop_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "desktop-symbolic";
+			title = _("Desktop Only");
+			description = _("Only works on a large screen");
+			css_class = "red";
+		} else if (!current_match && current_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "desktop-symbolic";
+			title = _("Screen Size Mismatch");
+			description = _("Doesn’t support your current screen size");
+			css_class = "red";
 		}
 	}
 
