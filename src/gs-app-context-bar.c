@@ -536,117 +536,37 @@ update_hardware_support_tile (GsAppContextBar *self)
 		gtk_style_context_remove_class (context, "wide-image");
 }
 
-static gchar *
-build_age_rating_description (AsContentRating *content_rating)
+static void
+build_age_rating_description_cb (const gchar          *attribute,
+                                 AsContentRatingValue  value,
+                                 gpointer              user_data)
 {
-	g_autofree const gchar **rating_ids = as_content_rating_get_all_rating_ids ();
-	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
-	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
-	guint age_bad = 0;
+	GPtrArray *descriptions = user_data;
+	const gchar *description;
 
-	/* Ordered from worst to best, these are all OARS 1.0/1.1 categories */
-	const gchar * const violence_group[] = {
-		"violence-bloodshed",
-		"violence-realistic",
-		"violence-fantasy",
-		"violence-cartoon",
-		NULL
-	};
-	const gchar * const social_group[] = {
-		"social-audio",
-		"social-chat",
-		"social-contacts",
-		"social-info",
-		NULL
-	};
-	const gchar * const coalesce_groups[] = {
-		"sex-themes",
-		"sex-homosexuality",
-		NULL
-	};
-
-	/* Get the worst category. */
-	for (gsize i = 0; rating_ids[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, rating_ids[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (rating_ids[i], rating_value);
-
-		if (rating_age > age_bad)
-			age_bad = rating_age;
-		if (rating_value > value_bad)
-			value_bad = rating_value;
-	}
-
-	/* If the worst category is nothing, great! Show a more specific message
-	 * than a big listing of all the groups. */
-	if (value_bad == AS_CONTENT_RATING_VALUE_NONE || age_bad == 0)
+	/* (attribute == NULL) is used by the caller to indicate that no
+	 * attributes apply. This callback will be called at most once like
+	 * that. */
+	if (attribute == NULL)
 		/* Translators: This indicates that the content rating for an
 		 * app says it can be used by all ages of people, as it contains
 		 * no objectionable content. */
-		return g_strdup (_("Contains no age-inappropriate content"));
+		description = _("Contains no age-inappropriate content");
+	else
+		description = as_content_rating_attribute_get_description (attribute, value);
 
-	/* Add a description for each rating category which contributes to the
-	 * @age_bad being as it is. Handle the groups separately.
-	 * Intentionally coalesce some categories if they have the same values,
-	 * to avoid confusion */
-	for (gsize i = 0; rating_ids[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
+	g_ptr_array_add (descriptions, (gpointer) description);
+}
 
-		if (g_strv_contains (violence_group, rating_ids[i]) ||
-		    g_strv_contains (social_group, rating_ids[i]))
-			continue;
+static gchar *
+build_age_rating_description (AsContentRating *content_rating)
+{
+	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 
-		rating_value = as_content_rating_get_value (content_rating, rating_ids[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (rating_ids[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		/* Coalesce down to the first element in @coalesce_groups,
-		 * unless this group’s value differs. Currently only one
-		 * coalesce group is supported. */
-		if (g_strv_contains (coalesce_groups + 1, rating_ids[i]) &&
-		    as_content_rating_attribute_to_csm_age (coalesce_groups[0],
-							    as_content_rating_get_value (content_rating,
-											 coalesce_groups[0])) == rating_age)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (rating_ids[i], rating_value));
-	}
-
-	for (gsize i = 0; violence_group[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, violence_group[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (violence_group[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (violence_group[i], rating_value));
-		break;
-	}
-
-	for (gsize i = 0; social_group[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, social_group[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (social_group[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (social_group[i], rating_value));
-		break;
-	}
+	gs_age_rating_context_dialog_process_attributes (content_rating,
+							 TRUE,
+							 build_age_rating_description_cb,
+							 descriptions);
 
 	g_ptr_array_add (descriptions, NULL);
 	/* Translators: This string is used to join various other translated
@@ -659,120 +579,33 @@ build_age_rating_description (AsContentRating *content_rating)
 	return g_strjoinv (_("; "), (gchar **) descriptions->pdata);
 }
 
-/* Wrapper around as_content_rating_system_format_age() which returns the short
- * form of the content rating. This doesn’t make a difference for most ratings
- * systems, but it does for ESRB which normally produces quite long strings.
- *
- * FIXME: This should probably be upstreamed into libappstream once it’s been in
- * the GNOME 41 release and stabilised. */
-static gchar *
-content_rating_system_format_age_short (AsContentRatingSystem system,
-                                        guint                 age)
-{
-	if (system == AS_CONTENT_RATING_SYSTEM_ESRB) {
-		if (age >= 18)
-			return g_strdup ("AO");
-		if (age >= 17)
-			return g_strdup ("M");
-		if (age >= 13)
-			return g_strdup ("T");
-		if (age >= 10)
-			return g_strdup ("E10+");
-		if (age >= 6)
-			return g_strdup ("E");
-
-		return g_strdup ("EC");
-	}
-
-	return as_content_rating_system_format_age (system, age);
-}
-
 static void
 update_age_rating_tile (GsAppContextBar *self)
 {
 	AsContentRating *content_rating;
-	AsContentRatingSystem system;
-	guint age = G_MAXUINT;  /* unknown */
-	g_autofree gchar *age_text = NULL;
+	gboolean is_unknown;
 	g_autofree gchar *description = NULL;
-	const gchar *locale;
-	GtkStyleContext *context;
-	const gchar *css_age_classes[] = {
-		"details-rating-18",
-		"details-rating-15",
-		"details-rating-12",
-		"details-rating-5",
-		"details-rating-0",
-	};
-	gsize age_index;
 
 	g_assert (self->app != NULL);
 
-	/* get the content rating system from the locale */
-	locale = setlocale (LC_MESSAGES, NULL);
-	system = as_content_rating_system_from_locale (locale);
-	g_debug ("content rating system is guessed as %s from %s",
-		 as_content_rating_system_to_string (system),
-		 locale);
-
 	content_rating = gs_app_get_content_rating (self->app);
-	if (content_rating != NULL)
-		age = as_content_rating_get_minimum_age (content_rating);
+	gs_age_rating_context_dialog_update_lozenge (self->app,
+						     self->tiles[AGE_RATING_TILE].lozenge,
+						     GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content),
+						     &is_unknown);
 
-	if (age != G_MAXUINT)
-		age_text = content_rating_system_format_age_short (system, age);
-
-	/* Some ratings systems (PEGI) don’t start at age 0 */
-	if (content_rating != NULL && age_text == NULL && age == 0)
-		/* Translators: The app is considered suitable to be run by all ages of people.
-		 * This is displayed in a context tile, so the string should be short. */
-		age_text = g_strdup (_("All"));
-
-	context = gtk_widget_get_style_context (self->tiles[AGE_RATING_TILE].lozenge);
-
-	/* We currently only support OARS-1.0 and OARS-1.1 */
-	if (age_text == NULL ||
-	    (content_rating != NULL &&
-	     g_strcmp0 (as_content_rating_get_kind (content_rating), "oars-1.0") != 0 &&
-	     g_strcmp0 (as_content_rating_get_kind (content_rating), "oars-1.1") != 0)) {
-		for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++)
-			gtk_style_context_remove_class (context, css_age_classes[i]);
-		gtk_style_context_add_class (context, "grey");
-
-		/* Translators: This app has no age rating information available.
-		 * This string is displayed like an icon. Please use any
-		 * similarly short punctuation character, word or acronym which
-		 * will be widely understood in your region, in this context.
-		 * This is displayed in a context tile, so the string should be short. */
-		age_text = g_strdup (_("?"));
+	/* Description */
+	if (content_rating == NULL || is_unknown) {
 		description = g_strdup (_("No age rating information available"));
 	} else {
-		/* Update the CSS */
-		if (age >= 18)
-			age_index = 0;
-		else if (age >= 15)
-			age_index = 1;
-		else if (age >= 12)
-			age_index = 2;
-		else if (age >= 5)
-			age_index = 3;
-		else
-			age_index = 4;
-
-		for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++) {
-			if (i == age_index)
-				gtk_style_context_add_class (context, css_age_classes[i]);
-			else
-				gtk_style_context_remove_class (context, css_age_classes[i]);
-		}
-		gtk_style_context_remove_class (context, "grey");
-
 		description = build_age_rating_description (content_rating);
 	}
 
-	/* Update the label texts */
-	gtk_label_set_text (GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content), age_text);
 	gtk_label_set_text (self->tiles[AGE_RATING_TILE].description, description);
+
+	/* Disable the button if no content rating information is available, as
+	 * it would only show a dialogue full of rows saying ‘Unknown’ */
+	gtk_widget_set_sensitive (self->tiles[AGE_RATING_TILE].tile, (content_rating != NULL));
 }
 
 static void
