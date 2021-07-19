@@ -44,6 +44,8 @@ struct _GsFlatpak {
 	GHashTable		*remote_title; /* gchar *remote name ~> gchar *remote title */
 	GMutex			 remote_title_mutex;
 	gboolean		 requires_full_rescan;
+	gint			 busy; /* (atomic) */
+	gboolean		 changed_while_busy;
 };
 
 G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
@@ -390,6 +392,19 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	return g_steal_pointer (&app);
 }
 
+static gboolean
+gs_flatpak_claim_changed_idle_cb (gpointer user_data)
+{
+	GsFlatpak *self = user_data;
+
+	self->requires_full_rescan = TRUE;
+
+	gs_plugin_cache_invalidate (self->plugin);
+	gs_plugin_reload (self->plugin);
+
+	return G_SOURCE_REMOVE;
+}
+
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
@@ -416,10 +431,11 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 		xb_silo_invalidate (self->silo);
 	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
 
-	self->requires_full_rescan = TRUE;
-
-	gs_plugin_cache_invalidate (self->plugin);
-	gs_plugin_reload (self->plugin);
+	if (gs_flatpak_get_busy (self)) {
+		self->changed_while_busy = TRUE;
+	} else {
+		gs_flatpak_claim_changed_idle_cb (self);
+	}
 }
 
 static gboolean
@@ -3788,4 +3804,31 @@ gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation, GsFlatpakFl
 	self->plugin = g_object_ref (plugin);
 	self->flags = flags;
 	return GS_FLATPAK (self);
+}
+
+void
+gs_flatpak_set_busy (GsFlatpak *self,
+		     gboolean busy)
+{
+	g_return_if_fail (GS_IS_FLATPAK (self));
+
+	if (busy) {
+		g_atomic_int_inc (&self->busy);
+	} else {
+		g_return_if_fail (g_atomic_int_get (&self->busy) > 0);
+		if (g_atomic_int_dec_and_test (&self->busy)) {
+			if (self->changed_while_busy) {
+				self->changed_while_busy = FALSE;
+				g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_flatpak_claim_changed_idle_cb,
+					g_object_ref (self), g_object_unref);
+			}
+		}
+	}
+}
+
+gboolean
+gs_flatpak_get_busy (GsFlatpak *self)
+{
+	g_return_val_if_fail (GS_IS_FLATPAK (self), FALSE);
+	return g_atomic_int_get (&self->busy) > 0;
 }

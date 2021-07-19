@@ -128,5 +128,8 @@ gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
 						 guint64		 age,
 						 GCancellable		*cancellable,
 						 GError			**error);
+void		gs_flatpak_set_busy		(GsFlatpak		*self,
+						 gboolean		 busy);
+gboolean	gs_flatpak_get_busy		(GsFlatpak		*self);
 
 G_END_DECLS
