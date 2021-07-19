@@ -1573,6 +1573,7 @@ resolve_available_packages_app (GsPlugin *plugin,
 		/* set hide-from-search quirk for available apps we don't want to show */
 		if (!gs_app_is_installed (app)) {
 			switch (gs_app_get_kind (app)) {
+			case AS_COMPONENT_KIND_DESKTOP_APP:
 			case AS_COMPONENT_KIND_WEB_APP:
 			case AS_COMPONENT_KIND_CONSOLE_APP:
 				gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
