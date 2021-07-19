@@ -83,33 +83,41 @@ reenable_offline_update_notification (gpointer data)
 static void
 check_updates_kind (GsAppList *apps,
 		    gboolean *out_has_important,
+		    gboolean *out_any_important_downloaded,
 		    gboolean *out_all_downloaded,
 		    gboolean *out_any_downloaded)
 {
-	gboolean has_important, all_downloaded, any_downloaded;
+	gboolean has_important, any_important_downloaded, all_downloaded, any_downloaded;
 	guint ii, len;
 	GsApp *app;
 
 	len = gs_app_list_length (apps);
 	has_important = FALSE;
+	any_important_downloaded = FALSE;
 	all_downloaded = len > 0;
 	any_downloaded = FALSE;
 
 	for (ii = 0; ii < len && (!has_important || all_downloaded || !any_downloaded); ii++) {
+		gboolean is_important;
+
 		app = gs_app_list_index (apps, ii);
 
-		has_important = has_important ||
-				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
+		is_important = gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
+		has_important = has_important || is_important;
 
 		/* took from gs-updates-section.c: _all_offline_updates_downloaded();
 		   the app is considered downloaded, when its download size is 0 */
-		if (gs_app_get_size_download (app))
+		if (gs_app_get_size_download (app)) {
 			all_downloaded = FALSE;
-		else
+		} else {
 			any_downloaded = TRUE;
+			if (is_important)
+				any_important_downloaded = TRUE;
+		}
 	}
 
 	*out_has_important = has_important;
+	*out_any_important_downloaded = any_important_downloaded;
 	*out_all_downloaded = all_downloaded;
 	*out_any_downloaded = any_downloaded;
 }
@@ -168,7 +176,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				     const gchar **out_title,
 				     const gchar **out_body)
 {
-	gboolean has_important = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
+	gboolean has_important = FALSE, any_important_downloaded = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
 	gboolean should_download, res = FALSE;
 	gint64 timestamp_days;
 
@@ -178,7 +186,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 	}
 
 	should_download = should_download_updates (monitor);
-	check_updates_kind (apps, &has_important, &all_downloaded, &any_downloaded);
+	check_updates_kind (apps, &has_important, &any_important_downloaded, &all_downloaded, &any_downloaded);
 
 	if (!gs_app_list_length (apps)) {
 		/* Notify only when the download is disabled and it's the 4th day or it's more than 7 days */
@@ -189,7 +197,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 		}
 	} else if (has_important) {
 		if (timestamp_days >= 1) {
-			if (all_downloaded) {
+			if (any_important_downloaded) {
 				*out_title = _("Critical Software Update Ready to Install");
 				*out_body = _("An important software update is ready to be installed.");
 				res = TRUE;
@@ -199,7 +207,9 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				res = TRUE;
 			}
 		}
-	} else if (all_downloaded) {
+		/* When automatic updates are on and there are things ready to be installed, then rather claim
+		 * about things to be installed, than things to be downloaded. */
+	} else if (all_downloaded || (any_downloaded && should_download)) {
 		if (timestamp_days >= 3) {
 			*out_title = _("Software Updates Ready to Install");
 			*out_body = _("Software updates are waiting and ready to be installed.");
@@ -212,9 +222,10 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 		res = TRUE;
 	}
 
-	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d has_important:%d "
+	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d has_important:%d any_important_downloaded:%d "
 		"all_downloaded:%d any_downloaded:%d res:%d%s%s%s%s", G_STRFUNC,
-		timestamp_days, gs_app_list_length (apps), should_download, has_important, all_downloaded, any_downloaded, res,
+		timestamp_days, gs_app_list_length (apps), should_download, has_important, any_important_downloaded,
+		all_downloaded, any_downloaded, res,
 		res ? " reason:" : "",
 		res ? *out_title : "",
 		res ? "|" : "",
