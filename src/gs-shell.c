@@ -33,10 +33,11 @@
 #include "gs-extras-page.h"
 #include "gs-repos-dialog.h"
 #include "gs-prefs-dialog.h"
-#include "gs-sidebar.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
+
+#define NARROW_WIDTH_THRESHOLD 800
 
 static const gchar *page_name[] = {
 	"unknown",
@@ -72,15 +73,12 @@ struct _GsShell
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
 	HdyDeck			*main_deck;
-	HdyLeaflet		*main_leaflet;
 	HdyDeck			*details_deck;
 	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
 	GtkStack		*stack_sub;
 	GsPage			*page;
-	GsSidebar		*sidebar;
 
-	GBinding		*main_header_title_binding;
 	GBinding		*application_details_header_binding;
 	GBinding		*sub_page_header_title_binding;
 
@@ -90,12 +88,10 @@ struct _GsShell
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
 
-	GtkWidget		*sidebar_box;
 	GtkWidget		*main_header;
 	GtkWidget		*details_header;
 	GtkWidget		*metered_updates_bar;
-	GtkWidget		*search_button_main;
-	GtkWidget		*search_button_sidebar;
+	GtkWidget		*search_button;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
@@ -111,15 +107,24 @@ struct _GsShell
 	GtkWidget		*application_details_header;
 	GtkWidget		*sub_page_header_title;
 
+	gboolean		 is_narrow;
+	guint			 allocation_changed_cb_id;
+
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, HDY_TYPE_APPLICATION_WINDOW)
 
+typedef enum {
+	PROP_IS_NARROW = 1,
+} GsShellProperty;
+
 enum {
 	SIGNAL_LOADED,
 	SIGNAL_LAST
 };
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
@@ -461,15 +466,13 @@ update_header_widgets (GsShell *shell)
 	GsShellMode mode = gs_shell_get_mode (shell);
 
 	/* only show the search button in overview and search pages */
-	g_signal_handlers_block_by_func (shell->search_button_main, search_button_clicked_cb, shell);
-	g_signal_handlers_block_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
+	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
 	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
-	g_signal_handlers_unblock_by_func (shell->search_button_sidebar, search_button_clicked_cb, shell);
-	g_signal_handlers_unblock_by_func (shell->search_button_main, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
 }
 
 static void
@@ -484,9 +487,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	gsize i;
 
 	update_header_widgets (shell);
-
-	/* set the window title back to default */
-	gtk_window_set_title (GTK_WINDOW (shell), g_get_application_name ());
 
 	/* do action for mode */
 	page = shell->pages[mode];
@@ -529,11 +529,6 @@ stack_notify_visible_child_cb (GObject    *object,
 		break;
 	}
 
-	g_clear_object (&shell->main_header_title_binding);
-	shell->main_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_main), "title",
-								   shell->main_header, "title",
-								   G_BINDING_SYNC_CREATE);
-
 	g_clear_object (&shell->application_details_header_binding);
 	shell->application_details_header_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
 									    shell->application_details_header, "label",
@@ -568,26 +563,6 @@ stack_notify_visible_child_cb (GObject    *object,
 		}
 		g_ptr_array_set_size (shell->modal_dialogs, 0);
 	}
-}
-
-static void
-sidebar_category_selected_cb (GsSidebar  *sidebar,
-                              GsCategory *category,
-                              gpointer    user_data)
-{
-	GsShell *shell = GS_SHELL (user_data);
-
-	gs_shell_show_category (shell, category);
-}
-
-static void
-main_leaflet_notify_folded_cb (GObject    *obj,
-                               GParamSpec *pspec,
-                               gpointer    user_data)
-{
-	GsShell *shell = GS_SHELL (user_data);
-
-	update_header_widgets (shell);
 }
 
 void
@@ -2171,8 +2146,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	shell->settings = g_settings_new ("org.gnome.software");
 
-	gs_sidebar_set_category_manager (shell->sidebar, gs_plugin_loader_get_category_manager (plugin_loader));
-
 	/* get UI */
 	accel_group = gtk_accel_group_new ();
 	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
@@ -2367,12 +2340,58 @@ gs_shell_show_uri (GsShell *shell, const gchar *url)
 	}
 }
 
+/**
+ * gs_shell_get_is_narrow:
+ * @shell: a #GsShell
+ *
+ * Get the value of #GsShell:is-narrow.
+ *
+ * Returns: %TRUE if the window is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_shell_get_is_narrow (GsShell *shell)
+{
+	g_return_val_if_fail (GS_IS_SHELL (shell), FALSE);
+
+	return shell->is_narrow;
+}
+
+static void
+gs_shell_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsShell *shell = GS_SHELL (object);
+
+	switch ((GsShellProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_shell_get_is_narrow (shell));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_shell_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	switch ((GsShellProperty) prop_id) {
+	case PROP_IS_NARROW:
+		/* Read only. */
+		g_assert_not_reached ();
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 static void
 gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 
-	g_clear_object (&shell->main_header_title_binding);
 	g_clear_object (&shell->application_details_header_binding);
 	g_clear_object (&shell->sub_page_header_title_binding);
 
@@ -2408,13 +2427,69 @@ gs_shell_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
 
+static gboolean
+allocation_changed_cb (gpointer user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+	GtkAllocation allocation;
+	gboolean is_narrow;
+
+	gtk_widget_get_allocation (GTK_WIDGET (shell), &allocation);
+
+	is_narrow = allocation.width <= NARROW_WIDTH_THRESHOLD;
+
+	if (shell->is_narrow != is_narrow) {
+		shell->is_narrow = is_narrow;
+		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_IS_NARROW]);
+	}
+
+	shell->allocation_changed_cb_id = 0;
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_shell_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+{
+	GsShell *shell = GS_SHELL (widget);
+
+	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget, allocation);
+
+	/* Delay updating is-narrow so children can adapt to it, which isn't
+	 * possible during the widget's allocation phase as it would break their
+	 * size request.
+	 */
+	if (shell->allocation_changed_cb_id == 0)
+		shell->allocation_changed_cb_id = g_idle_add (allocation_changed_cb, shell);
+}
+
 static void
 gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_shell_get_property;
+	object_class->set_property = gs_shell_set_property;
 	object_class->dispose = gs_shell_dispose;
+
+	widget_class->size_allocate = gs_shell_size_allocate;
+
+	/**
+	 * GsShell:is-narrow:
+	 *
+	 * Whether the window is in narrow mode.
+	 *
+	 * Pages can track this property to adapt to the available width.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_LOADED] =
 		g_signal_new ("loaded",
@@ -2424,19 +2499,15 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, sidebar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_main);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button_sidebar);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
@@ -2484,8 +2555,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
-	gtk_widget_class_bind_template_callback (widget_class, main_leaflet_notify_folded_cb);
-	gtk_widget_class_bind_template_callback (widget_class, sidebar_category_selected_cb);
 }
 
 static void
