@@ -244,6 +244,10 @@ main (int argc, char **argv)
 		NULL
 	};
 
+	/* The tests access the system proxy schemas, so pre-load those before
+	 * %G_TEST_OPTION_ISOLATE_DIRS resets the XDG system dirs. */
+	g_settings_schema_source_get_default ();
+
 	g_test_init (&argc, &argv,
 #if GLIB_CHECK_VERSION(2, 60, 0)
 		     G_TEST_OPTION_ISOLATE_DIRS,
