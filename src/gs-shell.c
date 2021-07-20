@@ -79,7 +79,6 @@ struct _GsShell
 	GtkStack		*stack_sub;
 	GsPage			*page;
 
-	GBinding		*application_details_header_binding;
 	GBinding		*sub_page_header_title_binding;
 
 #ifdef HAVE_MOGWAI
@@ -104,7 +103,6 @@ struct _GsShell
 	GtkWidget		*button_events_dismiss;
 	GtkWidget		*label_events;
 	GtkWidget		*primary_menu;
-	GtkWidget		*application_details_header;
 	GtkWidget		*sub_page_header_title;
 
 	gboolean		 is_narrow;
@@ -528,11 +526,6 @@ stack_notify_visible_child_cb (GObject    *object,
 		g_assert (widget == NULL);
 		break;
 	}
-
-	g_clear_object (&shell->application_details_header_binding);
-	shell->application_details_header_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
-									    shell->application_details_header, "label",
-									    G_BINDING_SYNC_CREATE);
 
 	g_clear_object (&shell->sub_page_header_title_binding);
 	shell->sub_page_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
@@ -2392,7 +2385,6 @@ gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 
-	g_clear_object (&shell->application_details_header_binding);
 	g_clear_object (&shell->sub_page_header_title_binding);
 
 	if (shell->back_entry_stack != NULL) {
@@ -2520,7 +2512,6 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, application_details_header);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, sub_page_header_title);
 
 	gtk_widget_class_bind_template_child_full (widget_class, "overview_page", FALSE, G_STRUCT_OFFSET (GsShell, pages[GS_SHELL_MODE_OVERVIEW]));
