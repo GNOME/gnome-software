@@ -29,7 +29,9 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* force this app to be installed */
-	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/arachne.desktop/*");
+	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/arachne.desktop/*", NULL, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (app_tmp);
 	gs_app_set_state (app_tmp, GS_APP_STATE_INSTALLED);
 
 	/* get search result based on addon keyword */
@@ -63,7 +65,9 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* refine system application */
-	app = gs_plugin_loader_get_system_app (plugin_loader);
+	app = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
@@ -89,8 +93,9 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Fedora Workstation");
 
 	/* check we can get this by the old name too */
-	app3 = gs_plugin_loader_get_system_app (plugin_loader);
-	g_assert (app3 != NULL);
+	app3 = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (app3);
 	g_assert (app3 == app);
 }
 

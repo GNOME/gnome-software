@@ -2318,24 +2318,19 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 }
 
 static void
-gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
-					GFile *file,
-					GFile *other_file,
-					GFileMonitorEvent event_type,
-					GsPluginLoader *plugin_loader)
+gs_plugin_loader_software_app_created_cb (GObject *source_object,
+					  GAsyncResult *result,
+					  gpointer user_data)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 	g_autoptr(GError) error = NULL;
 
-	/* already triggered */
-	if (plugin_loader->plugin_dir_dirty)
-		return;
+	app = gs_plugin_loader_app_create_finish (plugin_loader, result, NULL);
 
 	/* add app */
 	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_SETUP);
-	app = gs_plugin_loader_app_create (plugin_loader,
-		"system/*/*/org.gnome.Software.desktop/*");
 	if (app != NULL)
 		gs_plugin_event_set_app (event, app);
 
@@ -2346,6 +2341,22 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 			     "A restart is required");
 	gs_plugin_event_set_error (event, error);
 	gs_plugin_loader_add_event (plugin_loader, event);
+}
+
+static void
+gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
+					GFile *file,
+					GFile *other_file,
+					GFileMonitorEvent event_type,
+					GsPluginLoader *plugin_loader)
+{
+	/* already triggered */
+	if (plugin_loader->plugin_dir_dirty)
+		return;
+
+	gs_plugin_loader_app_create_async (plugin_loader, "system/*/*/org.gnome.Software.desktop/*",
+		NULL, gs_plugin_loader_software_app_created_cb, NULL);
+
 	plugin_loader->plugin_dir_dirty = TRUE;
 }
 
@@ -3932,25 +3943,21 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_app_create:
- * @plugin_loader: a #GsPluginLoader
- * @unique_id: a unique_id
- *
- * Returns an application from the global cache, creating if required.
- *
- * Returns: (transfer full): a #GsApp
- **/
-GsApp *
-gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_id)
+static void
+gs_plugin_loader_job_app_create_thread_cb (GTask *task,
+					   gpointer object,
+					   gpointer task_data,
+					   GCancellable *cancellable)
 {
-	g_autoptr(GError) error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (g_task_get_source_object (task));
+	const gchar *unique_id = task_data;
+	GError *error = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 
-	/* use the plugin loader to convert a wildcard app*/
+	/* use the plugin loader to convert a wildcard app */
 	app = gs_app_new (NULL);
 	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_from_unique_id (app, unique_id, AS_COMPONENT_KIND_UNKNOWN);
@@ -3958,15 +3965,18 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	if (!gs_plugin_loader_run_refine (helper, list, NULL, &error)) {
-		g_warning ("%s", error->message);
-		return NULL;
+		g_prefix_error (&error, "Failed to refine '%s': ", unique_id);
+		g_task_return_error (task, error);
+		return;
 	}
 
 	/* return the matching GsApp */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app_tmp = gs_app_list_index (list, i);
-		if (g_strcmp0 (unique_id, gs_app_get_unique_id (app_tmp)) == 0)
-			return g_object_ref (app_tmp);
+		if (g_strcmp0 (unique_id, gs_app_get_unique_id (app_tmp)) == 0) {
+			g_task_return_pointer (task, g_object_ref (app_tmp), g_object_unref);
+			return;
+		}
 	}
 
 	/* return the first returned app that's not a wildcard */
@@ -3975,27 +3985,121 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 		if (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_WILDCARD)) {
 			g_debug ("returning imperfect match: %s != %s",
 				 unique_id, gs_app_get_unique_id (app_tmp));
-			return g_object_ref (app_tmp);
+			g_task_return_pointer (task, g_object_ref (app_tmp), g_object_unref);
+			return;
 		}
 	}
 
 	/* does not exist */
-	g_warning ("failed to create an app for %s", unique_id);
-	return NULL;
+	g_task_return_new_error (task,
+				 GS_PLUGIN_ERROR,
+				 GS_PLUGIN_ERROR_FAILED,
+				 "Failed to create an app for '%s'", unique_id);
 }
 
 /**
- * gs_plugin_loader_get_system_app:
+ * gs_plugin_loader_app_create_async:
  * @plugin_loader: a #GsPluginLoader
+ * @unique_id: a unique_id
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: function to call when complete
+ * @user_data: user data to pass to @callback
  *
- * Returns the application that represents the currently installed OS.
+ * Create a #GsApp identified by @unique_id asynchronously.
+ * Finish the call with gs_plugin_loader_app_create_finish().
  *
- * Returns: (transfer full): a #GsApp
+ * Since: 41
+ **/
+void
+gs_plugin_loader_app_create_async (GsPluginLoader *plugin_loader,
+				   const gchar *unique_id,
+				   GCancellable *cancellable,
+				   GAsyncReadyCallback callback,
+				   gpointer user_data)
+{
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (unique_id != NULL);
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_loader_app_create_async);
+	g_task_set_task_data (task, g_strdup (unique_id), g_free);
+	g_task_run_in_thread (task, gs_plugin_loader_job_app_create_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_app_create_finish:
+ * @plugin_loader: a #GsPluginLoader
+ * @res: a #GAsyncResult
+ * @error: A #GError, or %NULL
+ *
+ * Finishes call to gs_plugin_loader_app_create_async().
+ *
+ * Returns: (transfer full): a #GsApp, or %NULL on error.
+ *
+ * Since: 41
  **/
 GsApp *
-gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
+gs_plugin_loader_app_create_finish (GsPluginLoader *plugin_loader,
+				    GAsyncResult *res,
+				    GError **error)
 {
-	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/system/*");
+	GsApp *app;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_TASK (res), NULL);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	app = g_task_propagate_pointer (G_TASK (res), error);
+	gs_utils_error_convert_gio (error);
+	return app;
+}
+
+/**
+ * gs_plugin_loader_get_system_app_async:
+ * @plugin_loader: a #GsPluginLoader
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: function to call when complete
+ * @user_data: user data to pass to @callback
+ *
+ * Get the application that represents the currently installed OS
+ * asynchronously. Finish the call with gs_plugin_loader_get_system_app_finish().
+ *
+ * Since: 41
+ **/
+void
+gs_plugin_loader_get_system_app_async (GsPluginLoader *plugin_loader,
+				       GCancellable *cancellable,
+				       GAsyncReadyCallback callback,
+				       gpointer user_data)
+{
+	gs_plugin_loader_app_create_async (plugin_loader, "*/*/*/system/*", cancellable, callback, user_data);
+}
+
+/**
+ * gs_plugin_loader_get_system_app_finish:
+ * @plugin_loader: a #GsPluginLoader
+ * @res: a #GAsyncResult
+ * @error: A #GError, or %NULL
+ *
+ * Finishes call to gs_plugin_loader_get_system_app_async().
+ *
+ * Returns: (transfer full): a #GsApp, which represents
+ *    the currently installed OS, or %NULL on error.
+ *
+ * Since: 41
+ **/
+GsApp *
+gs_plugin_loader_get_system_app_finish (GsPluginLoader *plugin_loader,
+					GAsyncResult *res,
+					GError **error)
+{
+	return gs_plugin_loader_app_create_finish (plugin_loader, res, error);
 }
 
 /**

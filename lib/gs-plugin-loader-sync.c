@@ -178,3 +178,75 @@ gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
 
 	return app;
 }
+
+GsApp *
+gs_plugin_loader_app_create (GsPluginLoader *plugin_loader,
+			     const gchar *unique_id,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsPluginLoaderHelper helper;
+	GsApp *app;
+
+	/* create temp object */
+	helper.res = NULL;
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_app_create_async (plugin_loader,
+					   unique_id,
+					   cancellable,
+					   _helper_finish_sync,
+					   &helper);
+	g_main_loop_run (helper.loop);
+	app = gs_plugin_loader_app_create_finish (plugin_loader,
+						  helper.res,
+						  error);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
+
+	return app;
+}
+
+GsApp *
+gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	GsPluginLoaderHelper helper;
+	GsApp *app;
+
+	/* create temp object */
+	helper.res = NULL;
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_get_system_app_async (plugin_loader,
+					       cancellable,
+					       _helper_finish_sync,
+					       &helper);
+	g_main_loop_run (helper.loop);
+	app = gs_plugin_loader_get_system_app_finish (plugin_loader,
+						      helper.res,
+						      error);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
+
+	return app;
+}

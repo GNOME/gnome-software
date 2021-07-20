@@ -574,6 +574,28 @@ _search_launchable_details_cb (GObject *source, GAsyncResult *res, gpointer user
 }
 
 static void
+gs_application_app_to_show_created_cb (GObject *source_object,
+				       GAsyncResult *result,
+				       gpointer user_data)
+{
+	GsApplication *gs_app = user_data;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_app_create_finish (GS_PLUGIN_LOADER (source_object), result, &error);
+	if (app == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("Failed to create application: %s", error->message);
+	} else {
+		g_return_if_fail (GS_IS_APPLICATION (gs_app));
+
+		gs_shell_reset_state (gs_app->shell);
+		gs_shell_show_app (gs_app->shell, app);
+	}
+}
+
+static void
 details_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -594,9 +616,8 @@ details_activated (GSimpleAction *action,
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		data_id = gs_utils_unique_id_compat_convert (id);
 		if (data_id != NULL) {
-			g_autoptr(GsApp) a = gs_plugin_loader_app_create (app->plugin_loader, data_id);
-			gs_shell_reset_state (app->shell);
-			gs_shell_show_app (app->shell, a);
+			gs_plugin_loader_app_create_async (app->plugin_loader, data_id, app->cancellable,
+				gs_application_app_to_show_created_cb, app);
 			return;
 		}
 
@@ -656,6 +677,41 @@ details_url_activated (GSimpleAction *action,
 	gs_shell_show_app (app->shell, a);
 }
 
+typedef struct {
+	GWeakRef gs_app_weakref;
+	gchar *data_id;
+	GsShellInteraction interaction;
+} InstallActivatedHelper;
+
+static void
+gs_application_app_to_install_created_cb (GObject *source_object,
+					  GAsyncResult *result,
+					  gpointer user_data)
+{
+	InstallActivatedHelper *helper = user_data;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_app_create_finish (GS_PLUGIN_LOADER (source_object), result, &error);
+	if (app == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("Failed to create application '%s': %s", helper->data_id, error->message);
+	} else {
+		g_autoptr(GsApplication) gs_app = NULL;
+
+		gs_app = g_weak_ref_get (&helper->gs_app_weakref);
+		if (gs_app != NULL) {
+			gs_shell_reset_state (gs_app->shell);
+			gs_shell_install (gs_app->shell, app, helper->interaction);
+		}
+	}
+
+	g_weak_ref_clear (&helper->gs_app_weakref);
+	g_free (helper->data_id);
+	g_slice_free (InstallActivatedHelper, helper);
+}
+
 static void
 install_activated (GSimpleAction *action,
 		   GVariant      *parameter,
@@ -664,6 +720,7 @@ install_activated (GSimpleAction *action,
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *id;
 	GsShellInteraction interaction;
+	InstallActivatedHelper *helper;
 	g_autoptr (GsApp) a = NULL;
 	g_autofree gchar *data_id = NULL;
 
@@ -677,14 +734,13 @@ install_activated (GSimpleAction *action,
 	if (interaction == GS_SHELL_INTERACTION_FULL)
 		gs_application_present_window (app, NULL);
 
-	a = gs_plugin_loader_app_create (app->plugin_loader, data_id);
-	if (a == NULL) {
-		g_warning ("Could not create app from data-id: %s", data_id);
-		return;
-	}
+	helper = g_slice_new0 (InstallActivatedHelper);
+	g_weak_ref_init (&helper->gs_app_weakref, app);
+	helper->data_id = g_strdup (data_id);
+	helper->interaction = interaction;
 
-	gs_shell_reset_state (app->shell);
-	gs_shell_install (app->shell, a, interaction);
+	gs_plugin_loader_app_create_async (app->plugin_loader, data_id, app->cancellable,
+		gs_application_app_to_install_created_cb, helper);
 }
 
 static GFile *

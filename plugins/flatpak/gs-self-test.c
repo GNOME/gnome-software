@@ -1696,8 +1696,12 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* check if the extension was installed */
 	extension = gs_plugin_loader_app_create (plugin_loader,
-			"user/flatpak/*/org.test.Chiron.Extension/master");
+			"user/flatpak/*/org.test.Chiron.Extension/master",
+			NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
 	g_assert_nonnull (extension);
+
 	g_assert_cmpint (gs_app_get_state (extension), ==, GS_APP_STATE_INSTALLED);
 
 	/* switch to the new repo (to get the update) */
@@ -1782,7 +1786,10 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* The install refreshes GsApp-s cache, thus re-get the extension */
 	g_clear_object (&extension);
 	extension = gs_plugin_loader_app_create (plugin_loader,
-			"user/flatpak/*/org.test.Chiron.Extension/master");
+			"user/flatpak/*/org.test.Chiron.Extension/master",
+			NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
 	g_assert_nonnull (extension);
 
 	/* check the extension's state after the update */

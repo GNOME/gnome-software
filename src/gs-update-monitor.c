@@ -60,17 +60,28 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(DownloadUpdatesData, download_updates_data_free);
 typedef struct {
 	GsUpdateMonitor		*monitor;
 	GsApp			*app;
-} LanguagePackData;
+} WithAppData;
+
+static WithAppData *
+with_app_data_new (GsUpdateMonitor	*monitor,
+		   GsApp		*app)
+{
+	WithAppData *data;
+	data = g_slice_new0 (WithAppData);
+	data->monitor = g_object_ref (monitor);
+	data->app = g_object_ref (app);
+	return data;
+}
 
 static void
-language_pack_data_free (LanguagePackData *data)
+with_app_data_free (WithAppData *data)
 {
 	g_clear_object (&data->monitor);
 	g_clear_object (&data->app);
-	g_slice_free (LanguagePackData, data);
+	g_slice_free (WithAppData, data);
 }
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(LanguagePackData, language_pack_data_free);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(WithAppData, with_app_data_free);
 
 static gboolean
 reenable_offline_update_notification (gpointer data)
@@ -612,13 +623,14 @@ static void
 get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	GsUpdateMonitor *monitor = data;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GNotification) n = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	/* get result */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+	app = gs_plugin_loader_get_system_app_finish (plugin_loader, res, &error);
+	if (app == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get system: %s", error->message);
 		return;
@@ -632,7 +644,6 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 
 	/* is not EOL */
-	app = gs_plugin_loader_get_system_app (plugin_loader);
 	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
 		return;
 
@@ -766,17 +777,10 @@ static void
 get_system (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_debug ("Getting system");
-	app = gs_plugin_loader_get_system_app (monitor->plugin_loader);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 NULL);
-	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
-					    monitor->cancellable,
-					    get_system_finished_cb,
-					    monitor);
+	gs_plugin_loader_get_system_app_async (monitor->plugin_loader, monitor->cancellable,
+		get_system_finished_cb, monitor);
 }
 
 static void
@@ -816,7 +820,7 @@ static void
 install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
 	g_autoptr(GError) error = NULL;
-	g_autoptr(LanguagePackData) language_pack_data = data;
+	g_autoptr(WithAppData) with_app_data = data;
 
 	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
@@ -824,7 +828,7 @@ install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 	} else {
 		g_debug ("language pack for %s installed",
-			 gs_app_get_name (language_pack_data->app));
+			 gs_app_get_name (with_app_data->app));
 	}
 }
 
@@ -852,12 +856,10 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* there should be one langpack for a given locale */
 	app = g_object_ref (gs_app_list_index (app_list, 0));
 	if (!gs_app_is_installed (app)) {
-		g_autoptr(LanguagePackData) language_pack_data = NULL;
+		WithAppData *with_app_data;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-		language_pack_data = g_slice_new0 (LanguagePackData);
-		language_pack_data->monitor = g_object_ref (monitor);
-		language_pack_data->app = g_object_ref (app);
+		with_app_data = with_app_data_new (monitor, app);
 
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 							 "app", app,
@@ -866,7 +868,7 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    plugin_job,
 						    monitor->cancellable,
 						    install_language_pack_cb,
-						    g_steal_pointer (&language_pack_data));
+						    with_app_data);
 	}
 }
 

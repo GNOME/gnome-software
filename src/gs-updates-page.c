@@ -515,31 +515,52 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 	gs_updates_page_decrement_refresh_count (self);
 }
 
+typedef struct {
+	GsApp		*app; /* (owned) */
+	GsUpdatesPage	*self; /* (owned) */
+} GsPageHelper;
+
+static GsPageHelper *
+gs_page_helper_new (GsUpdatesPage *self,
+		    GsApp	 *app)
+{
+	GsPageHelper *helper;
+	helper = g_slice_new0 (GsPageHelper);
+	helper->self = g_object_ref (self);
+	helper->app = g_object_ref (app);
+	return helper;
+}
+
 static void
-gs_updates_page_get_system_finished_cb (GObject *source_object,
-					GAsyncResult *res,
-					gpointer user_data)
+gs_page_helper_free (GsPageHelper *helper)
+{
+	g_clear_object (&helper->app);
+	g_clear_object (&helper->self);
+	g_slice_free (GsPageHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
+
+static void
+gs_updates_page_refine_system_finished_cb (GObject *source_object,
+					   GAsyncResult *res,
+					   gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
+	g_autoptr(GsPageHelper) helper = user_data;
+	GsUpdatesPage *self = helper->self;
+	GsApp *app = helper->app;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* get result */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to get system: %s", error->message);
+			g_warning ("Failed to refine system: %s", error->message);
 		return;
 	}
 
 	/* show or hide the end of life notification */
-	app = gs_plugin_loader_get_system_app (plugin_loader);
-	if (app == NULL) {
-		g_warning ("failed to get system app");
-		gtk_widget_set_visible (self->box_end_of_life, FALSE);
-		return;
-	}
 	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE) {
 		gtk_widget_set_visible (self->box_end_of_life, FALSE);
 		return;
@@ -568,6 +589,45 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 	gtk_label_set_label (GTK_LABEL (self->label_end_of_life), str->str);
 	gtk_widget_set_visible (self->box_end_of_life, TRUE);
 
+}
+
+static void
+gs_updates_page_get_system_finished_cb (GObject *source_object,
+					GAsyncResult *res,
+					gpointer user_data)
+{
+	guint64 refine_flags;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsUpdatesPage *self = user_data;
+	GsPageHelper *helper;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_get_system_app_finish (plugin_loader, res, &error);
+	if (app == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("Failed to get system: %s", error->message);
+		return;
+	}
+
+	g_return_if_fail (GS_IS_UPDATES_PAGE (self));
+
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+
+	helper = gs_page_helper_new (self, app);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "interactive", TRUE,
+					 "app", app,
+					 "refine-flags", refine_flags,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_updates_page_refine_system_finished_cb,
+					    helper);
 }
 
 static void
@@ -601,17 +661,8 @@ gs_updates_page_load (GsUpdatesPage *self)
 					    self);
 
 	/* get the system state */
-	g_object_unref (plugin_job);
-	app = gs_plugin_loader_get_system_app (self->plugin_loader);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "interactive", TRUE,
-					 "app", app,
-					 "refine-flags", refine_flags,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_updates_page_get_system_finished_cb,
-					    self);
+	gs_plugin_loader_get_system_app_async (self->plugin_loader, self->cancellable,
+		gs_updates_page_get_system_finished_cb, self);
 
 	/* don't refresh every each time */
 	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
@@ -865,29 +916,13 @@ gs_updates_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	gs_updates_page_invalidate (self);
 }
 
-typedef struct {
-	GsApp		*app;
-	GsUpdatesPage	*self;
-} GsPageHelper;
-
-static void
-gs_page_helper_free (GsPageHelper *helper)
-{
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
-	if (helper->self != NULL)
-		g_object_unref (helper->self);
-	g_slice_free (GsPageHelper, helper);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
-
 static void
 upgrade_download_finished_cb (GObject *source,
                               GAsyncResult *res,
                               gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GsPageHelper) helper = user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
@@ -911,9 +946,7 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 		return;
 	}
 
-	helper = g_slice_new0 (GsPageHelper);
-	helper->app = g_object_ref (app);
-	helper->self = g_object_ref (self);
+	helper = gs_page_helper_new (self, app);
 
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);

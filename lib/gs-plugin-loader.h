@@ -70,9 +70,21 @@ GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 
-GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
-							 const gchar	*unique_id);
-GsApp		*gs_plugin_loader_get_system_app	(GsPluginLoader	*plugin_loader);
+void		 gs_plugin_loader_app_create_async	(GsPluginLoader	*plugin_loader,
+							 const gchar	*unique_id,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GsApp		*gs_plugin_loader_app_create_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_get_system_app_async	(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GsApp		*gs_plugin_loader_get_system_app_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 SoupSession	*gs_plugin_loader_get_soup_session	(GsPluginLoader	*plugin_loader);
 GsOdrsProvider	*gs_plugin_loader_get_odrs_provider	(GsPluginLoader	*plugin_loader);
 
