@@ -264,7 +264,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
 					 PK_FILTER_ENUM_NOT_DEVELOPMENT,
-					 PK_FILTER_ENUM_NOT_SUPPORTED,
 					 -1);
 	g_mutex_lock (&priv->task_mutex);
 	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
