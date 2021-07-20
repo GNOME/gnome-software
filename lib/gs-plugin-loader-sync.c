@@ -19,10 +19,11 @@ typedef struct {
 } GsPluginLoaderHelper;
 
 static void
-_job_process_finish_sync (GsPluginLoader *plugin_loader,
-			  GAsyncResult *res,
-			  GsPluginLoaderHelper *helper)
+_helper_finish_sync (GObject *source_object,
+		     GAsyncResult *res,
+		     gpointer user_data)
 {
+	GsPluginLoaderHelper *helper = user_data;
 	helper->res = g_object_ref (res);
 	g_main_loop_quit (helper->loop);
 }
@@ -47,7 +48,7 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job,
 					    cancellable,
-					    (GAsyncReadyCallback) _job_process_finish_sync,
+					    _helper_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
@@ -64,20 +65,11 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 	return list;
 }
 
-static void
-_job_get_categories_finish_sync (GsPluginLoader *plugin_loader,
-				 GAsyncResult *res,
-				 GsPluginLoaderHelper *helper)
-{
-	helper->res = g_object_ref (res);
-	g_main_loop_quit (helper->loop);
-}
-
 GPtrArray *
 gs_plugin_loader_job_get_categories (GsPluginLoader *plugin_loader,
-				    GsPluginJob *plugin_job,
-				    GCancellable *cancellable,
-				    GError **error)
+				     GsPluginJob *plugin_job,
+				     GCancellable *cancellable,
+				     GError **error)
 {
 	GsPluginLoaderHelper helper;
 	GPtrArray *catlist;
@@ -93,7 +85,7 @@ gs_plugin_loader_job_get_categories (GsPluginLoader *plugin_loader,
 	gs_plugin_loader_job_get_categories_async (plugin_loader,
 						   plugin_job,
 						   cancellable,
-						   (GAsyncReadyCallback) _job_get_categories_finish_sync,
+						   _helper_finish_sync,
 						   &helper);
 	g_main_loop_run (helper.loop);
 	catlist = gs_plugin_loader_job_get_categories_finish (plugin_loader,
@@ -110,20 +102,11 @@ gs_plugin_loader_job_get_categories (GsPluginLoader *plugin_loader,
 	return catlist;
 }
 
-static void
-_job_action_finish_sync (GsPluginLoader *plugin_loader,
-			 GAsyncResult *res,
-			 GsPluginLoaderHelper *helper)
-{
-	helper->res = g_object_ref (res);
-	g_main_loop_quit (helper->loop);
-}
-
 gboolean
 gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
-			      GsPluginJob *plugin_job,
-			      GCancellable *cancellable,
-			      GError **error)
+			     GsPluginJob *plugin_job,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	GsPluginLoaderHelper helper;
 	gboolean ret;
@@ -139,7 +122,7 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job,
 					    cancellable,
-					    (GAsyncReadyCallback) _job_action_finish_sync,
+					    _helper_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
 	ret = gs_plugin_loader_job_action_finish (plugin_loader,
@@ -154,17 +137,6 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 		g_object_unref (helper.res);
 
 	return ret;
-}
-
-static void
-_job_process_app_finish_sync (GObject *source_object,
-			      GAsyncResult *res,
-			      gpointer user_data)
-{
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
-
-	helper->res = g_object_ref (res);
-	g_main_loop_quit (helper->loop);
 }
 
 GsApp *
@@ -188,7 +160,7 @@ gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job,
 					    cancellable,
-					    _job_process_app_finish_sync,
+					    _helper_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
