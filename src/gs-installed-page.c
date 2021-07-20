@@ -660,7 +660,7 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	page_class->setup = gs_installed_page_setup;
 
 	/**
-	 * GsAppRow:is-narrow:
+	 * GsInstalledPage:is-narrow:
 	 *
 	 * Whether the page is in narrow mode.
 	 *
