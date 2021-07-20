@@ -85,5 +85,6 @@ void		 gs_shell_setup			(GsShell	*shell,
 						 GCancellable	*cancellable);
 void		 gs_shell_show_notification	(GsShell	*shell,
 						 const gchar	*title);
+gboolean	 gs_shell_get_is_narrow		(GsShell	*shell);
 
 G_END_DECLS

@@ -38,6 +38,8 @@
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
 
+#define NARROW_WIDTH_THRESHOLD 800
+
 static const gchar *page_name[] = {
 	"unknown",
 	"overview",
@@ -111,15 +113,24 @@ struct _GsShell
 	GtkWidget		*application_details_header;
 	GtkWidget		*sub_page_header_title;
 
+	gboolean		 is_narrow;
+	guint			 allocation_changed_cb_id;
+
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, HDY_TYPE_APPLICATION_WINDOW)
 
+typedef enum {
+	PROP_IS_NARROW = 1,
+} GsShellProperty;
+
 enum {
 	SIGNAL_LOADED,
 	SIGNAL_LAST
 };
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
@@ -2367,6 +2378,53 @@ gs_shell_show_uri (GsShell *shell, const gchar *url)
 	}
 }
 
+/**
+ * gs_shell_get_is_narrow:
+ * @shell: a #GsShell
+ *
+ * Get the value of #GsShell:is-narrow.
+ *
+ * Returns: %TRUE if the window is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_shell_get_is_narrow (GsShell *shell)
+{
+	g_return_val_if_fail (GS_IS_SHELL (shell), FALSE);
+
+	return shell->is_narrow;
+}
+
+static void
+gs_shell_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsShell *shell = GS_SHELL (object);
+
+	switch ((GsShellProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_shell_get_is_narrow (shell));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_shell_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	switch ((GsShellProperty) prop_id) {
+	case PROP_IS_NARROW:
+		/* Read only. */
+		g_assert_not_reached ();
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 static void
 gs_shell_dispose (GObject *object)
 {
@@ -2408,13 +2466,69 @@ gs_shell_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
 
+static gboolean
+allocation_changed_cb (gpointer user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+	GtkAllocation allocation;
+	gboolean is_narrow;
+
+	gtk_widget_get_allocation (GTK_WIDGET (shell), &allocation);
+
+	is_narrow = allocation.width <= NARROW_WIDTH_THRESHOLD;
+
+	if (shell->is_narrow != is_narrow) {
+		shell->is_narrow = is_narrow;
+		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_IS_NARROW]);
+	}
+
+	shell->allocation_changed_cb_id = 0;
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_shell_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+{
+	GsShell *shell = GS_SHELL (widget);
+
+	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget, allocation);
+
+	/* Delay updating is-narrow so children can adapt to it, which isn't
+	 * possible during the widget's allocation phase as it would break their
+	 * size request.
+	 */
+	if (shell->allocation_changed_cb_id == 0)
+		shell->allocation_changed_cb_id = g_idle_add (allocation_changed_cb, shell);
+}
+
 static void
 gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_shell_get_property;
+	object_class->set_property = gs_shell_set_property;
 	object_class->dispose = gs_shell_dispose;
+
+	widget_class->size_allocate = gs_shell_size_allocate;
+
+	/**
+	 * GsShell:is-narrow:
+	 *
+	 * Whether the window is in narrow mode.
+	 *
+	 * Pages can track this property to adapt to the available width.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_LOADED] =
 		g_signal_new ("loaded",
