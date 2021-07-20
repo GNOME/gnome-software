@@ -271,8 +271,12 @@ gs_page_install_app (GsPage *page,
 		GtkResponseType response;
 
 		response = gs_app_notify_unavailable (app, GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (page), GTK_TYPE_WINDOW)));
-		if (response != GTK_RESPONSE_OK)
+		if (response != GTK_RESPONSE_OK) {
+			g_autoptr(GError) error_local = NULL;
+			g_set_error_literal (&error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED, _("User declined installation"));
+			gs_application_emit_install_resources_done (GS_APPLICATION (g_application_get_default ()), NULL, error_local);
 			return;
+		}
 	}
 
 	helper = g_slice_new0 (GsPageHelper);
