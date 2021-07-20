@@ -203,6 +203,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	guint i;
 	GsApp *app;
 	GtkWidget *tile;
+	GtkWidget *child;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -234,7 +235,15 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->box_recent), tile);
+		child = gtk_flow_box_child_new ();
+		/* Manually creating the child is needed to avoid having it be
+		 * focusable but non activatable, and then have the child
+		 * focusable and activatable, which is annoying and confusing.
+		 */
+		gtk_widget_set_can_focus (child, FALSE);
+		gtk_widget_show (child);
+		gtk_container_add (GTK_CONTAINER (child), tile);
+		gtk_container_add (GTK_CONTAINER (self->box_recent), child);
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
