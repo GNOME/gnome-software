@@ -70,7 +70,6 @@ struct _GsUpdatesPage
 	GtkWidget		*button_updates_offline;
 	GtkWidget		*updates_failed_page;
 	GtkWidget		*updates_uptodate_page;
-	GtkWidget		*label_updates_spinner;
 	GtkWidget		*scrolledwindow_updates;
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
@@ -295,23 +294,6 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
 		gtk_widget_hide (self->header_spinner_start);
 		gtk_widget_hide (self->header_checking_label);
-		break;
-	}
-
-	/* spinner text */
-	switch (self->state) {
-	case GS_UPDATES_PAGE_STATE_STARTUP:
-		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner),
-				     /* TRANSLATORS: the updates panel is starting up */
-				     _("Setting Up Updates…"));
-		break;
-	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
-	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
-		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner),
-				     /* TRANSLATORS: the update panel is doing *something* vague */
-				     _("Looking for New Updates…"));
-		break;
-	default:
 		break;
 	}
 
@@ -1425,7 +1407,6 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_failed_page);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_uptodate_page);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
