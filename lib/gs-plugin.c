@@ -2143,3 +2143,29 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 		}
 	}
 }
+
+/**
+ * gs_plugin_get_action_supported:
+ * @plugin: a #GsPlugin
+ * @action: a #GsPluginAction
+ *
+ * Checks whether the @plugin supports @action, meaning whether
+ * the @plugin can execute the @action.
+ *
+ * Returns: Whether the @plugin supports the @action
+ *
+ * Since: 41
+ **/
+gboolean
+gs_plugin_get_action_supported (GsPlugin *plugin,
+				GsPluginAction action)
+{
+	const gchar *function_name;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+
+	function_name = gs_plugin_action_to_function_name (action);
+	g_return_val_if_fail (function_name != NULL, FALSE);
+
+	return gs_plugin_get_symbol (plugin, function_name) != NULL;
+}
