@@ -5562,7 +5562,8 @@ gs_app_get_origin_ui (GsApp *app)
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* use the distro name for official packages */
-	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE) &&
+	    gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY) {
 		os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
 			origin_str = gs_os_release_get_name (os_release);
