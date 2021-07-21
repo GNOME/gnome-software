@@ -32,7 +32,8 @@ struct _GsUpdatesSection
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
-	GtkSizeGroup		*sizegroup_button;
+	GtkSizeGroup		*sizegroup_button_label;
+	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
 	GtkWidget		*button_download;
 	GtkWidget		*button_update;
@@ -112,7 +113,8 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
-				    self->sizegroup_button);
+				    self->sizegroup_button_label,
+				    self->sizegroup_button_image);
 	g_signal_connect_object (app, "notify::state",
 	                         G_CALLBACK (_app_state_notify_cb),
 	                         app_row, 0);
@@ -555,7 +557,8 @@ gs_updates_section_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
-	g_clear_object (&self->sizegroup_button);
+	g_clear_object (&self->sizegroup_button_label);
+	g_clear_object (&self->sizegroup_button_image);
 	g_clear_object (&self->sizegroup_header);
 	self->button_download = NULL;
 	self->button_update = NULL;
@@ -581,16 +584,22 @@ gs_updates_section_set_size_groups (GsUpdatesSection *self,
 				    GtkSizeGroup *image,
 				    GtkSizeGroup *name,
 				    GtkSizeGroup *desc,
-				    GtkSizeGroup *button,
+				    GtkSizeGroup *button_label,
+				    GtkSizeGroup *button_image,
 				    GtkSizeGroup *header)
 {
+	g_return_if_fail (GS_IS_UPDATES_SECTION (self));
+
 	g_set_object (&self->sizegroup_image, image);
 	g_set_object (&self->sizegroup_name, name);
 	g_set_object (&self->sizegroup_desc, desc);
-	g_set_object (&self->sizegroup_button, button);
+	g_set_object (&self->sizegroup_button_label, button_label);
+	g_set_object (&self->sizegroup_button_image, button_image);
 	g_set_object (&self->sizegroup_header, header);
 
-	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
+	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (self->button_cancel), button_label, button_image);
+	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (self->button_download), button_label, button_image);
+	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (self->button_update), button_label, button_image);
 	gtk_size_group_add_widget (self->sizegroup_header, self->section_header);
 }
 

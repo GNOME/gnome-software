@@ -40,7 +40,8 @@ void		 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
 							 GtkSizeGroup		*image,
 							 GtkSizeGroup		*name,
 							 GtkSizeGroup		*desc,
-							 GtkSizeGroup		*button,
+							 GtkSizeGroup		*button_label,
+							 GtkSizeGroup		*button_image,
 							 GtkSizeGroup		*header);
 
 G_END_DECLS

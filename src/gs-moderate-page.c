@@ -29,7 +29,8 @@ struct _GsModeratePage
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
-	GtkSizeGroup		*sizegroup_button;
+	GtkSizeGroup		*sizegroup_button_label;
+	GtkSizeGroup		*sizegroup_button_image;
 	GsShell			*shell;
 	GsOdrsProvider		*odrs_provider;
 
@@ -162,7 +163,8 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
-				    self->sizegroup_button);
+				    self->sizegroup_button_label,
+				    self->sizegroup_button_image);
 
 	/* add reviews */
 	reviews = gs_app_get_reviews (app);
@@ -364,7 +366,8 @@ gs_moderate_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
-	g_clear_object (&self->sizegroup_button);
+	g_clear_object (&self->sizegroup_button_label);
+	g_clear_object (&self->sizegroup_button_image);
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
@@ -424,7 +427,8 @@ gs_moderate_page_init (GsModeratePage *self)
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 GsModeratePage *

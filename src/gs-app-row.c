@@ -872,7 +872,8 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 			    GtkSizeGroup *image,
 			    GtkSizeGroup *name,
 			    GtkSizeGroup *desc,
-			    GtkSizeGroup *button)
+			    GtkSizeGroup *button_label,
+			    GtkSizeGroup *button_image)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
@@ -882,8 +883,7 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 		gtk_size_group_add_widget (name, priv->name_box);
 	if (desc != NULL)
 		gtk_size_group_add_widget (desc, priv->description_box);
-	if (button != NULL)
-		gtk_size_group_add_widget (button, priv->button);
+	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (priv->button), button_label, button_image);
 }
 
 void

@@ -81,7 +81,8 @@ struct _GsUpdatesPage
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
-	GtkSizeGroup		*sizegroup_button;
+	GtkSizeGroup		*sizegroup_button_label;
+	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
 	GtkListBox		*sections[GS_UPDATES_SECTION_KIND_LAST];
 
@@ -1238,7 +1239,8 @@ gs_updates_page_setup (GsPage *page,
 						    self->sizegroup_image,
 						    self->sizegroup_name,
 						    self->sizegroup_desc,
-						    self->sizegroup_button,
+						    self->sizegroup_button_label,
+						    self->sizegroup_button_image,
 						    self->sizegroup_header);
 		gtk_widget_set_vexpand (GTK_WIDGET (self->sections[i]), FALSE);
 		gtk_container_add (GTK_CONTAINER (self->updates_box), GTK_WIDGET (self->sections[i]));
@@ -1313,7 +1315,8 @@ gs_updates_page_setup (GsPage *page,
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
 	/* set initial state */
@@ -1392,7 +1395,8 @@ gs_updates_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
-	g_clear_object (&self->sizegroup_button);
+	g_clear_object (&self->sizegroup_button_label);
+	g_clear_object (&self->sizegroup_button_image);
 	g_clear_object (&self->sizegroup_header);
 
 	G_OBJECT_CLASS (gs_updates_page_parent_class)->dispose (object);
@@ -1446,7 +1450,8 @@ gs_updates_page_init (GsUpdatesPage *self)
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
 }
