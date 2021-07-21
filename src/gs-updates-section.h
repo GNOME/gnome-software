@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_UPDATES_SECTION (gs_updates_section_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsUpdatesSection, gs_updates_section, GS, UPDATES_SECTION, GtkListBox)
+G_DECLARE_FINAL_TYPE (GsUpdatesSection, gs_updates_section, GS, UPDATES_SECTION, GtkBox)
 
 typedef enum {
 	GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE,
