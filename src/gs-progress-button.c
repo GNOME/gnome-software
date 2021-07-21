@@ -213,6 +213,27 @@ gs_progress_button_set_show_icon (GsProgressButton *button, gboolean show_icon)
 	g_object_notify_by_pspec (G_OBJECT (button), obj_props[PROP_SHOW_ICON]);
 }
 
+/**
+ * gs_progress_button_set_size_groups:
+ * @button: a #GsProgressButton
+ * @label: the #GtkSizeGroup for the label
+ * @image: the #GtkSizeGroup for the image
+ *
+ * Groups the size of different buttons while keeping adaptiveness.
+ *
+ * Since: 41
+ */
+void
+gs_progress_button_set_size_groups (GsProgressButton *button, GtkSizeGroup *label, GtkSizeGroup *image)
+{
+	g_return_if_fail (GS_IS_PROGRESS_BUTTON (button));
+
+	if (label != NULL)
+		gtk_size_group_add_widget (label, button->label);
+	if (image != NULL)
+		gtk_size_group_add_widget (image, button->image);
+}
+
 static void
 gs_progress_button_page_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {

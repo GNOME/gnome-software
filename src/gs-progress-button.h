@@ -31,5 +31,8 @@ void		 gs_progress_button_set_progress	(GsProgressButton	*button,
 							 guint			 percentage);
 void		 gs_progress_button_set_show_progress	(GsProgressButton	*button,
 							 gboolean		 show_progress);
+void		 gs_progress_button_set_size_groups	(GsProgressButton	*button,
+							 GtkSizeGroup		*label,
+							 GtkSizeGroup		*image);
 
 G_END_DECLS

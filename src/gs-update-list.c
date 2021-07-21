@@ -48,6 +48,7 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 				    priv->sizegroup_image,
 				    priv->sizegroup_name,
 				    priv->sizegroup_desc,
+				    NULL,
 				    NULL);
 	g_signal_connect_object (app, "notify::state",
 	                         G_CALLBACK (gs_update_list_app_state_notify_cb),

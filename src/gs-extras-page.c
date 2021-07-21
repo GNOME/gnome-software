@@ -48,7 +48,8 @@ struct _GsExtrasPage
 	GtkSizeGroup		 *sizegroup_image;
 	GtkSizeGroup		 *sizegroup_name;
 	GtkSizeGroup		 *sizegroup_desc;
-	GtkSizeGroup		 *sizegroup_button;
+	GtkSizeGroup		 *sizegroup_button_label;
+	GtkSizeGroup		 *sizegroup_button_image;
 	GPtrArray		 *array_search_data;
 	GsExtrasPageMode	  mode;
 	GsLanguage		 *language;
@@ -320,7 +321,8 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
-				    self->sizegroup_button);
+				    self->sizegroup_button_label,
+				    self->sizegroup_button_image);
 	gtk_widget_show (app_row);
 }
 
@@ -1260,7 +1262,8 @@ gs_extras_page_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
-	g_clear_object (&self->sizegroup_button);
+	g_clear_object (&self->sizegroup_button_label);
+	g_clear_object (&self->sizegroup_button_image);
 	g_clear_object (&self->language);
 	g_clear_object (&self->vendor);
 	g_clear_object (&self->plugin_loader);
@@ -1283,7 +1286,8 @@ gs_extras_page_init (GsExtrasPage *self)
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->vendor = gs_vendor_new ();
 
 	/* map ISO639 to language names */
