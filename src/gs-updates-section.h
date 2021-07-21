@@ -43,5 +43,8 @@ void		 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
 							 GtkSizeGroup		*button_label,
 							 GtkSizeGroup		*button_image,
 							 GtkSizeGroup		*header);
+gboolean	 gs_updates_section_get_is_narrow	(GsUpdatesSection	*self);
+void		 gs_updates_section_set_is_narrow	(GsUpdatesSection	*self,
+							 gboolean		 is_narrow);
 
 G_END_DECLS

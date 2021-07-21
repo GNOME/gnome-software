@@ -40,9 +40,16 @@ struct _GsUpdatesSection
 	GtkWidget		*button_cancel;
 	GtkStack		*button_stack;
 	GtkWidget		*section_header;
+	gboolean		 is_narrow;
 };
 
 G_DEFINE_TYPE (GsUpdatesSection, gs_updates_section, GTK_TYPE_LIST_BOX)
+
+typedef enum {
+	PROP_IS_NARROW = 1,
+} GsUpdatesSectionProperty;
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 GsAppList *
 gs_updates_section_get_list (GsUpdatesSection *self)
@@ -118,6 +125,9 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_signal_connect_object (app, "notify::state",
 	                         G_CALLBACK (_app_state_notify_cb),
 	                         app_row, 0);
+	g_object_bind_property (G_OBJECT (self), "is-narrow",
+				app_row, "is-narrow",
+				G_BINDING_SYNC_CREATE);
 	gtk_widget_show (GTK_WIDGET (self));
 }
 
@@ -546,6 +556,42 @@ gs_updates_section_show (GtkWidget *widget)
 }
 
 static void
+gs_updates_section_get_property (GObject    *object,
+                                 guint       prop_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
+
+	switch ((GsUpdatesSectionProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_updates_section_get_is_narrow (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_updates_section_set_property (GObject      *object,
+                                 guint         prop_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
+
+	switch ((GsUpdatesSectionProperty) prop_id) {
+	case PROP_IS_NARROW:
+		gs_updates_section_set_is_narrow (self, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_updates_section_dispose (GObject *object)
 {
 	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
@@ -575,8 +621,28 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_updates_section_get_property;
+	object_class->set_property = gs_updates_section_set_property;
 	object_class->dispose = gs_updates_section_dispose;
 	widget_class->show = gs_updates_section_show;
+
+	/**
+	 * GsUpdatesSection:is-narrow:
+	 *
+	 * Whether the section is in narrow mode.
+	 *
+	 * In narrow mode, the section will take up less horizontal space, doing
+	 * so by e.g. using icons rather than labels in buttons. This is needed
+	 * to keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 void
@@ -664,6 +730,47 @@ gs_updates_section_init (GsUpdatesSection *self)
 	/* make rounded edges */
 	context = gtk_widget_get_style_context (GTK_WIDGET (self));
 	gtk_style_context_add_class (context, "app-updates-section");
+}
+
+/**
+ * gs_updates_section_get_is_narrow:
+ * @self: a #GsUpdatesSection
+ *
+ * Get the value of #GsUpdatesSection:is-narrow.
+ *
+ * Returns: %TRUE if the section is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_updates_section_get_is_narrow (GsUpdatesSection *self)
+{
+	g_return_val_if_fail (GS_IS_UPDATES_SECTION (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_updates_section_set_is_narrow:
+ * @self: a #GsUpdatesSection
+ * @is_narrow: %TRUE to set the section in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsUpdatesSection:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_updates_section_set_is_narrow (GsUpdatesSection *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_UPDATES_SECTION (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
 GtkListBox *
