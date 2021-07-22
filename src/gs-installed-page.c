@@ -50,7 +50,7 @@ G_DEFINE_TYPE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE)
 
 typedef enum {
 	PROP_IS_NARROW = 1,
-	/* Overriddes: */
+	/* Overrides: */
 	PROP_VADJUSTMENT,
 	PROP_TITLE,
 } GsInstalledPageProperty;
