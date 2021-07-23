@@ -2262,10 +2262,6 @@ gs_shell_show_prefs (GsShell *shell)
 
 	dialog = gs_prefs_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 void
