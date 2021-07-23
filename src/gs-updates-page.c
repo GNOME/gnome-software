@@ -1217,6 +1217,7 @@ gs_updates_page_setup (GsPage *page,
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
 	AtkObject *accessible;
+	GtkWidget *widget;
 
 	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
 
@@ -1275,7 +1276,21 @@ gs_updates_page_setup (GsPage *page,
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
 	/* This label indicates that the update check is in progress */
-	self->header_checking_label = gtk_label_new (_("Checking…"));
+	self->header_checking_label = hdy_squeezer_new ();
+	hdy_squeezer_set_xalign (HDY_SQUEEZER (self->header_checking_label), 0);
+	hdy_squeezer_set_transition_type (HDY_SQUEEZER (self->header_checking_label), HDY_SQUEEZER_TRANSITION_TYPE_CROSSFADE);
+
+	widget = gtk_label_new (_("Checking…"));
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+
+	/* FIXME: This box is just a 0x0 widget the squeezer will show when it
+	 * hasn't enough space to show the label. In GTK 4, we will be able to
+	 * use AdwSqueezer:allow-none instead. */
+	widget = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+
 	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_checking_label);
 	gtk_container_child_set(GTK_CONTAINER (self->header_start_box), self->header_checking_label,
 				"pack-type", GTK_PACK_END, NULL);
