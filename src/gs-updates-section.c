@@ -128,6 +128,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 {
 	GtkWidget *app_row;
 	app_row = gs_app_row_new (app);
+	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
