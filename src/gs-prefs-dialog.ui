@@ -12,11 +12,12 @@
         <child>
           <object class="HdyPreferencesGroup">
             <property name="visible">True</property>
+            <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
             <child>
               <object class="HdyActionRow">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes">Automatic Updates</property>
-                <property name="subtitle" translatable="yes">Automatic updates are disabled when on mobile or metered connections.</property>
+                <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates</property>
                 <child>
