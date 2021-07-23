@@ -848,7 +848,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
 				  self);
-		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 
 	/* no network connection */
 	} else {
@@ -872,7 +872,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
 				  self);
-		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 	}
 }
 
@@ -1105,7 +1105,7 @@ gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 	                  self);
 	gs_removal_dialog_show_upgrade_removals (GS_REMOVAL_DIALOG (dialog),
 	                                         upgrade);
-	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 }
 
 static void

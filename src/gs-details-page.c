@@ -594,7 +594,7 @@ gs_details_page_history_cb (GtkLabel *label,
 
 	dialog = gs_history_dialog_new ();
 	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), self->app);
-	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
@@ -1238,7 +1238,7 @@ version_history_list_row_activated_cb (GtkListBox *list_box,
 
 	dialog = gs_app_version_history_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW)),
 						    self->app);
-	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
@@ -2001,7 +2001,7 @@ gs_details_page_write_review_cb (GtkButton *button,
 	dialog = gs_review_dialog_new ();
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_details_page_review_response_cb), self);
-	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 }
 
 static void
