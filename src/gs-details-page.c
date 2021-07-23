@@ -78,6 +78,7 @@ struct _GsDetailsPage
 	GSettings		*settings;
 	GtkSizeGroup		*size_group_origin_popover;
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
+	GAppInfoMonitor		*app_info_monitor; /* (owned) */
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -776,6 +777,10 @@ gs_details_page_can_launch_app (GsDetailsPage *self)
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE))
 		return FALSE;
 
+	/* don't show the launch button if the app doesn't have a desktop ID */
+	if (gs_app_get_id (self->app) == NULL)
+		return FALSE;
+
 	desktop_id = gs_app_get_launchable (self->app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
 	if (!desktop_id)
 		desktop_id = gs_app_get_id (self->app);
@@ -874,11 +879,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
 			      /* TRANSLATORS: A label for a button to execute the selected application. */
 			      _("_Launch"));
-
-	/* don't show the launch and shortcut buttons if the app doesn't have a desktop ID */
-	if (gs_app_get_id (self->app) == NULL) {
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-	}
 
 	/* remove button */
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_COMPULSORY) ||
@@ -1780,6 +1780,20 @@ settings_changed_cb (GsDetailsPage *self, const gchar *key, gpointer data)
 	}
 }
 
+static void
+gs_details_page_app_info_changed_cb (GAppInfoMonitor *monitor,
+				     gpointer user_data)
+{
+	GsDetailsPage *self = user_data;
+
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+
+	if (!self->app || !gs_page_is_active (GS_PAGE (self)))
+		return;
+
+	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
+}
+
 /* this is being called from GsShell */
 void
 gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
@@ -2210,6 +2224,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->odrs_provider);
+	g_clear_object (&self->app_info_monitor);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
@@ -2338,6 +2353,9 @@ gs_details_page_init (GsDetailsPage *self)
 				  G_CALLBACK (settings_changed_cb),
 				  self);
 	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->app_info_monitor = g_app_info_monitor_get ();
+	g_signal_connect_object (self->app_info_monitor, "changed",
+				 G_CALLBACK (gs_details_page_app_info_changed_cb), self, 0);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_addons),
 				    list_sort_func,
