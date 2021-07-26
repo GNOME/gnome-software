@@ -24,6 +24,7 @@
 #include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
 #include "gs-history-dialog.h"
+#include "gs-license-tile.h"
 #include "gs-origin-popover-row.h"
 #include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
@@ -157,6 +158,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
 	GtkWidget		*origin_button_label;
+	GsLicenseTile		*license_tile;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -564,6 +566,13 @@ static void
 gs_details_page_link_row_activated_cb (HdyActionRow *row, GsDetailsPage *self)
 {
 	gs_shell_show_uri (self->shell, hdy_action_row_get_subtitle (row));
+}
+
+static void
+gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_tile,
+							GsDetailsPage *self)
+{
+	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
 }
 
 static void
@@ -1594,6 +1603,7 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_set_object (&self->app, app);
 
 	gs_app_context_bar_set_app (self->context_bar, app);
+	gs_license_tile_set_app (self->license_tile, app);
 
 	/* title/app name will have changed */
 	g_object_notify (G_OBJECT (self), "title");
@@ -2482,8 +2492,10 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 }
 
 static void

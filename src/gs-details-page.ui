@@ -547,8 +547,18 @@
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
+                            <property name="homogeneous">True</property>
                             <property name="orientation">horizontal</property>
                             <property name="spacing">12</property>
+
+                            <child>
+                              <object class="GsLicenseTile" id="license_tile">
+                                <property name="visible">True</property>
+                                <property name="halign">fill</property>
+                                <property name="valign">start</property>
+                                <signal name="get-involved-activated" handler="gs_details_page_license_tile_get_involved_activated_cb"/>
+                              </object>
+                            </child>
 
                             <child>
                               <object class="GtkStack" id="links_stack">
