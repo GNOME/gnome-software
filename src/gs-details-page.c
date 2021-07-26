@@ -142,15 +142,6 @@ struct _GsDetailsPage
 	GtkWidget		*spinner_details;
 	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
-	GtkWidget		*grid_details_kudo;
-	GtkWidget		*image_details_kudo_docs;
-	GtkWidget		*image_details_kudo_integration;
-	GtkWidget		*image_details_kudo_translated;
-	GtkWidget		*image_details_kudo_updated;
-	GtkWidget		*label_details_kudo_docs;
-	GtkWidget		*label_details_kudo_integration;
-	GtkWidget		*label_details_kudo_translated;
-	GtkWidget		*label_details_kudo_updated;
 	GtkWidget		*progressbar_top;
 	guint			 progress_pulse_id;
 	GtkWidget		*star_eventbox;
@@ -581,18 +572,6 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 	gs_description_box_set_text (GS_DESCRIPTION_BOX (self->box_details_description), tmp);
 	gs_description_box_set_collapsed (GS_DESCRIPTION_BOX (self->box_details_description), TRUE);
 	gtk_widget_set_visible (self->label_webapp_warning, gs_app_get_kind (self->app) == AS_COMPONENT_KIND_WEB_APP);
-}
-
-static void
-gs_details_page_set_sensitive (GtkWidget *widget, gboolean is_active)
-{
-	GtkStyleContext *style_context;
-	style_context = gtk_widget_get_style_context (widget);
-	if (!is_active) {
-		gtk_style_context_add_class (style_context, "dim-label");
-	} else {
-		gtk_style_context_remove_class (style_context, "dim-label");
-	}
 }
 
 static gboolean
@@ -1039,10 +1018,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	g_autoptr(GIcon) icon = NULL;
 	GList *addons;
 	const gchar *tmp;
-	gboolean ret;
-	guint64 kudos;
 	guint64 updated;
-	guint64 user_integration_bf;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
@@ -1198,40 +1174,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), C_("origin", "Unknown"));
 	} else {
 		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), origin);
-	}
-
-	/* set MyLanguage kudo */
-	kudos = gs_app_get_kudos (self->app);
-	ret = (kudos & GS_APP_KUDO_MY_LANGUAGE) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_translated, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_translated, ret);
-
-	/* set RecentRelease kudo */
-	ret = (kudos & GS_APP_KUDO_RECENT_RELEASE) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_updated, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_updated, ret);
-
-	/* set UserDocs kudo */
-	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_docs, ret);
-
-	/* any of the various integration kudos */
-	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
-			      GS_APP_KUDO_USES_NOTIFICATIONS |
-			      GS_APP_KUDO_HIGH_CONTRAST;
-	ret = (kudos & user_integration_bf) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_integration, ret);
-
-	/* hide the kudo details for non-desktop software */
-	switch (gs_app_get_kind (self->app)) {
-	case AS_COMPONENT_KIND_DESKTOP_APP:
-		gtk_widget_set_visible (self->grid_details_kudo, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
-		break;
 	}
 
 	/* are we trying to replace something in the baseos */
@@ -2477,15 +2419,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, grid_details_kudo);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_updated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
