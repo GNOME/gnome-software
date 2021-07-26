@@ -36,11 +36,6 @@
 #include "gs-utils.h"
 
 #include "gs-screenshot-carousel.h"
-#include "gs-app-version-history-row.h"
-#include "gs-app-version-history-dialog.h"
-#include "gs-description-box.h"
-#include "gs-history-dialog.h"
-#include "gs-origin-popover-row.h"
 #include "gs-screenshot-image.h"
 
 struct _GsScreenshotCarousel
