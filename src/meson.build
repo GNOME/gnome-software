@@ -46,7 +46,6 @@ gnome_software_sources = [
   'gs-fixed-size-bin.c',
   'gs-folders.c',
   'gs-hardware-support-context-dialog.c',
-  'gs-history-dialog.c',
   'gs-info-bar.c',
   'gs-installed-page.c',
   'gs-language.c',
