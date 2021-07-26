@@ -112,6 +112,37 @@
                                     </style>
                                   </object>
                                 </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible" bind-source="developer_name_label" bind-property="visible" bind-flags="sync-create"/>
+                                    <property name="hexpand">True</property>
+                                    <property name="spacing">3</property>
+                                    <property name="orientation">horizontal</property>
+                                    <child>
+                                      <object class="GtkLabel" id="developer_name_label">
+                                        <property name="visible">True</property>
+                                        <!-- This is a placeholder; the real value is set in code -->
+                                        <property name="label">Yorba</property>
+                                        <property name="wrap">False</property>
+                                        <property name="selectable">True</property>
+                                        <property name="max-width-chars">100</property>
+                                        <property name="xalign">0</property>
+                                        <property name="yalign">0.5</property>
+                                        <property name="hexpand">False</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkImage" id="developer_verified_image">
+                                        <property name="visible">True</property>
+                                        <property name="pixel-size">16</property>
+                                        <property name="icon-name">emblem-ok-symbolic</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
 
@@ -809,53 +840,6 @@
                                 <property name="column_spacing">24</property>
                                 <property name="hexpand">True</property>
                                 <property name="valign">start</property>
-
-                                <child>
-                                  <object class="GtkLabel" id="label_details_developer_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Developer</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">6</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="box_details_developer">
-                                    <property name="visible">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="spacing">3</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label_details_developer_value">
-                                        <property name="visible">True</property>
-                                        <property name="label">Yorba</property>
-                                        <property name="wrap">True</property>
-                                        <property name="selectable">True</property>
-                                        <property name="max_width_chars">100</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="hexpand">False</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkImage" id="image_details_developer_verified">
-                                        <property name="visible">True</property>
-                                        <property name="pixel_size">16</property>
-                                        <property name="icon_name">emblem-ok-symbolic</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">6</property>
-                                  </packing>
-                                </child>
                               </object>
                             </child>
                           </object>

@@ -119,10 +119,8 @@ struct _GsDetailsPage
 	GtkWidget		*label_progress_status;
 	GtkWidget		*label_addons_uninstalled_app;
 	GsAppContextBar		*context_bar;
-	GtkWidget		*label_details_developer_title;
-	GtkWidget		*label_details_developer_value;
-	GtkWidget		*box_details_developer;
-	GtkWidget		*image_details_developer_verified;
+	GtkLabel		*developer_name_label;
+	GtkImage		*developer_verified_image;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
@@ -1062,15 +1060,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_developer_name (self->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_project_group (self->app);
-	if (tmp == NULL) {
-		gtk_widget_set_visible (self->label_details_developer_title, FALSE);
-		gtk_widget_set_visible (self->box_details_developer, FALSE);
-	} else {
-		gtk_widget_set_visible (self->label_details_developer_title, TRUE);
-		gtk_label_set_label (GTK_LABEL (self->label_details_developer_value), tmp);
-		gtk_widget_set_visible (self->box_details_developer, TRUE);
-	}
-	gtk_widget_set_visible (self->image_details_developer_verified, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
+	if (tmp != NULL)
+		gtk_label_set_label (GTK_LABEL (self->developer_name_label), tmp);
+	gtk_widget_set_visible (GTK_WIDGET (self->developer_name_label), tmp != NULL);
+	gtk_widget_set_visible (GTK_WIDGET (self->developer_verified_image), gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
@@ -2308,10 +2301,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, context_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_developer);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_name_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
