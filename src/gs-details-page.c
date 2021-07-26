@@ -127,8 +127,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_channel_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
-	GtkWidget		*label_details_updated_title;
-	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
@@ -575,24 +573,6 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 }
 
 static gboolean
-gs_details_page_history_cb (GtkLabel *label,
-                            gchar *uri,
-                            GsDetailsPage *self)
-{
-	GtkWidget *dialog;
-
-	dialog = gs_history_dialog_new ();
-	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), self->app);
-	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
-
-	return TRUE;
-}
-
-static gboolean
 app_origin_equal (GsApp *a,
                   GsApp *b)
 {
@@ -1014,11 +994,9 @@ update_action_row_from_link (HdyActionRow *row,
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
-	GsAppList *history;
 	g_autoptr(GIcon) icon = NULL;
 	GList *addons;
 	const gchar *tmp;
-	guint64 updated;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
@@ -1126,38 +1104,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
-
-	/* set the updated date */
-	updated = gs_app_get_install_date (self->app);
-	if (updated == GS_APP_INSTALL_DATE_UNSET) {
-		gtk_widget_set_visible (self->label_details_updated_title, FALSE);
-		gtk_widget_set_visible (self->label_details_updated_value, FALSE);
-	} else if (updated == GS_APP_INSTALL_DATE_UNKNOWN) {
-		/* TRANSLATORS: this is where the updated date is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), C_("updated", "Never"));
-		gtk_widget_set_visible (self->label_details_updated_title, TRUE);
-		gtk_widget_set_visible (self->label_details_updated_value, TRUE);
-	} else {
-		g_autoptr(GDateTime) dt = NULL;
-		g_autofree gchar *updated_str = NULL;
-		dt = g_date_time_new_from_unix_utc ((gint64) updated);
-		updated_str = g_date_time_format (dt, "%x");
-
-		history = gs_app_get_history (self->app);
-
-		if (gs_app_list_length (history) == 0) {
-			gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
-		} else {
-			GString *url;
-
-			url = g_string_new (NULL);
-			g_string_printf (url, "<a href=\"show-history\">%s</a>", updated_str);
-			gtk_label_set_markup (GTK_LABEL (self->label_details_updated_value), url->str);
-			g_string_free (url, TRUE);
-		}
-		gtk_widget_set_visible (self->label_details_updated_title, TRUE);
-		gtk_widget_set_visible (self->label_details_updated_value, TRUE);
-	}
 
 	/* set the origin */
 	origin = g_strdup (gs_app_get_origin_hostname (self->app));
@@ -2190,9 +2136,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
-	g_signal_connect (self->label_details_updated_value, "activate-link",
-			  G_CALLBACK (gs_details_page_history_cb),
-			  self);
 	g_signal_connect (self->button_details_launch, "clicked",
 			  G_CALLBACK (gs_details_page_app_launch_button_cb),
 			  self);
@@ -2404,8 +2347,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
