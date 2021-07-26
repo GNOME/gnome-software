@@ -123,8 +123,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_developer_value;
 	GtkWidget		*box_details_developer;
 	GtkWidget		*image_details_developer_verified;
-	GtkWidget		*label_details_channel_title;
-	GtkWidget		*label_details_channel_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_failed;
@@ -1075,16 +1073,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->box_details_developer, TRUE);
 	}
 	gtk_widget_set_visible (self->image_details_developer_verified, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
-
-	/* set channel for snaps */
-	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_SNAP) {
-		gtk_label_set_label (GTK_LABEL (self->label_details_channel_value), gs_app_get_branch (self->app));
-		gtk_widget_set_visible (self->label_details_channel_title, TRUE);
-		gtk_widget_set_visible (self->label_details_channel_value, TRUE);
-	} else {
-		gtk_widget_set_visible (self->label_details_channel_title, FALSE);
-		gtk_widget_set_visible (self->label_details_channel_value, FALSE);
-	}
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
@@ -2343,8 +2331,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_developer);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
