@@ -545,26 +545,211 @@
                         <property name="visible">True</property>
                         <property name="preferred-width">860</property>
                         <child>
-                          <object class="GtkBox" id="box_details_support">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="margin_bottom">26</property>
+                            <property name="orientation">horizontal</property>
                             <property name="spacing">12</property>
+
                             <child>
-                              <object class="GtkButton" id="button_details_website">
-                                <property name="label" translatable="yes">_Website</property>
-                                <property name="width_request">150</property>
+                              <object class="GtkStack" id="links_stack">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_donate">
-                                <property name="label" translatable="yes">_Donate</property>
-                                <property name="width_request">150</property>
-                                <property name="visible">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
+
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <style>
+                                      <class name="content-box"/>
+                                    </style>
+
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="visible">True</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">8</property>
+                                        <property name="margin">14</property>
+                                        <property name="valign">center</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="icon-name">dialog-question-symbolic</property>
+                                            <property name="pixel-size">96</property>
+                                            <property name="visible">True</property>
+                                            <property name="margin-bottom">8</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="label" translatable="yes">No Metadata</property>
+                                            <property name="visible">True</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                            </attributes>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="justify">center</property>
+                                            <property name="label" translatable="yes">This app doesn’t provide any links to a website, code repository or issue tracker.</property>
+                                            <property name="visible">True</property>
+                                            <property name="wrap">True</property>
+                                            <property name="xalign">0.5</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="name">empty</property>
+                                  </packing>
+                                </child>
+
+                                <child>
+                                  <object class="GtkListBox">
+                                    <property name="visible">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <property name="halign">fill</property>
+                                    <property name="valign">start</property>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="project_website_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">Project _Website</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">web-browser-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="donate_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Donate</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">money-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="translate_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Contribute Translations</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">flag-outline-thin-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="report_an_issue_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Report an Issue</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">computer-fail-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="help_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Help</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">help-browser-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="name">links</property>
+                                  </packing>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -994,11 +1179,6 @@
       <widget name="button_update"/>
       <widget name="button_remove"/>
       <widget name="button_details_launch"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup" id="sizegroup_details_buttons">
-    <widgets>
-      <widget name="button_details_website"/>
     </widgets>
   </object>
 

@@ -91,7 +91,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*label_webapp_warning;
-	GtkWidget		*box_details_support;
 	GtkWidget		*box_progress;
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
@@ -100,8 +99,12 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
-	GtkWidget		*button_details_website;
-	GtkWidget		*button_donate;
+	GtkStack		*links_stack;
+	HdyActionRow		*project_website_row;
+	HdyActionRow		*donate_row;
+	HdyActionRow		*translate_row;
+	HdyActionRow		*report_an_issue_row;
+	HdyActionRow		*help_row;
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
@@ -558,16 +561,9 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
 }
 
 static void
-gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
+gs_details_page_link_row_activated_cb (HdyActionRow *row, GsDetailsPage *self)
 {
-	gs_shell_show_uri (self->shell,
-	                   gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
-}
-
-static void
-gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_DONATION));
+	gs_shell_show_uri (self->shell, hdy_action_row_get_subtitle (row));
 }
 
 static void
@@ -1014,6 +1010,19 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	}
 }
 
+static gboolean
+update_action_row_from_link (HdyActionRow *row,
+                             GsApp        *app,
+                             AsUrlKind     url_kind)
+{
+	const gchar *url = gs_app_get_url (app, url_kind);
+	if (url != NULL)
+		hdy_action_row_set_subtitle (row, url);
+	gtk_widget_set_visible (GTK_WIDGET (row), url != NULL);
+
+	return (url != NULL);
+}
+
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
@@ -1025,10 +1034,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 kudos;
 	guint64 updated;
 	guint64 user_integration_bf;
-	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
+	gboolean link_rows_visible;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -1079,21 +1088,16 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
 				  GTK_ICON_SIZE_INVALID);
 
-	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
-	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_widget_set_visible (self->button_details_website, TRUE);
-		show_support_box = TRUE;
-	} else {
-		gtk_widget_set_visible (self->button_details_website, FALSE);
-	}
-	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
-	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_widget_set_visible (self->button_donate, TRUE);
-		show_support_box = TRUE;
-	} else {
-		gtk_widget_set_visible (self->button_donate, FALSE);
-	}
-	gtk_widget_set_visible (self->box_details_support, show_support_box);
+	/* Set various external links. If none are visible, show a fallback
+	 * message instead. */
+	link_rows_visible = FALSE;
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->project_website_row, self->app, AS_URL_KIND_HOMEPAGE);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->donate_row, self->app, AS_URL_KIND_DONATION);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->translate_row, self->app, AS_URL_KIND_TRANSLATE);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->report_an_issue_row, self->app, AS_URL_KIND_BUGTRACKER);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->help_row, self->app, AS_URL_KIND_HELP);
+
+	gtk_stack_set_visible_child_name (self->links_stack, link_rows_visible ? "links" : "empty");
 
 	/* set the developer name, falling back to the project group */
 	tmp = gs_app_get_developer_name (self->app);
@@ -2246,12 +2250,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_details_remove_shortcut, "clicked",
 			  G_CALLBACK (gs_details_page_app_remove_shortcut_button_cb),
 			  self);
-	g_signal_connect (self->button_details_website, "clicked",
-			  G_CALLBACK (gs_details_page_website_cb),
-			  self);
-	g_signal_connect (self->button_donate, "clicked",
-			  G_CALLBACK (gs_details_page_donate_cb),
-			  self);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
 	                            origin_popover_list_sort_func,
@@ -2419,7 +2417,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_support);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
@@ -2428,8 +2425,12 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_donate);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, links_stack);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, project_website_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, donate_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translate_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, report_an_issue_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, help_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
@@ -2481,6 +2482,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 }
 
 static void
