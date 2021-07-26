@@ -461,7 +461,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="label_webapp_warning" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkLabel" id="label_webapp_warning">
@@ -481,7 +481,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_app_repo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_repo">
@@ -496,7 +496,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_app_norepo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_norepo">
@@ -511,7 +511,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_package_baseos" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_package_baseos">
@@ -526,7 +526,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_repo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_repo">
