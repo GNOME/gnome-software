@@ -123,8 +123,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_developer_value;
 	GtkWidget		*box_details_developer;
 	GtkWidget		*image_details_developer_verified;
-	GtkWidget		*label_details_origin_title;
-	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
@@ -1092,23 +1090,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
-
-	/* set the origin */
-	origin = g_strdup (gs_app_get_origin_hostname (self->app));
-	if (origin == NULL)
-		origin = g_strdup (gs_app_get_origin (self->app));
-	if (origin == NULL) {
-		GFile *local_file = gs_app_get_local_file (self->app);
-		if (local_file != NULL)
-			origin = g_file_get_basename (local_file);
-	}
-	if (origin == NULL || origin[0] == '\0') {
-		/* TRANSLATORS: this is where we don't know the origin of the
-		 * application */
-		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), C_("origin", "Unknown"));
-	} else {
-		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), origin);
-	}
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -2331,8 +2312,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_developer);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
