@@ -26,10 +26,6 @@ GtkResponseType
 	gs_app_notify_unavailable	(GsApp		*app,
 					 GtkWindow	*parent);
 
-void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
-						 const GdkPixbuf	*pixbuf,
-						 gint			 scale);
-
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 gchar		*gs_utils_set_key_colors_in_css	(const gchar	*css,
 						 GsApp		*app);
