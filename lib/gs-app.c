@@ -5442,6 +5442,32 @@ gs_app_get_packaging_format (GsApp *app)
 }
 
 /**
+ * gs_app_get_packaging_format_raw:
+ * @app: a #GsApp
+ *
+ * Similar to gs_app_get_packaging_format(), but it does not return a newly
+ * allocated string and the value is not suitable for the UI. Depending on
+ * the plugin, it can be "deb", "flatpak", "package", "RPM", "snap", ....
+ *
+ * Returns: The raw value of the packaging format
+ *
+ * Since: 41
+ **/
+const gchar *
+gs_app_get_packaging_format_raw (GsApp *app)
+{
+	const gchar *packaging_format;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	packaging_format = gs_app_get_metadata_item (app, "GnomeSoftware::PackagingFormat");
+	if (packaging_format != NULL)
+		return packaging_format;
+
+	return as_bundle_kind_to_string (gs_app_get_bundle_kind (app));
+}
+
+/**
  * gs_app_subsume_metadata:
  * @app: a #GsApp
  * @donor: another #GsApp
