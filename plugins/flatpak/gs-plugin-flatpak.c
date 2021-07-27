@@ -929,27 +929,12 @@ app_has_local_source (GsApp *app)
 	return FALSE;
 }
 
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_flatpak_ensure_scope (GsPlugin *plugin,
+				GsApp *app)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsFlatpak *flatpak;
-	g_autoptr(FlatpakTransaction) transaction = NULL;
-	g_autoptr(GError) error_local = NULL;
-	gpointer schedule_entry_handle = NULL;
-	gboolean already_installed = FALSE;
 
-	/* queue for install if installation needs the network */
-	if (!app_has_local_source (app) &&
-	    !gs_plugin_get_network_available (plugin)) {
-		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
-		return TRUE;
-	}
-
-	/* set the app scope */
 	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
 		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
 
@@ -965,6 +950,29 @@ gs_plugin_app_install (GsPlugin *plugin,
 			gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 		}
 	}
+}
+
+gboolean
+gs_plugin_app_install (GsPlugin *plugin,
+		       GsApp *app,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsFlatpak *flatpak;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(GError) error_local = NULL;
+	gpointer schedule_entry_handle = NULL;
+	gboolean already_installed = FALSE;
+
+	/* queue for install if installation needs the network */
+	if (!app_has_local_source (app) &&
+	    !gs_plugin_get_network_available (plugin)) {
+		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
+		return TRUE;
+	}
+
+	/* set the app scope */
+	gs_plugin_flatpak_ensure_scope (plugin, app);
 
 	/* not supported */
 	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
