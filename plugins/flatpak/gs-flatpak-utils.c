@@ -76,6 +76,7 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 			 flatpak_remote_get_name (xremote));
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
