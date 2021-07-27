@@ -14,6 +14,7 @@
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
+#include "gs-picture.h"
 
 #define SPINNER_TIMEOUT_SECS 2
 
@@ -98,15 +99,13 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	/* show icon */
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		if (pixbuf != NULL) {
-			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
-							     pixbuf, (gint) ssimg->scale);
+			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
 		ssimg->current_image = "image2";
 	} else {
 		if (pixbuf != NULL) {
-			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
-							     pixbuf, (gint) ssimg->scale);
+			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
 		ssimg->current_image = "image1";
@@ -224,11 +223,9 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 		return;
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
-						     pb, (gint) ssimg->scale);
+		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pb);
 	} else {
-		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
-						     pb, (gint) ssimg->scale);
+		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pb);
 	}
 }
 
@@ -417,7 +414,7 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 
 	ssimg->width = width;
 	ssimg->height = height;
-	gtk_widget_set_size_request (ssimg->stack, (gint) width, (gint) height);
+	gtk_widget_set_size_request (ssimg->stack, -1, (gint) height);
 }
 
 static gchar *
@@ -687,6 +684,8 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	ssimg->showing_image = FALSE;
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
+
+	g_type_ensure (GS_TYPE_PICTURE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
