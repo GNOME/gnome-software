@@ -19,16 +19,16 @@
 
 struct _GsPrefsDialog
 {
-	GtkDialog	 parent_instance;
-	GSettings	*settings;
+	HdyPreferencesWindow	 parent_instance;
+	GSettings		*settings;
 
-	GCancellable	*cancellable;
-	GsPluginLoader	*plugin_loader;
-	GtkWidget	*switch_updates;
-	GtkWidget	*switch_updates_notify;
+	GCancellable		*cancellable;
+	GsPluginLoader		*plugin_loader;
+	GtkWidget		*switch_updates;
+	GtkWidget		*switch_updates_notify;
 };
 
-G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, HDY_TYPE_PREFERENCES_WINDOW)
 
 static void
 gs_prefs_dialog_dispose (GObject *object)
@@ -79,9 +79,7 @@ gs_prefs_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 {
 	GsPrefsDialog *dialog;
 	dialog = g_object_new (GS_TYPE_PREFS_DIALOG,
-			       "use-header-bar", TRUE,
 			       "transient-for", parent,
-			       "modal", TRUE,
 			       NULL);
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	return GTK_WIDGET (dialog);

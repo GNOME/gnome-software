@@ -53,7 +53,7 @@ void		 gs_shell_reset_state		(GsShell	*shell);
 void		 gs_shell_set_mode		(GsShell	*shell,
 						 GsShellMode	 mode);
 void		 gs_shell_modal_dialog_present	(GsShell	*shell,
-						 GtkDialog	*dialog);
+						 GtkWindow	*window);
 GsShellMode	 gs_shell_get_mode		(GsShell	*shell);
 const gchar	*gs_shell_get_mode_string	(GsShell	*shell);
 void		 gs_shell_install		(GsShell		*shell,

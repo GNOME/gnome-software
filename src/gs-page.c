@@ -119,7 +119,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 	/* handle this async */
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_update_app_response_close_cb), helper);
-	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
 }
 
 static void
@@ -383,7 +383,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	/* handle this async */
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_update_app_response_cb), helper);
-	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
 }
 
 void
@@ -523,7 +523,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* handle this async */
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_remove_app_response_cb), helper);
-	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (priv->shell, GTK_WINDOW (dialog));
 }
 
 static void

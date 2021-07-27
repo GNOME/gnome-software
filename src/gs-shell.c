@@ -135,7 +135,7 @@ modal_dialog_unmapped_cb (GtkWidget *dialog,
 }
 
 void
-gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
+gs_shell_modal_dialog_present (GsShell *shell, GtkWindow *window)
 {
 	GtkWindow *parent;
 
@@ -148,16 +148,16 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 		parent = GTK_WINDOW (shell);
 		g_debug ("using main window");
 	}
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+	gtk_window_set_transient_for (window, parent);
 
 	/* add to stack, transfer ownership to here */
-	g_ptr_array_add (shell->modal_dialogs, dialog);
-	g_signal_connect (GTK_WIDGET (dialog), "unmap",
+	g_ptr_array_add (shell->modal_dialogs, window);
+	g_signal_connect (GTK_WIDGET (window), "unmap",
 	                  G_CALLBACK (modal_dialog_unmapped_cb), shell);
 
 	/* present the new one */
-	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
-	gtk_window_present (GTK_WINDOW (dialog));
+	gtk_window_set_modal (window, TRUE);
+	gtk_window_present (window);
 }
 
 void
@@ -265,7 +265,7 @@ gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
 	GtkDialog *dialog;
 
 	dialog = GTK_DIALOG (gs_metered_data_dialog_new (GTK_WINDOW (shell)));
-	gs_shell_modal_dialog_present (shell, dialog);
+	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
@@ -407,7 +407,7 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 	GtkWidget *dialog;
 
 	dialog = gs_basic_auth_dialog_new (GTK_WINDOW (shell), remote, realm, callback, callback_data);
-	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
@@ -2235,7 +2235,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 	dialog = gs_update_dialog_new (shell->plugin_loader);
 	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog));
 
-	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 }
 
 void
@@ -2248,7 +2248,7 @@ gs_shell_show_sources (GsShell *shell)
 		return;
 
 	dialog = gs_repos_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
-	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
@@ -2261,11 +2261,7 @@ gs_shell_show_prefs (GsShell *shell)
 	GtkWidget *dialog;
 
 	dialog = gs_prefs_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
-	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 }
 
 void
