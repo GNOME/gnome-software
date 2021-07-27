@@ -1316,12 +1316,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
+	/* enable repo, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
 	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
-
-	/* enable repo */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_rpmostree_repo_enable (plugin, app, TRUE, os_proxy, sysroot_proxy, cancellable, error);
 
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_AVAILABLE:
@@ -1422,9 +1421,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
-	/* disable repo */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_rpmostree_repo_enable (plugin, app, FALSE, os_proxy, sysroot_proxy, cancellable, error);
+	/* disable repo, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	tp->app = g_object_ref (app);
@@ -2152,4 +2150,48 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_enable_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* enable repo */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+		return FALSE;
+
+	return gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error);
+}
+
+gboolean
+gs_plugin_disable_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* disable repo */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+		return FALSE;
+
+	return gs_rpmostree_repo_enable (plugin, repo, FALSE, os_proxy, sysroot_proxy, cancellable, error);
 }

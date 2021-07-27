@@ -970,27 +970,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* source -> remote */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
-		return gs_plugin_fwupd_modify_source (plugin, app, TRUE,
-						      cancellable, error);
-	}
+	/* source -> remote, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* firmware */
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
-}
-
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
-		      GCancellable *cancellable, GError **error)
-{
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
-		return TRUE;
-
-	/* source -> remote */
-	return gs_plugin_fwupd_modify_source (plugin, app, FALSE, cancellable, error);
 }
 
 gboolean
@@ -1193,4 +1177,38 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
+}
+
+gboolean
+gs_plugin_enable_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* source -> remote */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_plugin_fwupd_modify_source (plugin, repo, TRUE, cancellable, error);
+}
+
+gboolean
+gs_plugin_disable_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* source -> remote */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_plugin_fwupd_modify_source (plugin, repo, FALSE, cancellable, error);
 }

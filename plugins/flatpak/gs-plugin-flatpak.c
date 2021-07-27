@@ -865,9 +865,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (flatpak == NULL)
 		return TRUE;
 
-	/* is a source */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_flatpak_app_remove_source (flatpak, app, cancellable, error);
+	/* is a source, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* build and run transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -979,9 +978,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (flatpak == NULL)
 		return TRUE;
 
-	/* is a source */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
+	/* is a source, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* build */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -1607,4 +1605,85 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 			return FALSE;
 	}
 	return TRUE;
+}
+
+gboolean
+gs_plugin_install_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	GsFlatpak *flatpak;
+
+	/* queue for install if installation needs the network */
+	if (!app_has_local_source (repo) &&
+	    !gs_plugin_get_network_available (plugin)) {
+		gs_app_set_state (repo, GS_APP_STATE_QUEUED_FOR_INSTALL);
+		return TRUE;
+	}
+
+	gs_plugin_flatpak_ensure_scope (plugin, repo);
+
+	flatpak = gs_plugin_flatpak_get_handler (plugin, repo);
+	if (flatpak == NULL)
+		return TRUE;
+
+	/* is a source */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_flatpak_app_install_source (flatpak, repo, TRUE, cancellable, error);
+}
+
+gboolean
+gs_plugin_remove_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsFlatpak *flatpak;
+
+	flatpak = gs_plugin_flatpak_get_handler (plugin, repo);
+	if (flatpak == NULL)
+		return TRUE;
+
+	/* is a source */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_flatpak_app_remove_source (flatpak, repo, TRUE, cancellable, error);
+}
+
+gboolean
+gs_plugin_enable_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsFlatpak *flatpak;
+
+	flatpak = gs_plugin_flatpak_get_handler (plugin, repo);
+	if (flatpak == NULL)
+		return TRUE;
+
+	/* is a source */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_flatpak_app_install_source (flatpak, repo, FALSE, cancellable, error);
+}
+
+gboolean
+gs_plugin_disable_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	GsFlatpak *flatpak;
+
+	flatpak = gs_plugin_flatpak_get_handler (plugin, repo);
+	if (flatpak == NULL)
+		return TRUE;
+
+	/* is a source */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_flatpak_app_remove_source (flatpak, repo, FALSE, cancellable, error);
 }
