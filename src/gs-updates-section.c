@@ -23,7 +23,18 @@
 
 struct _GsUpdatesSection
 {
-	GtkListBox		 parent_instance;
+	GtkBox			 parent_instance;
+
+	GtkWidget		*button_cancel;
+	GtkWidget		*button_download;
+	GtkWidget		*button_stack;
+	GtkWidget		*button_update;
+	GtkWidget		*description;
+	GtkWidget		*listbox;
+	GtkWidget		*listbox_box;
+	GtkWidget		*section_header;
+	GtkWidget		*title;
+
 	GsAppList		*list;
 	GsUpdatesSectionKind	 kind;
 	GCancellable		*cancellable;
@@ -35,19 +46,35 @@ struct _GsUpdatesSection
 	GtkSizeGroup		*sizegroup_button_label;
 	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
-	GtkWidget		*button_download;
-	GtkWidget		*button_update;
-	GtkWidget		*button_cancel;
-	GtkStack		*button_stack;
-	GtkWidget		*section_header;
+	gboolean		 is_narrow;
 };
 
-G_DEFINE_TYPE (GsUpdatesSection, gs_updates_section, GTK_TYPE_LIST_BOX)
+G_DEFINE_TYPE (GsUpdatesSection, gs_updates_section, GTK_TYPE_BOX)
+
+typedef enum {
+	PROP_IS_NARROW = 1,
+} GsUpdatesSectionProperty;
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 GsAppList *
 gs_updates_section_get_list (GsUpdatesSection *self)
 {
 	return self->list;
+}
+
+static gboolean
+_listbox_keynav_failed_cb (GsAppRow *app_row, GtkDirectionType direction)
+{
+	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (app_row));
+
+	if (!toplevel)
+		return FALSE;
+
+	if (direction != GTK_DIR_UP && direction != GTK_DIR_DOWN)
+		return FALSE;
+
+	return gtk_widget_child_focus (toplevel, direction == GTK_DIR_UP ? GTK_DIR_TAB_BACKWARD : GTK_DIR_TAB_FORWARD);
 }
 
 static void
@@ -101,6 +128,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 {
 	GtkWidget *app_row;
 	app_row = gs_app_row_new (app);
+	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
@@ -118,6 +146,9 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_signal_connect_object (app, "notify::state",
 	                         G_CALLBACK (_app_state_notify_cb),
 	                         app_row, 0);
+	g_object_bind_property (G_OBJECT (self), "is-narrow",
+				app_row, "is-narrow",
+				G_BINDING_SYNC_CREATE);
 	gtk_widget_show (GTK_WIDGET (self));
 }
 
@@ -274,7 +305,7 @@ _update_buttons (GsUpdatesSection *self)
 	if (self->cancellable != NULL) {
 		gtk_widget_set_sensitive (self->button_cancel,
 					  !g_cancellable_is_cancelled (self->cancellable));
-		gtk_stack_set_visible_child_name (self->button_stack, "cancel");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "cancel");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		return;
 	}
@@ -282,16 +313,16 @@ _update_buttons (GsUpdatesSection *self)
 	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
 	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
 		if (_all_offline_updates_downloaded (self))
-			gtk_stack_set_visible_child_name (self->button_stack, "update");
+			gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
 		else
-			gtk_stack_set_visible_child_name (self->button_stack, "download");
+			gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "download");
 
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for installing all
 		 * offline updates */
 		gtk_button_set_label (GTK_BUTTON (self->button_update), _("Restart & Update"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
-		gtk_stack_set_visible_child_name (self->button_stack, "update");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for upgrading all
 		 * online-updatable applications */
@@ -367,7 +398,7 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 }
 
 static void
-_button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
+_button_download_clicked_cb (GsUpdatesSection *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -386,7 +417,7 @@ _button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 }
 
 static void
-_button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
+_button_update_all_clicked_cb (GsUpdatesSection *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -415,110 +446,38 @@ _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 	_update_buttons (self);
 }
 
-static GtkWidget *
-_build_section_header (GsUpdatesSection *self)
+static void
+_setup_section_header (GsUpdatesSection *self)
 {
-	GtkStyleContext *context;
-	GtkWidget *header;
-	GtkWidget *label;
-
 	/* get labels and buttons for everything */
-	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE) {
+	switch (self->kind) {
+	case GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE:
 		/* TRANSLATORS: This is the header for system firmware that
 		 * requires a reboot to apply */
-		label = gtk_label_new (_("Integrated Firmware"));
-	} else if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
+		gtk_label_set_label (GTK_LABEL (self->title), _("Integrated Firmware"));
+		break;
+	case GS_UPDATES_SECTION_KIND_OFFLINE:
 		/* TRANSLATORS: This is the header for offline OS and offline
 		 * app updates that require a reboot to apply */
-		label = gtk_label_new (_("Requires Restart"));
-	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
+		gtk_label_set_label (GTK_LABEL (self->title), _("Requires Restart"));
+		break;
+	case GS_UPDATES_SECTION_KIND_ONLINE:
 		/* TRANSLATORS: This is the header for online runtime and
 		 * app updates, typically flatpaks or snaps */
-		label = gtk_label_new (_("Application Updates"));
-	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE) {
+		gtk_label_set_label (GTK_LABEL (self->title), _("Application Updates"));
+		break;
+	case GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE:
 		/* TRANSLATORS: This is the header for device firmware that can
 		 * be installed online */
-		label = gtk_label_new (_("Device Firmware"));
-	} else {
+		gtk_label_set_label (GTK_LABEL (self->title), _("Device Firmware"));
+		break;
+	default:
 		g_assert_not_reached ();
 	}
-
-	/* create header */
-	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
-	context = gtk_widget_get_style_context (header);
-	gtk_style_context_add_class (context, "app-listbox-header");
-
-	/* put label into the header */
-	gtk_widget_set_hexpand (label, TRUE);
-	gtk_container_add (GTK_CONTAINER (header), label);
-	gtk_widget_set_visible (label, TRUE);
-	gtk_widget_set_margin_start (label, 6);
-	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-	context = gtk_widget_get_style_context (label);
-	gtk_style_context_add_class (context, "app-listbox-header-title");
-
-	/* use a stack so we can switch which buttons are showing without the
-	 * sizegroup resizing */
-	self->button_stack = GTK_STACK (gtk_stack_new ());
-	gtk_container_add (GTK_CONTAINER (header), GTK_WIDGET (self->button_stack));
-	gtk_container_child_set (GTK_CONTAINER (header), GTK_WIDGET (self->button_stack), "pack-type", GTK_PACK_END, NULL);
-
-	/* add download button */
-	self->button_download = gs_progress_button_new ();
-	gtk_button_set_use_underline (GTK_BUTTON (self->button_download), TRUE);
-	gtk_button_set_label (GTK_BUTTON (self->button_download), _("_Download"));
-	context = gtk_widget_get_style_context (self->button_download);
-	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
-	g_signal_connect (self->button_download, "clicked",
-			  G_CALLBACK (_button_download_clicked_cb),
-			  self);
-	gtk_stack_add_named (self->button_stack, self->button_download, "download");
-	gtk_widget_set_visible (self->button_download, TRUE);
-
-	/* add update button */
-	self->button_update = gs_progress_button_new ();
-	context = gtk_widget_get_style_context (self->button_update);
-	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
-	g_signal_connect (self->button_update, "clicked",
-			  G_CALLBACK (_button_update_all_clicked_cb),
-			  self);
-	gtk_stack_add_named (self->button_stack, self->button_update, "update");
-	gtk_widget_set_visible (self->button_update, TRUE);
-
-	/* add cancel button */
-	self->button_cancel = gs_progress_button_new ();
-	gtk_button_set_label (GTK_BUTTON (self->button_cancel), _("Cancel"));
-	gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (self->button_cancel), TRUE);
-	g_signal_connect (self->button_cancel, "clicked",
-			  G_CALLBACK (_button_cancel_clicked_cb),
-			  self);
-	gtk_stack_add_named (self->button_stack, self->button_cancel, "cancel");
-	gtk_widget_set_visible (self->button_cancel, TRUE);
-
-	/* success */
-	return header;
 }
 
 static void
-_list_header_func (GtkListBoxRow *row, GtkListBoxRow *before, gpointer user_data)
-{
-	GsUpdatesSection *self = GS_UPDATES_SECTION (user_data);
-	GtkWidget *header;
-
-	/* section changed */
-	if (before == NULL) {
-		if (gtk_list_box_row_get_header (row) != self->section_header) {
-			gtk_widget_unparent (self->section_header);
-		}
-		header = self->section_header;
-	} else {
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	}
-	gtk_list_box_row_set_header (row, header);
-}
-
-static void
-_app_row_activated_cb (GtkListBox *list_box, GtkListBoxRow *row, GsUpdatesSection *self)
+_app_row_activated_cb (GsUpdatesSection *self, GtkListBoxRow *row)
 {
 	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
 	GtkWidget *dialog;
@@ -546,6 +505,92 @@ gs_updates_section_show (GtkWidget *widget)
 }
 
 static void
+gs_updates_section_forall (GtkContainer *container,
+			   gboolean include_internals,
+			   GtkCallback callback,
+			   gpointer callback_data)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
+
+	if (include_internals) {
+		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->forall (GTK_CONTAINER (self), include_internals, callback, callback_data);
+
+		return;
+	}
+
+	if (self->listbox)
+		GTK_CONTAINER_GET_CLASS (self->listbox)->forall (GTK_CONTAINER (self->listbox), include_internals, callback, callback_data);
+}
+
+static void
+gs_updates_section_add (GtkContainer *container, GtkWidget *child)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
+
+	if (self->section_header == NULL ||
+	    self->description == NULL ||
+	    self->listbox_box == NULL) {
+		/* Add internal children, used when building the widget. */
+		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->add (container, child);
+	} else {
+		/* Add external children to the listbox. */
+		gtk_container_add (GTK_CONTAINER (self->listbox), child);
+	}
+}
+
+static void
+gs_updates_section_remove (GtkContainer *container, GtkWidget *child)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
+
+	if (child == self->section_header ||
+	    child == self->description ||
+	    child == self->listbox_box) {
+		/* Remove internal children, used when destroying the widget. */
+		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->remove (container, child);
+	} else {
+		/* Remove external children from the listbox. */
+		gtk_container_remove (GTK_CONTAINER (self->listbox), child);
+	}
+}
+
+static void
+gs_updates_section_get_property (GObject    *object,
+                                 guint       prop_id,
+                                 GValue     *value,
+                                 GParamSpec *pspec)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
+
+	switch ((GsUpdatesSectionProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_updates_section_get_is_narrow (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_updates_section_set_property (GObject      *object,
+                                 guint         prop_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
+{
+	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
+
+	switch ((GsUpdatesSectionProperty) prop_id) {
+	case PROP_IS_NARROW:
+		gs_updates_section_set_is_narrow (self, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_updates_section_dispose (GObject *object)
 {
 	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
@@ -564,7 +609,6 @@ gs_updates_section_dispose (GObject *object)
 	self->button_update = NULL;
 	self->button_cancel = NULL;
 	self->button_stack = NULL;
-	g_clear_object (&self->section_header);
 
 	G_OBJECT_CLASS (gs_updates_section_parent_class)->dispose (object);
 }
@@ -574,9 +618,51 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+	GtkContainerClass *container_class = GTK_CONTAINER_CLASS (klass);
 
+	object_class->get_property = gs_updates_section_get_property;
+	object_class->set_property = gs_updates_section_set_property;
 	object_class->dispose = gs_updates_section_dispose;
 	widget_class->show = gs_updates_section_show;
+
+	container_class->add = gs_updates_section_add;
+	container_class->remove = gs_updates_section_remove;
+	container_class->forall = gs_updates_section_forall;
+
+	/**
+	 * GsUpdatesSection:is-narrow:
+	 *
+	 * Whether the section is in narrow mode.
+	 *
+	 * In narrow mode, the section will take up less horizontal space, doing
+	 * so by e.g. using icons rather than labels in buttons. This is needed
+	 * to keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-section.ui");
+
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, button_cancel);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, button_download);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, button_stack);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, button_update);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, description);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, listbox);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, listbox_box);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, section_header);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesSection, title);
+	gtk_widget_class_bind_template_callback (widget_class, _app_row_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, _button_cancel_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, _button_download_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, _button_update_all_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, _listbox_keynav_failed_cb);
 }
 
 void
@@ -640,7 +726,7 @@ gs_updates_section_app_state_changed_cb (GsAppList *list,
 static void
 gs_updates_section_init (GsUpdatesSection *self)
 {
-	GtkStyleContext *context;
+	gtk_widget_init_template (GTK_WIDGET (self));
 
 	self->list = gs_app_list_new ();
 	gs_app_list_add_flag (self->list,
@@ -650,23 +736,55 @@ gs_updates_section_init (GsUpdatesSection *self)
 	g_signal_connect_object (self->list, "notify::progress",
 				 G_CALLBACK (gs_updates_section_progress_notify_cb),
 				 self, 0);
-	gtk_list_box_set_selection_mode (GTK_LIST_BOX (self),
+	gtk_list_box_set_selection_mode (GTK_LIST_BOX (self->listbox),
 					 GTK_SELECTION_NONE);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (self),
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->listbox),
 				    _list_sort_func,
 				    self, NULL);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (self),
-				      _list_header_func,
-				      self, NULL);
-	g_signal_connect (self, "row-activated",
-			  G_CALLBACK (_app_row_activated_cb), self);
-
-	/* make rounded edges */
-	context = gtk_widget_get_style_context (GTK_WIDGET (self));
-	gtk_style_context_add_class (context, "app-updates-section");
 }
 
-GtkListBox *
+/**
+ * gs_updates_section_get_is_narrow:
+ * @self: a #GsUpdatesSection
+ *
+ * Get the value of #GsUpdatesSection:is-narrow.
+ *
+ * Returns: %TRUE if the section is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_updates_section_get_is_narrow (GsUpdatesSection *self)
+{
+	g_return_val_if_fail (GS_IS_UPDATES_SECTION (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_updates_section_set_is_narrow:
+ * @self: a #GsUpdatesSection
+ * @is_narrow: %TRUE to set the section in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsUpdatesSection:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_updates_section_set_is_narrow (GsUpdatesSection *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_UPDATES_SECTION (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
+}
+
+GsUpdatesSection *
 gs_updates_section_new (GsUpdatesSectionKind kind,
 			GsPluginLoader *plugin_loader,
 			GsPage *page)
@@ -676,7 +794,7 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->kind = kind;
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->page = g_object_ref (page);
-	self->section_header = g_object_ref_sink (_build_section_header (self));
+	_setup_section_header (self);
 
 	if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		g_signal_connect_object (self->list, "app-state-changed",
@@ -684,5 +802,5 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 					 self, 0);
 	}
 
-	return GTK_LIST_BOX (self);
+	return self;
 }

@@ -19,4 +19,8 @@ G_DECLARE_FINAL_TYPE (GsUpdatesPage, gs_updates_page, GS, UPDATES_PAGE, GsPage)
 
 GsUpdatesPage	*gs_updates_page_new		(void);
 
+gboolean	 gs_updates_page_get_is_narrow	(GsUpdatesPage	*self);
+void		 gs_updates_page_set_is_narrow	(GsUpdatesPage	*self,
+						 gboolean	 is_narrow);
+
 G_END_DECLS

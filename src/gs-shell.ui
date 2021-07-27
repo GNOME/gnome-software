@@ -331,6 +331,7 @@
                             <child>
                               <object class="GsUpdatesPage" id="updates_page">
                                 <property name="visible">True</property>
+                                <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                 <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
                               </object>
                               <packing>

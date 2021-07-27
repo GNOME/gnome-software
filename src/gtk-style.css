@@ -576,6 +576,15 @@ scrolledwindow.list-page > viewport > clamp.large .section {
   margin-top: 18px;
 }
 
+/* The following style is taken from libhandy's HdyPreferencesGroup style, which
+ * implements the style for titled and described sections with a list box.
+ * FIXME: Drop this style if we use the successor of HdyPreferencesGroup in
+ * Libadwaita when porting to GTK 4. */
+
+.section > label:not(:first-child) { margin-top: 6px; }
+
+.section > box:not(:first-child) { margin-top: 12px; }
+
 /* The following style is taken from libhandy's HdyStatusPage style.
  * FIXME: Drop this style if HdyStatusPage or its GTK 4 successor allows setting
  * a spinner and the updates spinner page can be ported to it. */

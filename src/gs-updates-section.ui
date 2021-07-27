@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="libhandy">
+  <requires lib="gtk+" version="3.0"/>
+  <template class="GsUpdatesSection" parent="GtkBox">
+    <property name="orientation">vertical</property>
+    <style>
+      <class name="section"/>
+    </style>
+    <child>
+      <object class="GtkBox" id="section_header">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkLabel" id="title">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="ellipsize">end</property>
+            <property name="halign">start</property>
+            <property name="xalign">0</property>
+            <property name="no-show-all">True</property>
+            <style>
+              <class name="heading"/>
+            </style>
+            <accessibility>
+              <relation target="listbox_box" type="label-for"/>
+            </accessibility>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStack" id="button_stack">
+            <property name="visible">True</property>
+            <child>
+              <object class="GsProgressButton" id="button_download">
+                <property name="visible">True</property>
+                <property name="use_underline">True</property>
+                <property name="label" translatable="yes">_Download</property>
+                <signal name="clicked" handler="_button_download_clicked_cb" swapped="yes"/>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="name">download</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GsProgressButton" id="button_update">
+                <property name="visible">True</property>
+                <signal name="clicked" handler="_button_update_all_clicked_cb" swapped="yes"/>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="name">update</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GsProgressButton" id="button_cancel">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Cancel</property>
+                <signal name="clicked" handler="_button_cancel_clicked_cb" swapped="yes"/>
+                <style>
+                  <class name="suggested-action"/>
+                  <class name="install-progress"/>
+                </style>
+              </object>
+              <packing>
+                <property name="name">cancel</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="description">
+        <property name="can_focus">False</property>
+        <property name="halign">start</property>
+        <property name="wrap">True</property>
+        <property name="wrap-mode">word-char</property>
+        <property name="xalign">0</property>
+        <property name="no-show-all">True</property>
+        <style>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="listbox_box">
+        <property name="orientation">vertical</property>
+        <property name="visible">True</property>
+        <accessibility>
+          <relation target="title" type="labelled-by"/>
+        </accessibility>
+        <child>
+          <object class="GtkListBox" id="listbox">
+            <property name="selection_mode">none</property>
+            <property name="visible">True</property>
+            <signal name="row-activated" handler="_app_row_activated_cb" swapped="yes"/>
+            <signal name="keynav-failed" handler="_listbox_keynav_failed_cb" swapped="yes"/>
+            <style>
+              <class name="content"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

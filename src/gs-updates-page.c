@@ -64,6 +64,7 @@ struct _GsUpdatesPage
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
 	guint			 updates_counter;
+	gboolean		 is_narrow;
 
 	GtkWidget		*updates_box;
 	GtkWidget		*button_updates_mobile;
@@ -83,7 +84,7 @@ struct _GsUpdatesPage
 	GtkSizeGroup		*sizegroup_button_label;
 	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
-	GtkListBox		*sections[GS_UPDATES_SECTION_KIND_LAST];
+	GsUpdatesSection	*sections[GS_UPDATES_SECTION_KIND_LAST];
 
 	guint			 refresh_last_checked_id;
 };
@@ -98,10 +99,14 @@ enum {
 G_DEFINE_TYPE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE)
 
 typedef enum {
-	PROP_VADJUSTMENT = 1,
+	PROP_IS_NARROW = 1,
+	/* Overrides: */
+	PROP_VADJUSTMENT,
 	PROP_TITLE,
 	PROP_COUNTER,
 } GsUpdatesPageProperty;
+
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static void
 gs_updates_page_set_flag (GsUpdatesPage *self, GsUpdatesPageFlags flag)
@@ -158,7 +163,7 @@ _get_all_apps (GsUpdatesPage *self)
 {
 	GsAppList *apps = gs_app_list_new ();
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
-		GsAppList *list = gs_updates_section_get_list (GS_UPDATES_SECTION (self->sections[i]));
+		GsAppList *list = gs_updates_section_get_list (self->sections[i]);
 		gs_app_list_add_list (apps, list);
 	}
 	return apps;
@@ -461,7 +466,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GsUpdatesSectionKind section = _get_app_section (app);
-		gs_updates_section_add_app (GS_UPDATES_SECTION (self->sections[section]), app);
+		gs_updates_section_add_app (self->sections[section], app);
 	}
 
 	/* update the counter in headerbar */
@@ -582,7 +587,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 
 	/* remove all existing apps */
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++)
-		gs_updates_section_remove_all (GS_UPDATES_SECTION (self->sections[i]));
+		gs_updates_section_remove_all (self->sections[i]);
 
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
@@ -1212,12 +1217,13 @@ gs_updates_page_setup (GsPage *page,
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
 	AtkObject *accessible;
+	GtkWidget *widget;
 
 	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
 
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		self->sections[i] = gs_updates_section_new (i, plugin_loader, page);
-		gs_updates_section_set_size_groups (GS_UPDATES_SECTION (self->sections[i]),
+		gs_updates_section_set_size_groups (self->sections[i],
 						    self->sizegroup_image,
 						    self->sizegroup_name,
 						    self->sizegroup_desc,
@@ -1225,6 +1231,9 @@ gs_updates_page_setup (GsPage *page,
 						    self->sizegroup_button_image,
 						    self->sizegroup_header);
 		gtk_widget_set_vexpand (GTK_WIDGET (self->sections[i]), FALSE);
+		g_object_bind_property (G_OBJECT (self), "is-narrow",
+					self->sections[i], "is-narrow",
+					G_BINDING_SYNC_CREATE);
 		gtk_container_add (GTK_CONTAINER (self->updates_box), GTK_WIDGET (self->sections[i]));
 	}
 
@@ -1267,7 +1276,21 @@ gs_updates_page_setup (GsPage *page,
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
 	/* This label indicates that the update check is in progress */
-	self->header_checking_label = gtk_label_new (_("Checking…"));
+	self->header_checking_label = hdy_squeezer_new ();
+	hdy_squeezer_set_xalign (HDY_SQUEEZER (self->header_checking_label), 0);
+	hdy_squeezer_set_transition_type (HDY_SQUEEZER (self->header_checking_label), HDY_SQUEEZER_TRANSITION_TYPE_CROSSFADE);
+
+	widget = gtk_label_new (_("Checking…"));
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+
+	/* FIXME: This box is just a 0x0 widget the squeezer will show when it
+	 * hasn't enough space to show the label. In GTK 4, we will be able to
+	 * use AdwSqueezer:allow-none instead. */
+	widget = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+
 	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_checking_label);
 	gtk_container_child_set(GTK_CONTAINER (self->header_start_box), self->header_checking_label,
 				"pack-type", GTK_PACK_END, NULL);
@@ -1316,6 +1339,9 @@ gs_updates_page_get_property (GObject    *object,
 	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
 
 	switch ((GsUpdatesPageProperty) prop_id) {
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_updates_page_get_is_narrow (self));
+		break;
 	case PROP_VADJUSTMENT:
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
 		break;
@@ -1337,7 +1363,12 @@ gs_updates_page_set_property (GObject      *object,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
+	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
+
 	switch ((GsUpdatesPageProperty) prop_id) {
+	case PROP_IS_NARROW:
+		gs_updates_page_set_is_narrow (self, g_value_get_boolean (value));
+		break;
 	case PROP_VADJUSTMENT:
 	case PROP_TITLE:
 	case PROP_COUNTER:
@@ -1400,6 +1431,24 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	page_class->reload = gs_updates_page_reload;
 	page_class->setup = gs_updates_page_setup;
 
+	/**
+	 * GsUpdatesPage:is-narrow:
+	 *
+	 * Whether the page is in narrow mode.
+	 *
+	 * In narrow mode, the page will take up less horizontal space, doing so
+	 * by e.g. using icons rather than labels in buttons. This is needed to
+	 * keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 	g_object_class_override_property (object_class, PROP_COUNTER, "counter");
@@ -1435,6 +1484,47 @@ gs_updates_page_init (GsUpdatesPage *self)
 	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
+}
+
+/**
+ * gs_updates_page_get_is_narrow:
+ * @self: a #GsUpdatesPage
+ *
+ * Get the value of #GsUpdatesPage:is-narrow.
+ *
+ * Returns: %TRUE if the page is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_updates_page_get_is_narrow (GsUpdatesPage *self)
+{
+	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_updates_page_set_is_narrow:
+ * @self: a #GsUpdatesPage
+ * @is_narrow: %TRUE to set the page in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsUpdatesPage:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_updates_page_set_is_narrow (GsUpdatesPage *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_UPDATES_PAGE (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
 GsUpdatesPage *
