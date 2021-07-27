@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-07-26 16:05+0000\n"
-"PO-Revision-Date: 2021-07-26 20:36+0300\n"
+"POT-Creation-Date: 2021-07-27 11:55+0000\n"
+"PO-Revision-Date: 2021-07-27 20:15+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -2303,25 +2303,35 @@ msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Невідома"
 
-#: src/gs-prefs-dialog.ui:5 src/gs-prefs-dialog.ui:17
+#: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
 msgstr "Налаштування оновлень"
 
-#: src/gs-prefs-dialog.ui:43
+#: src/gs-prefs-dialog.ui:18
+#| msgid ""
+#| "Automatic updates are disabled when on mobile or metered connections."
+msgid ""
+"To avoid charges and network caps, software updates are not automatically "
+"downloaded on mobile or metered connections."
+msgstr ""
+"Щоб уникнути додаткових сплат та вичерпання мережевих квот, отримання оновлень програмного забезпечення не відбуватиметься, якщо ви користуєтеся мобільним з'єднанням "
+"або з'єднанням із обліком даних."
+
+#: src/gs-prefs-dialog.ui:22
 msgid "Automatic Updates"
 msgstr "Автоматичні оновлення"
 
-#: src/gs-prefs-dialog.ui:70
-msgid "Automatic updates are disabled when on mobile or metered connections."
-msgstr ""
-"Автоматичні оновлення вимкнено, якщо ви користуєтеся мобільним з'єднанням "
-"або з'єднанням із обліком даних"
+#: src/gs-prefs-dialog.ui:23
+#| msgid "Installs any pending updates in the background"
+msgid ""
+"Downloads and installs software updates in the background, when possible."
+msgstr "Отримує та встановлює будь-які оновлення програмного забезпечення у фоновому режимі, якщо це можливо."
 
-#: src/gs-prefs-dialog.ui:88
+#: src/gs-prefs-dialog.ui:37
 msgid "Automatic Update Notifications"
 msgstr "Сповіщення щодо автоматичних оновлень"
 
-#: src/gs-prefs-dialog.ui:102
+#: src/gs-prefs-dialog.ui:38
 msgid "Show notifications when updates have been automatically installed."
 msgstr "Показувати сповіщення, коли програма автоматично встановлює оновлення."
 
@@ -3716,7 +3726,6 @@ msgstr "Сторінка оновлень"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:94
-#| msgid "Pending update…"
 msgid "Loading Updates…"
 msgstr "Завантаження оновлень…"
 
