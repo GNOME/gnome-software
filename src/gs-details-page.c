@@ -79,6 +79,9 @@ struct _GsDetailsPage
 	GtkSizeGroup		*size_group_origin_popover;
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 	GAppInfoMonitor		*app_info_monitor; /* (owned) */
+	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
+	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
+								packaging format when the alternatives are found */
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -648,6 +651,36 @@ app_origin_equal (GsApp *a,
 	return TRUE;
 }
 
+static gint
+sort_by_packaging_format_preference (GsApp *app1,
+				     GsApp *app2,
+				     gpointer user_data)
+{
+	GHashTable *preference = user_data;
+	const gchar *packaging_format_raw1 = gs_app_get_packaging_format_raw (app1);
+	const gchar *packaging_format_raw2 = gs_app_get_packaging_format_raw (app2);
+	gint index1, index2;
+
+	if (g_strcmp0 (packaging_format_raw1, packaging_format_raw2) == 0)
+		return 0;
+
+	if (packaging_format_raw1 == NULL || packaging_format_raw2 == NULL)
+		return packaging_format_raw1 == NULL ? -1 : 1;
+
+	index1 = GPOINTER_TO_INT (g_hash_table_lookup (preference, packaging_format_raw1));
+	index2 = GPOINTER_TO_INT (g_hash_table_lookup (preference, packaging_format_raw2));
+
+	if (index1 == index2)
+		return 0;
+
+	/* Index 0 means unspecified packaging format in the preference array,
+	   thus move these at the end. */
+	if (index1 == 0 || index2 == 0)
+		return index1 == 0 ? 1 : -1;
+
+	return index1 - index2;
+}
+
 static void
 gs_details_page_get_alternates_cb (GObject *source_object,
                                    GAsyncResult *res,
@@ -659,7 +692,12 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 	g_autofree gchar *origin_ui = NULL;
 	gboolean instance_changed = FALSE;
+	gboolean origin_by_packaging_format = self->origin_by_packaging_format;
+	GtkWidget *select_row = NULL;
+	GtkWidget *origin_row_by_packaging_format = NULL;
+	gint origin_row_by_packaging_format_index = 0;
 
+	self->origin_by_packaging_format = FALSE;
 	gs_container_remove_all (GTK_CONTAINER (self->origin_popover_list_box));
 
 	/* Did we switch away from the page in the meantime? */
@@ -710,14 +748,25 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	/* add the local file to the list so that we can carry it over when
 	 * switching between alternates */
-	if (self->app_local_file != NULL)
+	if (self->app_local_file != NULL) {
 		gs_app_list_add (list, self->app_local_file);
+		/* Do not allow change of the app by the packaging format when it's a local file */
+		origin_by_packaging_format = FALSE;
+	}
 
 	/* no alternates to show */
 	if (gs_app_list_length (list) < 2) {
 		gtk_widget_hide (self->origin_box);
 		return;
 	}
+
+	/* Do not allow change of the app by the packaging format when it's installed */
+	origin_by_packaging_format = origin_by_packaging_format &&
+		self->app != NULL && gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED;
+
+	/* Sort the alternates by the user's packaging preferences */
+	if (g_hash_table_size (self->packaging_format_preference) > 0)
+		gs_app_list_sort (list, sort_by_packaging_format_preference, self->packaging_format_preference);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -735,12 +784,35 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 				self->app = g_object_ref (app);
 				instance_changed = TRUE;
 			}
-			gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (row), TRUE);
+			select_row = row;
 		}
 		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
 		                                      self->size_group_origin_popover);
 		gtk_container_add (GTK_CONTAINER (self->origin_popover_list_box), row);
+
+		if (origin_by_packaging_format) {
+			const gchar *packaging_format = gs_app_get_packaging_format_raw (app);
+			gint index = GPOINTER_TO_INT (g_hash_table_lookup (self->packaging_format_preference, packaging_format));
+			if (index > 0 && (index < origin_row_by_packaging_format_index || origin_row_by_packaging_format_index == 0)) {
+				origin_row_by_packaging_format_index = index;
+				origin_row_by_packaging_format = row;
+			}
+		}
 	}
+
+	if (origin_row_by_packaging_format) {
+		GsOriginPopoverRow *row = GS_ORIGIN_POPOVER_ROW (origin_row_by_packaging_format);
+		GsApp *app = gs_origin_popover_row_get_app (row);
+		select_row = origin_row_by_packaging_format;
+		if (app != self->app) {
+			g_clear_object (&self->app);
+			self->app = g_object_ref (app);
+			instance_changed = TRUE;
+		}
+	}
+
+	if (select_row)
+		gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (select_row), TRUE);
 
 	origin_ui = gs_app_get_origin_ui (self->app);
 	if (origin_ui != NULL)
@@ -1679,6 +1751,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
+	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
@@ -1696,6 +1769,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
+	self->origin_by_packaging_format = FALSE;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS |
@@ -1771,8 +1845,33 @@ origin_popover_row_activated_cb (GtkListBox *list_box,
 }
 
 static void
+gs_details_page_read_packaging_format_preference (GsDetailsPage *self)
+{
+	g_auto(GStrv) preference = NULL;
+
+	if (self->packaging_format_preference == NULL)
+		return;
+
+	g_hash_table_remove_all (self->packaging_format_preference);
+
+	preference = g_settings_get_strv (self->settings, "packaging-format-preference");
+	if (preference == NULL || preference[0] == NULL)
+		return;
+
+	for (gsize ii = 0; preference[ii] != NULL; ii++) {
+		/* Using 'ii + 1' to easily distinguish between "not found" and "the first" index */
+		g_hash_table_insert (self->packaging_format_preference, g_strdup (preference[ii]), GINT_TO_POINTER (ii + 1));
+	}
+}
+
+static void
 settings_changed_cb (GsDetailsPage *self, const gchar *key, gpointer data)
 {
+	if (g_strcmp0 (key, "packaging-format-preference") == 0) {
+		gs_details_page_read_packaging_format_preference (self);
+		return;
+	}
+
 	if (self->app == NULL)
 		return;
 	if (g_strcmp0 (key, "show-nonfree-ui") == 0) {
@@ -1806,6 +1905,7 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 
 	/* save GsApp */
 	_set_app (self, app);
+	self->origin_by_packaging_format = TRUE;
 	gs_details_page_load_stage1 (self);
 }
 
@@ -2148,6 +2248,30 @@ gs_details_page_setup (GsPage *page,
 	return TRUE;
 }
 
+static guint
+gs_details_page_strcase_hash (gconstpointer key)
+{
+	const gchar *ptr;
+	guint hsh = 0, gg;
+
+	for (ptr = (const gchar *) key; *ptr != '\0'; ptr++) {
+		hsh = (hsh << 4) + g_ascii_toupper (*ptr);
+		if ((gg = hsh & 0xf0000000)) {
+			hsh = hsh ^ (gg >> 24);
+			hsh = hsh ^ gg;
+		}
+	}
+
+	return hsh;
+}
+
+static gboolean
+gs_details_page_strcase_equal (gconstpointer key1,
+			       gconstpointer key2)
+{
+	return g_ascii_strcasecmp ((const gchar *) key1, (const gchar *) key2) == 0;
+}
+
 static void
 gs_details_page_get_property (GObject    *object,
                               guint       prop_id,
@@ -2216,6 +2340,10 @@ gs_details_page_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 		g_clear_object (&self->app);
+	}
+	if (self->packaging_format_preference) {
+		g_hash_table_unref (self->packaging_format_preference);
+		self->packaging_format_preference = NULL;
 	}
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->plugin_loader);
@@ -2348,6 +2476,7 @@ gs_details_page_init (GsDetailsPage *self)
 	/* setup networking */
 	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                               NULL);
+	self->packaging_format_preference = g_hash_table_new_full (gs_details_page_strcase_hash, gs_details_page_strcase_equal, g_free, NULL);
 	self->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect_swapped (self->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
@@ -2368,6 +2497,8 @@ gs_details_page_init (GsDetailsPage *self)
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
 
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
+
+	gs_details_page_read_packaging_format_preference (self);
 }
 
 GsDetailsPage *
