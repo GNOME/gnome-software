@@ -62,7 +62,7 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	gs_app_set_description (app,
 				GS_APP_QUALITY_NORMAL,
 				gs_app_get_summary (app));
-	ic = g_themed_icon_new ("software-update-available-symbolic");
+	ic = g_themed_icon_new ("system-component-os-updates");
 	gs_app_add_icon (app, ic);
 	return app;
 }
