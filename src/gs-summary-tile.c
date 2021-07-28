@@ -62,7 +62,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	icon = gs_app_get_icon_for_size (app,
 					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
 					 gtk_widget_get_scale_factor (tile->image),
-					 "application-x-executable");
+					 "system-component-application");
 	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_DIALOG);
 
 	context = gtk_widget_get_style_context (tile->image);
