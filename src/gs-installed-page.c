@@ -214,6 +214,10 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 {
 	GtkWidget *app_row;
 
+	/* only show if is an actual application */
+	if (!gs_installed_page_is_actual_app (app))
+		return;
+
 	app_row = g_object_new (GS_TYPE_APP_ROW,
 				"app", app,
 				"show-buttons", TRUE,
@@ -254,9 +258,6 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_source (GS_APP_ROW (app_row), FALSE);
 	g_object_bind_property (self, "is-narrow", app_row, "is-narrow", G_BINDING_SYNC_CREATE);
-
-	/* only show if is an actual application */
-	gtk_widget_set_visible (app_row, gs_installed_page_is_actual_app (app));
 }
 
 static void
