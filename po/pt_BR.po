@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-07-27 11:55+0000\n"
-"PO-Revision-Date: 2021-07-28 10:30-0300\n"
+"POT-Creation-Date: 2021-07-28 13:37+0000\n"
+"PO-Revision-Date: 2021-07-28 10:57-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -316,7 +316,17 @@ msgstr ""
 "Instalar os arquivos AppStream em uma localização global do sistema para "
 "todos os usuários"
 
-#: data/org.gnome.software.gschema.xml:147
+#: data/org.gnome.software.gschema.xml:144
+msgid ""
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last."
+msgstr ""
+"Ordem de prioridade dos formatos de empacotamento a serem preferidos, com os "
+"formatos mais importantes listados primeiro. Uma matriz vazia significa a "
+"ordem padrão. Os formatos omitidos são considerados listados por último."
+
+#: data/org.gnome.software.gschema.xml:151
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Uma string armazenando o id da gnome-online-account usada para iniciar a "
@@ -381,11 +391,11 @@ msgstr "Pacote"
 msgid "Pending"
 msgstr "Pendente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:444 src/gs-details-page.c:382
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:444 src/gs-details-page.c:385
 msgid "Pending install"
 msgstr "Instalação pendente"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:448 src/gs-details-page.c:389
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:448 src/gs-details-page.c:392
 msgid "Pending remove"
 msgstr "Remoção pendente"
 
@@ -400,7 +410,7 @@ msgstr "Instalado"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:375
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:378
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Instalando"
@@ -413,7 +423,7 @@ msgid "Removing"
 msgstr "Removendo"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:900
+#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:972
 #: src/gs-details-page.ui:209
 msgid "_Uninstall"
 msgstr "_Desinstalar"
@@ -826,7 +836,7 @@ msgstr "Instalar…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:157 src/gs-updates-section.c:490
+#: src/gs-app-row.c:157 src/gs-updates-section.ui:60
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -1545,32 +1555,32 @@ msgstr "_Ler mais"
 msgid "_Read Less"
 msgstr "_Ler menos"
 
-#: src/gs-details-page.c:370
+#: src/gs-details-page.c:373
 msgid "Removing…"
 msgstr "Removendo…"
 
-#: src/gs-details-page.c:380
+#: src/gs-details-page.c:383
 msgid "Requires restart to finish install"
 msgstr "Requer reinício para finalizar a instalação"
 
-#: src/gs-details-page.c:387
+#: src/gs-details-page.c:390
 msgid "Requires restart to finish remove"
 msgstr "Requer reinício para finalizar a remoção"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:404
+#: src/gs-details-page.c:407
 msgid "Pending installation…"
 msgstr "Instalação pendente…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:411
+#: src/gs-details-page.c:414
 msgid "Pending update…"
 msgstr "Atualização pendente…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:425
+#: src/gs-details-page.c:428
 msgid "Preparing…"
 msgstr "Preparando…"
 
@@ -1580,13 +1590,13 @@ msgstr "Preparando…"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:813 src/gs-details-page.c:839
+#: src/gs-details-page.c:885 src/gs-details-page.c:911
 #: src/gs-details-page.ui:184 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:829
+#: src/gs-details-page.c:901
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -1597,41 +1607,41 @@ msgstr "_Reiniciar"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:853 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:925 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:881
+#: src/gs-details-page.c:953
 msgid "_Launch"
 msgstr "_Executar"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1059
+#: src/gs-details-page.c:1131
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1096
+#: src/gs-details-page.c:1168
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1464
+#: src/gs-details-page.c:1536
 msgid "You need internet access to write a review"
 msgstr "Você precisa de acesso à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1600 src/gs-details-page.c:1616
+#: src/gs-details-page.c:1672 src/gs-details-page.c:1688
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Não foi possível localizar “%s”"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2165
+#: src/gs-details-page.c:2289
 msgid "Loading…"
 msgstr "Carregando…"
 
@@ -2304,8 +2314,6 @@ msgid "Update Preferences"
 msgstr "Preferências de atualização"
 
 #: src/gs-prefs-dialog.ui:18
-#| msgid ""
-#| "Automatic updates are disabled when on mobile or metered connections."
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
@@ -2318,7 +2326,6 @@ msgid "Automatic Updates"
 msgstr "Atualizações automáticas"
 
 #: src/gs-prefs-dialog.ui:23
-#| msgid "Installs any pending updates in the background"
 msgid ""
 "Downloads and installs software updates in the background, when possible."
 msgstr ""
@@ -3258,7 +3265,7 @@ msgstr "Examine o disco"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:93 src/gs-updates-page.c:852
+#: src/gs-shell.ui:93 src/gs-updates-page.c:857
 msgid "Network Settings"
 msgstr "Configurações de rede"
 
@@ -3287,11 +3294,11 @@ msgstr "Saiba _mais"
 #. Translators: A label for a button to show only updates which are available to install.
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-shell.ui:338 src/gs-update-dialog.c:566 src/gs-updates-page.c:1323
+#: src/gs-shell.ui:339 src/gs-update-dialog.c:566 src/gs-updates-page.c:1349
 msgid "Updates"
 msgstr "Atualizações"
 
-#: src/gs-shell.ui:373 src/gs-shell.ui:461 src/gs-update-dialog.ui:20
+#: src/gs-shell.ui:374 src/gs-shell.ui:462 src/gs-update-dialog.ui:20
 msgid "Go back"
 msgstr "Voltar"
 
@@ -3651,41 +3658,41 @@ msgstr ""
 "contato com seu fornecedor de programa."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:247
+#: src/gs-updates-page.c:252
 #, c-format
 msgid "Last checked: %s"
 msgstr "Última verificação: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:552
+#: src/gs-updates-page.c:557
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s não possui mais suporte."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:557
+#: src/gs-updates-page.c:562
 msgid "Your OS is no longer supported."
 msgstr "Seu SO não possui mais suporte."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:562
+#: src/gs-updates-page.c:567
 msgid "This means that it does not receive security updates."
 msgstr "Isso significa que ele não recebe atualizações de segurança."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:566
+#: src/gs-updates-page.c:571
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "É recomendável que você atualize para uma versão mais recente."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:820
+#: src/gs-updates-page.c:825
 msgid "Charges May Apply"
 msgstr "Podem ser feitas cobranças"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:824
+#: src/gs-updates-page.c:829
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3695,27 +3702,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:828
+#: src/gs-updates-page.c:833
 msgid "Check _Anyway"
 msgstr "Verificar mesmo _assim"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:844
+#: src/gs-updates-page.c:849
 msgid "No Network"
 msgstr "Nenhuma rede"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:848
+#: src/gs-updates-page.c:853
 msgid "Internet access is required to check for updates."
 msgstr "Acesso à internet é necessário para verificar atualizações."
 
-#. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1270
+#: src/gs-updates-page.c:1283
 msgid "Checking…"
 msgstr "Verificando…"
 
-#: src/gs-updates-page.c:1283
+#: src/gs-updates-page.c:1306
 msgid "Check for updates"
 msgstr "Verificação de atualizações"
 
@@ -3725,7 +3731,6 @@ msgstr "Página de atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:94
-#| msgid "Pending update…"
 msgid "Loading Updates…"
 msgstr "Carregando atualizações…"
 
@@ -3735,15 +3740,15 @@ msgid "This could take a while."
 msgstr "Isso pode levar um tempo."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:179
+#: src/gs-updates-page.ui:180
 msgid "Up To Date"
 msgstr "Atualizado"
 
-#: src/gs-updates-page.ui:195
+#: src/gs-updates-page.ui:196
 msgid "Use Mobile Data?"
 msgstr "Usar dados móveis?"
 
-#: src/gs-updates-page.ui:196
+#: src/gs-updates-page.ui:197
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
@@ -3751,67 +3756,67 @@ msgstr ""
 "Verificar atualizações quando se está usando conexão móvel pode resultar em "
 "cobranças extras."
 
-#: src/gs-updates-page.ui:199
+#: src/gs-updates-page.ui:200
 msgid "_Check Anyway"
 msgstr "Verifi_car mesmo assim"
 
-#: src/gs-updates-page.ui:214
+#: src/gs-updates-page.ui:215
 msgid "No Connection"
 msgstr "Sem conexão"
 
-#: src/gs-updates-page.ui:215
+#: src/gs-updates-page.ui:216
 msgid "Go online to check for updates."
 msgstr "Fique online para verificar atualizações."
 
-#: src/gs-updates-page.ui:218
+#: src/gs-updates-page.ui:219
 msgid "_Network Settings"
 msgstr "Co_nfigurações de rede"
 
-#: src/gs-updates-page.ui:244
+#: src/gs-updates-page.ui:245
 msgid "Error"
 msgstr "Erro"
 
-#: src/gs-updates-page.ui:245
+#: src/gs-updates-page.ui:246
 msgid "Updates are automatically managed."
 msgstr "As atualizações são gerenciadas automaticamente."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:292
+#: src/gs-updates-section.c:323
 msgid "Restart & Update"
 msgstr "Reiniciar & atualizar"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:298
+#: src/gs-updates-section.c:329
 msgid "Update All"
 msgstr "Atualizar tudo"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:429
+#: src/gs-updates-section.c:457
 msgid "Integrated Firmware"
 msgstr "Firmware integrado"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:433
+#: src/gs-updates-section.c:462
 msgid "Requires Restart"
 msgstr "Requer reinício"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:437
+#: src/gs-updates-section.c:467
 msgid "Application Updates"
 msgstr "Atualizações de aplicativos"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:441
+#: src/gs-updates-section.c:472
 msgid "Device Firmware"
 msgstr "Firmware de dispositivo"
 
-#: src/gs-updates-section.c:469 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Baixar"
 
