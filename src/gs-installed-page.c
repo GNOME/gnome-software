@@ -638,11 +638,13 @@ gs_installed_page_dispose (GObject *object)
 }
 
 static void
-update_group_visibility_cb (GtkWidget *group)
+update_group_visibility_cb (GtkWidget *group,
+			    GtkWidget *widget,
+			    GtkWidget *list_box)
 {
 	g_autoptr(GList) children = NULL;
 
-	children = gtk_container_get_children (GTK_CONTAINER (group));
+	children = gtk_container_get_children (GTK_CONTAINER (list_box));
 	gtk_widget_set_visible (group, children != NULL);
 }
 
