@@ -35,6 +35,11 @@ struct _GsUpdateMonitor {
 	GNetworkMonitor *network_monitor;
 	guint		 network_changed_handler;
 
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	GPowerProfileMonitor	*power_profile_monitor;  /* (owned) (nullable) */
+	gulong			 power_profile_changed_handler;
+#endif
+
 	guint		 cleanup_notifications_id;	/* at startup */
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
@@ -934,6 +939,18 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("no UPower support, so not doing power level checks");
 	}
 
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	/* never refresh when in power saver mode */
+	if (monitor->power_profile_monitor != NULL) {
+		if (g_power_profile_monitor_get_power_saver_enabled (monitor->power_profile_monitor)) {
+			g_debug ("Not getting updates with power saver enabled");
+			return;
+		}
+	} else {
+		g_debug ("No power profile monitor support, so not doing power profile checks");
+	}
+#endif
+
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
 	last_refreshed = g_date_time_new_from_unix_local (tmp);
 	if (last_refreshed != NULL) {
@@ -1269,6 +1286,26 @@ gs_update_monitor_network_changed_cb (GNetworkMonitor *network_monitor,
 	}
 }
 
+#if GLIB_CHECK_VERSION(2, 69, 1)
+static void
+gs_update_monitor_power_profile_changed_cb (GObject    *object,
+                                            GParamSpec *pspec,
+                                            gpointer    user_data)
+{
+	GsUpdateMonitor *self = GS_UPDATE_MONITOR (user_data);
+
+	if (g_power_profile_monitor_get_power_saver_enabled (self->power_profile_monitor)) {
+		/* Cancel an ongoing refresh if we’re now in power saving mode. */
+		g_cancellable_cancel (self->refresh_cancellable);
+		g_object_unref (self->refresh_cancellable);
+		self->refresh_cancellable = g_cancellable_new ();
+	} else {
+		/* Else, it might be time to check for updates */
+		check_updates (self);
+	}
+}
+#endif
+
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
@@ -1309,13 +1346,22 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	}
 
 	network_monitor = g_network_monitor_get_default ();
-	if (network_monitor == NULL)
-		return;
-	monitor->network_monitor = g_object_ref (network_monitor);
-	monitor->network_changed_handler = g_signal_connect (monitor->network_monitor,
-							     "network-changed",
-							     G_CALLBACK (gs_update_monitor_network_changed_cb),
-							     monitor);
+	if (network_monitor != NULL) {
+		monitor->network_monitor = g_object_ref (network_monitor);
+		monitor->network_changed_handler = g_signal_connect (monitor->network_monitor,
+								     "network-changed",
+								     G_CALLBACK (gs_update_monitor_network_changed_cb),
+								     monitor);
+	}
+
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	monitor->power_profile_monitor = g_power_profile_monitor_dup_default ();
+	if (monitor->power_profile_monitor != NULL)
+		monitor->power_profile_changed_handler = g_signal_connect (monitor->power_profile_monitor,
+									   "notify::power-saver-enabled",
+									   G_CALLBACK (gs_update_monitor_power_profile_changed_cb),
+									   monitor);
+#endif
 }
 
 static void
@@ -1328,6 +1374,11 @@ gs_update_monitor_dispose (GObject *object)
 					     monitor->network_changed_handler);
 		monitor->network_changed_handler = 0;
 	}
+
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	g_clear_signal_handler (&monitor->power_profile_changed_handler, monitor->power_profile_monitor);
+	g_clear_object (&monitor->power_profile_monitor);
+#endif
 
 	g_cancellable_cancel (monitor->cancellable);
 	g_clear_object (&monitor->cancellable);
