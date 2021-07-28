@@ -467,6 +467,7 @@ gchar		*gs_app_get_origin_ui		(GsApp		*app);
 void		 gs_app_set_origin_ui		(GsApp		*app,
 						 const gchar	*origin_ui);
 gchar		*gs_app_get_packaging_format	(GsApp		*app);
+const gchar	*gs_app_get_packaging_format_raw(GsApp *app);
 void		 gs_app_subsume_metadata	(GsApp		*app,
 						 GsApp		*donor);
 GsAppPermissions gs_app_get_permissions		(GsApp		*app);
