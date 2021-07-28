@@ -549,7 +549,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	/* prepare EOS upgrade app + sync initial state */
 
 	/* use stock icon */
-	ic = g_themed_icon_new ("application-x-addon");
+	ic = g_themed_icon_new ("system-component-addon");
 
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");

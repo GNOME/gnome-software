@@ -774,7 +774,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	g_autoptr(GIcon) ic = NULL;
 
 	/* use stock icon */
-	ic = g_themed_icon_new ("application-x-addon");
+	ic = g_themed_icon_new ("system-component-addon");
 
 	/* get existing item from the cache */
 	app = gs_plugin_cache_lookup (plugin, "user/*/os-upgrade/org.fedoraproject.release-rawhide.upgrade/*");
