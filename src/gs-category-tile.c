@@ -29,7 +29,7 @@ struct _GsCategoryTile
 {
 	GtkButton	 parent_instance;
 
-	GsCategory	*cat;  /* (owned) (not nullable) */
+	GsCategory	*category;  /* (owned) (not nullable) */
 	GtkWidget	*label;
 	GtkWidget	*image;
 };
@@ -86,7 +86,7 @@ gs_category_tile_get_category (GsCategoryTile *tile)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY_TILE (tile), NULL);
 
-	return tile->cat;
+	return tile->category;
 }
 
 static void
@@ -94,9 +94,9 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 {
 	/* set labels */
 	gtk_label_set_label (GTK_LABEL (tile->label),
-			     gs_category_get_name (tile->cat));
+			     gs_category_get_name (tile->category));
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				      gs_category_get_icon_name (tile->cat),
+				      gs_category_get_icon_name (tile->category),
 				      GTK_ICON_SIZE_MENU);
 }
 
@@ -115,7 +115,7 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
 
-	if (g_set_object (&tile->cat, cat)) {
+	if (g_set_object (&tile->category, cat)) {
 		gs_category_tile_refresh (tile);
 		g_object_notify_by_pspec (G_OBJECT (tile), obj_props[PROP_CATEGORY]);
 	}
@@ -126,7 +126,7 @@ gs_category_tile_dispose (GObject *object)
 {
 	GsCategoryTile *tile = GS_CATEGORY_TILE (object);
 
-	g_clear_object (&tile->cat);
+	g_clear_object (&tile->category);
 
 	G_OBJECT_CLASS (gs_category_tile_parent_class)->dispose (object);
 }
