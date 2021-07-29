@@ -112,10 +112,26 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 void
 gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 {
+	GtkStyleContext *context;
+
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
 
+	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
+
+	/* Remove the old category ID. */
+	if (tile->category != NULL) {
+		g_autofree gchar *class_name = g_strdup_printf ("category-%s", gs_category_get_id (tile->category));
+		gtk_style_context_remove_class (context, class_name);
+	}
+
 	if (g_set_object (&tile->category, cat)) {
+		g_autofree gchar *class_name = g_strdup_printf ("category-%s", gs_category_get_id (tile->category));
+
+		/* Add the new category’s ID as a CSS class, to get
+		 * category-specific styling. */
+		gtk_style_context_add_class (context, class_name);
+
 		gs_category_tile_refresh (tile);
 		g_object_notify_by_pspec (G_OBJECT (tile), obj_props[PROP_CATEGORY]);
 	}
