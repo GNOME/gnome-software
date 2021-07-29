@@ -6,6 +6,20 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
+/*
+ * SECTION:gs-category-tile
+ * @short_description: A UI tile for presenting a category
+ *
+ * #GsCategoryTile is a UI widget to show a category to the user. It’s generally
+ * aimed to be used in a list box, to provide navigation options to all the
+ * categories.
+ *
+ * It will display the category’s name, and potentially a background image which
+ * is styled to match the category’s content.
+ *
+ * Since: 41
+ */
+
 #include "config.h"
 
 #include "gs-category-tile.h"
@@ -58,6 +72,15 @@ gs_category_tile_set_property (GObject *object, guint prop_id, const GValue *val
 	}
 }
 
+/**
+ * gs_category_tile_get_category:
+ * @tile: a #GsCategoryTile
+ *
+ * Get the value of #GsCategoryTile:category.
+ *
+ * Returns: (transfer none) (not nullable): a category
+ * Since: 41
+ */
 GsCategory *
 gs_category_tile_get_category (GsCategoryTile *tile)
 {
@@ -77,6 +100,15 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 				      GTK_ICON_SIZE_MENU);
 }
 
+/**
+ * gs_category_tile_set_category:
+ * @tile: a #GsCategoryTile
+ * @cat: (transfer none) (not nullable): a #GsCategory
+ *
+ * Set the value of #GsCategoryTile:category to @cat.
+ *
+ * Since: 41
+ */
 void
 gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 {
@@ -138,6 +170,15 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, image);
 }
 
+/**
+ * gs_category_tile_new:
+ * @cat: (transfer none) (not nullable): a #GsCategory
+ *
+ * Create a new #GsCategoryTile to represent @cat.
+ *
+ * Returns: (transfer full) (type GsCategoryTile): a new #GsCategoryTile
+ * Since: 41
+ */
 GtkWidget *
 gs_category_tile_new (GsCategory *cat)
 {
