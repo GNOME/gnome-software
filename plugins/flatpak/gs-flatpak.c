@@ -3708,6 +3708,29 @@ gs_flatpak_add_recent (GsFlatpak *self,
 	return TRUE;
 }
 
+gboolean
+gs_flatpak_url_to_app (GsFlatpak *self,
+		       GsAppList *list,
+		       const gchar *url,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
+	if (!gs_flatpak_rescan_app_data (self, cancellable, error))
+		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
+	if (!gs_appstream_url_to_app (self->plugin, self->silo, list_tmp, url, cancellable, error))
+		return FALSE;
+
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+
+	return TRUE;
+}
+
 const gchar *
 gs_flatpak_get_id (GsFlatpak *self)
 {
