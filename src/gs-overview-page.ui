@@ -91,6 +91,19 @@
                             </child>
 
                             <child>
+                              <object class="GtkFlowBox" id="flowbox_categories">
+                                <property name="visible">True</property>
+                                <property name="margin-top">21</property>
+                                <property name="margin-bottom">6</property>
+                                <property name="row_spacing">14</property>
+                                <property name="column_spacing">14</property>
+                                <property name="homogeneous">True</property>
+                                <property name="max_children_per_line">3</property>
+                                <property name="selection_mode">none</property>
+                              </object>
+                            </child>
+
+                            <child>
                               <object class="GtkLabel" id="popular_heading">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
@@ -143,36 +156,6 @@
                                 <property name="selection-mode">none</property>
                                 <accessibility>
                                   <relation target="recent_heading" type="labelled-by"/>
-                                </accessibility>
-                              </object>
-                            </child>
-
-                            <child>
-                              <object class="GtkLabel" id="category_heading">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Categories</property>
-                                <property name="margin-top">24</property>
-                                <property name="margin-bottom">6</property>
-                                <accessibility>
-                                  <relation target="flowbox_categories" type="label-for"/>
-                                </accessibility>
-                                <style>
-                                  <class name="index-title-alignment-software"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFlowBox" id="flowbox_categories">
-                                <property name="visible">True</property>
-                                <property name="margin-bottom">6</property>
-                                <property name="row_spacing">14</property>
-                                <property name="column_spacing">14</property>
-                                <property name="homogeneous">True</property>
-                                <property name="max_children_per_line">3</property>
-                                <property name="selection_mode">none</property>
-                                <accessibility>
-                                  <relation target="category_heading" type="labelled-by"/>
                                 </accessibility>
                               </object>
                             </child>
