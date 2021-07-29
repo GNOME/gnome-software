@@ -311,17 +311,6 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	return response;
 }
 
-void
-gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, gint scale)
-{
-	cairo_surface_t *surface;
-	surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
-	if (surface == NULL)
-		return;
-	gtk_image_set_from_surface (image, surface);
-	cairo_surface_destroy (surface);
-}
-
 gboolean
 gs_utils_is_current_desktop (const gchar *name)
 {
