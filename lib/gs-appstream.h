@@ -57,6 +57,12 @@ gboolean	 gs_appstream_add_recent		(GsPlugin	*plugin,
 							 guint64	 age,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	gs_appstream_url_to_app			(GsPlugin	*plugin,
+							 XbSilo		*silo,
+							 GsAppList	*list,
+							 const gchar	*url,
+							 GCancellable	*cancellable,
+							 GError		**error);
 void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);
