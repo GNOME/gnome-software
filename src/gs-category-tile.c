@@ -52,13 +52,13 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 }
 
 static void
-gs_category_tile_destroy (GtkWidget *widget)
+gs_category_tile_dispose (GObject *object)
 {
-	GsCategoryTile *tile = GS_CATEGORY_TILE (widget);
+	GsCategoryTile *tile = GS_CATEGORY_TILE (object);
 
 	g_clear_object (&tile->cat);
 
-	GTK_WIDGET_CLASS (gs_category_tile_parent_class)->destroy (widget);
+	G_OBJECT_CLASS (gs_category_tile_parent_class)->dispose (object);
 }
 
 static void
@@ -71,9 +71,10 @@ gs_category_tile_init (GsCategoryTile *tile)
 static void
 gs_category_tile_class_init (GsCategoryTileClass *klass)
 {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_category_tile_destroy;
+	object_class->dispose = gs_category_tile_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-tile.ui");
 
