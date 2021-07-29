@@ -903,6 +903,31 @@ refine_screenshots (GsApp *app, SnapdSnap *snap)
 }
 
 static gboolean
+gs_snap_file_size_include_cb (const gchar *filename,
+			      GFileTest file_kind,
+			      gpointer user_data)
+{
+	return file_kind != G_FILE_TEST_IS_SYMLINK &&
+	       g_strcmp0 (filename, "common") != 0 &&
+	       g_strcmp0 (filename, "current") != 0;
+}
+
+static guint64
+gs_snap_get_app_directory_size (const gchar *snap_name,
+				gboolean is_cache_size,
+				GCancellable *cancellable)
+{
+	g_autofree gchar *filename = NULL;
+
+	if (is_cache_size)
+		filename = g_build_filename (g_get_home_dir (), "snap", snap_name, "common", NULL);
+	else
+		filename = g_build_filename (g_get_home_dir (), "snap", snap_name, NULL);
+
+	return gs_utils_get_file_size (filename, is_cache_size ? NULL : gs_snap_file_size_include_cb, NULL, cancellable);
+}
+
+static gboolean
 refine_app_with_client (GsPlugin             *plugin,
 			SnapdClient          *client,
 			GsApp                *app,
@@ -1063,6 +1088,20 @@ refine_app_with_client (GsPlugin             *plugin,
 	/* load icon if requested */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
 		load_icon (plugin, client, app, snap_name, local_snap, store_snap, cancellable);
+
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
+	    gs_app_is_installed (app) &&
+	    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
+		if (gs_app_get_size_cache_data (app) == GS_APP_SIZE_UNKNOWABLE)
+			gs_app_set_size_cache_data (app, gs_snap_get_app_directory_size (snap_name, TRUE, cancellable));
+		if (gs_app_get_size_user_data (app) == GS_APP_SIZE_UNKNOWABLE)
+			gs_app_set_size_user_data (app, gs_snap_get_app_directory_size (snap_name, FALSE, cancellable));
+
+		if (g_cancellable_is_cancelled (cancellable)) {
+			gs_app_set_size_cache_data (app, GS_APP_SIZE_UNKNOWABLE);
+			gs_app_set_size_user_data (app, GS_APP_SIZE_UNKNOWABLE);
+		}
+	}
 
 	return TRUE;
 }
