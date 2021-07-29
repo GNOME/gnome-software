@@ -428,11 +428,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	else
 		gtk_style_context_remove_class (context, "dimmer-label");
 
-	if (gs_app_get_use_drop_shadow (priv->app))
-		gtk_style_context_add_class (context, "icon-dropshadow");
-	else
-		gtk_style_context_remove_class (context, "icon-dropshadow");
-
 	/* pending label */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:

@@ -40,7 +40,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 	GsSummaryTile *tile = GS_SUMMARY_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
 	AtkObject *accessible;
-	GtkStyleContext *context;
 	g_autoptr(GIcon) icon = NULL;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
@@ -64,12 +63,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 					 gtk_widget_get_scale_factor (tile->image),
 					 "system-component-application");
 	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_DIALOG);
-
-	context = gtk_widget_get_style_context (tile->image);
-	if (gs_app_get_use_drop_shadow (app))
-		gtk_style_context_add_class (context, "icon-dropshadow");
-	else
-		gtk_style_context_remove_class (context, "icon-dropshadow");
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
