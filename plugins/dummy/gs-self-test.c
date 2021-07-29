@@ -230,7 +230,8 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (ret);
 	array = gs_app_get_key_colors (app);
-	g_assert_cmpint (array->len, >=, 3);
+	g_assert_cmpint (array->len, <=, 3);
+	g_assert_cmpint (array->len, >, 0);
 
 	/* check values are in range */
 	for (i = 0; i < array->len; i++) {
