@@ -22,6 +22,42 @@ struct _GsCategoryTile
 
 G_DEFINE_TYPE (GsCategoryTile, gs_category_tile, GTK_TYPE_BUTTON)
 
+typedef enum {
+	PROP_CATEGORY = 1,
+} GsCategoryTileProperty;
+
+static GParamSpec *obj_props[PROP_CATEGORY + 1] = { NULL, };
+
+static void
+gs_category_tile_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsCategoryTile *self = GS_CATEGORY_TILE (object);
+
+	switch ((GsCategoryTileProperty) prop_id) {
+	case PROP_CATEGORY:
+		g_value_set_object (value, gs_category_tile_get_category (self));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_category_tile_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsCategoryTile *self = GS_CATEGORY_TILE (object);
+
+	switch ((GsCategoryTileProperty) prop_id) {
+	case PROP_CATEGORY:
+		gs_category_tile_set_category (self, g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 GsCategory *
 gs_category_tile_get_category (GsCategoryTile *tile)
 {
@@ -47,8 +83,10 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
 
-	g_set_object (&tile->cat, cat);
-	gs_category_tile_refresh (tile);
+	if (g_set_object (&tile->cat, cat)) {
+		gs_category_tile_refresh (tile);
+		g_object_notify_by_pspec (G_OBJECT (tile), obj_props[PROP_CATEGORY]);
+	}
 }
 
 static void
@@ -74,7 +112,25 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_category_tile_get_property;
+	object_class->set_property = gs_category_tile_set_property;
 	object_class->dispose = gs_category_tile_dispose;
+
+	/**
+	 * GsCategoryTile:category: (not nullable)
+	 *
+	 * The category to display in this tile.
+	 *
+	 * This must not be %NULL.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_CATEGORY] =
+		g_param_spec_object ("category", NULL, NULL,
+				     GS_TYPE_CATEGORY,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-tile.ui");
 
@@ -85,10 +141,7 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 GtkWidget *
 gs_category_tile_new (GsCategory *cat)
 {
-	GsCategoryTile *tile;
-
-	tile = g_object_new (GS_TYPE_CATEGORY_TILE, NULL);
-	gs_category_tile_set_category (tile, cat);
-
-	return GTK_WIDGET (tile);
+	return g_object_new (GS_TYPE_CATEGORY_TILE,
+			     "category", cat,
+			     NULL);
 }
