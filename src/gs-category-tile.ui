@@ -10,20 +10,18 @@
     </style>
     <child>
       <object class="GtkBox" id="box">
+        <property name="halign">center</property>
         <property name="visible">True</property>
         <property name="orientation">horizontal</property>
-        <property name="spacing">12</property>
-        <property name="margin_top">9</property>
-        <property name="margin_bottom">9</property>
-        <property name="margin_start">9</property>
-        <property name="margin_end">9</property>
+        <property name="spacing">8</property>
         <child>
           <object class="GtkImage" id="image">
             <property name="visible">True</property>
+            <!-- Placeholder; the actual icon is set in code -->
             <property name="icon_name">folder-music-symbolic</property>
-            <property name="icon_size">1</property>
+            <property name="icon_size">5</property><!-- GTK_ICON_SIZE_DND -->
             <style>
-              <class name="dim-label"/>
+              <class name="icon-dropshadow"/>
             </style>
           </object>
         </child>

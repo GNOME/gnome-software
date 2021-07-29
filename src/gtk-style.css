@@ -179,8 +179,52 @@ summary-tile {
 }
 
 .view.category-tile {
-    padding-top: 2px;
-    padding-bottom: 2px;
+	padding: 20px 40px;
+	border-radius: 8px;
+	font-size: larger;
+	font-weight: bold;
+	text-shadow: none;
+}
+
+/* Disable highlight on hover as it doesn’t make these icons look good */
+.view.category-tile:hover { -gtk-icon-effect: none }
+
+/* Styling for specific category buttons. */
+.category-tile.category-create {
+	border-color: #9072ce;
+	background: linear-gradient(180deg, #ce8cd7 0%, #2861c6 100%);
+	color: #ffffff;
+}
+
+.category-tile.category-develop {
+	border-color: #353040;
+	background: #5e5c64;
+	color: #ffffff;
+}
+
+.category-tile.category-learn {
+	border-color: #26a269;
+	background: linear-gradient(180deg, #2ec27e 0%, #27a76c 100%);
+	color: #ffffff;
+}
+
+.category-tile.category-play {
+	border-color: #f1b28a;
+	background: linear-gradient(90deg, rgba(248,217,169,1) 0%, rgba(235,95,195,1) 50%, rgba(9,9,121,1) 100%);
+	color: #393484;
+}
+
+.category-tile.category-socialize {
+	border-color: #db3371;
+	background: linear-gradient(90deg, #ef4e9b 0%, #f77466 100%);
+	color: #572f15;
+}
+
+.category-tile.category-work {
+	border-color: #efd185;
+	background: url("resource:///org/gnome/Software/work-category-background.png");
+	background-repeat: repeat;
+	color: #1c71d8;
 }
 
 .app-list {

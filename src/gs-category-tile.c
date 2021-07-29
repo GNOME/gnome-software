@@ -97,7 +97,7 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 			     gs_category_get_name (tile->category));
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 				      gs_category_get_icon_name (tile->category),
-				      GTK_ICON_SIZE_MENU);
+				      GTK_ICON_SIZE_DND);
 }
 
 /**
