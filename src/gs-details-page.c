@@ -773,8 +773,10 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GtkWidget *row = gs_origin_popover_row_new (app);
 		gtk_widget_show (row);
 		if (app == self->app || (
-		    gs_app_get_bundle_kind (app) == gs_app_get_bundle_kind (self->app) &&
-		    gs_app_get_scope (app) == gs_app_get_scope (self->app) &&
+		    (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN ||
+		    gs_app_get_bundle_kind (app) == gs_app_get_bundle_kind (self->app)) &&
+		    (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN ||
+		    gs_app_get_scope (app) == gs_app_get_scope (self->app)) &&
 		    g_strcmp0 (gs_app_get_origin (app), gs_app_get_origin (self->app)) == 0 &&
 		    g_strcmp0 (gs_app_get_branch (app), gs_app_get_branch (self->app)) == 0 &&
 		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0)) {
