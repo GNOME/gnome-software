@@ -419,7 +419,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	icon = gs_app_get_icon_for_size (priv->app,
 					 gtk_image_get_pixel_size (GTK_IMAGE (priv->image)),
 					 gtk_widget_get_scale_factor (priv->image),
-					 "application-x-executable");
+					 "system-component-application");
 	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon, GTK_ICON_SIZE_DIALOG);
 
 	context = gtk_widget_get_style_context (priv->image);
@@ -427,11 +427,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		gtk_style_context_add_class (context, "dimmer-label");
 	else
 		gtk_style_context_remove_class (context, "dimmer-label");
-
-	if (gs_app_get_use_drop_shadow (priv->app))
-		gtk_style_context_add_class (context, "icon-dropshadow");
-	else
-		gtk_style_context_remove_class (context, "icon-dropshadow");
 
 	/* pending label */
 	switch (gs_app_get_state (priv->app)) {

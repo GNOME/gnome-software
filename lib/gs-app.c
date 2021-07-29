@@ -2011,46 +2011,6 @@ gs_app_remove_all_icons (GsApp *app)
 }
 
 /**
- * gs_app_get_use_drop_shadow:
- * @app: a #GsApp
- *
- * Uses a heuristic to work out if the application pixbuf should have a drop
- * shadow applied.
- *
- * Returns: %TRUE if a drop shadow should be applied
- *
- * Since: 3.34
- **/
-gboolean
-gs_app_get_use_drop_shadow (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	GIcon *icon;
-	const gchar * const *names;
-
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-
-	/* guess */
-	if (priv->icons == NULL || priv->icons->len == 0)
-		return TRUE;
-
-	icon = g_ptr_array_index (priv->icons, 0);
-
-	/* Apply drop shadows to non-themed icons. */
-	if (!G_IS_THEMED_ICON (icon))
-		return TRUE;
-
-	/* Don’t apply drop shadows to symbolic icons. */
-	names = g_themed_icon_get_names (G_THEMED_ICON (icon));
-	for (gsize i = 0; names[i] != NULL; i++) {
-		if (g_str_has_suffix (names[i], "-symbolic"))
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
-/**
  * gs_app_get_agreement:
  * @app: a #GsApp
  *

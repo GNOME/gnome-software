@@ -306,7 +306,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
 	/* create icon */
-	icon = g_themed_icon_new ("application-x-firmware");
+	icon = g_themed_icon_new ("system-component-firmware");
 	gs_app_add_icon (app, icon);
 	gs_fwupd_app_set_from_device (app, dev);
 	gs_fwupd_app_set_from_release (app, rel);

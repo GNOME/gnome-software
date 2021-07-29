@@ -212,7 +212,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
 						 gtk_widget_get_scale_factor (dialog->image_icon),
-						 "application-x-executable");
+						 "system-component-application");
 	}
 
 	gtk_image_set_pixel_size (GTK_IMAGE (dialog->image_icon), icon_size);

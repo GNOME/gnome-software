@@ -3474,7 +3474,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				if (gs_app_has_quirk (app, GS_APP_QUIRK_HAS_SOURCE))
 					icon_name = "x-package-repository";
 				else
-					icon_name = "application-x-executable";
+					icon_name = "system-component-application";
 				ic = g_themed_icon_new (icon_name);
 				gs_app_add_icon (app, ic);
 			}

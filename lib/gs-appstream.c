@@ -1713,26 +1713,26 @@ gs_appstream_component_add_extra_info (XbBuilderNode *component)
 	case AS_COMPONENT_KIND_DRIVER:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Driver");
-		gs_appstream_component_add_icon (component, "application-x-firmware-symbolic");
+		gs_appstream_component_add_icon (component, "system-component-driver");
 		break;
 	case AS_COMPONENT_KIND_LOCALIZATION:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Localization");
-		gs_appstream_component_add_icon (component, "accessories-dictionary-symbolic");
+		gs_appstream_component_add_icon (component, "system-component-language");
 		break;
 	case AS_COMPONENT_KIND_CODEC:
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "Codec");
-		gs_appstream_component_add_icon (component, "application-x-addon");
+		gs_appstream_component_add_icon (component, "system-component-codecs");
 		break;
 	case AS_COMPONENT_KIND_INPUT_METHOD:
 		gs_appstream_component_add_keyword (component, kind);
 		gs_appstream_component_add_category (component, "Addon");
 		gs_appstream_component_add_category (component, "InputSource");
-		gs_appstream_component_add_icon (component, "system-run-symbolic");
+		gs_appstream_component_add_icon (component, "system-component-input-sources");
 		break;
 	case AS_COMPONENT_KIND_FIRMWARE:
-		gs_appstream_component_add_icon (component, "system-run-symbolic");
+		gs_appstream_component_add_icon (component, "system-component-firmware");
 		break;
 	default:
 		break;

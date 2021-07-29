@@ -356,7 +356,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 				    "Framework for applications");
 		gs_app_set_version (app, flatpak_ref_get_branch (FLATPAK_REF (xref)));
-		icon = g_themed_icon_new ("system-run-symbolic");
+		icon = g_themed_icon_new ("system-component-runtime");
 		gs_app_add_icon (app, icon);
 	}
 
@@ -3308,7 +3308,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* Fallback */
 	if (icon_data64 == NULL && icon_data128 == NULL) {
-		g_autoptr(GIcon) icon = g_themed_icon_new ("application-x-executable");
+		g_autoptr(GIcon) icon = g_themed_icon_new ("system-component-application");
 		gs_app_add_icon (app, icon);
 	}
 
