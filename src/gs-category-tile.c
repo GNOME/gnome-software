@@ -29,7 +29,7 @@ struct _GsCategoryTile
 {
 	GtkButton	 parent_instance;
 
-	GsCategory	*cat;
+	GsCategory	*cat;  /* (owned) (not nullable) */
 	GtkWidget	*label;
 	GtkWidget	*image;
 };
