@@ -617,6 +617,33 @@ gs_shell_change_mode (GsShell *shell,
 		gs_page_scroll_up (page);
 }
 
+static gboolean
+overlay_get_child_position_cb (GtkOverlay   *overlay,
+                               GtkWidget    *widget,
+                               GdkRectangle *allocation,
+                               gpointer      user_data)
+{
+	GsShell *self = GS_SHELL (user_data);
+	GtkRequisition overlay_natural_size;
+
+	/* Override the default position of the in-app notification overlay
+	 * to position it below the header bar. The overlay can’t easily be
+	 * moved in the widget hierarchy so it doesn’t have the header bar as
+	 * a child, since there are several header bars in different pages of
+	 * a HdyDeck. */
+	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
+
+	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
+
+	allocation->width = overlay_natural_size.width;
+	allocation->height = overlay_natural_size.height;
+
+	allocation->x = gtk_widget_get_allocated_width (GTK_WIDGET (overlay)) / 2 - overlay_natural_size.width / 2;
+	allocation->y = gtk_widget_get_allocated_height (GTK_WIDGET (self->main_header));
+
+	return TRUE;
+}
+
 static void
 gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -2542,6 +2569,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
+	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
 }
 
 static void

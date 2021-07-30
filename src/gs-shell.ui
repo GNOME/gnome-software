@@ -37,6 +37,7 @@
             <property name="halign">fill</property>
             <property name="valign">fill</property>
             <property name="vexpand">True</property>
+            <signal name="get-child-position" handler="overlay_get_child_position_cb"/>
             <child type="overlay">
               <object class="GtkRevealer" id="notification_event">
                 <property name="visible">True</property>
