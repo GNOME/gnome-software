@@ -23,7 +23,7 @@
 
 struct _GsReposDialog
 {
-	GtkDialog	 parent_instance;
+	HdyWindow	 parent_instance;
 	GSettings	*settings;
 	GsApp		*third_party_repo;
 	GHashTable	*sections; /* gchar * ~> GsReposSection * */
@@ -31,13 +31,12 @@ struct _GsReposDialog
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*status_empty;
-	GtkWidget	*label_header;
 	GtkWidget	*content_page;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
 };
 
-G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, HDY_TYPE_WINDOW)
 
 typedef struct {
 	GsReposDialog	*dialog;
@@ -56,6 +55,35 @@ install_remove_data_free (InstallRemoveData *data)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(InstallRemoveData, install_remove_data_free);
+
+static gboolean
+key_press_event_cb (GtkWidget            *sender,
+                    GdkEvent             *event,
+                    HdyPreferencesWindow *self)
+{
+	guint keyval;
+	GdkModifierType state;
+	GdkKeymap *keymap;
+	GdkEventKey *key_event = (GdkEventKey *) event;
+
+	gdk_event_get_state (event, &state);
+
+	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
+
+	gdk_keymap_translate_keyboard_state (keymap,
+					     key_event->hardware_keycode,
+					     state,
+					     key_event->group,
+					     &keyval, NULL, NULL, NULL);
+
+	if (keyval == GDK_KEY_Escape) {
+		gtk_window_close (GTK_WINDOW (self));
+
+		return GDK_EVENT_STOP;
+	}
+
+	return GDK_EVENT_PROPAGATE;
+}
 
 static void
 repo_enabled_cb (GObject *source,
@@ -411,8 +439,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			g_warning ("failed to get sources: %s", error->message);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header),
-		                             "dim-label");
 		return;
 	}
 
@@ -427,12 +453,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("no sources to show");
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header), "dim-label");
 		return;
 	}
-
-	gtk_style_context_remove_class (gtk_widget_get_style_context (dialog->label_header),
-	                                "dim-label");
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
@@ -679,10 +701,11 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
+
+	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 }
 
 GtkWidget *
@@ -691,7 +714,6 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 	GsReposDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_REPOS_DIALOG,
-			       "use-header-bar", TRUE,
 			       "transient-for", parent,
 			       "modal", TRUE,
 			       NULL);
