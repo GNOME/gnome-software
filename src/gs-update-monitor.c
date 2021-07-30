@@ -26,6 +26,7 @@ struct _GsUpdateMonitor {
 
 	GApplication	*application;
 	GCancellable    *cancellable;
+	GCancellable	*refresh_cancellable;
 	GSettings	*settings;
 	GsPluginLoader	*plugin_loader;
 	GDBusProxy	*proxy_upower;
@@ -33,7 +34,11 @@ struct _GsUpdateMonitor {
 
 	GNetworkMonitor *network_monitor;
 	guint		 network_changed_handler;
-	GCancellable    *network_cancellable;
+
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	GPowerProfileMonitor	*power_profile_monitor;  /* (owned) (nullable) */
+	gulong			 power_profile_changed_handler;
+#endif
 
 	guint		 cleanup_notifications_id;	/* at startup */
 	guint		 check_startup_id;		/* 60s after startup */
@@ -934,6 +939,18 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("no UPower support, so not doing power level checks");
 	}
 
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	/* never refresh when in power saver mode */
+	if (monitor->power_profile_monitor != NULL) {
+		if (g_power_profile_monitor_get_power_saver_enabled (monitor->power_profile_monitor)) {
+			g_debug ("Not getting updates with power saver enabled");
+			return;
+		}
+	} else {
+		g_debug ("No power profile monitor support, so not doing power profile checks");
+	}
+#endif
+
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
 	last_refreshed = g_date_time_new_from_unix_local (tmp);
 	if (last_refreshed != NULL) {
@@ -969,7 +986,7 @@ check_updates (GsUpdateMonitor *monitor)
 					 "age", (guint64) (60 * 60 * 24),
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
-					    monitor->network_cancellable,
+					    monitor->refresh_cancellable,
 					    refresh_cache_finished_cb,
 					    monitor);
 }
@@ -1263,11 +1280,31 @@ gs_update_monitor_network_changed_cb (GNetworkMonitor *network_monitor,
 	/* cancel an on-going refresh if we're now in a metered connection */
 	if (!g_settings_get_boolean (monitor->settings, "refresh-when-metered") &&
 	    g_network_monitor_get_network_metered (network_monitor)) {
-		g_cancellable_cancel (monitor->network_cancellable);
-		g_object_unref (monitor->network_cancellable);
-		monitor->network_cancellable = g_cancellable_new ();
+		g_cancellable_cancel (monitor->refresh_cancellable);
+		g_object_unref (monitor->refresh_cancellable);
+		monitor->refresh_cancellable = g_cancellable_new ();
 	}
 }
+
+#if GLIB_CHECK_VERSION(2, 69, 1)
+static void
+gs_update_monitor_power_profile_changed_cb (GObject    *object,
+                                            GParamSpec *pspec,
+                                            gpointer    user_data)
+{
+	GsUpdateMonitor *self = GS_UPDATE_MONITOR (user_data);
+
+	if (g_power_profile_monitor_get_power_saver_enabled (self->power_profile_monitor)) {
+		/* Cancel an ongoing refresh if we’re now in power saving mode. */
+		g_cancellable_cancel (self->refresh_cancellable);
+		g_object_unref (self->refresh_cancellable);
+		self->refresh_cancellable = g_cancellable_new ();
+	} else {
+		/* Else, it might be time to check for updates */
+		check_updates (self);
+	}
+}
+#endif
 
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
@@ -1284,11 +1321,12 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	monitor->check_startup_id =
 		g_timeout_add_seconds (60, check_updates_on_startup_cb, monitor);
 
-	/* we use two cancellables because one can be cancelled by any network
-	 * changes to a metered connection, and this shouldn't intervene with other
-	 * operations */
+	/* we use two cancellables because we want to be able to cancel refresh
+	 * operations more opportunistically than other operations, since
+	 * they’re less important and cancelling them doesn’t result in much
+	 * wasted work */
 	monitor->cancellable = g_cancellable_new ();
-	monitor->network_cancellable = g_cancellable_new ();
+	monitor->refresh_cancellable = g_cancellable_new ();
 
 	/* connect to UPower to get the system power state */
 	monitor->proxy_upower = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
@@ -1308,13 +1346,22 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	}
 
 	network_monitor = g_network_monitor_get_default ();
-	if (network_monitor == NULL)
-		return;
-	monitor->network_monitor = g_object_ref (network_monitor);
-	monitor->network_changed_handler = g_signal_connect (monitor->network_monitor,
-							     "network-changed",
-							     G_CALLBACK (gs_update_monitor_network_changed_cb),
-							     monitor);
+	if (network_monitor != NULL) {
+		monitor->network_monitor = g_object_ref (network_monitor);
+		monitor->network_changed_handler = g_signal_connect (monitor->network_monitor,
+								     "network-changed",
+								     G_CALLBACK (gs_update_monitor_network_changed_cb),
+								     monitor);
+	}
+
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	monitor->power_profile_monitor = g_power_profile_monitor_dup_default ();
+	if (monitor->power_profile_monitor != NULL)
+		monitor->power_profile_changed_handler = g_signal_connect (monitor->power_profile_monitor,
+									   "notify::power-saver-enabled",
+									   G_CALLBACK (gs_update_monitor_power_profile_changed_cb),
+									   monitor);
+#endif
 }
 
 static void
@@ -1328,10 +1375,15 @@ gs_update_monitor_dispose (GObject *object)
 		monitor->network_changed_handler = 0;
 	}
 
+#if GLIB_CHECK_VERSION(2, 69, 1)
+	g_clear_signal_handler (&monitor->power_profile_changed_handler, monitor->power_profile_monitor);
+	g_clear_object (&monitor->power_profile_monitor);
+#endif
+
 	g_cancellable_cancel (monitor->cancellable);
 	g_clear_object (&monitor->cancellable);
-	g_cancellable_cancel (monitor->network_cancellable);
-	g_clear_object (&monitor->network_cancellable);
+	g_cancellable_cancel (monitor->refresh_cancellable);
+	g_clear_object (&monitor->refresh_cancellable);
 
 	stop_updates_check (monitor);
 	stop_upgrades_check (monitor);
