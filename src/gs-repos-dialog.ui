@@ -57,23 +57,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow">
+              <object class="HdyPreferencesPage" id="content_page">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
-                <property name="shadow_type">none</property>
-                <child>
-                  <object class="GtkBox" id="content_box">
-                    <property name="visible">True</property>
-                    <property name="margin_start">52</property>
-                    <property name="margin_end">52</property>
-                    <property name="margin_top">32</property>
-                    <property name="margin_bottom">40</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">20</property>
-                  </object>
-                </child>
               </object>
               <packing>
                 <property name="name">sources</property>

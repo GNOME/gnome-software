@@ -32,7 +32,7 @@ struct _GsReposDialog
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*status_empty;
 	GtkWidget	*label_header;
-	GtkWidget	*content_box;
+	GtkWidget	*content_page;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
 };
@@ -418,7 +418,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* remove previous */
 	g_hash_table_remove_all (dialog->sections);
-	gs_container_remove_all (GTK_CONTAINER (dialog->content_box));
+	gs_container_remove_all (GTK_CONTAINER (dialog->content_page));
 
 	/* stop the spinner */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
@@ -445,10 +445,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	sections = g_list_sort (sections, repos_dialog_compare_sections_cb);
 	for (GList *link = sections; link; link = g_list_next (link)) {
 		GtkWidget *section = link->data;
-		gtk_container_add (GTK_CONTAINER (dialog->content_box), section);
+		gtk_container_add (GTK_CONTAINER (dialog->content_page), section);
 	}
 
-	gtk_widget_set_visible (dialog->content_box, sections != NULL);
+	gtk_widget_set_visible (dialog->content_page, sections != NULL);
 
 	if (other_repos) {
 		GsReposSection *section;
@@ -498,7 +498,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			gs_repos_section_add_repo (section, repo);
 		}
 
-		gtk_container_add (GTK_CONTAINER (dialog->content_box), GTK_WIDGET (section));
+		gtk_container_add (GTK_CONTAINER (dialog->content_page), GTK_WIDGET (section));
 	}
 }
 
@@ -680,7 +680,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_box);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
 }
