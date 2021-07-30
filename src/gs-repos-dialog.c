@@ -30,7 +30,7 @@ struct _GsReposDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
-	GtkWidget	*label_empty;
+	GtkWidget	*status_empty;
 	GtkWidget	*label_header;
 	GtkWidget	*content_box;
 	GtkWidget	*spinner;
@@ -665,7 +665,7 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	   %s gets replaced by the name of the actual distro, e.g. Fedora. */
 	label_empty_text = g_strdup_printf (_("These repositories supplement the default software provided by %s."),
 	                                    os_name);
-	gtk_label_set_text (GTK_LABEL (dialog->label_empty), label_empty_text);
+	hdy_status_page_set_description (HDY_STATUS_PAGE (dialog->status_empty), label_empty_text);
 }
 
 static void
@@ -678,7 +678,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_box);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
