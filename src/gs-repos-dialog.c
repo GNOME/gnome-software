@@ -349,11 +349,9 @@ add_repo (GsReposDialog *dialog,
 		origin_ui = g_strdup (gs_app_get_management_plugin (repo));
 	section = g_hash_table_lookup (dialog->sections, origin_ui);
 	if (section == NULL) {
-		section = gs_repos_section_new (dialog->plugin_loader, origin_ui);
-		g_object_set (G_OBJECT (section),
-			      "halign", GTK_ALIGN_FILL,
-			      "hexpand", TRUE,
-			      NULL);
+		section = gs_repos_section_new (dialog->plugin_loader);
+		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
+						 origin_ui);
 		g_signal_connect_object (section, "remove-clicked",
 					 G_CALLBACK (repo_section_remove_clicked_cb), dialog, 0);
 		g_signal_connect_object (section, "switch-clicked",
@@ -384,8 +382,8 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 	if (res != 0)
 		return res;
 
-	title_sort_key_a = gs_utils_sort_key (gs_repos_section_get_title (section_a));
-	title_sort_key_b = gs_utils_sort_key (gs_repos_section_get_title (section_b));
+	title_sort_key_a = gs_utils_sort_key (hdy_preferences_group_get_title (HDY_PREFERENCES_GROUP (section_a)));
+	title_sort_key_b = gs_utils_sort_key (hdy_preferences_group_get_title (HDY_PREFERENCES_GROUP (section_b)));
 
 	return g_strcmp0 (title_sort_key_a, title_sort_key_b);
 }
@@ -459,11 +457,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		g_autofree gchar *anchor = NULL;
 		g_autofree gchar *hint = NULL;
 
-		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, _("Fedora Third Party Repositories")));
-		g_object_set (G_OBJECT (section),
-			      "halign", GTK_ALIGN_FILL,
-			      "hexpand", TRUE,
-			      NULL);
+		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader));
+		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
+						 _("Fedora Third Party Repositories"));
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);

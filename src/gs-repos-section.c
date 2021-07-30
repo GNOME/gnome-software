@@ -15,14 +15,14 @@
 
 struct _GsReposSection
 {
-	GtkBox		 parent_instance;
-	GtkWidget	*title;
-	GtkListBox	*list;
-	GsPluginLoader	*plugin_loader;
-	gchar		*sort_key;
+	HdyPreferencesGroup	 parent_instance;
+	GtkWidget		*title;
+	GtkListBox		*list;
+	GsPluginLoader		*plugin_loader;
+	gchar			*sort_key;
 };
 
-G_DEFINE_TYPE (GsReposSection, gs_repos_section, GTK_TYPE_BOX)
+G_DEFINE_TYPE (GsReposSection, gs_repos_section, HDY_TYPE_PREFERENCES_GROUP)
 
 enum {
 	SIGNAL_REMOVE_CLICKED,
@@ -113,34 +113,10 @@ static void
 gs_repos_section_init (GsReposSection *self)
 {
 	GtkStyleContext *style_context;
-	PangoAttrList *attrs;
-
-	attrs = pango_attr_list_new ();
-	pango_attr_list_insert (attrs, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-
-	self->title = gtk_label_new ("");
-	g_object_set (G_OBJECT (self->title),
-		      "visible", TRUE,
-		      "halign", GTK_ALIGN_START,
-		      "valign", GTK_ALIGN_CENTER,
-		      "xalign", 0.0,
-		      "yalign", 0.5,
-		      "attributes", attrs,
-		      NULL);
-
-	pango_attr_list_unref (attrs);
-
-	gtk_box_pack_start (GTK_BOX (self), self->title, FALSE, FALSE, 0);
 
 	self->list = GTK_LIST_BOX (gtk_list_box_new ());
 	g_object_set (G_OBJECT (self->list),
 		      "visible", TRUE,
-		      "halign", GTK_ALIGN_FILL,
-		      "hexpand", TRUE,
-		      "valign", GTK_ALIGN_CENTER,
-		      "vexpand", TRUE,
-		      "margin-top", 4,
-		      "margin-bottom", 4,
 		      "selection-mode", GTK_SELECTION_NONE,
 		      NULL);
 	gtk_list_box_set_sort_func (self->list, _list_sort_func, self, NULL);
@@ -148,26 +124,21 @@ gs_repos_section_init (GsReposSection *self)
 	style_context = gtk_widget_get_style_context (GTK_WIDGET (self->list));
 	gtk_style_context_add_class (style_context, "content");
 
-	gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (self->list), TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (self), GTK_WIDGET (self->list));
 
 	g_signal_connect (self->list, "row-activated",
 			  G_CALLBACK (gs_repos_section_row_activated_cb), self);
 }
 
 GtkWidget *
-gs_repos_section_new (GsPluginLoader *plugin_loader,
-		      const gchar *title)
+gs_repos_section_new (GsPluginLoader *plugin_loader)
 {
 	GsReposSection *self;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 
-	self = g_object_new (GS_TYPE_REPOS_SECTION,
-			     "orientation", GTK_ORIENTATION_VERTICAL,
-			     "spacing", 8,
-			     NULL);
+	self = g_object_new (GS_TYPE_REPOS_SECTION, NULL);
 
-	gtk_label_set_text (GTK_LABEL (self->title), title);
 	self->plugin_loader = g_object_ref (plugin_loader);
 
 	return GTK_WIDGET (self);
@@ -197,14 +168,6 @@ gs_repos_section_add_repo (GsReposSection *self,
 
 	gtk_list_box_prepend (self->list, row);
 	gtk_widget_show (row);
-}
-
-const gchar *
-gs_repos_section_get_title (GsReposSection *self)
-{
-	g_return_val_if_fail (GS_IS_REPOS_SECTION (self), NULL);
-
-	return gtk_label_get_text (GTK_LABEL (self->title));
 }
 
 const gchar *
