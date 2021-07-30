@@ -107,13 +107,12 @@ gs_repos_section_class_init (GsReposSectionClass *klass)
 		              0,
 		              NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
 		              G_TYPE_NONE, 1, GS_TYPE_REPO_ROW);
-
-	gtk_widget_class_set_css_name (GTK_WIDGET_CLASS (klass), "repos-section");
 }
 
 static void
 gs_repos_section_init (GsReposSection *self)
 {
+	GtkStyleContext *style_context;
 	PangoAttrList *attrs;
 
 	attrs = pango_attr_list_new ();
@@ -145,6 +144,9 @@ gs_repos_section_init (GsReposSection *self)
 		      "selection-mode", GTK_SELECTION_NONE,
 		      NULL);
 	gtk_list_box_set_sort_func (self->list, _list_sort_func, self, NULL);
+
+	style_context = gtk_widget_get_style_context (GTK_WIDGET (self->list));
+	gtk_style_context_add_class (style_context, "content");
 
 	gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (self->list), TRUE, TRUE, 0);
 
