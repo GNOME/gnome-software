@@ -1460,7 +1460,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 		return;
 	priv->name_quality = quality;
 	if (_g_set_str (&priv->name, name))
-		g_object_notify_by_pspec (G_OBJECT (app), obj_props[PROP_NAME]);
+		gs_app_queue_notify (app, obj_props[PROP_NAME]);
 }
 
 /**
@@ -2396,7 +2396,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 		return;
 	priv->summary_quality = quality;
 	if (_g_set_str (&priv->summary, summary))
-		g_object_notify_by_pspec (G_OBJECT (app), obj_props[PROP_SUMMARY]);
+		gs_app_queue_notify (app, obj_props[PROP_SUMMARY]);
 }
 
 /**
