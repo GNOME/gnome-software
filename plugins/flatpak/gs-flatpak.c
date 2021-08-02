@@ -2514,6 +2514,16 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 	return TRUE;
 }
 
+static guint64
+gs_flatpak_get_app_directory_size (GsApp *app,
+				   const gchar *subdir_name,
+				   GCancellable *cancellable)
+{
+	g_autofree gchar *filename = NULL;
+	filename = g_build_filename (g_get_home_dir (), ".var", "app", gs_app_get_id (app), subdir_name, NULL);
+	return gs_utils_get_file_size (filename, NULL, NULL, cancellable);
+}
+
 static gboolean
 gs_plugin_refine_item_size (GsFlatpak *self,
 			    GsApp *app,
@@ -3004,6 +3014,21 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 				g_propagate_error (error, g_steal_pointer (&error_local));
 				return FALSE;
 			}
+		}
+	}
+
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
+	    gs_app_is_installed (app) &&
+	    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
+		if (gs_app_get_size_cache_data (app) == GS_APP_SIZE_UNKNOWABLE)
+			gs_app_set_size_cache_data (app, gs_flatpak_get_app_directory_size (app, "cache", cancellable));
+		if (gs_app_get_size_user_data (app) == GS_APP_SIZE_UNKNOWABLE)
+			gs_app_set_size_user_data (app, gs_flatpak_get_app_directory_size (app, "config", cancellable) +
+							gs_flatpak_get_app_directory_size (app, "data", cancellable));
+
+		if (g_cancellable_is_cancelled (cancellable)) {
+			gs_app_set_size_cache_data (app, GS_APP_SIZE_UNKNOWABLE);
+			gs_app_set_size_user_data (app, GS_APP_SIZE_UNKNOWABLE);
 		}
 	}
 

@@ -407,9 +407,19 @@ void		 gs_app_add_provided_item	(GsApp		*app,
 guint64		 gs_app_get_size_installed	(GsApp		*app);
 void		 gs_app_set_size_installed	(GsApp		*app,
 						 guint64	 size_installed);
+guint64		 gs_app_get_size_installed_dependencies
+						(GsApp		*app);
+guint64		 gs_app_get_size_user_data	(GsApp		*app);
+void		 gs_app_set_size_user_data	(GsApp		*app,
+						 guint64	 size_user_data);
+guint64		 gs_app_get_size_cache_data	(GsApp		*app);
+void		 gs_app_set_size_cache_data	(GsApp		*app,
+						 guint64	 size_cache_data);
 guint64		 gs_app_get_size_download	(GsApp		*app);
 void		 gs_app_set_size_download	(GsApp		*app,
 						 guint64	 size_download);
+guint64		 gs_app_get_size_download_dependencies
+						(GsApp		*app);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);
 void		 gs_app_add_addon		(GsApp		*app,

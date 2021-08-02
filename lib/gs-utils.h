@@ -106,6 +106,29 @@ void		 gs_utils_pixbuf_blur		(GdkPixbuf	*src,
 						 guint		radius,
 						 guint		iterations);
 
+/**
+ * GsFileSizeIncludeFunc:
+ * @filename: file name to check
+ * @file_kind: the file kind, one of #GFileTest enums
+ * @user_data: a user data passed to the gs_utils_get_file_size()
+ *
+ * Check whether include the @filename in the size calculation.
+ * The @filename is a relative path to the file name passed to
+ * the #GsFileSizeIncludeFunc.
+ *
+ * Returns: Whether to include the @filename in the size calculation
+ *
+ * Since: 41
+ **/
+typedef gboolean (*GsFileSizeIncludeFunc)	(const gchar		*filename,
+						 GFileTest		 file_kind,
+						 gpointer		 user_data);
+
+guint64		 gs_utils_get_file_size		(const gchar		*filename,
+						 GsFileSizeIncludeFunc	 include_func,
+						 gpointer		 user_data,
+						 GCancellable		*cancellable);
+
 #if !GLIB_CHECK_VERSION(2, 64, 0)
 typedef void GsMainContextPusher;
 

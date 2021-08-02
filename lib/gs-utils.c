@@ -1435,4 +1435,83 @@ gs_utils_pixbuf_blur (GdkPixbuf *src, guint radius, guint iterations)
 		gs_pixbuf_blur_private (src, tmp, radius, div_kernel_size);
 }
 
+/**
+ * gs_utils_get_file_size:
+ * @filename: a file name to get the size of; it can be a file or a directory
+ * @include_func: (nullable) (scope call): optional callback to limit what files to count
+ * @user_data: user data passed to the @include_func
+ * @cancellable: (nullable): an optional #GCancellable or %NULL
+ *
+ * Gets the size of the file or a directory identified by @filename.
+ *
+ * When the @include_func is not %NULL, it can limit which files are included
+ * in the resulting size. When it's %NULL, all files and subdirectories are included.
+ *
+ * Returns: disk size of the @filename; or 0 when not found
+ *
+ * Since: 41
+ **/
+guint64
+gs_utils_get_file_size (const gchar *filename,
+			GsFileSizeIncludeFunc include_func,
+			gpointer user_data,
+			GCancellable *cancellable)
+{
+	guint64 size = 0;
+
+	g_return_val_if_fail (filename != NULL, 0);
+
+	if (g_file_test (filename, G_FILE_TEST_IS_DIR)) {
+		GSList *dirs_to_do = NULL;
+		gsize base_len = strlen (filename);
+
+		/* The `include_func()` expects a path relative to the `filename`, without
+		   a leading dir separator. As the `dirs_to_do` contains the full path,
+		   constructed with `g_build_filename()`, the added dir separator needs
+		   to be skipped, when it's not part of the `filename` already. */
+		if (!g_str_has_suffix (filename, G_DIR_SEPARATOR_S))
+			base_len++;
+
+		dirs_to_do = g_slist_prepend (dirs_to_do, g_strdup (filename));
+		while (dirs_to_do != NULL && !g_cancellable_is_cancelled (cancellable)) {
+			g_autofree gchar *path = NULL;
+			g_autoptr(GDir) dir = NULL;
+
+			/* Steal the top `path` out of the `dirs_to_do`. */
+			path = dirs_to_do->data;
+			dirs_to_do = g_slist_remove (dirs_to_do, path);
+
+			dir = g_dir_open (path, 0, NULL);
+			if (dir) {
+				const gchar *name;
+				while (name = g_dir_read_name (dir), name != NULL && !g_cancellable_is_cancelled (cancellable)) {
+					g_autofree gchar *full_path = g_build_filename (path, name, NULL);
+					GStatBuf st;
+
+					if (g_stat (full_path, &st) == 0 && (include_func == NULL ||
+					    include_func (full_path + base_len,
+							  S_ISLNK (st.st_mode) ? G_FILE_TEST_IS_SYMLINK :
+							  S_ISDIR (st.st_mode) ? G_FILE_TEST_IS_DIR :
+							  G_FILE_TEST_IS_REGULAR,
+							  user_data))) {
+						if (S_ISDIR (st.st_mode)) {
+							dirs_to_do = g_slist_prepend (dirs_to_do, g_steal_pointer (&full_path));
+						} else {
+							size += st.st_size;
+						}
+					}
+				}
+			}
+		}
+		g_slist_free_full (dirs_to_do, g_free);
+	} else {
+		GStatBuf st;
+
+		if (g_stat (filename, &st) == 0)
+			size = st.st_size;
+	}
+
+	return size;
+}
+
 /* vim: set noexpandtab: */
