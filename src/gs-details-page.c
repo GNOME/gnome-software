@@ -693,6 +693,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	g_autofree gchar *origin_ui = NULL;
 	gboolean instance_changed = FALSE;
 	gboolean origin_by_packaging_format = self->origin_by_packaging_format;
+	GtkWidget *first_row = NULL;
 	GtkWidget *select_row = NULL;
 	GtkWidget *origin_row_by_packaging_format = NULL;
 	gint origin_row_by_packaging_format_index = 0;
@@ -772,9 +773,13 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 		GtkWidget *row = gs_origin_popover_row_new (app);
 		gtk_widget_show (row);
+		if (first_row == NULL)
+			first_row = row;
 		if (app == self->app || (
-		    gs_app_get_bundle_kind (app) == gs_app_get_bundle_kind (self->app) &&
-		    gs_app_get_scope (app) == gs_app_get_scope (self->app) &&
+		    (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN ||
+		    gs_app_get_bundle_kind (app) == gs_app_get_bundle_kind (self->app)) &&
+		    (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN ||
+		    gs_app_get_scope (app) == gs_app_get_scope (self->app)) &&
 		    g_strcmp0 (gs_app_get_origin (app), gs_app_get_origin (self->app)) == 0 &&
 		    g_strcmp0 (gs_app_get_branch (app), gs_app_get_branch (self->app)) == 0 &&
 		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0)) {
@@ -804,6 +809,17 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsOriginPopoverRow *row = GS_ORIGIN_POPOVER_ROW (origin_row_by_packaging_format);
 		GsApp *app = gs_origin_popover_row_get_app (row);
 		select_row = origin_row_by_packaging_format;
+		if (app != self->app) {
+			g_clear_object (&self->app);
+			self->app = g_object_ref (app);
+			instance_changed = TRUE;
+		}
+	}
+
+	if (select_row == NULL && first_row != NULL) {
+		GsOriginPopoverRow *row = GS_ORIGIN_POPOVER_ROW (first_row);
+		GsApp *app = gs_origin_popover_row_get_app (row);
+		select_row = first_row;
 		if (app != self->app) {
 			g_clear_object (&self->app);
 			self->app = g_object_ref (app);

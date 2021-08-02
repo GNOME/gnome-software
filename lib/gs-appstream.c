@@ -1623,6 +1623,43 @@ gs_appstream_add_featured (XbSilo *silo,
 	return TRUE;
 }
 
+gboolean
+gs_appstream_url_to_app (GsPlugin *plugin,
+			 XbSilo *silo,
+			 GsAppList *list,
+			 const gchar *url,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	g_autofree gchar *path = NULL;
+	g_autofree gchar *scheme = NULL;
+	g_autofree gchar *xpath = NULL;
+	g_autoptr(GPtrArray) components = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "appstream") != 0)
+		return TRUE;
+
+	path = gs_utils_get_url_path (url);
+	xpath = g_strdup_printf ("components/component/id[text()='%s']/..", path);
+	components = xb_silo_query (silo, xpath, 0, NULL);
+	if (components == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		g_autoptr(GsApp) app = NULL;
+		app = gs_appstream_create_app (plugin, silo, component, error);
+		if (app == NULL)
+			return FALSE;
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
 void
 gs_appstream_component_add_keyword (XbBuilderNode *component, const gchar *str)
 {

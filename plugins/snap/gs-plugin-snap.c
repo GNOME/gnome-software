@@ -368,12 +368,18 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "snap") != 0)
+	if (g_strcmp0 (scheme, "snap") != 0 &&
+	    g_strcmp0 (scheme, "appstream") != 0)
 		return TRUE;
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
 	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME, NULL, path, cancellable, NULL);
+	if (snaps == NULL || snaps->len < 1) {
+		g_clear_pointer (&snaps, g_ptr_array_unref);
+		/* This works for the appstream:// URL-s */
+		snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID, NULL, path, cancellable, NULL);
+	}
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 

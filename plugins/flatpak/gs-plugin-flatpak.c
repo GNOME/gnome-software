@@ -1584,3 +1584,19 @@ gs_plugin_add_recent (GsPlugin *plugin,
 	}
 	return TRUE;
 }
+
+gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (!gs_flatpak_url_to_app (flatpak, list, url, cancellable, error))
+			return FALSE;
+	}
+	return TRUE;
+}

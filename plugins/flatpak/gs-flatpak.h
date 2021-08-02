@@ -128,6 +128,11 @@ gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
 						 guint64		 age,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_url_to_app		(GsFlatpak		*self,
+						 GsAppList		*list,
+						 const gchar		*url,
+						 GCancellable		*cancellable,
+						 GError			**error);
 void		gs_flatpak_set_busy		(GsFlatpak		*self,
 						 gboolean		 busy);
 gboolean	gs_flatpak_get_busy		(GsFlatpak		*self);

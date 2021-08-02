@@ -691,36 +691,15 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *path = NULL;
-	g_autofree gchar *scheme = NULL;
-	g_autofree gchar *xpath = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(XbNode) component = NULL;
 
 	/* check silo is valid */
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
 
-	/* not us */
-	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "appstream") != 0)
-		return TRUE;
-
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
-	/* create app */
-	path = gs_utils_get_url_path (url);
-	xpath = g_strdup_printf ("components/component/id[text()='%s']", path);
-	component = xb_silo_query_first (priv->silo, xpath, NULL);
-	if (component == NULL)
-		return TRUE;
-	app = gs_appstream_create_app (plugin, priv->silo, component, error);
-	if (app == NULL)
-		return FALSE;
-	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-	gs_app_list_add (list, app);
-	return TRUE;
+	return gs_appstream_url_to_app (plugin, priv->silo, list, url, cancellable, error);
 }
 
 static void
