@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsUpdateDialog" parent="GtkDialog">
+  <template class="GsUpdateDialog" parent="HdyWindow">
     <property name="modal">True</property>
-    <property name="default_width">600</property>
-    <property name="default_height">600</property>
+    <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
+    <property name="icon_name">dialog-information</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="title" translatable="yes">Software Repositories</property>
     <property name="type_hint">dialog</property>
-    <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
+    <property name="default-width">640</property>
+    <property name="default-height">576</property>
+
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="HdyHeaderBar">
+            <property name="show_close_button">True</property>
+            <property name="visible">True</property>
+            <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
         <child>
           <object class="GtkButton" id="button_back">
             <property name="visible">True</property>
@@ -35,13 +46,8 @@
             <property name="pack-type">start</property>
           </packing>
         </child>
-      </object>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox1">
-        <property name="border_width">0</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+          </object>
+        </child>
         <child>
           <object class="GtkStack" id="stack">
             <property name="visible">True</property>

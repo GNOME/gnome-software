@@ -490,10 +490,6 @@ _app_row_activated_cb (GsUpdatesSection *self, GtkListBoxRow *row)
 	dialog = gs_update_dialog_new (self->plugin_loader);
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
 	gs_shell_modal_dialog_present (gs_page_get_shell (self->page), GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 static void

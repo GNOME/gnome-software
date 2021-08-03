@@ -32,7 +32,7 @@ typedef enum {
 
 struct _GsUpdateDialog
 {
-	GtkDialog	 parent_instance;
+	HdyWindow	 parent_instance;
 
 	GQueue		*back_entry_stack;
 	GCancellable	*cancellable;
@@ -55,7 +55,7 @@ struct _GsUpdateDialog
 	GtkWidget       *permissions_section_content;
 };
 
-G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, HDY_TYPE_WINDOW)
 
 static void
 save_back_entry (GsUpdateDialog *dialog)
@@ -745,14 +745,20 @@ key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	GdkModifierType state;
 	gboolean is_rtl;
 
-	if (!gtk_widget_is_visible (dialog->button_back) || !gtk_widget_is_sensitive (dialog->button_back))
-		return GDK_EVENT_PROPAGATE;
-
 	state = event->state;
 	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (widget));
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
 	state = state & gtk_accelerator_get_default_mod_mask ();
 	is_rtl = gtk_widget_get_direction (dialog->button_back) == GTK_TEXT_DIR_RTL;
+
+	if (event->keyval == GDK_KEY_Escape) {
+		gtk_window_close (GTK_WINDOW (dialog));
+
+		return GDK_EVENT_STOP;
+	}
+
+	if (!gtk_widget_is_visible (dialog->button_back) || !gtk_widget_is_sensitive (dialog->button_back))
+		return GDK_EVENT_PROPAGATE;
 
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
@@ -864,9 +870,7 @@ gs_update_dialog_new (GsPluginLoader *plugin_loader)
 {
 	GsUpdateDialog *dialog;
 
-	dialog = g_object_new (GS_TYPE_UPDATE_DIALOG,
-	                       "use-header-bar", TRUE,
-	                       NULL);
+	dialog = g_object_new (GS_TYPE_UPDATE_DIALOG, NULL);
 	set_plugin_loader (dialog, plugin_loader);
 
 	return GTK_WIDGET (dialog);
