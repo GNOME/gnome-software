@@ -619,9 +619,15 @@ app-context-bar {
 
 app-context-bar .context-tile {
 	padding: 24px 12px 21px 12px;
+	border-radius: 0;
+	border: none;
 	border-right: 1px solid shade(@theme_bg_color, 0.9);
 }
-app-context-bar .context-tile:last-child { border-right: none }
+app-context-bar .context-tile:last-child {
+	border-right: none;
+	border-bottom-right-radius: 8px;
+	border-top-right-radius: 8px;
+}
 
 .context-tile-lozenge {
 	font-size: 18px;
