@@ -164,9 +164,10 @@ typedef enum {
 	PROP_SIZE_USER_DATA,
 	PROP_PERMISSIONS,
 	PROP_RELATIONS,
+	PROP_ORIGIN_UI,
 } GsAppProperty;
 
-static GParamSpec *obj_props[PROP_RELATIONS + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_ORIGIN_UI + 1] = { NULL, };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
@@ -4852,6 +4853,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_RELATIONS:
 		g_value_take_boxed (value, gs_app_get_relations (app));
 		break;
+	case PROP_ORIGIN_UI:
+		g_value_take_string (value, gs_app_get_origin_ui (app));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4955,6 +4959,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_RELATIONS:
 		gs_app_set_relations (app, g_value_get_boxed (value));
+		break;
+	case PROP_ORIGIN_UI:
+		gs_app_set_origin_ui (app, g_value_get_string (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -5354,6 +5361,19 @@ gs_app_class_init (GsAppClass *klass)
 				    G_TYPE_PTR_ARRAY,
 				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * GsApp:origin-ui: (not nullable)
+	 *
+	 * The package origin, in a human readable format suitable for use in
+	 * the UI. For example ‘Local file (RPM)’ or ‘Flathub (Flatpak)’.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_ORIGIN_UI] =
+		g_param_spec_string ("origin-ui", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
@@ -5488,9 +5508,10 @@ gs_app_new_from_unique_id (const gchar *unique_id)
  * gs_app_get_origin_ui:
  * @app: a #GsApp
  *
- * Gets the package origin that's suitable for UI use.
+ * Gets the package origin that's suitable for UI use. i.e. The value of
+ * #GsApp:origin-ui.
  *
- * Returns: The package origin for UI use
+ * Returns: (not nullable): The package origin for UI use
  *
  * Since: 3.32
  **/
@@ -5543,6 +5564,13 @@ gs_app_get_origin_ui (GsApp *app)
 	return g_strdup (origin_str);
 }
 
+/**
+ * gs_app_set_origin_ui:
+ * @app: a #GsApp
+ * @origin_ui: (not nullable): the new origin UI
+ *
+ * Set the value of #GsApp:origin-ui.
+ */
 void
 gs_app_set_origin_ui (GsApp *app,
 		      const gchar *origin_ui)
@@ -5563,6 +5591,7 @@ gs_app_set_origin_ui (GsApp *app,
 
 	g_free (priv->origin_ui);
 	priv->origin_ui = g_strdup (origin_ui);
+	gs_app_queue_notify (app, obj_props[PROP_ORIGIN_UI]);
 }
 
 /**

@@ -15,7 +15,15 @@ gdbus_src = gnome.gdbus_codegen(
   namespace : 'Gs'
 )
 
+enums = gnome.mkenums_simple('gs-enums',
+  sources : [
+    'gs-context-dialog-row.h',
+  ],
+  install_header : false,
+)
+
 gnome_software_sources = [
+  'gs-age-rating-context-dialog.c',
   'gs-app-addon-row.c',
   'gs-app-version-history-dialog.c',
   'gs-app-version-history-row.c',
@@ -27,6 +35,7 @@ gnome_software_sources = [
   'gs-category-page.c',
   'gs-category-tile.c',
   'gs-common.c',
+  'gs-context-dialog-row.c',
   'gs-css.c',
   'gs-description-box.c',
   'gs-details-page.c',
@@ -36,6 +45,7 @@ gnome_software_sources = [
   'gs-first-run-dialog.c',
   'gs-fixed-size-bin.c',
   'gs-folders.c',
+  'gs-hardware-support-context-dialog.c',
   'gs-history-dialog.c',
   'gs-info-bar.c',
   'gs-installed-page.c',
@@ -58,6 +68,7 @@ gnome_software_sources = [
   'gs-review-histogram.c',
   'gs-review-row.c',
   'gs-rounded-bin.c',
+  'gs-safety-context-dialog.c',
   'gs-screenshot-carousel.c',
   'gs-screenshot-image.c',
   'gs-search-page.c',
@@ -125,7 +136,7 @@ executable(
   'gnome-software',
   resources_src,
   gdbus_src,
-  sources : gnome_software_sources,
+  sources : gnome_software_sources + enums,
   include_directories : [
     include_directories('..'),
     include_directories('../lib'),

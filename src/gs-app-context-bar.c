@@ -33,11 +33,15 @@
 #include <handy.h>
 #include <locale.h>
 
+#include "gs-age-rating-context-dialog.h"
 #include "gs-app.h"
 #include "gs-app-context-bar.h"
+#include "gs-hardware-support-context-dialog.h"
+#include "gs-safety-context-dialog.h"
 
 typedef struct
 {
+	GtkWidget	*tile;
 	GtkWidget	*lozenge;
 	GtkWidget	*lozenge_content;
 	GtkLabel	*title;
@@ -364,7 +368,6 @@ update_hardware_support_tile (GsAppContextBar *self)
 	AsRelationKind control_relations[AS_CONTROL_KIND_LAST] = { AS_RELATION_KIND_UNKNOWN, };
 	GdkDisplay *display;
 	GdkMonitor *monitor = NULL;
-	GdkRectangle current_screen_size;
 	gboolean any_control_relations_set;
 	const gchar *icon_name = NULL, *title = NULL, *description = NULL, *css_class = NULL;
 	gboolean has_touchscreen = FALSE, has_keyboard = FALSE, has_mouse = FALSE;
@@ -376,33 +379,13 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	/* Extract the %AS_RELATION_ITEM_KIND_CONTROL relations and summarise
 	 * them. */
-	any_control_relations_set = FALSE;
-
-	for (gsize i = 0; relations != NULL && i < relations->len; i++) {
-		AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
-		AsRelationKind kind = as_relation_get_kind (relation);
-
-		if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_CONTROL) {
-			AsControlKind control_kind = as_relation_get_value_control_kind (relation);
-			control_relations[control_kind] = MAX (control_relations[control_kind], kind);
-
-			if (kind == AS_RELATION_KIND_REQUIRES ||
-			    kind == AS_RELATION_KIND_RECOMMENDS)
-				any_control_relations_set = TRUE;
-		}
-	}
-
 	display = gtk_widget_get_display (GTK_WIDGET (self));
-
-	/* Work out what input devices are available. */
-	if (display != NULL) {
-		GdkSeat *seat = gdk_display_get_default_seat (display);
-		GdkSeatCapabilities seat_capabilities = gdk_seat_get_capabilities (seat);
-
-		has_touchscreen = (seat_capabilities & GDK_SEAT_CAPABILITY_TOUCH);
-		has_keyboard = (seat_capabilities & GDK_SEAT_CAPABILITY_KEYBOARD);
-		has_mouse = (seat_capabilities & GDK_SEAT_CAPABILITY_POINTER);
-	}
+	gs_hardware_support_context_dialog_get_control_support (display, relations,
+								&any_control_relations_set,
+								control_relations,
+								&has_touchscreen,
+								&has_keyboard,
+								&has_mouse);
 
 	/* Warn about screen size mismatches. Compare against the largest
 	 * monitor associated with this widget’s #GdkDisplay, defaulting to
@@ -410,129 +393,38 @@ update_hardware_support_tile (GsAppContextBar *self)
 	 *
 	 * See https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length
 	 * for the semantics of the display length relations.*/
-	if (display != NULL) {
-		int n_monitors = gdk_display_get_n_monitors (display);
-		int monitor_max_dimension;
-
-		monitor = NULL;
-		monitor_max_dimension = 0;
-
-		for (int i = 0; i < n_monitors; i++) {
-			GdkMonitor *monitor2 = gdk_display_get_monitor (display, i);
-			GdkRectangle monitor_geometry;
-			int monitor2_max_dimension;
-
-			if (monitor2 == NULL)
-				continue;
-
-			gdk_monitor_get_geometry (monitor2, &monitor_geometry);
-			monitor2_max_dimension = MAX (monitor_geometry.width, monitor_geometry.height);
-
-			if (monitor2_max_dimension > monitor_max_dimension ||
-			    (gdk_monitor_is_primary (monitor2) &&
-			     monitor2_max_dimension == monitor_max_dimension)) {
-				monitor = monitor2;
-				monitor_max_dimension = monitor2_max_dimension;
-				continue;
-			}
-		}
-	}
+	if (display != NULL)
+		monitor = gs_hardware_support_context_dialog_get_largest_monitor (display);
 
 	if (monitor != NULL) {
-		gdk_monitor_get_geometry (monitor, &current_screen_size);
+		AsRelationKind desktop_relation_kind, mobile_relation_kind, current_relation_kind;
+		gboolean desktop_match, mobile_match, current_match;
 
-		for (gsize i = 0; relations != NULL && i < relations->len; i++) {
-			AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
-			guint comparand1;
-			Range comparand2;
-			gboolean match = TRUE;
+		gs_hardware_support_context_dialog_get_display_support (monitor, relations,
+									NULL,
+									&desktop_match, &desktop_relation_kind,
+									&mobile_match, &mobile_relation_kind,
+									&current_match, &current_relation_kind);
 
-			/* All lengths here are in logical/application pixels,
-			 * not device pixels. */
-			if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_DISPLAY_LENGTH &&
-			    as_relation_get_kind (relation) == AS_RELATION_KIND_REQUIRES) {
-				AsRelationCompare comparator = as_relation_get_compare (relation);
-
-				/* From https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
-				Range display_lengths[] = {
-					[AS_DISPLAY_LENGTH_KIND_XSMALL] = { 0, 360 },
-					[AS_DISPLAY_LENGTH_KIND_SMALL] = { 360, 768 },
-					[AS_DISPLAY_LENGTH_KIND_MEDIUM] = { 768, 1024 },
-					[AS_DISPLAY_LENGTH_KIND_LARGE] = { 1024, 3840 },
-					[AS_DISPLAY_LENGTH_KIND_XLARGE] = { 3840, G_MAXUINT },
-				};
-
-				switch (as_relation_get_display_side_kind (relation)) {
-				case AS_DISPLAY_SIDE_KIND_SHORTEST:
-					comparand1 = MIN (current_screen_size.width, current_screen_size.height);
-					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
-					break;
-				case AS_DISPLAY_SIDE_KIND_LONGEST:
-					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
-					comparand2.min = comparand2.max = as_relation_get_value_px (relation);
-					break;
-				case AS_DISPLAY_SIDE_KIND_UNKNOWN:
-				case AS_DISPLAY_SIDE_KIND_LAST:
-				default:
-					comparand1 = MAX (current_screen_size.width, current_screen_size.height);
-					comparand2.min = display_lengths[as_relation_get_value_display_length_kind (relation)].min;
-					comparand2.max = display_lengths[as_relation_get_value_display_length_kind (relation)].max;
-					break;
-				}
-
-				switch (comparator) {
-				case AS_RELATION_COMPARE_EQ:
-					match = (comparand1 >= comparand2.min &&
-						 comparand1 <= comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_NE:
-					match = (comparand1 < comparand2.min ||
-						 comparand1 > comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_LT:
-					match = (comparand1 < comparand2.min);
-					break;
-				case AS_RELATION_COMPARE_GT:
-					match = (comparand1 > comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_LE:
-					match = (comparand1 <= comparand2.max);
-					break;
-				case AS_RELATION_COMPARE_GE:
-					match = (comparand1 >= comparand2.min);
-					break;
-				case AS_RELATION_COMPARE_UNKNOWN:
-				case AS_RELATION_COMPARE_LAST:
-				default:
-					g_assert_not_reached ();
-				}
-
-				/* If the current screen size is not supported,
-				 * try and summarise the restrictions into a
-				 * single context tile. */
-				if (!match) {
-					if ((comparator == AS_RELATION_COMPARE_LE ||
-					     comparator == AS_RELATION_COMPARE_LT) &&
-					     comparand1 >= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
-						icon_name = "phone-symbolic";
-						title = _("Mobile Only");
-						description = _("Only works on a small screen");
-						css_class = "red";
-					} else if ((comparator == AS_RELATION_COMPARE_GE ||
-						    comparator == AS_RELATION_COMPARE_GT) &&
-						   comparand1 <= display_lengths[AS_DISPLAY_LENGTH_KIND_MEDIUM].min) {
-						icon_name = "desktop-symbolic";
-						title = _("Desktop Only");
-						description = _("Only works on a large screen");
-						css_class = "red";
-					} else {
-						icon_name = "desktop-symbolic";
-						title = _("Screen Size Mismatch");
-						description = _("Requires a specific screen size");
-						css_class = "red";
-					}
-				}
-			}
+		/* If the current screen size is not supported, try and
+		 * summarise the restrictions into a single context tile. */
+		if (!current_match &&
+		    !mobile_match && mobile_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "phone-symbolic";
+			title = _("Mobile Only");
+			description = _("Only works on a small screen");
+			css_class = "red";
+		} else if (!current_match &&
+			   !desktop_match && desktop_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "desktop-symbolic";
+			title = _("Desktop Only");
+			description = _("Only works on a large screen");
+			css_class = "red";
+		} else if (!current_match && current_relation_kind == AS_RELATION_KIND_REQUIRES) {
+			icon_name = "desktop-symbolic";
+			title = _("Screen Size Mismatch");
+			description = _("Doesn’t support your current screen size");
+			css_class = "red";
 		}
 	}
 
@@ -644,117 +536,37 @@ update_hardware_support_tile (GsAppContextBar *self)
 		gtk_style_context_remove_class (context, "wide-image");
 }
 
-static gchar *
-build_age_rating_description (AsContentRating *content_rating)
+static void
+build_age_rating_description_cb (const gchar          *attribute,
+                                 AsContentRatingValue  value,
+                                 gpointer              user_data)
 {
-	g_autofree const gchar **rating_ids = as_content_rating_get_all_rating_ids ();
-	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
-	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
-	guint age_bad = 0;
+	GPtrArray *descriptions = user_data;
+	const gchar *description;
 
-	/* Ordered from worst to best, these are all OARS 1.0/1.1 categories */
-	const gchar * const violence_group[] = {
-		"violence-bloodshed",
-		"violence-realistic",
-		"violence-fantasy",
-		"violence-cartoon",
-		NULL
-	};
-	const gchar * const social_group[] = {
-		"social-audio",
-		"social-chat",
-		"social-contacts",
-		"social-info",
-		NULL
-	};
-	const gchar * const coalesce_groups[] = {
-		"sex-themes",
-		"sex-homosexuality",
-		NULL
-	};
-
-	/* Get the worst category. */
-	for (gsize i = 0; rating_ids[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, rating_ids[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (rating_ids[i], rating_value);
-
-		if (rating_age > age_bad)
-			age_bad = rating_age;
-		if (rating_value > value_bad)
-			value_bad = rating_value;
-	}
-
-	/* If the worst category is nothing, great! Show a more specific message
-	 * than a big listing of all the groups. */
-	if (value_bad == AS_CONTENT_RATING_VALUE_NONE || age_bad == 0)
+	/* (attribute == NULL) is used by the caller to indicate that no
+	 * attributes apply. This callback will be called at most once like
+	 * that. */
+	if (attribute == NULL)
 		/* Translators: This indicates that the content rating for an
 		 * app says it can be used by all ages of people, as it contains
 		 * no objectionable content. */
-		return g_strdup (_("Contains no age-inappropriate content"));
+		description = _("Contains no age-inappropriate content");
+	else
+		description = as_content_rating_attribute_get_description (attribute, value);
 
-	/* Add a description for each rating category which contributes to the
-	 * @age_bad being as it is. Handle the groups separately.
-	 * Intentionally coalesce some categories if they have the same values,
-	 * to avoid confusion */
-	for (gsize i = 0; rating_ids[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
+	g_ptr_array_add (descriptions, (gpointer) description);
+}
 
-		if (g_strv_contains (violence_group, rating_ids[i]) ||
-		    g_strv_contains (social_group, rating_ids[i]))
-			continue;
+static gchar *
+build_age_rating_description (AsContentRating *content_rating)
+{
+	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 
-		rating_value = as_content_rating_get_value (content_rating, rating_ids[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (rating_ids[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		/* Coalesce down to the first element in @coalesce_groups,
-		 * unless this group’s value differs. Currently only one
-		 * coalesce group is supported. */
-		if (g_strv_contains (coalesce_groups + 1, rating_ids[i]) &&
-		    as_content_rating_attribute_to_csm_age (coalesce_groups[0],
-							    as_content_rating_get_value (content_rating,
-											 coalesce_groups[0])) == rating_age)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (rating_ids[i], rating_value));
-	}
-
-	for (gsize i = 0; violence_group[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, violence_group[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (violence_group[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (violence_group[i], rating_value));
-		break;
-	}
-
-	for (gsize i = 0; social_group[i] != NULL; i++) {
-		guint rating_age;
-		AsContentRatingValue rating_value;
-
-		rating_value = as_content_rating_get_value (content_rating, social_group[i]);
-		rating_age = as_content_rating_attribute_to_csm_age (social_group[i], rating_value);
-
-		if (rating_age < age_bad)
-			continue;
-
-		g_ptr_array_add (descriptions,
-				 (gpointer) as_content_rating_attribute_get_description (social_group[i], rating_value));
-		break;
-	}
+	gs_age_rating_context_dialog_process_attributes (content_rating,
+							 TRUE,
+							 build_age_rating_description_cb,
+							 descriptions);
 
 	g_ptr_array_add (descriptions, NULL);
 	/* Translators: This string is used to join various other translated
@@ -767,120 +579,33 @@ build_age_rating_description (AsContentRating *content_rating)
 	return g_strjoinv (_("; "), (gchar **) descriptions->pdata);
 }
 
-/* Wrapper around as_content_rating_system_format_age() which returns the short
- * form of the content rating. This doesn’t make a difference for most ratings
- * systems, but it does for ESRB which normally produces quite long strings.
- *
- * FIXME: This should probably be upstreamed into libappstream once it’s been in
- * the GNOME 41 release and stabilised. */
-static gchar *
-content_rating_system_format_age_short (AsContentRatingSystem system,
-                                        guint                 age)
-{
-	if (system == AS_CONTENT_RATING_SYSTEM_ESRB) {
-		if (age >= 18)
-			return g_strdup ("AO");
-		if (age >= 17)
-			return g_strdup ("M");
-		if (age >= 13)
-			return g_strdup ("T");
-		if (age >= 10)
-			return g_strdup ("E10+");
-		if (age >= 6)
-			return g_strdup ("E");
-
-		return g_strdup ("EC");
-	}
-
-	return as_content_rating_system_format_age (system, age);
-}
-
 static void
 update_age_rating_tile (GsAppContextBar *self)
 {
 	AsContentRating *content_rating;
-	AsContentRatingSystem system;
-	guint age = G_MAXUINT;  /* unknown */
-	g_autofree gchar *age_text = NULL;
+	gboolean is_unknown;
 	g_autofree gchar *description = NULL;
-	const gchar *locale;
-	GtkStyleContext *context;
-	const gchar *css_age_classes[] = {
-		"details-rating-18",
-		"details-rating-15",
-		"details-rating-12",
-		"details-rating-5",
-		"details-rating-0",
-	};
-	gsize age_index;
 
 	g_assert (self->app != NULL);
 
-	/* get the content rating system from the locale */
-	locale = setlocale (LC_MESSAGES, NULL);
-	system = as_content_rating_system_from_locale (locale);
-	g_debug ("content rating system is guessed as %s from %s",
-		 as_content_rating_system_to_string (system),
-		 locale);
-
 	content_rating = gs_app_get_content_rating (self->app);
-	if (content_rating != NULL)
-		age = as_content_rating_get_minimum_age (content_rating);
+	gs_age_rating_context_dialog_update_lozenge (self->app,
+						     self->tiles[AGE_RATING_TILE].lozenge,
+						     GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content),
+						     &is_unknown);
 
-	if (age != G_MAXUINT)
-		age_text = content_rating_system_format_age_short (system, age);
-
-	/* Some ratings systems (PEGI) don’t start at age 0 */
-	if (content_rating != NULL && age_text == NULL && age == 0)
-		/* Translators: The app is considered suitable to be run by all ages of people.
-		 * This is displayed in a context tile, so the string should be short. */
-		age_text = g_strdup (_("All"));
-
-	context = gtk_widget_get_style_context (self->tiles[AGE_RATING_TILE].lozenge);
-
-	/* We currently only support OARS-1.0 and OARS-1.1 */
-	if (age_text == NULL ||
-	    (content_rating != NULL &&
-	     g_strcmp0 (as_content_rating_get_kind (content_rating), "oars-1.0") != 0 &&
-	     g_strcmp0 (as_content_rating_get_kind (content_rating), "oars-1.1") != 0)) {
-		for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++)
-			gtk_style_context_remove_class (context, css_age_classes[i]);
-		gtk_style_context_add_class (context, "grey");
-
-		/* Translators: This app has no age rating information available.
-		 * This string is displayed like an icon. Please use any
-		 * similarly short punctuation character, word or acronym which
-		 * will be widely understood in your region, in this context.
-		 * This is displayed in a context tile, so the string should be short. */
-		age_text = g_strdup (_("?"));
+	/* Description */
+	if (content_rating == NULL || is_unknown) {
 		description = g_strdup (_("No age rating information available"));
 	} else {
-		/* Update the CSS */
-		if (age >= 18)
-			age_index = 0;
-		else if (age >= 15)
-			age_index = 1;
-		else if (age >= 12)
-			age_index = 2;
-		else if (age >= 5)
-			age_index = 3;
-		else
-			age_index = 4;
-
-		for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++) {
-			if (i == age_index)
-				gtk_style_context_add_class (context, css_age_classes[i]);
-			else
-				gtk_style_context_remove_class (context, css_age_classes[i]);
-		}
-		gtk_style_context_remove_class (context, "grey");
-
 		description = build_age_rating_description (content_rating);
 	}
 
-	/* Update the label texts */
-	gtk_label_set_text (GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content), age_text);
 	gtk_label_set_text (self->tiles[AGE_RATING_TILE].description, description);
+
+	/* Disable the button if no content rating information is available, as
+	 * it would only show a dialogue full of rows saying ‘Unknown’ */
+	gtk_widget_set_sensitive (self->tiles[AGE_RATING_TILE].tile, (content_rating != NULL));
 }
 
 static void
@@ -903,6 +628,29 @@ app_notify_cb (GObject    *obj,
 	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
 
 	update_tiles (self);
+}
+
+static void
+tile_clicked_cb (GtkWidget *widget,
+                 gpointer   user_data)
+{
+	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
+	GtkWindow *dialog;
+	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+
+	if (GTK_IS_WINDOW (toplevel)) {
+		if (widget == self->tiles[SAFETY_TILE].tile)
+			dialog = GTK_WINDOW (gs_safety_context_dialog_new (self->app));
+		else if (widget == self->tiles[HARDWARE_SUPPORT_TILE].tile)
+			dialog = GTK_WINDOW (gs_hardware_support_context_dialog_new (self->app));
+		else if (widget == self->tiles[AGE_RATING_TILE].tile)
+			dialog = GTK_WINDOW (gs_age_rating_context_dialog_new (self->app));
+		else
+			g_assert_not_reached ();
+
+		gtk_window_set_transient_for (dialog, GTK_WINDOW (toplevel));
+		gtk_widget_show (GTK_WIDGET (dialog));
+	}
 }
 
 static void
@@ -992,22 +740,27 @@ gs_app_context_bar_class_init (GsAppContextBarClass *klass)
 	gtk_widget_class_set_css_name (widget_class, "app-context-bar");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-context-bar.ui");
 
+	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].description));
+	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].description));
+	gtk_widget_class_bind_template_callback (widget_class, tile_clicked_cb);
 }
 
 /**
