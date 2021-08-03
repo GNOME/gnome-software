@@ -64,7 +64,7 @@ gs_picture_get_pixbuf (GsPicture *picture)
  * @pixbuf: (transfer none) (nullable): new pixbuf
  *
  * Set the value of #GsPicture:pixbuf, and schedule the widget to
- * be redrawn. The new pixbuf will be scaled to fit the widget’s
+ * be resized. The new pixbuf will be scaled to fit the widget’s
  * existing size allocation.
  *
  * Since: 41
@@ -78,7 +78,7 @@ gs_picture_set_pixbuf (GsPicture *picture, GdkPixbuf *pixbuf)
 		return;
 
 	g_set_object (&picture->pixbuf, pixbuf);
-	gtk_widget_queue_draw (GTK_WIDGET (picture));
+	gtk_widget_queue_resize (GTK_WIDGET (picture));
 
 	g_object_notify_by_pspec (G_OBJECT (picture), obj_props[PROP_PIXBUF]);
 }
