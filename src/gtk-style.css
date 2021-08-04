@@ -2,6 +2,13 @@
   margin: 24px 0px;
 }
 
+/* The equivalent of libhandy’s .content class, but applicable to a plain GtkBox */
+.content-box {
+	border-radius: 8px;
+	border: 1px solid shade(@theme_bg_color, 0.9);
+	background-color: @theme_base_color;
+}
+
 .installed-overlay-box {
 	font-size: smaller;
 	background-color: @theme_selected_bg_color;
@@ -238,16 +245,8 @@ summary-tile {
 	text-shadow: none;
 }
 
-.application-details-title {
-	font-weight: bold;
-	font-size: 125%;
-}
-
 .application-details-webapp-warning {
 	font-weight: bold;
-}
-
-.application-details-summary {
 }
 
 .application-details-description {

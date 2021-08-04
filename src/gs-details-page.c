@@ -23,7 +23,7 @@
 #include "gs-app-version-history-row.h"
 #include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
-#include "gs-history-dialog.h"
+#include "gs-license-tile.h"
 #include "gs-origin-popover-row.h"
 #include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
@@ -91,7 +91,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*label_webapp_warning;
-	GtkWidget		*box_details_support;
 	GtkWidget		*box_progress;
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
@@ -100,8 +99,12 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
-	GtkWidget		*button_details_website;
-	GtkWidget		*button_donate;
+	GtkStack		*links_stack;
+	HdyActionRow		*project_website_row;
+	HdyActionRow		*donate_row;
+	HdyActionRow		*translate_row;
+	HdyActionRow		*report_an_issue_row;
+	HdyActionRow		*help_row;
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
@@ -115,16 +118,8 @@ struct _GsDetailsPage
 	GtkWidget		*label_progress_status;
 	GtkWidget		*label_addons_uninstalled_app;
 	GsAppContextBar		*context_bar;
-	GtkWidget		*label_details_developer_title;
-	GtkWidget		*label_details_developer_value;
-	GtkWidget		*box_details_developer;
-	GtkWidget		*image_details_developer_verified;
-	GtkWidget		*label_details_channel_title;
-	GtkWidget		*label_details_channel_value;
-	GtkWidget		*label_details_origin_title;
-	GtkWidget		*label_details_origin_value;
-	GtkWidget		*label_details_updated_title;
-	GtkWidget		*label_details_updated_value;
+	GtkLabel		*developer_name_label;
+	GtkImage		*developer_verified_image;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*list_box_version_history;
@@ -138,15 +133,6 @@ struct _GsDetailsPage
 	GtkWidget		*spinner_details;
 	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
-	GtkWidget		*grid_details_kudo;
-	GtkWidget		*image_details_kudo_docs;
-	GtkWidget		*image_details_kudo_integration;
-	GtkWidget		*image_details_kudo_translated;
-	GtkWidget		*image_details_kudo_updated;
-	GtkWidget		*label_details_kudo_docs;
-	GtkWidget		*label_details_kudo_integration;
-	GtkWidget		*label_details_kudo_translated;
-	GtkWidget		*label_details_kudo_updated;
 	GtkWidget		*progressbar_top;
 	guint			 progress_pulse_id;
 	GtkWidget		*star_eventbox;
@@ -154,6 +140,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
 	GtkWidget		*origin_button_label;
+	GsLicenseTile		*license_tile;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -558,16 +545,16 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
 }
 
 static void
-gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
+gs_details_page_link_row_activated_cb (HdyActionRow *row, GsDetailsPage *self)
 {
-	gs_shell_show_uri (self->shell,
-	                   gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
+	gs_shell_show_uri (self->shell, hdy_action_row_get_subtitle (row));
 }
 
 static void
-gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
+gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_tile,
+							GsDetailsPage *self)
 {
-	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_DONATION));
+	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
 }
 
 static void
@@ -576,36 +563,6 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 	gs_description_box_set_text (GS_DESCRIPTION_BOX (self->box_details_description), tmp);
 	gs_description_box_set_collapsed (GS_DESCRIPTION_BOX (self->box_details_description), TRUE);
 	gtk_widget_set_visible (self->label_webapp_warning, gs_app_get_kind (self->app) == AS_COMPONENT_KIND_WEB_APP);
-}
-
-static void
-gs_details_page_set_sensitive (GtkWidget *widget, gboolean is_active)
-{
-	GtkStyleContext *style_context;
-	style_context = gtk_widget_get_style_context (widget);
-	if (!is_active) {
-		gtk_style_context_add_class (style_context, "dim-label");
-	} else {
-		gtk_style_context_remove_class (style_context, "dim-label");
-	}
-}
-
-static gboolean
-gs_details_page_history_cb (GtkLabel *label,
-                            gchar *uri,
-                            GsDetailsPage *self)
-{
-	GtkWidget *dialog;
-
-	dialog = gs_history_dialog_new ();
-	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), self->app);
-	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
-
-	return TRUE;
 }
 
 static gboolean
@@ -1014,21 +971,29 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	}
 }
 
+static gboolean
+update_action_row_from_link (HdyActionRow *row,
+                             GsApp        *app,
+                             AsUrlKind     url_kind)
+{
+	const gchar *url = gs_app_get_url (app, url_kind);
+	if (url != NULL)
+		hdy_action_row_set_subtitle (row, url);
+	gtk_widget_set_visible (GTK_WIDGET (row), url != NULL);
+
+	return (url != NULL);
+}
+
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
-	GsAppList *history;
 	g_autoptr(GIcon) icon = NULL;
 	GList *addons;
 	const gchar *tmp;
-	gboolean ret;
-	guint64 kudos;
-	guint64 updated;
-	guint64 user_integration_bf;
-	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
 	guint icon_size;
+	gboolean link_rows_visible;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -1079,45 +1044,25 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
 				  GTK_ICON_SIZE_INVALID);
 
-	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
-	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_widget_set_visible (self->button_details_website, TRUE);
-		show_support_box = TRUE;
-	} else {
-		gtk_widget_set_visible (self->button_details_website, FALSE);
-	}
-	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
-	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_widget_set_visible (self->button_donate, TRUE);
-		show_support_box = TRUE;
-	} else {
-		gtk_widget_set_visible (self->button_donate, FALSE);
-	}
-	gtk_widget_set_visible (self->box_details_support, show_support_box);
+	/* Set various external links. If none are visible, show a fallback
+	 * message instead. */
+	link_rows_visible = FALSE;
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->project_website_row, self->app, AS_URL_KIND_HOMEPAGE);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->donate_row, self->app, AS_URL_KIND_DONATION);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->translate_row, self->app, AS_URL_KIND_TRANSLATE);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->report_an_issue_row, self->app, AS_URL_KIND_BUGTRACKER);
+	link_rows_visible = link_rows_visible || update_action_row_from_link (self->help_row, self->app, AS_URL_KIND_HELP);
+
+	gtk_stack_set_visible_child_name (self->links_stack, link_rows_visible ? "links" : "empty");
 
 	/* set the developer name, falling back to the project group */
 	tmp = gs_app_get_developer_name (self->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_project_group (self->app);
-	if (tmp == NULL) {
-		gtk_widget_set_visible (self->label_details_developer_title, FALSE);
-		gtk_widget_set_visible (self->box_details_developer, FALSE);
-	} else {
-		gtk_widget_set_visible (self->label_details_developer_title, TRUE);
-		gtk_label_set_label (GTK_LABEL (self->label_details_developer_value), tmp);
-		gtk_widget_set_visible (self->box_details_developer, TRUE);
-	}
-	gtk_widget_set_visible (self->image_details_developer_verified, gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
-
-	/* set channel for snaps */
-	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_SNAP) {
-		gtk_label_set_label (GTK_LABEL (self->label_details_channel_value), gs_app_get_branch (self->app));
-		gtk_widget_set_visible (self->label_details_channel_title, TRUE);
-		gtk_widget_set_visible (self->label_details_channel_value, TRUE);
-	} else {
-		gtk_widget_set_visible (self->label_details_channel_title, FALSE);
-		gtk_widget_set_visible (self->label_details_channel_value, FALSE);
-	}
+	if (tmp != NULL)
+		gtk_label_set_label (GTK_LABEL (self->developer_name_label), tmp);
+	gtk_widget_set_visible (GTK_WIDGET (self->developer_name_label), tmp != NULL);
+	gtk_widget_set_visible (GTK_WIDGET (self->developer_verified_image), gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
 
 	/* set version history */
 	version_history = gs_app_get_version_history (self->app);
@@ -1137,89 +1082,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	gtk_widget_set_visible (self->version_history_button, version_history != NULL && version_history->len > 1);
-
-	/* set the updated date */
-	updated = gs_app_get_install_date (self->app);
-	if (updated == GS_APP_INSTALL_DATE_UNSET) {
-		gtk_widget_set_visible (self->label_details_updated_title, FALSE);
-		gtk_widget_set_visible (self->label_details_updated_value, FALSE);
-	} else if (updated == GS_APP_INSTALL_DATE_UNKNOWN) {
-		/* TRANSLATORS: this is where the updated date is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), C_("updated", "Never"));
-		gtk_widget_set_visible (self->label_details_updated_title, TRUE);
-		gtk_widget_set_visible (self->label_details_updated_value, TRUE);
-	} else {
-		g_autoptr(GDateTime) dt = NULL;
-		g_autofree gchar *updated_str = NULL;
-		dt = g_date_time_new_from_unix_utc ((gint64) updated);
-		updated_str = g_date_time_format (dt, "%x");
-
-		history = gs_app_get_history (self->app);
-
-		if (gs_app_list_length (history) == 0) {
-			gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
-		} else {
-			GString *url;
-
-			url = g_string_new (NULL);
-			g_string_printf (url, "<a href=\"show-history\">%s</a>", updated_str);
-			gtk_label_set_markup (GTK_LABEL (self->label_details_updated_value), url->str);
-			g_string_free (url, TRUE);
-		}
-		gtk_widget_set_visible (self->label_details_updated_title, TRUE);
-		gtk_widget_set_visible (self->label_details_updated_value, TRUE);
-	}
-
-	/* set the origin */
-	origin = g_strdup (gs_app_get_origin_hostname (self->app));
-	if (origin == NULL)
-		origin = g_strdup (gs_app_get_origin (self->app));
-	if (origin == NULL) {
-		GFile *local_file = gs_app_get_local_file (self->app);
-		if (local_file != NULL)
-			origin = g_file_get_basename (local_file);
-	}
-	if (origin == NULL || origin[0] == '\0') {
-		/* TRANSLATORS: this is where we don't know the origin of the
-		 * application */
-		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), C_("origin", "Unknown"));
-	} else {
-		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), origin);
-	}
-
-	/* set MyLanguage kudo */
-	kudos = gs_app_get_kudos (self->app);
-	ret = (kudos & GS_APP_KUDO_MY_LANGUAGE) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_translated, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_translated, ret);
-
-	/* set RecentRelease kudo */
-	ret = (kudos & GS_APP_KUDO_RECENT_RELEASE) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_updated, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_updated, ret);
-
-	/* set UserDocs kudo */
-	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_docs, ret);
-
-	/* any of the various integration kudos */
-	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
-			      GS_APP_KUDO_USES_NOTIFICATIONS |
-			      GS_APP_KUDO_HIGH_CONTRAST;
-	ret = (kudos & user_integration_bf) > 0;
-	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
-	gs_details_page_set_sensitive (self->label_details_kudo_integration, ret);
-
-	/* hide the kudo details for non-desktop software */
-	switch (gs_app_get_kind (self->app)) {
-	case AS_COMPONENT_KIND_DESKTOP_APP:
-		gtk_widget_set_visible (self->grid_details_kudo, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
-		break;
-	}
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -1590,6 +1452,7 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_set_object (&self->app, app);
 
 	gs_app_context_bar_set_app (self->context_bar, app);
+	gs_license_tile_set_app (self->license_tile, app);
 
 	/* title/app name will have changed */
 	g_object_notify (G_OBJECT (self), "title");
@@ -2234,9 +2097,6 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
-	g_signal_connect (self->label_details_updated_value, "activate-link",
-			  G_CALLBACK (gs_details_page_history_cb),
-			  self);
 	g_signal_connect (self->button_details_launch, "clicked",
 			  G_CALLBACK (gs_details_page_app_launch_button_cb),
 			  self);
@@ -2245,12 +2105,6 @@ gs_details_page_setup (GsPage *page,
 			  self);
 	g_signal_connect (self->button_details_remove_shortcut, "clicked",
 			  G_CALLBACK (gs_details_page_app_remove_shortcut_button_cb),
-			  self);
-	g_signal_connect (self->button_details_website, "clicked",
-			  G_CALLBACK (gs_details_page_website_cb),
-			  self);
-	g_signal_connect (self->button_donate, "clicked",
-			  G_CALLBACK (gs_details_page_donate_cb),
 			  self);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
@@ -2419,7 +2273,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_support);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
@@ -2428,8 +2281,12 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_donate);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, links_stack);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, project_website_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, donate_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translate_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, report_an_issue_row);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, help_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
@@ -2443,16 +2300,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, context_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_developer);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_name_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
@@ -2466,21 +2315,16 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, grid_details_kudo);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_updated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
+
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 }
 
 static void

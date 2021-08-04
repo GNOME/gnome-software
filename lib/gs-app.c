@@ -79,7 +79,7 @@ typedef struct
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GArray			*key_colors;  /* (nullable) (element-type GdkRGBA) */
-	GHashTable		*urls;
+	GHashTable		*urls;  /* (element-type AsUrlKind utf8) (owned) (nullable) */
 	GHashTable		*launchables;
 	gchar			*url_missing;
 	gchar			*license;
@@ -153,6 +153,7 @@ typedef enum {
 	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
+	PROP_URLS,
 	PROP_URL_MISSING,
 	PROP_CONTENT_RATING,
 	PROP_LICENSE,
@@ -616,7 +617,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "content-rating",
 				as_content_rating_get_kind (priv->content_rating));
 	}
-	tmp = g_hash_table_lookup (priv->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
+	tmp = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
 	keys = g_hash_table_get_keys (priv->launchables);
@@ -2466,7 +2467,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
  *
  * Gets a web address of a specific type.
  *
- * Returns: a string, or %NULL for unset
+ * Returns: (nullable): a string, or %NULL for unset
  *
  * Since: 40
  **/
@@ -2477,7 +2478,10 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
-	return g_hash_table_lookup (priv->urls, as_url_kind_to_string (kind));
+
+	if (priv->urls == NULL)
+		return NULL;
+	return g_hash_table_lookup (priv->urls, GINT_TO_POINTER (kind));
 }
 
 /**
@@ -2497,9 +2501,16 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->urls == NULL)
+		priv->urls = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+						    NULL, g_free);
+
 	g_hash_table_insert (priv->urls,
-			     g_strdup (as_url_kind_to_string (kind)),
+			     GINT_TO_POINTER (kind),
 			     g_strdup (url));
+
+	gs_app_queue_notify (app, obj_props[PROP_URLS]);
 }
 
 /**
@@ -4820,6 +4831,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_IS_UPDATE_DOWNLOADED:
 		g_value_set_boolean (value, priv->is_update_downloaded);
 		break;
+	case PROP_URLS:
+		g_value_set_boxed (value, priv->urls);
+		break;
 	case PROP_URL_MISSING:
 		g_value_set_string (value, priv->url_missing);
 		break;
@@ -4927,6 +4941,10 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_IS_UPDATE_DOWNLOADED:
 		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
 		break;
+	case PROP_URLS:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
 	case PROP_URL_MISSING:
 		gs_app_set_url_missing (app, g_value_get_string (value));
 		break;
@@ -5004,7 +5022,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->renamed_from);
 	g_free (priv->url_missing);
-	g_hash_table_unref (priv->urls);
+	g_clear_pointer (&priv->urls, g_hash_table_unref);
 	g_hash_table_unref (priv->launchables);
 	g_free (priv->license);
 	g_strfreev (priv->menu_path);
@@ -5183,6 +5201,23 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
 					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:urls: (nullable) (element-type AsUrlKind utf8)
+	 *
+	 * The URLs associated with the app.
+	 *
+	 * This is %NULL if no URLs are available. If provided, it is a mapping
+	 * from #AsUrlKind to the URLs.
+	 *
+	 * This property is read-only: use gs_app_set_url() to set URLs.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_URLS] =
+		g_param_spec_boxed ("urls", NULL, NULL,
+				    G_TYPE_HASH_TABLE,
+				    G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:url-missing:
@@ -5395,10 +5430,6 @@ gs_app_init (GsApp *app)
 	                                        g_str_equal,
 	                                        g_free,
 	                                        (GDestroyNotify) g_variant_unref);
-	priv->urls = g_hash_table_new_full (g_str_hash,
-	                                    g_str_equal,
-	                                    g_free,
-	                                    g_free);
 	priv->launchables = g_hash_table_new_full (g_str_hash,
 	                                           g_str_equal,
 	                                           NULL,

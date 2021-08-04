@@ -108,24 +108,39 @@
                                     <property name="wrap">True</property>
                                     <property name="max_width_chars">20</property>
                                     <style>
-                                      <class name="application-details-title"/>
+                                      <class name="title-1"/>
                                     </style>
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="application_details_summary">
-                                    <property name="visible">True</property>
-                                    <property name="halign">fill</property>
-                                    <property name="valign">start</property>
+                                  <object class="GtkBox">
+                                    <property name="visible" bind-source="developer_name_label" bind-property="visible" bind-flags="sync-create"/>
                                     <property name="hexpand">True</property>
-                                    <property name="margin_bottom">16</property>
-                                    <property name="xalign">0</property>
-                                    <property name="selectable">True</property>
-                                    <property name="wrap">True</property>
-                                    <property name="max-width-chars">60</property>
-                                    <style>
-                                      <class name="application-details-summary"/>
-                                    </style>
+                                    <property name="spacing">3</property>
+                                    <property name="orientation">horizontal</property>
+                                    <child>
+                                      <object class="GtkLabel" id="developer_name_label">
+                                        <property name="visible">True</property>
+                                        <!-- This is a placeholder; the real value is set in code -->
+                                        <property name="label">Yorba</property>
+                                        <property name="wrap">False</property>
+                                        <property name="selectable">True</property>
+                                        <property name="max-width-chars">100</property>
+                                        <property name="xalign">0</property>
+                                        <property name="yalign">0.5</property>
+                                        <property name="hexpand">False</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkImage" id="developer_verified_image">
+                                        <property name="visible">True</property>
+                                        <property name="pixel-size">16</property>
+                                        <property name="icon-name">emblem-ok-symbolic</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
@@ -327,14 +342,36 @@
                         <property name="visible">True</property>
                         <property name="preferred-width">860</property>
                         <child>
-                          <object class="GsDescriptionBox" id="box_details_description">
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">12</property>
-                            <property name="halign">fill</property>
-                            <property name="hexpand">True</property>
-                            <property name="valign">start</property>
-                            <property name="visible">FALSE</property>
-                            <property name="margin_bottom">14</property>
+                            <child>
+                              <object class="GtkLabel" id="application_details_summary">
+                                <property name="visible">True</property>
+                                <property name="halign">fill</property>
+                                <property name="valign">start</property>
+                                <property name="hexpand">True</property>
+                                <property name="xalign">0</property>
+                                <property name="selectable">True</property>
+                                <property name="wrap">True</property>
+                                <property name="max-width-chars">60</property>
+                                <style>
+                                  <class name="title-2"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GsDescriptionBox" id="box_details_description">
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">12</property>
+                                <property name="halign">fill</property>
+                                <property name="hexpand">True</property>
+                                <property name="valign">start</property>
+                                <property name="visible">FALSE</property>
+                                <property name="margin_bottom">14</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -364,7 +401,7 @@
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes">Add-ons</property>
                                     <style>
-                                      <class name="application-details-title"/>
+                                      <class name="title-2"/>
                                     </style>
                                   </object>
                                 </child>
@@ -461,7 +498,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="label_webapp_warning" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkLabel" id="label_webapp_warning">
@@ -481,7 +518,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_app_repo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_repo">
@@ -496,7 +533,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_app_norepo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_norepo">
@@ -511,7 +548,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_package_baseos" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_package_baseos">
@@ -526,7 +563,7 @@
 
                     <child>
                       <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="infobar_details_repo" bind-property="visible" bind-flags="sync-create"/>
                         <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_repo">
@@ -545,326 +582,219 @@
                         <property name="visible">True</property>
                         <property name="preferred-width">860</property>
                         <child>
-                          <object class="GtkBox" id="box_details_support">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="margin_bottom">26</property>
+                            <property name="homogeneous">True</property>
+                            <property name="orientation">horizontal</property>
                             <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkButton" id="button_details_website">
-                                <property name="label" translatable="yes">_Website</property>
-                                <property name="width_request">150</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_donate">
-                                <property name="label" translatable="yes">_Donate</property>
-                                <property name="width_request">150</property>
-                                <property name="visible">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
 
-                    <child>
-                      <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
-                        <child>
-                          <object class="GtkLabel" id="application_details_details_title">
-                            <property name="visible">True</property>
-                            <property name="halign">start</property>
-                            <property name="valign">start</property>
-                            <property name="hexpand">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Details</property>
-                            <style>
-                              <class name="application-details-title"/>
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
-                        <child>
-                          <object class="GtkBox" id="box_details_details">
-                            <property name="visible">True</property>
-                            <property name="margin_bottom">26</property>
-                            <property name="spacing">30</property>
                             <child>
-                              <object class="GtkGrid" id="grid_details_kudo">
+                              <object class="GsLicenseTile" id="license_tile">
                                 <property name="visible">True</property>
-                                <property name="row_spacing">9</property>
-                                <property name="column_spacing">12</property>
-                                <property name="hexpand">True</property>
-                                <child>
-                                  <object class="GtkImage" id="image_details_kudo_translated">
-                                    <property name="visible">True</property>
-                                    <property name="pixel_size">16</property>
-                                    <property name="icon_name">preferences-desktop-locale-symbolic</property>
-                                    <property name="icon_size">6</property>
-                                    <style>
-                                      <class name="kudo-pill"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="image_details_kudo_docs">
-                                    <property name="visible">True</property>
-                                    <property name="pixel_size">16</property>
-                                    <property name="icon_name">system-help-symbolic</property>
-                                    <style>
-                                      <class name="kudo-pill"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="image_details_kudo_updated">
-                                    <property name="visible">True</property>
-                                    <property name="pixel_size">16</property>
-                                    <property name="icon_name">software-update-available-symbolic</property>
-                                    <property name="icon_size">6</property>
-                                    <style>
-                                      <class name="kudo-pill"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="image_details_kudo_integration">
-                                    <property name="visible">True</property>
-                                    <property name="pixel_size">16</property>
-                                    <property name="icon_name">emblem-system-symbolic</property>
-                                    <property name="icon_size">0</property>
-                                    <style>
-                                      <class name="kudo-pill"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_kudo_translated">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Localized in your Language</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_kudo_docs">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Documentation</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_kudo_updated">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Release Activity</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_kudo_integration">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">System Integration</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkGrid" id="grid_details_details">
-                                <property name="visible">True</property>
-                                <property name="row_spacing">9</property>
-                                <property name="column_spacing">24</property>
-                                <property name="hexpand">True</property>
+                                <property name="halign">fill</property>
                                 <property name="valign">start</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_channel_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Channel</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_channel_value">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">stable</property>
-                                    <property name="selectable">True</property>
-                                    <property name="ellipsize">end</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_channel_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
+                                <signal name="get-involved-activated" handler="gs_details_page_license_tile_get_involved_activated_cb"/>
+                              </object>
+                            </child>
+
+                            <child>
+                              <object class="GtkStack" id="links_stack">
+                                <property name="visible">True</property>
 
                                 <child>
-                                  <object class="GtkLabel" id="label_details_updated_title">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Updated</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
                                     <style>
-                                      <class name="dim-label"/>
+                                      <class name="content-box"/>
                                     </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_updated_value">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">May 12, 2012</property>
-                                    <property name="selectable">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <accessibility>
-                                      <relation type="labelled-by" target="label_details_updated_title"/>
-                                    </accessibility>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
 
-                                <child>
-                                  <object class="GtkLabel" id="label_details_origin_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Source</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">7</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_origin_value">
-                                    <property name="visible">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">Upstream</property>
-                                    <property name="selectable">True</property>
-                                    <property name="ellipsize">end</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">7</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_developer_title">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Developer</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0.5</property>
-                                    <property name="vexpand">True</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">6</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="box_details_developer">
-                                    <property name="visible">True</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="spacing">3</property>
                                     <child>
-                                      <object class="GtkLabel" id="label_details_developer_value">
+                                      <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="label">Yorba</property>
-                                        <property name="wrap">True</property>
-                                        <property name="selectable">True</property>
-                                        <property name="max_width_chars">100</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="hexpand">False</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkImage" id="image_details_developer_verified">
-                                        <property name="visible">True</property>
-                                        <property name="pixel_size">16</property>
-                                        <property name="icon_name">emblem-ok-symbolic</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="spacing">8</property>
+                                        <property name="margin">14</property>
+                                        <property name="valign">center</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="icon-name">dialog-question-symbolic</property>
+                                            <property name="pixel-size">96</property>
+                                            <property name="visible">True</property>
+                                            <property name="margin-bottom">8</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="label" translatable="yes">No Metadata</property>
+                                            <property name="visible">True</property>
+                                            <attributes>
+                                              <attribute name="weight" value="bold"/>
+                                            </attributes>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="justify">center</property>
+                                            <property name="label" translatable="yes">This app doesn’t provide any links to a website, code repository or issue tracker.</property>
+                                            <property name="visible">True</property>
+                                            <property name="wrap">True</property>
+                                            <property name="xalign">0.5</property>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">6</property>
+                                    <property name="name">empty</property>
+                                  </packing>
+                                </child>
+
+                                <child>
+                                  <object class="GtkListBox">
+                                    <property name="visible">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <property name="halign">fill</property>
+                                    <property name="valign">start</property>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="project_website_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">Project _Website</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">web-browser-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="donate_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Donate</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">money-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="translate_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Contribute Translations</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">flag-outline-thin-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="report_an_issue_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Report an Issue</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">computer-fail-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+
+                                    <child>
+                                      <object class="HdyActionRow" id="help_row">
+                                        <property name="activatable">True</property>
+                                        <property name="visible">True</property>
+                                        <property name="title" translatable="yes">_Help</property>
+                                        <!-- This is a placeholder; the actual URI is set in code -->
+                                        <property name="subtitle">gnome.org</property>
+                                        <property name="use-underline">True</property>
+                                        <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
+                                        <child type="prefix">
+                                          <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">help-browser-symbolic</property>
+                                            <property name="icon-size">4</property>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="icon-name">external-link-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="name">links</property>
                                   </packing>
                                 </child>
                               </object>
@@ -892,7 +822,7 @@
                                 <property name="xalign">0</property>
                                 <property name="label" translatable="yes" comments="Translators: Header of the section with other users&apos; opinions about the app.">Reviews</property>
                                 <style>
-                                  <class name="application-details-title"/>
+                                  <class name="title-2"/>
                                 </style>
                               </object>
                             </child>
@@ -994,11 +924,6 @@
       <widget name="button_update"/>
       <widget name="button_remove"/>
       <widget name="button_details_launch"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup" id="sizegroup_details_buttons">
-    <widgets>
-      <widget name="button_details_website"/>
     </widgets>
   </object>
 
