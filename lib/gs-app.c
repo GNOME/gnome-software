@@ -79,7 +79,7 @@ typedef struct
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GArray			*key_colors;  /* (nullable) (element-type GdkRGBA) */
-	GHashTable		*urls;
+	GHashTable		*urls;  /* (element-type AsUrlKind utf8) (owned) (nullable) */
 	GHashTable		*launchables;
 	gchar			*url_missing;
 	gchar			*license;
@@ -616,7 +616,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "content-rating",
 				as_content_rating_get_kind (priv->content_rating));
 	}
-	tmp = g_hash_table_lookup (priv->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
+	tmp = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
 	keys = g_hash_table_get_keys (priv->launchables);
@@ -2466,7 +2466,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
  *
  * Gets a web address of a specific type.
  *
- * Returns: a string, or %NULL for unset
+ * Returns: (nullable): a string, or %NULL for unset
  *
  * Since: 40
  **/
@@ -2477,7 +2477,10 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
-	return g_hash_table_lookup (priv->urls, as_url_kind_to_string (kind));
+
+	if (priv->urls == NULL)
+		return NULL;
+	return g_hash_table_lookup (priv->urls, GINT_TO_POINTER (kind));
 }
 
 /**
@@ -2497,8 +2500,13 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->urls == NULL)
+		priv->urls = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+						    NULL, g_free);
+
 	g_hash_table_insert (priv->urls,
-			     g_strdup (as_url_kind_to_string (kind)),
+			     GINT_TO_POINTER (kind),
 			     g_strdup (url));
 }
 
@@ -5004,7 +5012,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->renamed_from);
 	g_free (priv->url_missing);
-	g_hash_table_unref (priv->urls);
+	g_clear_pointer (&priv->urls, g_hash_table_unref);
 	g_hash_table_unref (priv->launchables);
 	g_free (priv->license);
 	g_strfreev (priv->menu_path);
@@ -5395,10 +5403,6 @@ gs_app_init (GsApp *app)
 	                                        g_str_equal,
 	                                        g_free,
 	                                        (GDestroyNotify) g_variant_unref);
-	priv->urls = g_hash_table_new_full (g_str_hash,
-	                                    g_str_equal,
-	                                    g_free,
-	                                    g_free);
 	priv->launchables = g_hash_table_new_full (g_str_hash,
 	                                           g_str_equal,
 	                                           NULL,
