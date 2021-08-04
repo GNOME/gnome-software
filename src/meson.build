@@ -57,6 +57,7 @@ gnome_software_sources = [
   'gs-moderate-page.c',
   'gs-overview-page.c',
   'gs-origin-popover-row.c',
+  'gs-os-update-page.c',
   'gs-page.c',
   'gs-picture.c',
   'gs-prefs-dialog.c',
