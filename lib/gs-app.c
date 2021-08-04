@@ -153,6 +153,7 @@ typedef enum {
 	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
+	PROP_URLS,
 	PROP_URL_MISSING,
 	PROP_CONTENT_RATING,
 	PROP_LICENSE,
@@ -2508,6 +2509,8 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 	g_hash_table_insert (priv->urls,
 			     GINT_TO_POINTER (kind),
 			     g_strdup (url));
+
+	gs_app_queue_notify (app, obj_props[PROP_URLS]);
 }
 
 /**
@@ -4828,6 +4831,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_IS_UPDATE_DOWNLOADED:
 		g_value_set_boolean (value, priv->is_update_downloaded);
 		break;
+	case PROP_URLS:
+		g_value_set_boxed (value, priv->urls);
+		break;
 	case PROP_URL_MISSING:
 		g_value_set_string (value, priv->url_missing);
 		break;
@@ -4934,6 +4940,10 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_IS_UPDATE_DOWNLOADED:
 		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
+		break;
+	case PROP_URLS:
+		/* Read only */
+		g_assert_not_reached ();
 		break;
 	case PROP_URL_MISSING:
 		gs_app_set_url_missing (app, g_value_get_string (value));
@@ -5191,6 +5201,23 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
 					       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsApp:urls: (nullable) (element-type AsUrlKind utf8)
+	 *
+	 * The URLs associated with the app.
+	 *
+	 * This is %NULL if no URLs are available. If provided, it is a mapping
+	 * from #AsUrlKind to the URLs.
+	 *
+	 * This property is read-only: use gs_app_set_url() to set URLs.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_URLS] =
+		g_param_spec_boxed ("urls", NULL, NULL,
+				    G_TYPE_HASH_TABLE,
+				    G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:url-missing:
