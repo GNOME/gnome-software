@@ -670,7 +670,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	if (is_unknown) {
 		/* Translators: It’s unknown what age rating this app has. The
 		 * placeholder is the app name. */
-		title = g_strdup_printf (("%s Has an Unknown Age Rating"), gs_app_get_name (self->app));
+		title = g_strdup_printf (("%s has an unknown age rating"), gs_app_get_name (self->app));
 	} else {
 		guint age;
 
@@ -680,32 +680,32 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 		if (age == 0)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for all ages. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Everyone"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for everyone"), gs_app_get_name (self->app));
 		else if (age <= 3)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for children up to around age 3. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Toddlers"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for toddlers"), gs_app_get_name (self->app));
 		else if (age <= 5)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for children up to around age 5. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Young Children"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for young children"), gs_app_get_name (self->app));
 		else if (age <= 12)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for children up to around age 12. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Children"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for children"), gs_app_get_name (self->app));
 		else if (age <= 18)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for people up to around age 18. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Teenagers"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for teenagers"), gs_app_get_name (self->app));
 		else if (age < G_MAXUINT)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for people aged up to and over 18. The placeholder is the app name. */
-			title = g_strdup_printf (("%s is Suitable for Adults"), gs_app_get_name (self->app));
+			title = g_strdup_printf (("%s is suitable for adults"), gs_app_get_name (self->app));
 		else
 			/* Translators: This is a dialogue title which indicates that an app is suitable
 			 * for a specified age group. The first placeholder is the app name, the second
 			 * is the age group. */
-			title = g_strdup_printf (("%s is Suitable for %s"), gs_app_get_name (self->app),
+			title = g_strdup_printf (("%s is suitable for %s"), gs_app_get_name (self->app),
 						 gtk_label_get_text (self->age));
 	}
 
