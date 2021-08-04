@@ -690,28 +690,28 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		icon_name = "desktop-symbolic";
 		/* Translators: It’s unknown whether this app is supported on
 		 * the current hardware. The placeholder is the app name. */
-		title = g_strdup_printf (("%s Probably Works on This Device"), gs_app_get_name (self->app));
+		title = g_strdup_printf (("%s probably works on this device"), gs_app_get_name (self->app));
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
 		icon_name = "test-pass-symbolic";
 		/* Translators: The app will work on the current hardware.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s Works on This Device"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s works on this device"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app may not work fully on the current hardware.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s Will Not Work Properly on This Device"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s will not work properly on this device"), gs_app_get_name (self->app));
 		css_class = "yellow";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		icon_name = "dialog-warning-symbolic";
 		/* Translators: The app will not work properly on the current hardware.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s Will Not Work on This Device"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s will not work on this device"), gs_app_get_name (self->app));
 		css_class = "red";
 		break;
 	default:

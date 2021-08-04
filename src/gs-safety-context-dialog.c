@@ -328,21 +328,21 @@ update_permissions_list (GsSafetyContextDialog *self)
 		icon_name = "safety-symbolic";
 		/* Translators: The app is considered safe to install and run.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s is Safe"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s is safe"), gs_app_get_name (self->app));
 		css_class = "green";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING:
 		icon_name = "dialog-question-symbolic";
 		/* Translators: The app is considered potentially unsafe to install and run.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s is Potentially Unsafe"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s is potentially unsafe"), gs_app_get_name (self->app));
 		css_class = "yellow";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT:
 		icon_name = "dialog-warning-symbolic";
 		/* Translators: The app is considered unsafe to install and run.
 		 * The placeholder is the app name. */
-		title = g_strdup_printf (_("%s is Unsafe"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s is unsafe"), gs_app_get_name (self->app));
 		css_class = "red";
 		break;
 	default:
