@@ -520,6 +520,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	case GS_SHELL_MODE_OVERVIEW:
 	case GS_SHELL_MODE_INSTALLED:
 	case GS_SHELL_MODE_UPDATES:
+	case GS_SHELL_MODE_SEARCH:
 		gs_shell_set_header_start_widget (shell, widget);
 		break;
 	default:
@@ -532,6 +533,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	case GS_SHELL_MODE_OVERVIEW:
 	case GS_SHELL_MODE_INSTALLED:
 	case GS_SHELL_MODE_UPDATES:
+	case GS_SHELL_MODE_SEARCH:
 		gs_shell_set_header_end_widget (shell, widget);
 		break;
 	case GS_SHELL_MODE_DETAILS:
