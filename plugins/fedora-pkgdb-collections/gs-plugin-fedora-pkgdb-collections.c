@@ -232,7 +232,7 @@ _get_upgrade_css_background (guint version)
 	if (g_file_test (filename2, G_FILE_TEST_EXISTS))
 		return g_strdup_printf ("url('%s')", filename2);
 
-	return NULL;
+	return g_strdup ("url('" DATADIR "/gnome-software/upgrade-bg.png')");
 }
 
 static gint
