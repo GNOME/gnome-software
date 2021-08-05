@@ -105,14 +105,20 @@ gs_search_page_get_search_cb (GObject *source_object,
 		}
 		g_warning ("failed to get search apps: %s", error->message);
 		gs_stop_spinner (GTK_SPINNER (self->spinner_search));
-		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
+		if (self->value && self->value[0])
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
+		else
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-search");
 		return;
 	}
 
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("no search results to show");
-		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
+		if (self->value && self->value[0])
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
+		else
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-search");
 		return;
 	}
 
