@@ -77,6 +77,7 @@
                           <object class="GtkBox" id="box_details_header">
                             <property name="orientation">horizontal</property>
                             <property name="visible">True</property>
+                            <property name="spacing">32</property>
                             <child>
                               <object class="GtkImage" id="application_details_icon">
                                 <property name="visible">True</property>
@@ -89,20 +90,23 @@
                               </object>
                             </child>
                             <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="visible">True</property>
+                                <property name="spacing">10</property>
+                            <child>
                               <object class="GtkBox" id="box_details_header2">
                                 <property name="orientation">vertical</property>
                                 <property name="visible">True</property>
                                 <property name="halign">fill</property>
-                                <property name="valign">start</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
+                                <property name="valign">center</property>
+                                <property name="spacing">6</property>
                                 <child>
                                   <object class="GtkLabel" id="application_details_title">
                                     <property name="visible">True</property>
                                     <property name="halign">fill</property>
                                     <property name="valign">start</property>
                                     <property name="hexpand">True</property>
-                                    <property name="margin_bottom">4</property>
                                     <property name="xalign">0</property>
                                     <property name="selectable">True</property>
                                     <property name="wrap">True</property>
@@ -143,11 +147,9 @@
                                     </child>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-
                             <child>
                               <object class="GtkBox" id="star_box">
+                                <property name="margin-top">6</property>
                                 <property name="visible">True</property>
                                 <property name="valign">start</property>
                                 <child>
@@ -176,20 +178,12 @@
                                 </child>
                               </object>
                             </child>
+                              </object>
+                            </child>
 
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_install_remove">
                             <property name="visible">True</property>
-                            <property name="margin_bottom">14</property>
                             <property name="spacing">9</property>
                             <child>
                               <object class="GtkButton" id="button_install">
@@ -200,7 +194,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="halign">start</property>
-                                <property name="valign">start</property>
+                                <property name="valign">center</property>
                                 <style>
                                   <class name="suggested-action"/>
                                 </style>
@@ -211,6 +205,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="use_underline">True</property>
+                                <property name="valign">center</property>
                                 <style>
                                   <class name="suggested-action"/>
                                 </style>
@@ -225,7 +220,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="halign">start</property>
-                                <property name="valign">start</property>
+                                <property name="valign">center</property>
                               </object>
                             </child>
                             <child>
@@ -284,6 +279,7 @@
                                 <property name="width_request">116</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                               </object>
                             </child>
                             <child>
@@ -295,7 +291,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="halign">start</property>
-                                <property name="valign">start</property>
+                                <property name="valign">center</property>
                               </object>
                               <packing>
                                 <property name="pack-type">end</property>
@@ -307,6 +303,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes" comments="Translators: A label for a button to add a shortcut to the selected application.">_Add shortcut</property>
+                                <property name="valign">center</property>
                                 <style>
                                   <class name="suggested-action"/>
                                 </style>
@@ -321,10 +318,15 @@
                                 <property name="can_focus">True</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes" comments="Translators: A label for a button to remove a shortcut to the selected application.">Re_move shortcut</property>
+                                <property name="valign">center</property>
                               </object>
                               <packing>
                                 <property name="pack-type">end</property>
                               </packing>
+                            </child>
+                          </object>
+                        </child>
+                              </object>
                             </child>
                           </object>
                         </child>
