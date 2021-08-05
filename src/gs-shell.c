@@ -500,6 +500,21 @@ stack_notify_visible_child_cb (GObject    *object,
 	gs_page_switch_to (page);
 
 	/* update header bar widgets */
+	switch (mode) {
+	case GS_SHELL_MODE_OVERVIEW:
+	case GS_SHELL_MODE_INSTALLED:
+	case GS_SHELL_MODE_SEARCH:
+		gtk_widget_show (shell->search_button);
+		break;
+	case GS_SHELL_MODE_UPDATES:
+		gtk_widget_hide (shell->search_button);
+		break;
+	default:
+		/* We don't care about changing the visibility of the search
+		 * button in modes appearing in sub-pages.  */
+		break;
+	}
+
 	widget = gs_page_get_header_start_widget (page);
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
