@@ -906,8 +906,24 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
 			if (!hdy_search_bar_get_search_mode (HDY_SEARCH_BAR (shell->search_bar))) {
+				GsShellMode mode = gs_shell_get_mode (shell);
+
 				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), TRUE);
 				gtk_widget_grab_focus (shell->entry_search);
+
+				/* If the mode doesn't have a search button,
+				 * switch to the search page right away,
+				 * otherwise we would show the search bar
+				 * without a button to toggle it. */
+				switch (mode) {
+				case GS_SHELL_MODE_OVERVIEW:
+				case GS_SHELL_MODE_INSTALLED:
+				case GS_SHELL_MODE_SEARCH:
+					break;
+				default:
+					gs_shell_show_search (shell, "");
+					break;
+				}
 			} else {
 				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), FALSE);
 			}
