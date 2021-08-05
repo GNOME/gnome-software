@@ -1018,16 +1018,17 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_description (self->app);
 	gs_details_page_set_description (self, tmp);
 
-	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
-	 * happens at 2× scale factor (hi-DPI) */
+	/* set the icon; fall back to 96px and 64px if 128px isn’t available,
+	 * which sometimes happens at 2× scale factor (hi-DPI) */
 	{
 		const struct {
 			guint icon_size;
 			const gchar *fallback_icon_name;  /* (nullable) */
 		} icon_fallbacks[] = {
+			{ 128, NULL },
 			{ 96, NULL },
 			{ 64, NULL },
-			{ 96, "system-component-application" },
+			{ 128, "system-component-application" },
 		};
 
 		for (gsize i = 0; i < G_N_ELEMENTS (icon_fallbacks) && icon == NULL; i++) {
