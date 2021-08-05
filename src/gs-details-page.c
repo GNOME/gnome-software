@@ -1020,24 +1020,23 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
 	 * happens at 2× scale factor (hi-DPI) */
-	icon_size = 96;
-	icon = gs_app_get_icon_for_size (self->app,
-					 icon_size,
-					 gtk_widget_get_scale_factor (self->application_details_icon),
-					 NULL);
-	if (icon == NULL) {
-		icon_size = 64;
-		icon = gs_app_get_icon_for_size (self->app,
-						 icon_size,
-						 gtk_widget_get_scale_factor (self->application_details_icon),
-						 NULL);
-	}
-	if (icon == NULL) {
-		icon_size = 96;
-		icon = gs_app_get_icon_for_size (self->app,
-						 icon_size,
-						 gtk_widget_get_scale_factor (self->application_details_icon),
-						 "system-component-application");
+	{
+		const struct {
+			guint icon_size;
+			const gchar *fallback_icon_name;  /* (nullable) */
+		} icon_fallbacks[] = {
+			{ 96, NULL },
+			{ 64, NULL },
+			{ 96, "system-component-application" },
+		};
+
+		for (gsize i = 0; i < G_N_ELEMENTS (icon_fallbacks) && icon == NULL; i++) {
+			icon_size = icon_fallbacks[i].icon_size;
+			icon = gs_app_get_icon_for_size (self->app,
+							 icon_size,
+							 gtk_widget_get_scale_factor (self->application_details_icon),
+							 icon_fallbacks[i].fallback_icon_name);
+		}
 	}
 
 	gtk_image_set_pixel_size (GTK_IMAGE (self->application_details_icon), icon_size);
