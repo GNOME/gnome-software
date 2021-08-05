@@ -104,7 +104,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 						 gs_app_get_license (self->app));
 	} else {
 		title = _("Proprietary");
-		css_class = "red";
+		css_class = "grey";
 		lozenge_icon_names[0] = "dialog-warning-symbolic";
 		lozenge_icon_names[1] = "face-sad-symbolic";
 		lozenge_icon_names[2] = "padlock-open-symbolic";
