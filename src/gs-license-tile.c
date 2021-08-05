@@ -110,7 +110,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[2] = "padlock-open-symbolic";
 		get_involved_visible = FALSE;
 
-		description = g_strdup (_("This app is not developed in the open, so only its developers know how it works. It could be insecure, or actively do nefarious things that are hard to detect or prevent."
+		description = g_strdup (_("This app is not developed in the open, so only its developers know how it works. There may be restrictions on its use, and it may be harder to tell if the app is insecure."
 					  "\n\n"
 					  "By installing this app you are putting a high amount of trust in the developers."));
 	}
