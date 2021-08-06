@@ -13,24 +13,6 @@
 	background-color: #999999;
 }
 
-.view.tile {
-	padding: 0;
-	border: 1px solid @theme_bg_color;
-	box-shadow: none;
-	background: mix(@theme_base_color,@theme_bg_color,0.3);
-}
-
-.view.tile:active {
-	border-color: @theme_selected_bg_color;
-	box-shadow: none;
-	color: @theme_selected_bg_color;
-}
-
-.view.tile:backdrop {
-	box-shadow: none;
-	border-color: @unfocused_borders;
-}
-
 .application-details-infobar.info {
 	background-color: #d3d7cf;
 	border-color: darker(#d3d7cf);
