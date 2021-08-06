@@ -77,254 +77,256 @@
                           <object class="GtkBox" id="box_details_header">
                             <property name="orientation">horizontal</property>
                             <property name="visible">True</property>
+                            <property name="spacing">32</property>
                             <child>
                               <object class="GtkImage" id="application_details_icon">
                                 <property name="visible">True</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
-                                <property name="pixel_size">96</property>
+                                <property name="pixel_size">128</property>
                                 <style>
                                   <class name="icon-dropshadow"/>
                                 </style>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkBox" id="box_details_header2">
-                                <property name="orientation">vertical</property>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
                                 <property name="visible">True</property>
-                                <property name="halign">fill</property>
-                                <property name="valign">start</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
+                                <property name="spacing">10</property>
                                 <child>
-                                  <object class="GtkLabel" id="application_details_title">
+                                  <object class="GtkBox" id="box_details_header2">
+                                    <property name="orientation">vertical</property>
                                     <property name="visible">True</property>
                                     <property name="halign">fill</property>
-                                    <property name="valign">start</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="margin_bottom">4</property>
-                                    <property name="xalign">0</property>
-                                    <property name="selectable">True</property>
-                                    <property name="wrap">True</property>
-                                    <property name="max_width_chars">20</property>
-                                    <style>
-                                      <class name="title-1"/>
-                                    </style>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkBox">
-                                    <property name="visible" bind-source="developer_name_label" bind-property="visible" bind-flags="sync-create"/>
-                                    <property name="hexpand">True</property>
-                                    <property name="spacing">3</property>
-                                    <property name="orientation">horizontal</property>
+                                    <property name="valign">center</property>
+                                    <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkLabel" id="developer_name_label">
+                                      <object class="GtkLabel" id="application_details_title">
                                         <property name="visible">True</property>
-                                        <!-- This is a placeholder; the real value is set in code -->
-                                        <property name="label">Yorba</property>
-                                        <property name="wrap">False</property>
-                                        <property name="selectable">True</property>
-                                        <property name="max-width-chars">100</property>
+                                        <property name="halign">fill</property>
+                                        <property name="valign">start</property>
+                                        <property name="hexpand">True</property>
                                         <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="hexpand">False</property>
+                                        <property name="selectable">True</property>
+                                        <property name="wrap">True</property>
+                                        <property name="max_width_chars">20</property>
                                         <style>
-                                          <class name="dim-label"/>
+                                          <class name="title-1"/>
                                         </style>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkImage" id="developer_verified_image">
+                                      <object class="GtkBox">
+                                        <property name="visible" bind-source="developer_name_label" bind-property="visible" bind-flags="sync-create"/>
+                                        <property name="hexpand">True</property>
+                                        <property name="spacing">3</property>
+                                        <property name="orientation">horizontal</property>
+                                        <child>
+                                          <object class="GtkLabel" id="developer_name_label">
+                                            <property name="visible">True</property>
+                                            <!-- This is a placeholder; the real value is set in code -->
+                                            <property name="label">Yorba</property>
+                                            <property name="wrap">False</property>
+                                            <property name="selectable">True</property>
+                                            <property name="max-width-chars">100</property>
+                                            <property name="xalign">0</property>
+                                            <property name="yalign">0.5</property>
+                                            <property name="hexpand">False</property>
+                                            <style>
+                                              <class name="dim-label"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage" id="developer_verified_image">
+                                            <property name="visible">True</property>
+                                            <property name="pixel-size">16</property>
+                                            <property name="icon-name">emblem-ok-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="star_box">
+                                        <property name="margin-top">6</property>
                                         <property name="visible">True</property>
-                                        <property name="pixel-size">16</property>
-                                        <property name="icon-name">emblem-ok-symbolic</property>
+                                        <property name="valign">start</property>
+                                        <child>
+                                          <object class="GtkEventBox" id="star_eventbox">
+                                            <property name="visible">True</property>
+                                            <child>
+                                              <object class="GsStarWidget" id="star">
+                                                <property name="visible">True</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">center</property>
+                                                <property name="icon-size">16</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel" id="label_review_count">
+                                            <property name="visible">True</property>
+                                            <property name="margin_start">5</property>
+                                            <property name="halign">start</property>
+                                            <property name="valign">center</property>
+                                            <style>
+                                              <class name="dim-label"/>
+                                            </style>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
 
-                            <child>
-                              <object class="GtkBox" id="star_box">
-                                <property name="visible">True</property>
-                                <property name="valign">start</property>
                                 <child>
-                                  <object class="GtkEventBox" id="star_eventbox">
+                                  <object class="GtkBox" id="box_install_remove">
                                     <property name="visible">True</property>
+                                    <property name="spacing">9</property>
                                     <child>
-                                      <object class="GsStarWidget" id="star">
-                                        <property name="visible">True</property>
+                                      <object class="GtkButton" id="button_install">
+                                        <property name="visible">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes">_Install</property>
+                                        <property name="width_request">105</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
                                         <property name="halign">start</property>
                                         <property name="valign">center</property>
-                                        <property name="icon-size">16</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_review_count">
-                                    <property name="visible">True</property>
-                                    <property name="margin_start">5</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <style>
-                                      <class name="dim-label"/>
-                                    </style>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
-                        <child>
-                          <object class="GtkBox" id="box_install_remove">
-                            <property name="visible">True</property>
-                            <property name="margin_bottom">14</property>
-                            <property name="spacing">9</property>
-                            <child>
-                              <object class="GtkButton" id="button_install">
-                                <property name="visible">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes">_Install</property>
-                                <property name="width_request">105</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="halign">start</property>
-                                <property name="valign">start</property>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_details_launch">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_remove">
-                                <property name="visible">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes">_Uninstall</property>
-                                <property name="width_request">105</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="halign">start</property>
-                                <property name="valign">start</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSpinner" id="spinner_remove">
-                                <property name="visible">False</property>
-                                <property name="valign">center</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkBox" id="box_progress">
-                                <property name="visible">True</property>
-                                <property name="spacing">3</property>
-                                <property name="orientation">vertical</property>
-                                <property name="hexpand">True</property>
-                                <property name="valign">center</property>
-                                <child>
-                                  <object class="GtkBox" id="box_progress2">
-                                    <property name="visible">True</property>
-                                    <property name="spacing">3</property>
-                                    <property name="halign">center</property>
-                                    <child>
-                                      <object class="GtkLabel" id="label_progress_status">
-                                        <property name="visible">True</property>
-                                        <property name="valign">start</property>
-                                        <property name="label" translatable="yes">Downloading</property>
+                                        <style>
+                                          <class name="suggested-action"/>
+                                        </style>
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkLabel" id="label_progress_percentage">
+                                      <object class="GtkButton" id="button_details_launch">
                                         <property name="visible">True</property>
-                                        <property name="valign">start</property>
-                                        <property name="label">50%</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="valign">center</property>
+                                        <style>
+                                          <class name="suggested-action"/>
+                                        </style>
                                       </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_remove">
+                                        <property name="visible">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes">_Uninstall</property>
+                                        <property name="width_request">105</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinner" id="spinner_remove">
+                                        <property name="visible">False</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="box_progress">
+                                        <property name="visible">True</property>
+                                        <property name="spacing">3</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="valign">center</property>
+                                        <child>
+                                          <object class="GtkBox" id="box_progress2">
+                                            <property name="visible">True</property>
+                                            <property name="spacing">3</property>
+                                            <property name="halign">center</property>
+                                            <child>
+                                              <object class="GtkLabel" id="label_progress_status">
+                                                <property name="visible">True</property>
+                                                <property name="valign">start</property>
+                                                <property name="label" translatable="yes">Downloading</property>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel" id="label_progress_percentage">
+                                                <property name="visible">True</property>
+                                                <property name="valign">start</property>
+                                                <property name="label">50%</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkProgressBar" id="progressbar_top">
+                                            <property name="visible">True</property>
+                                            <property name="fraction">0.5</property>
+                                            <property name="valign">center</property>
+                                            <property name="vexpand">True</property>
+                                            <property name="width_request">624</property>
+                                            <style>
+                                              <class name="upgrade-progressbar"/>
+                                            </style>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_cancel">
+                                        <property name="visible">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes">_Cancel</property>
+                                        <property name="width_request">116</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_update">
+                                        <property name="visible">False</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes">_Update</property>
+                                        <property name="width_request">105</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                      <packing>
+                                        <property name="pack-type">end</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_details_add_shortcut">
+                                        <property name="visible">False</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes" comments="Translators: A label for a button to add a shortcut to the selected application.">_Add shortcut</property>
+                                        <property name="valign">center</property>
+                                        <style>
+                                          <class name="suggested-action"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="pack-type">end</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_details_remove_shortcut">
+                                        <property name="visible">False</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="use_underline">True</property>
+                                        <property name="label" translatable="yes" comments="Translators: A label for a button to remove a shortcut to the selected application.">Re_move shortcut</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                      <packing>
+                                        <property name="pack-type">end</property>
+                                      </packing>
                                     </child>
                                   </object>
                                 </child>
-                                <child>
-                                  <object class="GtkProgressBar" id="progressbar_top">
-                                    <property name="visible">True</property>
-                                    <property name="fraction">0.5</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="width_request">624</property>
-                                    <style>
-                                      <class name="upgrade-progressbar"/>
-                                    </style>
-                                  </object>
-                                </child>
                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_cancel">
-                                <property name="visible">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes">_Cancel</property>
-                                <property name="width_request">116</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_update">
-                                <property name="visible">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes">_Update</property>
-                                <property name="width_request">105</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="halign">start</property>
-                                <property name="valign">start</property>
-                              </object>
-                              <packing>
-                                <property name="pack-type">end</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_details_add_shortcut">
-                                <property name="visible">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes" comments="Translators: A label for a button to add a shortcut to the selected application.">_Add shortcut</property>
-                                <style>
-                                  <class name="suggested-action"/>
-                                </style>
-                              </object>
-                              <packing>
-                                <property name="pack-type">end</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_details_remove_shortcut">
-                                <property name="visible">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="use_underline">True</property>
-                                <property name="label" translatable="yes" comments="Translators: A label for a button to remove a shortcut to the selected application.">Re_move shortcut</property>
-                              </object>
-                              <packing>
-                                <property name="pack-type">end</property>
-                              </packing>
                             </child>
                           </object>
                         </child>
