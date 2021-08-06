@@ -520,14 +520,11 @@ gs_details_page_allow_cancel_changed_cb (GsApp *app,
 }
 
 static gboolean
-gs_details_page_switch_to_idle (gpointer user_data)
+gs_details_page_refresh_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
-		gs_page_switch_to (GS_PAGE (self));
-		gs_page_scroll_up (GS_PAGE (self));
-
 		/* update widgets */
 		gs_details_page_refresh_all (self);
 	}
@@ -541,7 +538,7 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
                                          GParamSpec *pspec,
                                          GsDetailsPage *self)
 {
-	g_idle_add (gs_details_page_switch_to_idle, g_object_ref (self));
+	g_idle_add (gs_details_page_refresh_idle, g_object_ref (self));
 }
 
 static void
