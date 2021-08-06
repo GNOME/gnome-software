@@ -1044,11 +1044,11 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* Set various external links. If none are visible, show a fallback
 	 * message instead. */
 	link_rows_visible = FALSE;
-	link_rows_visible = link_rows_visible || update_action_row_from_link (self->project_website_row, self->app, AS_URL_KIND_HOMEPAGE);
-	link_rows_visible = link_rows_visible || update_action_row_from_link (self->donate_row, self->app, AS_URL_KIND_DONATION);
-	link_rows_visible = link_rows_visible || update_action_row_from_link (self->translate_row, self->app, AS_URL_KIND_TRANSLATE);
-	link_rows_visible = link_rows_visible || update_action_row_from_link (self->report_an_issue_row, self->app, AS_URL_KIND_BUGTRACKER);
-	link_rows_visible = link_rows_visible || update_action_row_from_link (self->help_row, self->app, AS_URL_KIND_HELP);
+	link_rows_visible = update_action_row_from_link (self->project_website_row, self->app, AS_URL_KIND_HOMEPAGE) || link_rows_visible;
+	link_rows_visible = update_action_row_from_link (self->donate_row, self->app, AS_URL_KIND_DONATION) || link_rows_visible;
+	link_rows_visible = update_action_row_from_link (self->translate_row, self->app, AS_URL_KIND_TRANSLATE) || link_rows_visible;
+	link_rows_visible = update_action_row_from_link (self->report_an_issue_row, self->app, AS_URL_KIND_BUGTRACKER) || link_rows_visible;
+	link_rows_visible = update_action_row_from_link (self->help_row, self->app, AS_URL_KIND_HELP) || link_rows_visible;
 
 	gtk_stack_set_visible_child_name (self->links_stack, link_rows_visible ? "links" : "empty");
 
