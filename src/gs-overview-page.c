@@ -35,7 +35,6 @@ struct _GsOverviewPage
 	gboolean		 loading_featured;
 	gboolean		 loading_popular;
 	gboolean		 loading_recent;
-	gboolean		 loading_popular_rotating;
 	gboolean		 loading_categories;
 	gboolean		 empty;
 	gchar			*category_of_day;
@@ -48,7 +47,6 @@ struct _GsOverviewPage
 	GtkWidget		*featured_carousel;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
-	GtkWidget		*box_popular_rotating;
 	GtkWidget		*box_recent;
 	GtkWidget		*category_heading;
 	GtkWidget		*flowbox_categories;
@@ -71,22 +69,6 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
-
-typedef struct {
-        GsCategory	*category;
-        GsOverviewPage	*self;
-        const gchar	*title;
-} LoadData;
-
-static void
-load_data_free (LoadData *data)
-{
-        if (data->category != NULL)
-                g_object_unref (data->category);
-        if (data->self != NULL)
-                g_object_unref (data->self);
-        g_slice_free (LoadData, data);
-}
 
 static void
 gs_overview_page_invalidate (GsOverviewPage *self)
@@ -140,7 +122,6 @@ gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 	self->loading_featured = FALSE;
 	self->loading_popular = FALSE;
 	self->loading_recent = FALSE;
-	self->loading_popular_rotating = FALSE;
 }
 
 static void
@@ -251,114 +232,6 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	self->empty = FALSE;
 
 out:
-	gs_overview_page_decrement_action_cnt (self);
-}
-
-static void
-gs_overview_page_category_more_cb (GtkButton *button, GsOverviewPage *self)
-{
-	GsCategory *cat;
-	const gchar *id;
-
-	id = g_object_get_data (G_OBJECT (button), "GnomeSoftware::CategoryId");
-	if (id == NULL)
-		return;
-	cat = g_hash_table_lookup (self->category_hash, id);
-	if (cat == NULL)
-		return;
-	gs_shell_show_category (self->shell, cat);
-}
-
-static void
-gs_overview_page_get_category_apps_cb (GObject *source_object,
-                                       GAsyncResult *res,
-                                       gpointer user_data)
-{
-	LoadData *load_data = (LoadData *) user_data;
-	GsOverviewPage *self = load_data->self;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	guint i;
-	GsApp *app;
-	GtkWidget *box;
-	GtkWidget *button;
-	GtkWidget *headerbox;
-	GtkWidget *label;
-	GtkWidget *tile;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	/* get popular apps */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			goto out;
-		g_warning ("failed to get category %s featured applications: %s",
-			   gs_category_get_id (load_data->category),
-			   error->message);
-		goto out;
-	} else if (gs_app_list_length (list) < N_TILES) {
-		g_warning ("hiding category %s featured applications: "
-			   "found only %u to show, need at least %d",
-			   gs_category_get_id (load_data->category),
-			   gs_app_list_length (list), N_TILES);
-		goto out;
-	}
-	gs_app_list_randomize (list);
-
-	/* add header */
-	headerbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 9);
-	gtk_widget_set_visible (headerbox, TRUE);
-
-	/* add label */
-	label = gtk_label_new (load_data->title);
-	gtk_widget_set_visible (label, TRUE);
-	gtk_label_set_xalign (GTK_LABEL (label), 0.f);
-	gtk_widget_set_margin_top (label, 24);
-	gtk_widget_set_margin_bottom (label, 6);
-	gtk_widget_set_hexpand (label, TRUE);
-	gtk_style_context_add_class (gtk_widget_get_style_context (label),
-				     "index-title-alignment-software");
-	gtk_container_add (GTK_CONTAINER (headerbox), label);
-
-	/* add button */
-	button = gtk_button_new_with_label (_("More…"));
-	gtk_style_context_add_class (gtk_widget_get_style_context (button),
-				     "overview-more-button");
-	g_object_set_data_full (G_OBJECT (button), "GnomeSoftware::CategoryId",
-				g_strdup (gs_category_get_id (load_data->category)),
-				g_free);
-	gtk_widget_set_visible (button, TRUE);
-	gtk_widget_set_valign (button, GTK_ALIGN_END);
-	gtk_widget_set_margin_bottom (button, 9);
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (gs_overview_page_category_more_cb), self);
-	gtk_container_add (GTK_CONTAINER (headerbox), button);
-	gtk_container_add (GTK_CONTAINER (self->box_popular_rotating), headerbox);
-
-	/* add the box */
-	box = gtk_flow_box_new ();
-	g_object_set (G_OBJECT (box),
-		"visible", TRUE,
-		"homogeneous", TRUE,
-		"column-spacing", 14,
-		"row-spacing", 14,
-		"valign", GTK_ALIGN_START,
-		NULL);
-	gtk_container_add (GTK_CONTAINER (self->box_popular_rotating), box);
-
-	/* add all the apps */
-	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
-		app = gs_app_list_index (list, i);
-		tile = gs_summary_tile_new (app);
-		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (box), tile);
-	}
-
-	self->empty = FALSE;
-
-out:
-	load_data_free (load_data);
 	gs_overview_page_decrement_action_cnt (self);
 }
 
@@ -478,62 +351,6 @@ out:
 	gs_overview_page_decrement_action_cnt (self);
 }
 
-static const gchar *
-gs_overview_page_get_category_label (const gchar *id)
-{
-	if (g_strcmp0 (id, "play") == 0) {
-		/* TRANSLATORS: this is a heading for games which have been
-		 * featured ('recommended') by the distribution */
-		return _("Recommended Games");
-	}
-	if (g_strcmp0 (id, "create") == 0) {
-		/* TRANSLATORS: this is a heading for graphics applications
-		 * which have been featured ('recommended') by the distribution */
-		return _("Recommended Creation Applications");
-	}
-	if (g_strcmp0 (id, "work") == 0) {
-		/* TRANSLATORS: this is a heading for office applications which
-		 * have been featured ('recommended') by the distribution */
-		return _("Recommended Work Applications");
-	}
-	return NULL;
-}
-
-static GPtrArray *
-gs_overview_page_get_random_categories (void)
-{
-	GPtrArray *cats;
-	guint i;
-	g_autoptr(GDateTime) date = NULL;
-	g_autoptr(GRand) rand = NULL;
-	const gchar *ids[] = { "create",
-			       "play",
-			       "socialize",
-			       "work",
-			       NULL };
-
-	date = g_date_time_new_now_utc ();
-	rand = g_rand_new_with_seed ((guint32) g_date_time_get_day_of_year (date));
-	cats = g_ptr_array_new_with_free_func (g_free);
-	for (i = 0; ids[i] != NULL; i++)
-		g_ptr_array_add (cats, g_strdup (ids[i]));
-	for (i = 0; i < powl (cats->len + 1, 2); i++) {
-		gpointer tmp;
-		guint rnd1 = (guint) g_rand_int_range (rand, 0, (gint32) cats->len);
-		guint rnd2 = (guint) g_rand_int_range (rand, 0, (gint32) cats->len);
-		if (rnd1 == rnd2)
-			continue;
-		tmp = cats->pdata[rnd1];
-		cats->pdata[rnd1] = cats->pdata[rnd2];
-		cats->pdata[rnd2] = tmp;
-	}
-	for (i = 0; i < cats->len; i++) {
-		const gchar *tmp = g_ptr_array_index (cats, i);
-		g_debug ("%u = %s", i + 1, tmp);
-	}
-	return cats;
-}
-
 static void
 refresh_third_party_repo (GsOverviewPage *self)
 {
@@ -623,8 +440,6 @@ reload_third_party_repo (GsOverviewPage *self)
 static void
 gs_overview_page_load (GsOverviewPage *self)
 {
-	guint i;
-
 	self->empty = TRUE;
 
 	if (!self->loading_featured) {
@@ -683,54 +498,6 @@ gs_overview_page_load (GsOverviewPage *self)
 						    gs_overview_page_get_recent_cb,
 						    self);
 		self->action_cnt++;
-	}
-
-	if (!self->loading_popular_rotating) {
-		const guint MAX_CATS = 2;
-		g_autoptr(GPtrArray) cats_random = NULL;
-		cats_random = gs_overview_page_get_random_categories ();
-
-		/* remove existing widgets, if any */
-		gs_container_remove_all (GTK_CONTAINER (self->box_popular_rotating));
-
-		/* load all the categories */
-		for (i = 0; i < cats_random->len && i < MAX_CATS; i++) {
-			LoadData *load_data;
-			const gchar *cat_id;
-			g_autoptr(GsCategory) category = NULL;
-			GsCategory *featured_category = NULL;
-			g_autoptr(GsPluginJob) plugin_job = NULL;
-
-			cat_id = g_ptr_array_index (cats_random, i);
-			if (i == 0) {
-				g_free (self->category_of_day);
-				self->category_of_day = g_strdup (cat_id);
-			}
-			category = gs_category_manager_lookup (gs_plugin_loader_get_category_manager (self->plugin_loader), cat_id);
-			g_assert (category != NULL);
-
-			featured_category = gs_category_find_child (category, "featured");
-
-			load_data = g_slice_new0 (LoadData);
-			load_data->category = g_steal_pointer (&category);
-			load_data->self = g_object_ref (self);
-			load_data->title = gs_overview_page_get_category_label (cat_id);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-							 "max-results", 20,
-							 "category", featured_category,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-							 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-									 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-							 NULL);
-			gs_plugin_loader_job_process_async (self->plugin_loader,
-							    plugin_job,
-							    self->cancellable,
-							    gs_overview_page_get_category_apps_cb,
-							    load_data);
-			self->action_cnt++;
-		}
-		self->loading_popular_rotating = TRUE;
 	}
 
 	if (!self->loading_categories) {
@@ -963,7 +730,6 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, featured_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_popular);
-	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_popular_rotating);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, category_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_categories);
