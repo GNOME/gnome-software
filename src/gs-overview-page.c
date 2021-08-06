@@ -48,7 +48,6 @@ struct _GsOverviewPage
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
 	GtkWidget		*box_recent;
-	GtkWidget		*category_heading;
 	GtkWidget		*flowbox_categories;
 	GtkWidget		*popular_heading;
 	GtkWidget		*recent_heading;
@@ -346,7 +345,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 out:
 	if (added_cnt > 0)
 		self->empty = FALSE;
-	gtk_widget_set_visible (self->category_heading, added_cnt > 0);
 
 	gs_overview_page_decrement_action_cnt (self);
 }
@@ -731,7 +729,6 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_popular);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_recent);
-	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, category_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_categories);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, popular_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, recent_heading);

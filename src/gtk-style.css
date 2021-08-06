@@ -179,8 +179,105 @@ summary-tile {
 }
 
 .view.category-tile {
-    padding-top: 2px;
-    padding-bottom: 2px;
+	padding: 20px 40px;
+	border-radius: 8px;
+	font-size: larger;
+	font-weight: 900;
+	text-shadow: none;
+	border: none;
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13);
+}
+
+/* Disable highlight on hover as it doesn’t make these icons look good */
+.view.category-tile:hover { -gtk-icon-effect: none }
+
+/* Styling for specific category buttons. */
+.category-tile.category-create {
+	background: linear-gradient(180deg, #ce8cd7 0%, #2861c6 100%);
+	color: white;
+}
+.category-tile.category-create:hover {
+	background: linear-gradient(180deg, shade(#ce8cd7, 1.07) 0%, shade(#2861c6, 1.1) 100%);
+}
+.category-tile.category-create:active {
+	background: linear-gradient(180deg, shade(#ce8cd7, .95) 0%, shade(#2861c6, .95) 100%);
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+}
+
+.category-tile.category-develop {
+	background: #5e5c64;
+	color: white;
+}
+.category-tile.category-develop:hover {
+	background: shade(#5e5c64, 1.2);
+}
+.category-tile.category-develop:active {
+	background-color: shade(#5e5c64, .95);
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+}
+
+.category-tile.category-learn {
+	background: linear-gradient(180deg, #2ec27e 30%, #27a66c 100%);
+	color: white;
+}
+.category-tile.category-learn:hover {
+	background: linear-gradient(180deg, shade(#2ec27e, 1.06) 30%, shade(#27a66c, 1.06) 100%);
+}
+.category-tile.category-learn:active {
+	background: linear-gradient(180deg, shade(#2ec27e, .95) 30%, shade(#27a66c, .95) 100%);
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+}
+
+.category-tile.category-play {
+	background: linear-gradient(75deg, #f9e2a7 0%, #eb5ec3 50%, #6d53e0 100%);
+	color: #393484;
+}
+.category-tile.category-play:hover {
+	background: linear-gradient(75deg, shade(#f9e2a7, 1.07) 0%, shade(#eb5ec3, 1.07) 50%, shade(#6d53e0, 1.07) 100%);
+}
+.category-tile.category-play:active {
+	background: linear-gradient(75deg, shade(#f9e2a7, .97) 0%, shade(#eb5ec3, .95) 50%, shade(#6d53e0, 1.07) 100%);
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+}
+
+.category-tile.category-socialize {
+	background: linear-gradient(90deg, #ef4e9b 0%, #f77466 100%);
+	color: alpha(black, 0.7);
+}
+.category-tile.category-socialize:hover {
+	background: linear-gradient(90deg, shade(#ef4e9b, 1.08) 0%, shade(#f77466, 1.08) 100%);
+}
+.category-tile.category-socialize:active {
+	background: linear-gradient(90deg, shade(#ef4e9b, .95) 0%, shade(#f77466, .95) 100%);
+	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+}
+
+.category-tile.category-work {
+	box-shadow: inset 0 0 0 1px #efd185;
+	color: #1c71d8;
+	background-color:#fdf8d7;
+	background-image: linear-gradient(#deddda 1px, transparent 1px),
+			  linear-gradient(90deg, #deddda 1px, transparent 1px);
+	background-size: 10px 10px, 10px 10px;
+	background-position: -1px -4px, center -1px;
+}
+.category-tile.category-work:hover {
+	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08);
+	background-color: shade(#fdf8d7, 1.03);
+	background-image: linear-gradient(shade(#deddda, 1.04) 1px, transparent 1px),
+			  linear-gradient(90deg, shade(#deddda, 1.04) 1px, transparent 1px);
+}
+.category-tile.category-work:active {
+	background-color: shade(#fdf8d7, .93);
+	background-image: linear-gradient(shade(#deddda, .97) 1px, transparent 1px),
+			  linear-gradient(90deg, shade(#deddda, .97) 1px, transparent 1px);
+	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08),
+		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .app-list {
