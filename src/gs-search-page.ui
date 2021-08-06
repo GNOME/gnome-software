@@ -11,6 +11,16 @@
       <object class="GtkStack" id="stack_search">
         <property name="visible">True</property>
         <child>
+          <object class="HdyStatusPage">
+            <property name="visible">True</property>
+            <property name="icon_name">org.gnome.Software-symbolic</property>
+            <property name="title" translatable="yes">Search for Apps</property>
+          </object>
+          <packing>
+            <property name="name">no-search</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkSpinner" id="spinner_search">
             <property name="visible">True</property>
             <property name="width_request">32</property>

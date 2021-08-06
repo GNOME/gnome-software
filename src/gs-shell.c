@@ -500,11 +500,27 @@ stack_notify_visible_child_cb (GObject    *object,
 	gs_page_switch_to (page);
 
 	/* update header bar widgets */
+	switch (mode) {
+	case GS_SHELL_MODE_OVERVIEW:
+	case GS_SHELL_MODE_INSTALLED:
+	case GS_SHELL_MODE_SEARCH:
+		gtk_widget_show (shell->search_button);
+		break;
+	case GS_SHELL_MODE_UPDATES:
+		gtk_widget_hide (shell->search_button);
+		break;
+	default:
+		/* We don't care about changing the visibility of the search
+		 * button in modes appearing in sub-pages.  */
+		break;
+	}
+
 	widget = gs_page_get_header_start_widget (page);
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
 	case GS_SHELL_MODE_INSTALLED:
 	case GS_SHELL_MODE_UPDATES:
+	case GS_SHELL_MODE_SEARCH:
 		gs_shell_set_header_start_widget (shell, widget);
 		break;
 	default:
@@ -517,6 +533,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	case GS_SHELL_MODE_OVERVIEW:
 	case GS_SHELL_MODE_INSTALLED:
 	case GS_SHELL_MODE_UPDATES:
+	case GS_SHELL_MODE_SEARCH:
 		gs_shell_set_header_end_widget (shell, widget);
 		break;
 	case GS_SHELL_MODE_DETAILS:
@@ -891,8 +908,24 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
 			if (!hdy_search_bar_get_search_mode (HDY_SEARCH_BAR (shell->search_bar))) {
+				GsShellMode mode = gs_shell_get_mode (shell);
+
 				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), TRUE);
 				gtk_widget_grab_focus (shell->entry_search);
+
+				/* If the mode doesn't have a search button,
+				 * switch to the search page right away,
+				 * otherwise we would show the search bar
+				 * without a button to toggle it. */
+				switch (mode) {
+				case GS_SHELL_MODE_OVERVIEW:
+				case GS_SHELL_MODE_INSTALLED:
+				case GS_SHELL_MODE_SEARCH:
+					break;
+				default:
+					gs_shell_show_search (shell, "");
+					break;
+				}
 			} else {
 				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), FALSE);
 			}
