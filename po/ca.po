@@ -244,14 +244,14 @@ msgstr "Ressenyes amb karma inferior a aquest nombre no es mostraran."
 msgid ""
 "A list of official repositories that should not be considered 3rd party"
 msgstr ""
-"Una llista de dipòsits oficials que no han de ser considerats de terceres "
+"Una llista de repositoris oficials que no han de ser considerats de terceres "
 "parts"
 
 #: data/org.gnome.software.gschema.xml:99
 msgid ""
 "A list of official repositories that should be considered free software"
 msgstr ""
-"Una llista de dipòsits oficials que han de ser considerats de programari "
+"Una llista de repositoris oficials que han de ser considerats de programari "
 "lliure"
 
 #: data/org.gnome.software.gschema.xml:103
@@ -271,7 +271,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:111
 msgid "Allow access to the Software Repositories dialog"
-msgstr "Permet l'accés al diàleg dipòsits de programari"
+msgstr "Permet l'accés al diàleg repositoris de programari"
 
 #: data/org.gnome.software.gschema.xml:115
 msgid "Offer upgrades for pre-releases"
@@ -286,7 +286,7 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:123
 msgid "Show the prompt to install nonfree software repositories"
 msgstr ""
-"Mostra la pregunta abans d'instal·lar de dipòsits de programari no lliures"
+"Mostra la pregunta abans d'instal·lar de repositoris de programari no lliures"
 
 #: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
@@ -320,15 +320,14 @@ msgstr ""
 "usuaris"
 
 #: data/org.gnome.software.gschema.xml:144
-#, fuzzy
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last."
 msgstr ""
 "Ordre de prioritat dels formats d'empaquetat a preferir, amb els formats més"
-" importants llistats primer. Una matriu buida significa l'ordre per defecte."
-" S'assumeix que els formats admesos es llisten més tard."
+" importants llistats primer. Una matriu buida indica l'ordre per defecte."
+" S'assumeix que els formats omesos es llisten els últims."
 
 #: data/org.gnome.software.gschema.xml:151
 msgid "A string storing the gnome-online-account id used to login"
@@ -377,73 +376,61 @@ msgstr "Instal·la el programari seleccionat al sistema"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:78
-#, fuzzy
 msgid "Cartoon Violence"
-msgstr "Violència còmica"
+msgstr "Violència en còmics"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:85
-#, fuzzy
 msgid "Fantasy Violence"
 msgstr "Violència de fantasia"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:92
-#, fuzzy
 msgid "Realistic Violence"
 msgstr "Violència realista"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:99
-#, fuzzy
 msgid "Violence Depicting Bloodshed"
-msgstr "Violència que descriu la sang tallada"
+msgstr "Violència que descriu matances"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:106
-#, fuzzy
 msgid "Sexual Violence"
 msgstr "Violència sexual"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:113
-#, fuzzy
 msgid "Alcohol"
 msgstr "Alcohol"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:120
-#, fuzzy
 msgid "Narcotics"
-msgstr "Narcotics"
+msgstr "Drogues"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:127
-#, fuzzy
 msgid "Tobacco"
 msgstr "Tabac"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:134
-#, fuzzy
 msgid "Nudity"
-msgstr "Nudit"
+msgstr "Nuesa"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:141
-#, fuzzy
 msgid "Sexual Themes"
 msgstr "Temes sexuals"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:148
-#, fuzzy
 msgid "Profanity"
-msgstr "Profanitat"
+msgstr "Blasfèmia"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:155
-#, fuzzy
 msgid "Inappropriate Humor"
 msgstr "Humor inapropiat"
 
@@ -514,9 +501,8 @@ msgstr "Personatges sexualitzats"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:269
-#, fuzzy
 msgid "Desecration"
-msgstr "Deseccionament"
+msgstr "Profanació"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:276
@@ -526,7 +512,7 @@ msgstr "Restes humanes"
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:283
 msgid "Slavery"
-msgstr "Esclavatge"
+msgstr "Esclavitud"
 
 #. Translators: This refers to a content rating attribute which
 #. * has an unknown value. For example, the amount of violence in
@@ -626,7 +612,7 @@ msgstr "Historial de versions"
 #: src/gs-app-version-history-row.c:61
 #, c-format
 msgid "New in Version %s"
-msgstr "Nou a la versió %s"
+msgstr "Novetats de la versió %s"
 
 #: src/gs-app-version-history-row.c:68
 #, c-format
@@ -752,7 +738,7 @@ msgstr "No hi ha detalls per a aquesta aplicació."
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:92
 msgid "Installed Size"
-msgstr "Mida instal·lat"
+msgstr "Mida un cop instal·lada"
 
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
@@ -841,7 +827,7 @@ msgstr "Usa un sistema antic de finestres"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:259 src/gs-safety-context-dialog.c:198
 msgid "Can acquire arbitrary permissions"
-msgstr "Pot adquirir permisos de forma arbitraria"
+msgstr "Pot adquirir permisos de forma arbitrària"
 
 #. Translators: This indicates that we don’t know what permissions an app
 #. requires to run.
@@ -907,7 +893,7 @@ msgstr "Segur"
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:332
 msgid "Potentially Unsafe"
-msgstr "Potencialment insegur"
+msgstr "Potencialment insegura"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
@@ -940,9 +926,8 @@ msgid "Screen Size Mismatch"
 msgstr "La mida de la pantalla no coincideix"
 
 #: src/gs-app-context-bar.c:426 src/gs-hardware-support-context-dialog.c:603
-#, fuzzy
 msgid "Doesn’t support your current screen size"
-msgstr "No admet la mida de la pantalla actual"
+msgstr "No és compatible amb la mida de la pantalla actual"
 
 #: src/gs-app-context-bar.c:447 src/gs-hardware-support-context-dialog.c:655
 #: src/gs-hardware-support-context-dialog.c:661
@@ -1455,7 +1440,7 @@ msgstr "Treball"
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:265
 msgid "Play"
-msgstr "Reproducció"
+msgstr "Jocs"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:267
@@ -1525,7 +1510,7 @@ msgstr "Voleu instal·lar programari de tercers?"
 #. TRANSLATORS: window title
 #: src/gs-common.c:235 src/gs-repos-dialog.c:234
 msgid "Enable Third-Party Software Repository?"
-msgstr "Voleu habilitar els dipòsits de programari de tercers?"
+msgstr "Voleu habilitar els repositoris de programari de tercers?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -1552,7 +1537,7 @@ msgstr "%s es proporciona amb «%s»."
 #: src/gs-common.c:270
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
-"Cal habilitar aquest dipòsit de programari per a poder continuar amb la "
+"Cal habilitar aquest repositoris de programari per a poder continuar amb la "
 "instal·lació."
 
 #. TRANSLATORS: Laws are geographical, urgh...
@@ -1865,26 +1850,26 @@ msgstr ""
 
 #: src/gs-details-page.ui:527
 msgid "Software Repository Included"
-msgstr "S'inclou dipòsit de programari"
+msgstr "S'inclou repositori de programari"
 
 #: src/gs-details-page.ui:528
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
 msgstr ""
-"L'aplicació inclou un dipòsit de programari que proporciona actualitzacions "
+"L'aplicació inclou un repositori de programari que proporciona actualitzacions "
 "així com accés a altre programari."
 
 #: src/gs-details-page.ui:542
 msgid "No Software Repository Included"
-msgstr "No s'inclouen dipòsits de programari"
+msgstr "No s'inclouen repositoris de programari"
 
 #: src/gs-details-page.ui:543
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr ""
-"L'aplicació no inclou cap dipòsit de programari. No s'actualitzarà a "
+"L'aplicació no inclou cap repositori de programari. No s'actualitzarà a "
 "versions més noves."
 
 #: src/gs-details-page.ui:558
@@ -1899,14 +1884,14 @@ msgstr ""
 #. discovered.
 #: src/gs-details-page.ui:572
 msgid "Software Repository Identified"
-msgstr "S'ha identificat un dipòsit de programari"
+msgstr "S'ha identificat un repositori de programari"
 
 #: src/gs-details-page.ui:573
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr ""
-"En afegir aquest dipòsit de programari tindreu accés a programari i "
+"En afegir aquest repositori de programari tindreu accés a programari i "
 "actualitzacions addicionals."
 
 #: src/gs-details-page.ui:574
@@ -1914,18 +1899,16 @@ msgid "Only use software repositories that you trust."
 msgstr "Utilitzeu només fonts de programari de confiança."
 
 #: src/gs-details-page.ui:632
-#, fuzzy
 msgid "No Metadata"
 msgstr "Sense metadades"
 
 #: src/gs-details-page.ui:642
-#, fuzzy
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
 msgstr ""
-"Aquesta aplicació no proporciona cap enllaç a un lloc web, un dipòsit de "
-"codi o un seguidor d'incidents."
+"Aquesta aplicació no proporciona cap enllaç a un lloc web, repositori de "
+"codi o sistema de gestió d'incidents."
 
 #: src/gs-details-page.ui:670
 msgid "Project _Website"
@@ -1937,11 +1920,11 @@ msgstr "_Fes un donatiu"
 
 #: src/gs-details-page.ui:722
 msgid "_Contribute Translations"
-msgstr "_Contribueix a la traducció"
+msgstr "_Col·laboreu a la traducció"
 
 #: src/gs-details-page.ui:748
 msgid "_Report an Issue"
-msgstr "_Informa d'un problema"
+msgstr "_Informeu d'un problema"
 
 #: src/gs-details-page.ui:774
 msgid "_Help"
@@ -2233,25 +2216,21 @@ msgstr "_Navega pel programari"
 
 #: src/gs-hardware-support-context-dialog.c:558
 #: src/gs-hardware-support-context-dialog.c:567
-#, fuzzy
 msgid "Desktop Support"
-msgstr "Suport per a l'escriptori"
+msgstr "Comptabilitat amb escriptori"
 
 #: src/gs-hardware-support-context-dialog.c:559
 #: src/gs-hardware-support-context-dialog.c:568
-#, fuzzy
 msgid "Supports being used on a large screen"
-msgstr "Suports que s'utilitzen en una pantalla gran"
+msgstr "Es pot utilitzar en una pantalla gran"
 
 #: src/gs-hardware-support-context-dialog.c:561
-#, fuzzy
 msgid "Desktop Support Unknown"
-msgstr "Suport per a l'escriptori desconegut"
+msgstr "Comptabilitat amb escriptori desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:562
-#, fuzzy
 msgid "Not enough information to know if large screens are supported"
-msgstr "No hi ha prou informació per saber si s'admeten pantalles grans"
+msgstr "No hi ha prou informació per a saber si és compatible amb pantalles grans"
 
 #: src/gs-hardware-support-context-dialog.c:565
 msgid "Requires a large screen"
@@ -2259,7 +2238,7 @@ msgstr "Requereix una pantalla gran"
 
 #: src/gs-hardware-support-context-dialog.c:570
 msgid "Desktop Not Supported"
-msgstr "Escriptori no compatible"
+msgstr "No és compatible amb escriptori"
 
 #: src/gs-hardware-support-context-dialog.c:571
 msgid "Cannot be used on a large screen"
@@ -2280,18 +2259,16 @@ msgid "Mobile Support Unknown"
 msgstr "Compatibilitat amb mòbil desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:582
-#, fuzzy
 msgid "Not enough information to know if small screens are supported"
-msgstr "No hi ha prou informació per saber si s'admeten pantalles petites"
+msgstr "No hi ha prou informació per saber si es compatible amb pantalles petites"
 
 #: src/gs-hardware-support-context-dialog.c:585
 msgid "Requires a small screen"
 msgstr "Requereix una pantalla petita"
 
 #: src/gs-hardware-support-context-dialog.c:590
-#, fuzzy
 msgid "Mobile Not Supported"
-msgstr "Mobile no compatible"
+msgstr "No és compatible amb mòbil"
 
 #: src/gs-hardware-support-context-dialog.c:591
 msgid "Cannot be used on a small screen"
@@ -2307,9 +2284,8 @@ msgid "Keyboard Support Unknown"
 msgstr "Compatibilitat de teclat desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:618
-#, fuzzy
 msgid "Not enough information to know if keyboards are supported"
-msgstr "No hi ha prou informació per saber si s'admeten els teclats"
+msgstr "No hi ha prou informació per saber és compatible amb teclats"
 
 #: src/gs-hardware-support-context-dialog.c:620
 msgid "Keyboard Required"
@@ -2321,7 +2297,7 @@ msgstr "Compatible amb teclats"
 
 #: src/gs-hardware-support-context-dialog.c:626
 msgid "Keyboard Not Supported"
-msgstr "Teclat no compatible"
+msgstr "No és compatible amb teclat"
 
 #: src/gs-hardware-support-context-dialog.c:627
 msgid "Cannot be used with a keyboard"
@@ -2335,132 +2311,106 @@ msgstr "Compatibilitat amb ratolí"
 #: src/gs-hardware-support-context-dialog.c:635
 #: src/gs-hardware-support-context-dialog.c:641
 msgid "Requires a mouse or pointing device"
-msgstr "Requereix un ratolí o un dispositiu de punter"
+msgstr "Requereix un ratolí o un dispositiu assenyalador"
 
 #: src/gs-hardware-support-context-dialog.c:637
-#, fuzzy
 msgid "Mouse Support Unknown"
-msgstr "Suport per al ratolí desconegut"
+msgstr "Comptabilitat amb ratolí desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:638
-#, fuzzy
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
-"No hi ha prou informació per saber si s'admeten ratolins o dispositius "
-"d'apuntament"
+"No hi ha prou informació per saber si es compatible amb ratolins o dispositius "
+"assenyaladors"
 
 #: src/gs-hardware-support-context-dialog.c:640
-#, fuzzy
-#| msgid "Login Required"
 msgid "Mouse Required"
 msgstr "Requereix un ratolí"
 
 #: src/gs-hardware-support-context-dialog.c:644
-#, fuzzy
 msgid "Supports mice and pointing devices"
-msgstr "Admet ratolins i dispositius d'apuntament"
+msgstr "És compatible amb ratolins i dispositius assenyaladors"
 
 #: src/gs-hardware-support-context-dialog.c:646
-#, fuzzy
 msgid "Mouse Not Supported"
-msgstr "Ratolí no compatible"
+msgstr "No és compatible amb ratolí"
 
 #: src/gs-hardware-support-context-dialog.c:647
-#, fuzzy
 msgid "Cannot be used with a mouse or pointing device"
-msgstr "No es pot utilitzar amb un ratolí o un dispositiu apuntador"
+msgstr "No es pot usar amb un ratolí o un dispositiu assenyalador"
 
 #: src/gs-hardware-support-context-dialog.c:654
 #: src/gs-hardware-support-context-dialog.c:663
-#, fuzzy
 msgid "Touchscreen Support"
-msgstr "Suport per a la pantalla tàctil"
+msgstr "Comptabilitat amb pantalla tàctil"
 
 #: src/gs-hardware-support-context-dialog.c:657
-#, fuzzy
 msgid "Touchscreen Support Unknown"
-msgstr "Suport per a la pantalla tàctil desconegut"
+msgstr "Comptabilitat amb pantalla tàctil desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:658
-#, fuzzy
 msgid "Not enough information to know if touchscreens are supported"
-msgstr "No hi ha prou informació per saber si s'admeten les pantalles tàctils"
+msgstr "No hi ha prou informació per saber si és compatible amb pantalles tàctils"
 
 #: src/gs-hardware-support-context-dialog.c:660
-#, fuzzy
-#| msgid "Login Required"
 msgid "Touchscreen Required"
-msgstr "Cal autenticació"
+msgstr "Requereix pantalla tàctil"
 
 #: src/gs-hardware-support-context-dialog.c:664
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Supports touchscreens"
-msgstr "Requereix una pantalla tàctil"
+msgstr "Compatible amb pantalla tàctil"
 
 #: src/gs-hardware-support-context-dialog.c:666
-#, fuzzy
 msgid "Touchscreen Not Supported"
-msgstr "Pantalla tàctil no compatible"
+msgstr "No és compatible amb pantalla tàctil"
 
 #: src/gs-hardware-support-context-dialog.c:667
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Cannot be used with a touchscreen"
-msgstr "Requereix una pantalla tàctil"
+msgstr "No pot ser usat en una pantalla tàctil"
 
 #: src/gs-hardware-support-context-dialog.c:680
-#, fuzzy
-#| msgid "Gamepad Needed"
 msgid "Gamepad Required"
-msgstr "Cal un comandament de joc"
+msgstr "Requereix un comandament de joc"
 
 #: src/gs-hardware-support-context-dialog.c:681
-#, fuzzy
-#| msgid "Requires a gamepad to play"
 msgid "Requires a gamepad"
-msgstr "Requereix un comandament de joc per a jugar"
+msgstr "Requereix un comandament de joc"
 
 #: src/gs-hardware-support-context-dialog.c:683
-#, fuzzy
-#| msgid "Snap Support"
 msgid "Gamepad Support"
-msgstr "Compatibilitat amb Snap"
+msgstr "Compatibilitat amb comandament de joc"
 
 #: src/gs-hardware-support-context-dialog.c:684
-#, fuzzy
 msgid "Supports gamepads"
-msgstr "Permet els comandaments de joc"
+msgstr "Compatible amb comandaments de joc"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:700
-#, c-format, fuzzy
+#, c-format
 msgid "%s works on this device"
 msgstr "%s funciona en aquest dispositiu"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:707
-#, c-format, fuzzy
+#, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s no funcionarà correctament en aquest dispositiu"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:714
-#, c-format, fuzzy
+#, c-format
 msgid "%s will not work on this device"
 msgstr "%s no funcionarà en aquest dispositiu"
 
 #. Translators: This is the title of the dialog which contains information
 #. about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:9
-#, fuzzy
-#| msgid "Firmware Upgrade Support"
 msgid "Hardware Support"
-msgstr "Compatibilitat amb actualitzacions de microprogramari"
+msgstr "Compatibilitat amb maquinari"
 
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
@@ -2490,9 +2440,9 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
-"Aquesta aplicació està desenvolupada en obert per una comunitat de voluntaris, i es publica sota la llicència %s.\n"
+"Aquesta aplicació es desenvolupa en obert per una comunitat de voluntaris, i es publica sota la llicència %s.\n"
 "\n"
-"Pots contribuir i ajudar a millorar-la encara més."
+"Podeu contribuir i ajudar a millorar-la encara més."
 
 #: src/gs-license-tile.c:106
 msgid "Proprietary"
@@ -2510,7 +2460,7 @@ msgstr ""
 
 #: src/gs-license-tile.ui:132
 msgid "Get _Involved"
-msgstr "_Involucreu-vos"
+msgstr "_Involucreu-vos-hi"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:62 src/gs-loading-page.c:66
@@ -2698,7 +2648,7 @@ msgstr "Prepara %s"
 #: src/gs-page.c:488
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
-msgstr "Esteu segur de voler suprimir el dipòsit %s?"
+msgstr "Esteu segur de voler suprimir el repositori %s?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:492
@@ -2708,7 +2658,7 @@ msgid ""
 "install the repository to use them again."
 msgstr ""
 "Es desinstal·laran totes les aplicacions de %s, i haureu de tornar a "
-"instal·lar el dipòsit per a tornar-les a utilitzar."
+"instal·lar el repositori per a tornar-les a utilitzar."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -2727,7 +2677,6 @@ msgstr ""
 
 #. Translators: This is the accessibility label for a screenshot.
 #: src/gs-picture.c:388
-#, fuzzy
 msgid "Picture"
 msgstr "Imatge"
 
@@ -2853,7 +2802,7 @@ msgid ""
 "Software that has been installed from this repository will no longer receive"
 " updates, including security fixes."
 msgstr ""
-"El programari que s'ha instal·lat des d'aquest dipòsit ja no rebrà més "
+"El programari que s'ha instal·lat des d'aquest repositori ja no rebrà més "
 "actualitzacions, incloent-hi correccions de seguretat."
 
 #. TRANSLATORS: this is button text to remove the repo
@@ -2879,21 +2828,21 @@ msgstr "el sistema operatiu"
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
-"Aquests dipòsits complementen el programari per defecte proveït per %s."
+"Aquests repositoris complementen el programari per defecte proveït per %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
 #: src/gs-repos-dialog.c:813
 msgid "Third Party Repositories"
-msgstr "Dipòsits de tercers parts"
+msgstr "Repositoris de tercers parts"
 
 #. button in the info bar
 #: src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18 src/gs-shell.ui:76
 msgid "Software Repositories"
-msgstr "Dipòsits de programari"
+msgstr "Repositoris de programari"
 
 #: src/gs-repos-dialog.ui:73
 msgid "No Additional Repositories"
-msgstr "No hi ha cap dipòsit addicional"
+msgstr "No hi ha cap repositori addicional"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for enabling a repo
@@ -3121,227 +3070,170 @@ msgstr "No es coneixen els permisos necessaris per a aquesta aplicació"
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:143
-#, fuzzy
-#| msgid "No permissions"
 msgid "No Permissions"
-msgstr "Sense permisos"
+msgstr "Cap permís"
 
 #: src/gs-safety-context-dialog.c:144
-#, fuzzy
-#| msgid "This application is fully sandboxed."
 msgid "App is fully sandboxed"
 msgstr "Aquesta aplicació està completament en un espai aïllat."
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:151
-#, fuzzy
-#| msgid "Has network access"
 msgid "Network Access"
-msgstr "Té accés a xarxa"
+msgstr "Accés a xarxa"
 
 #: src/gs-safety-context-dialog.c:152
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access the internet"
-msgstr "Pot accedir a fitxers de dispositiu del sistema"
+msgstr "Pot accedir a Internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:155
-#, fuzzy
-#| msgid "Has network access"
 msgid "No Network Access"
-msgstr "Té accés a xarxa"
+msgstr "Sense accés a xarxa"
 
 #: src/gs-safety-context-dialog.c:156
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the internet"
-msgstr "Pot accedir a fitxers de dispositiu del sistema"
+msgstr "No pot accedir a Internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:162
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Uses System Services"
 msgstr "Usa serveis del sistema"
 
 #: src/gs-safety-context-dialog.c:163
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Can request data from system services"
-msgstr "Usa serveis del sistema"
+msgstr "Pot demanar dades als serveis del sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:170
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Uses Session Services"
 msgstr "Usa serveis de sessió"
 
 #: src/gs-safety-context-dialog.c:171
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Can request data from session services"
-msgstr "Usa serveis de sessió"
+msgstr "Pot demanar dades dels serveis de sessió"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:178
-#, fuzzy
-#| msgid "Devices"
 msgid "Device Access"
-msgstr "Dispositius"
+msgstr "Accés a dispositius"
 
 #: src/gs-safety-context-dialog.c:179
-#, fuzzy
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr "Pot accedir a dispositius com ara càmeres web o controladors de jocs"
+msgstr "Pot accedir a dispositius com ara càmeres web o controladors de joc"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:182
-#, fuzzy
-#| msgid "Devices"
 msgid "No Device Access"
-msgstr "Dispositius"
+msgstr "Sense accés a dispositius"
 
 #: src/gs-safety-context-dialog.c:183
-#, fuzzy
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
-"No es pot accedir als dispositius com ara les càmeres web o els controladors"
+"No pot accedir als dispositius com ara les càmeres web o els controladors"
 " de jocs"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:189
-#, fuzzy
-#| msgid "Uses a legacy windowing system"
 msgid "Legacy Windowing System"
-msgstr "Usa un sistema antic de finestres"
+msgstr "Sistema antic de finestres"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:197
-#, fuzzy
-#| msgid "Can acquire arbitrary permissions"
 msgid "Arbitrary Permissions"
-msgstr "Pot adquirir permisos de forma arbitraria"
+msgstr "Permisos arbitraris"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:205
-#, fuzzy
-#| msgid "Settings"
 msgid "User Settings"
-msgstr "Paràmetres"
+msgstr "Paràmetres de l'usuari"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:217
-#, fuzzy
 msgid "Full File System Read/Write Access"
-msgstr "Accés de lectura/escriptura del sistema de fitxers complet"
+msgstr "Accés complet de lectura/escriptura al sistema de fitxers"
 
 #: src/gs-safety-context-dialog.c:218
-#, fuzzy
 msgid "Can read and write all data on the file system"
-msgstr "Pot llegir i escriure totes les dades del sistema de fitxers"
+msgstr "Pot llegir i escriure totes les dades al sistema de fitxers"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:226
-#, fuzzy
 msgid "Home Read/Write Access"
-msgstr "Accés de lectura/escriptura a casa"
+msgstr "Accés de lectura/escriptura al directori de l'usuari"
 
 #: src/gs-safety-context-dialog.c:227
-#, fuzzy
-#| msgid "Can read/write all your data"
 msgid "Can read and write all data in your home directory"
-msgstr "Pot llegir/escriure totes les vostres dades"
+msgstr "Pot llegir/escriure totes les dades del directori de l'usuari"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:235
-#, fuzzy
 msgid "Full File System Read Access"
-msgstr "Accés de lectura del sistema de fitxers complet"
+msgstr "Accés complet de lectura del sistema de fitxers"
 
 #: src/gs-safety-context-dialog.c:236
-#, fuzzy
 msgid "Can read all data on the file system"
 msgstr "Pot llegir totes les dades del sistema de fitxers"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:245
-#, fuzzy
-#| msgid "_Read Less"
 msgid "Home Read Access"
-msgstr "_Mostra'n menys"
+msgstr "Pot llegir el directori de l'usuari"
 
 #: src/gs-safety-context-dialog.c:246
-#, fuzzy
-#| msgid "Can read all your data"
 msgid "Can read all data in your home directory"
-msgstr "Pot llegir totes les vostres dades"
+msgstr "Pot llegir totes les dades del directori de l'usuari"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:255
-#, fuzzy
 msgid "Downloads Read/Write Access"
-msgstr "Baixa l'accés de lectura/escriptura"
+msgstr "Accés de lectura/escriptura al directori de baixades"
 
 #: src/gs-safety-context-dialog.c:256
-#, fuzzy
-#| msgid "Can read/write your downloads"
 msgid "Can read and write all data in your downloads directory"
-msgstr "Podeu llegir/escriure les vostres baixades"
+msgstr "Pot llegir i escriure totes les dades del directori de baixades"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:267
-#, fuzzy
-#| msgid "Downloads folder"
 msgid "Downloads Read Access"
-msgstr "Carpeta de baixada"
+msgstr "Accés de lectura al directori de baixades"
 
 #: src/gs-safety-context-dialog.c:268
-#, fuzzy
-#| msgid "Can read your downloads"
 msgid "Can read all data in your downloads directory"
-msgstr "Podeu llegir les vostres baixades"
+msgstr "Pot llegir totes les dades del directori de baixades"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:281
-#, fuzzy
-#| msgid "File system"
 msgid "No File System Access"
-msgstr "Sistema de fitxers"
+msgstr "Sense accés al sistema de fitxers"
 
 #: src/gs-safety-context-dialog.c:282
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the file system at all"
-msgstr "Pot accedir a fitxers de dispositiu del sistema"
+msgstr "No pot accedir de cap manera al sistema de fitxers"
 
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:296
-#, fuzzy
-#| msgid "Proprietary code"
 msgid "Proprietary Code"
 msgstr "Codi propietari"
 
 #: src/gs-safety-context-dialog.c:297
-#, fuzzy
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3352,13 +3244,10 @@ msgstr ""
 #. Translators: This refers to permissions (for example, from flatpak) which
 #. an app requests from the user.
 #: src/gs-safety-context-dialog.c:300
-#, fuzzy
-#| msgid "Auditable code"
 msgid "Auditable Code"
 msgstr "Codi auditable"
 
 #: src/gs-safety-context-dialog.c:301
-#, fuzzy
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3367,57 +3256,49 @@ msgstr ""
 "que l'aplicació sigui més segura"
 
 #: src/gs-safety-context-dialog.c:312
-#, fuzzy
 msgid "Your distribution has verified that this app can be trusted"
 msgstr ""
 "La vostra distribució ha verificat que es pot confiar en aquesta aplicació"
 
 #: src/gs-safety-context-dialog.c:322
-#, fuzzy
 msgid ""
 "The developer of this app has been verified to be who they say they are"
 msgstr ""
-"S'ha verificat que el desenvolupador d'aquesta aplicació és qui diuen que "
-"són"
+"S'ha verificat que el desenvolupador d'aquesta aplicació és qui diu que "
+"és"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:331
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is safe"
-msgstr "S'ha instal·lat %s"
+msgstr "%s és segur"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:338
-#, fuzzy, c-format
-#| msgid "Potentially Unsafe"
+#, c-format
 msgid "%s is potentially unsafe"
-msgstr "Potencialment insegur"
+msgstr "%s és potencialment insegur"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:345
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is unsafe"
-msgstr "S'ha instal·lat %s"
+msgstr "%s és insegur"
 
 #. Translators: This is the title of the dialog which contains information
 #. about the permissions of an app
 #: src/gs-safety-context-dialog.ui:9
-#, fuzzy
-#| msgid "Safe"
 msgid "Safety"
-msgstr "Segur"
+msgstr "Seguretat"
 
 #: src/gs-safety-context-dialog.ui:147
 msgid "License"
 msgstr "Llicència"
 
 #: src/gs-safety-context-dialog.ui:233
-#, fuzzy
 msgid "SDK"
 msgstr "SDK"
 
@@ -3993,7 +3874,7 @@ msgstr "El nivell de la bateria és massa baix"
 
 #: src/gs-shell.ui:7
 msgid "_Software Repositories"
-msgstr "_Dipòsits de programari"
+msgstr "_Repositoris de programari"
 
 #: src/gs-shell.ui:12
 msgid "_Update Preferences"
@@ -4507,7 +4388,7 @@ msgid ""
 "charges."
 msgstr ""
 "La comprovació d'actualitzacions quan utilitzeu la xarxa mòbil pot incórrer "
-"en l'aplicació de càrrecs"
+"en l'aplicació de càrrecs."
 
 #: src/gs-updates-page.ui:200
 msgid "_Check Anyway"
@@ -4519,7 +4400,7 @@ msgstr "Sense connexió"
 
 #: src/gs-updates-page.ui:216
 msgid "Go online to check for updates."
-msgstr "Connecteu-vos per a comprovar si hi ha actualitzacions"
+msgstr "Connecteu-vos per a comprovar si hi ha actualitzacions."
 
 #: src/gs-updates-page.ui:219
 msgid "_Network Settings"
@@ -4639,7 +4520,7 @@ msgstr "Afegeix, suprimeix o actualitza programari en aquest ordinador"
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
 msgstr ""
-"Actualitzacions;Actualització;Fonts;Dipòsits;Preferències;Instal·lació;Desinstal·lació;Aplicació;Programa;Apli;Botiga;"
+"Actualitzacions;Actualització;Fonts;Repositoris;Preferències;Instal·lació;Desinstal·lació;Aplicació;Programa;Apli;Botiga;"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
