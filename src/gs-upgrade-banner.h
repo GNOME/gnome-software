@@ -25,7 +25,6 @@ struct _GsUpgradeBannerClass
 	void		(*download_clicked)	(GsUpgradeBanner	*self);
 	void		(*install_clicked)	(GsUpgradeBanner	*self);
 	void		(*cancel_clicked)	(GsUpgradeBanner	*self);
-	void		(*help_clicked)		(GsUpgradeBanner	*self);
 };
 
 GtkWidget	*gs_upgrade_banner_new			(void);

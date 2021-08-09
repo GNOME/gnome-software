@@ -19,14 +19,18 @@ typedef struct
 {
 	GsApp		*app;
 
-	GtkWidget	*box_upgrades;
+	GtkWidget	*box_upgrades_info;
+	GtkWidget	*box_upgrades_download;
+	GtkWidget	*box_upgrades_downloading;
+	GtkWidget	*box_upgrades_install;
 	GtkWidget	*button_upgrades_download;
 	GtkWidget	*button_upgrades_install;
-	GtkWidget	*button_upgrades_help;
 	GtkWidget	*button_upgrades_cancel;
 	GtkWidget	*label_upgrades_summary;
 	GtkWidget	*label_upgrades_title;
-	GtkWidget	*label_upgrades_warning;
+	GtkWidget	*label_download_info;
+	GtkWidget	*label_upgrades_downloading_spacer;
+	GtkWidget	*label_upgrades_downloading;
 	GtkWidget	*progressbar;
 	guint		 progress_pulse_id;
 	GtkCssProvider	*banner_provider;  /* (owned) (nullable) */
@@ -37,7 +41,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsUpgradeBanner, gs_upgrade_banner, GTK_TYPE_BIN)
 enum {
 	SIGNAL_DOWNLOAD_CLICKED,
 	SIGNAL_INSTALL_CLICKED,
-	SIGNAL_HELP_CLICKED,
 	SIGNAL_CANCEL_CLICKED,
 	SIGNAL_LAST
 };
@@ -70,35 +73,20 @@ static void
 gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	const gchar *uri;
-	g_autofree gchar *name_bold = NULL;
-	g_autofree gchar *version_bold = NULL;
+	const gchar *uri, *summary;
 	g_autofree gchar *str = NULL;
 	guint percentage;
 
 	if (priv->app == NULL)
 		return;
 
-	/* embolden */
-	name_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_name (priv->app));
-	version_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_version (priv->app));
+	/* TRANSLATORS: This is the text displayed when a distro
+	 * upgrade is available. The first %s is the distro name
+	 * and the 2nd %s is the version, e.g. "Fedora 35 Available" */
+	str = g_strdup_printf (_("%s %s Available"), gs_app_get_name (priv->app), gs_app_get_version (priv->app));
+	gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
 
-	/* Distributions that need to reboot to deploy the upgrade show the "Install" button */
-	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
-		gtk_button_set_label (GTK_BUTTON (priv->button_upgrades_install),
-				      _("_Install"));
-		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_warning),
-				    _("It is recommended that you back up your "
-				      "data and files before upgrading."));
-	} else {
-		gtk_button_set_label (GTK_BUTTON (priv->button_upgrades_install),
-				      _("_Restart Now"));
-		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_warning),
-				    _("Updates will be applied when the "
-				      "computer is restarted."));
-	}
-
-	/* Refresh the title. Normally a distro upgrade state goes from
+	/* Normally a distro upgrade state goes from
 	 *
 	 * AVAILABLE (available to download) to
 	 * INSTALLING (downloading packages for later installation) to
@@ -106,45 +94,20 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	 */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_AVAILABLE:
-		/* TRANSLATORS: This is the text displayed when a distro
-		 * upgrade is available. First %s is the distro name and the
-		 * 2nd %s is the version, e.g. "Fedora 23 Now Available" */
-		str = g_strdup_printf (_("%s %s Now Available"),
-				       name_bold, version_bold);
-		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
-		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
-		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
-		break;
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		/* TRANSLATORS: This is the text displayed while waiting to
-		 * download a distro upgrade. First %s is the distro name and
-		 * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23" */
-		str = g_strdup_printf (_("Waiting to Download %s %s"),
-				       name_bold, version_bold);
-		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
-		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
-		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
+		gtk_widget_show (priv->box_upgrades_download);
+		gtk_widget_hide (priv->box_upgrades_downloading);
+		gtk_widget_hide (priv->box_upgrades_install);
 		break;
 	case GS_APP_STATE_INSTALLING:
-		/* TRANSLATORS: This is the text displayed while downloading a
-		 * distro upgrade. First %s is the distro name and the 2nd %s
-		 * is the version, e.g. "Downloading Fedora 23" */
-		str = g_strdup_printf (_("Downloading %s %s"),
-				       name_bold, version_bold);
-		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
-		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
-		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
+		gtk_widget_hide (priv->box_upgrades_download);
+		gtk_widget_show (priv->box_upgrades_downloading);
+		gtk_widget_hide (priv->box_upgrades_install);
 		break;
 	case GS_APP_STATE_UPDATABLE:
-		/* TRANSLATORS: This is the text displayed when a distro
-		 * upgrade has been downloaded and is ready to be installed.
-		 * First %s is the distro name and the 2nd %s is the version,
-		 * e.g. "Fedora 23 Ready to be Installed" */
-		str = g_strdup_printf (_("%s %s Ready to be Installed"),
-				       name_bold, version_bold);
-		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
-		gtk_widget_set_visible (priv->label_upgrades_warning, TRUE);
-		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
+		gtk_widget_hide (priv->box_upgrades_download);
+		gtk_widget_hide (priv->box_upgrades_downloading);
+		gtk_widget_show (priv->box_upgrades_install);
 		break;
 	default:
 		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
@@ -154,39 +117,28 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	}
 
 	/* Hide the upgrade box until the app state is known. */
-	gtk_widget_set_visible (priv->box_upgrades,
+	gtk_widget_set_visible (GTK_WIDGET (self),
 				(gs_app_get_state (priv->app) != GS_APP_STATE_UNKNOWN));
 
 	/* Refresh the summary if we got anything better than the default blurb */
-	if (gs_app_get_summary (priv->app) != NULL)
-		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_summary),
-		                    gs_app_get_summary (priv->app));
+	summary = gs_app_get_summary (priv->app);
+	if (summary != NULL)
+		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_summary), summary);
 
-	/* Show the right buttons for the current state */
-	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_AVAILABLE:
-		gtk_widget_show (priv->button_upgrades_download);
-		gtk_widget_hide (priv->button_upgrades_install);
-		break;
-	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-	case GS_APP_STATE_INSTALLING:
-		gtk_widget_hide (priv->button_upgrades_download);
-		gtk_widget_hide (priv->button_upgrades_install);
-		break;
-	case GS_APP_STATE_UPDATABLE:
-		gtk_widget_hide (priv->button_upgrades_download);
-		gtk_widget_show (priv->button_upgrades_install);
-		break;
-	default:
-		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
-			    gs_app_state_to_string (gs_app_get_state (priv->app)),
-			    gs_app_get_unique_id (priv->app));
-		break;
-	}
-
-	/* only show help when we have a URL */
 	uri = gs_app_get_url (priv->app, AS_URL_KIND_HOMEPAGE);
-	gtk_widget_set_visible (priv->button_upgrades_help, uri != NULL);
+	if (uri != NULL) {
+		g_autofree gchar *link = NULL;
+		link = g_markup_printf_escaped ("<a href=\"%s\">%s</a>", uri, _("Learn about the new version"));
+		gtk_label_set_markup (GTK_LABEL (priv->label_download_info), link);
+	} else if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
+		   gs_app_get_size_download (priv->app) != 0) {
+		g_autofree gchar *tmp;
+		g_clear_pointer (&str, g_free);
+		tmp = g_format_size (gs_app_get_size_download (priv->app));
+		/* Translators: the '%s' is replaced with the download size, forming text like "2 GB download" */
+		str = g_strdup_printf ("%s download", tmp);
+		gtk_label_set_text (GTK_LABEL (priv->label_download_info), str);
+	}
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
@@ -196,18 +148,35 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 			if (priv->progress_pulse_id == 0)
 				priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
 
-			gtk_widget_set_visible (priv->progressbar, TRUE);
+			gtk_label_set_text (GTK_LABEL (priv->label_upgrades_downloading), _("Downloading…"));
 			break;
 		} else if (percentage <= 100) {
 			stop_progress_pulsing (self);
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
 						       (gdouble) percentage / 100.f);
-			gtk_widget_set_visible (priv->progressbar, TRUE);
+			g_clear_pointer (&str, g_free);
+			if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
+			    gs_app_get_size_download (priv->app) != 0) {
+				g_autofree gchar *tmp = NULL;
+				g_autofree gchar *downloaded_tmp = NULL;
+				guint64 downloaded;
+
+				downloaded = gs_app_get_size_download (priv->app) * percentage / 100.0;
+				downloaded_tmp = g_format_size (downloaded);
+				tmp = g_format_size (gs_app_get_size_download (priv->app));
+				/* Translators: the first '%s' is replaced with the downloaded size, the second '%s'
+				   with the total download size, forming text like "135 MB of 2 GB downloaded" */
+				str = g_strdup_printf (_("%s of %s downloaded"), downloaded_tmp, tmp);
+			} else {
+				/* Translators: the '%u' is replaced with the actual percentage being already
+				   downloaded, forming text like "13% downloaded" */
+				str = g_strdup_printf (_("%u%% downloaded"), percentage);
+			}
+			gtk_label_set_text (GTK_LABEL (priv->label_upgrades_downloading), str);
 			break;
 		}
 		break;
 	default:
-		gtk_widget_hide (priv->progressbar);
 		stop_progress_pulsing (self);
 		break;
 	}
@@ -249,15 +218,47 @@ install_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 }
 
 static void
-learn_more_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
-{
-	g_signal_emit (self, signals[SIGNAL_HELP_CLICKED], 0);
-}
-
-static void
 cancel_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 {
 	g_signal_emit (self, signals[SIGNAL_CANCEL_CLICKED], 0);
+}
+
+static gboolean
+cancel_button_size_allocate_cb (GtkWidget *widget,
+				GdkRectangle *allocation,
+				gpointer user_data)
+{
+	GsUpgradeBanner *self = user_data;
+	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
+	gint size = allocation->width;
+
+	/* Make sure it's a square button, thus looks like a circle */
+	if (allocation->width != allocation->height) {
+		size = MAX (allocation->width, allocation->height);
+		gtk_widget_set_size_request (widget, size, size);
+	}
+
+	/* Also let the spacer be of the same size, to have the progress bar centered */
+	size += gtk_widget_get_margin_start (widget) + gtk_widget_get_margin_end (widget);
+	gtk_widget_set_size_request (priv->label_upgrades_downloading_spacer, size, -1);
+
+	return FALSE;
+}
+
+static gboolean
+box_upgrades_download_size_allocate_cb (GtkWidget *widget,
+					GdkRectangle *allocation,
+					gpointer user_data)
+{
+	GsUpgradeBanner *self = user_data;
+	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
+	gint size = allocation->height;
+
+	/* Make them all the same height, ruled by the first box shown */
+	gtk_widget_set_size_request (priv->box_upgrades_downloading, -1, size);
+	gtk_widget_set_size_request (priv->box_upgrades_install, -1, size);
+
+	return FALSE;
 }
 
 void
@@ -287,7 +288,7 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::UpgradeBanner-css");
 	modified_css = gs_utils_set_key_colors_in_css (css, app);
-	gs_utils_widget_set_css (priv->box_upgrades, &priv->banner_provider, "upgrade-banner-custom", modified_css);
+	gs_utils_widget_set_css (priv->box_upgrades_info, &priv->banner_provider, "upgrade-banner-custom", modified_css);
 
 	gs_upgrade_banner_refresh (self);
 }
@@ -344,12 +345,13 @@ gs_upgrade_banner_init (GsUpgradeBanner *self)
 	g_signal_connect (priv->button_upgrades_install, "clicked",
 	                  G_CALLBACK (install_button_cb),
 	                  self);
-	g_signal_connect (priv->button_upgrades_help, "clicked",
-	                  G_CALLBACK (learn_more_button_cb),
-	                  self);
 	g_signal_connect (priv->button_upgrades_cancel, "clicked",
 	                  G_CALLBACK (cancel_button_cb),
 	                  self);
+	g_signal_connect (priv->button_upgrades_cancel, "size-allocate",
+			  G_CALLBACK (cancel_button_size_allocate_cb), self);
+	g_signal_connect (priv->box_upgrades_download, "size-allocate",
+			  G_CALLBACK (box_upgrades_download_size_allocate_cb), self);
 }
 
 static void
@@ -382,24 +384,21 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0);
 
-	signals [SIGNAL_HELP_CLICKED] =
-		g_signal_new ("help-clicked",
-		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-		              G_STRUCT_OFFSET (GsUpgradeBannerClass, help_clicked),
-		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
-		              G_TYPE_NONE, 0);
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-upgrade-banner.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_info);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_download);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_downloading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_install);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_download);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_install);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_cancel);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_help);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_summary);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_title);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_download_info);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_downloading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_downloading_spacer);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, progressbar);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_warning);
 }
 
 GtkWidget *
