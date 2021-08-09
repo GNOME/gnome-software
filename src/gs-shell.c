@@ -2260,7 +2260,6 @@ gs_shell_show_installed_updates (GsShell *shell)
 	GtkWidget *dialog;
 
 	dialog = gs_update_dialog_new (shell->plugin_loader);
-	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog));
 
 	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
 }

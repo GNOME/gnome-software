@@ -487,8 +487,7 @@ _app_row_activated_cb (GsUpdatesSection *self, GtkListBoxRow *row)
 	str = gs_app_to_string (app);
 	g_debug ("%s", str);
 
-	dialog = gs_update_dialog_new (self->plugin_loader);
-	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
+	dialog = gs_update_dialog_new_for_app (self->plugin_loader, app);
 	gs_shell_modal_dialog_present (gs_page_get_shell (self->page), GTK_WINDOW (dialog));
 }
 

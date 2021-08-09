@@ -24,6 +24,7 @@ struct _GsUpdateDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
+	GsApp		*app;
 	GtkWidget	*deck;
 	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*spinner;
@@ -31,6 +32,16 @@ struct _GsUpdateDialog
 };
 
 G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, HDY_TYPE_WINDOW)
+
+typedef enum {
+	PROP_PLUGIN_LOADER = 1,
+	PROP_APP,
+} GsUpdateDialogProperty;
+
+static GParamSpec *obj_props[PROP_APP + 1]  = { NULL, };
+
+static void gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog);
+static void gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app);
 
 static void
 deck_child_transition_cb (HdyDeck *deck, GParamSpec *pspec, GsUpdateDialog *dialog)
@@ -122,7 +133,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	}
 }
 
-void
+static void
 gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -167,7 +178,7 @@ app_activated_cb (GtkWidget *widget, GsApp *app, GsUpdateDialog *page)
 	gs_update_dialog_show_update_details (page, app);
 }
 
-void
+static void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
 	GtkWidget *page;
@@ -245,9 +256,69 @@ button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
 }
 
 static void
-set_plugin_loader (GsUpdateDialog *dialog, GsPluginLoader *plugin_loader)
+gs_update_dialog_get_property (GObject    *object,
+                               guint       prop_id,
+                               GValue     *value,
+                               GParamSpec *pspec)
 {
-	dialog->plugin_loader = g_object_ref (plugin_loader);
+	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
+
+	switch ((GsUpdateDialogProperty) prop_id) {
+	case PROP_PLUGIN_LOADER:
+		g_value_set_object (value, dialog->plugin_loader);
+		break;
+	case PROP_APP:
+		g_value_set_object (value, dialog->app);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_update_dialog_set_property (GObject      *object,
+                               guint         prop_id,
+                               const GValue *value,
+                               GParamSpec   *pspec)
+{
+	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
+
+	switch ((GsUpdateDialogProperty) prop_id) {
+	case PROP_PLUGIN_LOADER:
+		dialog->plugin_loader = g_object_ref (g_value_get_object (value));
+		break;
+	case PROP_APP:
+		dialog->app = g_object_ref (g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_update_dialog_constructed (GObject *object)
+{
+	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
+
+	g_assert (dialog->plugin_loader);
+
+	if (dialog->app) {
+		GtkWidget *child;
+
+		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
+		gtk_container_remove (GTK_CONTAINER (dialog->deck), child);
+
+		gs_update_dialog_show_update_details (dialog, dialog->app);
+
+		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
+		gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
+	} else {
+		gs_update_dialog_show_installed_updates (dialog);
+	}
+
+	G_OBJECT_CLASS (gs_update_dialog_parent_class)->constructed (object);
 }
 
 static void
@@ -259,6 +330,7 @@ gs_update_dialog_dispose (GObject *object)
 	g_clear_object (&dialog->cancellable);
 
 	g_clear_object (&dialog->plugin_loader);
+	g_clear_object (&dialog->app);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->dispose (object);
 }
@@ -288,7 +360,38 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_update_dialog_get_property;
+	object_class->set_property = gs_update_dialog_set_property;
+	object_class->constructed = gs_update_dialog_constructed;
 	object_class->dispose = gs_update_dialog_dispose;
+
+	/**
+	 * GsUpdateDialog:plugin-loader
+	 *
+	 * The plugin loader of the dialog.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_PLUGIN_LOADER] =
+		g_param_spec_object ("plugin-loader", NULL, NULL,
+				     GS_TYPE_PLUGIN_LOADER,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsUpdateDialog:app: (nullable)
+	 *
+	 * The app whose details to display.
+	 *
+	 * If none is set, the intalled updates will be displayed.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_APP] =
+		g_param_spec_object ("app", NULL, NULL,
+				     GS_TYPE_APP,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 
@@ -302,10 +405,16 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 GtkWidget *
 gs_update_dialog_new (GsPluginLoader *plugin_loader)
 {
-	GsUpdateDialog *dialog;
+	return GTK_WIDGET (g_object_new (GS_TYPE_UPDATE_DIALOG,
+					 "plugin-loader", plugin_loader,
+					 NULL));
+}
 
-	dialog = g_object_new (GS_TYPE_UPDATE_DIALOG, NULL);
-	set_plugin_loader (dialog, plugin_loader);
-
-	return GTK_WIDGET (dialog);
+GtkWidget *
+gs_update_dialog_new_for_app (GsPluginLoader *plugin_loader, GsApp *app)
+{
+	return GTK_WIDGET (g_object_new (GS_TYPE_UPDATE_DIALOG,
+					 "plugin-loader", plugin_loader,
+					 "app", app,
+					 NULL));
 }
