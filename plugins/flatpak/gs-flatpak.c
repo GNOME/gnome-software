@@ -379,7 +379,7 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	g_autoptr(GsApp) app = NULL;
 
 	/* create a temp GsApp */
-	app = gs_flatpak_app_new_from_remote (xremote);
+	app = gs_flatpak_app_new_from_remote (self->plugin, xremote, flatpak_installation_get_is_user (self->installation));
 	gs_flatpak_claim_app (self, app);
 
 	/* we already have one, returned the ref'd cached copy */
@@ -1583,7 +1583,9 @@ gs_flatpak_create_new_remote (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
+gs_flatpak_app_install_source (GsFlatpak *self,
+			       GsApp *app,
+			       gboolean is_install,
 			       GCancellable *cancellable,
 			       GError **error)
 {
@@ -1596,6 +1598,8 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 		/* if the remote already exists, just enable it */
 		g_debug ("enabling existing remote %s", flatpak_remote_get_name (xremote));
 		flatpak_remote_set_disabled (xremote, FALSE);
+	} else if (!is_install) {
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED, "Cannot enable flatpak remote '%s', remote not found", gs_app_get_id (app));
 	} else {
 		/* create a new remote */
 		xremote = gs_flatpak_create_new_remote (self, app, cancellable, error);
@@ -3205,10 +3209,12 @@ gs_flatpak_launch (GsFlatpak *self,
 gboolean
 gs_flatpak_app_remove_source (GsFlatpak *self,
 			      GsApp *app,
+			      gboolean is_remove,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
+	gboolean success;
 
 	/* find the remote */
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
@@ -3224,10 +3230,17 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 
 	/* remove */
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
-	if (!flatpak_installation_remove_remote (self->installation,
-						 gs_app_get_id (app),
-						 cancellable,
-						 error)) {
+	if (is_remove) {
+		success = flatpak_installation_remove_remote (self->installation, gs_app_get_id (app), cancellable, error);
+	} else {
+		gboolean was_disabled = flatpak_remote_get_disabled (xremote);
+		flatpak_remote_set_disabled (xremote, TRUE);
+		success = flatpak_installation_modify_remote (self->installation, xremote, cancellable, error);
+		if (!success)
+			flatpak_remote_set_disabled (xremote, was_disabled);
+	}
+
+	if (!success) {
 		gs_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
@@ -3239,7 +3252,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 		xb_silo_invalidate (self->silo);
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
-	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+	gs_app_set_state (app, is_remove ? GS_APP_STATE_UNAVAILABLE : GS_APP_STATE_AVAILABLE);
 
 	gs_plugin_repository_changed (self->plugin, app);
 

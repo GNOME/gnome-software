@@ -221,6 +221,10 @@ typedef enum {
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
  * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
+ * @GS_PLUGIN_ACTION_INSTALL_REPO:		Install a repository (Since: 41)
+ * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)
+ * @GS_PLUGIN_ACTION_ENABLE_REPO:		Enable a repository (Since: 41)
+ * @GS_PLUGIN_ACTION_DISABLE_REPO:		Disable a repository (Since: 41)
  *
  * The plugin action.
  **/
@@ -259,6 +263,10 @@ typedef enum {
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
 	GS_PLUGIN_ACTION_GET_LANGPACKS,
+	GS_PLUGIN_ACTION_INSTALL_REPO,
+	GS_PLUGIN_ACTION_REMOVE_REPO,
+	GS_PLUGIN_ACTION_ENABLE_REPO,
+	GS_PLUGIN_ACTION_DISABLE_REPO,
 	GS_PLUGIN_ACTION_LAST  /*< skip >*/
 } GsPluginAction;
 

@@ -11,6 +11,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n-lib.h>
 #include <gnome-software.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 #include <packagekit-glib2/packagekit.h>
@@ -294,6 +295,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_LOWEST,
 				    pk_repo_detail_get_description (rd));
+		gs_plugin_packagekit_set_packaging_format (plugin, app);
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
+		gs_app_set_origin_ui (app, _("Packages"));
 		gs_app_list_add (list, app);
 		g_hash_table_insert (hash,
 				     g_strdup (id),
@@ -361,50 +365,6 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_repo_enable (GsPlugin *plugin,
-                       GsApp *app,
-                       GCancellable *cancellable,
-                       GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(PkError) error_code = NULL;
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_repo_enable (PK_CLIENT (priv->task),
-					 gs_app_get_id (app),
-					 TRUE,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&priv->task_mutex);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
-	if (results != NULL &&
-	    (error_code = pk_results_get_error_code (results)) != NULL &&
-	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_app_set_state_recover (app);
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
-	}
-
-	/* state is known */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	gs_plugin_repository_changed (plugin, app);
-
-	return TRUE;
-}
-
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -427,9 +387,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* enable repo */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_plugin_repo_enable (plugin, app, cancellable, error);
+	/* enable repo, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* queue for install if installation needs the network */
 	if (!gs_plugin_get_network_available (plugin)) {
@@ -615,50 +574,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_repo_disable (GsPlugin *plugin,
-                        GsApp *app,
-                        GCancellable *cancellable,
-                        GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(PkError) error_code = NULL;
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-	gs_app_set_state (app, GS_APP_STATE_REMOVING);
-	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&priv->task_mutex);
-	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_repo_enable (PK_CLIENT (priv->task),
-					 gs_app_get_id (app),
-					 FALSE,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&priv->task_mutex);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
-	if (results != NULL &&
-	    (error_code = pk_results_get_error_code (results)) != NULL &&
-	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_app_set_state_recover (app);
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
-	}
-
-	/* state is known */
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-
-	gs_plugin_repository_changed (plugin, app);
-
-	return TRUE;
-}
-
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -680,9 +595,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* disable repo */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		return gs_plugin_repo_disable (plugin, app, cancellable, error);
+	/* disable repo, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* get the list of available package ids to install */
 	source_ids = gs_app_get_source_ids (app);
@@ -2635,5 +2549,109 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	/* state is known */
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	return TRUE;
+}
+
+gboolean
+gs_plugin_enable_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* is repo */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, repo, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (repo, GS_APP_STATE_INSTALLING);
+	gs_packagekit_helper_add_app (helper, repo);
+	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
+					 gs_app_get_id (repo),
+					 TRUE,
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+	g_mutex_unlock (&priv->task_mutex);
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (error);
+	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_app_set_state_recover (repo);
+		gs_utils_error_add_origin_id (error, repo);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (repo, GS_APP_STATE_INSTALLED);
+
+	gs_plugin_repository_changed (plugin, repo);
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_disable_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* is repo */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, repo, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (repo, GS_APP_STATE_REMOVING);
+	gs_packagekit_helper_add_app (helper, repo);
+	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
+					 gs_app_get_id (repo),
+					 FALSE,
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+	g_mutex_unlock (&priv->task_mutex);
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (error);
+	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_app_set_state_recover (repo);
+		gs_utils_error_add_origin_id (error, repo);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (repo, GS_APP_STATE_AVAILABLE);
+
+	gs_plugin_repository_changed (plugin, repo);
+
 	return TRUE;
 }

@@ -2020,12 +2020,16 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_refresh (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_INSTALL_REPO:
+	case GS_PLUGIN_ACTION_ENABLE_REPO:
 		return gs_shell_show_event_install (shell, event);
 	case GS_PLUGIN_ACTION_UPDATE:
 		return gs_shell_show_event_update (shell, event);
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		return gs_shell_show_event_upgrade (shell, event);
 	case GS_PLUGIN_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_REMOVE_REPO:
+	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		return gs_shell_show_event_remove (shell, event);
 	case GS_PLUGIN_ACTION_LAUNCH:
 		return gs_shell_show_event_launch (shell, event);

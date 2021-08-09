@@ -1285,8 +1285,12 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		 * actions that usually change the state, we assign it to the
 		 * appropriate action here */
 		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
-		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL)
-			action = GS_PLUGIN_ACTION_INSTALL;
+		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+			if (priv->kind == AS_COMPONENT_KIND_REPOSITORY)
+				action = GS_PLUGIN_ACTION_INSTALL_REPO;
+			else
+				action = GS_PLUGIN_ACTION_INSTALL;
+		}
 		gs_app_set_pending_action_internal (app, action);
 
 		gs_app_queue_notify (app, obj_props[PROP_STATE]);
@@ -5558,7 +5562,8 @@ gs_app_get_origin_ui (GsApp *app)
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* use the distro name for official packages */
-	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE) &&
+	    gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY) {
 		os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
 			origin_str = gs_os_release_get_name (os_release);

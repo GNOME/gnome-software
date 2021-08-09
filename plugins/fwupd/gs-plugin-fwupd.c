@@ -248,6 +248,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
+	gs_app_set_management_plugin (priv->cached_origin, gs_plugin_get_name (plugin));
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -970,27 +971,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* source -> remote */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
-		return gs_plugin_fwupd_modify_source (plugin, app, TRUE,
-						      cancellable, error);
-	}
+	/* source -> remote, handled by dedicated function */
+	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* firmware */
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
-}
-
-gboolean
-gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
-		      GCancellable *cancellable, GError **error)
-{
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
-		return TRUE;
-
-	/* source -> remote */
-	return gs_plugin_fwupd_modify_source (plugin, app, FALSE, cancellable, error);
 }
 
 gboolean
@@ -1190,7 +1175,44 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_metadata (app, "fwupd::remote-id",
 				     fwupd_remote_get_id (remote));
 		gs_app_set_management_plugin (app, "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
+		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
+		gs_app_set_origin_ui (app, _("Firmware"));
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
+}
+
+gboolean
+gs_plugin_enable_repo (GsPlugin *plugin,
+		       GsApp *repo,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* source -> remote */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_plugin_fwupd_modify_source (plugin, repo, TRUE, cancellable, error);
+}
+
+gboolean
+gs_plugin_disable_repo (GsPlugin *plugin,
+			GsApp *repo,
+			GCancellable *cancellable,
+			GError **error)
+{
+	/* only process this app if it was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (repo),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* source -> remote */
+	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	return gs_plugin_fwupd_modify_source (plugin, repo, FALSE, cancellable, error);
 }
