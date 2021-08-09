@@ -80,29 +80,68 @@ update_storage_tile (GsAppContextBar *self)
 {
 	g_autofree gchar *lozenge_text = NULL;
 	const gchar *title;
-	const gchar *description;
+	g_autofree gchar *description = NULL;
 	guint64 size_bytes;
 
 	g_assert (self->app != NULL);
 
 	if (gs_app_is_installed (self->app)) {
-		size_bytes = gs_app_get_size_installed (self->app);
+		guint64 size_installed = gs_app_get_size_installed (self->app);
+		guint64 size_user_data = gs_app_get_size_user_data (self->app);
+		guint64 size_cache_data = gs_app_get_size_cache_data (self->app);
+		g_autofree gchar *size_user_data_str = NULL;
+		g_autofree gchar *size_cache_data_str = NULL;
+
+		/* If any installed sizes are unknowable, ignore them. This
+		 * means the stated installed size is a lower bound on the
+		 * actual installed size.
+		 * Don’t include dependencies in the stated installed size,
+		 * because uninstalling the app won’t reclaim that space unless
+		 * it’s the last app using those dependencies. */
+		size_bytes = size_installed;
+		if (size_user_data != GS_APP_SIZE_UNKNOWABLE)
+			size_bytes += size_user_data;
+		if (size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+			size_bytes += size_cache_data;
+
+		size_user_data_str = g_format_size (size_user_data);
+		size_cache_data_str = g_format_size (size_cache_data);
+
 		/* Translators: The disk usage of an application when installed.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Installed Size");
-		/* FIXME: Calculate data and cache usage so we can set the text
-		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/HEAD/adaptive/context-tiles.png
-		description = "Includes 230 MB of data and 1.8 GB of cache"; */
-		description = "";
+
+		if (size_user_data != GS_APP_SIZE_UNKNOWABLE && size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+			description = g_strdup_printf (_("Includes %s of data and %s of cache"),
+						       size_user_data_str, size_cache_data_str);
+		else if (size_user_data != GS_APP_SIZE_UNKNOWABLE)
+			description = g_strdup_printf (_("Includes %s of data"),
+						       size_user_data_str);
+		else if (size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+			description = g_strdup_printf (_("Includes %s of cache"),
+						       size_cache_data_str);
+		else
+			description = g_strdup (_("Cache and data usage unknown"));
 	} else {
-		size_bytes = gs_app_get_size_download (self->app);
+		guint64 app_download_size_bytes = gs_app_get_size_download (self->app);
+		guint64 dependencies_download_size_bytes = gs_app_get_size_download_dependencies (self->app);
+
+		size_bytes = app_download_size_bytes;
+
 		/* Translators: The download size of an application.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Download Size");
-		/* FIXME: Calculate data and cache usage so we can set the text
-		 * as per https://gitlab.gnome.org/Teams/Design/software-mockups/-/raw/HEAD/adaptive/context-tiles.png
-		description = "Needs 150 MB of additional system downloads"; */
-		description = "";
+
+		if (dependencies_download_size_bytes == 0) {
+			description = g_strdup (_("Needs no additional system downloads"));
+		} else if (dependencies_download_size_bytes == GS_APP_SIZE_UNKNOWABLE) {
+			description = g_strdup (_("Needs an unknown size of additional system downloads"));
+		} else {
+			g_autofree gchar *size = g_format_size (dependencies_download_size_bytes);
+			/* Translators: The placeholder is for a size string,
+			 * such as ‘150 MB’ or ‘1.5 GB’. */
+			description = g_strdup_printf (_("Needs %s of additional system downloads"), size);
+		}
 	}
 
 	if (size_bytes == 0 || size_bytes == GS_APP_SIZE_UNKNOWABLE) {
@@ -110,10 +149,12 @@ update_storage_tile (GsAppContextBar *self)
 		 * app’s context tile if the size is unknown. It should be short
 		 * (at most a couple of characters wide). */
 		lozenge_text = g_strdup (_("?"));
+
+		g_free (description);
 		/* Translators: Displayed if the download or installed size of
 		 * an app could not be determined.
 		 * This is displayed in a context tile, so the string should be short. */
-		description = _("Size is unknown");
+		description = g_strdup (_("Size is unknown"));
 	} else {
 		lozenge_text = g_format_size (size_bytes);
 	}
