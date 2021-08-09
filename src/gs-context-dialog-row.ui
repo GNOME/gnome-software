@@ -22,11 +22,27 @@
               <class name="grey"/>
             </style>
             <child>
-              <object class="GtkImage" id="lozenge_content">
+              <object class="GtkImage" id="lozenge_content_image">
                 <property name="halign">center</property>
                 <!-- this is a placeholder: the icon is actually set in code -->
                 <property name="icon-name">safety-symbolic</property>
                 <property name="visible">True</property>
+                <accessibility>
+                  <relation target="title" type="labelled-by"/>
+                  <relation target="description" type="details"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lozenge_content_text">
+                <property name="halign">center</property>
+                <!-- this is a placeholder: the text is actually set in code -->
+                <property name="label">20 MB</property>
+                <property name="visible">False</property>
+                <property name="xalign">0.5</property>
                 <accessibility>
                   <relation target="title" type="labelled-by"/>
                   <relation target="description" type="details"/>
@@ -53,7 +69,8 @@
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <accessibility>
-                  <relation target="lozenge_content" type="label-for"/>
+                  <relation target="lozenge_content_image" type="label-for"/>
+                  <relation target="lozenge_content_text" type="label-for"/>
                 </accessibility>
                 <style>
                   <class name="context-tile-title"/>
@@ -68,7 +85,8 @@
                 <property name="wrap">True</property>
                 <property name="xalign">0</property>
                 <accessibility>
-                  <relation target="lozenge_content" type="details-for"/>
+                  <relation target="lozenge_content_image" type="details-for"/>
+                  <relation target="lozenge_content_text" type="details-for"/>
                 </accessibility>
                 <style>
                   <class name="context-tile-description"/>

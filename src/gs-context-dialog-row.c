@@ -38,7 +38,8 @@ struct _GsContextDialogRow
 	GsContextDialogRowImportance	 importance;
 
 	GtkWidget			*lozenge;  /* (unowned) */
-	GtkImage			*lozenge_content;  /* (unowned) */
+	GtkImage			*lozenge_content_image;  /* (unowned) */
+	GtkLabel			*lozenge_content_text;  /* (unowned) */
 	GtkLabel			*title;  /* (unowned) */
 	GtkLabel			*description;  /* (unowned) */
 };
@@ -47,6 +48,7 @@ G_DEFINE_TYPE (GsContextDialogRow, gs_context_dialog_row, GTK_TYPE_LIST_BOX_ROW)
 
 typedef enum {
 	PROP_ICON_NAME = 1,
+	PROP_CONTENT,
 	PROP_IMPORTANCE,
 	PROP_TITLE,
 	PROP_DESCRIPTION,
@@ -91,6 +93,9 @@ gs_context_dialog_row_get_property (GObject    *object,
 	case PROP_ICON_NAME:
 		g_value_set_string (value, gs_context_dialog_row_get_icon_name (self));
 		break;
+	case PROP_CONTENT:
+		g_value_set_string (value, gs_context_dialog_row_get_content (self));
+		break;
 	case PROP_IMPORTANCE:
 		g_value_set_enum (value, gs_context_dialog_row_get_importance (self));
 		break;
@@ -116,7 +121,14 @@ gs_context_dialog_row_set_property (GObject      *object,
 
 	switch ((GsContextDialogRowProperty) prop_id) {
 	case PROP_ICON_NAME:
-		gtk_image_set_from_icon_name (self->lozenge_content, g_value_get_string (value), GTK_ICON_SIZE_BUTTON);
+		gtk_image_set_from_icon_name (self->lozenge_content_image, g_value_get_string (value), GTK_ICON_SIZE_BUTTON);
+		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_image), TRUE);
+		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_text), FALSE);
+		break;
+	case PROP_CONTENT:
+		gtk_label_set_text (self->lozenge_content_text, g_value_get_string (value));
+		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_image), FALSE);
+		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_text), TRUE);
 		break;
 	case PROP_IMPORTANCE: {
 		GtkStyleContext *context;
@@ -157,16 +169,32 @@ gs_context_dialog_row_class_init (GsContextDialogRowClass *klass)
 	object_class->set_property = gs_context_dialog_row_set_property;
 
 	/**
-	 * GsContextDialogRow:icon-name: (not nullable)
+	 * GsContextDialogRow:icon-name: (nullable)
 	 *
 	 * Name of the icon to display in the row.
 	 *
-	 * This may not be %NULL.
+	 * This must be %NULL if #GsContextDialogRow:content is set,
+	 * and non-%NULL otherwise.
 	 *
 	 * Since: 41
 	 */
 	obj_props[PROP_ICON_NAME] =
 		g_param_spec_string ("icon-name", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsContextDialogRow:content: (nullable)
+	 *
+	 * Text content to display in the row.
+	 *
+	 * This must be %NULL if #GsContextDialogRow:icon-name is set,
+	 * and non-%NULL otherwise.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_CONTENT] =
+		g_param_spec_string ("content", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
@@ -220,7 +248,8 @@ gs_context_dialog_row_class_init (GsContextDialogRowClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-context-dialog-row.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge);
-	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge_content);
+	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge_content_image);
+	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge_content_text);
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, title);
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, description);
 }
@@ -232,7 +261,7 @@ gs_context_dialog_row_class_init (GsContextDialogRowClass *klass)
  * @title: (not nullable): title for the row
  * @description: (not nullable): description for the row
  *
- * Create a new #GsContextDialogRow.
+ * Create a new #GsContextDialogRow with an icon inside the lozenge.
  *
  * Returns: (transfer full): a new #GsContextDialogRow
  * Since: 41
@@ -256,6 +285,36 @@ gs_context_dialog_row_new (const gchar                  *icon_name,
 }
 
 /**
+ * gs_context_dialog_row_new_text:
+ * @content: (not nullable): text to put in the lozenge
+ * @importance: importance of the information in the row
+ * @title: (not nullable): title for the row
+ * @description: (not nullable): description for the row
+ *
+ * Create a new #GsContextDialogRow with text inside the lozenge.
+ *
+ * Returns: (transfer full): a new #GsContextDialogRow
+ * Since: 41
+ */
+GtkListBoxRow *
+gs_context_dialog_row_new_text (const gchar                  *content,
+                                GsContextDialogRowImportance  importance,
+                                const gchar                  *title,
+                                const gchar                  *description)
+{
+	g_return_val_if_fail (content != NULL, NULL);
+	g_return_val_if_fail (title != NULL, NULL);
+	g_return_val_if_fail (description != NULL, NULL);
+
+	return g_object_new (GS_TYPE_CONTEXT_DIALOG_ROW,
+			     "content", content,
+			     "importance", importance,
+			     "title", title,
+			     "description", description,
+			     NULL);
+}
+
+/**
  * gs_context_dialog_row_get_icon_name:
  * @self: a #GsContextDialogRow
  *
@@ -271,9 +330,26 @@ gs_context_dialog_row_get_icon_name (GsContextDialogRow *self)
 
 	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), NULL);
 
-	gtk_image_get_icon_name (self->lozenge_content, &icon_name, NULL);
+	gtk_image_get_icon_name (self->lozenge_content_image, &icon_name, NULL);
 
 	return icon_name;
+}
+
+/**
+ * gs_context_dialog_row_get_content:
+ * @self: a #GsContextDialogRow
+ *
+ * Get the value of #GsContextDialogRow:content.
+ *
+ * Returns: the text content used in the row
+ * Since: 41
+ */
+const gchar *
+gs_context_dialog_row_get_content (GsContextDialogRow *self)
+{
+	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), NULL);
+
+	return gtk_label_get_text (self->lozenge_content_text);
 }
 
 /**
