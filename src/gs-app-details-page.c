@@ -83,14 +83,15 @@ static const struct {
 };
 
 static void
+destroy_cb (GtkWidget *widget, gpointer data)
+{
+	gtk_widget_destroy (widget);
+}
+
+static void
 populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissions)
 {
-	GList *children;
-
-	children = gtk_container_get_children (GTK_CONTAINER (page->permissions_section_content));
-	for (GList *l = children; l != NULL; l = l->next)
-		gtk_widget_destroy (GTK_WIDGET (l->data));
-	g_list_free (children);
+	gtk_container_foreach (GTK_CONTAINER (page->permissions_section_content), destroy_cb, NULL);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
 		GtkWidget *row, *image, *box, *label;
