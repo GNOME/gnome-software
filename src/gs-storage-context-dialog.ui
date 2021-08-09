@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.10"/>
+  <template class="GsStorageContextDialog" parent="HdyWindow">
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="icon_name">dialog-information</property>
+    <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the storage or download size needed for an app">Storage</property>
+    <property name="type_hint">dialog</property>
+    <property name="default-width">640</property>
+    <property name="default-height">576</property>
+    <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
+    <style>
+      <class name="toolbox"/>
+    </style>
+
+    <child>
+      <object class="GtkOverlay">
+        <property name="visible">True</property>
+        <child type="overlay">
+          <object class="HdyHeaderBar">
+            <property name="show_close_button">True</property>
+            <property name="visible">True</property>
+            <property name="valign">start</property>
+          </object>
+        </child>
+        <child>
+          <object class="HdyPreferencesPage">
+            <property name="visible">True</property>
+            <child>
+              <object class="HdyPreferencesGroup">
+                <property name="visible">True</property>
+
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">8</property>
+                    <property name="visible">True</property>
+
+                    <child>
+                      <object class="GtkBox">
+                        <property name="margin">20</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">12</property>
+                        <property name="visible">True</property>
+
+                        <child>
+                          <object class="GtkBox" id="lozenge">
+                            <property name="halign">center</property>
+                            <property name="visible">True</property>
+                            <style>
+                              <class name="context-tile-lozenge"/>
+                              <class name="large"/>
+                              <class name="grey"/>
+                            </style>
+                            <child>
+                              <object class="GtkLabel" id="lozenge_content">
+                                <property name="halign">center</property>
+                                <!-- this is a placeholder: the text is actually set in code -->
+                                <property name="label">20 MB</property>
+                                <property name="visible">True</property>
+                                <property name="xalign">0.5</property>
+                                <accessibility>
+                                  <relation target="title" type="labelled-by"/>
+                                </accessibility>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="fill">False</property>
+                          </packing>
+                        </child>
+
+                        <child>
+                          <object class="GtkLabel" id="title">
+                            <property name="justify">center</property>
+                            <!-- this is a placeholder: the text is actually set in code -->
+                            <property name="label">Shortwave works on this device</property>
+                            <property name="visible">True</property>
+                            <property name="wrap">True</property>
+                            <property name="xalign">0.5</property>
+                            <style>
+                              <class name="heading"/>
+                              <class name="title-1"/>
+                            </style>
+                            <accessibility>
+                              <relation target="lozenge" type="label-for"/>
+                            </accessibility>
+                            <style>
+                              <class name="context-tile-title"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkListBox" id="sizes_list">
+                        <property name="visible">True</property>
+                        <property name="selection_mode">none</property>
+                        <property name="halign">fill</property>
+                        <property name="valign">start</property>
+                        <style>
+                          <class name="content"/>
+                        </style>
+                        <!-- Rows are added in code -->
+                        <placeholder/>
+                      </object>
+                    </child>
+
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+
+  <object class="GtkSizeGroup" id="lozenge_size_group">
+    <property name="mode">horizontal</property>
+  </object>
+</interface>
