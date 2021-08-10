@@ -15,8 +15,9 @@
             <child>
               <object class="HdyClamp">
                 <property name="visible">True</property>
-                <!-- This is 3*420 plus margins, paddings, CSS borders -->
-                <property name="maximum-size">1338</property>
+                <!-- We use the same sizes as the overview page. -->
+                <property name="maximum-size">1000</property>
+                <property name="tightening-threshold">600</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
