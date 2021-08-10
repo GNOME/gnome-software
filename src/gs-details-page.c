@@ -93,6 +93,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*box_details_header_not_icon;
 	GtkWidget		*label_webapp_warning;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
@@ -138,6 +139,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
 	GtkWidget		*origin_button_label;
+	GtkWidget		*box_license;
 	GsLicenseTile		*license_tile;
 	GtkInfoBar		*translation_infobar;
 	GtkButton		*translation_infobar_button;
@@ -2245,6 +2247,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_header_not_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
@@ -2290,6 +2293,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_license);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar_button);
@@ -2308,6 +2312,17 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_add_shortcut_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_shortcut_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
+}
+
+static gboolean
+narrow_to_orientation (GBinding *binding, const GValue *from_value, GValue *to_value, gpointer user_data)
+{
+	if (g_value_get_boolean (from_value))
+		g_value_set_enum (to_value, GTK_ORIENTATION_VERTICAL);
+	else
+		g_value_set_enum (to_value, GTK_ORIENTATION_HORIZONTAL);
+
+	return TRUE;
 }
 
 static void
@@ -2343,6 +2358,13 @@ gs_details_page_init (GsDetailsPage *self)
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
 
 	gs_details_page_read_packaging_format_preference (self);
+
+	g_object_bind_property_full (self, "is-narrow", self->box_details_header_not_icon, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->context_bar, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
 }
 
 GsDetailsPage *

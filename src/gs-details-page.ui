@@ -135,7 +135,7 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkBox" id="box_details_header_not_icon">
                                     <property name="orientation">horizontal</property>
                                     <property name="visible">True</property>
                                     <property name="spacing">10</property>
@@ -681,6 +681,7 @@
                                 <property name="homogeneous">True</property>
                                 <property name="orientation">horizontal</property>
                                 <property name="spacing">12</property>
+                                <property name="homogeneous" bind-source="GsDetailsPage" bind-property="is-narrow" bind-flags="sync-create|invert-boolean"/>
 
                                 <child>
                                   <object class="GsLicenseTile" id="license_tile">
