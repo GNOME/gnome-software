@@ -32,6 +32,7 @@ gnome_software_sources = [
   'gs-app-details-page.c',
   'gs-app-row.c',
   'gs-app-tile.c',
+  'gs-app-translation-dialog.c',
   'gs-basic-auth-dialog.c',
   'gs-category-page.c',
   'gs-category-tile.c',
