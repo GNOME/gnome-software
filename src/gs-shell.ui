@@ -481,6 +481,7 @@
                     <child>
                       <object class="GsDetailsPage" id="details_page">
                         <property name="visible">True</property>
+                        <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                       </object>
                     </child>
                   </object>

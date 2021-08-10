@@ -85,6 +85,7 @@ struct _GsDetailsPage
 	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
+	gboolean		 is_narrow;
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -146,11 +147,12 @@ G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 typedef enum {
 	PROP_ODRS_PROVIDER = 1,
+	PROP_IS_NARROW,
 	/* Override properties: */
 	PROP_TITLE,
 } GsDetailsPageProperty;
 
-static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -2123,6 +2125,9 @@ gs_details_page_get_property (GObject    *object,
 	case PROP_ODRS_PROVIDER:
 		g_value_set_object (value, gs_details_page_get_odrs_provider (self));
 		break;
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_details_page_get_is_narrow (self));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2144,6 +2149,9 @@ gs_details_page_set_property (GObject      *object,
 		break;
 	case PROP_ODRS_PROVIDER:
 		gs_details_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
+	case PROP_IS_NARROW:
+		gs_details_page_set_is_narrow (self, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2208,6 +2216,22 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 		g_param_spec_object ("odrs-provider", NULL, NULL,
 				     GS_TYPE_ODRS_PROVIDER,
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsDetailsPage:is-narrow:
+	 *
+	 * Whether the page is in narrow mode.
+	 *
+	 * In narrow mode, the page will take up less horizontal space, doing so
+	 * by e.g. turning horizontal boxes into vertical ones. This is needed
+	 * to keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
@@ -2364,4 +2388,45 @@ gs_details_page_set_odrs_provider (GsDetailsPage  *self,
 		gs_details_page_refresh_reviews (self);
 		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
 	}
+}
+
+/**
+ * gs_details_page_get_is_narrow:
+ * @self: a #GsDetailsPage
+ *
+ * Get the value of #GsDetailsPage:is-narrow.
+ *
+ * Returns: %TRUE if the page is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_details_page_get_is_narrow (GsDetailsPage *self)
+{
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_details_page_set_is_narrow:
+ * @self: a #GsDetailsPage
+ * @is_narrow: %TRUE to set the page in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsDetailsPage:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_details_page_set_is_narrow (GsDetailsPage *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
