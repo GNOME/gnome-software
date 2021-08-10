@@ -20,7 +20,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_APP_CONTEXT_BAR (gs_app_context_bar_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAppContextBar, gs_app_context_bar, GS, APP_CONTEXT_BAR, GtkGrid)
+G_DECLARE_FINAL_TYPE (GsAppContextBar, gs_app_context_bar, GS, APP_CONTEXT_BAR, GtkBox)
 
 GtkWidget	*gs_app_context_bar_new		(GsApp			*app);
 
