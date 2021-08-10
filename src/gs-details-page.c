@@ -964,7 +964,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	const gchar *tmp;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
-	guint icon_size;
 	gboolean link_rows_visible;
 
 	/* change widgets */
@@ -1014,15 +1013,13 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		};
 
 		for (gsize i = 0; i < G_N_ELEMENTS (icon_fallbacks) && icon == NULL; i++) {
-			icon_size = icon_fallbacks[i].icon_size;
 			icon = gs_app_get_icon_for_size (self->app,
-							 icon_size,
+							 icon_fallbacks[i].icon_size,
 							 gtk_widget_get_scale_factor (self->application_details_icon),
 							 icon_fallbacks[i].fallback_icon_name);
 		}
 	}
 
-	gtk_image_set_pixel_size (GTK_IMAGE (self->application_details_icon), icon_size);
 	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
 				  GTK_ICON_SIZE_INVALID);
 
