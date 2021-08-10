@@ -328,8 +328,6 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0, G_TYPE_NONE);
 
-	gtk_widget_class_set_css_name (widget_class, "reporow");
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repo-row.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, name_label);

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <gtk/gtk.h>
+#include <handy.h>
 
 #include "gnome-software-private.h"
 #include "gs-app.h"
@@ -17,10 +18,9 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_REPOS_SECTION (gs_repos_section_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReposSection, gs_repos_section, GS, REPOS_SECTION, GtkBox)
+G_DECLARE_FINAL_TYPE (GsReposSection, gs_repos_section, GS, REPOS_SECTION, HdyPreferencesGroup)
 
-GtkWidget	*gs_repos_section_new			(GsPluginLoader		*plugin_loader,
-							 const gchar		*title);
+GtkWidget	*gs_repos_section_new			(GsPluginLoader		*plugin_loader);
 void		 gs_repos_section_add_repo		(GsReposSection		*self,
 							 GsApp			*repo);
 const gchar	*gs_repos_section_get_title		(GsReposSection		*self);

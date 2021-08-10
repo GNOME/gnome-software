@@ -23,21 +23,20 @@
 
 struct _GsReposDialog
 {
-	GtkDialog	 parent_instance;
+	HdyWindow	 parent_instance;
 	GSettings	*settings;
 	GsApp		*third_party_repo;
 	GHashTable	*sections; /* gchar * ~> GsReposSection * */
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
-	GtkWidget	*label_empty;
-	GtkWidget	*label_header;
-	GtkWidget	*content_box;
+	GtkWidget	*status_empty;
+	GtkWidget	*content_page;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
 };
 
-G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, HDY_TYPE_WINDOW)
 
 typedef struct {
 	GsReposDialog	*dialog;
@@ -56,6 +55,35 @@ install_remove_data_free (InstallRemoveData *data)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(InstallRemoveData, install_remove_data_free);
+
+static gboolean
+key_press_event_cb (GtkWidget            *sender,
+                    GdkEvent             *event,
+                    HdyPreferencesWindow *self)
+{
+	guint keyval;
+	GdkModifierType state;
+	GdkKeymap *keymap;
+	GdkEventKey *key_event = (GdkEventKey *) event;
+
+	gdk_event_get_state (event, &state);
+
+	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
+
+	gdk_keymap_translate_keyboard_state (keymap,
+					     key_event->hardware_keycode,
+					     state,
+					     key_event->group,
+					     &keyval, NULL, NULL, NULL);
+
+	if (keyval == GDK_KEY_Escape) {
+		gtk_window_close (GTK_WINDOW (self));
+
+		return GDK_EVENT_STOP;
+	}
+
+	return GDK_EVENT_PROPAGATE;
+}
 
 static void
 repo_enabled_cb (GObject *source,
@@ -349,11 +377,9 @@ add_repo (GsReposDialog *dialog,
 		origin_ui = g_strdup (gs_app_get_management_plugin (repo));
 	section = g_hash_table_lookup (dialog->sections, origin_ui);
 	if (section == NULL) {
-		section = gs_repos_section_new (dialog->plugin_loader, origin_ui);
-		g_object_set (G_OBJECT (section),
-			      "halign", GTK_ALIGN_FILL,
-			      "hexpand", TRUE,
-			      NULL);
+		section = gs_repos_section_new (dialog->plugin_loader);
+		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
+						 origin_ui);
 		g_signal_connect_object (section, "remove-clicked",
 					 G_CALLBACK (repo_section_remove_clicked_cb), dialog, 0);
 		g_signal_connect_object (section, "switch-clicked",
@@ -384,8 +410,8 @@ repos_dialog_compare_sections_cb (gconstpointer aa,
 	if (res != 0)
 		return res;
 
-	title_sort_key_a = gs_utils_sort_key (gs_repos_section_get_title (section_a));
-	title_sort_key_b = gs_utils_sort_key (gs_repos_section_get_title (section_b));
+	title_sort_key_a = gs_utils_sort_key (hdy_preferences_group_get_title (HDY_PREFERENCES_GROUP (section_a)));
+	title_sort_key_b = gs_utils_sort_key (hdy_preferences_group_get_title (HDY_PREFERENCES_GROUP (section_b)));
 
 	return g_strcmp0 (title_sort_key_a, title_sort_key_b);
 }
@@ -413,14 +439,12 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			g_warning ("failed to get sources: %s", error->message);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header),
-		                             "dim-label");
 		return;
 	}
 
 	/* remove previous */
 	g_hash_table_remove_all (dialog->sections);
-	gs_container_remove_all (GTK_CONTAINER (dialog->content_box));
+	gs_container_remove_all (GTK_CONTAINER (dialog->content_page));
 
 	/* stop the spinner */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
@@ -429,12 +453,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("no sources to show");
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header), "dim-label");
 		return;
 	}
-
-	gtk_style_context_remove_class (gtk_widget_get_style_context (dialog->label_header),
-	                                "dim-label");
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
@@ -447,10 +467,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	sections = g_list_sort (sections, repos_dialog_compare_sections_cb);
 	for (GList *link = sections; link; link = g_list_next (link)) {
 		GtkWidget *section = link->data;
-		gtk_container_add (GTK_CONTAINER (dialog->content_box), section);
+		gtk_container_add (GTK_CONTAINER (dialog->content_page), section);
 	}
 
-	gtk_widget_set_visible (dialog->content_box, sections != NULL);
+	gtk_widget_set_visible (dialog->content_page, sections != NULL);
 
 	if (other_repos) {
 		GsReposSection *section;
@@ -459,11 +479,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		g_autofree gchar *anchor = NULL;
 		g_autofree gchar *hint = NULL;
 
-		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, _("Fedora Third Party Repositories")));
-		g_object_set (G_OBJECT (section),
-			      "halign", GTK_ALIGN_FILL,
-			      "hexpand", TRUE,
-			      NULL);
+		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader));
+		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
+						 _("Fedora Third Party Repositories"));
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
@@ -502,7 +520,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			gs_repos_section_add_repo (section, repo);
 		}
 
-		gtk_container_add (GTK_CONTAINER (dialog->content_box), GTK_WIDGET (section));
+		gtk_container_add (GTK_CONTAINER (dialog->content_page), GTK_WIDGET (section));
 	}
 }
 
@@ -669,7 +687,7 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	   %s gets replaced by the name of the actual distro, e.g. Fedora. */
 	label_empty_text = g_strdup_printf (_("These repositories supplement the default software provided by %s."),
 	                                    os_name);
-	gtk_label_set_text (GTK_LABEL (dialog->label_empty), label_empty_text);
+	hdy_status_page_set_description (HDY_STATUS_PAGE (dialog->status_empty), label_empty_text);
 }
 
 static void
@@ -682,11 +700,12 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_box);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, status_empty);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, content_page);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
+
+	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 }
 
 GtkWidget *
@@ -695,7 +714,6 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 	GsReposDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_REPOS_DIALOG,
-			       "use-header-bar", TRUE,
 			       "transient-for", parent,
 			       "modal", TRUE,
 			       NULL);
