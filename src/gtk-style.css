@@ -179,7 +179,9 @@ summary-tile {
 }
 
 .category-tile {
-	padding: 20px 40px;
+	/* We have to remove the padding: 160px - 2*10px = 140px */
+	min-width: 140px;
+	padding: 20px 10px;
 	border-radius: 8px;
 	-gtk-outline-radius: 7px;
 	font-size: larger;
