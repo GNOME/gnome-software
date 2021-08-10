@@ -284,8 +284,8 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 			    /* TRANSLATORS: this is a title for Fedora distro upgrades */
 			    _("Upgrade for the latest features, performance and stability improvements."));
 	gs_app_set_version (app, app_version);
-	gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
-	gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
+	gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
