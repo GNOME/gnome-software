@@ -67,10 +67,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 static const gchar *
 gs_plugin_appstream_convert_component_kind (const gchar *kind)
 {
-	if (g_strcmp0 (kind, "web-application") == 0)
-		return "webapp";
-	if (g_strcmp0 (kind, "console-application") == 0)
-		return "console";
+	if (g_strcmp0 (kind, "webapp") == 0)
+		return "web-application";
 	return kind;
 }
 
