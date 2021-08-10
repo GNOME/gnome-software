@@ -41,6 +41,7 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new (app);
+	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), FALSE);
 	gtk_container_add (GTK_CONTAINER (update_list), app_row);
@@ -54,16 +55,6 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 	                         G_CALLBACK (gs_update_list_app_state_notify_cb),
 	                         app_row, 0);
 	gtk_widget_show (app_row);
-}
-
-static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GtkWidget *header;
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
 }
 
 static gint
@@ -97,9 +88,6 @@ gs_update_list_init (GsUpdateList *update_list)
 	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	priv->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (update_list),
-				      list_header_func,
-				      update_list, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (update_list),
 				    list_sort_func,
 				    update_list, NULL);

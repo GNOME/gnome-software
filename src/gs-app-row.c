@@ -530,7 +530,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 				!gtk_widget_get_visible (priv->description_box));
 
 	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
-				       gtk_widget_get_visible (priv->description_box) ? 20 : -1);
+				       gtk_widget_get_visible (priv->description_label) ? 20 : -1);
 }
 
 static void

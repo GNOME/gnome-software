@@ -1,305 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsUpdateDialog" parent="GtkDialog">
+  <template class="GsUpdateDialog" parent="HdyWindow">
     <property name="modal">True</property>
-    <property name="default_width">600</property>
-    <property name="default_height">600</property>
+    <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
+    <property name="icon_name">dialog-information</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="title" translatable="yes">Software Repositories</property>
     <property name="type_hint">dialog</property>
-    <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
+    <property name="default-width">640</property>
+    <property name="default-height">576</property>
+
+    <child>
+      <object class="HdyDeck" id="deck">
+        <property name="visible">True</property>
+        <property name="can_swipe_back">True</property>
+        <!-- We need both signals to support the animations being disabled, as
+             notify::transition-running isn't emitted in that case. -->
+        <signal name="notify::visible-child" handler="deck_child_transition_cb" swapped="no"/>
+        <signal name="notify::transition-running" handler="deck_child_transition_cb" swapped="no"/>
         <child>
-          <object class="GtkButton" id="button_back">
+          <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <child internal-child="accessible">
-              <object class="AtkObject" id="button_back_accessible">
-                <property name="accessible-name" translatable="yes">Go back</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="HdyHeaderBar">
+                <property name="show_close_button">True</property>
+                <property name="visible">True</property>
+                <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
               </object>
             </child>
-            <style>
-              <class name="image-button"/>
-            </style>
             <child>
-              <object class="GtkImage" id="image_update_back">
+              <object class="GtkStack" id="stack">
                 <property name="visible">True</property>
-                <property name="icon_name">go-previous-symbolic</property>
-                <property name="icon_size">1</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="pack-type">start</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox1">
-        <property name="border_width">0</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child>
-          <object class="GtkStack" id="stack">
-            <property name="visible">True</property>
-            <property name="transition_duration">300</property>
-            <child>
-              <object class="GtkBox" id="box_spinner">
-                <property name="visible">True</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">12</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
+                <property name="transition_duration">300</property>
                 <child>
-                  <object class="GtkSpinner" id="spinner">
+                  <object class="GtkBox" id="box_spinner">
                     <property name="visible">True</property>
-                    <property name="width_request">32</property>
-                    <property name="height_request">32</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                    <child>
+                      <object class="GtkSpinner" id="spinner">
+                        <property name="visible">True</property>
+                        <property name="width_request">32</property>
+                        <property name="height_request">32</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                      </object>
+                    </child>
                   </object>
+                  <packing>
+                    <property name="name">spinner</property>
+                  </packing>
                 </child>
-              </object>
-              <packing>
-                <property name="name">spinner</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box_empty">
-                <property name="visible">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="spacing">16</property>
-                <property name="orientation">vertical</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
                 <child>
-                  <object class="GtkImage" id="icon_empty">
+                  <object class="HdyStatusPage">
                     <property name="visible">True</property>
                     <property name="icon_name">org.gnome.Software-symbolic</property>
-                    <property name="pixel-size">64</property>
+                    <property name="title" translatable="yes">No updates have been installed on this system.</property>
                   </object>
+                  <packing>
+                    <property name="name">empty</property>
+                  </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label_empty">
+                  <object class="HdyPreferencesPage">
                     <property name="visible">True</property>
-                    <property name="justify">center</property>
-                    <property name="label" translatable="yes">No updates have been installed on this system.</property>
-                    <property name="wrap">True</property>
-                    <property name="max_width_chars">40</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="name">empty</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box7">
-                <property name="visible">True</property>
-                <property name="margin_start">6</property>
-                <property name="margin_end">6</property>
-                <property name="margin_top">6</property>
-                <property name="margin_bottom">9</property>
-                <property name="border_width">5</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">9</property>
-                <child>
-                  <object class="GtkBox" id="box_header">
-                    <property name="visible">True</property>
-                    <property name="spacing">9</property>
                     <child>
-                      <object class="GtkImage" id="image_icon">
+                      <object class="HdyPreferencesGroup">
                         <property name="visible">True</property>
-                        <property name="pixel_size">96</property>
-                        <property name="icon_name">system-component-application</property>
-                        <property name="icon_size">0</property>
-                        <style>
-                          <class name="icon-dropshadow"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box9">
-                        <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">3</property>
                         <child>
-                          <object class="GtkLabel" id="label_name">
+                          <object class="GsUpdateList" id="list_box_installed_updates">
                             <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label">Inkscape</property>
-                            <property name="selectable">True</property>
-                            <property name="wrap">True</property>
-                            <property name="max_width_chars">50</property>
-                            <property name="width_chars">50</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                              <attribute name="scale" value="1.3999999999999999"/>
-                            </attributes>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label_summary">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label">Vector based drawing program</property>
-                            <property name="selectable">True</property>
-                            <property name="wrap">True</property>
-                            <property name="max_width_chars">50</property>
-                            <property name="width_chars">50</property>
+                            <property name="selection_mode">none</property>
+                            <style>
+                              <class name="content" />
+                            </style>
                           </object>
                         </child>
                       </object>
                     </child>
                   </object>
-                </child>
-                <child>
-                  <object class="GtkBox" id="permissions_section_box">
-                    <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
-                    <property name="margin_top">12</property>
-                    <property name="margin_bottom">18</property>
-                    <child>
-                      <object class="GtkLabel" id="permissions_section_title">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="halign">start</property>
-                        <property name="margin_bottom">6</property>
-                        <property name="label" translatable="yes">Requires additional permissions</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="permissions_section_content">
-                        <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">12</property>
-                        <property name="margin-start">18</property>
-                        <property name="margin-end">18</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow_details">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="vexpand">True</property>
-                    <property name="hscrollbar_policy">never</property>
-                    <property name="vscrollbar_policy">automatic</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <object class="GtkLabel" id="label_details">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="yalign">0</property>
-                        <property name="margin">6</property>
-                        <property name="label">New in kmod 14-1
-* Moo
-* bar</property>
-                        <property name="wrap">True</property>
-                        <property name="selectable">True</property>
-                      </object>
-                    </child>
-                  </object>
+                  <packing>
+                    <property name="name">installed-updates-list</property>
+                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="name">package-details</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="vexpand">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
-                <property name="shadow_type">none</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="margin_top">24</property>
-                    <property name="margin_bottom">18</property>
-                    <property name="margin_start">18</property>
-                    <property name="margin_end">18</property>
-                    <child>
-                      <object class="GtkLabel" id="os_update_description">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="wrap">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="os_update_box">
-                        <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
-                        <property name="vexpand">False</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="name">os-update-list</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_installed_updates">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="vexpand">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
-                <property name="shadow_type">none</property>
-                <child>
-                  <object class="GsUpdateList" id="list_box_installed_updates">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="selection_mode">none</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">start</property>
-                    <style>
-                      <class name="content" />
-                    </style>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="name">installed-updates-list</property>
-              </packing>
             </child>
           </object>
         </child>
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup" id="sizegroup_update_details">
-    <property name="ignore-hidden">False</property>
-    <property name="mode">horizontal</property>
-    <widgets>
-      <widget name="scrolledwindow"/>
-      <widget name="scrolledwindow_details"/>
-    </widgets>
-  </object>
 </interface>
