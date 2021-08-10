@@ -11,6 +11,11 @@
     </style>
 
     <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="homogeneous">True</property>
+
+    <child>
       <object class="GtkButton" id="storage_tile">
         <property name="visible">True</property>
         <signal name="clicked" handler="tile_clicked_cb"/>
@@ -162,6 +167,14 @@
         </child>
       </object>
     </child>
+
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="homogeneous">True</property>
 
     <child>
       <object class="GtkButton" id="hardware_support_tile">
@@ -315,6 +328,9 @@
             </child>
           </object>
         </child>
+      </object>
+    </child>
+
       </object>
     </child>
   </template>

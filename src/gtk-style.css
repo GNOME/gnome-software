@@ -721,22 +721,44 @@ clamp.status-page .title:not(:last-child) {
   margin-bottom: 12px;
 }
 
-app-context-bar {
-	border-radius: 8px;
+app-context-bar .context-tile {
 	border: 1px solid shade(@theme_bg_color, 0.9);
 	background-color: @theme_base_color;
-}
-
-app-context-bar .context-tile {
-	padding: 24px 12px 21px 12px;
 	border-radius: 0;
-	border: none;
+	padding: 24px 12px 21px 12px;
 	border-right: 1px solid shade(@theme_bg_color, 0.9);
 }
-app-context-bar .context-tile:last-child {
-	border-right: none;
-	border-bottom-right-radius: 8px;
+
+app-context-bar box:first-child .context-tile:first-child {
+	border-top-left-radius: 8px;
+	-gtk-outline-top-left-radius: 7px;
+}
+
+app-context-bar.horizontal box:last-child .context-tile:last-child,
+app-context-bar.vertical box:first-child .context-tile:last-child {
 	border-top-right-radius: 8px;
+	-gtk-outline-top-right-radius: 7px;
+}
+
+app-context-bar.horizontal box:first-child .context-tile:first-child,
+app-context-bar.vertical box:last-child .context-tile:first-child {
+	border-bottom-left-radius: 8px;
+	-gtk-outline-bottom-left-radius: 7px;
+}
+
+app-context-bar box:last-child .context-tile:last-child {
+	border-bottom-right-radius: 8px;
+	-gtk-outline-bottom-right-radius: 7px;
+}
+
+app-context-bar.horizontal box:not(:last-child) .context-tile,
+app-context-bar.horizontal box:last-child .context-tile:not(:last-child),
+app-context-bar.vertical .context-tile:not(:last-child) {
+	border-right: none;
+}
+
+app-context-bar.vertical box:not(:last-child) .context-tile {
+	border-bottom: none;
 }
 
 .context-tile-lozenge {
