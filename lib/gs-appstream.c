@@ -1157,7 +1157,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 			/* @variants includes @tmp */
 			for (gsize i = 0; variants[i] != NULL; i++)
-				xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", variants[i]);
+				xb_string_append_union (xpath, "languages/lang[(text()='%s') and (@percentage>50)]", variants[i]);
 
 			if (xb_node_query_text (component, xpath->str, NULL) != NULL)
 				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
