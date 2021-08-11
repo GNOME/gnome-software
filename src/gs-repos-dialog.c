@@ -474,8 +474,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	if (other_repos) {
 		GsReposSection *section;
-		GtkWidget *label;
-		GtkStyleContext *style;
 		g_autofree gchar *anchor = NULL;
 		g_autofree gchar *hint = NULL;
 
@@ -499,21 +497,13 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 				_("Additional repositories from selected third parties — %s."),
 				anchor);
 
-		label = gtk_label_new ("");
-		g_object_set (G_OBJECT (label),
-			      "halign", GTK_ALIGN_START,
-			      "hexpand", TRUE,
-			      "label", hint,
-			      "use-markup", TRUE,
-			      "visible", TRUE,
-			      "wrap", TRUE,
-			      "xalign", 0.0,
-			      NULL);
-		style = gtk_widget_get_style_context (label);
-		gtk_style_context_add_class (style, "dim-label");
-
-		gtk_box_pack_start (GTK_BOX (section), label, FALSE, TRUE, 0);
-		gtk_box_reorder_child (GTK_BOX (section), label, 1);
+/* HdyPreferencesGroup:use-markup doesn't exist before 1.4, configurations where
+ * GNOME 41 will be used and Libhandy 1.4 won't be available are unlikely, so
+ * let's just ignore the description in such cases. */
+#if HDY_CHECK_VERSION(1, 4, 0)
+		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (section), hint);
+		hdy_preferences_group_set_use_markup (HDY_PREFERENCES_GROUP (section), TRUE);
+#endif
 
 		for (GSList *link = other_repos; link; link = g_slist_next (link)) {
 			GsApp *repo = link->data;
