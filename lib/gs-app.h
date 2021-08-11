@@ -499,4 +499,8 @@ void		 gs_app_add_relation		(GsApp		*app,
 void		 gs_app_set_relations		(GsApp		*app,
 						 GPtrArray	*relations);
 
+gboolean	 gs_app_get_has_translations	(GsApp		*app);
+void		 gs_app_set_has_translations	(GsApp		*app,
+						 gboolean	 has_translations);
+
 G_END_DECLS
