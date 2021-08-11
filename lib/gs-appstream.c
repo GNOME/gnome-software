@@ -1163,6 +1163,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 		}
 
+		/* Set this under the FLAGS_REQUIRE_KUDOS flag because it’s
+		 * only useful in combination with KUDO_MY_LANGUAGE */
+		if (xb_node_query_text (component, "languages/lang", NULL) != NULL)
+			gs_app_set_has_translations (app, TRUE);
+
 		/* any keywords */
 		if (xb_node_query_text (component, "keywords/keyword", NULL) != NULL)
 			gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
