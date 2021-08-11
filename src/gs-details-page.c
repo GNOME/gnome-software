@@ -934,10 +934,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	/* launch button */
 	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
 
-	gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-			      /* TRANSLATORS: A label for a button to execute the selected application. */
-			      _("_Launch"));
-
 	/* remove button */
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_COMPULSORY) ||
 	    gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
