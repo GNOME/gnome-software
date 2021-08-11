@@ -1096,24 +1096,6 @@ gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 }
 
 static void
-gs_updates_page_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
-                                 GsUpdatesPage *self)
-{
-	GsApp *app;
-	const gchar *uri;
-
-	app = gs_upgrade_banner_get_app (upgrade_banner);
-	if (app == NULL) {
-		g_warning ("no upgrade available to launch");
-		return;
-	}
-
-	/* open the link */
-	uri = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
-	gs_shell_show_uri (self->shell, uri);
-}
-
-static void
 gs_updates_page_invalidate_downloaded_upgrade (GsUpdatesPage *self)
 {
 	GsApp *app;
@@ -1264,8 +1246,6 @@ gs_updates_page_setup (GsPage *page,
 			  G_CALLBACK (gs_updates_page_upgrade_install_cb), self);
 	g_signal_connect (self->upgrade_banner, "cancel-clicked",
 			  G_CALLBACK (gs_updates_page_upgrade_cancel_cb), self);
-	g_signal_connect (self->upgrade_banner, "help-clicked",
-			  G_CALLBACK (gs_updates_page_upgrade_help_cb), self);
 
 	self->header_end_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_end_box, TRUE);
