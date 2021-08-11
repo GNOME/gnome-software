@@ -261,13 +261,22 @@
                                         <child>
                                           <object class="GtkButton" id="button_remove">
                                             <property name="visible">False</property>
-                                            <property name="use_underline">True</property>
-                                            <property name="label" translatable="yes">_Uninstall</property>
-                                            <property name="width_request">105</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
                                             <property name="halign">start</property>
                                             <property name="valign">center</property>
+                                            <child>
+                                              <object class="GtkImage">
+                                                <property name="icon-name">user-trash-symbolic</property>
+                                                <property name="visible">True</property>
+                                              </object>
+                                            </child>
+                                            <child internal-child="accessible">
+                                              <object class="AtkObject">
+                                                <!-- TRANSLATORS: button text in the header when an application can be erased -->
+                                                <property name="accessible-name" translatable="yes">Uninstall</property>
+                                              </object>
+                                            </child>
                                           </object>
                                         </child>
                                         <child>
@@ -1018,7 +1027,6 @@
     <widgets>
       <widget name="button_install"/>
       <widget name="button_update"/>
-      <widget name="button_remove"/>
       <widget name="button_details_launch"/>
     </widgets>
   </object>

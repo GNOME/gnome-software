@@ -950,8 +950,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
 			else
 				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			/* TRANSLATORS: button text in the header when an application can be erased */
-			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Uninstall"));
 			break;
 		case GS_APP_STATE_AVAILABLE_LOCAL:
 		case GS_APP_STATE_AVAILABLE:
