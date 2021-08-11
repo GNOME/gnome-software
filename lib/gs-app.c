@@ -1909,7 +1909,10 @@ gs_app_get_icon_for_size (GsApp       *app,
 			return g_object_ref (icon);
 	}
 
-	if (fallback_icon_name != NULL) {
+	if (scale > 1) {
+		g_debug ("Retrying at scale 1");
+		return gs_app_get_icon_for_size (app, size, 1, fallback_icon_name);
+	} else if (fallback_icon_name != NULL) {
 		g_debug ("Using fallback icon %s", fallback_icon_name);
 		return g_themed_icon_new (fallback_icon_name);
 	} else {
