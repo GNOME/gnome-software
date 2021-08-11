@@ -402,3 +402,34 @@ gs_context_dialog_row_get_description (GsContextDialogRow *self)
 
 	return gtk_label_get_text (self->description);
 }
+
+/**
+ * gs_context_dialog_row_set_size_groups:
+ * @self: a #GsContextDialogRow
+ * @lozenge: (nullable) (transfer none): a #GtkSizeGroup for the lozenge, or %NULL
+ * @title: (nullable) (transfer none): a #GtkSizeGroup for the title, or %NULL
+ * @description: (nullable) (transfer none): a #GtkSizeGroup for the description, or %NULL
+ *
+ * Add widgets from the #GsContextDialogRow to the given size groups. If a size
+ * group is %NULL, the corresponding widget will not be changed.
+ *
+ * Since: 41
+ */
+void
+gs_context_dialog_row_set_size_groups (GsContextDialogRow *self,
+                                       GtkSizeGroup       *lozenge,
+                                       GtkSizeGroup       *title,
+                                       GtkSizeGroup       *description)
+{
+	g_return_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self));
+	g_return_if_fail (lozenge == NULL || GTK_IS_SIZE_GROUP (lozenge));
+	g_return_if_fail (title == NULL || GTK_IS_SIZE_GROUP (title));
+	g_return_if_fail (description == NULL || GTK_IS_SIZE_GROUP (description));
+
+	if (lozenge != NULL)
+		gtk_size_group_add_widget (lozenge, self->lozenge);
+	if (title != NULL)
+		gtk_size_group_add_widget (title, GTK_WIDGET (self->title));
+	if (description != NULL)
+		gtk_size_group_add_widget (description, GTK_WIDGET (self->description));
+}

@@ -57,4 +57,9 @@ GsContextDialogRowImportance	 gs_context_dialog_row_get_importance	(GsContextDia
 const gchar			*gs_context_dialog_row_get_title	(GsContextDialogRow	*self);
 const gchar			*gs_context_dialog_row_get_description	(GsContextDialogRow	*self);
 
+void				 gs_context_dialog_row_set_size_groups	(GsContextDialogRow	*self,
+									 GtkSizeGroup		*lozenge,
+									 GtkSizeGroup		*title,
+									 GtkSizeGroup		*description);
+
 G_END_DECLS
