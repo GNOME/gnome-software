@@ -45,6 +45,13 @@ static const GsDesktopMap map_create[] = {
 	{ "fonts",		NC_("Menu of Add-ons", "Fonts"),
 					{ "Addon::Font",
 					  NULL} },
+	{ "music-players",	NC_("Menu of Audio & Video", "Music Players"),
+					{ "AudioVideo::Music",
+					  "AudioVideo::Player",
+					  NULL} },
+	{ "codecs",		NC_("Menu of Add-ons", "Codecs"),
+					{ "Addon::Codec",
+					  NULL} },
 	{ NULL }
 };
 
@@ -53,6 +60,7 @@ static const GsDesktopMap map_work[] = {
 					{ "Office",
 					  "Utility",
 					  "Addon",
+					  "Network::WebBrowser",
 					  NULL } },
 	{ "featured",		NC_("Menu of Productivity", "Featured"),
 					{ "Office::Featured",
@@ -76,6 +84,9 @@ static const GsDesktopMap map_work[] = {
 	{ "text-editors",	NC_("Menu of Utilities", "Text Editors"),
 					{ "Utility::TextEditor",
 					  NULL} },
+	{ "web-browsers",	NC_("Menu of Communication & News", "Web Browsers"),
+					{ "Network::WebBrowser",
+					  NULL} },
 	{ "input-sources",	NC_("Menu of Add-ons", "Input Sources"),
 					{ "Addon::InputSource",
 					  NULL} },
@@ -93,16 +104,10 @@ static const GsDesktopMap map_work[] = {
 
 static const GsDesktopMap map_play[] = {
 	{ "all",		NC_("Menu of Audio & Video", "All"),
-					{ "AudioVideo",
-					  "Game",
+					{ "Game",
 					  NULL } },
 	{ "featured",		NC_("Menu of Audio & Video", "Featured"),
-					{ "AudioVideo::Featured",
-					  "Game::Featured",
-					  NULL} },
-	{ "music-players",	NC_("Menu of Audio & Video", "Music Players"),
-					{ "AudioVideo::Music",
-					  "AudioVideo::Player",
+					{ "Game::Featured",
 					  NULL} },
 	{ "action",		NC_("Menu of Games", "Action"),
 					{ "Game::ActionGame",
@@ -141,9 +146,6 @@ static const GsDesktopMap map_play[] = {
 	{ "strategy",		NC_("Menu of Games", "Strategy"),
 					{ "Game::StrategyGame",
 					  NULL} },
-	{ "codecs",		NC_("Menu of Add-ons", "Codecs"),
-					{ "Addon::Codec",
-					  NULL} },
 	{ NULL }
 };
 
@@ -161,13 +163,6 @@ static const GsDesktopMap map_socialize[] = {
 					  "Network::VideoConference",
 					  "Network::Email",
 					  NULL} },
-	{ "news",		NC_("Menu of Communication & News", "News"),
-					{ "Network::Feed",
-					  "Network::News",
-					  NULL} },
-	{ "web-browsers",	NC_("Menu of Communication & News", "Web Browsers"),
-					{ "Network::WebBrowser",
-					  NULL} },
 	{ NULL }
 };
 
@@ -176,6 +171,8 @@ static const GsDesktopMap map_learn[] = {
 					{ "Education",
 					  "Science",
 					  "Reference",
+					  "Network::Feed",
+					  "Network::News",
 					  NULL } },
 	{ "featured",		NC_("Menu of Education & Science", "Featured"),
 					{ "Education::Featured",
@@ -203,6 +200,10 @@ static const GsDesktopMap map_learn[] = {
 					  "Science::Math",
 					  "Science::Physics",
 					  "Science::NumericalAnalysis",
+					  NULL} },
+	{ "news",		NC_("Menu of Communication & News", "News"),
+					{ "Network::Feed",
+					  "Network::News",
 					  NULL} },
 	{ "robotics",		NC_("Menu of Education & Science", "Robotics"),
 					{ "Science::Robotics",
