@@ -555,6 +555,7 @@ gs_folders_convert (void)
 			"gnome-system-log.desktop",
 			"nm-connection-editor.desktop",
 			"org.gnome.baobab.desktop",
+			"org.gnome.Connections.desktop",
 			"org.gnome.DejaDup.desktop",
 			"org.gnome.Dictionary.desktop",
 			"org.gnome.DiskUtility.desktop",
