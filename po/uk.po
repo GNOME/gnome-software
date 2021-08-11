@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-10 07:26+0000\n"
-"PO-Revision-Date: 2021-08-10 13:19+0300\n"
+"POT-Creation-Date: 2021-08-11 09:20+0000\n"
+"PO-Revision-Date: 2021-08-11 12:49+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -508,7 +508,7 @@ msgstr "Усе"
 #. Translators: This is displayed for the download size in an
 #. * app’s context tile if the size is unknown. It should be short
 #. * (at most a couple of characters wide).
-#: src/gs-age-rating-context-dialog.c:618 src/gs-app-context-bar.c:112
+#: src/gs-age-rating-context-dialog.c:618 src/gs-app-context-bar.c:151
 msgid "?"
 msgstr "?"
 
@@ -663,8 +663,7 @@ msgstr "Може подолати обмеження «пісочниці» і �
 #: src/gs-app-details-page.c:159
 #, c-format
 msgid "%s %s"
-msgstr ""
-"%s %s"
+msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
@@ -809,122 +808,163 @@ msgstr "Вибачте! Не маємо подробиць щодо цієї п�
 
 #. Translators: The disk usage of an application when installed.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:92
+#: src/gs-app-context-bar.c:112
 msgid "Installed Size"
 msgstr "Розмір встановлення"
 
+#: src/gs-app-context-bar.c:115
+#, c-format
+#| msgid "Includes %s, %s and %s."
+msgid "Includes %s of data and %s of cache"
+msgstr "Включає %s даних і %s кешу"
+
+#: src/gs-app-context-bar.c:118
+#, c-format
+#| msgid "Includes %s, %s and %s."
+msgid "Includes %s of data"
+msgstr "Включає %s даних"
+
+#: src/gs-app-context-bar.c:121
+#, c-format
+#| msgid "Includes %s, %s and %s."
+msgid "Includes %s of cache"
+msgstr "Включає %s кешу"
+
+#: src/gs-app-context-bar.c:124
+msgid "Cache and data usage unknown"
+msgstr ""
+"Використання кешу і даних є невідомим"
+
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:101
+#: src/gs-app-context-bar.c:133
 msgid "Download Size"
 msgstr "Розмір звантаження"
+
+#: src/gs-app-context-bar.c:136
+msgid "Needs no additional system downloads"
+msgstr ""
+"Не потребує додаткового отримання даних системи"
+
+#: src/gs-app-context-bar.c:138
+msgid "Needs an unknown size of additional system downloads"
+msgstr ""
+"Потребує невідомого обсягу отримання додаткових даних системи"
+
+#. Translators: The placeholder is for a size string,
+#. * such as ‘150 MB’ or ‘1.5 GB’.
+#: src/gs-app-context-bar.c:143
+#, c-format
+msgid "Needs %s of additional system downloads"
+msgstr ""
+"Потребує додаткового отримання %s системою"
 
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:116
+#: src/gs-app-context-bar.c:157
 msgid "Size is unknown"
 msgstr "Невідомий розмір"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:180
+#: src/gs-app-context-bar.c:221
 msgid "No permissions"
 msgstr "Права доступу не потрібні"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:187
+#: src/gs-app-context-bar.c:228
 msgid "Has network access"
 msgstr "Має доступ до мережі"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:194
+#: src/gs-app-context-bar.c:235
 msgid "Uses system services"
 msgstr "Використовує служби системи"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:201
+#: src/gs-app-context-bar.c:242
 msgid "Uses session services"
 msgstr "Використовує служби сеансу"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:208
+#: src/gs-app-context-bar.c:249
 msgid "Can access hardware devices"
 msgstr "Може отримувати доступ до апаратних пристроїв"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:216
+#: src/gs-app-context-bar.c:257
 msgid "Can read/write all your data"
 msgstr "Має доступ до читання/запису усіх ваших даних"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:224
+#: src/gs-app-context-bar.c:265
 msgid "Can read all your data"
 msgstr "Може читати усі ваші дані"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:231
+#: src/gs-app-context-bar.c:272
 msgid "Can read/write your downloads"
 msgstr "Може читати/записувати дані до теки отриманих вами з інтернету даних"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:238
+#: src/gs-app-context-bar.c:279
 msgid "Can read your downloads"
 msgstr "Може читати дані з теки отриманих вами з інтернету даних"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:245 src/gs-safety-context-dialog.c:206
+#: src/gs-app-context-bar.c:286 src/gs-safety-context-dialog.c:206
 msgid "Can access and change user settings"
 msgstr "Може отримувати доступ і змінювати параметри роботи користувача"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:252 src/gs-safety-context-dialog.c:190
+#: src/gs-app-context-bar.c:293 src/gs-safety-context-dialog.c:190
 msgid "Uses a legacy windowing system"
 msgstr "Використовує застарілу систему керування дисплеєм"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:259 src/gs-safety-context-dialog.c:198
+#: src/gs-app-context-bar.c:300 src/gs-safety-context-dialog.c:198
 msgid "Can acquire arbitrary permissions"
 msgstr "Може надсилати доступ щодо отримання довільних прав доступу"
 
 #. Translators: This indicates that we don’t know what permissions an app requires to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:271
+#: src/gs-app-context-bar.c:312
 msgid "App has unknown permissions"
 msgstr "Права доступу програми є невідомими"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:283
+#: src/gs-app-context-bar.c:324
 msgid "Proprietary code"
 msgstr "Закритий код"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:289
+#: src/gs-app-context-bar.c:330
 msgid "Auditable code"
 msgstr "Придатний до перевірки код"
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:298 src/gs-safety-context-dialog.c:311
+#: src/gs-app-context-bar.c:339 src/gs-safety-context-dialog.c:311
 msgid "App comes from a trusted source"
 msgstr "Програма походить з надійного джерела"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:305 src/gs-safety-context-dialog.c:321
+#: src/gs-app-context-bar.c:346 src/gs-safety-context-dialog.c:321
 msgid "App developer is verified"
 msgstr "Розробник програми є перевіреним"
 
@@ -942,105 +982,105 @@ msgstr "Розробник програми є перевіреним"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:317 src/gs-app-context-bar.c:579
+#: src/gs-app-context-bar.c:358 src/gs-app-context-bar.c:620
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:325
+#: src/gs-app-context-bar.c:366
 msgid "Safe"
 msgstr "Безпечна"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:332
+#: src/gs-app-context-bar.c:373
 msgid "Potentially Unsafe"
 msgstr "Потенційно небезпечна"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:339
+#: src/gs-app-context-bar.c:380
 msgid "Unsafe"
 msgstr "Небезпечна"
 
-#: src/gs-app-context-bar.c:414 src/gs-app-context-bar.c:446
+#: src/gs-app-context-bar.c:455 src/gs-app-context-bar.c:487
 #: src/gs-hardware-support-context-dialog.c:584
 msgid "Mobile Only"
 msgstr "Лише для мобільних"
 
-#: src/gs-app-context-bar.c:415
+#: src/gs-app-context-bar.c:456
 msgid "Only works on a small screen"
 msgstr "Працює лише на малих екранах"
 
-#: src/gs-app-context-bar.c:420 src/gs-app-context-bar.c:453
-#: src/gs-app-context-bar.c:460 src/gs-app-context-bar.c:465
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:510
+#: src/gs-app-context-bar.c:461 src/gs-app-context-bar.c:494
+#: src/gs-app-context-bar.c:501 src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:546 src/gs-app-context-bar.c:551
 #: src/gs-hardware-support-context-dialog.c:564
 msgid "Desktop Only"
 msgstr "Лише для комп'ютерів"
 
-#: src/gs-app-context-bar.c:421
+#: src/gs-app-context-bar.c:462
 msgid "Only works on a large screen"
 msgstr "Працює лише на великих екранах"
 
-#: src/gs-app-context-bar.c:425 src/gs-hardware-support-context-dialog.c:602
+#: src/gs-app-context-bar.c:466 src/gs-hardware-support-context-dialog.c:602
 msgid "Screen Size Mismatch"
 msgstr "Невідповідність розміру екрана"
 
-#: src/gs-app-context-bar.c:426 src/gs-hardware-support-context-dialog.c:603
+#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:603
 msgid "Doesn’t support your current screen size"
 msgstr "Підтримки поточних розмірів екрана не передбачено"
 
-#: src/gs-app-context-bar.c:447 src/gs-hardware-support-context-dialog.c:655
+#: src/gs-app-context-bar.c:488 src/gs-hardware-support-context-dialog.c:655
 #: src/gs-hardware-support-context-dialog.c:661
 msgid "Requires a touchscreen"
 msgstr "Потребує сенсорного екрана"
 
-#: src/gs-app-context-bar.c:454 src/gs-hardware-support-context-dialog.c:615
+#: src/gs-app-context-bar.c:495 src/gs-hardware-support-context-dialog.c:615
 #: src/gs-hardware-support-context-dialog.c:621
 msgid "Requires a keyboard"
 msgstr "Потребує клавіатури"
 
-#: src/gs-app-context-bar.c:461
+#: src/gs-app-context-bar.c:502
 msgid "Requires a mouse"
 msgstr "Потребує миші"
 
-#: src/gs-app-context-bar.c:466 src/gs-app-context-bar.c:511
+#: src/gs-app-context-bar.c:507 src/gs-app-context-bar.c:552
 msgid "Not optimized for touch devices or phones"
 msgstr "Не оптимізовано для сенсорних пристроїв або телефонів"
 
-#: src/gs-app-context-bar.c:477
+#: src/gs-app-context-bar.c:518
 msgid "Gamepad Needed"
 msgstr "Потрібен ігровий пульт"
 
-#: src/gs-app-context-bar.c:478
+#: src/gs-app-context-bar.c:519
 msgid "Requires a gamepad to play"
 msgstr "Потребує для гри ігрового пульта"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:492
+#: src/gs-app-context-bar.c:533
 msgid "Adaptive"
 msgstr "Адаптивна"
 
-#: src/gs-app-context-bar.c:493
+#: src/gs-app-context-bar.c:534
 msgid "Works on phones, tablets and desktops"
 msgstr "Працює на телефонах, планшетах та комп'ютерах"
 
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:547
 msgid "Probably requires a keyboard or mouse"
 msgstr "Можливо, потребує клавіатури або миші"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:554
+#: src/gs-app-context-bar.c:595
 msgid "Contains no age-inappropriate content"
 msgstr "Місить неприйнятні для заданого віку дані"
 
-#: src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:640
 msgid "No age rating information available"
 msgstr "Дані щодо обмежень за віком є недоступними"
 
@@ -1149,7 +1189,7 @@ msgstr "Особливе"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:45 src/gs-overview-page.ui:111
+#: src/gs-category-page.ui:45 src/gs-overview-page.ui:113
 msgid "Editor’s Picks"
 msgstr "Відібране редактором"
 
@@ -1563,7 +1603,7 @@ msgid "Install Third-Party Software?"
 msgstr "Встановити програму третьої сторони?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:235 src/gs-repos-dialog.c:162
+#: src/gs-common.c:235 src/gs-repos-dialog.c:190
 msgid "Enable Third-Party Software Repository?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
 
@@ -1958,11 +1998,11 @@ msgstr ""
 msgid "Only use software repositories that you trust."
 msgstr "Використовувати тільки ті сховища програм, яким ви довіряєте."
 
-#: src/gs-details-page.ui:656
+#: src/gs-details-page.ui:658
 msgid "No Metadata"
 msgstr "Немає метаданих"
 
-#: src/gs-details-page.ui:666
+#: src/gs-details-page.ui:668
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -1970,44 +2010,44 @@ msgstr ""
 "Авторами цієї програми не надано жодних посилань на сайти, сховища коду або "
 "сторінку системи стеження за вадами."
 
-#: src/gs-details-page.ui:694
+#: src/gs-details-page.ui:696
 msgid "Project _Website"
 msgstr "_Сайт проєкту"
 
-#: src/gs-details-page.ui:720
+#: src/gs-details-page.ui:722
 msgid "_Donate"
 msgstr "_Підтримати фінансово"
 
-#: src/gs-details-page.ui:746
+#: src/gs-details-page.ui:748
 msgid "_Contribute Translations"
 msgstr "Д_опомогти із перекладом"
 
-#: src/gs-details-page.ui:772
+#: src/gs-details-page.ui:774
 msgid "_Report an Issue"
 msgstr "По_відомити про ваду"
 
-#: src/gs-details-page.ui:798
+#: src/gs-details-page.ui:800
 msgid "_Help"
 msgstr "_Довідка"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:849
+#: src/gs-details-page.ui:851
 msgid "Reviews"
 msgstr "Огляди"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:867
+#: src/gs-details-page.ui:869
 msgid "_Write a Review"
 msgstr "_Написати огляд"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:888
+#: src/gs-details-page.ui:890
 msgid "_Show More"
 msgstr "_Показати більше"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-details-page.ui:963 src/gs-safety-context-dialog.ui:190
+#: src/gs-details-page.ui:965 src/gs-safety-context-dialog.ui:190
 msgid "Source"
 msgstr "Джерело"
 
@@ -2688,7 +2728,7 @@ msgstr "З'ясувати більше…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:602 src/gs-repos-dialog.c:167
+#: src/gs-overview-page.c:602 src/gs-repos-dialog.c:195
 msgid "Enable"
 msgstr "Увімкнути"
 
@@ -2707,11 +2747,11 @@ msgid "Enable Third Party Software Repositories?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
 
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-overview-page.ui:139
+#: src/gs-overview-page.ui:141
 msgid "Recent Releases"
 msgstr "Нещодавні випуски"
 
-#: src/gs-overview-page.ui:205
+#: src/gs-overview-page.ui:207
 msgid "No Application Data Found"
 msgstr "Не знайдено даних про програму"
 
@@ -2816,80 +2856,68 @@ msgid "_Continue"
 msgstr "_Далі"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:234
+#: src/gs-repos-dialog.c:262
 #, c-format
-#| msgid ""
-#| "Software that has been installed from this repository will no longer "
-#| "receive updates, including security fixes."
 msgid "Software that has been installed from “%s” will cease receive updates."
 msgstr ""
-"Програмне забезпечення, яке було встановлено з «%s», не "
-"отримуватиме оновлень."
+"Програмне забезпечення, яке було встановлено з «%s», не отримуватиме "
+"оновлень."
 
-#: src/gs-repos-dialog.c:243
-#| msgid "Software Repositories"
+#: src/gs-repos-dialog.c:271
 msgid "Disable Repository?"
 msgstr "Вимкнути сховище?"
 
-#: src/gs-repos-dialog.c:243
-#| msgid "Software Repositories"
+#: src/gs-repos-dialog.c:271
 msgid "Remove Repository?"
 msgstr "Вилучити сховище?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:249
-#| msgid "Disable"
+#: src/gs-repos-dialog.c:277
 msgid "_Disable"
 msgstr "Ви_мкнути"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:252
+#: src/gs-repos-dialog.c:280
 msgid "_Remove"
 msgstr "В_илучити"
 
-#: src/gs-repos-dialog.c:462
-#| msgid "Third Party Repositories"
+#: src/gs-repos-dialog.c:484
 msgid "Fedora Third Party Repositories"
 msgstr "Сторонні сховища Fedora"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:476
-#| msgid "More information"
+#: src/gs-repos-dialog.c:494
 msgid "more information"
 msgstr "докладніше"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:481
+#: src/gs-repos-dialog.c:499
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid "Additional repositories from selected third parties — %s."
-msgstr ""
-"Додаткові сховища з вибраних сторонніх — %s."
+msgstr "Додаткові сховища з вибраних сторонніх — %s."
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:614
+#: src/gs-repos-dialog.c:632
 msgid "the operating system"
 msgstr "операційна система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:670
+#: src/gs-repos-dialog.c:688
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Ці сховища доповнюють типове програмне забезпечення, яке надається %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18 src/gs-shell.ui:76
-#: src/gs-update-dialog.ui:10
+#: src/gs-repos-dialog.ui:10 src/gs-shell.ui:76 src/gs-update-dialog.ui:10
 msgid "Software Repositories"
 msgstr "Сховища програм"
 
-#: src/gs-repos-dialog.ui:73
-#| msgid "Software Repositories"
+#: src/gs-repos-dialog.ui:50
 msgid "No Repositories"
 msgstr "Немає сховищ"
 
@@ -2958,8 +2986,7 @@ msgstr[3] "Встановлено %s і %s"
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
-msgstr ""
-"%s • %s"
+msgstr "%s • %s"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
@@ -4507,12 +4534,10 @@ msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Не вдалося очистити додаток «%s»: %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:89
-#| msgid "Installation"
 msgid "User Installation"
 msgstr "Встановлення для користувача"
 
 #: plugins/flatpak/gs-flatpak-utils.c:89
-#| msgid "System Integration"
 msgid "System Installation"
 msgstr "Загальносистемне встановлення"
 
@@ -4646,7 +4671,6 @@ msgid "Downloading firmware update metadata…"
 msgstr "Отримуємо метадані оновлення мікропрограми…"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1180
-#| msgid "Device Firmware"
 msgid "Firmware"
 msgstr "Мікропрограма"
 
@@ -4659,12 +4683,10 @@ msgid "Provides support for firmware upgrades"
 msgstr "Надає підтримку оновлення мікропрограм"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:300
-#| msgid "Package"
 msgid "Packages"
 msgstr "Пакунки"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2151
-#| msgid "Operating System Updates Unavailable"
 msgid "Operating System (OSTree)"
 msgstr "Операційна система (OSTree)"
 
