@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-11 10:10+0000\n"
-"PO-Revision-Date: 2021-08-11 19:15+0300\n"
+"POT-Creation-Date: 2021-08-11 16:18+0000\n"
+"PO-Revision-Date: 2021-08-11 19:26+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -518,7 +518,7 @@ msgstr "?"
 msgid "Age Rating"
 msgstr "Віковий рейтинг"
 
-#: lib/gs-app.c:5581
+#: lib/gs-app.c:5584
 msgid "Local file"
 msgstr "Локальний файл"
 
@@ -527,12 +527,12 @@ msgstr "Локальний файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5597 src/gs-safety-context-dialog.c:392
+#: lib/gs-app.c:5600 src/gs-safety-context-dialog.c:392
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5673
+#: lib/gs-app.c:5676
 msgid "Package"
 msgstr "Пакунок"
 
@@ -1153,7 +1153,6 @@ msgstr "Потрібна реєстрація"
 
 #: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:280
 #: src/gs-removal-dialog.ui:29 src/gs-review-dialog.ui:22
-#: src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
 msgstr "_Скасувати"
 
@@ -1183,14 +1182,12 @@ msgstr "Особливе"
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: src/gs-category-page.ui:45 src/gs-overview-page.ui:113
-#| msgid "Editor’s Picks"
 msgid "Editor’s Choice"
 msgstr "Відібране редактором"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
 #: src/gs-category-page.ui:73 src/gs-overview-page.ui:141
-#| msgid "Updated"
 msgid "New & Updated"
 msgstr "Нове і оновлене"
 
@@ -1865,7 +1862,6 @@ msgstr "Приготування…"
 #. dialog for installing a repo
 #: src/gs-details-page.c:856 src/gs-details-page.c:882
 #: src/gs-details-page.ui:194 src/gs-third-party-repo-row.c:84
-#: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Встановити"
 
@@ -2691,7 +2687,7 @@ msgstr "Вилучення"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:280 src/gs-shell.ui:340 src/gs-updates-page.c:1349
+#: src/gs-os-update-page.c:280 src/gs-shell.ui:340 src/gs-updates-page.c:1329
 msgid "Updates"
 msgstr "Оновлення"
 
@@ -4288,11 +4284,11 @@ msgstr "Немає мережі"
 msgid "Internet access is required to check for updates."
 msgstr "Потрібен інтернет, щоб перевірити оновлення."
 
-#: src/gs-updates-page.c:1283
+#: src/gs-updates-page.c:1263
 msgid "Checking…"
 msgstr "Перевіряємо…"
 
-#: src/gs-updates-page.c:1306
+#: src/gs-updates-page.c:1286
 msgid "Check for updates"
 msgstr "Перевірити на оновлення"
 
@@ -4387,64 +4383,60 @@ msgstr "Оновлення програм"
 msgid "Device Firmware"
 msgstr "Прошиті програми для пристроїв"
 
-#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:68
 msgid "_Download"
 msgstr "_Звантажити"
 
-#: src/gs-upgrade-banner.c:91
-msgid ""
-"It is recommended that you back up your data and files before upgrading."
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. The first %s is the distro name
+#. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
+#: src/gs-upgrade-banner.c:86
+#, c-format
+#| msgid "%s %s Now Available"
+msgid "%s %s Available"
+msgstr "Доступна %s %s"
+
+#: src/gs-upgrade-banner.c:131
+msgid "Learn about the new version"
 msgstr ""
-"Радимо зробити резервну копію ваших даних і викласти їх перед оновленням."
+"Дізнатися більше про нову версію"
 
-#: src/gs-upgrade-banner.c:95
-msgid "_Restart Now"
-msgstr "П_ерезапустити зараз"
+#: src/gs-upgrade-banner.c:151
+#| msgid "Downloading"
+msgid "Downloading…"
+msgstr "Отримання…"
 
-#: src/gs-upgrade-banner.c:97
-msgid "Updates will be applied when the computer is restarted."
-msgstr "Оновлення буде застосовано під час перезавантаження комп'ютера."
-
-#. TRANSLATORS: This is the text displayed when a distro
-#. * upgrade is available. First %s is the distro name and the
-#. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:112
+#. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
+#. with the total download size, forming text like "135 MB of 2 GB downloaded"
+#: src/gs-upgrade-banner.c:169
 #, c-format
-msgid "%s %s Now Available"
-msgstr "%s %s тепер доступний"
+msgid "%s of %s downloaded"
+msgstr ""
+"Отримано %s з %s"
 
-#. TRANSLATORS: This is the text displayed while waiting to
-#. * download a distro upgrade. First %s is the distro name and
-#. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:122
+#. Translators: the '%u' is replaced with the actual percentage being already
+#. downloaded, forming text like "13% downloaded"
+#: src/gs-upgrade-banner.c:173
 #, c-format
-msgid "Waiting to Download %s %s"
-msgstr "Очікуємо на отримання %s %s"
+msgid "%u%% downloaded"
+msgstr ""
+"Отримано %u%%"
 
-#. TRANSLATORS: This is the text displayed while downloading a
-#. * distro upgrade. First %s is the distro name and the 2nd %s
-#. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:132
-#, c-format
-msgid "Downloading %s %s"
-msgstr "Звантаження %s %s"
-
-#. TRANSLATORS: This is the text displayed when a distro
-#. * upgrade has been downloaded and is ready to be installed.
-#. * First %s is the distro name and the 2nd %s is the version,
-#. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:143
-#, c-format
-msgid "%s %s Ready to be Installed"
-msgstr "%s %s можна встановлювати"
-
-#: src/gs-upgrade-banner.ui:30
+#: src/gs-upgrade-banner.ui:43
 msgid "A major upgrade, with new features and added polish."
 msgstr "Велике оновлення, з новими можливостями і виправленнями."
 
-#: src/gs-upgrade-banner.ui:50
-msgid "_Learn More"
-msgstr "_Дізнатись більше"
+#: src/gs-upgrade-banner.ui:203
+#| msgid "Restart & Update"
+msgid "_Restart & Upgrade"
+msgstr "П_ерезавантажити і оновити"
+
+#: src/gs-upgrade-banner.ui:220
+#| msgid ""
+#| "It is recommended that you back up your data and files before upgrading."
+msgid "Remember to back up data and files before upgrading."
+msgstr ""
+"Не забудьте створити резервні копії ваших даних і файлів до оновлення."
 
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
@@ -4693,6 +4685,24 @@ msgstr "Підтримка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
+
+#~ msgid "_Restart Now"
+#~ msgstr "П_ерезапустити зараз"
+
+#~ msgid "Updates will be applied when the computer is restarted."
+#~ msgstr "Оновлення буде застосовано під час перезавантаження комп'ютера."
+
+#~ msgid "Waiting to Download %s %s"
+#~ msgstr "Очікуємо на отримання %s %s"
+
+#~ msgid "Downloading %s %s"
+#~ msgstr "Звантаження %s %s"
+
+#~ msgid "%s %s Ready to be Installed"
+#~ msgstr "%s %s можна встановлювати"
+
+#~ msgid "_Learn More"
+#~ msgstr "_Дізнатись більше"
 
 #~ msgid "Recently Updated"
 #~ msgstr "Нещодавно оновлені"
