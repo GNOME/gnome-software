@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-11 09:20+0000\n"
-"PO-Revision-Date: 2021-08-11 12:49+0300\n"
+"POT-Creation-Date: 2021-08-11 10:10+0000\n"
+"PO-Revision-Date: 2021-08-11 19:15+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -814,26 +814,22 @@ msgstr "Розмір встановлення"
 
 #: src/gs-app-context-bar.c:115
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data and %s of cache"
 msgstr "Включає %s даних і %s кешу"
 
 #: src/gs-app-context-bar.c:118
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data"
 msgstr "Включає %s даних"
 
 #: src/gs-app-context-bar.c:121
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of cache"
 msgstr "Включає %s кешу"
 
 #: src/gs-app-context-bar.c:124
 msgid "Cache and data usage unknown"
-msgstr ""
-"Використання кешу і даних є невідомим"
+msgstr "Використання кешу і даних є невідомим"
 
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
@@ -843,21 +839,18 @@ msgstr "Розмір звантаження"
 
 #: src/gs-app-context-bar.c:136
 msgid "Needs no additional system downloads"
-msgstr ""
-"Не потребує додаткового отримання даних системи"
+msgstr "Не потребує додаткового отримання даних системи"
 
 #: src/gs-app-context-bar.c:138
 msgid "Needs an unknown size of additional system downloads"
-msgstr ""
-"Потребує невідомого обсягу отримання додаткових даних системи"
+msgstr "Потребує невідомого обсягу отримання додаткових даних системи"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
 #: src/gs-app-context-bar.c:143
 #, c-format
 msgid "Needs %s of additional system downloads"
-msgstr ""
-"Потребує додаткового отримання %s системою"
+msgstr "Потребує додаткового отримання %s системою"
 
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
@@ -1190,13 +1183,16 @@ msgstr "Особливе"
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: src/gs-category-page.ui:45 src/gs-overview-page.ui:113
-msgid "Editor’s Picks"
+#| msgid "Editor’s Picks"
+msgid "Editor’s Choice"
 msgstr "Відібране редактором"
 
 #. Heading for recently updated apps on a category page
-#: src/gs-category-page.ui:73
-msgid "Recently Updated"
-msgstr "Нещодавно оновлені"
+#. Translators: This is a heading for software which has been recently released upstream.
+#: src/gs-category-page.ui:73 src/gs-overview-page.ui:141
+#| msgid "Updated"
+msgid "New & Updated"
+msgstr "Нове і оновлене"
 
 #. Heading for the rest of the apps on a category page
 #: src/gs-category-page.ui:101
@@ -1259,298 +1255,298 @@ msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Шрифти"
 
-#: lib/gs-desktop-data.c:52
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "Усі"
-
-#: lib/gs-desktop-data.c:57
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "Рекомендовані"
-
-#: lib/gs-desktop-data.c:61
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "Календар"
-
-#: lib/gs-desktop-data.c:65
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "База даних"
-
-#: lib/gs-desktop-data.c:68
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "Фінанси"
-
-#: lib/gs-desktop-data.c:72
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "Текстовий процесор"
-
-#: lib/gs-desktop-data.c:76
-msgctxt "Menu of Utilities"
-msgid "Text Editors"
-msgstr "Текстові редактори"
-
-#: lib/gs-desktop-data.c:79
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Джерела введення"
-
-#: lib/gs-desktop-data.c:82
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Мовні пакети"
-
-#: lib/gs-desktop-data.c:85
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Локалізація"
-
-#: lib/gs-desktop-data.c:88
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Драйвери апаратури"
-
-#: lib/gs-desktop-data.c:95
-msgctxt "Menu of Audio & Video"
-msgid "All"
-msgstr "Усі"
-
-#: lib/gs-desktop-data.c:99
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "Рекомендовані"
-
-#: lib/gs-desktop-data.c:103
+#: lib/gs-desktop-data.c:48
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Програвачі музики"
 
-#: lib/gs-desktop-data.c:107
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "Дійовик"
-
-#: lib/gs-desktop-data.c:110
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "Пригоди"
-
-#: lib/gs-desktop-data.c:113
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "Аркада"
-
-#: lib/gs-desktop-data.c:116
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "Мозаїка"
-
-#: lib/gs-desktop-data.c:119
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "Настільні"
-
-#: lib/gs-desktop-data.c:122
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "Карти"
-
-#: lib/gs-desktop-data.c:125
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "Емулятори"
-
-#: lib/gs-desktop-data.c:128
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "Дитячі"
-
-#: lib/gs-desktop-data.c:131
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "Логіка"
-
-#: lib/gs-desktop-data.c:135
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "Рольові ігри"
-
-#: lib/gs-desktop-data.c:138
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "Спорт"
-
-#: lib/gs-desktop-data.c:141
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "Стратегія"
-
-#: lib/gs-desktop-data.c:144
+#: lib/gs-desktop-data.c:52
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Кодеки"
 
-#: lib/gs-desktop-data.c:151
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:59
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Усі"
 
-#: lib/gs-desktop-data.c:154
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:65
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: lib/gs-desktop-data.c:157
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "Спілкування"
+#: lib/gs-desktop-data.c:69
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "Календар"
 
-#: lib/gs-desktop-data.c:164
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "Новини"
+#: lib/gs-desktop-data.c:73
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "База даних"
 
-#: lib/gs-desktop-data.c:168
+#: lib/gs-desktop-data.c:76
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "Фінанси"
+
+#: lib/gs-desktop-data.c:80
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "Текстовий процесор"
+
+#: lib/gs-desktop-data.c:84
+msgctxt "Menu of Utilities"
+msgid "Text Editors"
+msgstr "Текстові редактори"
+
+#: lib/gs-desktop-data.c:87
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Переглядачі інтернету"
 
-#: lib/gs-desktop-data.c:175
+#: lib/gs-desktop-data.c:90
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Джерела введення"
+
+#: lib/gs-desktop-data.c:93
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Мовні пакети"
+
+#: lib/gs-desktop-data.c:96
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Локалізація"
+
+#: lib/gs-desktop-data.c:99
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Драйвери апаратури"
+
+#: lib/gs-desktop-data.c:106
+msgctxt "Menu of Audio & Video"
+msgid "All"
+msgstr "Усі"
+
+#: lib/gs-desktop-data.c:109
+msgctxt "Menu of Audio & Video"
+msgid "Featured"
+msgstr "Рекомендовані"
+
+#: lib/gs-desktop-data.c:112
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Дійовик"
+
+#: lib/gs-desktop-data.c:115
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Пригоди"
+
+#: lib/gs-desktop-data.c:118
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Аркада"
+
+#: lib/gs-desktop-data.c:121
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Мозаїка"
+
+#: lib/gs-desktop-data.c:124
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Настільні"
+
+#: lib/gs-desktop-data.c:127
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Карти"
+
+#: lib/gs-desktop-data.c:130
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Емулятори"
+
+#: lib/gs-desktop-data.c:133
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Дитячі"
+
+#: lib/gs-desktop-data.c:136
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Логіка"
+
+#: lib/gs-desktop-data.c:140
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Рольові ігри"
+
+#: lib/gs-desktop-data.c:143
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Спорт"
+
+#: lib/gs-desktop-data.c:146
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Стратегія"
+
+#: lib/gs-desktop-data.c:153
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "Усі"
+
+#: lib/gs-desktop-data.c:156
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "Рекомендовані"
+
+#: lib/gs-desktop-data.c:159
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "Спілкування"
+
+#: lib/gs-desktop-data.c:170
 msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Усі"
 
-#: lib/gs-desktop-data.c:180
+#: lib/gs-desktop-data.c:177
 msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: lib/gs-desktop-data.c:185
+#: lib/gs-desktop-data.c:182
 msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Штучний інтелект"
 
-#: lib/gs-desktop-data.c:188
+#: lib/gs-desktop-data.c:185
 msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Астрономія"
 
-#: lib/gs-desktop-data.c:192
+#: lib/gs-desktop-data.c:189
 msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Хімія"
 
-#: lib/gs-desktop-data.c:196
+#: lib/gs-desktop-data.c:193
 msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Мови"
 
-#: lib/gs-desktop-data.c:200
+#: lib/gs-desktop-data.c:197
 msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Математика"
 
-#: lib/gs-desktop-data.c:207
+#: lib/gs-desktop-data.c:204
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "Новини"
+
+#: lib/gs-desktop-data.c:208
 msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Робототехніка"
 
-#: lib/gs-desktop-data.c:210
+#: lib/gs-desktop-data.c:211
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Мистецтво"
 
-#: lib/gs-desktop-data.c:213
+#: lib/gs-desktop-data.c:214
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Біографія"
 
-#: lib/gs-desktop-data.c:216
+#: lib/gs-desktop-data.c:217
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Комікси"
 
-#: lib/gs-desktop-data.c:219
+#: lib/gs-desktop-data.c:220
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Фантастика"
 
-#: lib/gs-desktop-data.c:222
+#: lib/gs-desktop-data.c:223
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Здоров'я"
 
-#: lib/gs-desktop-data.c:225
+#: lib/gs-desktop-data.c:226
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Історія"
 
-#: lib/gs-desktop-data.c:228
+#: lib/gs-desktop-data.c:229
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Стиль життя"
 
-#: lib/gs-desktop-data.c:231
+#: lib/gs-desktop-data.c:232
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Політика"
 
-#: lib/gs-desktop-data.c:234
+#: lib/gs-desktop-data.c:235
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Спорт"
 
-#: lib/gs-desktop-data.c:241
+#: lib/gs-desktop-data.c:242
 msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Усі"
 
-#: lib/gs-desktop-data.c:244
+#: lib/gs-desktop-data.c:245
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Рекомендовані"
 
-#: lib/gs-desktop-data.c:247
+#: lib/gs-desktop-data.c:248
 msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Засоби діагностики"
 
-#: lib/gs-desktop-data.c:250
+#: lib/gs-desktop-data.c:251
 msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "IDE"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:261
+#: lib/gs-desktop-data.c:262
 msgid "Create"
 msgstr "Творчість"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:263
+#: lib/gs-desktop-data.c:264
 msgid "Work"
 msgstr "Робота"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:265
+#: lib/gs-desktop-data.c:266
 msgid "Play"
 msgstr "Гра"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:267
+#: lib/gs-desktop-data.c:268
 msgid "Socialize"
 msgstr "Соціалізація"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:269
+#: lib/gs-desktop-data.c:270
 msgid "Learn"
 msgstr "Навчання"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:271
+#: lib/gs-desktop-data.c:272
 msgid "Develop"
 msgstr "Розробка"
 
@@ -2745,11 +2741,6 @@ msgstr "Сторінка огляду"
 #: src/gs-overview-page.ui:40
 msgid "Enable Third Party Software Repositories?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
-
-#. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-overview-page.ui:141
-msgid "Recent Releases"
-msgstr "Нещодавні випуски"
 
 #: src/gs-overview-page.ui:207
 msgid "No Application Data Found"
@@ -4703,6 +4694,12 @@ msgstr "Підтримка Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
 
+#~ msgid "Recently Updated"
+#~ msgstr "Нещодавно оновлені"
+
+#~ msgid "Recent Releases"
+#~ msgstr "Нещодавні випуски"
+
 #~ msgid "Remove “%s”?"
 #~ msgstr "Вилучити «%s»?"
 
@@ -4767,9 +4764,6 @@ msgstr "Snap — універсальний пакунок Linux"
 
 #~ msgid "Release Activity"
 #~ msgstr "Частота випусків"
-
-#~ msgid "Updated"
-#~ msgstr "Оновлено"
 
 #~ msgid "Developer"
 #~ msgstr "Розробник"
