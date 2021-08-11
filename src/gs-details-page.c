@@ -93,6 +93,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*box_details_header;
 	GtkWidget		*box_details_header_not_icon;
 	GtkWidget		*label_webapp_warning;
 	GtkWidget		*star;
@@ -2244,6 +2245,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_header);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_header_not_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
@@ -2322,6 +2324,17 @@ narrow_to_orientation (GBinding *binding, const GValue *from_value, GValue *to_v
 	return TRUE;
 }
 
+static gboolean
+narrow_to_spacing (GBinding *binding, const GValue *from_value, GValue *to_value, gpointer user_data)
+{
+	if (g_value_get_boolean (from_value))
+		g_value_set_int (to_value, 12);
+	else
+		g_value_set_int (to_value, 24);
+
+	return TRUE;
+}
+
 static void
 gs_details_page_init (GsDetailsPage *self)
 {
@@ -2356,6 +2369,8 @@ gs_details_page_init (GsDetailsPage *self)
 
 	gs_details_page_read_packaging_format_preference (self);
 
+	g_object_bind_property_full (self, "is-narrow", self->box_details_header, "spacing", G_BINDING_SYNC_CREATE,
+				     narrow_to_spacing, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_details_header_not_icon, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
