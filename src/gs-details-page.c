@@ -2023,7 +2023,7 @@ gs_details_page_setup (GsPage *page,
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
 
-	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), FALSE);
 
 	self->shell = shell;
 
