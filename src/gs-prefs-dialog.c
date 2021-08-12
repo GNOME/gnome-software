@@ -14,7 +14,6 @@
 #include "gs-common.h"
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
-#include "gs-third-party-repo-row.h"
 #include <glib/gi18n.h>
 
 struct _GsPrefsDialog

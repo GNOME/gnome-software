@@ -17,7 +17,6 @@
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
 #include "gs-repos-section.h"
-#include "gs-third-party-repo-row.h"
 #include "gs-utils.h"
 #include <glib/gi18n.h>
 
