@@ -2030,50 +2030,14 @@ gs_details_page_setup (GsPage *page,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
 
-	g_signal_connect (self->button_review, "clicked",
-			  G_CALLBACK (gs_details_page_write_review_cb),
-			  self);
-	g_signal_connect (self->star_eventbox, "button-press-event",
-			  G_CALLBACK (gs_details_page_star_pressed_cb),
-			  self);
-
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_details_page_network_available_notify_cb),
 				 self, 0);
 
-	/* setup details */
-	g_signal_connect (self->button_install, "clicked",
-			  G_CALLBACK (gs_details_page_app_install_button_cb),
-			  self);
-	g_signal_connect (self->button_update, "clicked",
-			  G_CALLBACK (gs_details_page_app_update_button_cb),
-			  self);
-	g_signal_connect (self->button_remove, "clicked",
-			  G_CALLBACK (gs_details_page_app_remove_button_cb),
-			  self);
-	g_signal_connect (self->button_cancel, "clicked",
-			  G_CALLBACK (gs_details_page_app_cancel_button_cb),
-			  self);
-	g_signal_connect (self->button_more_reviews, "clicked",
-			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
-			  self);
-	g_signal_connect (self->button_details_launch, "clicked",
-			  G_CALLBACK (gs_details_page_app_launch_button_cb),
-			  self);
-	g_signal_connect (self->button_details_add_shortcut, "clicked",
-			  G_CALLBACK (gs_details_page_app_add_shortcut_button_cb),
-			  self);
-	g_signal_connect (self->button_details_remove_shortcut, "clicked",
-			  G_CALLBACK (gs_details_page_app_remove_shortcut_button_cb),
-			  self);
-
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
 	                            origin_popover_list_sort_func,
 	                            NULL, NULL);
-	g_signal_connect (self->origin_popover_list_box, "row-activated",
-	                  G_CALLBACK (origin_popover_row_activated_cb),
-	                  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);
@@ -2283,6 +2247,17 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_write_review_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_star_pressed_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_install_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_update_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_cancel_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_more_reviews_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_launch_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_add_shortcut_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_shortcut_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
 }
 
 static void
