@@ -39,7 +39,6 @@ struct _GsOverviewPage
 	gboolean		 empty;
 	gchar			*category_of_day;
 	GHashTable		*category_hash;		/* id : GsCategory */
-	GSettings		*settings;
 	gchar			*third_party_cmdtool;
 	gboolean		 third_party_needs_question;
 
@@ -353,13 +352,7 @@ out:
 static void
 refresh_third_party_repo (GsOverviewPage *self)
 {
-	/* only show if never prompted and needs checking */
-	if (g_settings_get_boolean (self->settings, "show-nonfree-prompt") &&
-	    self->third_party_needs_question) {
-		gtk_widget_set_visible (self->infobar_third_party, TRUE);
-	} else {
-		gtk_widget_set_visible (self->infobar_third_party, FALSE);
-	}
+	gtk_widget_set_visible (self->infobar_third_party, self->third_party_needs_question);
 }
 
 static gboolean
@@ -472,10 +465,6 @@ reload_third_party_repo (GsOverviewPage *self)
 		"--quiet",
 		NULL
 	};
-
-	/* only show if never prompted */
-	if (!g_settings_get_boolean (self->settings, "show-nonfree-prompt"))
-		return;
 
 	/* Fedora-specific functionality */
 	if (!is_fedora ())
@@ -661,7 +650,6 @@ third_party_response_cb (GtkInfoBar *info_bar,
                          gint response_id,
                          GsOverviewPage *self)
 {
-	g_settings_set_boolean (self->settings, "show-nonfree-prompt", FALSE);
 	if (response_id == GTK_RESPONSE_YES)
 		fedora_third_party_enable (self);
 	else
@@ -747,8 +735,6 @@ gs_overview_page_init (GsOverviewPage *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	g_signal_connect (self, "refreshed", G_CALLBACK (refreshed_cb), self);
-
-	self->settings = g_settings_new ("org.gnome.software");
 }
 
 static void
@@ -798,7 +784,6 @@ gs_overview_page_dispose (GObject *object)
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
-	g_clear_object (&self->settings);
 	g_clear_pointer (&self->third_party_cmdtool, g_free);
 	g_clear_pointer (&self->category_of_day, g_free);
 	g_clear_pointer (&self->category_hash, g_hash_table_unref);
