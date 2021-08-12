@@ -140,7 +140,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed */
-			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Visit website"));
+			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Visit Website"));
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
