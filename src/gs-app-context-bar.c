@@ -38,6 +38,7 @@
 #include "gs-app-context-bar.h"
 #include "gs-hardware-support-context-dialog.h"
 #include "gs-safety-context-dialog.h"
+#include "gs-storage-context-dialog.h"
 
 typedef struct
 {
@@ -680,7 +681,9 @@ tile_clicked_cb (GtkWidget *widget,
 	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
 
 	if (GTK_IS_WINDOW (toplevel)) {
-		if (widget == self->tiles[SAFETY_TILE].tile)
+		if (widget == self->tiles[STORAGE_TILE].tile)
+			dialog = GTK_WINDOW (gs_storage_context_dialog_new (self->app));
+		else if (widget == self->tiles[SAFETY_TILE].tile)
 			dialog = GTK_WINDOW (gs_safety_context_dialog_new (self->app));
 		else if (widget == self->tiles[HARDWARE_SUPPORT_TILE].tile)
 			dialog = GTK_WINDOW (gs_hardware_support_context_dialog_new (self->app));

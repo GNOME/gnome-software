@@ -13,70 +13,77 @@
     </style>
 
     <child>
-      <object class="GtkBox" id="storage_tile">
-        <property name="orientation">vertical</property>
-        <property name="spacing">8</property>
+      <object class="GtkButton" id="storage_tile">
         <property name="visible">True</property>
+        <signal name="clicked" handler="tile_clicked_cb"/>
         <style>
           <class name="context-tile"/>
+          <class name="flat"/>
         </style>
         <child>
-          <object class="GtkBox" id="storage_tile_lozenge">
-            <property name="halign">center</property>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">8</property>
             <property name="visible">True</property>
-            <style>
-              <class name="context-tile-lozenge"/>
-              <class name="grey"/>
-            </style>
             <child>
-              <object class="GtkLabel" id="storage_tile_lozenge_content">
+              <object class="GtkBox" id="storage_tile_lozenge">
                 <property name="halign">center</property>
+                <property name="visible">True</property>
+                <style>
+                  <class name="context-tile-lozenge"/>
+                  <class name="grey"/>
+                </style>
+                <child>
+                  <object class="GtkLabel" id="storage_tile_lozenge_content">
+                    <property name="halign">center</property>
+                    <!-- this is a placeholder: the text is actually set in code -->
+                    <property name="label">20 MB</property>
+                    <property name="visible">True</property>
+                    <property name="xalign">0.5</property>
+                    <accessibility>
+                      <relation target="storage_tile_title" type="labelled-by"/>
+                      <relation target="storage_tile_description" type="details"/>
+                    </accessibility>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="storage_tile_title">
                 <!-- this is a placeholder: the text is actually set in code -->
-                <property name="label">20 MB</property>
+                <property name="label">Download Size</property>
                 <property name="visible">True</property>
                 <property name="xalign">0.5</property>
                 <accessibility>
-                  <relation target="storage_tile_title" type="labelled-by"/>
-                  <relation target="storage_tile_description" type="details"/>
+                  <relation target="storage_tile_lozenge_content" type="label-for"/>
                 </accessibility>
+                <style>
+                  <class name="context-tile-title"/>
+                </style>
               </object>
-              <packing>
-                <property name="expand">True</property>
-              </packing>
             </child>
-          </object>
-          <packing>
-            <property name="fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="storage_tile_title">
-            <!-- this is a placeholder: the text is actually set in code -->
-            <property name="label">Download Size</property>
-            <property name="visible">True</property>
-            <property name="xalign">0.5</property>
-            <accessibility>
-              <relation target="storage_tile_lozenge_content" type="label-for"/>
-            </accessibility>
-            <style>
-              <class name="context-tile-title"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="storage_tile_description">
-            <property name="justify">center</property>
-            <!-- this is a placeholder: the text is actually set in code -->
-            <property name="label">Needs 150 MB of additional system downloads</property>
-            <property name="visible">True</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0.5</property>
-            <accessibility>
-              <relation target="storage_tile_lozenge_content" type="details-for"/>
-            </accessibility>
-            <style>
-              <class name="context-tile-description"/>
-            </style>
+            <child>
+              <object class="GtkLabel" id="storage_tile_description">
+                <property name="justify">center</property>
+                <!-- this is a placeholder: the text is actually set in code -->
+                <property name="label">Needs 150 MB of additional system downloads</property>
+                <property name="visible">True</property>
+                <property name="wrap">True</property>
+                <property name="xalign">0.5</property>
+                <accessibility>
+                  <relation target="storage_tile_lozenge_content" type="details-for"/>
+                </accessibility>
+                <style>
+                  <class name="context-tile-description"/>
+                </style>
+              </object>
+            </child>
           </object>
         </child>
       </object>

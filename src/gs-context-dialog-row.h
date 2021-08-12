@@ -46,10 +46,20 @@ GtkListBoxRow	*gs_context_dialog_row_new	(const gchar			*icon_name,
 						 GsContextDialogRowImportance	 importance,
 						 const gchar			*title,
 						 const gchar			*description);
+GtkListBoxRow	*gs_context_dialog_row_new_text	(const gchar			*content,
+						 GsContextDialogRowImportance	 importance,
+						 const gchar			*title,
+						 const gchar			*description);
 
 const gchar			*gs_context_dialog_row_get_icon_name	(GsContextDialogRow	*self);
+const gchar			*gs_context_dialog_row_get_content	(GsContextDialogRow	*self);
 GsContextDialogRowImportance	 gs_context_dialog_row_get_importance	(GsContextDialogRow	*self);
 const gchar			*gs_context_dialog_row_get_title	(GsContextDialogRow	*self);
 const gchar			*gs_context_dialog_row_get_description	(GsContextDialogRow	*self);
+
+void				 gs_context_dialog_row_set_size_groups	(GsContextDialogRow	*self,
+									 GtkSizeGroup		*lozenge,
+									 GtkSizeGroup		*title,
+									 GtkSizeGroup		*description);
 
 G_END_DECLS
