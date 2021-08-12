@@ -284,9 +284,8 @@
                                             <property name="visible" bind-source="button_cancel" bind-property="visible" bind-flags="sync-create"/>
                                             <property name="spacing">3</property>
                                             <property name="orientation">vertical</property>
-                                            <property name="hexpand">True</property>
-                                            <property name="valign">center</property>
-                                            <child>
+                                            <property name="valign">fill</property>
+                                            <child type="center">
                                               <object class="GsProgressButton" id="button_cancel">
                                                 <property name="visible">False</property>
                                                 <property name="use_underline">True</property>
@@ -298,9 +297,15 @@
                                             </child>
                                             <child>
                                               <object class="GtkBox">
-                                                <property name="visible">True</property>
+                                                <property name="visible" bind-source="label_progress_status" bind-property="visible" bind-flags="sync-create"/>
                                                 <property name="spacing">3</property>
                                                 <property name="halign">center</property>
+                                                <property name="valign">start</property>
+                                                <property name="vexpand">True</property>
+                                                <style>
+                                                  <class name="dim-label"/>
+                                                  <class name="install-progress-label"/>
+                                                </style>
                                                 <child>
                                                   <object class="GtkLabel" id="label_progress_status">
                                                     <property name="visible">True</property>
@@ -316,6 +321,9 @@
                                                   </object>
                                                 </child>
                                               </object>
+                                              <packing>
+                                                <property name="pack-type">end</property>
+                                              </packing>
                                             </child>
                                           </object>
                                         </child>
@@ -1004,7 +1012,6 @@
     </child>
   </template>
   <object class="GtkSizeGroup" id="sizegroup_install_remove">
-    <property name="ignore_hidden">True</property>
     <widgets>
       <widget name="button_install"/>
       <widget name="button_cancel"/>
