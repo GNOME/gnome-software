@@ -571,7 +571,8 @@ gs_overview_page_setup (GsPage *page,
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
-	g_autoptr(GString) str = g_string_new (NULL);
+	g_autofree gchar *text = NULL;
+	g_autofree gchar *link = NULL;
 
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
@@ -580,19 +581,16 @@ gs_overview_page_setup (GsPage *page,
 	self->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);
 
-	g_string_append (str,
-	                 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Access additional software from selected third party sources."));
-	g_string_append (str, " ");
-	g_string_append (str,
-			 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
-	g_string_append_printf (str, " <a href=\"%s\">%s</a>",
+	link = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
-	                        /* TRANSLATORS: this is the clickable
-	                         * link on the third party repositories info bar */
-	                        _("Find out more…"));
-	gtk_label_set_markup (GTK_LABEL (self->label_third_party), str->str);
+	                        /* Translators: This is a clickable link on the third party repositories info bar. It's
+				   part of a constructed sentence: "Provides access to additional software from [selected external sources].
+				   Some proprietary software is included." */
+	                        _("selected external sources"));
+	/* Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link. */
+	text = g_strdup_printf (_("Provides access to additional software from %s. Some proprietary software is included."),
+				link);
+	gtk_label_set_markup (GTK_LABEL (self->label_third_party), text);
 
 	/* create info bar if not already dismissed in initial-setup */
 	refresh_third_party_repo (self);
