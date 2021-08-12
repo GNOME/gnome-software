@@ -144,6 +144,11 @@
       <summary>Priority order of packaging formats to prefer, with more important formats listed first. An empty array means the default order. Omitted formats are assumed to be listed last.</summary>
     </key>
     <child name="auth" schema="org.gnome.software.auth"/>
+    <key name="upgrade-background-uri" type="s">
+      <default>''</default>
+      <summary>The URI that references the background for an upgrade banner.</summary>
+      <description>The URI can contain up to three '%u', which will be replaced by the upgrade version.</description>
+    </key>
   </schema>
   <schema id="org.gnome.software.auth" gettext-domain="gnome-software">
     <key name="account-id" type="s">

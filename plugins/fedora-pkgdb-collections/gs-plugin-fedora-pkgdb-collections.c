@@ -221,8 +221,37 @@ gs_plugin_refresh (GsPlugin *plugin,
 static gchar *
 _get_upgrade_css_background (guint version)
 {
+	g_autoptr(GSettings) settings = NULL;
 	g_autofree gchar *filename1 = NULL;
 	g_autofree gchar *filename2 = NULL;
+	g_autofree gchar *uri = NULL;
+
+	settings = g_settings_new ("org.gnome.software");
+	uri = g_settings_get_string (settings, "upgrade-background-uri");
+	if (uri != NULL && *uri != '\0') {
+		const gchar *ptr;
+		guint percents_u = 0;
+		for (ptr = uri; *ptr != '\0'; ptr++) {
+			if (*ptr == '%') {
+				if (ptr[1] == 'u')
+					percents_u++;
+				else if (ptr[1] == '%')
+					ptr++;
+				else
+					break;
+			}
+		}
+
+		if (*ptr != '\0' || percents_u > 3) {
+			g_warning ("Incorrect upgrade-background-uri (%s), it can contain only up to three '%%u' sequences", uri);
+		} else {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+			filename1 = g_strdup_printf (uri, version, version, version);
+#pragma GCC diagnostic pop
+			return g_strdup_printf ("url('%s')", filename1);
+		}
+	}
 
 	filename1 = g_strdup_printf ("/usr/share/backgrounds/f%u/default/standard/f%u.png", version, version);
 	if (g_file_test (filename1, G_FILE_TEST_EXISTS))
@@ -232,7 +261,7 @@ _get_upgrade_css_background (guint version)
 	if (g_file_test (filename2, G_FILE_TEST_EXISTS))
 		return g_strdup_printf ("url('%s')", filename2);
 
-	return NULL;
+	return g_strdup ("url('" DATADIR "/gnome-software/upgrade-bg.png')");
 }
 
 static gint
@@ -302,8 +331,8 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	if (background != NULL) {
 		css = g_strdup_printf ("background: %s;"
 				       "background-position: top;"
-				       "background-size: cover;"
-				       "color: white; text-shadow: 0 2px 2px rgba(0,0,0,0.5);",
+				       "background-size: 100%% 100%%;"
+				       "color: white;",
 				       background);
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 	}
