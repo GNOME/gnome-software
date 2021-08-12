@@ -286,8 +286,8 @@
                                           </object>
                                         </child>
                                         <child>
-                                          <object class="GtkBox" id="box_progress">
-                                            <property name="visible">True</property>
+                                          <object class="GtkBox">
+                                            <property name="visible" bind-source="button_cancel" bind-property="visible" bind-flags="sync-create"/>
                                             <property name="spacing">3</property>
                                             <property name="orientation">vertical</property>
                                             <property name="hexpand">True</property>

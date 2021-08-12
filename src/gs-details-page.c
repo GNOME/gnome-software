@@ -93,7 +93,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*label_webapp_warning;
-	GtkWidget		*box_progress;
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
@@ -444,21 +443,6 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_CENTER);
 		break;
 	}
-
-	/* progress box */
-	switch (state) {
-	case GS_APP_STATE_REMOVING:
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_PENDING_INSTALL:
-	case GS_APP_STATE_PENDING_REMOVE:
-		gtk_widget_set_visible (self->box_progress, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->box_progress, FALSE);
-		break;
-	}
-	if (app_has_pending_action (self->app))
-		gtk_widget_set_visible (self->box_progress, TRUE);
 }
 
 static gboolean
@@ -2271,7 +2255,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
