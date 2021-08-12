@@ -93,7 +93,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*label_webapp_warning;
-	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
 	GtkWidget		*screenshot_carousel;
@@ -132,7 +131,6 @@ struct _GsDetailsPage
 	GtkWidget		*list_box_reviews;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
-	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
 	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
@@ -314,6 +312,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	state = gs_app_get_state (self->app);
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
 		/* If the app is installing, the user can only cancel it if
 		 * 1) They haven't already, and
@@ -392,6 +391,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	/* percentage bar */
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		percentage = gs_app_get_progress (self->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
 			/* Translators: This string is shown when preparing to download and install an app. */
@@ -419,29 +419,6 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	if (app_has_pending_action (self->app)) {
 		gs_progress_button_set_progress (self->button_cancel, 0);
 		gs_progress_button_set_show_progress (self->button_cancel, TRUE);
-	}
-
-	/* spinner */
-	switch (state) {
-	case GS_APP_STATE_REMOVING:
-		if (!gtk_widget_get_visible (self->spinner_remove)) {
-			gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
-			gtk_widget_set_visible (self->spinner_remove, TRUE);
-		}
-		/* align text together with the spinner if we're showing it */
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
-		break;
-	case GS_APP_STATE_PENDING_INSTALL:
-	case GS_APP_STATE_PENDING_REMOVE:
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
-		gtk_widget_set_visible (self->spinner_remove, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
-		break;
-	default:
-		gtk_widget_set_visible (self->spinner_remove, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_CENTER);
-		break;
 	}
 }
 
@@ -2255,7 +2232,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
@@ -2294,7 +2270,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
