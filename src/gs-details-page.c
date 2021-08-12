@@ -26,6 +26,7 @@
 #include "gs-description-box.h"
 #include "gs-license-tile.h"
 #include "gs-origin-popover-row.h"
+#include "gs-progress-button.h"
 #include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
 #include "gs-review-histogram.h"
@@ -109,7 +110,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
-	GtkWidget		*button_cancel;
+	GsProgressButton	*button_cancel;
 	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
@@ -134,8 +135,6 @@ struct _GsDetailsPage
 	GtkWidget		*spinner_details;
 	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
-	GtkWidget		*progressbar_top;
-	guint			 progress_pulse_id;
 	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
@@ -306,25 +305,6 @@ gs_details_page_switch_to (GsPage *page)
 	gs_grab_focus_when_mapped (self->scrolledwindow_details);
 }
 
-static gboolean
-_pulse_cb (gpointer user_data)
-{
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-
-	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (self->progressbar_top));
-
-	return G_SOURCE_CONTINUE;
-}
-
-static void
-stop_progress_pulsing (GsDetailsPage *self)
-{
-	if (self->progress_pulse_id != 0) {
-		g_source_remove (self->progress_pulse_id);
-		self->progress_pulse_id = 0;
-	}
-}
-
 static void
 gs_details_page_refresh_progress (GsDetailsPage *self)
 {
@@ -335,23 +315,23 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	state = gs_app_get_state (self->app);
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_cancel, TRUE);
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
 		/* If the app is installing, the user can only cancel it if
 		 * 1) They haven't already, and
 		 * 2) the plugin hasn't said that they can't, for example if a
 		 *    package manager has already gone 'too far'
 		 */
-		gtk_widget_set_sensitive (self->button_cancel,
+		gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
 					   gs_app_get_allow_cancel (self->app));
 		break;
 	default:
-		gtk_widget_set_visible (self->button_cancel, FALSE);
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), FALSE);
 		break;
 	}
 	if (app_has_pending_action (self->app)) {
-		gtk_widget_set_visible (self->button_cancel, TRUE);
-		gtk_widget_set_sensitive (self->button_cancel,
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
+		gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
 					  gs_app_get_allow_cancel (self->app));
 	}
@@ -419,32 +399,27 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
 			gtk_widget_set_visible (self->label_progress_status, TRUE);
 			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
-
-			if (self->progress_pulse_id == 0)
-				self->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
-
-			gtk_widget_set_visible (self->progressbar_top, TRUE);
+			gs_progress_button_set_progress (self->button_cancel, percentage);
+			gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 			break;
 		} else if (percentage <= 100) {
 			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
 			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
-			stop_progress_pulsing (self);
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top),
-						       (gdouble) percentage / 100.f);
-			gtk_widget_set_visible (self->progressbar_top, TRUE);
+			gs_progress_button_set_progress (self->button_cancel, percentage);
+			gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 			break;
 		}
 		/* FALLTHROUGH */
 	default:
 		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
-		gtk_widget_set_visible (self->progressbar_top, FALSE);
-		stop_progress_pulsing (self);
+		gs_progress_button_set_show_progress (self->button_cancel, FALSE);
+		gs_progress_button_set_progress (self->button_cancel, 0);
 		break;
 	}
 	if (app_has_pending_action (self->app)) {
-		gtk_widget_set_visible (self->progressbar_top, TRUE);
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top), 0);
+		gs_progress_button_set_progress (self->button_cancel, 0);
+		gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 	}
 
 	/* spinner */
@@ -507,7 +482,7 @@ static gboolean
 gs_details_page_allow_cancel_changed_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	gtk_widget_set_sensitive (self->button_cancel,
+	gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 				  gs_app_get_allow_cancel (self->app));
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -2230,8 +2205,6 @@ gs_details_page_dispose (GObject *object)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (object);
 
-	stop_progress_pulsing (self);
-
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
@@ -2340,7 +2313,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);

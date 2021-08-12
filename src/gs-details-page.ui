@@ -293,6 +293,16 @@
                                             <property name="hexpand">True</property>
                                             <property name="valign">center</property>
                                             <child>
+                                              <object class="GsProgressButton" id="button_cancel">
+                                                <property name="visible">False</property>
+                                                <property name="use_underline">True</property>
+                                                <property name="label" translatable="yes">_Cancel</property>
+                                                <property name="can_focus">True</property>
+                                                <property name="receives_default">True</property>
+                                                <property name="valign">center</property>
+                                              </object>
+                                            </child>
+                                            <child>
                                               <object class="GtkBox" id="box_progress2">
                                                 <property name="visible">True</property>
                                                 <property name="spacing">3</property>
@@ -313,29 +323,6 @@
                                                 </child>
                                               </object>
                                             </child>
-                                            <child>
-                                              <object class="GtkProgressBar" id="progressbar_top">
-                                                <property name="visible">True</property>
-                                                <property name="fraction">0.5</property>
-                                                <property name="valign">center</property>
-                                                <property name="vexpand">True</property>
-                                                <property name="width_request">624</property>
-                                                <style>
-                                                  <class name="upgrade-progressbar"/>
-                                                </style>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                        <child>
-                                          <object class="GtkButton" id="button_cancel">
-                                            <property name="visible">False</property>
-                                            <property name="use_underline">True</property>
-                                            <property name="label" translatable="yes">_Cancel</property>
-                                            <property name="width_request">116</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">True</property>
-                                            <property name="valign">center</property>
                                           </object>
                                         </child>
                                         <child>
@@ -1026,6 +1013,7 @@
     <property name="ignore_hidden">True</property>
     <widgets>
       <widget name="button_install"/>
+      <widget name="button_cancel"/>
       <widget name="button_update"/>
       <widget name="button_details_launch"/>
     </widgets>
