@@ -1342,7 +1342,6 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* enable appropriate widgets */
 	gtk_widget_set_visible (self->star, show_reviews);
-	gtk_widget_set_visible (self->box_reviews, show_reviews);
 	gtk_widget_set_visible (self->histogram, review_ratings != NULL && review_ratings->len > 0);
 	gtk_widget_set_visible (self->label_review_count, n_reviews > 0);
 
@@ -1355,8 +1354,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	}
 
 	/* no point continuing */
-	if (!show_reviews)
+	if (!show_reviews) {
+		gtk_widget_set_visible (self->box_reviews, FALSE);
 		return;
+	}
 
 	/* find what the plugins support */
 	for (i = 0; i < G_N_ELEMENTS (all_actions); i++) {
@@ -1411,6 +1412,14 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 					     /* TRANSLATORS: we need a remote server to process */
 					     _("You need internet access to write a review"));
 	}
+
+	/* Update the overall container. */
+	gtk_widget_set_visible (self->box_reviews,
+				show_reviews &&
+				(gtk_widget_get_visible (self->histogram) ||
+				 gtk_widget_get_visible (self->button_review) ||
+				 reviews->len > 0 ||
+				 gtk_widget_get_visible (self->button_more_reviews)));
 }
 
 static void
