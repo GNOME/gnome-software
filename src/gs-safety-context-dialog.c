@@ -223,7 +223,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Home Read/Write Access"),
+				    _("Home Folder Read/Write Access"),
 				    _("Can read and write all data in your home directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
@@ -242,7 +242,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Home Read Access"),
+				    _("Home Folder Read Access"),
 				    _("Can read all data in your home directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
@@ -252,7 +252,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-download-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Downloads Read/Write Access"),
+				    _("Download Folder Read/Write Access"),
 				    _("Can read and write all data in your downloads directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
@@ -264,7 +264,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-download-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Downloads Read Access"),
+				    _("Download Folder Read Access"),
 				    _("Can read all data in your downloads directory"),
 				    NULL, NULL, NULL);
 
