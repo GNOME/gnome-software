@@ -832,7 +832,7 @@
 
                     <child>
                       <object class="HdyClamp">
-                        <property name="visible">True</property>
+                        <property name="visible" bind-source="box_reviews" bind-property="visible" bind-flags="sync-create"/>
                         <property name="maximum-size">860</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">12</property>
