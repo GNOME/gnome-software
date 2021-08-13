@@ -69,6 +69,8 @@
               <object class="HdyClamp">
                 <property name="visible">True</property>
                 <property name="valign">center</property>
+                <!-- We explicitly want to use the default HdyClamp sizes here,
+                     as does HdyStatusPage. -->
                 <style>
                   <class name="status-page"/>
                 </style>
@@ -132,6 +134,8 @@
                 <child>
                   <object class="HdyClamp">
                     <property name="visible">True</property>
+                    <property name="maximum-size">600</property>
+                    <property name="tightening-threshold">400</property>
                     <child>
                       <object class="GtkBox" id="list_box_updates_box">
                         <property name="visible">True</property>

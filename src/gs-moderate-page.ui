@@ -40,6 +40,8 @@
                   <object class="HdyClamp">
                     <property name="visible">True</property>
                     <property name="maximum-size">860</property>
+                    <!-- ~⅔ of the maximum size. -->
+                    <property name="tightening-threshold">576</property>
                     <child>
                       <object class="GtkListBox" id="list_box_install">
                         <property name="visible">True</property>
