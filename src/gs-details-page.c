@@ -26,6 +26,7 @@
 #include "gs-description-box.h"
 #include "gs-license-tile.h"
 #include "gs-origin-popover-row.h"
+#include "gs-progress-button.h"
 #include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
 #include "gs-review-histogram.h"
@@ -92,8 +93,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*label_webapp_warning;
-	GtkWidget		*box_progress;
-	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
 	GtkWidget		*screenshot_carousel;
@@ -109,7 +108,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
-	GtkWidget		*button_cancel;
+	GsProgressButton	*button_cancel;
 	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
@@ -132,10 +131,7 @@ struct _GsDetailsPage
 	GtkWidget		*list_box_reviews;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
-	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
-	GtkWidget		*progressbar_top;
-	guint			 progress_pulse_id;
 	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
@@ -306,25 +302,6 @@ gs_details_page_switch_to (GsPage *page)
 	gs_grab_focus_when_mapped (self->scrolledwindow_details);
 }
 
-static gboolean
-_pulse_cb (gpointer user_data)
-{
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-
-	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (self->progressbar_top));
-
-	return G_SOURCE_CONTINUE;
-}
-
-static void
-stop_progress_pulsing (GsDetailsPage *self)
-{
-	if (self->progress_pulse_id != 0) {
-		g_source_remove (self->progress_pulse_id);
-		self->progress_pulse_id = 0;
-	}
-}
-
 static void
 gs_details_page_refresh_progress (GsDetailsPage *self)
 {
@@ -335,23 +312,24 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	state = gs_app_get_state (self->app);
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_cancel, TRUE);
+	case GS_APP_STATE_REMOVING:
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
 		/* If the app is installing, the user can only cancel it if
 		 * 1) They haven't already, and
 		 * 2) the plugin hasn't said that they can't, for example if a
 		 *    package manager has already gone 'too far'
 		 */
-		gtk_widget_set_sensitive (self->button_cancel,
+		gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
 					   gs_app_get_allow_cancel (self->app));
 		break;
 	default:
-		gtk_widget_set_visible (self->button_cancel, FALSE);
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), FALSE);
 		break;
 	}
 	if (app_has_pending_action (self->app)) {
-		gtk_widget_set_visible (self->button_cancel, TRUE);
-		gtk_widget_set_sensitive (self->button_cancel,
+		gtk_widget_set_visible (GTK_WIDGET (self->button_cancel), TRUE);
+		gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
 					  gs_app_get_allow_cancel (self->app));
 	}
@@ -413,77 +391,41 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	/* percentage bar */
 	switch (state) {
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		percentage = gs_app_get_progress (self->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-			/* Translators: This string is shown when preparing to download and install an app. */
-			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
+			if (state == GS_APP_STATE_INSTALLING) {
+				/* Translators: This string is shown when preparing to download and install an app. */
+				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
+			} else {
+				/* Translators: This string is shown when uninstalling an app. */
+				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Uninstalling…"));
+			}
+
 			gtk_widget_set_visible (self->label_progress_status, TRUE);
 			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
-
-			if (self->progress_pulse_id == 0)
-				self->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
-
-			gtk_widget_set_visible (self->progressbar_top, TRUE);
+			gs_progress_button_set_progress (self->button_cancel, percentage);
+			gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 			break;
 		} else if (percentage <= 100) {
 			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
 			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
-			stop_progress_pulsing (self);
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top),
-						       (gdouble) percentage / 100.f);
-			gtk_widget_set_visible (self->progressbar_top, TRUE);
+			gs_progress_button_set_progress (self->button_cancel, percentage);
+			gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 			break;
 		}
 		/* FALLTHROUGH */
 	default:
 		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
-		gtk_widget_set_visible (self->progressbar_top, FALSE);
-		stop_progress_pulsing (self);
+		gs_progress_button_set_show_progress (self->button_cancel, FALSE);
+		gs_progress_button_set_progress (self->button_cancel, 0);
 		break;
 	}
 	if (app_has_pending_action (self->app)) {
-		gtk_widget_set_visible (self->progressbar_top, TRUE);
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top), 0);
+		gs_progress_button_set_progress (self->button_cancel, 0);
+		gs_progress_button_set_show_progress (self->button_cancel, TRUE);
 	}
-
-	/* spinner */
-	switch (state) {
-	case GS_APP_STATE_REMOVING:
-		if (!gtk_widget_get_visible (self->spinner_remove)) {
-			gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
-			gtk_widget_set_visible (self->spinner_remove, TRUE);
-		}
-		/* align text together with the spinner if we're showing it */
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
-		break;
-	case GS_APP_STATE_PENDING_INSTALL:
-	case GS_APP_STATE_PENDING_REMOVE:
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
-		gtk_widget_set_visible (self->spinner_remove, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
-		break;
-	default:
-		gtk_widget_set_visible (self->spinner_remove, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
-		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_CENTER);
-		break;
-	}
-
-	/* progress box */
-	switch (state) {
-	case GS_APP_STATE_REMOVING:
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_PENDING_INSTALL:
-	case GS_APP_STATE_PENDING_REMOVE:
-		gtk_widget_set_visible (self->box_progress, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->box_progress, FALSE);
-		break;
-	}
-	if (app_has_pending_action (self->app))
-		gtk_widget_set_visible (self->box_progress, TRUE);
 }
 
 static gboolean
@@ -507,7 +449,7 @@ static gboolean
 gs_details_page_allow_cancel_changed_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	gtk_widget_set_sensitive (self->button_cancel,
+	gtk_widget_set_sensitive (GTK_WIDGET (self->button_cancel),
 				  gs_app_get_allow_cancel (self->app));
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -858,6 +800,13 @@ static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	GsAppState state;
+	GtkWidget *buttons_in_order[] = {
+		self->button_details_launch,
+		self->button_install,
+		self->button_update,
+		self->button_remove,
+	};
+	GtkWidget *highlighted_button = NULL;
 
 	state = gs_app_get_state (self->app);
 
@@ -934,10 +883,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	/* launch button */
 	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
 
-	gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-			      /* TRANSLATORS: A label for a button to execute the selected application. */
-			      _("_Launch"));
-
 	/* remove button */
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_COMPULSORY) ||
 	    gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FIRMWARE) {
@@ -949,13 +894,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case GS_APP_STATE_UPDATABLE_LIVE:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
-			/* Mark the button as destructive only if Launch is not visible */
-			if (gtk_widget_get_visible (self->button_details_launch))
-				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			else
-				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			/* TRANSLATORS: button text in the header when an application can be erased */
-			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Uninstall"));
 			break;
 		case GS_APP_STATE_AVAILABLE_LOCAL:
 		case GS_APP_STATE_AVAILABLE:
@@ -980,6 +918,24 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_update, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 		gtk_widget_set_visible (self->button_remove, FALSE);
+	}
+
+	/* Update the styles so that the first visible button gets
+	 * `suggested-action` or `destructive-action` and the rest are
+	 * unstyled. This draws the user’s attention to the most likely
+	 * action to perform. */
+	for (gsize i = 0; i < G_N_ELEMENTS (buttons_in_order); i++) {
+		if (highlighted_button != NULL) {
+			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
+			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+		} else if (gtk_widget_get_visible (buttons_in_order[i])) {
+			highlighted_button = buttons_in_order[i];
+
+			if (buttons_in_order[i] == self->button_remove)
+				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+			else
+				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
+		}
 	}
 }
 
@@ -1801,7 +1757,7 @@ gs_details_page_app_info_changed_cb (GAppInfoMonitor *monitor,
 	if (!self->app || !gs_page_is_active (GS_PAGE (self)))
 		return;
 
-	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
+	gs_details_page_refresh_buttons (self);
 }
 
 /* this is being called from GsShell */
@@ -2093,57 +2049,21 @@ gs_details_page_setup (GsPage *page,
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
 
-	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), FALSE);
 
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
 
-	g_signal_connect (self->button_review, "clicked",
-			  G_CALLBACK (gs_details_page_write_review_cb),
-			  self);
-	g_signal_connect (self->star_eventbox, "button-press-event",
-			  G_CALLBACK (gs_details_page_star_pressed_cb),
-			  self);
-
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_details_page_network_available_notify_cb),
 				 self, 0);
 
-	/* setup details */
-	g_signal_connect (self->button_install, "clicked",
-			  G_CALLBACK (gs_details_page_app_install_button_cb),
-			  self);
-	g_signal_connect (self->button_update, "clicked",
-			  G_CALLBACK (gs_details_page_app_update_button_cb),
-			  self);
-	g_signal_connect (self->button_remove, "clicked",
-			  G_CALLBACK (gs_details_page_app_remove_button_cb),
-			  self);
-	g_signal_connect (self->button_cancel, "clicked",
-			  G_CALLBACK (gs_details_page_app_cancel_button_cb),
-			  self);
-	g_signal_connect (self->button_more_reviews, "clicked",
-			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
-			  self);
-	g_signal_connect (self->button_details_launch, "clicked",
-			  G_CALLBACK (gs_details_page_app_launch_button_cb),
-			  self);
-	g_signal_connect (self->button_details_add_shortcut, "clicked",
-			  G_CALLBACK (gs_details_page_app_add_shortcut_button_cb),
-			  self);
-	g_signal_connect (self->button_details_remove_shortcut, "clicked",
-			  G_CALLBACK (gs_details_page_app_remove_shortcut_button_cb),
-			  self);
-
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
 	                            origin_popover_list_sort_func,
 	                            NULL, NULL);
-	g_signal_connect (self->origin_popover_list_box, "row-activated",
-	                  G_CALLBACK (origin_popover_row_activated_cb),
-	                  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);
@@ -2236,8 +2156,6 @@ gs_details_page_dispose (GObject *object)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (object);
 
-	stop_progress_pulsing (self);
-
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
@@ -2304,8 +2222,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
@@ -2344,9 +2260,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
@@ -2359,6 +2273,17 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_write_review_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_star_pressed_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_install_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_update_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_cancel_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_more_reviews_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_launch_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_add_shortcut_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_shortcut_button_cb);
+	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
 }
 
 static void
