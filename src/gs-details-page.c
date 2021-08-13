@@ -394,8 +394,14 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	case GS_APP_STATE_REMOVING:
 		percentage = gs_app_get_progress (self->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-			/* Translators: This string is shown when preparing to download and install an app. */
-			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
+			if (state == GS_APP_STATE_INSTALLING) {
+				/* Translators: This string is shown when preparing to download and install an app. */
+				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
+			} else {
+				/* Translators: This string is shown when uninstalling an app. */
+				gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Uninstalling…"));
+			}
+
 			gtk_widget_set_visible (self->label_progress_status, TRUE);
 			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
 			gs_progress_button_set_progress (self->button_cancel, percentage);
