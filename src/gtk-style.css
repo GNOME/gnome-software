@@ -744,14 +744,15 @@ app-context-bar .context-tile:last-child {
 	font-weight: bold;
 	border-radius: 99999px;
 	padding: 9px 11px;
-	min-width: 18px;
-	min-height: 22px;
+	min-width: 18px;  /* 40px minus the left and right padding */
+	min-height: 22px;  /* 40px minus the top and bottom padding */
 }
 
 .context-tile-lozenge.large {
 	font-size: 24px;
 	padding: 15px 18px;
-	min-height: 30px;
+	min-width: 24px;  /* 60px minus the left and right padding */
+	min-height: 30px;  /* 60px minus the top and bottom padding */
 }
 
 .context-tile-lozenge.wide-image image {
@@ -772,7 +773,7 @@ app-context-bar .context-tile-description { font-size: smaller }
 .context-tile-lozenge.red, .context-tile-lozenge.details-rating-18 { background-color: #fbd3cf; color: #ab3342 }
 .context-tile-lozenge.details-rating-15 { background-color: #ffd7a5; color: #c75400 }
 .context-tile-lozenge.yellow, .context-tile-lozenge.details-rating-12 { background-color: #f7eb9f; color: #9c7107 }
-.context-tile-lozenge.details-rating-5 { background-color: #d1e4fb; color: #294d7a }
+.context-tile-lozenge.blue, .context-tile-lozenge.details-rating-5 { background-color: #d1e4fb; color: #294d7a }
 
 window.toolbox button.titlebutton:not(:hover) {
   background: @theme_bg_color;

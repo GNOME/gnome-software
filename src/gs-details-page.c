@@ -20,6 +20,7 @@
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
 #include "gs-app-context-bar.h"
+#include "gs-app-translation-dialog.h"
 #include "gs-app-version-history-row.h"
 #include "gs-app-version-history-dialog.h"
 #include "gs-description-box.h"
@@ -141,6 +142,8 @@ struct _GsDetailsPage
 	GtkWidget		*origin_box;
 	GtkWidget		*origin_button_label;
 	GsLicenseTile		*license_tile;
+	GtkInfoBar		*translation_infobar;
+	GtkButton		*translation_infobar_button;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -552,6 +555,18 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 							GsDetailsPage *self)
 {
 	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
+}
+
+static void
+gs_details_page_translation_infobar_response_cb (GtkInfoBar *infobar,
+                                                 int         response,
+                                                 gpointer    user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	GtkWindow *window;
+
+	window = GTK_WINDOW (gs_app_translation_dialog_new (self->app));
+	gs_shell_modal_dialog_present (self->shell, window);
 }
 
 static void
@@ -1010,6 +1025,16 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* refresh buttons */
 	gs_details_page_refresh_buttons (self);
+
+	/* Set up the translation infobar. Assume that translations can be
+	 * contributed to if an app is FOSS and it has provided a link for
+	 * contributing translations. */
+	gtk_widget_set_visible (GTK_WIDGET (self->translation_infobar_button),
+				gs_app_translation_dialog_app_has_url (self->app) &&
+				gs_app_get_license_is_free (self->app));
+	gtk_info_bar_set_revealed (self->translation_infobar,
+				   gs_app_get_has_translations (self->app) &&
+				   !gs_app_has_kudo (self->app, GS_APP_KUDO_MY_LANGUAGE));
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
@@ -2328,9 +2353,12 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar_button);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
 }
 
 static void

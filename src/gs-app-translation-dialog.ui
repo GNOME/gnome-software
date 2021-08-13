@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsHardwareSupportContextDialog" parent="HdyWindow">
+  <template class="GsAppTranslationDialog" parent="HdyWindow">
     <property name="modal">True</property>
     <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon_name">dialog-information</property>
-    <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app">Hardware Support</property>
+    <property name="title" translatable="yes">Translations</property>
     <property name="type_hint">dialog</property>
-    <property name="default-width">640</property>
-    <property name="default-height">576</property>
+    <property name="default-width">380</property>
     <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
     <style>
       <class name="toolbox"/>
@@ -34,6 +33,8 @@
 
                 <child>
                   <object class="GtkBox">
+                    <property name="margin-left">3</property>
+                    <property name="margin-right">3</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">8</property>
                     <property name="visible">True</property>
@@ -52,13 +53,13 @@
                             <style>
                               <class name="context-tile-lozenge"/>
                               <class name="large"/>
-                              <class name="grey"/>
+                              <class name="blue"/>
                             </style>
                             <child>
                               <object class="GtkImage" id="icon">
                                 <property name="halign">center</property>
-                                <!-- this is a placeholder: the icon is actually set in code -->
-                                <property name="icon-name">safety-symbolic</property>
+                                <property name="icon-name">flag-outline-thin-symbolic</property>
+                                <property name="icon-size">3</property><!-- GTK_ICON_SIZE_LARGE_TOOLBAR -->
                                 <property name="visible">True</property>
                                 <accessibility>
                                   <relation target="title" type="labelled-by"/>
@@ -76,9 +77,9 @@
 
                         <child>
                           <object class="GtkLabel" id="title">
-                            <!-- this is a placeholder: the text is actually set in code -->
                             <property name="justify">center</property>
-                            <property name="label">Shortwave works on this device</property>
+                            <!-- this is a placeholder: the text is actually set in code -->
+                            <property name="label">Help Translate Shortwave</property>
                             <property name="visible">True</property>
                             <property name="wrap">True</property>
                             <property name="xalign">0.5</property>
@@ -97,19 +98,52 @@
                     </child>
 
                     <child>
-                      <object class="GtkListBox" id="relations_list">
+                      <object class="GtkLabel" id="description">
+                        <property name="justify">center</property>
+                        <!-- This is a placeholder: the actual label is set in code -->
+                        <property name="label">Shortwave is designed, developed, and translated by an international community of volunteers.\n\nThis means that while it’s not yet available in your language, you can get involved and help translate it yourself.</property>
                         <property name="visible">True</property>
-                        <property name="selection_mode">none</property>
-                        <property name="halign">fill</property>
-                        <property name="valign">start</property>
-                        <style>
-                          <class name="content"/>
-                        </style>
-                        <!-- Rows are added in code -->
-                        <placeholder/>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.5</property>
                       </object>
                     </child>
 
+                    <child>
+                      <object class="GtkButton">
+                        <property name="halign">center</property>
+                        <property name="margin">14</property>
+                        <property name="visible">True</property>
+                        <signal name="clicked" handler="button_clicked_cb"/>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">6</property>
+                            <property name="halign">center</property>
+                            <property name="margin-left">12</property>
+                            <property name="margin-right">12</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0.5</property>
+                                <property name="label" translatable="yes">_Translation Website</property>
+                                <property name="use-underline">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="icon-name">external-link-symbolic</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
