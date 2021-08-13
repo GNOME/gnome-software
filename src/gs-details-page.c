@@ -1731,7 +1731,7 @@ gs_details_page_app_info_changed_cb (GAppInfoMonitor *monitor,
 	if (!self->app || !gs_page_is_active (GS_PAGE (self)))
 		return;
 
-	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
+	gs_details_page_refresh_buttons (self);
 }
 
 /* this is being called from GsShell */
