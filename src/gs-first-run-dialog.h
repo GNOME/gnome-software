@@ -9,12 +9,13 @@
 #pragma once
 
 #include <gtk/gtk.h>
+#include <handy.h>
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_FIRST_RUN_DIALOG (gs_first_run_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsFirstRunDialog, gs_first_run_dialog, GS, FIRST_RUN_DIALOG, GtkDialog)
+G_DECLARE_FINAL_TYPE (GsFirstRunDialog, gs_first_run_dialog, GS, FIRST_RUN_DIALOG, HdyWindow)
 
 GtkWidget	*gs_first_run_dialog_new	(void);
 

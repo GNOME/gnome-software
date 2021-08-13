@@ -2,75 +2,44 @@
 <!-- Generated with glade 3.18.1 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
-  <template class="GsFirstRunDialog" parent="GtkDialog">
-    <property name="title" translatable="yes">Welcome</property>
+  <template class="GsFirstRunDialog" parent="HdyWindow">
     <property name="modal">True</property>
-    <property name="resizable">False</property>
+    <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
+    <property name="icon_name">dialog-information</property>
+    <property name="title" translatable="yes">Welcome</property>
     <property name="type_hint">dialog</property>
+    <property name="default-width">640</property>
+    <property name="default-height">576</property>
     <property name="skip_taskbar_hint">True</property>
-    <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
-        <property name="title" translatable="yes">Welcome</property>
-        <property name="show_close_button">False</property>
-      </object>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox" id="dialog-vbox1">
-        <property name="margin_start">55</property>
-        <property name="margin_end">55</property>
-        <property name="margin_top">44</property>
-        <property name="orientation">vertical</property>
+    <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
+    <style>
+      <class name="toolbox"/>
+    </style>
+
+    <child>
+      <object class="HdyWindowHandle">
+        <property name="visible">True</property>
         <child>
-          <object class="GtkBox" id="box_empty">
+          <object class="HdyStatusPage">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">16</property>
+            <property name="icon_name">org.gnome.Software</property>
+            <property name="title" translatable="yes">Welcome to Software</property>
+            <property name="description" translatable="yes">Software lets you install all the software you need, all from one place. See our recommendations, browse the categories, or search for the applications you want.</property>
             <child>
-              <object class="GtkImage" id="image1">
+              <object class="GtkButton" id="button">
+                <property name="label" translatable="yes">_Browse Software</property>
                 <property name="visible">True</property>
-                <property name="pixel_size">128</property>
-                <property name="icon_name">org.gnome.Software</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="use_underline">True</property>
                 <style>
-                  <class name="icon-dropshadow"/>
+                  <class name="suggested-action"/>
                 </style>
               </object>
             </child>
-            <child>
-              <object class="GtkLabel" id="label1">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Welcome to Software</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                  <attribute name="scale" value="1.7"/>
-                </attributes>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label2">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Software lets you install all the software you need, all from one place. See our recommendations, browse the categories, or search for the applications you want.</property>
-                <property name="wrap">True</property>
-                <property name="max_width_chars">48</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="button">
-            <property name="label" translatable="yes">_Browse Software</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="margin_top">23</property>
-            <property name="margin_bottom">26</property>
-            <property name="use_underline">True</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
           </object>
         </child>
       </object>
