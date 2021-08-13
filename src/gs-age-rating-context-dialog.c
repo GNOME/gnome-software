@@ -674,8 +674,9 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	} else {
 		guint age;
 
-		if (content_rating != NULL)
-			age = as_content_rating_get_minimum_age (content_rating);
+		/* if content_rating is NULL, is_unknown should be TRUE */
+		g_assert (content_rating != NULL);
+		age = as_content_rating_get_minimum_age (content_rating);
 
 		if (age == 0)
 			/* Translators: This is a dialogue title which indicates that an app is suitable
