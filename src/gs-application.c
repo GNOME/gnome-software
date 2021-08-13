@@ -240,8 +240,6 @@ gs_application_show_first_run_dialog (GsApplication *app)
 		dialog = gs_first_run_dialog_new ();
 		gs_shell_modal_dialog_present (app->shell, GTK_WINDOW (dialog));
 		g_settings_set_boolean (app->settings, "first-run", FALSE);
-		g_signal_connect_swapped (dialog, "response",
-					  G_CALLBACK (gtk_widget_destroy), dialog);
 	}
 }
 
