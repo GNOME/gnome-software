@@ -497,10 +497,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 				_("Additional repositories from selected third parties — %s."),
 				anchor);
 
-/* HdyPreferencesGroup:use-markup doesn't exist before 1.4, configurations where
- * GNOME 41 will be used and Libhandy 1.4 won't be available are unlikely, so
- * let's just ignore the description in such cases. */
-#if HDY_CHECK_VERSION(1, 4, 0)
+/* HdyPreferencesGroup:use-markup doesn't exist before 1.3.90, configurations
+ * where GNOME 41 will be used and Libhandy 1.3.90 won't be available are
+ * unlikely, so let's just ignore the description in such cases. */
+#if HDY_CHECK_VERSION(1, 3, 90)
 		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (section), hint);
 		hdy_preferences_group_set_use_markup (HDY_PREFERENCES_GROUP (section), TRUE);
 #endif
