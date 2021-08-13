@@ -85,6 +85,7 @@ struct _GsDetailsPage
 	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
+	gboolean		 is_narrow;
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -92,6 +93,8 @@ struct _GsDetailsPage
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*box_details_header;
+	GtkWidget		*box_details_header_not_icon;
 	GtkWidget		*label_webapp_warning;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
@@ -137,6 +140,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
 	GtkWidget		*origin_button_label;
+	GtkWidget		*box_license;
 	GsLicenseTile		*license_tile;
 	GtkInfoBar		*translation_infobar;
 	GtkButton		*translation_infobar_button;
@@ -146,11 +150,12 @@ G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 typedef enum {
 	PROP_ODRS_PROVIDER = 1,
+	PROP_IS_NARROW,
 	/* Override properties: */
 	PROP_TITLE,
 } GsDetailsPageProperty;
 
-static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
+static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -960,7 +965,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	const gchar *tmp;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
-	guint icon_size;
 	gboolean link_rows_visible;
 
 	/* change widgets */
@@ -1010,15 +1014,13 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		};
 
 		for (gsize i = 0; i < G_N_ELEMENTS (icon_fallbacks) && icon == NULL; i++) {
-			icon_size = icon_fallbacks[i].icon_size;
 			icon = gs_app_get_icon_for_size (self->app,
-							 icon_size,
+							 icon_fallbacks[i].icon_size,
 							 gtk_widget_get_scale_factor (self->application_details_icon),
 							 icon_fallbacks[i].fallback_icon_name);
 		}
 	}
 
-	gtk_image_set_pixel_size (GTK_IMAGE (self->application_details_icon), icon_size);
 	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
 				  GTK_ICON_SIZE_INVALID);
 
@@ -2123,6 +2125,9 @@ gs_details_page_get_property (GObject    *object,
 	case PROP_ODRS_PROVIDER:
 		g_value_set_object (value, gs_details_page_get_odrs_provider (self));
 		break;
+	case PROP_IS_NARROW:
+		g_value_set_boolean (value, gs_details_page_get_is_narrow (self));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2144,6 +2149,9 @@ gs_details_page_set_property (GObject      *object,
 		break;
 	case PROP_ODRS_PROVIDER:
 		gs_details_page_set_odrs_provider (self, g_value_get_object (value));
+		break;
+	case PROP_IS_NARROW:
+		gs_details_page_set_is_narrow (self, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2209,6 +2217,22 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 				     GS_TYPE_ODRS_PROVIDER,
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
+	/**
+	 * GsDetailsPage:is-narrow:
+	 *
+	 * Whether the page is in narrow mode.
+	 *
+	 * In narrow mode, the page will take up less horizontal space, doing so
+	 * by e.g. turning horizontal boxes into vertical ones. This is needed
+	 * to keep the UI useable on small form-factors like smartphones.
+	 *
+	 * Since: 41
+	 */
+	obj_props[PROP_IS_NARROW] =
+		g_param_spec_boolean ("is-narrow", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
@@ -2221,6 +2245,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_header);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_header_not_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
@@ -2266,6 +2292,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_license);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar_button);
@@ -2284,6 +2311,28 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_add_shortcut_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_shortcut_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
+}
+
+static gboolean
+narrow_to_orientation (GBinding *binding, const GValue *from_value, GValue *to_value, gpointer user_data)
+{
+	if (g_value_get_boolean (from_value))
+		g_value_set_enum (to_value, GTK_ORIENTATION_VERTICAL);
+	else
+		g_value_set_enum (to_value, GTK_ORIENTATION_HORIZONTAL);
+
+	return TRUE;
+}
+
+static gboolean
+narrow_to_spacing (GBinding *binding, const GValue *from_value, GValue *to_value, gpointer user_data)
+{
+	if (g_value_get_boolean (from_value))
+		g_value_set_int (to_value, 12);
+	else
+		g_value_set_int (to_value, 24);
+
+	return TRUE;
 }
 
 static void
@@ -2319,6 +2368,15 @@ gs_details_page_init (GsDetailsPage *self)
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
 
 	gs_details_page_read_packaging_format_preference (self);
+
+	g_object_bind_property_full (self, "is-narrow", self->box_details_header, "spacing", G_BINDING_SYNC_CREATE,
+				     narrow_to_spacing, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->box_details_header_not_icon, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->context_bar, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
 }
 
 GsDetailsPage *
@@ -2364,4 +2422,45 @@ gs_details_page_set_odrs_provider (GsDetailsPage  *self,
 		gs_details_page_refresh_reviews (self);
 		g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_ODRS_PROVIDER]);
 	}
+}
+
+/**
+ * gs_details_page_get_is_narrow:
+ * @self: a #GsDetailsPage
+ *
+ * Get the value of #GsDetailsPage:is-narrow.
+ *
+ * Returns: %TRUE if the page is in narrow mode, %FALSE otherwise
+ *
+ * Since: 41
+ */
+gboolean
+gs_details_page_get_is_narrow (GsDetailsPage *self)
+{
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), FALSE);
+
+	return self->is_narrow;
+}
+
+/**
+ * gs_details_page_set_is_narrow:
+ * @self: a #GsDetailsPage
+ * @is_narrow: %TRUE to set the page in narrow mode, %FALSE otherwise
+ *
+ * Set the value of #GsDetailsPage:is-narrow.
+ *
+ * Since: 41
+ */
+void
+gs_details_page_set_is_narrow (GsDetailsPage *self, gboolean is_narrow)
+{
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+
+	is_narrow = !!is_narrow;
+
+	if (self->is_narrow == is_narrow)
+		return;
+
+	self->is_narrow = is_narrow;
+	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }

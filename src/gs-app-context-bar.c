@@ -60,7 +60,7 @@ typedef enum
 
 struct _GsAppContextBar
 {
-	GtkGrid			 parent_instance;
+	GtkBox			 parent_instance;
 
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler;
@@ -68,7 +68,7 @@ struct _GsAppContextBar
 	GsAppContextTile	tiles[N_TILE_TYPES];
 };
 
-G_DEFINE_TYPE (GsAppContextBar, gs_app_context_bar, GTK_TYPE_GRID)
+G_DEFINE_TYPE (GsAppContextBar, gs_app_context_bar, GTK_TYPE_BOX)
 
 typedef enum {
 	PROP_APP = 1,

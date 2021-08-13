@@ -151,7 +151,6 @@ gs_description_box_init (GsDescriptionBox *box)
 		"visible", TRUE,
 		"can-focus", FALSE,
 		"max-width-chars", 40,
-		"width-chars", 40,
 		"selectable", TRUE,
 		"wrap", TRUE,
 		"xalign", 0.0,
