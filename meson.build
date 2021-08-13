@@ -51,6 +51,7 @@ test_args = [
   '-Werror=implicit-function-declaration',
   '-Winit-self',
   '-Winline',
+  '-Wmaybe-uninitialized',
   '-Wmissing-declarations',
   '-Wmissing-format-attribute',
   '-Wmissing-include-dirs',

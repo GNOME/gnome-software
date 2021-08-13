@@ -309,6 +309,9 @@ gs_hardware_support_context_dialog_get_control_support (GdkDisplay     *display,
 	g_return_if_fail (control_relations != NULL);
 
 	any_control_relations_set = FALSE;
+	has_touchscreen = FALSE;
+	has_keyboard = FALSE;
+	has_mouse = FALSE;
 
 	/* Initialise @control_relations */
 	for (gint i = 0; i < AS_CONTROL_KIND_LAST; i++)
