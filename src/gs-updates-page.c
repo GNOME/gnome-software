@@ -70,7 +70,7 @@ struct _GsUpdatesPage
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
 	GtkWidget		*updates_failed_page;
-	GtkWidget		*updates_uptodate_page;
+	GtkLabel		*uptodate_description;
 	GtkWidget		*scrolledwindow_updates;
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
@@ -250,8 +250,8 @@ gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
 
 		/* TRANSLATORS: This is the time when we last checked for updates */
 		last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
-		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
-						 last_checked);
+		gtk_label_set_label (self->uptodate_description, last_checked);
+		gtk_widget_set_visible (GTK_WIDGET (self->uptodate_description), TRUE);
 
 		if (hours_ago < 1)
 			interval = 60;
@@ -265,8 +265,7 @@ gs_updates_page_refresh_last_checked (GsUpdatesPage *self)
 		self->refresh_last_checked_id = g_timeout_add_seconds (interval,
 			gs_updates_page_refresh_last_checked_cb, self);
 	} else {
-		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_uptodate_page),
-						 NULL);
+		gtk_widget_set_visible (GTK_WIDGET (self->uptodate_description), FALSE);
 	}
 }
 
@@ -1472,7 +1471,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_mobile);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_failed_page);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_uptodate_page);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, uptodate_description);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
