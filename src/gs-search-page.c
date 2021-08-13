@@ -82,6 +82,23 @@ gs_search_page_waiting_cancel (GsSearchPage *self)
 }
 
 static void
+gs_search_page_app_to_show_created_cb (GObject *source_object,
+				       GAsyncResult *result,
+				       gpointer user_data)
+{
+	GsSearchPage *self = user_data;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_app_create_finish (GS_PLUGIN_LOADER (source_object), result, &error);
+	if (app != NULL) {
+		g_return_if_fail (GS_IS_SEARCH_PAGE (self));
+
+		gs_shell_show_app (self->shell, app);
+	}
+}
+
+static void
 gs_search_page_get_search_cb (GObject *source_object,
                               GAsyncResult *res,
                               gpointer user_data)
@@ -173,8 +190,8 @@ gs_search_page_get_search_cb (GObject *source_object,
 	if (self->appid_to_show != NULL) {
 		g_autoptr (GsApp) a = NULL;
 		if (as_utils_data_id_valid (self->appid_to_show)) {
-			a = gs_plugin_loader_app_create (self->plugin_loader,
-							 self->appid_to_show);
+			gs_plugin_loader_app_create_async (self->plugin_loader, self->appid_to_show, self->cancellable,
+				gs_search_page_app_to_show_created_cb, self);
 		} else {
 			a = gs_app_new (self->appid_to_show);
 		}
