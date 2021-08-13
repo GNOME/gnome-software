@@ -794,6 +794,13 @@ static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	GsAppState state;
+	GtkWidget *buttons_in_order[] = {
+		self->button_details_launch,
+		self->button_install,
+		self->button_update,
+		self->button_remove,
+	};
+	GtkWidget *highlighted_button = NULL;
 
 	state = gs_app_get_state (self->app);
 
@@ -881,11 +888,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case GS_APP_STATE_UPDATABLE_LIVE:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
-			/* Mark the button as destructive only if Launch is not visible */
-			if (gtk_widget_get_visible (self->button_details_launch))
-				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			else
-				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
 			break;
 		case GS_APP_STATE_AVAILABLE_LOCAL:
 		case GS_APP_STATE_AVAILABLE:
@@ -910,6 +912,24 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_update, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 		gtk_widget_set_visible (self->button_remove, FALSE);
+	}
+
+	/* Update the styles so that the first visible button gets
+	 * `suggested-action` or `destructive-action` and the rest are
+	 * unstyled. This draws the user’s attention to the most likely
+	 * action to perform. */
+	for (gsize i = 0; i < G_N_ELEMENTS (buttons_in_order); i++) {
+		if (highlighted_button != NULL) {
+			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
+			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+		} else if (gtk_widget_get_visible (buttons_in_order[i])) {
+			highlighted_button = buttons_in_order[i];
+
+			if (buttons_in_order[i] == self->button_remove)
+				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+			else
+				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
+		}
 	}
 }
 
