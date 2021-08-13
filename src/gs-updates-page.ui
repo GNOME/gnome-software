@@ -179,11 +179,73 @@
                   </object>
                 </child>
                 <child>
-                  <object class="HdyStatusPage" id="updates_uptodate_page">
+
+                  <!-- FIXME: This should be a HdyStatusPage but it doesn’t
+                       currently support non-icon images
+                       See https://gitlab.gnome.org/GNOME/libhandy/-/issues/448 -->
+                  <object class="GtkScrolledWindow">
                     <property name="visible">True</property>
-                    <property name="icon_name">object-select-symbolic</property>
-                    <property name="title" translatable="yes" comments="TRANSLATORS: This means all software (plural) installed on this system is up to date.">Up To Date</property>
-                    <property name="description">Last checked: HH:MM</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="propagate-natural-height">True</property>
+                    <style>
+                      <class name="fake-hdy-status-page"/>
+                    </style>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <property name="valign">center</property>
+                        <child>
+                          <object class="HdyClamp">
+                            <property name="visible">True</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
+                                <property name="valign">center</property>
+                                <child>
+                                  <object class="GtkImage">
+                                    <property name="visible">True</property>
+                                    <!--><property name="pixel-size">400</property>-->
+                                    <property name="resource">/org/gnome/Software/up-to-date.svg</property>
+                                    <style>
+                                      <class name="icon"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="wrap">True</property>
+                                    <property name="wrap-mode">word-char</property>
+                                    <property name="justify">center</property>
+                                    <property name="label" translatable="yes" comments="TRANSLATORS: This means all software (plural) installed on this system is up to date.">Up to Date</property>
+                                    <style>
+                                      <class name="title"/>
+                                      <class name="large-title"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="uptodate_description">
+                                    <property name="visible">True</property>
+                                    <property name="wrap">True</property>
+                                    <property name="wrap-mode">word-char</property>
+                                    <property name="justify">center</property>
+                                    <property name="use-markup">True</property>
+                                    <property name="label">Last checked: HH:MM</property>
+                                    <style>
+                                      <class name="body"/>
+                                      <class name="description"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>

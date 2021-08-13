@@ -780,3 +780,10 @@ window.toolbox button.titlebutton:not(:hover) {
 }
 
 .install-progress-label { font-size: smaller }
+
+/* FIXME: These are needed in the updates page until we can use HdyStatusPage
+ * again. See the note in gs-updates-page.ui. */
+scrolledwindow.fake-hdy-status-page > viewport > box { margin: 36px 12px; }
+scrolledwindow.fake-hdy-status-page > viewport > box > clamp:not(:last-child) > box { margin-bottom: 36px; }
+scrolledwindow.fake-hdy-status-page > viewport > box > clamp > box > .icon:not(:last-child) { margin-bottom: 36px; }
+scrolledwindow.fake-hdy-status-page > viewport > box > clamp > box > .title:not(:last-child) { margin-bottom: 12px; }
