@@ -39,8 +39,8 @@ struct _GsOverviewPage
 	gboolean		 empty;
 	gchar			*category_of_day;
 	GHashTable		*category_hash;		/* id : GsCategory */
-	GSettings		*settings;
-	GsApp			*third_party_repo;
+	gchar			*third_party_cmdtool;
+	gboolean		 third_party_needs_question;
 
 	GtkWidget		*infobar_third_party;
 	GtkWidget		*label_third_party;
@@ -352,45 +352,7 @@ out:
 static void
 refresh_third_party_repo (GsOverviewPage *self)
 {
-	/* only show if never prompted and third party repo is available */
-	if (g_settings_get_boolean (self->settings, "show-nonfree-prompt") &&
-	    self->third_party_repo != NULL &&
-	    gs_app_get_state (self->third_party_repo) == GS_APP_STATE_AVAILABLE) {
-		gtk_widget_set_visible (self->infobar_third_party, TRUE);
-	} else {
-		gtk_widget_set_visible (self->infobar_third_party, FALSE);
-	}
-}
-
-static void
-resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
-                             GAsyncResult *res,
-                             GsOverviewPage *self)
-{
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_CANCELLED)) {
-			g_debug ("resolve third party repo cancelled");
-			return;
-		} else {
-			g_warning ("failed to resolve third party repo: %s", error->message);
-			return;
-		}
-	}
-
-	/* save results for later */
-	g_clear_object (&self->third_party_repo);
-	if (gs_app_list_length (list) > 0)
-		self->third_party_repo = g_object_ref (gs_app_list_index (list, 0));
-
-	/* refresh widget */
-	refresh_third_party_repo (self);
+	gtk_widget_set_visible (self->infobar_third_party, self->third_party_needs_question);
 }
 
 static gboolean
@@ -411,28 +373,173 @@ is_fedora (void)
 }
 
 static void
+fedora_third_party_call_thread (GTask *task,
+				gpointer source_object,
+				gpointer task_data,
+				GCancellable *cancellable)
+{
+	GPtrArray *args = task_data;
+	g_autoptr(GError) error = NULL;
+	gint exit_status = -1;
+
+	g_return_if_fail (args != NULL);
+
+	if (g_spawn_sync (NULL, (gchar **) args->pdata, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &exit_status, &error))
+		g_task_return_int (task, WEXITSTATUS (exit_status));
+	else
+		g_task_return_error (task, g_steal_pointer (&error));
+}
+
+static void
+fedora_third_party_call_async (GsOverviewPage *self,
+			       const gchar *args[],
+			       GAsyncReadyCallback callback,
+			       gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	GPtrArray *args_array;
+
+	g_return_if_fail (self->third_party_cmdtool != NULL);
+
+	args_array = g_ptr_array_new_with_free_func (g_free);
+	for (gsize ii = 0; args[ii] != NULL; ii++) {
+		g_ptr_array_add (args_array, g_strdup (args[ii]));
+	}
+
+	/* NULL-terminated array */
+	g_ptr_array_add (args_array, NULL);
+
+	task = g_task_new (self, NULL, callback, user_data);
+	g_task_set_source_tag (task, fedora_third_party_call_async);
+	g_task_set_task_data (task, args_array, (GDestroyNotify) g_ptr_array_unref);
+	g_task_run_in_thread (task, fedora_third_party_call_thread);
+}
+
+static gboolean
+fedora_third_party_call_finish (GsOverviewPage *self,
+				GAsyncResult *result,
+				gint *out_exit_status,
+				GError **error)
+{
+	gint exit_status;
+	GError *local_error = NULL;
+
+	exit_status = g_task_propagate_int (G_TASK (result), &local_error);
+	if (local_error) {
+		g_propagate_error (error, local_error);
+		return FALSE;
+	}
+
+	if (out_exit_status)
+		*out_exit_status = exit_status;
+
+	return TRUE;
+}
+
+static void
+fedora_third_party_query_done_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
+{
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (source_object);
+	g_autoptr(GError) error = NULL;
+	gint exit_status = -1;
+
+	if (!fedora_third_party_call_finish (self, result, &exit_status, &error)) {
+		g_warning ("Failed to query '%s': %s", self->third_party_cmdtool, error->message);
+	} else {
+		/* The number 2 means no choice made yet, thus ask the user.
+		   See https://pagure.io/fedora-third-party/blob/main/f/doc/fedora-third-party.1.md */
+		self->third_party_needs_question = exit_status == 2;
+	}
+
+	refresh_third_party_repo (self);
+}
+
+static void
 reload_third_party_repo (GsOverviewPage *self)
 {
-	const gchar *third_party_repo_package = "fedora-workstation-repositories";
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* only show if never prompted */
-	if (!g_settings_get_boolean (self->settings, "show-nonfree-prompt"))
-		return;
+	const gchar *args[] = {
+		"", /* executable */
+		"query",
+		"--quiet",
+		NULL
+	};
 
 	/* Fedora-specific functionality */
 	if (!is_fedora ())
 		return;
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
-	                                 "search", third_party_repo_package,
-	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-	                                 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-	                                    self->cancellable,
-	                                    (GAsyncReadyCallback) resolve_third_party_repo_cb,
-	                                    self);
+	if (self->third_party_cmdtool == NULL)
+		self->third_party_cmdtool = g_find_program_in_path ("fedora-third-party");
+
+	if (self->third_party_cmdtool == NULL)
+		return;
+
+	args[0] = self->third_party_cmdtool;
+	fedora_third_party_call_async (self, args, fedora_third_party_query_done_cb, NULL);
+}
+
+static void
+fedora_third_party_enable_done_cb (GObject *source_object,
+				   GAsyncResult *result,
+				   gpointer user_data)
+{
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (source_object);
+	g_autoptr(GError) error = NULL;
+
+	if (!fedora_third_party_call_finish (self, result, NULL, &error))
+		g_warning ("Failed to enable '%s': %s", self->third_party_cmdtool, error->message);
+
+	refresh_third_party_repo (self);
+}
+
+static void
+fedora_third_party_enable (GsOverviewPage *self)
+{
+	const gchar *args[] = {
+		"pkexec",
+		"", /* executable */
+		"enable",
+		NULL
+	};
+
+	g_return_if_fail (self->third_party_cmdtool != NULL);
+
+	args[1] = self->third_party_cmdtool;
+	fedora_third_party_call_async (self, args, fedora_third_party_enable_done_cb, NULL);
+}
+
+static void
+fedora_third_party_disable_done_cb (GObject *source_object,
+				    GAsyncResult *result,
+				    gpointer user_data)
+{
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (source_object);
+	g_autoptr(GError) error = NULL;
+
+	if (!fedora_third_party_call_finish (self, result, NULL, &error))
+		g_warning ("Failed to disable fedora-third-party: %s", error->message);
+
+	refresh_third_party_repo (self);
+}
+
+static void
+fedora_third_party_disable (GsOverviewPage *self)
+{
+	/* fedora-third-party-opt-out is a single-purpose script that changes
+	 * the third-party status from unset => disabled. It exists to allow
+	 * a different pkexec configuration for opting-out and thus avoid
+	 * admin users needing to authenticate to opt-out.
+	 */
+	const gchar *args[] = {
+		"pkexec",
+		"/usr/lib/fedora-third-party/fedora-third-party-opt-out",
+		NULL
+	};
+	g_return_if_fail (self->third_party_cmdtool != NULL);
+
+	fedora_third_party_call_async (self, args, fedora_third_party_disable_done_cb, NULL);
 }
 
 static void
@@ -543,20 +650,12 @@ third_party_response_cb (GtkInfoBar *info_bar,
                          gint response_id,
                          GsOverviewPage *self)
 {
-	g_settings_set_boolean (self->settings, "show-nonfree-prompt", FALSE);
-	if (response_id == GTK_RESPONSE_CLOSE) {
-		gtk_widget_hide (self->infobar_third_party);
-		return;
-	}
-	if (response_id != GTK_RESPONSE_YES)
-		return;
+	if (response_id == GTK_RESPONSE_YES)
+		fedora_third_party_enable (self);
+	else
+		fedora_third_party_disable (self);
 
-	if (gs_app_get_state (self->third_party_repo) == GS_APP_STATE_AVAILABLE) {
-		gs_page_install_app (GS_PAGE (self), self->third_party_repo,
-		                     GS_SHELL_INTERACTION_FULL,
-		                     self->cancellable);
-	}
-
+	self->third_party_needs_question = FALSE;
 	refresh_third_party_repo (self);
 }
 
@@ -571,7 +670,8 @@ gs_overview_page_setup (GsPage *page,
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
-	g_autoptr(GString) str = g_string_new (NULL);
+	g_autofree gchar *text = NULL;
+	g_autofree gchar *link = NULL;
 
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
@@ -580,19 +680,16 @@ gs_overview_page_setup (GsPage *page,
 	self->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);
 
-	g_string_append (str,
-	                 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Access additional software from selected third party sources."));
-	g_string_append (str, " ");
-	g_string_append (str,
-			 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
-	g_string_append_printf (str, " <a href=\"%s\">%s</a>",
+	link = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
-	                        /* TRANSLATORS: this is the clickable
-	                         * link on the third party repositories info bar */
-	                        _("Find out more…"));
-	gtk_label_set_markup (GTK_LABEL (self->label_third_party), str->str);
+	                        /* Translators: This is a clickable link on the third party repositories info bar. It's
+				   part of a constructed sentence: "Provides access to additional software from [selected external sources].
+				   Some proprietary software is included." */
+	                        _("selected external sources"));
+	/* Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link. */
+	text = g_strdup_printf (_("Provides access to additional software from %s. Some proprietary software is included."),
+				link);
+	gtk_label_set_markup (GTK_LABEL (self->label_third_party), text);
 
 	/* create info bar if not already dismissed in initial-setup */
 	refresh_third_party_repo (self);
@@ -638,8 +735,6 @@ gs_overview_page_init (GsOverviewPage *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	g_signal_connect (self, "refreshed", G_CALLBACK (refreshed_cb), self);
-
-	self->settings = g_settings_new ("org.gnome.software");
 }
 
 static void
@@ -689,8 +784,7 @@ gs_overview_page_dispose (GObject *object)
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
-	g_clear_object (&self->settings);
-	g_clear_object (&self->third_party_repo);
+	g_clear_pointer (&self->third_party_cmdtool, g_free);
 	g_clear_pointer (&self->category_of_day, g_free);
 	g_clear_pointer (&self->category_hash, g_hash_table_unref);
 

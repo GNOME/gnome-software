@@ -17,7 +17,6 @@
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
 #include "gs-repos-section.h"
-#include "gs-third-party-repo-row.h"
 #include "gs-utils.h"
 #include <glib/gi18n.h>
 
@@ -25,7 +24,9 @@ struct _GsReposDialog
 {
 	HdyWindow	 parent_instance;
 	GSettings	*settings;
-	GsApp		*third_party_repo;
+	gchar		*third_party_cmdtool;
+	gboolean	 third_party_enabled;
+	GHashTable	*third_party_repos; /* (nullable) (owned), mapping from owned repo ID → owned plugin name */
 	GHashTable	*sections; /* gchar * ~> GsReposSection * */
 
 	GCancellable	*cancellable;
@@ -37,6 +38,8 @@ struct _GsReposDialog
 };
 
 G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, HDY_TYPE_WINDOW)
+
+static void reload_third_party_repos (GsReposDialog *dialog);
 
 typedef struct {
 	GsReposDialog	*dialog;
@@ -326,19 +329,123 @@ repo_section_remove_clicked_cb (GsReposSection *section,
 	remove_confirm_repo (dialog, row, repo, GS_PLUGIN_ACTION_REMOVE_REPO);
 }
 
+static void
+fedora_third_party_call_thread (GTask *task,
+				gpointer source_object,
+				gpointer task_data,
+				GCancellable *cancellable)
+{
+	GPtrArray *args = task_data;
+	g_autoptr(GError) error = NULL;
+	gint exit_status = -1;
+
+	g_return_if_fail (args != NULL);
+
+	if (g_spawn_sync (NULL, (gchar **) args->pdata, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &exit_status, &error))
+		g_task_return_int (task, WEXITSTATUS (exit_status));
+	else
+		g_task_return_error (task, g_steal_pointer (&error));
+}
+
+static void
+fedora_third_party_call_async (GsReposDialog *self,
+			       const gchar *args[],
+			       GAsyncReadyCallback callback,
+			       gpointer user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	GPtrArray *args_array;
+
+	g_return_if_fail (self->third_party_cmdtool != NULL);
+
+	args_array = g_ptr_array_new_with_free_func (g_free);
+	for (gsize ii = 0; args[ii] != NULL; ii++) {
+		g_ptr_array_add (args_array, g_strdup (args[ii]));
+	}
+
+	/* NULL-terminated array */
+	g_ptr_array_add (args_array, NULL);
+
+	task = g_task_new (self, NULL, callback, user_data);
+	g_task_set_source_tag (task, fedora_third_party_call_async);
+	g_task_set_task_data (task, args_array, (GDestroyNotify) g_ptr_array_unref);
+	g_task_run_in_thread (task, fedora_third_party_call_thread);
+}
+
+static gboolean
+fedora_third_party_call_finish (GsReposDialog *self,
+				GAsyncResult *result,
+				gint *out_exit_status,
+				GError **error)
+{
+	gint exit_status;
+	GError *local_error = NULL;
+
+	exit_status = g_task_propagate_int (G_TASK (result), &local_error);
+	if (local_error) {
+		g_propagate_error (error, local_error);
+		return FALSE;
+	}
+
+	if (out_exit_status)
+		*out_exit_status = exit_status;
+
+	return TRUE;
+}
+
+static void
+fedora_third_party_switch_done_cb (GObject *source_object,
+				   GAsyncResult *result,
+				   gpointer user_data)
+{
+	GsReposDialog *self = GS_REPOS_DIALOG (source_object);
+	g_autoptr(GError) error = NULL;
+
+	if (!fedora_third_party_call_finish (self, result, NULL, &error))
+		g_warning ("Failed to switch config with '%s': %s", self->third_party_cmdtool, error->message);
+
+	/* Reload the state, because the user could dismiss the authentication prompt
+	   or the repos could change their state. */
+	reload_third_party_repos (self);
+}
+
+static void
+fedora_third_party_repos_switch_notify_cb (GObject *object,
+					   GParamSpec *param,
+					   gpointer user_data)
+{
+	GsReposDialog *self = user_data;
+	const gchar *args[] = {
+		"pkexec",
+		"", /* executable */
+		"", /* command */
+		"--config-only",
+		NULL
+	};
+
+	g_return_if_fail (self->third_party_cmdtool != NULL);
+
+	args[1] = self->third_party_cmdtool;
+	args[2] = gtk_switch_get_active (GTK_SWITCH (object)) ? "enable" : "disable";
+
+	fedora_third_party_call_async (self, args, fedora_third_party_switch_done_cb, NULL);
+}
+
 static gboolean
 is_third_party_repo (GsReposDialog *dialog,
 		     GsApp *repo)
 {
-	if (dialog->third_party_repo != NULL) {
-		const gchar *source_repo;
-		const gchar *source_third_party_package;
+	if (dialog->third_party_repos != NULL &&
+	    gs_app_get_scope (repo) == AS_COMPONENT_SCOPE_SYSTEM) {
+		const gchar *expected_management_plugin;
+		const gchar *management_plugin;
 
-		source_repo = gs_app_get_source_id_default (repo);
-		source_third_party_package = gs_app_get_source_id_default (dialog->third_party_repo);
+		expected_management_plugin = g_hash_table_lookup (dialog->third_party_repos, gs_app_get_id (repo));
+		if (expected_management_plugin == NULL)
+			return FALSE;
 
-		/* group repos from the same repo-release package together */
-		return g_strcmp0 (source_repo, source_third_party_package) == 0;
+		management_plugin = gs_app_get_management_plugin (repo);
+		return g_strcmp0 (management_plugin, expected_management_plugin) == 0;
 	}
 
 	return FALSE;
@@ -474,16 +581,24 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	if (other_repos) {
 		GsReposSection *section;
+		GtkWidget *widget;
+		GtkWidget *row;
 		g_autofree gchar *anchor = NULL;
 		g_autofree gchar *hint = NULL;
 
-		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader));
-		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
-						 _("Fedora Third Party Repositories"));
-		gs_repos_section_set_sort_key (section, "900");
-		g_signal_connect_object (section, "switch-clicked",
-					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
-		gtk_widget_show (GTK_WIDGET (section));
+		widget = gtk_switch_new ();
+		gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+		gtk_switch_set_active (GTK_SWITCH (widget), dialog->third_party_enabled);
+		g_signal_connect_object (widget, "notify::active",
+					 G_CALLBACK (fedora_third_party_repos_switch_notify_cb), dialog, 0);
+		gtk_widget_show (widget);
+
+		row = hdy_action_row_new ();
+		hdy_preferences_row_set_title (HDY_PREFERENCES_ROW (row), _("Enable New Repositories"));
+		hdy_action_row_set_subtitle (HDY_ACTION_ROW (row), _("Turn on new repositories when they are added."));
+		hdy_action_row_set_activatable_widget (HDY_ACTION_ROW (row), widget);
+		gtk_container_add (GTK_CONTAINER (row), widget);
+		gtk_widget_show (row);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
@@ -497,13 +612,26 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 				_("Additional repositories from selected third parties — %s."),
 				anchor);
 
+		widget = hdy_preferences_group_new ();
+		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (widget),
+						 _("Fedora Third Party Repositories"));
 /* HdyPreferencesGroup:use-markup doesn't exist before 1.3.90, configurations
  * where GNOME 41 will be used and Libhandy 1.3.90 won't be available are
  * unlikely, so let's just ignore the description in such cases. */
 #if HDY_CHECK_VERSION(1, 3, 90)
-		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (section), hint);
-		hdy_preferences_group_set_use_markup (HDY_PREFERENCES_GROUP (section), TRUE);
+		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (widget), hint);
+		hdy_preferences_group_set_use_markup (HDY_PREFERENCES_GROUP (widget), TRUE);
 #endif
+
+		gtk_widget_show (widget);
+		gtk_container_add (GTK_CONTAINER (widget), row);
+		gtk_container_add (GTK_CONTAINER (dialog->content_page), widget);
+
+		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader));
+		gs_repos_section_set_sort_key (section, "900");
+		g_signal_connect_object (section, "switch-clicked",
+					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
+		gtk_widget_show (GTK_WIDGET (section));
 
 		for (GSList *link = other_repos; link; link = g_slist_next (link)) {
 			GsApp *repo = link->data;
@@ -533,37 +661,104 @@ reload_sources (GsReposDialog *dialog)
 }
 
 static void
-resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
-                             GAsyncResult *res,
-                             GsReposDialog *dialog)
+fedora_third_party_list_repos_thread (GTask *task,
+				      gpointer source_object,
+				      gpointer task_data,
+				      GCancellable *cancellable)
 {
-	GsApp *app;
+	GPtrArray *args = task_data;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autofree gchar *stdoutput = NULL;
 
-	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_CANCELLED)) {
-			g_debug ("resolve third party repo cancelled");
-			return;
-		} else {
-			g_warning ("failed to resolve third party repo: %s", error->message);
-			reload_sources (dialog);
-			return;
+	g_return_if_fail (args != NULL);
+
+	if (g_spawn_sync (NULL, (gchar **) args->pdata, NULL, G_SPAWN_DEFAULT, NULL, NULL, &stdoutput, NULL, NULL, &error)) {
+		GHashTable *repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+		g_auto(GStrv) lines = NULL;
+
+		lines = g_strsplit (stdoutput != NULL ? stdoutput : "", "\n", -1);
+
+		for (gsize ii = 0; lines != NULL && lines[ii]; ii++) {
+			g_auto(GStrv) tokens = g_strsplit (lines[ii], ",", 2);
+			if (tokens != NULL && tokens[0] != NULL && tokens[1] != NULL) {
+				const gchar *repo_type = tokens[0];
+				/* The 'dnf' means 'packagekit' here */
+				if (g_str_equal (repo_type, "dnf"))
+					repo_type = "packagekit";
+				/* Hash them by name, which cannot clash between types */
+				g_hash_table_insert (repos, g_strdup (tokens[1]), g_strdup (repo_type));
+			}
 		}
+
+		if (g_hash_table_size (repos) == 0)
+			g_clear_pointer (&repos, g_hash_table_unref);
+
+		g_task_return_pointer (task, repos, (GDestroyNotify) g_hash_table_unref);
+	} else
+		g_task_return_error (task, g_steal_pointer (&error));
+}
+
+static void
+fedora_third_party_list_repos_done_cb (GObject *source_object,
+				       GAsyncResult *result,
+				       gpointer user_data)
+{
+	GsReposDialog *self = GS_REPOS_DIALOG (source_object);
+	g_autoptr(GHashTable) repos = NULL;
+	g_autoptr(GError) error = NULL;
+
+	repos = g_task_propagate_pointer (G_TASK (result), &error);
+
+	if (error)
+		g_warning ("Failed to list repos '%s': %s", self->third_party_cmdtool, error->message);
+	else
+		self->third_party_repos = g_steal_pointer (&repos);
+
+	reload_sources (self);
+}
+
+static void
+fedora_third_party_query_done_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
+{
+	GsReposDialog *self = GS_REPOS_DIALOG (source_object);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) error = NULL;
+	gint exit_status;
+	GPtrArray *args_array;
+	const gchar *args[] = {
+		"", /* executable */
+		"list",
+		"--csv",
+		"--columns=type,name",
+		NULL
+	};
+
+	if (!fedora_third_party_call_finish (self, result, &exit_status, &error)) {
+		g_warning ("Failed to query '%s': %s", self->third_party_cmdtool, error->message);
+	} else {
+		/* The number 0 means it's enabled.
+		   See https://pagure.io/fedora-third-party/blob/main/f/doc/fedora-third-party.1.md */
+		self->third_party_enabled = exit_status == 0;
 	}
 
-	/* we should only get one result */
-	if (gs_app_list_length (list) > 0)
-		app = gs_app_list_index (list, 0);
-	else
-		app = NULL;
+	g_return_if_fail (self->third_party_cmdtool != NULL);
 
-	g_set_object (&dialog->third_party_repo, app);
-	reload_sources (dialog);
+	args[0] = self->third_party_cmdtool;
+
+	args_array = g_ptr_array_new_with_free_func (g_free);
+	for (gsize ii = 0; args[ii] != NULL; ii++) {
+		g_ptr_array_add (args_array, g_strdup (args[ii]));
+	}
+
+	/* NULL-terminated array */
+	g_ptr_array_add (args_array, NULL);
+
+	task = g_task_new (self, NULL, fedora_third_party_list_repos_done_cb, NULL);
+	g_task_set_source_tag (task, fedora_third_party_query_done_cb);
+	g_task_set_task_data (task, args_array, (GDestroyNotify) g_ptr_array_unref);
+	g_task_run_in_thread (task, fedora_third_party_list_repos_thread);
 }
 
 static gboolean
@@ -584,10 +779,14 @@ is_fedora (void)
 }
 
 static void
-reload_third_party_repo (GsReposDialog *dialog)
+reload_third_party_repos (GsReposDialog *dialog)
 {
-	const gchar *third_party_repo_package = "fedora-workstation-repositories";
-	g_autoptr(GsPluginJob) plugin_job = NULL;
+	const gchar *args[] = {
+		"", /* executable */
+		"query",
+		"--quiet",
+		NULL
+	};
 
 	/* Fedora-specific functionality */
 	if (!is_fedora ()) {
@@ -595,16 +794,18 @@ reload_third_party_repo (GsReposDialog *dialog)
 		return;
 	}
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
-	                                 "search", third_party_repo_package,
-	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
-	                                 NULL);
-	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-	                                    dialog->cancellable,
-	                                    (GAsyncReadyCallback) resolve_third_party_repo_cb,
-	                                    dialog);
+	g_clear_pointer (&dialog->third_party_repos, g_hash_table_unref);
+	g_clear_pointer (&dialog->third_party_cmdtool, g_free);
+
+	dialog->third_party_cmdtool = g_find_program_in_path ("fedora-third-party");
+
+	if (dialog->third_party_cmdtool == NULL) {
+		reload_sources (dialog);
+		return;
+	}
+
+	args[0] = dialog->third_party_cmdtool;
+	fedora_third_party_call_async (dialog, args, fedora_third_party_query_done_cb, NULL);
 }
 
 static gchar *
@@ -628,7 +829,7 @@ get_os_name (void)
 static void
 reload_cb (GsPluginLoader *plugin_loader, GsReposDialog *dialog)
 {
-	reload_third_party_repo (dialog);
+	reload_third_party_repos (dialog);
 }
 
 static void
@@ -650,10 +851,11 @@ gs_repos_dialog_dispose (GObject *object)
 	}
 
 	g_cancellable_cancel (dialog->cancellable);
+	g_clear_pointer (&dialog->third_party_cmdtool, g_free);
+	g_clear_pointer (&dialog->third_party_repos, g_hash_table_unref);
 	g_clear_pointer (&dialog->sections, g_hash_table_unref);
 	g_clear_object (&dialog->cancellable);
 	g_clear_object (&dialog->settings);
-	g_clear_object (&dialog->third_party_repo);
 
 	G_OBJECT_CLASS (gs_repos_dialog_parent_class)->dispose (object);
 }
@@ -710,7 +912,7 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 	set_plugin_loader (dialog, plugin_loader);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
 	gs_start_spinner (GTK_SPINNER (dialog->spinner));
-	reload_third_party_repo (dialog);
+	reload_third_party_repos (dialog);
 
 	return GTK_WIDGET (dialog);
 }

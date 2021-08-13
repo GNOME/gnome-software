@@ -286,6 +286,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
 				  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
