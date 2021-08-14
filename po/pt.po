@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-13 09:32+0000\n"
-"PO-Revision-Date: 2021-08-13 12:17+0100\n"
+"POT-Creation-Date: 2021-08-13 17:38+0000\n"
+"PO-Revision-Date: 2021-08-14 16:22+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -80,7 +80,7 @@ msgstr "Painel das atualizações"
 msgid "The update details"
 msgstr "Detalhes sobre as atualizações"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1744
+#: data/appdata/org.gnome.Software.appdata.xml.in:1774
 msgid "The GNOME Project"
 msgstr "O Projeto GNOME"
 
@@ -287,26 +287,21 @@ msgstr ""
 "livre"
 
 #: data/org.gnome.software.gschema.xml:123
-msgid "Show the prompt to install nonfree software repositories"
-msgstr ""
-"Ver linha de comando para instalar repositórios 'nonfree' de aplicações"
-
-#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "Ver o tamanho ocupado pelas aplicações instalada na lista de aplicações "
 "instaladas"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "O URI que explica o software não-livre e proprietário"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:132
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -314,13 +309,13 @@ msgstr ""
 "A lista de URLs a apontar aos ficheiros 'appstream' que serão transferidos "
 "numa pasta de informações de aplicações"
 
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:136
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Instalar um ficheiro <i>AppStream</i> numa localização do sistema para todos "
 "utilizadores"
 
-#: data/org.gnome.software.gschema.xml:144
+#: data/org.gnome.software.gschema.xml:140
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
@@ -330,11 +325,11 @@ msgstr ""
 "mais importantes listados primeiro. Uma matriz vazia significa a ordem "
 "padrão. Os formatos omitidos são considerados os últimos a serem listados."
 
-#: data/org.gnome.software.gschema.xml:149
+#: data/org.gnome.software.gschema.xml:145
 msgid "The URI that references the background for an upgrade banner."
 msgstr "O URI que faz referência ao fundo para uma faixa de atualização."
 
-#: data/org.gnome.software.gschema.xml:150
+#: data/org.gnome.software.gschema.xml:146
 msgid ""
 "The URI can contain up to three '%u', which will be replaced by the upgrade "
 "version."
@@ -342,7 +337,7 @@ msgstr ""
 "O URI pode conter até três '%u', que serão substituídos pela versão de "
 "atualização."
 
-#: data/org.gnome.software.gschema.xml:156
+#: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Um texto a gravar o id utilizado no início de sessão da conta online Gnome"
@@ -554,11 +549,11 @@ msgstr "?"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:303
+#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
 msgid "Age Rating"
 msgstr "Classificação Etária"
 
-#: lib/gs-app.c:5584
+#: lib/gs-app.c:5607
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -567,12 +562,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5600 src/gs-safety-context-dialog.c:392
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:392
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5676
+#: lib/gs-app.c:5699
 msgid "Package"
 msgstr "Pacote"
 
@@ -580,39 +575,32 @@ msgstr "Pacote"
 msgid "Pending"
 msgstr "Pendente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:359
 msgid "Pending install"
 msgstr "Instalação pendente"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:366
 msgid "Pending remove"
 msgstr "Remoção pendente"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:320
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:321
 msgid "Installed"
 msgstr "Instalada"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:366
-#: src/gs-third-party-repo-row.c:100
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:352
 msgid "Installing"
 msgstr "A instalar"
 
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:119 src/gs-third-party-repo-row.c:107
+#: src/gs-app-addon-row.c:119
 msgid "Removing"
 msgstr "A remover"
 
-#. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:943
-#: src/gs-details-page.ui:220
+#: src/gs-app-addon-row.ui:70
 msgid "_Uninstall"
 msgstr "_Desinstalar"
 
@@ -712,7 +700,7 @@ msgid "No update description available."
 msgstr "Nenhuma descrição de atualização foi fornecida."
 
 #: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22
-#: src/gs-shell.ui:375 src/gs-shell.ui:463
+#: src/gs-shell.ui:376 src/gs-shell.ui:464
 msgid "Go back"
 msgstr "Recuar"
 
@@ -720,7 +708,7 @@ msgstr "Recuar"
 msgid "Requires additional permissions"
 msgstr "Requer permissões adicionais"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:491
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:551
 msgid "Version History"
 msgstr "Histórico da versão"
 
@@ -823,11 +811,11 @@ msgstr "Preferir ficheiros locais de origens à AppStream"
 msgid "Show version number"
 msgstr "Mostrar número da versão"
 
-#: src/gs-application.c:360
+#: src/gs-application.c:358
 msgid "Copyright © 2016–2021 GNOME Software contributors"
 msgstr "Direitos de autor © 2016-2021 Colaboradores do Software GNOME"
 
-#: src/gs-application.c:363
+#: src/gs-application.c:361
 msgid "translator-credits"
 msgstr ""
 "Tiago Santos <tiagofsantos81@sapo.pt>\n"
@@ -838,17 +826,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:376 src/gs-shell.c:2132
+#: src/gs-application.c:374 src/gs-shell.c:2132
 msgid "About Software"
 msgstr "Sobre o Aplicações"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:379
+#: src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
 msgstr "Um modo agradável de gerir as aplicações no seu sistema."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:568
+#: src/gs-application.c:566
 msgid "Sorry! There are no details for that application."
 msgstr "Ups! Não foram encontrados detalhes sobre a aplicação."
 
@@ -1045,7 +1033,7 @@ msgid "Unsafe"
 msgstr "Inseguro"
 
 #: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:488
-#: src/gs-hardware-support-context-dialog.c:584
+#: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Apenas no telemóvel"
 
@@ -1056,7 +1044,7 @@ msgstr "Apenas funciona num ecrã pequeno"
 #: src/gs-app-context-bar.c:462 src/gs-app-context-bar.c:495
 #: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:507
 #: src/gs-app-context-bar.c:547 src/gs-app-context-bar.c:552
-#: src/gs-hardware-support-context-dialog.c:564
+#: src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Apenas no computador"
 
@@ -1064,21 +1052,21 @@ msgstr "Apenas no computador"
 msgid "Only works on a large screen"
 msgstr "Apenas funciona num ecrã grande"
 
-#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:602
+#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "Incompatibilidade de tamanho do ecrã"
 
-#: src/gs-app-context-bar.c:468 src/gs-hardware-support-context-dialog.c:603
+#: src/gs-app-context-bar.c:468 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Não suporta o tamanho atual do ecrã"
 
-#: src/gs-app-context-bar.c:489 src/gs-hardware-support-context-dialog.c:655
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-app-context-bar.c:489 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Requer um ecrã sensível ao toque"
 
-#: src/gs-app-context-bar.c:496 src/gs-hardware-support-context-dialog.c:615
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:496 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "Requer um teclado"
 
@@ -1159,8 +1147,10 @@ msgstr "Atualizar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:178 src/gs-app-row.c:188 src/gs-page.c:523
+#: src/gs-app-row.c:178 src/gs-app-row.c:188 src/gs-details-page.ui:295
+#: src/gs-page.c:523
 msgid "Uninstall"
 msgstr "Desinstalar"
 
@@ -1188,6 +1178,36 @@ msgstr "Fonte: %s"
 msgid "Renamed from %s"
 msgstr "Renomeado de %s"
 
+#. Translators: The placeholder is an application name
+#: src/gs-app-translation-dialog.c:67
+#, c-format
+msgid "Help Translate %s"
+msgstr "Ajudar a traduzir %s"
+
+#. Translators: The placeholder is an application name
+#: src/gs-app-translation-dialog.c:70
+#, c-format
+msgid ""
+"%s is designed, developed, and translated by an international community of "
+"volunteers.\n"
+"\n"
+"This means that while it’s not yet available in your language, you can get "
+"involved and help translate it yourself."
+msgstr ""
+"%s é concebida, desenvolvida e traduzida por uma comunidade internacional de "
+"voluntários.\n"
+"\n"
+"Isto significa que, embora ainda não esteja disponível no seu idioma, pode "
+"participar e ajudar a traduzi-la você mesmo."
+
+#: src/gs-app-translation-dialog.ui:9
+msgid "Translations"
+msgstr "Traduções"
+
+#: src/gs-app-translation-dialog.ui:133
+msgid "_Translation Website"
+msgstr "Website de tradução"
+
 #. TRANSLATORS: This is a description for entering user/password
 #: src/gs-basic-auth-dialog.c:82
 #, c-format
@@ -1198,7 +1218,7 @@ msgstr "Autenticação remota necessária %s (domínio %s)"
 msgid "Login Required"
 msgstr "Autenticação necessária"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:280
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:310
 #: src/gs-removal-dialog.ui:29 src/gs-review-dialog.ui:22
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -1228,18 +1248,18 @@ msgstr "Destaques"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:45 src/gs-overview-page.ui:115
+#: src/gs-category-page.ui:46 src/gs-overview-page.ui:118
 msgid "Editor’s Choice"
 msgstr "Escolha do Editor"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:73 src/gs-overview-page.ui:143
+#: src/gs-category-page.ui:74 src/gs-overview-page.ui:146
 msgid "New & Updated"
 msgstr "Novo e Atualizado"
 
 #. Heading for the rest of the apps on a category page
-#: src/gs-category-page.ui:101
+#: src/gs-category-page.ui:102
 msgid "Other Apps"
 msgstr "Outras aplicações"
 
@@ -1644,7 +1664,7 @@ msgid "Install Third-Party Software?"
 msgstr "Instalar aplicações de terceiros?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:235 src/gs-repos-dialog.c:190
+#: src/gs-common.c:235 src/gs-repos-dialog.c:193
 msgid "Enable Third-Party Software Repository?"
 msgstr "Ativar fontes de software de terceiros?"
 
@@ -1702,7 +1722,7 @@ msgstr "Ativar e instalar"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gestor de pacotes:"
 
-#: src/gs-common.c:513 src/gs-safety-context-dialog.ui:117
+#: src/gs-common.c:513 src/gs-safety-context-dialog.ui:116
 msgid "Details"
 msgstr "Detalhes"
 
@@ -1846,55 +1866,60 @@ msgstr "Pacotes adicionais requeridos"
 msgid "Find in Software"
 msgstr "Localizar no Aplicações"
 
-#: src/gs-description-box.c:64 src/gs-description-box.c:167
-msgid "_Read More"
-msgstr "_Leia mais"
+#. Translators: Button to return more application-submitted reviews.
+#: src/gs-description-box.c:64 src/gs-description-box.c:166
+#: src/gs-details-page.ui:965
+msgid "_Show More"
+msgstr "Mostrar mai_s"
 
 #: src/gs-description-box.c:64
-msgid "_Read Less"
-msgstr "_Leia menos"
+msgid "_Show Less"
+msgstr "Mostrar menos"
 
-#: src/gs-details-page.c:361
+#: src/gs-details-page.c:347
 msgid "Removing…"
 msgstr "A remover…"
 
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:357
 msgid "Requires restart to finish install"
 msgstr "É necessário reiniciar para terminar a instalação"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:364
 msgid "Requires restart to finish remove"
 msgstr "É necessário reiniciar para terminar a remoção"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:381
 msgid "Pending installation…"
 msgstr "Instalação pendente…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:388
 msgid "Pending update…"
 msgstr "Atualização pendente…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:416
+#: src/gs-details-page.c:404
 msgid "Preparing…"
 msgstr "A preparar…"
+
+#. Translators: This string is shown when uninstalling an app.
+#: src/gs-details-page.c:407
+msgid "Uninstalling…"
+msgstr "A desinstalar…"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for installing a repo
-#: src/gs-details-page.c:856 src/gs-details-page.c:882
-#: src/gs-details-page.ui:194 src/gs-third-party-repo-row.c:84
+#: src/gs-details-page.c:825 src/gs-details-page.c:851
+#: src/gs-details-page.ui:239
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:872
+#: src/gs-details-page.c:841
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -1902,31 +1927,23 @@ msgstr "_Reiniciar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for installing a repo.
-#. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:896 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:865
 msgid "_Install…"
 msgstr "_Instalar…"
 
-#. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:924
-msgid "_Launch"
-msgstr "_Iniciar"
-
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1413
+#: src/gs-details-page.c:1396
 msgid "You need internet access to write a review"
 msgstr "É necessário conexão à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1558 src/gs-details-page.c:1574
+#: src/gs-details-page.c:1541 src/gs-details-page.c:1557
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossível encontrar «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2166
+#: src/gs-details-page.c:2113
 msgid "Loading…"
 msgstr "A carregar…"
 
@@ -1938,44 +1955,60 @@ msgstr "Página de detalhes"
 msgid "Loading application details…"
 msgstr "A carregar os detalhes das aplicações…"
 
-#: src/gs-details-page.ui:250
-msgid "Downloading"
-msgstr "A transferir"
+#: src/gs-details-page.ui:79
+msgid ""
+"This app is not available in your language and will appear in US English."
+msgstr ""
+"Esta aplicação não está disponível no seu idioma e aparecerá em inglês dos "
+"EUA."
 
-#: src/gs-details-page.ui:291
+#: src/gs-details-page.ui:87
+msgid "Help _Translate"
+msgstr "Ajude a _traduzir"
+
+#. TRANSLATORS: A label for a button to execute the selected application.
+#: src/gs-details-page.ui:256
+msgid "_Open"
+msgstr "_Abrir"
+
+#: src/gs-details-page.ui:269
 msgid "_Update"
 msgstr "_Atualizar"
 
+#: src/gs-details-page.ui:335
+msgid "Downloading"
+msgstr "A transferir"
+
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:307
+#: src/gs-details-page.ui:357
 msgid "_Add shortcut"
 msgstr "_Adicionar atalho"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:322
+#: src/gs-details-page.ui:373
 msgid "Re_move shortcut"
 msgstr "Re_mover atalho"
 
-#: src/gs-details-page.ui:409 src/gs-installed-page.ui:118
+#: src/gs-details-page.ui:465 src/gs-installed-page.ui:120
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: src/gs-details-page.ui:421
+#: src/gs-details-page.ui:477
 msgid "Selected add-ons will be installed with the application."
 msgstr "Os complementos selecionados serão instalados com a aplicação."
 
-#: src/gs-details-page.ui:523
+#: src/gs-details-page.ui:585
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
 "Esta aplicação só pode ser usada se tiver uma ligação à Internet ativa."
 
-#: src/gs-details-page.ui:542
+#: src/gs-details-page.ui:606
 msgid "Software Repository Included"
 msgstr "Fonte de software incluída"
 
-#: src/gs-details-page.ui:543
+#: src/gs-details-page.ui:607
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1983,11 +2016,11 @@ msgstr ""
 "Esta aplicação inclui uma fonte de software que fornece atualizações, assim "
 "como acesso a outras aplicações."
 
-#: src/gs-details-page.ui:559
+#: src/gs-details-page.ui:625
 msgid "No Software Repository Included"
 msgstr "Sem fontes de software incluídas"
 
-#: src/gs-details-page.ui:560
+#: src/gs-details-page.ui:626
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1995,7 +2028,7 @@ msgstr ""
 "Esta aplicação não inclui uma fonte de software. Não será atualizada com "
 "novas versões."
 
-#: src/gs-details-page.ui:577
+#: src/gs-details-page.ui:645
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2004,11 +2037,11 @@ msgstr ""
 "substituída."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:593
+#: src/gs-details-page.ui:663
 msgid "Software Repository Identified"
 msgstr "Fonte de software identificada"
 
-#: src/gs-details-page.ui:594
+#: src/gs-details-page.ui:664
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2016,15 +2049,15 @@ msgstr ""
 "Adicionar esta fonte de software dar-lhe-á acesso a aplicações e "
 "atualizações adicionais."
 
-#: src/gs-details-page.ui:595
+#: src/gs-details-page.ui:665
 msgid "Only use software repositories that you trust."
 msgstr "Utilize apenas fontes de software em que confie."
 
-#: src/gs-details-page.ui:657
+#: src/gs-details-page.ui:730
 msgid "No Metadata"
 msgstr "Sem Metadados"
 
-#: src/gs-details-page.ui:667
+#: src/gs-details-page.ui:740
 msgid ""
 "This app doesn’t provide any links to a website, code repository or issue "
 "tracker."
@@ -2032,44 +2065,39 @@ msgstr ""
 "Esta aplicação não fornece quaisquer ligações a um website, repositório de "
 "código ou rastreador de problemas."
 
-#: src/gs-details-page.ui:695
+#: src/gs-details-page.ui:768
 msgid "Project _Website"
 msgstr "Página do _Website"
 
-#: src/gs-details-page.ui:721
+#: src/gs-details-page.ui:794
 msgid "_Donate"
 msgstr "_Doar"
 
-#: src/gs-details-page.ui:747
+#: src/gs-details-page.ui:820
 msgid "_Contribute Translations"
 msgstr "_Contribuir com tradução"
 
-#: src/gs-details-page.ui:773
+#: src/gs-details-page.ui:846
 msgid "_Report an Issue"
 msgstr "_Reportar um problema"
 
-#: src/gs-details-page.ui:799
+#: src/gs-details-page.ui:872
 msgid "_Help"
 msgstr "Ajuda"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:850
+#: src/gs-details-page.ui:925
 msgid "Reviews"
 msgstr "Análises"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:868
+#: src/gs-details-page.ui:943
 msgid "_Write a Review"
 msgstr "_Escrever uma análise"
 
-#. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:889
-msgid "_Show More"
-msgstr "Mostrar mai_s"
-
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-details-page.ui:964 src/gs-safety-context-dialog.ui:190
+#: src/gs-details-page.ui:1042 src/gs-safety-context-dialog.ui:189
 msgid "Source"
 msgstr "Fonte"
 
@@ -2306,15 +2334,15 @@ msgstr "Próximo"
 msgid "Featured Apps List"
 msgstr "Lista de aplicações em destaque"
 
-#: src/gs-first-run-dialog.ui:6 src/gs-first-run-dialog.ui:15
+#: src/gs-first-run-dialog.ui:10
 msgid "Welcome"
 msgstr "Bem-vindo"
 
-#: src/gs-first-run-dialog.ui:43
+#: src/gs-first-run-dialog.ui:27
 msgid "Welcome to Software"
 msgstr "Bem-vindo ao Aplicações"
 
-#: src/gs-first-run-dialog.ui:53
+#: src/gs-first-run-dialog.ui:28
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2324,202 +2352,202 @@ msgstr ""
 "local. Veja as nossas recomendações, navegue pelas categorias ou procure as "
 "aplicações que quiser."
 
-#: src/gs-first-run-dialog.ui:62
+#: src/gs-first-run-dialog.ui:31
 msgid "_Browse Software"
 msgstr "_Procurar aplicações"
 
-#: src/gs-hardware-support-context-dialog.c:558
-#: src/gs-hardware-support-context-dialog.c:567
+#: src/gs-hardware-support-context-dialog.c:561
+#: src/gs-hardware-support-context-dialog.c:570
 msgid "Desktop Support"
 msgstr "Suporte a desktop"
 
-#: src/gs-hardware-support-context-dialog.c:559
-#: src/gs-hardware-support-context-dialog.c:568
+#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:571
 msgid "Supports being used on a large screen"
 msgstr "Suporta ser utilizado num ecrã grande"
 
-#: src/gs-hardware-support-context-dialog.c:561
+#: src/gs-hardware-support-context-dialog.c:564
 msgid "Desktop Support Unknown"
 msgstr "Suporte desconhecido a desktop"
 
-#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:565
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
 "Não há informações suficientes para saber se os ecrãs grandes são suportados"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:568
 msgid "Requires a large screen"
 msgstr "Requer um ecrã grande"
 
-#: src/gs-hardware-support-context-dialog.c:570
+#: src/gs-hardware-support-context-dialog.c:573
 msgid "Desktop Not Supported"
 msgstr "Desktop não suportado"
 
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:574
 msgid "Cannot be used on a large screen"
 msgstr "Não pode ser usado num ecrã grande"
 
-#: src/gs-hardware-support-context-dialog.c:578
-#: src/gs-hardware-support-context-dialog.c:587
+#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:590
 msgid "Mobile Support"
 msgstr "Suporte a dispositivo móvel"
 
-#: src/gs-hardware-support-context-dialog.c:579
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:591
 msgid "Supports being used on a small screen"
 msgstr "Suporta ser utilizado num ecrã pequeno"
 
-#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:584
 msgid "Mobile Support Unknown"
 msgstr "Suporte desconhecido a dispositivo móvel"
 
-#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:585
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
 "Não há informações suficientes para saber se os ecrãs pequenos são suportados"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:588
 msgid "Requires a small screen"
 msgstr "Requer um ecrã pequeno"
 
-#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:593
 msgid "Mobile Not Supported"
 msgstr "Dispositivo móvel não suportado"
 
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:594
 msgid "Cannot be used on a small screen"
 msgstr "Não pode ser utilizado num ecrã pequeno"
 
-#: src/gs-hardware-support-context-dialog.c:614
-#: src/gs-hardware-support-context-dialog.c:623
+#: src/gs-hardware-support-context-dialog.c:617
+#: src/gs-hardware-support-context-dialog.c:626
 msgid "Keyboard Support"
 msgstr "Suporte a teclado"
 
-#: src/gs-hardware-support-context-dialog.c:617
+#: src/gs-hardware-support-context-dialog.c:620
 msgid "Keyboard Support Unknown"
 msgstr "Suporte desconhecido a teclado"
 
-#: src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:621
 msgid "Not enough information to know if keyboards are supported"
 msgstr ""
 "Não há informações suficientes para saber se os teclados são suportados"
 
-#: src/gs-hardware-support-context-dialog.c:620
+#: src/gs-hardware-support-context-dialog.c:623
 msgid "Keyboard Required"
 msgstr "Teclado necessário"
 
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-hardware-support-context-dialog.c:627
 msgid "Supports keyboards"
 msgstr "Tem suporte a teclados"
 
-#: src/gs-hardware-support-context-dialog.c:626
+#: src/gs-hardware-support-context-dialog.c:629
 msgid "Keyboard Not Supported"
 msgstr "Teclado não suportado"
 
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:630
 msgid "Cannot be used with a keyboard"
 msgstr "Não pode ser usado com um teclado"
 
-#: src/gs-hardware-support-context-dialog.c:634
-#: src/gs-hardware-support-context-dialog.c:643
+#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:646
 msgid "Mouse Support"
 msgstr "Suporte ao rato"
 
-#: src/gs-hardware-support-context-dialog.c:635
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:644
 msgid "Requires a mouse or pointing device"
 msgstr "Requer um rato ou dispositivo apontador"
 
-#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:640
 msgid "Mouse Support Unknown"
 msgstr "Suporte desconhecido ao rato"
 
-#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:641
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
 "Não há informações suficientes para saber se os ratos ou dispositivos "
 "apontadores são suportados"
 
-#: src/gs-hardware-support-context-dialog.c:640
+#: src/gs-hardware-support-context-dialog.c:643
 msgid "Mouse Required"
 msgstr "Rato necessário"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:647
 msgid "Supports mice and pointing devices"
 msgstr "Tem suporte a ratos e dispositivos apontadores"
 
-#: src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:649
 msgid "Mouse Not Supported"
 msgstr "Rato não suportado"
 
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:650
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "Não pode ser usado com um rato ou dispositivo apontador"
 
-#: src/gs-hardware-support-context-dialog.c:654
-#: src/gs-hardware-support-context-dialog.c:663
+#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:666
 msgid "Touchscreen Support"
 msgstr "Suporte a ecrã tátil"
 
-#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:660
 msgid "Touchscreen Support Unknown"
 msgstr "Suporte desconhecido a ecrã tátil"
 
-#: src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:661
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
 "Não há informações suficientes para saber se os ecrãs táteis são suportados"
 
-#: src/gs-hardware-support-context-dialog.c:660
+#: src/gs-hardware-support-context-dialog.c:663
 msgid "Touchscreen Required"
 msgstr "Ecrã tátil necessário"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:667
 msgid "Supports touchscreens"
 msgstr "Tem suporte a ecrãs táteis"
 
-#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:669
 msgid "Touchscreen Not Supported"
 msgstr "Ecrã tátil não suportado"
 
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:670
 msgid "Cannot be used with a touchscreen"
 msgstr "Não pode ser utilizado com um ecrã tátil"
 
-#: src/gs-hardware-support-context-dialog.c:680
+#: src/gs-hardware-support-context-dialog.c:683
 msgid "Gamepad Required"
 msgstr "Controlador de jogo necessário"
 
-#: src/gs-hardware-support-context-dialog.c:681
+#: src/gs-hardware-support-context-dialog.c:684
 msgid "Requires a gamepad"
 msgstr "Requer um controlador de jogo"
 
-#: src/gs-hardware-support-context-dialog.c:683
+#: src/gs-hardware-support-context-dialog.c:686
 msgid "Gamepad Support"
 msgstr "Suporte a controlador de jogo"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:687
 msgid "Supports gamepads"
 msgstr "Tem suporte a controladores de jogo"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:700
+#: src/gs-hardware-support-context-dialog.c:703
 #, c-format
 msgid "%s works on this device"
 msgstr "%s funciona neste dispositivo"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:707
+#: src/gs-hardware-support-context-dialog.c:710
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s não vai funcionar corretamente neste dispositivo"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:714
+#: src/gs-hardware-support-context-dialog.c:717
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s não vai funcionar neste dispositivo"
@@ -2533,17 +2561,17 @@ msgstr "Suporte a hardware"
 msgid "Installed page"
 msgstr "Página de instaladas"
 
-#: src/gs-installed-page.ui:52
+#: src/gs-installed-page.ui:54
 msgid "In Progress"
 msgstr "Em curso"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:74 plugins/flatpak/gs-flatpak-utils.c:100
+#: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:100
 msgid "Applications"
 msgstr "Aplicações"
 
-#: src/gs-installed-page.ui:96
+#: src/gs-installed-page.ui:98
 msgid "System Applications"
 msgstr "Aplicações de sistema"
 
@@ -2572,15 +2600,15 @@ msgstr "Proprietário"
 #: src/gs-license-tile.c:113
 msgid ""
 "This app is not developed in the open, so only its developers know how it "
-"works. It could be insecure, or actively do nefarious things that are hard "
-"to detect or prevent.\n"
+"works. There may be restrictions on its use, and it may be harder to tell if "
+"the app is insecure.\n"
 "\n"
 "By installing this app you are putting a high amount of trust in the "
 "developers."
 msgstr ""
 "Esta aplicação não é desenvolvida abertamente, por isso apenas os seus "
-"programadores sabem como a mesma funciona. Pode ser inseguro ou fazer "
-"ativamente coisas nefastas que são difíceis de detetar ou prevenir.\n"
+"programadores sabem como a mesma funciona. Pode haver restrições à sua "
+"utilização, e pode ser mais difícil dizer se a aplicação é insegura.\n"
 "\n"
 "Ao instalar esta aplicação, está a depositar uma grande confiança nos "
 "programadores."
@@ -2603,7 +2631,7 @@ msgid "Starting up…"
 msgstr "A iniciar…"
 
 #: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
-#: src/gs-shell.ui:266
+#: src/gs-shell.ui:267
 msgid "Automatic Updates Paused"
 msgstr "Atualizações automáticas interrompidas"
 
@@ -2637,7 +2665,7 @@ msgstr "Abrir as _Definições de Rede"
 msgid "Moderate page"
 msgstr "Moderar página"
 
-#: src/gs-moderate-page.ui:85
+#: src/gs-moderate-page.ui:87
 msgid "There are no reviews to moderate"
 msgstr "Não existem análises para moderar"
 
@@ -2701,7 +2729,7 @@ msgstr "Pacotes a remover"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:280 src/gs-shell.ui:340 src/gs-updates-page.c:1362
+#: src/gs-os-update-page.c:280 src/gs-shell.ui:341 src/gs-updates-page.c:1361
 msgid "Updates"
 msgstr "Pacotes a atualizar"
 
@@ -2711,35 +2739,32 @@ msgstr "Pacotes a atualizar"
 msgid "Downgrades"
 msgstr "Pacotes a reverter"
 
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:585
-msgid "Access additional software from selected third party sources."
-msgstr "Aceder a mais aplicações, de fontes terceiras selecionadas."
+#. Translators: This is a clickable link on the third party repositories info bar. It's
+#. part of a constructed sentence: "Provides access to additional software from [selected external sources].
+#. Some proprietary software is included."
+#: src/gs-overview-page.c:688
+msgid "selected external sources"
+msgstr "fontes externas selecionadas"
 
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:589
+#. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
+#: src/gs-overview-page.c:690
+#, c-format
 msgid ""
-"Some of this software is proprietary and therefore has restrictions on use, "
-"sharing, and access to source code."
+"Provides access to additional software from %s. Some proprietary software is "
+"included."
 msgstr ""
-"Algumas destas aplicações são proprietárias, e portanto têm restrições sobre "
-"o seu uso, partilha, e acesso ao código fonte."
-
-#. TRANSLATORS: this is the clickable
-#. * link on the third party repositories info bar
-#: src/gs-overview-page.c:594
-msgid "Find out more…"
-msgstr "Saber mais…"
+"Fornece acesso a software adicional a partir de %s. Está incluído algum "
+"software proprietário."
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:602 src/gs-repos-dialog.c:195
+#: src/gs-overview-page.c:699 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Ativar"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:659 src/gs-shell.ui:307
+#: src/gs-overview-page.c:754 src/gs-shell.ui:308
 msgid "Explore"
 msgstr "Explorar"
 
@@ -2751,7 +2776,7 @@ msgstr "Página de visão geral"
 msgid "Enable Third Party Software Repositories?"
 msgstr "Ativar fontes de software de terceiros?"
 
-#: src/gs-overview-page.ui:209
+#: src/gs-overview-page.ui:212
 msgid "No Application Data Found"
 msgstr "Nenhuns dados de aplicação encontrados"
 
@@ -2860,64 +2885,72 @@ msgid "_Continue"
 msgstr "_Continuar"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:262
+#: src/gs-repos-dialog.c:265
 #, c-format
 msgid "Software that has been installed from “%s” will cease receive updates."
 msgstr ""
 "O software que foi instalado a partir de \"%s\" deixará de receber "
 "atualizações."
 
-#: src/gs-repos-dialog.c:271
+#: src/gs-repos-dialog.c:274
 msgid "Disable Repository?"
 msgstr "Desativar o repositório?"
 
-#: src/gs-repos-dialog.c:271
+#: src/gs-repos-dialog.c:274
 msgid "Remove Repository?"
 msgstr "Remover o repositório?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:277
+#: src/gs-repos-dialog.c:280
 msgid "_Disable"
 msgstr "_Desativar"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:280
+#: src/gs-repos-dialog.c:283
 msgid "_Remove"
 msgstr "_Remover"
 
-#: src/gs-repos-dialog.c:482
-msgid "Fedora Third Party Repositories"
-msgstr "Repositórios de terceiros do Fedora"
+#: src/gs-repos-dialog.c:597
+msgid "Enable New Repositories"
+msgstr "Ativar novos repositórios"
+
+#: src/gs-repos-dialog.c:598
+msgid "Turn on new repositories when they are added."
+msgstr "Ativar novos repositórios quando estes são adicionados."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:492
+#: src/gs-repos-dialog.c:607
 msgid "more information"
 msgstr "mais informação"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:497
+#: src/gs-repos-dialog.c:612
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Repositórios adicionais de terceiros selecionados - %s."
 
+#: src/gs-repos-dialog.c:617
+msgid "Fedora Third Party Repositories"
+msgstr "Repositórios de terceiros do Fedora"
+
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:622
+#: src/gs-repos-dialog.c:823
 msgid "the operating system"
 msgstr "o sistema operativo"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:678
+#: src/gs-repos-dialog.c:880
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Estas fontes de aplicações suplementam as fontes predefinidas do %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:10 src/gs-shell.ui:76 src/gs-update-dialog.ui:10
+#: src/gs-repos-dialog.ui:10 src/gs-shell.ui:77 src/gs-update-dialog.ui:10
 msgid "Software Repositories"
 msgstr "Fontes de Software"
 
@@ -3127,28 +3160,28 @@ msgid "Report"
 msgstr "Denunciar"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:105
+#: src/gs-review-row.ui:89
 msgid "Was this review useful to you?"
 msgstr "Esta análise foi-lhe útil?"
 
-#: src/gs-review-row.ui:121
+#: src/gs-review-row.ui:106
 msgid "Yes"
 msgstr "Sim"
 
-#: src/gs-review-row.ui:130
+#: src/gs-review-row.ui:115
 msgid "No"
 msgstr "Não"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:139
+#: src/gs-review-row.ui:124
 msgid "Meh"
 msgstr "Meh"
 
-#: src/gs-review-row.ui:162
+#: src/gs-review-row.ui:135
 msgid "Report…"
 msgstr "Reporte…"
 
-#: src/gs-review-row.ui:172
+#: src/gs-review-row.ui:148
 msgid "Remove…"
 msgstr "Remover…"
 
@@ -3363,11 +3396,11 @@ msgstr "%s é inseguro"
 msgid "Safety"
 msgstr "Segurança"
 
-#: src/gs-safety-context-dialog.ui:147
+#: src/gs-safety-context-dialog.ui:146
 msgid "License"
 msgstr "Licença"
 
-#: src/gs-safety-context-dialog.ui:233
+#: src/gs-safety-context-dialog.ui:232
 msgid "SDK"
 msgstr "SDK"
 
@@ -3950,36 +3983,36 @@ msgid "Software"
 msgstr "Aplicações"
 
 #. button in the info bar
-#: src/gs-shell.ui:85
+#: src/gs-shell.ui:86
 msgid "Examine Disk"
 msgstr "Examinar Disco"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:94 src/gs-updates-page.c:908
+#: src/gs-shell.ui:95 src/gs-updates-page.c:907
 msgid "Network Settings"
 msgstr "Definições de rede"
 
 #. button in the info bar
-#: src/gs-shell.ui:103
+#: src/gs-shell.ui:104
 msgid "Restart Now"
 msgstr "Reiniciar"
 
 #. button in the info bar
-#: src/gs-shell.ui:112
+#: src/gs-shell.ui:113
 msgid "More Information"
 msgstr "Mais informação"
 
-#: src/gs-shell.ui:167
+#: src/gs-shell.ui:168
 msgid "Search"
 msgstr "Pesquisa"
 
-#: src/gs-shell.ui:196
+#: src/gs-shell.ui:197
 msgid "Primary Menu"
 msgstr "Menu principal"
 
-#: src/gs-shell.ui:285
+#: src/gs-shell.ui:286
 msgid "Find Out _More"
 msgstr "Saber _mais"
 
@@ -4046,12 +4079,6 @@ msgstr "%s (A instalar)"
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (A remover)"
-
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for removing multiple repos
-#: src/gs-third-party-repo-row.c:93
-msgid "_Remove All"
-msgstr "_Remover tudo"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
@@ -4292,34 +4319,34 @@ msgstr "Última verificação: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:578
+#: src/gs-updates-page.c:577
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "O %s %s não é mais suportado."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:583
+#: src/gs-updates-page.c:582
 msgid "Your OS is no longer supported."
 msgstr "O seu SO não é mais suportado."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:588
+#: src/gs-updates-page.c:587
 msgid "This means that it does not receive security updates."
 msgstr "Isto significa que não recebe atualizações de segurança."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:592
+#: src/gs-updates-page.c:591
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "É recomendável que atualize para uma versão mais recente."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:876
+#: src/gs-updates-page.c:875
 msgid "Charges May Apply"
 msgstr "Podem ser aplicados custos adicionais"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:880
+#: src/gs-updates-page.c:879
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -4328,26 +4355,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:884
+#: src/gs-updates-page.c:883
 msgid "Check _Anyway"
 msgstr "_Ainda assim procurar"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:900
+#: src/gs-updates-page.c:899
 msgid "No Network"
 msgstr "Sem rede"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:904
+#: src/gs-updates-page.c:903
 msgid "Internet access is required to check for updates."
 msgstr "É necessário acesso à Internet para procurar atualizações."
 
-#: src/gs-updates-page.c:1296
+#: src/gs-updates-page.c:1295
 msgid "Checking…"
 msgstr "A procurar…"
 
-#: src/gs-updates-page.c:1319
+#: src/gs-updates-page.c:1318
 msgid "Check for updates"
 msgstr "Procurar atualizações"
 
@@ -4356,51 +4383,51 @@ msgid "Updates page"
 msgstr "Página das atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:94
+#: src/gs-updates-page.ui:96
 msgid "Loading Updates…"
 msgstr "A carregar atualizações…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:108
+#: src/gs-updates-page.ui:110
 msgid "This could take a while."
 msgstr "Isto pode levar algum tempo."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:180
-msgid "Up To Date"
+#: src/gs-updates-page.ui:222
+msgid "Up to Date"
 msgstr "Atualizado"
 
-#: src/gs-updates-page.ui:196
+#: src/gs-updates-page.ui:263
 msgid "Use Mobile Data?"
 msgstr "Usar dados móveis?"
 
-#: src/gs-updates-page.ui:197
+#: src/gs-updates-page.ui:264
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
 msgstr "Procurar atualizações em redes de banda larga pode incorrer em custos."
 
-#: src/gs-updates-page.ui:200
+#: src/gs-updates-page.ui:267
 msgid "_Check Anyway"
 msgstr "Ainda assim pro_curar"
 
-#: src/gs-updates-page.ui:215
+#: src/gs-updates-page.ui:282
 msgid "No Connection"
 msgstr "Sem ligação"
 
-#: src/gs-updates-page.ui:216
+#: src/gs-updates-page.ui:283
 msgid "Go online to check for updates."
 msgstr "Procurar atualizações online."
 
-#: src/gs-updates-page.ui:219
+#: src/gs-updates-page.ui:286
 msgid "_Network Settings"
 msgstr "Defi_nições de rede"
 
-#: src/gs-updates-page.ui:245
+#: src/gs-updates-page.ui:312
 msgid "Error"
 msgstr "Erro"
 
-#: src/gs-updates-page.ui:246
+#: src/gs-updates-page.ui:313
 msgid "Updates are automatically managed."
 msgstr "As atualizações são geridas automaticamente."
 
@@ -4714,7 +4741,7 @@ msgstr "Suporte para Atualizações de Firmware"
 msgid "Provides support for firmware upgrades"
 msgstr "Permite realizar atualizações de firmware"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:300
+#: plugins/packagekit/gs-plugin-packagekit.c:301
 msgid "Packages"
 msgstr "Pacotes"
 
@@ -4734,6 +4761,32 @@ msgstr "Suporte para Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal para Linux"
+
+#~ msgid "Show the prompt to install nonfree software repositories"
+#~ msgstr ""
+#~ "Ver linha de comando para instalar repositórios 'nonfree' de aplicações"
+
+#~ msgid "_Read More"
+#~ msgstr "_Leia mais"
+
+#~ msgid "_Read Less"
+#~ msgstr "_Leia menos"
+
+#~ msgid "_Launch"
+#~ msgstr "_Iniciar"
+
+#~ msgid ""
+#~ "Some of this software is proprietary and therefore has restrictions on "
+#~ "use, sharing, and access to source code."
+#~ msgstr ""
+#~ "Algumas destas aplicações são proprietárias, e portanto têm restrições "
+#~ "sobre o seu uso, partilha, e acesso ao código fonte."
+
+#~ msgid "Find out more…"
+#~ msgstr "Saber mais…"
+
+#~ msgid "_Remove All"
+#~ msgstr "_Remover tudo"
 
 #~ msgid "Recently Updated"
 #~ msgstr "Atualizado recentemente"
