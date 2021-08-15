@@ -9,15 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-03-05 12:55+0000\n"
-"PO-Revision-Date: 2021-03-07 22:43+0700\n"
+"POT-Creation-Date: 2021-08-13 17:38+0000\n"
+"PO-Revision-Date: 2021-08-15 19:58+0700\n"
 "Last-Translator: Kukuh Syafaat <kukuhsyafaat@gnome.org>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.0\n"
 "Plural-Forms: nplurals=2; plural= n!=1;\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -68,7 +68,7 @@ msgstr "Panel pemutakhiran"
 msgid "The update details"
 msgstr "Detail pemutakhiran"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1609
+#: data/appdata/org.gnome.Software.appdata.xml.in:1774
 msgid "The GNOME Project"
 msgstr "Proyek GNOME"
 
@@ -272,24 +272,19 @@ msgstr ""
 "bukan bebas"
 
 #: data/org.gnome.software.gschema.xml:123
-msgid "Show the prompt to install nonfree software repositories"
-msgstr ""
-"Tampilkan pertanyaan untuk memasang repositori perangkat lunak tak bebas"
-
-#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr "Tampilkan ukuran terpasang bagi app dalam daftar aplikasi terpasang"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "URL yang menerangkan perangkat lunak tak bebas dan proprietari"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:132
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -297,16 +292,69 @@ msgstr ""
 "Daftar URL yang menunjuk ke berkas appstream yang akan diunduh ke dalam "
 "suatu folder app-info"
 
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:136
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Pasang berkas AppStream ke lokasi keseluruhan sistem untuk semua pengguna"
 
-#: data/org.gnome.software.gschema.xml:147
+#: data/org.gnome.software.gschema.xml:140
+msgid ""
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last."
+msgstr ""
+"Urutan prioritas format kemasan untuk disukai, dengan format yang lebih "
+"penting tercantum terlebih dahulu. Array kosong berarti urutan bawaan. "
+"Format yang dihilangkan diasumsikan terdaftar terakhir."
+
+#: data/org.gnome.software.gschema.xml:145
+msgid "The URI that references the background for an upgrade banner."
+msgstr "URI yang merujuk latar belakang untuk spanduk pemutakhiran."
+
+#: data/org.gnome.software.gschema.xml:146
+msgid ""
+"The URI can contain up to three '%u', which will be replaced by the upgrade "
+"version."
+msgstr ""
+"URI dapat berisi hingga tiga '%u', yang akan digantikan oleh versi "
+"pemutakhiran."
+
+#: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Sebuah string yang menyimpan id gnome-online-account yang digunakan untuk "
 "masuk"
+
+#. TRANSLATORS: tool that is used when copying profiles system-wide
+#: gs-install-appstream/gs-install-appstream.c:141
+msgid "GNOME Software AppStream system-wide installer"
+msgstr "Installer seluruh sistem GNOME Software AppStream"
+
+#: gs-install-appstream/gs-install-appstream.c:143
+msgid "Failed to parse command line arguments"
+msgstr "Gagal mengurai argumen baris perintah"
+
+#. TRANSLATORS: user did not specify a valid filename
+#: gs-install-appstream/gs-install-appstream.c:150
+msgid "You need to specify exactly one filename"
+msgstr "Anda perlu menentukan satu nama berkas"
+
+#. TRANSLATORS: only able to install files as root
+#: gs-install-appstream/gs-install-appstream.c:157
+msgid "This program can only be used by the root user"
+msgstr "Program ini hanya dapat digunakan oleh pengguna root"
+
+#. TRANSLATORS: error details
+#: gs-install-appstream/gs-install-appstream.c:165
+#, c-format
+msgid "Failed to validate content type: %s"
+msgstr "Gagal memvalidasi tipe konten: %s"
+
+#. TRANSLATORS: error details
+#: gs-install-appstream/gs-install-appstream.c:176
+#, c-format
+msgid "Failed to copy: %s"
+msgstr "Gagal menyalin: %s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -316,139 +364,334 @@ msgstr "Pasang Perangkat Lunak"
 msgid "Install selected software on the system"
 msgstr "Pasang perangkat lunak yang dipilih pada sistem"
 
-#: src/gnome-software.ui:11
-msgid "Select All"
-msgstr "Pilih Semua"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:78
+msgid "Cartoon Violence"
+msgstr "Kekerasan Kartun"
 
-#: src/gnome-software.ui:17
-msgid "Select None"
-msgstr "Pilih Tak Satupun"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:85
+msgid "Fantasy Violence"
+msgstr "Kekerasan Fantasi"
 
-#: src/gnome-software.ui:36
-msgid "_Software Repositories"
-msgstr "Repo_sitori Perangkat Lunak"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:92
+msgid "Realistic Violence"
+msgstr "Kekerasan Realistis"
 
-#: src/gnome-software.ui:41
-msgid "_Update Preferences"
-msgstr "Preferensi Pem_utakhiran"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:99
+msgid "Violence Depicting Bloodshed"
+msgstr "Kekerasan yang Menggambarkan Pertumpahan Darah"
 
-#: src/gnome-software.ui:49 src/org.gnome.Software.desktop.in:3
-msgid "Software"
-msgstr "Perangkat Lunak"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:106
+msgid "Sexual Violence"
+msgstr "Kekerasan Seksual"
 
-#: src/gnome-software.ui:65 src/gs-update-dialog.ui:20
-msgid "Go back"
-msgstr "Kembali"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:113
+msgid "Alcohol"
+msgstr "Alkohol"
 
-#. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:97
-msgid "_Explore"
-msgstr "J_elajahi"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:120
+msgid "Narcotics"
+msgstr "Narkotika"
 
-#. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:120
-msgid "_Installed"
-msgstr "Ter_pasang"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:127
+msgid "Tobacco"
+msgstr "Tembakau"
 
-#. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:160
-msgid "_Updates"
-msgstr "Pem_utakhiran"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:134
+msgid "Nudity"
+msgstr "Ketelanjangan"
 
-#: src/gnome-software.ui:229
-msgid "Search"
-msgstr "Pencarian"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:141
+msgid "Sexual Themes"
+msgstr "Tema Seksual"
 
-#. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
-#. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:273 src/gs-app-row.c:295 src/gs-details-page.ui:979
-msgid "Source"
-msgstr "Sumber"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:148
+msgid "Profanity"
+msgstr "Senonoh"
 
-#. button in the info bar
-#: src/gnome-software.ui:378 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
-msgid "Software Repositories"
-msgstr "Repositori Perangkat Lunak"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:155
+msgid "Inappropriate Humor"
+msgstr "Humor yang Tidak Pantas"
 
-#. button in the info bar
-#: src/gnome-software.ui:386
-msgid "Examine Disk"
-msgstr "Periksa Disk"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:162
+msgid "Discrimination"
+msgstr "Diskriminasi"
 
-#. button in the info bar
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: src/gnome-software.ui:394 src/gs-updates-page.c:838
-msgid "Network Settings"
-msgstr "Pengaturan Jaringan"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:169
+msgid "Advertising"
+msgstr "Iklan"
 
-#. button in the info bar
-#: src/gnome-software.ui:402
-msgid "Restart Now"
-msgstr "Mulai Ulang Sekarang"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:176
+msgid "Gambling"
+msgstr "Perjudian"
 
-#. button in the info bar
-#: src/gnome-software.ui:410
-msgid "More Information"
-msgstr "Informasi lebih lanjut"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:183
+msgid "Purchasing"
+msgstr "Membeli"
 
-#: src/gnome-software.ui:462 src/gs-metered-data-dialog.ui:5
-#: src/gs-metered-data-dialog.ui:17
-msgid "Automatic Updates Paused"
-msgstr "Pemutakhiran Otomatis Ditunda"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:190
+msgid "Chat Between Users"
+msgstr "Obrolan Antar Pengguna"
 
-#: src/gnome-software.ui:481
-msgid "Find Out _More"
-msgstr "Te_mukan Lebih Jauh"
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:197
+msgid "Audio Chat Between Users"
+msgstr "Obrolan Audio Antar Pengguna"
 
-#: lib/gs-app.c:5210
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:204
+msgid "Contact Details"
+msgstr "Detail Kontak"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:211
+msgid "Identifying Information"
+msgstr "Mengidentifikasi Informasi"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:218
+msgid "Location Sharing"
+msgstr "Berbagi Lokasi"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:241
+msgid "Homosexuality"
+msgstr "Homoseksualitas"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:248
+msgid "Prostitution"
+msgstr "Pelacuran"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:255
+msgid "Adultery"
+msgstr "Perzinaan"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:262
+msgid "Sexualized Characters"
+msgstr "Karakter Seksual"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:269
+msgid "Desecration"
+msgstr "Penodaan"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:276
+msgid "Human Remains"
+msgstr "Sisa-sisa Manusia"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:283
+msgid "Slavery"
+msgstr "Perbudakan"
+
+#. Translators: This refers to a content rating attribute which
+#. * has an unknown value. For example, the amount of violence in
+#. * an app is ‘Unknown’.
+#: src/gs-age-rating-context-dialog.c:338
+msgid "Unknown"
+msgstr "Tak Diketahui"
+
+#. Translators: The app is considered suitable to be run by all ages of people.
+#. * This is displayed in a context tile, so the string should be short.
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: src/gs-age-rating-context-dialog.c:605 lib/gs-category.c:214
+msgid "All"
+msgstr "Semua"
+
+#. Translators: This is displayed for the download size in an
+#. * app’s context tile if the size is unknown. It should be short
+#. * (at most a couple of characters wide).
+#. Translators: This is shown in a bubble if the storage
+#. * size of an application is not known. The bubble is small,
+#. * so the string should be as short as possible.
+#: src/gs-age-rating-context-dialog.c:618 src/gs-app-context-bar.c:152
+#: src/gs-storage-context-dialog.c:86
+msgid "?"
+msgstr "?"
+
+#. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
+#. this one’s not a placeholder
+#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
+msgid "Age Rating"
+msgstr "Peringkat Umur"
+
+#: lib/gs-app.c:5607
 msgid "Local file"
 msgstr "Berkas lokal"
 
 #. TRANSLATORS: the first %s is replaced with an origin name;
 #. the second %s is replaced with the packaging format.
 #. Example string: "Local file (RPM)"
-#: lib/gs-app.c:5225
+#. Translators: The first placeholder is an app runtime
+#. * name, the second is its version number.
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:392
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5293
+#: lib/gs-app.c:5699
 msgid "Package"
 msgstr "Paket"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:416
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:435
 msgid "Pending"
 msgstr "Tertunda"
 
-#: src/gs-app-addon-row.c:103 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:153
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:359
+msgid "Pending install"
+msgstr "Pemasangan tertunda"
+
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:366
+msgid "Pending remove"
+msgstr "Penghapusan tertunda"
+
+#. Translators: This is in the context of a list of apps which are installed on the system.
+#. Translators: A label for a button to show only software which is already installed.
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:321
 msgid "Installed"
 msgstr "Terpasang"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:172 src/gs-details-page.c:364
-#: src/gs-third-party-repo-row.c:100
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:352
 msgid "Installing"
 msgstr "Memasang"
 
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:111 src/gs-repo-row.c:126
-#: src/gs-third-party-repo-row.c:107
+#: src/gs-app-addon-row.c:119
 msgid "Removing"
 msgstr "Menghapus"
 
-#. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-app-addon-row.ui:70 src/gs-details-page.c:989
-#: src/gs-details-page.ui:202
+#: src/gs-app-addon-row.ui:70
 msgid "_Uninstall"
 msgstr "Hap_us pemasangan"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:480
+#: src/gs-app-details-page.c:70
+msgid "Network"
+msgstr "Jaringan"
+
+#: src/gs-app-details-page.c:70
+msgid "Can communicate over the network"
+msgstr "Dapat berkomunikasi melalui jaringan"
+
+#: src/gs-app-details-page.c:71
+msgid "System Services"
+msgstr "Layanan Sistem"
+
+#: src/gs-app-details-page.c:71
+msgid "Can access D-Bus services on the system bus"
+msgstr "Dapat mengakses layanan D-Bus pada bus sistem"
+
+#: src/gs-app-details-page.c:72
+msgid "Session Services"
+msgstr "Layanan Sesi"
+
+#: src/gs-app-details-page.c:72
+msgid "Can access D-Bus services on the session bus"
+msgstr "Dapat mengakses layanan D-Bus pada bus sesi"
+
+#: src/gs-app-details-page.c:73
+msgid "Devices"
+msgstr "Perangkat"
+
+#: src/gs-app-details-page.c:73
+msgid "Can access system device files"
+msgstr "Dapat mengakses berkas perangkat sistem"
+
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+msgid "Home folder"
+msgstr "Folder rumah"
+
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:78
+msgid "Can view, edit and create files"
+msgstr "Dapat melihat, menyunting, dan membuat berkas"
+
+#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:79
+msgid "Can view files"
+msgstr "Dapat melihat berkas"
+
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
+msgid "File system"
+msgstr "Sistem berkas"
+
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
+msgid "Downloads folder"
+msgstr "Folder unduhan"
+
+#: src/gs-app-details-page.c:80
+msgid "Settings"
+msgstr "Pengaturan"
+
+#: src/gs-app-details-page.c:80
+msgid "Can view and change any settings"
+msgstr "Dapat melihat dan mengubah pengaturan apa pun"
+
+#: src/gs-app-details-page.c:81
+msgid "Legacy display system"
+msgstr "Sistem tampilan lama"
+
+#: src/gs-app-details-page.c:81
+msgid "Uses an old, insecure display system"
+msgstr "Menggunakan sistem tampilan yang lama dan tidak aman"
+
+#: src/gs-app-details-page.c:82
+msgid "Sandbox escape"
+msgstr "Sandbox escape"
+
+#: src/gs-app-details-page.c:82
+msgid "Can escape the sandbox and circumvent any other restrictions"
+msgstr "Dapat menghindari sandbox dan menghindari pembatasan lainnya"
+
+#. Translators: This is the source and upgrade version of an
+#. * application, shown to the user when they view more detailed
+#. * information about pending updates. The source is of the form
+#. * ‘deja-dup’ (a package name) or
+#. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
+#. * version is of the form ‘40.4-1.fc34’ (a version number).
+#: src/gs-app-details-page.c:159
+#, c-format
+msgid "%s %s"
+msgstr "%s %s"
+
+#. TRANSLATORS: this is where the packager did not write
+#. * a description for the update
+#: src/gs-app-details-page.c:177
+msgid "No update description available."
+msgstr "Deskripsi pemutakhiran tak tersedia."
+
+#: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22
+#: src/gs-shell.ui:376 src/gs-shell.ui:464
+msgid "Go back"
+msgstr "Kembali"
+
+#: src/gs-app-details-page.ui:109 src/gs-app-row.c:504
+msgid "Requires additional permissions"
+msgstr "Membutuhkan izin tambahan"
+
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:551
 msgid "Version History"
 msgstr "Riwayat Versi"
 
@@ -468,58 +711,57 @@ msgstr "Tidak ada detail untuk rilis ini"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:84 src/gs-history-dialog.c:111
-#: src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:84 src/gs-review-row.c:65
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:136
+#: src/gs-application.c:139
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Mode awal mula: bisa ‘updates’, ‘updated’, ‘installed’, atau ‘overview’"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:139
 msgid "MODE"
 msgstr "MODE"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:141
 msgid "Search for applications"
 msgstr "Cari aplikasi"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:141
 msgid "SEARCH"
 msgstr "CARI"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:143
 msgid "Show application details (using application ID)"
 msgstr "Tampilkan rincian aplikasi (memakai ID aplikasi)"
 
-#: src/gs-application.c:140 src/gs-application.c:144
+#: src/gs-application.c:143 src/gs-application.c:147
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:145
 msgid "Show application details (using package name)"
 msgstr "Tampilkan rincian aplikasi (memakai nama paket)"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:145
 msgid "PKGNAME"
 msgstr "NAMAPAKET"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:147
 msgid "Install the application (using application ID)"
 msgstr "Pasang aplikasi (memakai ID aplikasi)"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:149
 msgid "Open a local package file"
 msgstr "Buka suatu berkas paket lokal"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:149
 msgid "FILENAME"
 msgstr "NAMABERKAS"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:151
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -527,31 +769,35 @@ msgstr ""
 "Jenis interaksi yang diharapkan untuk tindakan ini: baik 'tidak ada (none)', "
 "'memberitahu (notify)', atau 'penuh (full)'"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:154
 msgid "Show verbose debugging information"
 msgstr "Tampilkan informasi pengawakutuan cerewet"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:156
 msgid "Installs any pending updates in the background"
 msgstr "Pasang semua pemutakhiran yang tertunda di latar belakang"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:158
 msgid "Show update preferences"
 msgstr "Tampilkan preferensi pemutakhiran"
 
-#: src/gs-application.c:157
+#: src/gs-application.c:160
 msgid "Quit the running instance"
 msgstr "Keluar dari instansi yang tengah berjalan"
 
-#: src/gs-application.c:159
+#: src/gs-application.c:162
 msgid "Prefer local file sources to AppStream"
 msgstr "Lebih suka sumber berkas lokal daripada AppStream"
 
-#: src/gs-application.c:161
+#: src/gs-application.c:164
 msgid "Show version number"
 msgstr "Tampilkan nomor versi"
 
-#: src/gs-application.c:354
+#: src/gs-application.c:358
+msgid "Copyright © 2016–2021 GNOME Software contributors"
+msgstr "Hak Cipta © 2016–2021 Kontributor Perangkat Lunak GNOME"
+
+#: src/gs-application.c:361
 msgid "translator-credits"
 msgstr ""
 "Andika Triwidada <andika@gmail.com>, 2013-2015, 2017, 2018.\n"
@@ -560,37 +806,308 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:359 src/gs-shell.c:2136
+#: src/gs-application.c:374 src/gs-shell.c:2132
 msgid "About Software"
 msgstr "Tentang Perangkat Lunak"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:362
+#: src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
 msgstr ""
 "Suatu cara yang manis untuk mengelola perangkat lunak pada sistem Anda."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:590
+#: src/gs-application.c:566
 msgid "Sorry! There are no details for that application."
 msgstr "Maaf! Tidak ada detail untuk aplikasi itu."
 
+#. Translators: The disk usage of an application when installed.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:113 src/gs-storage-context-dialog.c:126
+msgid "Installed Size"
+msgstr "Ukuran Terpasang"
+
+#: src/gs-app-context-bar.c:116
+#, c-format
+msgid "Includes %s of data and %s of cache"
+msgstr "Termasuk %s data dan %s singgahan"
+
+#: src/gs-app-context-bar.c:119
+#, c-format
+msgid "Includes %s of data"
+msgstr "Termasuk %s data"
+
+#: src/gs-app-context-bar.c:122
+#, c-format
+msgid "Includes %s of cache"
+msgstr "Termasuk %s singgahan"
+
+#: src/gs-app-context-bar.c:125
+msgid "Cache and data usage unknown"
+msgstr "Singgahan dan penggunaan data tidak diketahui"
+
+#. Translators: The download size of an application.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:134 src/gs-storage-context-dialog.c:155
+msgid "Download Size"
+msgstr "Ukuran Unduh"
+
+#: src/gs-app-context-bar.c:137
+msgid "Needs no additional system downloads"
+msgstr "Tidak memerlukan unduhan sistem tambahan"
+
+#: src/gs-app-context-bar.c:139
+msgid "Needs an unknown size of additional system downloads"
+msgstr "Membutuhkan ukuran unduhan sistem tambahan yang tidak diketahui"
+
+#. Translators: The placeholder is for a size string,
+#. * such as ‘150 MB’ or ‘1.5 GB’.
+#: src/gs-app-context-bar.c:144
+#, c-format
+msgid "Needs %s of additional system downloads"
+msgstr "Membutuhkan %s unduhan sistem tambahan"
+
+#. Translators: Displayed if the download or installed size of
+#. * an app could not be determined.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:158
+msgid "Size is unknown"
+msgstr "Ukuran tidak diketahui"
+
+#. Translators: This indicates an app requires no permissions to run.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:222
+msgid "No permissions"
+msgstr "Tidak ada izin"
+
+#. Translators: This indicates an app uses the network.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:229
+msgid "Has network access"
+msgstr "Memiliki akses jaringan"
+
+#. Translators: This indicates an app uses D-Bus system services.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:236
+msgid "Uses system services"
+msgstr "Gunakan layanan sistem"
+
+#. Translators: This indicates an app uses D-Bus session services.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:243
+msgid "Uses session services"
+msgstr "Gunakan layanan sesi"
+
+#. Translators: This indicates an app can access arbitrary hardware devices.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:250
+msgid "Can access hardware devices"
+msgstr "Dapat mengakses perangkat keras"
+
+#. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:258
+msgid "Can read/write all your data"
+msgstr "Dapat membaca/menulis semua data Anda"
+
+#. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:266
+msgid "Can read all your data"
+msgstr "Dapat membaca semua data Anda"
+
+#. Translators: This indicates an app can read/write to the user’s Downloads directory.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:273
+msgid "Can read/write your downloads"
+msgstr "Dapat membaca/menulis unduhan Anda"
+
+#. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:280
+msgid "Can read your downloads"
+msgstr "Dapat membaca unduhan Anda"
+
+#. Translators: This indicates an app can access or change user settings.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:287 src/gs-safety-context-dialog.c:206
+msgid "Can access and change user settings"
+msgstr "Dapat mengakses dan mengubah pengaturan pengguna"
+
+#. Translators: This indicates an app uses the X11 windowing system.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:294 src/gs-safety-context-dialog.c:190
+msgid "Uses a legacy windowing system"
+msgstr "Menggunakan sistem jendela yang lama dan tidak aman"
+
+#. Translators: This indicates an app can escape its sandbox.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:301 src/gs-safety-context-dialog.c:198
+msgid "Can acquire arbitrary permissions"
+msgstr "Dapat memperoleh izin sewenang-wenang"
+
+#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:313
+msgid "App has unknown permissions"
+msgstr "Aplikasi memiliki izin yang tidak diketahui"
+
+#. Translators: This indicates an app is not licensed under a free software license.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:325
+msgid "Proprietary code"
+msgstr "Kode proprietari"
+
+#. Translators: This indicates an app’s source code is freely available, so can be audited for security.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:331
+msgid "Auditable code"
+msgstr "Kode yang dapat diaudit"
+
+#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:311
+msgid "App comes from a trusted source"
+msgstr "Aplikasi berasal dari sumber terpercaya"
+
+#. Translators: This indicates an app was written and released by a developer who has been verified.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:347 src/gs-safety-context-dialog.c:321
+msgid "App developer is verified"
+msgstr "Pengembang aplikasi diverifikasi"
+
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been marked as
+#. * ‘safe’, ‘potentially safe’ or ‘unsafe’. For example:
+#. * “App comes from a trusted source; Auditable code; No permissions”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been given a
+#. * certain content rating. For example:
+#. * “References to alcoholic beverages; Moderated chat functionality between users”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#: src/gs-app-context-bar.c:359 src/gs-app-context-bar.c:621
+msgid "; "
+msgstr "; "
+
+#. Translators: The app is considered safe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:367
+msgid "Safe"
+msgstr "Aman"
+
+#. Translators: The app is considered potentially unsafe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:374
+msgid "Potentially Unsafe"
+msgstr "Berpotensi Tidak Aman"
+
+#. Translators: The app is considered unsafe to install and run.
+#. * This is displayed in a context tile, so the string should be short.
+#: src/gs-app-context-bar.c:381
+msgid "Unsafe"
+msgstr "Tidak Aman"
+
+#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:488
+#: src/gs-hardware-support-context-dialog.c:587
+msgid "Mobile Only"
+msgstr "Hanya Seluler"
+
+#: src/gs-app-context-bar.c:457
+msgid "Only works on a small screen"
+msgstr "Hanya berfungsi pada layar kecil"
+
+#: src/gs-app-context-bar.c:462 src/gs-app-context-bar.c:495
+#: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:507
+#: src/gs-app-context-bar.c:547 src/gs-app-context-bar.c:552
+#: src/gs-hardware-support-context-dialog.c:567
+msgid "Desktop Only"
+msgstr "Hanya Destop"
+
+#: src/gs-app-context-bar.c:463
+msgid "Only works on a large screen"
+msgstr "Hanya berfungsi pada layar besar"
+
+#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:605
+msgid "Screen Size Mismatch"
+msgstr "Ketidakcocokan Ukuran Layar"
+
+#: src/gs-app-context-bar.c:468 src/gs-hardware-support-context-dialog.c:606
+msgid "Doesn’t support your current screen size"
+msgstr "Tidak mendukung ukuran layar Anda saat ini"
+
+#: src/gs-app-context-bar.c:489 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:664
+msgid "Requires a touchscreen"
+msgstr "Membutuhkan layar sentuh"
+
+#: src/gs-app-context-bar.c:496 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:624
+msgid "Requires a keyboard"
+msgstr "Membutuhkan papan tik"
+
+#: src/gs-app-context-bar.c:503
+msgid "Requires a mouse"
+msgstr "Membutuhkan tetikus"
+
+#: src/gs-app-context-bar.c:508 src/gs-app-context-bar.c:553
+msgid "Not optimized for touch devices or phones"
+msgstr "Tidak dioptimalkan untuk perangkat sentuh atau ponsel"
+
+#: src/gs-app-context-bar.c:519
+msgid "Gamepad Needed"
+msgstr "Gamepad Dibutuhkan"
+
+#: src/gs-app-context-bar.c:520
+msgid "Requires a gamepad to play"
+msgstr "Membutuhkan gamepad untuk bermain"
+
+#. Translators: This is used in a context tile to indicate that
+#. * an app works on phones, tablets *and* desktops. It should be
+#. * short and in title case.
+#: src/gs-app-context-bar.c:534
+msgid "Adaptive"
+msgstr "Adaptif"
+
+#: src/gs-app-context-bar.c:535
+msgid "Works on phones, tablets and desktops"
+msgstr "Bekerja pada ponsel, tablet, dan destop"
+
+#: src/gs-app-context-bar.c:548
+msgid "Probably requires a keyboard or mouse"
+msgstr "Mungkin membutuhkan papan tik atau tetikus"
+
+#. Translators: This indicates that the content rating for an
+#. * app says it can be used by all ages of people, as it contains
+#. * no objectionable content.
+#: src/gs-app-context-bar.c:596
+msgid "Contains no age-inappropriate content"
+msgstr "Berisi konten yang tidak sesuai dengan usia"
+
+#: src/gs-app-context-bar.c:641
+msgid "No age rating information available"
+msgstr "Tidak ada informasi peringkat usia yang tersedia"
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:127
-msgid "Visit website"
-msgstr "Kunjungi situs web"
+#: src/gs-app-row.c:143
+msgid "Visit Website"
+msgstr "Kunjungi Situs Web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:132
+#: src/gs-app-row.c:149
 msgid "Install…"
 msgstr "Pasang…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:488
+#: src/gs-app-row.c:157 src/gs-updates-section.ui:60
 msgid "Cancel"
 msgstr "Batal"
 
@@ -598,44 +1115,78 @@ msgstr "Batal"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:297 src/gs-page.c:338
+#: src/gs-app-row.c:165 src/gs-common.c:297 src/gs-page.c:365
 msgid "Install"
 msgstr "Pasang"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:153
+#: src/gs-app-row.c:173
 msgid "Update"
 msgstr "Mutakhiran"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:496
+#: src/gs-app-row.c:178 src/gs-app-row.c:188 src/gs-details-page.ui:295
+#: src/gs-page.c:523
 msgid "Uninstall"
 msgstr "Hapus pemasangan"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:178
+#: src/gs-app-row.c:202
 msgid "Uninstalling"
 msgstr "Menghapus pemasangan"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:285
+#: src/gs-app-row.c:312
 msgid "Device cannot be used during update."
 msgstr "Perangkat tidak dapat dipakai selama pemutakhiran."
 
-#: src/gs-app-row.c:476 src/gs-update-dialog.ui:185
-msgid "Requires additional permissions"
-msgstr "Membutuhkan izin tambahan"
+#. TRANSLATORS: this refers to where the app came from
+#: src/gs-app-row.c:322 src/gs-shell-search-provider.c:264
+#, c-format
+msgid "Source: %s"
+msgstr "Sumber: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:483
+#: src/gs-app-row.c:511
 #, c-format
 msgid "Renamed from %s"
 msgstr "Ganti nama dari %s"
+
+#. Translators: The placeholder is an application name
+#: src/gs-app-translation-dialog.c:67
+#, c-format
+msgid "Help Translate %s"
+msgstr "Bantu Terjemahkan %s"
+
+#. Translators: The placeholder is an application name
+#: src/gs-app-translation-dialog.c:70
+#, c-format
+msgid ""
+"%s is designed, developed, and translated by an international community of "
+"volunteers.\n"
+"\n"
+"This means that while it’s not yet available in your language, you can get "
+"involved and help translate it yourself."
+msgstr ""
+"%s dirancang, dikembangkan, dan diterjemahkan oleh komunitas sukarelawan "
+"internasional.\n"
+"\n"
+"Ini berarti bahwa meskipun belum tersedia dalam bahasa Anda, Anda dapat "
+"terlibat dan membantu menerjemahkannya sendiri."
+
+#: src/gs-app-translation-dialog.ui:9
+msgid "Translations"
+msgstr "Terjemahan"
+
+#: src/gs-app-translation-dialog.ui:133
+msgid "_Translation Website"
+msgstr "Situs Web _Terjemahan"
 
 #. TRANSLATORS: This is a description for entering user/password
 #: src/gs-basic-auth-dialog.c:82
@@ -647,9 +1198,8 @@ msgstr "Diperlukan log masuk jarak jauh %s (bidang %s)"
 msgid "Login Required"
 msgstr "Log Masuk Diperlukan"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:262
-#: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
-#: src/gs-upgrade-banner.ui:112
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:310
+#: src/gs-removal-dialog.ui:29 src/gs-review-dialog.ui:22
 msgid "_Cancel"
 msgstr "_Batal"
 
@@ -671,52 +1221,27 @@ msgstr "Kata _Sandi"
 msgid "Other"
 msgstr "Lainnya"
 
-#. TRANSLATORS: this is a subcategory matching all the
-#. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:214
-msgid "All"
-msgstr "Semua"
-
 #. TRANSLATORS: this is a subcategory of featured apps
 #: lib/gs-category.c:218
 msgid "Featured"
 msgstr "Pilihan"
 
-#. TRANSLATORS: This is a heading on the categories page. %s gets
-#. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:453
-#, c-format
-msgid "Featured %s"
-msgstr "%s Pilihan"
+#. Heading for featured apps on a category page
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: src/gs-category-page.ui:46 src/gs-overview-page.ui:118
+msgid "Editor’s Choice"
+msgstr "Pilihan Penyunting"
 
-#. Translators: A label for a button to sort apps by their rating.
-#: src/gs-category-page.ui:26 src/gs-review-dialog.ui:74
-msgid "Rating"
-msgstr "Peringkat"
+#. Heading for recently updated apps on a category page
+#. Translators: This is a heading for software which has been recently released upstream.
+#: src/gs-category-page.ui:74 src/gs-overview-page.ui:146
+msgid "New & Updated"
+msgstr "Baru & Dimutakhirkan"
 
-#. Translators: A label for a button to sort apps alphabetically.
-#. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:55
-msgid "Name"
-msgstr "Nama"
-
-#. TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.
-#: src/gs-category-page.ui:111
-msgid "Show"
-msgstr "Tampilkan"
-
-#: src/gs-category-page.ui:128
-msgid "Subcategories filter menu"
-msgstr "Menu penyaringan subkategori"
-
-#. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
-#: src/gs-category-page.ui:159
-msgid "Sort"
-msgstr "Urutkan"
-
-#: src/gs-category-page.ui:175
-msgid "Subcategories sorting menu"
-msgstr "Menu pengurutan subkategori"
+#. Heading for the rest of the apps on a category page
+#: src/gs-category-page.ui:102
+msgid "Other Apps"
+msgstr "Aplikasi Lainnya"
 
 #. TRANSLATORS: the user isn't reading the question
 #: lib/gs-cmd.c:193
@@ -729,398 +1254,345 @@ msgstr "Masukkan nomor dari 1 sampai %u: "
 msgid "Choose an application:"
 msgstr "Pilih aplikasi:"
 
-#: lib/gs-desktop-data.c:17
-msgctxt "Menu of Audio & Video"
+#: lib/gs-desktop-data.c:16
+msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Semua"
 
 #: lib/gs-desktop-data.c:20
-msgctxt "Menu of Audio & Video"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:23
-msgctxt "Menu of Audio & Video"
-msgid "Audio Creation & Editing"
-msgstr "Pembuatan & Penyuntingan Audio"
-
-#: lib/gs-desktop-data.c:29
-msgctxt "Menu of Audio & Video"
-msgid "Music Players"
-msgstr "Pemutar Musik"
-
-#: lib/gs-desktop-data.c:38
-msgctxt "Menu of Developer Tools"
-msgid "All"
-msgstr "Semua"
-
-#: lib/gs-desktop-data.c:41
-msgctxt "Menu of Developer Tools"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:44
-msgctxt "Menu of Developer Tools"
-msgid "Debuggers"
-msgstr "Pengawakutu"
-
-#: lib/gs-desktop-data.c:47
-msgctxt "Menu of Developer Tools"
-msgid "IDEs"
-msgstr "IDE"
-
-#: lib/gs-desktop-data.c:56
-msgctxt "Menu of Education & Science"
-msgid "All"
-msgstr "Semua"
-
-#: lib/gs-desktop-data.c:60
-msgctxt "Menu of Education & Science"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:64
-msgctxt "Menu of Education & Science"
-msgid "Artificial Intelligence"
-msgstr "Kecerdasan Buatan"
-
-#: lib/gs-desktop-data.c:67
-msgctxt "Menu of Education & Science"
-msgid "Astronomy"
-msgstr "Astronomi"
-
-#: lib/gs-desktop-data.c:71
-msgctxt "Menu of Education & Science"
-msgid "Chemistry"
-msgstr "Kimia"
-
-#: lib/gs-desktop-data.c:75
-msgctxt "Menu of Education & Science"
-msgid "Languages"
-msgstr "Bahasa"
-
-#: lib/gs-desktop-data.c:79
-msgctxt "Menu of Education & Science"
-msgid "Math"
-msgstr "Matematika"
-
-#: lib/gs-desktop-data.c:86
-msgctxt "Menu of Education & Science"
-msgid "Robotics"
-msgstr "Robotika"
-
-#: lib/gs-desktop-data.c:95
-msgctxt "Menu of Games"
-msgid "All"
-msgstr "Semua"
-
-#: lib/gs-desktop-data.c:98
-msgctxt "Menu of Games"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:101
-msgctxt "Menu of Games"
-msgid "Action"
-msgstr "Aksi"
-
-#: lib/gs-desktop-data.c:104
-msgctxt "Menu of Games"
-msgid "Adventure"
-msgstr "Petualangan"
-
-#: lib/gs-desktop-data.c:107
-msgctxt "Menu of Games"
-msgid "Arcade"
-msgstr "Arcade"
-
-#: lib/gs-desktop-data.c:110
-msgctxt "Menu of Games"
-msgid "Blocks"
-msgstr "Blok"
-
-#: lib/gs-desktop-data.c:113
-msgctxt "Menu of Games"
-msgid "Board"
-msgstr "Papan"
-
-#: lib/gs-desktop-data.c:116
-msgctxt "Menu of Games"
-msgid "Card"
-msgstr "Kartu"
-
-#: lib/gs-desktop-data.c:119
-msgctxt "Menu of Games"
-msgid "Emulators"
-msgstr "Emulator"
-
-#: lib/gs-desktop-data.c:122
-msgctxt "Menu of Games"
-msgid "Kids"
-msgstr "Anak-anak"
-
-#: lib/gs-desktop-data.c:125
-msgctxt "Menu of Games"
-msgid "Logic"
-msgstr "Logika"
-
-#: lib/gs-desktop-data.c:129
-msgctxt "Menu of Games"
-msgid "Role Playing"
-msgstr "Memainkan Peran"
-
-#: lib/gs-desktop-data.c:132
-msgctxt "Menu of Games"
-msgid "Sports"
-msgstr "Olah Raga"
-
-#: lib/gs-desktop-data.c:135
-msgctxt "Menu of Games"
-msgid "Strategy"
-msgstr "Strategi"
-
-#: lib/gs-desktop-data.c:143
-msgctxt "Menu of Graphics & Photography"
-msgid "All"
-msgstr "Semua"
-
-#: lib/gs-desktop-data.c:146
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Pilihan"
 
-#: lib/gs-desktop-data.c:149
+#: lib/gs-desktop-data.c:24
 msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "Grafik 3D"
 
-#: lib/gs-desktop-data.c:152
+#: lib/gs-desktop-data.c:27
 msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Fotografi"
 
-#: lib/gs-desktop-data.c:155
+#: lib/gs-desktop-data.c:30
 msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Pemindaian"
 
-#: lib/gs-desktop-data.c:158
+#: lib/gs-desktop-data.c:33
 msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Grafik Vektor"
 
-#: lib/gs-desktop-data.c:161
+#: lib/gs-desktop-data.c:36
 msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Penilik"
 
-#: lib/gs-desktop-data.c:169
-msgctxt "Menu of Productivity"
-msgid "All"
-msgstr "Semua"
+#: lib/gs-desktop-data.c:39
+msgctxt "Menu of Audio & Video"
+msgid "Audio Creation & Editing"
+msgstr "Pembuatan & Penyuntingan Audio"
 
-#: lib/gs-desktop-data.c:172
-msgctxt "Menu of Productivity"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:175
-msgctxt "Menu of Productivity"
-msgid "Calendar"
-msgstr "Kalender"
-
-#: lib/gs-desktop-data.c:179
-msgctxt "Menu of Productivity"
-msgid "Database"
-msgstr "Basis Data"
-
-#: lib/gs-desktop-data.c:182
-msgctxt "Menu of Productivity"
-msgid "Finance"
-msgstr "Keuangan"
-
-#: lib/gs-desktop-data.c:186
-msgctxt "Menu of Productivity"
-msgid "Word Processor"
-msgstr "Pengolah Kata"
-
-#: lib/gs-desktop-data.c:195
+#: lib/gs-desktop-data.c:45
 msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Fonta"
 
-#: lib/gs-desktop-data.c:198
+#: lib/gs-desktop-data.c:48
+msgctxt "Menu of Audio & Video"
+msgid "Music Players"
+msgstr "Pemutar Musik"
+
+#: lib/gs-desktop-data.c:52
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Kodek"
 
-#: lib/gs-desktop-data.c:201
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Sumber Masukan"
-
-#: lib/gs-desktop-data.c:204
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Paket Bahasa"
-
-#: lib/gs-desktop-data.c:207
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Penerjemahan"
-
-#: lib/gs-desktop-data.c:210
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Penggerak Perangkat Keras"
-
-#: lib/gs-desktop-data.c:218
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:59
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Semua"
 
-#: lib/gs-desktop-data.c:221
-msgctxt "Menu of Communication & News"
+#: lib/gs-desktop-data.c:65
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Pilihan"
 
-#: lib/gs-desktop-data.c:224
-msgctxt "Menu of Communication & News"
-msgid "Chat"
-msgstr "Mengobrol"
+#: lib/gs-desktop-data.c:69
+msgctxt "Menu of Productivity"
+msgid "Calendar"
+msgstr "Kalender"
 
-#: lib/gs-desktop-data.c:231
-msgctxt "Menu of Communication & News"
-msgid "News"
-msgstr "Berita"
+#: lib/gs-desktop-data.c:73
+msgctxt "Menu of Productivity"
+msgid "Database"
+msgstr "Basis Data"
 
-#: lib/gs-desktop-data.c:235
-msgctxt "Menu of Communication & News"
-msgid "Web Browsers"
-msgstr "Peramban Web"
+#: lib/gs-desktop-data.c:76
+msgctxt "Menu of Productivity"
+msgid "Finance"
+msgstr "Keuangan"
 
-#: lib/gs-desktop-data.c:243
-msgctxt "Menu of Utilities"
-msgid "All"
-msgstr "Semua"
+#: lib/gs-desktop-data.c:80
+msgctxt "Menu of Productivity"
+msgid "Word Processor"
+msgstr "Pengolah Kata"
 
-#: lib/gs-desktop-data.c:246
-msgctxt "Menu of Utilities"
-msgid "Featured"
-msgstr "Pilihan"
-
-#: lib/gs-desktop-data.c:249
+#: lib/gs-desktop-data.c:84
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Penyunting Teks"
 
-#: lib/gs-desktop-data.c:257
-msgctxt "Menu of Reference"
+#: lib/gs-desktop-data.c:87
+msgctxt "Menu of Communication & News"
+msgid "Web Browsers"
+msgstr "Peramban Web"
+
+#: lib/gs-desktop-data.c:90
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Sumber Masukan"
+
+#: lib/gs-desktop-data.c:93
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Paket Bahasa"
+
+#: lib/gs-desktop-data.c:96
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Penerjemahan"
+
+#: lib/gs-desktop-data.c:99
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Penggerak Perangkat Keras"
+
+#: lib/gs-desktop-data.c:106
+msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Semua"
 
-#: lib/gs-desktop-data.c:260
-msgctxt "Menu of Reference"
+#: lib/gs-desktop-data.c:109
+msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Pilihan"
 
-#: lib/gs-desktop-data.c:263
+#: lib/gs-desktop-data.c:112
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Aksi"
+
+#: lib/gs-desktop-data.c:115
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Petualangan"
+
+#: lib/gs-desktop-data.c:118
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: lib/gs-desktop-data.c:121
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Blok"
+
+#: lib/gs-desktop-data.c:124
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Papan"
+
+#: lib/gs-desktop-data.c:127
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Kartu"
+
+#: lib/gs-desktop-data.c:130
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Emulator"
+
+#: lib/gs-desktop-data.c:133
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Anak-anak"
+
+#: lib/gs-desktop-data.c:136
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Logika"
+
+#: lib/gs-desktop-data.c:140
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Memainkan Peran"
+
+#: lib/gs-desktop-data.c:143
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Olah Raga"
+
+#: lib/gs-desktop-data.c:146
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Strategi"
+
+#: lib/gs-desktop-data.c:153
+msgctxt "Menu of Communication & News"
+msgid "All"
+msgstr "Semua"
+
+#: lib/gs-desktop-data.c:156
+msgctxt "Menu of Communication & News"
+msgid "Featured"
+msgstr "Pilihan"
+
+#: lib/gs-desktop-data.c:159
+msgctxt "Menu of Communication & News"
+msgid "Chat"
+msgstr "Mengobrol"
+
+#: lib/gs-desktop-data.c:170
+msgctxt "Menu of Education & Science"
+msgid "All"
+msgstr "Semua"
+
+#: lib/gs-desktop-data.c:177
+msgctxt "Menu of Education & Science"
+msgid "Featured"
+msgstr "Pilihan"
+
+#: lib/gs-desktop-data.c:182
+msgctxt "Menu of Education & Science"
+msgid "Artificial Intelligence"
+msgstr "Kecerdasan Buatan"
+
+#: lib/gs-desktop-data.c:185
+msgctxt "Menu of Education & Science"
+msgid "Astronomy"
+msgstr "Astronomi"
+
+#: lib/gs-desktop-data.c:189
+msgctxt "Menu of Education & Science"
+msgid "Chemistry"
+msgstr "Kimia"
+
+#: lib/gs-desktop-data.c:193
+msgctxt "Menu of Education & Science"
+msgid "Languages"
+msgstr "Bahasa"
+
+#: lib/gs-desktop-data.c:197
+msgctxt "Menu of Education & Science"
+msgid "Math"
+msgstr "Matematika"
+
+#: lib/gs-desktop-data.c:204
+msgctxt "Menu of Communication & News"
+msgid "News"
+msgstr "Berita"
+
+#: lib/gs-desktop-data.c:208
+msgctxt "Menu of Education & Science"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: lib/gs-desktop-data.c:211
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Seni"
 
-#: lib/gs-desktop-data.c:266
+#: lib/gs-desktop-data.c:214
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Biografi"
 
-#: lib/gs-desktop-data.c:269
+#: lib/gs-desktop-data.c:217
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Komik"
 
-#: lib/gs-desktop-data.c:272
+#: lib/gs-desktop-data.c:220
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Fiksi"
 
-#: lib/gs-desktop-data.c:275
+#: lib/gs-desktop-data.c:223
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Kesehatan"
 
-#: lib/gs-desktop-data.c:278
+#: lib/gs-desktop-data.c:226
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Sejarah"
 
-#: lib/gs-desktop-data.c:281
+#: lib/gs-desktop-data.c:229
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Gaya Hidup"
 
-#: lib/gs-desktop-data.c:284
+#: lib/gs-desktop-data.c:232
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Politik"
 
-#: lib/gs-desktop-data.c:287
+#: lib/gs-desktop-data.c:235
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Olah Raga"
 
-#. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: lib/gs-desktop-data.c:297
-msgid "Audio & Video"
-msgstr "Audio & Video"
+#: lib/gs-desktop-data.c:242
+msgctxt "Menu of Developer Tools"
+msgid "All"
+msgstr "Semua"
 
-#. TRANSLATORS: this is the menu spec main category for Development
-#: lib/gs-desktop-data.c:300
-msgid "Developer Tools"
-msgstr "Alat Pengembangan"
+#: lib/gs-desktop-data.c:245
+msgctxt "Menu of Developer Tools"
+msgid "Featured"
+msgstr "Pilihan"
 
-#. TRANSLATORS: this is the menu spec main category for Education & Science
-#: lib/gs-desktop-data.c:303
-msgid "Education & Science"
-msgstr "Edukasi & Sains"
+#: lib/gs-desktop-data.c:248
+msgctxt "Menu of Developer Tools"
+msgid "Debuggers"
+msgstr "Pengawakutu"
 
-#. TRANSLATORS: this is the menu spec main category for Game
-#: lib/gs-desktop-data.c:306
-msgid "Games"
-msgstr "Permainan"
+#: lib/gs-desktop-data.c:251
+msgctxt "Menu of Developer Tools"
+msgid "IDEs"
+msgstr "IDE"
 
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: lib/gs-desktop-data.c:309
-msgid "Graphics & Photography"
-msgstr "Grafis & Fotografi"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:262
+msgid "Create"
+msgstr "Buat"
 
-#. TRANSLATORS: this is the menu spec main category for Office
-#: lib/gs-desktop-data.c:312
-msgid "Productivity"
-msgstr "Produktivitas"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:264
+msgid "Work"
+msgstr "Kerja"
 
-#. TRANSLATORS: this is the menu spec main category for Add-ons
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
-#: lib/gs-desktop-data.c:315 src/gs-details-page.ui:410
-#: src/gs-installed-page.c:441
-msgid "Add-ons"
-msgstr "Tambahan"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:266
+msgid "Play"
+msgstr "Putar"
 
-#. TRANSLATORS: this is the menu spec main category for Communication
-#: lib/gs-desktop-data.c:318
-msgid "Communication & News"
-msgstr "Komunikasi & Berita"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:268
+msgid "Socialize"
+msgstr "Bersosialisasi"
 
-#. TRANSLATORS: this is the menu spec main category for Reference
-#: lib/gs-desktop-data.c:321
-msgid "Reference"
-msgstr "Rujukan"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:270
+msgid "Learn"
+msgstr "Pelajari"
 
-#. TRANSLATORS: this is the menu spec main category for Utilities
-#: lib/gs-desktop-data.c:324
-msgid "Utilities"
-msgstr "Utilitas"
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:272
+msgid "Develop"
+msgstr "Mengembangkan"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -1156,7 +1628,7 @@ msgid "Recently installed updates are available to review"
 msgstr "Pemutakhiran yang baru dipasang tersedia untuk ditinjau"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:168 src/gs-common.c:702
+#: src/gs-common.c:168 src/gs-common.c:720
 msgid "Restart"
 msgstr "Mulai Ulang"
 
@@ -1171,7 +1643,7 @@ msgid "Install Third-Party Software?"
 msgstr "Pasang Perangkat Lunak Pihak Ketiga?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:235 src/gs-repos-dialog.c:236
+#: src/gs-common.c:235 src/gs-repos-dialog.c:193
 msgid "Enable Third-Party Software Repository?"
 msgstr "Fungsikan Repositori Perangkat Lunak Pihak Ketiga?"
 
@@ -1228,74 +1700,81 @@ msgstr "Aktifkan dan Pasang"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:505
+#: src/gs-common.c:494
 msgid "Detailed errors from the package manager follow:"
 msgstr "Rincian galat dari manajer paket adalah:"
 
-#: src/gs-common.c:524 src/gs-details-page.ui:576
+#: src/gs-common.c:513 src/gs-safety-context-dialog.ui:116
 msgid "Details"
 msgstr "Rincian"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:688
+#: src/gs-common.c:695
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Pemutakhiran telah dipasang"
 msgstr[1] "Pemutakhiran telah dipasang"
 
+#. TRANSLATORS: we've just removed some apps
+#: src/gs-common.c:705
+msgid "An application has been removed"
+msgid_plural "Applications have been removed"
+msgstr[0] "Sebuah aplikasi telah dihapus"
+msgstr[1] "Sebuah aplikasi telah dihapus"
+
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:693
+#: src/gs-common.c:711
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Mulai ulang diperlukan agar berdampak."
 msgstr[1] "Mulai ulang diperlukan agar berdampak."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:700
+#: src/gs-common.c:718
 msgid "Not Now"
 msgstr "Jangan Sekarang"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:742
+#: src/gs-common.c:810
 msgid "Just now"
 msgstr "Baru saja"
 
-#: src/gs-common.c:744
+#: src/gs-common.c:812
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d menit yang lalu"
 msgstr[1] "%d menit yang lalu"
 
-#: src/gs-common.c:748
+#: src/gs-common.c:816
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d jam yang lalu"
 msgstr[1] "%d jam yang lalu"
 
-#: src/gs-common.c:752
+#: src/gs-common.c:820
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d hari yang lalu"
 msgstr[1] "%d hari yang lalu"
 
-#: src/gs-common.c:756
+#: src/gs-common.c:824
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d minggu yang lalu"
 msgstr[1] "%d minggu yang lalu"
 
-#: src/gs-common.c:760
+#: src/gs-common.c:828
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d bulan yang lalu"
 msgstr[1] "%d bulan yang lalu"
 
-#: src/gs-common.c:764
+#: src/gs-common.c:832
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1367,246 +1846,86 @@ msgstr "Memerlukan Paket Tambahan"
 msgid "Find in Software"
 msgstr "Cari dalam Perangkat Lunak"
 
-#: src/gs-description-box.c:64 src/gs-description-box.c:168
-msgid "_Read More"
-msgstr "_Baca Lebih Lanjut"
+#. Translators: Button to return more application-submitted reviews.
+#: src/gs-description-box.c:64 src/gs-description-box.c:166
+#: src/gs-details-page.ui:965
+msgid "_Show More"
+msgstr "Tampilkan _Rinciannya"
 
 #: src/gs-description-box.c:64
-msgid "_Read Less"
-msgstr "_Baca Lebih Sedikit"
+msgid "_Show Less"
+msgstr "Tampilkan Lebih Sedikit"
 
-#: src/gs-details-page.c:359
+#: src/gs-details-page.c:347
 msgid "Removing…"
 msgstr "Menghapus…"
 
+#: src/gs-details-page.c:357
+msgid "Requires restart to finish install"
+msgstr "Membutuhkan nyala ulang untuk menyelesaikan pemasangan"
+
+#: src/gs-details-page.c:364
+msgid "Requires restart to finish remove"
+msgstr "Membutuhkan nyala ulang untuk menyelesaikan penghapusan"
+
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:381
 msgid "Pending installation…"
 msgstr "Pemasangan tertunda…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:388
 msgid "Pending update…"
 msgstr "Pemutakhiran tertunda…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:399
+#: src/gs-details-page.c:404
 msgid "Preparing…"
 msgstr "Mempersiapkan…"
+
+#. Translators: This string is shown when uninstalling an app.
+#: src/gs-details-page.c:407
+msgid "Uninstalling…"
+msgstr "Menghapus pemasangan…"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for installing a repo
-#: src/gs-details-page.c:906 src/gs-details-page.c:923
-#: src/gs-details-page.ui:177 src/gs-third-party-repo-row.c:84
-#: src/gs-upgrade-banner.c:89
+#: src/gs-details-page.c:825 src/gs-details-page.c:851
+#: src/gs-details-page.ui:239
 msgid "_Install"
 msgstr "_Pasang"
+
+#: src/gs-details-page.c:841
+msgid "_Restart"
+msgstr "Mu_lai ulang"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for installing a repo.
-#. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:937 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:865
 msgid "_Install…"
 msgstr "_Pasang…"
 
-#. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:965
-msgid "_Launch"
-msgstr "_Luncurkan"
-
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
-msgid "Network"
-msgstr "Jaringan"
-
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:93
-msgid "Can communicate over the network"
-msgstr "Dapat berkomunikasi melalui jaringan"
-
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
-msgid "System Services"
-msgstr "Layanan Sistem"
-
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:94
-msgid "Can access D-Bus services on the system bus"
-msgstr "Dapat mengakses layanan D-Bus pada bus sistem"
-
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
-msgid "Session Services"
-msgstr "Layanan Sesi"
-
-#: src/gs-details-page.c:1022 src/gs-update-dialog.c:95
-msgid "Can access D-Bus services on the session bus"
-msgstr "Dapat mengakses layanan D-Bus pada bus sesi"
-
-#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
-msgid "Devices"
-msgstr "Perangkat"
-
-#: src/gs-details-page.c:1023 src/gs-update-dialog.c:96
-msgid "Can access system device files"
-msgstr "Dapat mengakses berkas perangkat sistem"
-
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
-#: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
-msgid "Home folder"
-msgstr "Folder rumah"
-
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1026
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:97
-#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
-msgid "Can view, edit and create files"
-msgstr "Dapat melihat, menyunting, dan membuat berkas"
-
-#: src/gs-details-page.c:1025 src/gs-details-page.c:1027
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:98
-#: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
-msgid "Can view files"
-msgstr "Dapat melihat berkas"
-
-#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
-#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
-msgid "File system"
-msgstr "Sistem berkas"
-
-#: src/gs-details-page.c:1028 src/gs-details-page.c:1029
-#: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
-msgid "Downloads folder"
-msgstr "Folder unduhan"
-
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
-msgid "Settings"
-msgstr "Pengaturan"
-
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:103
-msgid "Can view and change any settings"
-msgstr "Dapat melihat dan mengubah pengaturan apa pun"
-
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
-msgid "Legacy display system"
-msgstr "Sistem tampilan lama"
-
-#: src/gs-details-page.c:1031 src/gs-update-dialog.c:104
-msgid "Uses an old, insecure display system"
-msgstr "Menggunakan sistem tampilan yang lama dan tidak aman"
-
-#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
-msgid "Sandbox escape"
-msgstr "Sandbox escape"
-
-#: src/gs-details-page.c:1032 src/gs-update-dialog.c:105
-msgid "Can escape the sandbox and circumvent any other restrictions"
-msgstr "Dapat menghindari sandbox dan menghindari pembatasan lainnya"
-
-#: src/gs-details-page.c:1047
-msgid "This application is fully sandboxed."
-msgstr "Aplikasi ini sepenuhnya sandbox."
-
-#: src/gs-details-page.c:1055
-msgid ""
-"Unable to determine which parts of the system this application accesses. "
-"This is typical for older applications."
-msgstr ""
-"Tidak dapat menentukan bagian mana dari sistem yang diakses aplikasi ini. "
-"Ini tipikal untuk aplikasi yang lebih lama."
-
-#. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1233
-msgctxt "updated"
-msgid "Never"
-msgstr "Tak Pernah"
-
-#. TRANSLATORS: this is where we don't know the origin of the
-#. * application
-#: src/gs-details-page.c:1286
-msgctxt "origin"
-msgid "Unknown"
-msgstr "Tak diketahui"
-
-#: src/gs-details-page.c:1339
-msgctxt "App permissions"
-msgid "None"
-msgstr "Nihil"
-
-#: src/gs-details-page.c:1341
-msgctxt "App permissions"
-msgid "Low"
-msgstr "Rendah"
-
-#: src/gs-details-page.c:1343
-msgctxt "App permissions"
-msgid "Medium"
-msgstr "Sedang"
-
-#: src/gs-details-page.c:1345
-msgctxt "App permissions"
-msgid "High"
-msgstr "Tinggi"
-
-#: src/gs-details-page.c:1347
-msgctxt "App permissions"
-msgid "Unknown"
-msgstr "Tak diketahui"
-
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1711
+#: src/gs-details-page.c:1396
 msgid "You need internet access to write a review"
 msgstr "Anda perlu akses internet untuk menulis ulasan"
 
-#: src/gs-details-page.c:1911 src/gs-details-page.c:1927
+#: src/gs-details-page.c:1541 src/gs-details-page.c:1557
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Tak bisa temukan \"%s\""
 
-#: src/gs-details-page.c:1993 src/gs-details-page.c:2028
+#. TRANSLATORS: This is a title for the app details page,
+#. * shown when it’s loading the details of an app.
+#: src/gs-details-page.c:2113
 msgid "Loading…"
 msgstr "Memuat…"
-
-#: src/gs-details-page.c:2466
-msgid "The application contains no age-inappropriate content."
-msgstr "Aplikasi berisi konten yang tidak sesuai dengan usia."
-
-#. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2575
-msgid "Public domain"
-msgstr "Domain publik"
-
-#. TRANSLATORS: Replace the link with a version in your language,
-#. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2578
-msgid "https://en.wikipedia.org/wiki/Public_domain"
-msgstr "https://en.wikipedia.org/wiki/Public_domain"
-
-#. TRANSLATORS: Replace the link with a version in your language,
-#. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2585
-msgid "https://www.gnu.org/philosophy/free-sw"
-msgstr "https://www.gnu.org/philosophy/free-sw"
-
-#. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2595 src/gs-details-page.ui:1285
-msgid "Free Software"
-msgstr "Perangkat Lunak Bebas"
-
-#. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2652
-msgid "Users are bound by the following license:"
-msgid_plural "Users are bound by the following licenses:"
-msgstr[0] "Pengguna terikat oleh lisensi-lisensi berikut:"
-msgstr[1] "Pengguna terikat oleh lisensi-lisensi berikut:"
-
-#: src/gs-details-page.c:2679 src/gs-details-page.ui:1357
-msgid "More information"
-msgstr "Informasi lebih lanjut"
 
 #: src/gs-details-page.ui:8
 msgid "Details page"
@@ -1616,43 +1935,59 @@ msgstr "Halaman rincian"
 msgid "Loading application details…"
 msgstr "Memuat detail aplikasi…"
 
-#: src/gs-details-page.ui:232
-msgid "Downloading"
-msgstr "Mengunduh"
+#: src/gs-details-page.ui:79
+msgid ""
+"This app is not available in your language and will appear in US English."
+msgstr ""
+"Aplikasi ini tidak tersedia dalam bahasa Anda dan akan muncul dalam bahasa "
+"Inggris AS."
 
-#: src/gs-details-page.ui:272
+#: src/gs-details-page.ui:87
+msgid "Help _Translate"
+msgstr "Bantu Terjemahkan"
+
+#. TRANSLATORS: A label for a button to execute the selected application.
+#: src/gs-details-page.ui:256
+msgid "_Open"
+msgstr "_Buka"
+
+#: src/gs-details-page.ui:269
 msgid "_Update"
 msgstr "M_utakhirkan"
 
+#: src/gs-details-page.ui:335
+msgid "Downloading"
+msgstr "Mengunduh"
+
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:288
+#: src/gs-details-page.ui:357
 msgid "_Add shortcut"
 msgstr "T_ambah Pintasan"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:302
+#: src/gs-details-page.ui:373
 msgid "Re_move shortcut"
 msgstr "Hapus pi_ntasan"
 
-#: src/gs-details-page.ui:376
-msgid "No screenshot provided"
-msgstr "Tidak disediakan cuplikan layar"
+#: src/gs-details-page.ui:465 src/gs-installed-page.ui:120
+msgid "Add-ons"
+msgstr "Tambahan"
 
-#: src/gs-details-page.ui:422
+#: src/gs-details-page.ui:477
 msgid "Selected add-ons will be installed with the application."
 msgstr "Tambahan yang dipilih akan dipasang dengan aplikasi."
 
-#: src/gs-details-page.ui:505
+#: src/gs-details-page.ui:585
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Aplikasi ini hanya dapat dipakai ketika ada koneksi internet aktif."
 
-#: src/gs-details-page.ui:515
+#: src/gs-details-page.ui:606
 msgid "Software Repository Included"
 msgstr "Repositori Perangkat Lunak Yang Disertakan"
 
-#: src/gs-details-page.ui:516
+#: src/gs-details-page.ui:607
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1660,11 +1995,11 @@ msgstr ""
 "Aplikasi ini menyertakan repositori perangkat lunak yang menyediakan "
 "pemutakhiran maupun akses ke perangkat lunak lain."
 
-#: src/gs-details-page.ui:523
+#: src/gs-details-page.ui:625
 msgid "No Software Repository Included"
 msgstr "Tak Ada Repositori Perangkat Lunak Yang Disertakan"
 
-#: src/gs-details-page.ui:524
+#: src/gs-details-page.ui:626
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1672,7 +2007,7 @@ msgstr ""
 "Aplikasi ini tak termasuk repositori perangkat lunak. Ini tak akan "
 "dimutakhirkan ke versi-versi lebih baru."
 
-#: src/gs-details-page.ui:532
+#: src/gs-details-page.ui:645
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1680,11 +2015,11 @@ msgstr ""
 "Perangkat lunak ini telah disediakan distribusi Anda dan tak boleh diganti."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:539
+#: src/gs-details-page.ui:663
 msgid "Software Repository Identified"
 msgstr "Repositori Perangkat Lunak Teridentifikasi"
 
-#: src/gs-details-page.ui:540
+#: src/gs-details-page.ui:664
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1692,157 +2027,76 @@ msgstr ""
 "Menambahkan repositori perangkat lunak ini akan memberi Anda akses ke "
 "perangkat lunak tambahan dan peningkatan."
 
-#: src/gs-details-page.ui:541
+#: src/gs-details-page.ui:665
 msgid "Only use software repositories that you trust."
 msgstr "Hanya pakai repositori perangkat lunak yang Anda percayai."
 
-#: src/gs-details-page.ui:551
-msgid "_Website"
-msgstr "Situs _Web"
+#: src/gs-details-page.ui:730
+msgid "No Metadata"
+msgstr "Tidak Ada Metadata"
 
-#: src/gs-details-page.ui:560
+#: src/gs-details-page.ui:740
+msgid ""
+"This app doesn’t provide any links to a website, code repository or issue "
+"tracker."
+msgstr ""
+"Aplikasi ini tidak menyediakan tautan ke situs web, repositori kode, atau "
+"pelacak masalah."
+
+#: src/gs-details-page.ui:768
+msgid "Project _Website"
+msgstr "Situs _Web Proyek"
+
+#: src/gs-details-page.ui:794
 msgid "_Donate"
 msgstr "_Donasi"
 
-#: src/gs-details-page.ui:670
-msgid "Localized in your Language"
-msgstr "Terlokalisasi dalam Bahasa Anda"
-
-#: src/gs-details-page.ui:681
-msgid "Documentation"
-msgstr "Dokumentasi"
-
-#: src/gs-details-page.ui:692
-msgid "Release Activity"
-msgstr "Aktivitas Rilis"
-
-#: src/gs-details-page.ui:703
-msgid "System Integration"
-msgstr "Integrasi Sistem"
-
-#: src/gs-details-page.ui:714
-msgid "Sandboxed"
-msgstr "Sandbox"
-
-#. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:734 src/gs-origin-popover-row.c:91
-msgid "Channel"
-msgstr "Kanal"
-
-#: src/gs-details-page.ui:770
-msgid "Age Rating"
-msgstr "Peringkat Umur"
-
-#: src/gs-details-page.ui:808 src/gs-details-page.ui:1443
-msgid "Permissions"
-msgstr "Izin"
+#: src/gs-details-page.ui:820
+msgid "_Contribute Translations"
+msgstr "_Kontribusi Terjemahan"
 
 #: src/gs-details-page.ui:846
-msgid "Updated"
-msgstr "Diperbarui"
+msgid "_Report an Issue"
+msgstr "Lapo_rkan Masalah"
 
-#: src/gs-details-page.ui:880
-msgid "Category"
-msgstr "Kategori"
-
-#: src/gs-details-page.ui:917
-msgid "Installed Size"
-msgstr "Ukuran Terpasang"
-
-#: src/gs-details-page.ui:948
-msgid "Download Size"
-msgstr "Ukuran Unduh"
-
-#: src/gs-details-page.ui:1010
-msgid "Developer"
-msgstr "Pengembang"
-
-#: src/gs-details-page.ui:1056
-msgid "License"
-msgstr "Lisensi"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1075
-msgid "Free"
-msgstr "Bebas"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1087
-msgid "Proprietary"
-msgstr "Proprietari"
-
-#. This refers to the license of the application
-#: src/gs-details-page.ui:1099
-msgctxt "Application license"
-msgid "Unknown"
-msgstr "Tak diketahui"
+#: src/gs-details-page.ui:872
+msgid "_Help"
+msgstr "_Bantuan"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1131
+#: src/gs-details-page.ui:925
 msgid "Reviews"
 msgstr "Ulasan"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1149
+#: src/gs-details-page.ui:943
 msgid "_Write a Review"
 msgstr "_Tulis Ulasan"
 
-#. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1170
-msgid "_Show More"
-msgstr "Tampilkan _Rinciannya"
+#. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
+#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
+#: src/gs-details-page.ui:1042 src/gs-safety-context-dialog.ui:189
+msgid "Source"
+msgstr "Sumber"
 
-#: src/gs-details-page.ui:1296
-msgid ""
-"This means that the software can be freely run, copied, distributed, studied "
-"and modified."
-msgstr ""
-"Ini berarti bahwa perangkat lunak dapat secara bebas dijalankan, disalin, "
-"didistribusikan, dipelajari, dan dimodifikasi."
-
-#: src/gs-details-page.ui:1336
-msgid "Proprietary Software"
-msgstr "Perangkat Lunak Proprietari"
-
-#: src/gs-details-page.ui:1347
-msgid ""
-"This means that the software is owned by an individual or a company. There "
-"are often restrictions on its use and its source code cannot usually be "
-"accessed."
-msgstr ""
-"Ini berarti bahwa perangkat lunak tersebut dimiliki oleh seorang individu "
-"atau perusahaan. Sering ada pembatasan pada penggunaan dan kode sumber "
-"biasanya tidak dapat diakses."
-
-#: src/gs-details-page.ui:1379
-msgid "Unknown Software License"
-msgstr "Lisensi Perangkat Lunak Tidak Diketahui"
-
-#: src/gs-details-page.ui:1390
-msgid "The license terms of this software are unknown."
-msgstr "Persyaratan lisensi perangkat lunak ini tidak diketahui."
-
-#: src/gs-details-page.ui:1410
-msgid "The application was rated this way because it features:"
-msgstr "Aplikasi ini dinilai dengan cara ini karena fitur:"
-
-#: src/gs-details-page.ui:1424
-msgid "No details were available for this rating."
-msgstr "Tak ada rincian yang tersedia bagi peringkat ini."
+#. TRANSLATORS: status text when downloading
+#: lib/gs-external-appstream-utils.c:226
+msgid "Downloading extra metadata files…"
+msgstr "Mengunduh berkas ekstra metadata…"
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:138
+#: src/gs-extras-page.c:143
 msgid " and "
 msgstr " dan "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:141
+#: src/gs-extras-page.c:146
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:167
+#: src/gs-extras-page.c:172
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1851,46 +2105,42 @@ msgstr[1] "Fonta yang tersedia untuk skrip %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:175
+#: src/gs-extras-page.c:180
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "Perangkat lunak yang tersedia untuk %s"
 msgstr[1] "Perangkat lunak yang tersedia untuk %s"
 
-#: src/gs-extras-page.c:217
-msgid "Unable to Find Requested Software"
-msgstr "Tak Menemukan Perangkat Lunak yang Dicari"
-
-#: src/gs-extras-page.c:256
+#: src/gs-extras-page.c:243
 msgid "Requested software not found"
 msgstr "Perangkat lunak yang diminta tak ditemukan"
 
-#: src/gs-extras-page.c:258
+#: src/gs-extras-page.c:245
 msgid "Failed to find requested software"
 msgstr "Gagal menemukan perangkat lunak yang diminta"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:348
+#: src/gs-extras-page.c:341
 #, c-format
 msgid "%s not found"
 msgstr "%s tak ditemukan"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:352
+#: src/gs-extras-page.c:345
 msgid "on the website"
 msgstr "pada laman situs"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:359
+#: src/gs-extras-page.c:352
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Tak satupun aplikasi yang ada menyediakan berkas %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:363 src/gs-extras-page.c:374 src/gs-extras-page.c:385
+#: src/gs-extras-page.c:356 src/gs-extras-page.c:367 src/gs-extras-page.c:378
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1901,21 +2151,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:370 src/gs-extras-page.c:392
+#: src/gs-extras-page.c:363 src/gs-extras-page.c:385
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Tak satupun aplikasi yang ada untuk dukungan %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:381
+#: src/gs-extras-page.c:374
 #, c-format
 msgid "%s is not available."
 msgstr "%s tak tersedia."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:396
+#: src/gs-extras-page.c:389
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1926,14 +2176,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:403
+#: src/gs-extras-page.c:396
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Tak ada fonta yang tersedia bagi dukungan skrip %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:407
+#: src/gs-extras-page.c:400
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1944,14 +2194,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:414
+#: src/gs-extras-page.c:407
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Tak ada kodek tambahan yang tersedia bagi format %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:418
+#: src/gs-extras-page.c:411
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1962,14 +2212,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:425
+#: src/gs-extras-page.c:418
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Tak ada sumber daya Plasma yang tersedia bagi dukungan %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:429
+#: src/gs-extras-page.c:422
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1980,14 +2230,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:436
+#: src/gs-extras-page.c:429
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Tak ada penggerak pencetak yang tersedia bagi %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:440
+#: src/gs-extras-page.c:433
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1997,13 +2247,13 @@ msgstr ""
 "penggerak yang mendukung pencetak ini mungkin dapat ditemukan %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:484
+#: src/gs-extras-page.c:477
 msgid "the documentation"
 msgstr "dokumentasi"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:490
+#: src/gs-extras-page.c:483
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2017,7 +2267,7 @@ msgstr[1] ""
 "lebih lanjut."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:499
+#: src/gs-extras-page.c:492
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2032,14 +2282,19 @@ msgstr[1] ""
 "Tak bisa menemukan %s yang Anda cari. Silakan lihat %s informasi lebih "
 "lanjut."
 
-#: src/gs-extras-page.c:569 src/gs-extras-page.c:625 src/gs-extras-page.c:664
-msgid "Failed to find any search results"
-msgstr "Tak menemukan apa pun"
+#: src/gs-extras-page.c:562 src/gs-extras-page.c:618 src/gs-extras-page.c:657
+#, c-format
+msgid "Failed to find any search results: %s"
+msgstr "Gagal menemukan hasil pencarian: %s"
 
-#: src/gs-extras-page.c:852
+#: src/gs-extras-page.c:848
 #, c-format
 msgid "%s file format"
 msgstr "Format berkas %s"
+
+#: src/gs-extras-page.c:1223
+msgid "Unable to Find Requested Software"
+msgstr "Tak Menemukan Perangkat Lunak yang Dicari"
 
 #: src/gs-extras-page.ui:7
 msgid "Codecs page"
@@ -2057,15 +2312,15 @@ msgstr "Selanjutnya"
 msgid "Featured Apps List"
 msgstr "Daftar Aplikasi Unggulan"
 
-#: src/gs-first-run-dialog.ui:6 src/gs-first-run-dialog.ui:15
+#: src/gs-first-run-dialog.ui:10
 msgid "Welcome"
 msgstr "Selamat Datang"
 
-#: src/gs-first-run-dialog.ui:43
+#: src/gs-first-run-dialog.ui:27
 msgid "Welcome to Software"
 msgstr "Selamat Datang ke Perangkat Lunak"
 
-#: src/gs-first-run-dialog.ui:53
+#: src/gs-first-run-dialog.ui:28
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2075,52 +2330,266 @@ msgstr ""
 "perlukan, semua dari satu tempat. Lihat rekomendasi kami, ramban kategori, "
 "atau cari aplikasi yang Anda inginkan."
 
-#: src/gs-first-run-dialog.ui:62
+#: src/gs-first-run-dialog.ui:31
 msgid "_Browse Software"
 msgstr "Jelajahi _Perangkat Lunak"
 
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was uninstalled
-#: src/gs-history-dialog.c:70
-msgctxt "app status"
-msgid "Uninstalled"
-msgstr "Pemasangan Terhapus"
+#: src/gs-hardware-support-context-dialog.c:561
+#: src/gs-hardware-support-context-dialog.c:570
+msgid "Desktop Support"
+msgstr "Dukungan Destop"
 
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was installed
-#: src/gs-history-dialog.c:76
-msgctxt "app status"
-msgid "Installed"
-msgstr "Terpasang"
+#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:571
+msgid "Supports being used on a large screen"
+msgstr "Mendukung digunakan pada layar besar"
 
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was updated
-#: src/gs-history-dialog.c:82
-msgctxt "app status"
-msgid "Updated"
-msgstr "Dimutakhirkan"
+#: src/gs-hardware-support-context-dialog.c:564
+msgid "Desktop Support Unknown"
+msgstr "Dukungan Destop Tidak Diketahui"
 
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing that something happened to the
-#. * application but we don't know what
-#: src/gs-history-dialog.c:88
-msgctxt "app status"
-msgid "Unknown"
-msgstr "Tak diketahui"
+#: src/gs-hardware-support-context-dialog.c:565
+msgid "Not enough information to know if large screens are supported"
+msgstr "Tidak cukup informasi untuk mengetahui apakah layar besar didukung"
 
-#: src/gs-history-dialog.ui:5
-msgid "History"
-msgstr "Sejarah"
+#: src/gs-hardware-support-context-dialog.c:568
+msgid "Requires a large screen"
+msgstr "Membutuhkan layar besar"
 
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the system ones
-#: src/gs-installed-page.c:437
-msgid "System Applications"
-msgstr "Aplikasi Sistem"
+#: src/gs-hardware-support-context-dialog.c:573
+msgid "Desktop Not Supported"
+msgstr "Destop Tidak Didukung"
+
+#: src/gs-hardware-support-context-dialog.c:574
+msgid "Cannot be used on a large screen"
+msgstr "Tidak dapat digunakan pada layar besar"
+
+#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:590
+msgid "Mobile Support"
+msgstr "Dukungan Seluler"
+
+#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:591
+msgid "Supports being used on a small screen"
+msgstr "Mendukung digunakan pada layar kecil"
+
+#: src/gs-hardware-support-context-dialog.c:584
+msgid "Mobile Support Unknown"
+msgstr "Dukungan Seluler Tidak Diketahui"
+
+#: src/gs-hardware-support-context-dialog.c:585
+msgid "Not enough information to know if small screens are supported"
+msgstr "Tidak cukup informasi untuk mengetahui apakah layar kecil didukung"
+
+#: src/gs-hardware-support-context-dialog.c:588
+msgid "Requires a small screen"
+msgstr "Membutuhkan layar kecil"
+
+#: src/gs-hardware-support-context-dialog.c:593
+msgid "Mobile Not Supported"
+msgstr "Seluler Tidak Didukung"
+
+#: src/gs-hardware-support-context-dialog.c:594
+msgid "Cannot be used on a small screen"
+msgstr "Tidak dapat digunakan pada layar kecil"
+
+#: src/gs-hardware-support-context-dialog.c:617
+#: src/gs-hardware-support-context-dialog.c:626
+msgid "Keyboard Support"
+msgstr "Dukungan Papan Tik"
+
+#: src/gs-hardware-support-context-dialog.c:620
+msgid "Keyboard Support Unknown"
+msgstr "Dukungan Papan Tik Tidak Diketahui"
+
+#: src/gs-hardware-support-context-dialog.c:621
+msgid "Not enough information to know if keyboards are supported"
+msgstr "Tidak cukup informasi untuk mengetahui apakah papan tik didukung"
+
+#: src/gs-hardware-support-context-dialog.c:623
+msgid "Keyboard Required"
+msgstr "Papan Tik Diperlukan"
+
+#: src/gs-hardware-support-context-dialog.c:627
+msgid "Supports keyboards"
+msgstr "Mendukung papan tik"
+
+#: src/gs-hardware-support-context-dialog.c:629
+msgid "Keyboard Not Supported"
+msgstr "Papan Tik Tidak Didukung"
+
+#: src/gs-hardware-support-context-dialog.c:630
+msgid "Cannot be used with a keyboard"
+msgstr "Tidak dapat digunakan dengan papan tik"
+
+#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:646
+msgid "Mouse Support"
+msgstr "Dukungan Tetikus"
+
+#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:644
+msgid "Requires a mouse or pointing device"
+msgstr "Membutuhkan tetikus atau perangkat penunjuk"
+
+#: src/gs-hardware-support-context-dialog.c:640
+msgid "Mouse Support Unknown"
+msgstr "Dukungan Tetikus Tidak Diketahui"
+
+#: src/gs-hardware-support-context-dialog.c:641
+msgid ""
+"Not enough information to know if mice or pointing devices are supported"
+msgstr ""
+"Tidak cukup informasi untuk mengetahui apakah tetikus atau perangkat "
+"penunjuk didukung"
+
+#: src/gs-hardware-support-context-dialog.c:643
+msgid "Mouse Required"
+msgstr "Tetikus Diperlukan"
+
+#: src/gs-hardware-support-context-dialog.c:647
+msgid "Supports mice and pointing devices"
+msgstr "Mendukung tetikus dan perangkat penunjuk"
+
+#: src/gs-hardware-support-context-dialog.c:649
+msgid "Mouse Not Supported"
+msgstr "Tetikus Tidak Didukung"
+
+#: src/gs-hardware-support-context-dialog.c:650
+msgid "Cannot be used with a mouse or pointing device"
+msgstr "Tidak dapat digunakan dengan tetikus atau perangkat penunjuk"
+
+#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:666
+msgid "Touchscreen Support"
+msgstr "Dukungan Layar Sentuh"
+
+#: src/gs-hardware-support-context-dialog.c:660
+msgid "Touchscreen Support Unknown"
+msgstr "Dukungan Layar Sentuh Tidak Diketahui"
+
+#: src/gs-hardware-support-context-dialog.c:661
+msgid "Not enough information to know if touchscreens are supported"
+msgstr "Tidak cukup informasi untuk mengetahui apakah layar sentuh didukung"
+
+#: src/gs-hardware-support-context-dialog.c:663
+msgid "Touchscreen Required"
+msgstr "Layar Sentuh Diperlukan"
+
+#: src/gs-hardware-support-context-dialog.c:667
+msgid "Supports touchscreens"
+msgstr "Mendukung layar sentuh"
+
+#: src/gs-hardware-support-context-dialog.c:669
+msgid "Touchscreen Not Supported"
+msgstr "Layar Sentuh Tidak Didukung"
+
+#: src/gs-hardware-support-context-dialog.c:670
+msgid "Cannot be used with a touchscreen"
+msgstr "Tidak dapat digunakan dengan layar sentuh"
+
+#: src/gs-hardware-support-context-dialog.c:683
+msgid "Gamepad Required"
+msgstr "Gamepad Diperlukan"
+
+#: src/gs-hardware-support-context-dialog.c:684
+msgid "Requires a gamepad"
+msgstr "Membutuhkan gamepad"
+
+#: src/gs-hardware-support-context-dialog.c:686
+msgid "Gamepad Support"
+msgstr "Dukungan Gamepad"
+
+#: src/gs-hardware-support-context-dialog.c:687
+msgid "Supports gamepads"
+msgstr "Mendukung gamepad"
+
+#. Translators: The app will work on the current hardware.
+#. * The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:703
+#, c-format
+msgid "%s works on this device"
+msgstr "%s bekerja pada perangkat ini"
+
+#. Translators: The app may not work fully on the current hardware.
+#. * The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:710
+#, c-format
+msgid "%s will not work properly on this device"
+msgstr "%s tidak akan berfungsi dengan baik pada perangkat ini"
+
+#. Translators: The app will not work properly on the current hardware.
+#. * The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:717
+#, c-format
+msgid "%s will not work on this device"
+msgstr "%s tidak akan berfungsi pada perangkat ini"
+
+#. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
+#: src/gs-hardware-support-context-dialog.ui:9
+msgid "Hardware Support"
+msgstr "Dukungan Perangkat Keras"
 
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
 msgstr "Halaman terpasang"
+
+#: src/gs-installed-page.ui:54
+msgid "In Progress"
+msgstr "Dalam Proses"
+
+#. origin_ui on a remote is the repo dialogue section name,
+#. * not the remote title
+#: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:100
+msgid "Applications"
+msgstr "Aplikasi"
+
+#: src/gs-installed-page.ui:98
+msgid "System Applications"
+msgstr "Aplikasi Sistem"
+
+#: src/gs-license-tile.c:93
+msgid "Community Built"
+msgstr "Komunitas Dibangun"
+
+#. Translators: The placeholder here is the name of a software license.
+#: src/gs-license-tile.c:101
+#, c-format
+msgid ""
+"This app is developed in the open by a community of volunteers, and released "
+"under the %s license.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"Aplikasi ini dikembangkan di tempat terbuka oleh komunitas sukarelawan, dan "
+"dirilis di bawah lisensi %s.\n"
+"\n"
+"Anda dapat berkontribusi dan membantu membuatnya lebih baik."
+
+#: src/gs-license-tile.c:106
+msgid "Proprietary"
+msgstr "Proprietari"
+
+#: src/gs-license-tile.c:113
+msgid ""
+"This app is not developed in the open, so only its developers know how it "
+"works. There may be restrictions on its use, and it may be harder to tell if "
+"the app is insecure.\n"
+"\n"
+"By installing this app you are putting a high amount of trust in the "
+"developers."
+msgstr ""
+"Aplikasi ini tidak dikembangkan secara terbuka, jadi hanya pengembangnya "
+"yang tahu cara kerjanya. Mungkin ada pembatasan penggunaannya, dan mungkin "
+"lebih sulit untuk mengetahui apakah aplikasi itu tidak aman.\n"
+"\n"
+"Dengan memasang aplikasi ini, Anda menaruh kepercayaan yang tinggi pada "
+"pengembang."
+
+#: src/gs-license-tile.ui:132
+msgid "Get _Involved"
+msgstr "_Ikut Terlibat"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:62 src/gs-loading-page.c:66
@@ -2131,9 +2600,14 @@ msgstr "Katalog perangkat lunak sedang diunduh"
 msgid "Loading page"
 msgstr "Memuat halaman"
 
-#: src/gs-loading-page.ui:48
+#: src/gs-loading-page.ui:14
 msgid "Starting up…"
 msgstr "Memulai…"
+
+#: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
+#: src/gs-shell.ui:267
+msgid "Automatic Updates Paused"
+msgstr "Pemutakhiran Otomatis Ditunda"
 
 #: src/gs-metered-data-dialog.ui:38
 msgid ""
@@ -2166,9 +2640,19 @@ msgstr "Buka Pengaturan _Jaringan"
 msgid "Moderate page"
 msgstr "Halaman moderasi"
 
-#: src/gs-moderate-page.ui:85
+#: src/gs-moderate-page.ui:87
 msgid "There are no reviews to moderate"
 msgstr "Tidak ada ulasan yang akan dimoderasi"
+
+#. TRANSLATORS: status text when downloading
+#: lib/gs-odrs-provider.c:1266
+msgid "Downloading application ratings…"
+msgstr "Mengunduh peringkat aplikasi…"
+
+#. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
+#: src/gs-origin-popover-row.c:55
+msgid "Name"
+msgstr "Nama"
 
 #. TRANSLATORS: the installation location for flatpaks
 #: src/gs-origin-popover-row.c:72
@@ -2180,13 +2664,18 @@ msgstr "sistem"
 msgid "user"
 msgstr "pengguna"
 
+#. TRANSLATORS: the title for Snap channels
+#: src/gs-origin-popover-row.c:91
+msgid "Channel"
+msgstr "Kanal"
+
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
 #: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
 msgid "Branch"
 msgstr "Cabang"
 
-#: src/gs-origin-popover-row.ui:35 src/gs-repo-row.ui:75
+#: src/gs-origin-popover-row.ui:35
 msgid "URL"
 msgstr "URL"
 
@@ -2200,62 +2689,59 @@ msgstr "Pemasangan"
 msgid "Version"
 msgstr "Versi"
 
-#. add button
-#: src/gs-overview-page.c:320
-msgid "More…"
-msgstr "Lebih banyak…"
+#. TRANSLATORS: This is the header for package additions during
+#. * a system update
+#: src/gs-os-update-page.c:272
+msgid "Additions"
+msgstr "Penambahan"
 
-#. TRANSLATORS: this is a heading for audio applications which
-#. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:463
-msgid "Recommended Audio & Video Applications"
-msgstr "Aplikasi Audio & Video yang Disarankan"
+#. TRANSLATORS: This is the header for package removals during
+#. * a system update
+#: src/gs-os-update-page.c:276
+msgid "Removals"
+msgstr "Penghapusan"
 
-#. TRANSLATORS: this is a heading for games which have been
-#. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:468
-msgid "Recommended Games"
-msgstr "Permainan yang Disarankan"
+#. TRANSLATORS: This is the header for package updates during
+#. * a system update
+#. Translators: A label for a button to show only updates which are available to install.
+#: src/gs-os-update-page.c:280 src/gs-shell.ui:341 src/gs-updates-page.c:1361
+msgid "Updates"
+msgstr "Pemutakhiran"
 
-#. TRANSLATORS: this is a heading for graphics applications
-#. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:473
-msgid "Recommended Graphics Applications"
-msgstr "Aplikasi Grafik yang Disarankan"
+#. TRANSLATORS: This is the header for package downgrades during
+#. * a system update
+#: src/gs-os-update-page.c:284
+msgid "Downgrades"
+msgstr "Penurunan"
 
-#. TRANSLATORS: this is a heading for office applications which
-#. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:478
-msgid "Recommended Productivity Applications"
-msgstr "Aplikasi Produktivitas yang Disarankan"
+#. Translators: This is a clickable link on the third party repositories info bar. It's
+#. part of a constructed sentence: "Provides access to additional software from [selected external sources].
+#. Some proprietary software is included."
+#: src/gs-overview-page.c:688
+msgid "selected external sources"
+msgstr "sumber eksternal yang dipilih"
 
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:825 src/gs-repos-dialog.c:836
-msgid "Access additional software from selected third party sources."
-msgstr ""
-"Mengakses perangkat lunak tambahan dari sumber-sumber pihak ketiga yang "
-"dipilih."
-
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:829 src/gs-repos-dialog.c:840
+#. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
+#: src/gs-overview-page.c:690
+#, c-format
 msgid ""
-"Some of this software is proprietary and therefore has restrictions on use, "
-"sharing, and access to source code."
+"Provides access to additional software from %s. Some proprietary software is "
+"included."
 msgstr ""
-"Sebagian dari perangkat lunak ini proprietary sehingga memiliki pembatasan "
-"pada penggunaan, pemakaian bersama, dan akses ke kode sumber."
-
-#. TRANSLATORS: this is the clickable
-#. * link on the third party repositories info bar
-#: src/gs-overview-page.c:834 src/gs-repos-dialog.c:845
-msgid "Find out more…"
-msgstr "Temukan lebih jauh…"
+"Menyediakan akses ke perangkat lunak tambahan dari %s. Beberapa perangkat "
+"lunak proprietari disertakan."
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:842 src/gs-repos-dialog.c:241
+#: src/gs-overview-page.c:699 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Fungsikan"
+
+#. Translators: This is the title of the main page of the UI.
+#. Translators: A label for a button to show all available software.
+#: src/gs-overview-page.c:754 src/gs-shell.ui:308
+msgid "Explore"
+msgstr "Jelajahi"
 
 #: src/gs-overview-page.ui:8
 msgid "Overview page"
@@ -2265,40 +2751,35 @@ msgstr "Halaman ringkasan"
 msgid "Enable Third Party Software Repositories?"
 msgstr "Fungsikan Repositori Perangkat Lunak Pihak Ketiga?"
 
-#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-overview-page.ui:96
-msgid "Editor’s Picks"
-msgstr "Pilihan Penyunting"
-
-#. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-overview-page.ui:122
-msgid "Recent Releases"
-msgstr "Rilis Terbaru"
-
-#: src/gs-overview-page.ui:156
-msgid "Categories"
-msgstr "Kategori"
-
-#: src/gs-overview-page.ui:223
+#: src/gs-overview-page.ui:212
 msgid "No Application Data Found"
 msgstr "Tak Ada Data Aplikasi Yang Ditemukan"
 
+#: lib/gs-plugin-loader.c:3023
+msgctxt "Distribution name"
+msgid "Unknown"
+msgstr "Tak diketahui"
+
+#: src/gs-page.c:276
+msgid "User declined installation"
+msgstr "Pengguna menolak pemasangan"
+
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:329
+#: src/gs-page.c:356
 #, c-format
 msgid "Prepare %s"
 msgstr "Persiapkan %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:465
+#: src/gs-page.c:492
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Anda yakin ingin menghapus repositori %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:469
+#: src/gs-page.c:496
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2309,13 +2790,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:477
+#: src/gs-page.c:504
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Apakah Anda yakin ingin menghapus pemasangan %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:480
+#: src/gs-page.c:507
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -2323,38 +2804,46 @@ msgstr ""
 "%s akan dihapus pemasangannya, dan Anda perlu memasangnya untuk memakainya "
 "lagi."
 
-#. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:65 src/gs-summary-tile.c:89
-#, c-format
-msgid "%s (Installed)"
-msgstr "%s (Terpasang)"
+#. Translators: This is the accessibility label for a screenshot.
+#: src/gs-picture.c:388
+msgid "Picture"
+msgstr "Gambar"
 
-#: src/gs-prefs-dialog.ui:5 src/gs-prefs-dialog.ui:17
+#: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
 msgstr "Preferensi Pemutakhiran"
 
-#: src/gs-prefs-dialog.ui:43
+#: src/gs-prefs-dialog.ui:18
+msgid ""
+"To avoid charges and network caps, software updates are not automatically "
+"downloaded on mobile or metered connections."
+msgstr ""
+"Untuk menghindari biaya dan batasan jaringan, pemutakhiran perangkat lunak "
+"tidak secara otomatis diunduh pada koneksi seluler atau kuota."
+
+#: src/gs-prefs-dialog.ui:22
 msgid "Automatic Updates"
 msgstr "Pemutakhiran Otomatis"
 
-#: src/gs-prefs-dialog.ui:70
-msgid "Automatic updates are disabled when on mobile or metered connections."
+#: src/gs-prefs-dialog.ui:23
+msgid ""
+"Downloads and installs software updates in the background, when possible."
 msgstr ""
-"Pemutakhiran otomatis dinonaktifkan ketika menggunakan koneksi seluler atau "
-"kuota."
+"Unduh dan pasang pemutakhiran perangkat lunak di latar belakang, jika "
+"memungkinkan."
 
-#: src/gs-prefs-dialog.ui:88
+#: src/gs-prefs-dialog.ui:37
 msgid "Automatic Update Notifications"
 msgstr "Pemberitahuan Pemutakhiran Otomatis"
 
-#: src/gs-prefs-dialog.ui:102
+#: src/gs-prefs-dialog.ui:38
 msgid "Show notifications when updates have been automatically installed."
 msgstr ""
 "Tampilkan pemberitahuan ketika pemutakhiran telah dipasang secara otomatis."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:120
+#: src/gs-removal-dialog.c:110
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2364,17 +2853,93 @@ msgstr ""
 "Bila Anda melanjutkan, yang berikut akan secara otomatis dihapus saat "
 "peningkatan:"
 
-#: src/gs-removal-dialog.ui:26
+#: src/gs-removal-dialog.ui:23
 msgid "Incompatible Software"
 msgstr "Perangkat Lunak Tak Kompatibel"
 
-#: src/gs-removal-dialog.ui:39
+#: src/gs-removal-dialog.ui:36
 msgid "_Continue"
 msgstr "_Lanjut"
 
+#. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
+#: src/gs-repos-dialog.c:265
+#, c-format
+msgid "Software that has been installed from “%s” will cease receive updates."
+msgstr ""
+"Perangkat lunak yang telah diapsang dari \"%s\" akan berhenti menerima "
+"pemutakhiran."
+
+#: src/gs-repos-dialog.c:274
+msgid "Disable Repository?"
+msgstr "Nonaktifkan Repositori?"
+
+#: src/gs-repos-dialog.c:274
+msgid "Remove Repository?"
+msgstr "Hapus Repositori?"
+
+#. TRANSLATORS: this is button text to disable a repo
+#: src/gs-repos-dialog.c:280
+msgid "_Disable"
+msgstr "_Nonaktif"
+
+#. TRANSLATORS: this is button text to remove a repo
+#: src/gs-repos-dialog.c:283
+msgid "_Remove"
+msgstr "_Hapus"
+
+#: src/gs-repos-dialog.c:597
+msgid "Enable New Repositories"
+msgstr "Aktifkan Repositori Baru"
+
+#: src/gs-repos-dialog.c:598
+msgid "Turn on new repositories when they are added."
+msgstr "Aktifkan repositori baru saat ditambahkan."
+
+#. TRANSLATORS: this is the clickable
+#. * link on the third party repositories info bar
+#: src/gs-repos-dialog.c:607
+msgid "more information"
+msgstr "informasi lebih lanjut"
+
+#. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
+#. with a link consisting a text "more information", which constructs a sentence:
+#. "Additional repositories from selected third parties - more information."
+#: src/gs-repos-dialog.c:612
+#, c-format
+msgid "Additional repositories from selected third parties — %s."
+msgstr "Repositori tambahan dari pihak ketiga yang dipilih — %s."
+
+#: src/gs-repos-dialog.c:617
+msgid "Fedora Third Party Repositories"
+msgstr "Repositori Pihak Ketiga Fedora"
+
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: src/gs-repos-dialog.c:823
+msgid "the operating system"
+msgstr "sistem operasi"
+
+#. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
+#. %s gets replaced by the name of the actual distro, e.g. Fedora.
+#: src/gs-repos-dialog.c:880
+#, c-format
+msgid "These repositories supplement the default software provided by %s."
+msgstr ""
+"Repositori-repositori ini melengkapi perangkat lunak baku yang disediakan "
+"oleh %s."
+
+#. button in the info bar
+#: src/gs-repos-dialog.ui:10 src/gs-shell.ui:77 src/gs-update-dialog.ui:10
+msgid "Software Repositories"
+msgstr "Repositori Perangkat Lunak"
+
+#: src/gs-repos-dialog.ui:50
+msgid "No Repositories"
+msgstr "Tidak Ada Repositori"
+
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:99
+#: src/gs-repo-row.c:155
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2383,7 +2948,7 @@ msgstr[1] "%u aplikasi terpasang"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:106
+#: src/gs-repo-row.c:162
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2393,7 +2958,7 @@ msgstr[1] "%u tambahan terpasang"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:114
+#: src/gs-repo-row.c:170
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2403,7 +2968,7 @@ msgstr[1] "%u aplikasi"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:120
+#: src/gs-repo-row.c:176
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2414,113 +2979,20 @@ msgstr[1] "%u tambahan"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:127
+#: src/gs-repo-row.c:183
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s dan %s terpasang"
 msgstr[1] "%s dan %s terpasang"
 
-#. TRANSLATORS: this is a prompt message, and '%s' is a
-#. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:303
+#. Translators: The first '%s' is replaced with a text like '10 applications installed',
+#. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
+#: src/gs-repo-row.c:232
 #, c-format
-msgid "Remove “%s”?"
-msgstr "Hapus \"%s\"?"
-
-#. TRANSLATORS: this is a prompt message, and '%s' is a
-#. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:308
-#, c-format
-msgid "Disable “%s”?"
-msgstr "Nonaktifkan \"%s\"?"
-
-#. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:312
-msgid ""
-"Software that has been installed from this repository will no longer receive "
-"updates, including security fixes."
-msgstr ""
-"Perangkat lunak yang telah dipasang dari repositori ini tidak akan lagi "
-"menerima pemutakhiran, termasuk perbaikan keamanan."
-
-#. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:327
-msgid "Remove"
-msgstr "Hapus"
-
-#. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:330
-msgid "Disable"
-msgstr "Nonaktifkan"
-
-#. TRANSLATORS: this is the fallback text we use if we can't
-#. figure out the name of the operating system
-#: src/gs-repos-dialog.c:749
-msgid "the operating system"
-msgstr "sistem operasi"
-
-#. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
-#. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:815 src/gs-repos-dialog.c:851
-#, c-format
-msgid "These repositories supplement the default software provided by %s."
-msgstr ""
-"Repositori-repositori ini melengkapi perangkat lunak baku yang disediakan "
-"oleh %s."
-
-#. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:833
-msgid "Third Party Repositories"
-msgstr "Repositori Pihak Ketiga"
-
-#: src/gs-repos-dialog.ui:73
-msgid "No Additional Repositories"
-msgstr "Tidak Ada Repositori Tambahan"
-
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for enabling a repo
-#: src/gs-repo-row.c:96
-msgid "_Enable"
-msgstr "_Fungsikan"
-
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. for removing a repo. The ellipsis indicates that further
-#. steps are required
-#: src/gs-repo-row.c:105
-msgid "_Remove…"
-msgstr "_Hapus…"
-
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. for disabling a repo. The ellipsis indicates that further
-#. steps are required
-#: src/gs-repo-row.c:110
-msgid "_Disable…"
-msgstr "_Nonaktifkan…"
-
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being enabled
-#: src/gs-repo-row.c:118
-msgid "Enabling"
-msgstr "Memfungsikan"
-
-#. TRANSLATORS: this is a button in the software repositories dialog
-#. that shows the status of a repo being disabled
-#: src/gs-repo-row.c:130
-msgid "Disabling"
-msgstr "Menonaktifkan"
-
-#. TRANSLATORS: this is a label in the software repositories
-#. dialog that indicates that a repo is enabled.
-#: src/gs-repo-row.c:147
-msgid "Enabled"
-msgstr "Difungsikan"
-
-#. TRANSLATORS: this is a label in the software repositories
-#. dialog that indicates that a repo is disabled.
-#: src/gs-repo-row.c:153
-msgid "Disabled"
-msgstr "Dinonaktifkan"
+msgctxt "repo-row"
+msgid "%s • %s"
+msgstr "%s • %s"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
@@ -2592,6 +3064,10 @@ msgstr "Kirim Ulasan"
 msgid "_Post"
 msgstr "_Kirim"
 
+#: src/gs-review-dialog.ui:74
+msgid "Rating"
+msgstr "Peringkat"
+
 #: src/gs-review-dialog.ui:110
 msgid "Summary"
 msgstr "Ringkasan"
@@ -2623,10 +3099,9 @@ msgstr ""
 "Temukan data apa yang dikirim di <a href=\"https://odrs.gnome.org/privacy"
 "\">kebijakan privasi</a> kami."
 
-#. Translators: A label for the total number of reviews.
-#: src/gs-review-histogram.ui:412
-msgid "ratings in total"
-msgstr "total peringkat"
+#: src/gs-review-histogram.ui:100
+msgid "out of 5 stars"
+msgstr "dari 5 bintang"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #: src/gs-review-row.c:58
@@ -2664,72 +3139,305 @@ msgid "Report"
 msgstr "Lapor"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:105
+#: src/gs-review-row.ui:89
 msgid "Was this review useful to you?"
 msgstr "Apakah ulasan ini berguna bagi Anda?"
 
-#: src/gs-review-row.ui:121
+#: src/gs-review-row.ui:106
 msgid "Yes"
 msgstr "Ya"
 
-#: src/gs-review-row.ui:130
+#: src/gs-review-row.ui:115
 msgid "No"
 msgstr "Tidak"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:139
+#: src/gs-review-row.ui:124
 msgid "Meh"
 msgstr "Meh"
 
-#: src/gs-review-row.ui:162
+#: src/gs-review-row.ui:135
 msgid "Report…"
 msgstr "Laporan…"
 
-#: src/gs-review-row.ui:172
+#: src/gs-review-row.ui:148
 msgid "Remove…"
 msgstr "Hapus…"
 
+#: src/gs-safety-context-dialog.c:133
+msgid "Unknown Permissions"
+msgstr "Izin Tidak Diketahui"
+
+#: src/gs-safety-context-dialog.c:134
+msgid "The permissions needed by this app aren’t known"
+msgstr "Izin yang dibutuhkan oleh aplikasi ini tidak diketahui"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:143
+msgid "No Permissions"
+msgstr "Tidak Ada Izin"
+
+#: src/gs-safety-context-dialog.c:144
+msgid "App is fully sandboxed"
+msgstr "Aplikasi sepenuhnya sandboxed"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:151
+msgid "Network Access"
+msgstr "Akses Jaringan"
+
+#: src/gs-safety-context-dialog.c:152
+msgid "Can access the internet"
+msgstr "Dapat mengakses internet"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:155
+msgid "No Network Access"
+msgstr "Tidak Ada Akses Jaringan"
+
+#: src/gs-safety-context-dialog.c:156
+msgid "Cannot access the internet"
+msgstr "Tidak dapat mengakses internet"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:162
+msgid "Uses System Services"
+msgstr "Gunakan Layanan Sistem"
+
+#: src/gs-safety-context-dialog.c:163
+msgid "Can request data from system services"
+msgstr "Dapat meminta data dari layanan sistem"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:170
+msgid "Uses Session Services"
+msgstr "Gunakan Layanan Sesi"
+
+#: src/gs-safety-context-dialog.c:171
+msgid "Can request data from session services"
+msgstr "Dapat meminta data dari layanan sesi"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:178
+msgid "Device Access"
+msgstr "Akses Perangkat"
+
+#: src/gs-safety-context-dialog.c:179
+msgid "Can access devices such as webcams or gaming controllers"
+msgstr "Dapat mengakses perangkat seperti kamera web atau pengontrol gim"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:182
+msgid "No Device Access"
+msgstr "Tidak Ada Akses Perangkat"
+
+#: src/gs-safety-context-dialog.c:183
+msgid "Cannot access devices such as webcams or gaming controllers"
+msgstr "Tidak dapat mengakses perangkat seperti kamera web atau pengontrol gim"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:189
+msgid "Legacy Windowing System"
+msgstr "Sistem Jendela Lama"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:197
+msgid "Arbitrary Permissions"
+msgstr "Izin Sewenang-wenang"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:205
+msgid "User Settings"
+msgstr "Pengaturan Pengguna"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:217
+msgid "Full File System Read/Write Access"
+msgstr "Akses Baca/Tulis Sistem Berkas Lengkap"
+
+#: src/gs-safety-context-dialog.c:218
+msgid "Can read and write all data on the file system"
+msgstr "Dapat membaca dan menulis semua data pada sistem berkas"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:226
+msgid "Home Folder Read/Write Access"
+msgstr "Akses Baca/Tulis Folder Rumah"
+
+#: src/gs-safety-context-dialog.c:227
+msgid "Can read and write all data in your home directory"
+msgstr "Dapat membaca dan menulis semua data di direktori rumah Anda"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:235
+msgid "Full File System Read Access"
+msgstr "Akses Baca Sistem Berkas Lengkap"
+
+#: src/gs-safety-context-dialog.c:236
+msgid "Can read all data on the file system"
+msgstr "Dapat membaca semua data pada sistem berkas"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:245
+msgid "Home Folder Read Access"
+msgstr "Akses Baca Folder Rumah"
+
+#: src/gs-safety-context-dialog.c:246
+msgid "Can read all data in your home directory"
+msgstr "Dapat membaca semua data di direktori rumah Anda"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:255
+msgid "Download Folder Read/Write Access"
+msgstr "Unduh Akses Baca/Tulis Folder"
+
+#: src/gs-safety-context-dialog.c:256
+msgid "Can read and write all data in your downloads directory"
+msgstr "Dapat membaca dan menulis semua data di direktori unduhan Anda"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:267
+msgid "Download Folder Read Access"
+msgstr "Unduh Akses Baca Folder"
+
+#: src/gs-safety-context-dialog.c:268
+msgid "Can read all data in your downloads directory"
+msgstr "Dapat membaca semua data di direktori unduhan Anda"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:281
+msgid "No File System Access"
+msgstr "Tidak Ada Akses Sistem Berkas"
+
+#: src/gs-safety-context-dialog.c:282
+msgid "Cannot access the file system at all"
+msgstr "Tidak dapat mengakses sistem berkas sama sekali"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:296
+msgid "Proprietary Code"
+msgstr "Kode Proprietari"
+
+#: src/gs-safety-context-dialog.c:297
+msgid ""
+"The source code is not public, so it cannot be independently audited and "
+"might be unsafe"
+msgstr ""
+"Kode sumber tidak bersifat publik, sehingga tidak dapat diaudit secara "
+"independen dan mungkin tidak aman"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:300
+msgid "Auditable Code"
+msgstr "Kode yang Dapat Diaudit"
+
+#: src/gs-safety-context-dialog.c:301
+msgid ""
+"The source code is public and can be independently audited, which makes the "
+"app more likely to be safe"
+msgstr ""
+"Kode sumber bersifat publik dan dapat diaudit secara independen, yang "
+"membuat aplikasi lebih mungkin aman"
+
+#: src/gs-safety-context-dialog.c:312
+msgid "Your distribution has verified that this app can be trusted"
+msgstr "Distribusi Anda telah memverifikasi bahwa aplikasi ini dapat dipercaya"
+
+#: src/gs-safety-context-dialog.c:322
+msgid "The developer of this app has been verified to be who they say they are"
+msgstr ""
+"Pengembang aplikasi ini telah diverifikasi untuk menjadi siapa yang mereka "
+"katakan"
+
+#. Translators: The app is considered safe to install and run.
+#. * The placeholder is the app name.
+#: src/gs-safety-context-dialog.c:331
+#, c-format
+msgid "%s is safe"
+msgstr "%s aman"
+
+#. Translators: The app is considered potentially unsafe to install and run.
+#. * The placeholder is the app name.
+#: src/gs-safety-context-dialog.c:338
+#, c-format
+msgid "%s is potentially unsafe"
+msgstr "%s berpotensi tidak aman"
+
+#. Translators: The app is considered unsafe to install and run.
+#. * The placeholder is the app name.
+#: src/gs-safety-context-dialog.c:345
+#, c-format
+msgid "%s is unsafe"
+msgstr "%s tidak aman"
+
+#. Translators: This is the title of the dialog which contains information about the permissions of an app
+#: src/gs-safety-context-dialog.ui:9
+msgid "Safety"
+msgstr "Keamanan"
+
+#: src/gs-safety-context-dialog.ui:146
+msgid "License"
+msgstr "Lisensi"
+
+#: src/gs-safety-context-dialog.ui:232
+msgid "SDK"
+msgstr "SDK"
+
+#. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
+#: src/gs-screenshot-carousel.ui:38
+msgid "Previous Screenshot"
+msgstr "Cuplikan Layar Sebelumnya"
+
+#. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
+#: src/gs-screenshot-carousel.ui:75
+msgid "Next Screenshot"
+msgstr "Cuplikan Layar Berikutnya"
+
+#: src/gs-screenshot-carousel.ui:142
+msgid "No screenshot provided"
+msgstr "Tidak disediakan cuplikan layar"
+
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:347
+#: src/gs-screenshot-image.c:345
 msgid "Screenshot not found"
 msgstr "Cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:364
+#: src/gs-screenshot-image.c:362
 msgid "Failed to load image"
 msgstr "Gagal memuat citra"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:506
+#: src/gs-screenshot-image.c:504
 msgid "Screenshot size not found"
 msgstr "Ukuran cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:536
+#: src/gs-screenshot-image.c:585
 msgid "Could not create cache"
 msgstr "Tak bisa membuat singgahan"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:596
+#: src/gs-screenshot-image.c:595
 msgid "Screenshot not valid"
 msgstr "Cuplikan layar tak valid"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:616
+#: src/gs-screenshot-image.c:615
 msgid "Screenshot not available"
 msgstr "Cuplikan layar tak tersedia"
 
-#: src/gs-screenshot-image.c:682
+#: src/gs-screenshot-image.c:694
 msgid "Screenshot"
 msgstr "Cuplikan layar"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:144
+#: src/gs-search-page.c:172
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -2740,7 +3448,11 @@ msgstr[1] "%u lagi yang cocok"
 msgid "Search page"
 msgstr "Halaman pencarian"
 
-#: src/gs-search-page.ui:54
+#: src/gs-search-page.ui:17
+msgid "Search for Apps"
+msgstr "Mencari Aplikasi"
+
+#: src/gs-search-page.ui:39
 msgid "No Application Found"
 msgstr "Tak Ada Aplikasi Yang Ditemukan"
 
@@ -2752,33 +3464,33 @@ msgstr "Tak Ada Aplikasi Yang Ditemukan"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1137 src/gs-shell.c:1142 src/gs-shell.c:1157
-#: src/gs-shell.c:1161
+#: src/gs-shell.c:1146 src/gs-shell.c:1151 src/gs-shell.c:1166
+#: src/gs-shell.c:1170
 #, c-format
 msgid "“%s”"
 msgstr "\"%s\""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1208
+#: src/gs-shell.c:1216
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Tidak bisa mengunduh pemutakhiran perangkat tegar dari %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1222
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Tidak bisa mengunduh pemutakhiran dari %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1221 src/gs-shell.c:1266
+#: src/gs-shell.c:1229 src/gs-shell.c:1274
 msgid "Unable to download updates"
 msgstr "Tidak bisa mengunduh pemutakhiran"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1227
+#: src/gs-shell.c:1235
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2787,28 +3499,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1236
+#: src/gs-shell.c:1244
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Tidak bisa mengunduh pemutakhiran dari %s: ruang disk tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1241
+#: src/gs-shell.c:1249
 msgid "Unable to download updates: not enough disk space"
 msgstr "Tidak bisa mengunduh pemutakhiran: ruang disk tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1248
+#: src/gs-shell.c:1256
 msgid "Unable to download updates: authentication was required"
 msgstr "Tidak bisa mengunduh pemutakhiran: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1253
+#: src/gs-shell.c:1261
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Tidak bisa mengunduh pemutakhiran: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1258
+#: src/gs-shell.c:1266
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2816,21 +3528,21 @@ msgstr ""
 "perangkat lunak"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1269
+#: src/gs-shell.c:1277
 msgid "Unable to get list of updates"
 msgstr "Tidak bisa mendapat daftar pemutakhiran"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1312
+#: src/gs-shell.c:1319
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Tidak bisa memasang %s karena pengunduhan gagal dari %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1318
+#: src/gs-shell.c:1325
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Tidak bisa memasang %s karena pengunduhan gagal"
@@ -2839,51 +3551,51 @@ msgstr "Tidak bisa memasang %s karena pengunduhan gagal"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1331
+#: src/gs-shell.c:1338
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Tidak bisa memasang %s karena runtime %s tidak tersedia"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1337
+#: src/gs-shell.c:1344
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Tidak bisa memasang %s karena tidak didukung"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1351
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Tidak bisa memasang: akses internet diperlukan tapi tidak tersedia"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1357
 msgid "Unable to install: the application has an invalid format"
 msgstr "Tidak bisa memasang: aplikasi memiliki format yang tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1355
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Tidak bisa memasang %s: ruang disk tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1362
+#: src/gs-shell.c:1369
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Tidak bisa memasang %s: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1369
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Tidak bisa memasang %s: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1376
+#: src/gs-shell.c:1383
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -2891,21 +3603,21 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1384
+#: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Tidak bisa memasang %s: perlu daya AC"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1391
+#: src/gs-shell.c:1398
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Tidak bisa memasang %s: Level baterai terlalu rendah"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1400
+#: src/gs-shell.c:1407
 #, c-format
 msgid "Unable to install %s"
 msgstr "Tidak bisa memasang %s"
@@ -2914,14 +3626,14 @@ msgstr "Tidak bisa memasang %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1447
+#: src/gs-shell.c:1453
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Tidak bisa memutakhirkan %s dari %s karena pengunduhan gagal"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1454
+#: src/gs-shell.c:1460
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Tidak bisa memutakhirkan %s karena pengunduhan gagal"
@@ -2929,64 +3641,64 @@ msgstr "Tidak bisa memutakhirkan %s karena pengunduhan gagal"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1461
+#: src/gs-shell.c:1467
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Tidak bisa memasang pemutakhiran dari %s karena pengunduhan gagal"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1465
+#: src/gs-shell.c:1471
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Tidak bisa memasang pemutakhiran karena pengunduhan gagal"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1471
+#: src/gs-shell.c:1477
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Tidak bisa mutakhirkan: akses internet diperlukan tapi tidak tersedia"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1481
+#: src/gs-shell.c:1487
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Tidak bisa memutakhirkan %s: ruang diska tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1486
+#: src/gs-shell.c:1492
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Tidak bisa memasang pemutakhiran: ruang diska tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1496
+#: src/gs-shell.c:1502
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Tidak bisa memutakhirkan %s: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1501
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Tidak bisa memasang pemutakhiran: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1510
+#: src/gs-shell.c:1516
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Tidak bisa memutakhirkan %s: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1515
+#: src/gs-shell.c:1521
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Tidak bisa memasang pemutakhiran: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1524
+#: src/gs-shell.c:1530
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
@@ -2994,7 +3706,7 @@ msgstr ""
 "perangkat lunak"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1530
+#: src/gs-shell.c:1536
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3004,41 +3716,41 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1540
+#: src/gs-shell.c:1546
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Tidak bisa memutakhirkan %s: perlu daya AC"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1552
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Tidak bisa memasang pemutakhiran: perlu daya AC"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1555
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Tidak bisa memutakhirkan %s: Level baterai terlalu rendah"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1561
+#: src/gs-shell.c:1567
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Tidak bisa memasang pemutakhiran: Level baterai terlalu rendah"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1572
+#: src/gs-shell.c:1578
 #, c-format
 msgid "Unable to update %s"
 msgstr "Tidak bisa memutakhirkan %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1575
+#: src/gs-shell.c:1581
 #, c-format
 msgid "Unable to install updates"
 msgstr "Tidak bisa memasang pemutakhiran"
@@ -3046,21 +3758,21 @@ msgstr "Tidak bisa memasang pemutakhiran"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1618
+#: src/gs-shell.c:1623
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Tidak bisa meningkatkan ke %s dari %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1628
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Tidak bisa meningkatkan ke %s karena pengunduhan gagal"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1632
+#: src/gs-shell.c:1637
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3069,70 +3781,70 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1641
+#: src/gs-shell.c:1646
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Tidak bisa meningkatkan ke %s: ruang disk tidak cukup"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1649
+#: src/gs-shell.c:1654
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Tidak bisa meningkatkan ke %s: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1656
+#: src/gs-shell.c:1661
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Tidak bisa meningkatkan ke %s: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1663
+#: src/gs-shell.c:1668
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Tidak bisa meningkatkan ke %s: Anda tidak punya hak untuk meningkatkan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1670
+#: src/gs-shell.c:1675
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Tidak bisa meningkatkan ke %s: perlu daya AC"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1677
+#: src/gs-shell.c:1682
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Tidak bisa meningkatkan ke %s: Level baterai terlalu rendah"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1686
+#: src/gs-shell.c:1691
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Tidak bisa meningkatkan ke %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1724
+#: src/gs-shell.c:1728
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Tidak bisa menghapus %s: perlu autentikasi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1730
+#: src/gs-shell.c:1734
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Tidak bisa menghapus %s: autentikasi tidak valid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1736
+#: src/gs-shell.c:1740
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr ""
@@ -3140,21 +3852,21 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1743
+#: src/gs-shell.c:1747
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Tidak bisa menghapus %s: perlu daya AC"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1750
+#: src/gs-shell.c:1754
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Tidak bisa menghapus %s: Level baterai terlalu rendah"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1762
+#: src/gs-shell.c:1766
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Tidak bisa menghapus %s"
@@ -3163,178 +3875,236 @@ msgstr "Tidak bisa menghapus %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1805
+#: src/gs-shell.c:1808
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Tidak bisa meluncurkan %s: %s tidak terpasang"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1812 src/gs-shell.c:1863 src/gs-shell.c:1904
-#: src/gs-shell.c:1950
+#: src/gs-shell.c:1815 src/gs-shell.c:1866 src/gs-shell.c:1907
+#: src/gs-shell.c:1952
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Ruang disk tidak cukup — kosongkan sebagian dan coba lagi"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1823 src/gs-shell.c:1874 src/gs-shell.c:1915
-#: src/gs-shell.c:1974
+#: src/gs-shell.c:1826 src/gs-shell.c:1877 src/gs-shell.c:1918
+#: src/gs-shell.c:1976
 msgid "Sorry, something went wrong"
 msgstr "Maaf, ada yang tidak beres"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1855
+#: src/gs-shell.c:1858
 msgid "Failed to install file: not supported"
 msgstr "Gagal memasang berkas: tidak didukung"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1859
+#: src/gs-shell.c:1862
 msgid "Failed to install file: authentication failed"
 msgstr "Gagal memasang berkas: autentikasi gagal"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1896
+#: src/gs-shell.c:1899
 msgid "Failed to install: not supported"
 msgstr "Gagal memasang: tidak didukung"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1900
+#: src/gs-shell.c:1903
 msgid "Failed to install: authentication failed"
 msgstr "Gagal memasang: autentikasi gagal"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1944
+#: src/gs-shell.c:1946
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Tidak bisa mengontak %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1956
+#: src/gs-shell.c:1958
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Perangkat lunak perlu dimulai ulang untuk menggunakan pengaya baru."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1961
+#: src/gs-shell.c:1963
 msgid "AC power is required"
 msgstr "Daya AC diperlukan"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1965
+#: src/gs-shell.c:1967
 msgid "The battery level is too low"
 msgstr "Level baterai terlalu rendah"
 
-#. TRANSLATORS: this refers to where the app came from
-#: src/gs-shell-search-provider.c:263
-#, c-format
-msgid "Source: %s"
-msgstr "Sumber: %s"
+#: src/gs-shell.ui:7
+msgid "_Software Repositories"
+msgstr "Repo_sitori Perangkat Lunak"
 
-#: src/gs-summary-tile.c:94
+#: src/gs-shell.ui:12
+msgid "_Update Preferences"
+msgstr "Preferensi Pem_utakhiran"
+
+#: src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
+msgid "Software"
+msgstr "Perangkat Lunak"
+
+#. button in the info bar
+#: src/gs-shell.ui:86
+msgid "Examine Disk"
+msgstr "Periksa Disk"
+
+#. button in the info bar
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: src/gs-shell.ui:95 src/gs-updates-page.c:907
+msgid "Network Settings"
+msgstr "Pengaturan Jaringan"
+
+#. button in the info bar
+#: src/gs-shell.ui:104
+msgid "Restart Now"
+msgstr "Mulai Ulang Sekarang"
+
+#. button in the info bar
+#: src/gs-shell.ui:113
+msgid "More Information"
+msgstr "Informasi lebih lanjut"
+
+#: src/gs-shell.ui:168
+msgid "Search"
+msgstr "Pencarian"
+
+#: src/gs-shell.ui:197
+msgid "Primary Menu"
+msgstr "Menu Utama"
+
+#: src/gs-shell.ui:286
+msgid "Find Out _More"
+msgstr "Te_mukan Lebih Jauh"
+
+#. Translators: This is shown in a bubble to represent a 0 byte
+#. * storage size, so its context is “storage size: none”. The
+#. * bubble is small, so the string should be as short as
+#. * possible.
+#: src/gs-storage-context-dialog.c:92
+msgid "None"
+msgstr "Nihil"
+
+#: src/gs-storage-context-dialog.c:130
+msgid "Application Data"
+msgstr "Data Aplikasi"
+
+#: src/gs-storage-context-dialog.c:131
+msgid "Data needed for the application to run"
+msgstr "Data yang diperlukan agar aplikasi berjalan"
+
+#: src/gs-storage-context-dialog.c:135
+msgid "User Data"
+msgstr "Data Pengguna"
+
+#: src/gs-storage-context-dialog.c:136
+msgid "Data created by you in the application"
+msgstr "Data yang dibuat oleh Anda dalam aplikasi"
+
+#: src/gs-storage-context-dialog.c:142
+msgid "Cache Data"
+msgstr "Data Singgahan"
+
+#: src/gs-storage-context-dialog.c:143
+msgid "Temporary cached data"
+msgstr "Data singgahan sementara"
+
+#: src/gs-storage-context-dialog.c:160
+msgid "The application itself"
+msgstr "Aplikasi itu sendiri"
+
+#: src/gs-storage-context-dialog.c:164
+msgid "Required Dependencies"
+msgstr "Dependensi yang Diperlukan"
+
+#: src/gs-storage-context-dialog.c:165
+msgid "Shared system components required by this application"
+msgstr "Komponen sistem bersama yang diperlukan oleh aplikasi ini"
+
+#. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
+#: src/gs-storage-context-dialog.ui:9
+msgid "Storage"
+msgstr "Penyimpanan"
+
+#: src/gs-summary-tile.c:74
+#, c-format
+msgid "%s (Installed)"
+msgstr "%s (Terpasang)"
+
+#: src/gs-summary-tile.c:79
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Memasang)"
 
-#: src/gs-summary-tile.c:99
+#: src/gs-summary-tile.c:84
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s( Menghapus)"
-
-#. TRANSLATORS: this is a button in the software repositories
-#. dialog for removing multiple repos
-#: src/gs-third-party-repo-row.c:93
-msgid "_Remove All"
-msgstr "_Hapus Semua"
-
-#. TRANSLATORS: this is where the packager did not write
-#. * a description for the update
-#: src/gs-update-dialog.c:189
-msgid "No update description available."
-msgstr "Deskripsi pemutakhiran tak tersedia."
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:293
+#: src/gs-update-dialog.c:122
 #, c-format
 msgid "Installed on %s"
 msgstr "Dipasang pada %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:313
+#: src/gs-update-dialog.c:142
 msgid "Installed Updates"
 msgstr "Pemutakhiran Terpasang"
 
-#. TRANSLATORS: This is the header for package additions during
-#. * a system update
-#: src/gs-update-dialog.c:535
-msgid "Additions"
-msgstr "Penambahan"
-
-#. TRANSLATORS: This is the header for package removals during
-#. * a system update
-#: src/gs-update-dialog.c:539
-msgid "Removals"
-msgstr "Penghapusan"
-
-#. TRANSLATORS: This is the header for package updates during
-#. * a system update
-#: src/gs-update-dialog.c:543
-msgid "Updates"
-msgstr "Pemutakhiran"
-
-#. TRANSLATORS: This is the header for package downgrades during
-#. * a system update
-#: src/gs-update-dialog.c:547
-msgid "Downgrades"
-msgstr "Penurunan"
-
-#: src/gs-update-dialog.ui:100
+#: src/gs-update-dialog.ui:70
 msgid "No updates have been installed on this system."
 msgstr "Tak ada pemutakhiran yang telah dipasang pada sistem ini."
 
-#: src/gs-update-monitor.c:193
+#: src/gs-update-monitor.c:210
 msgid "Software Updates Are Out of Date"
 msgstr "Pemutakhiran Perangkat Lunak Sudah Kedaluwarsa"
 
-#: src/gs-update-monitor.c:194
+#: src/gs-update-monitor.c:211
 msgid "Please check for software updates."
 msgstr "Silakan periksa pemutakhiran perangkat lunak."
 
-#: src/gs-update-monitor.c:200
+#: src/gs-update-monitor.c:217
 msgid "Critical Software Update Ready to Install"
 msgstr "Pemutakhiran Perangkat Lunak Penting Siap Dipasang"
 
-#: src/gs-update-monitor.c:201
+#: src/gs-update-monitor.c:218
 msgid "An important software update is ready to be installed."
 msgstr "Pemutakhiran perangkat lunak penting siap dipasang."
 
-#: src/gs-update-monitor.c:204
+#: src/gs-update-monitor.c:221
 msgid "Critical Software Updates Available to Download"
 msgstr "Pemutakhiran Perangkat Lunak Penting Tersedia untuk Diunduh"
 
-#: src/gs-update-monitor.c:205
+#: src/gs-update-monitor.c:222
 msgid "Important: critical software updates are waiting."
 msgstr "Penting: pemutakhiran perangkat lunak penting sedang menunggu."
 
-#: src/gs-update-monitor.c:211
+#: src/gs-update-monitor.c:230
 msgid "Software Updates Ready to Install"
 msgstr "Pemutakhiran Perangkat Lunak Siap Dipasang"
 
-#: src/gs-update-monitor.c:212
+#: src/gs-update-monitor.c:231
 msgid "Software updates are waiting and ready to be installed."
 msgstr "Pemutakhiran perangkat lunak sedang menunggu dan siap dipasang."
 
-#: src/gs-update-monitor.c:217
+#: src/gs-update-monitor.c:236
 msgid "Software Updates Available to Download"
 msgstr "Pemutakhiran Perangkat Lunak Tersedia untuk Diunduh"
 
-#: src/gs-update-monitor.c:218
+#: src/gs-update-monitor.c:237
 msgid "Please download waiting software updates."
 msgstr "Silakan unduh pemutakhiran perangkat lunak yang menunggu."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:323
+#: src/gs-update-monitor.c:343
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3342,7 +4112,7 @@ msgstr[0] "%u Aplikasi Dimutakhirkan — Mulai Ulang Diperlukan"
 msgstr[1] "%u Aplikasi Dimutakhirkan — Mulai Ulang Diperlukan"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:329
+#: src/gs-update-monitor.c:349
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3350,24 +4120,24 @@ msgstr[0] "%u Aplikasi Dimutakhirkan"
 msgstr[1] "%u Aplikasi Dimutakhirkan"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:340
+#: src/gs-update-monitor.c:360
 #, c-format
 msgid "%s has been updated."
 msgstr "%s telah dimutakhirkan."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:343
+#: src/gs-update-monitor.c:363
 msgid "Please restart the application."
 msgstr "Mohon memulai ulang aplikasi."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:351
+#: src/gs-update-monitor.c:371
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s dan %s telah dimutakhirkan."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:357 src/gs-update-monitor.c:376
+#: src/gs-update-monitor.c:377 src/gs-update-monitor.c:396
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3375,69 +4145,69 @@ msgstr[0] "%u aplikasi memerlukan mulai ulang."
 msgstr[1] "%u aplikasi memerlukan mulai ulang."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:369
+#: src/gs-update-monitor.c:389
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Termasuk %s, %s dan %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:580 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:656 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Pemutakhiran Sistem Operasi Tidak Tersedia"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:582
+#: src/gs-update-monitor.c:658
 msgid "Upgrade to continue receiving security updates."
 msgstr "Tingkatkan versi untuk terus menerima pemutakhiran keamanan."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:637
+#: src/gs-update-monitor.c:713
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Sebuah versi baru %s telah tersedia untuk dipasang"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:641
+#: src/gs-update-monitor.c:717
 msgid "Software Upgrade Available"
 msgstr "Pemutakhiran Perangkat Lunak Tersedia"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1035
+#: src/gs-update-monitor.c:1114
 msgid "Software Updates Failed"
 msgstr "Pemutakhiran Perangkat Lunak Gagal"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1037
+#: src/gs-update-monitor.c:1116
 msgid "An important OS update failed to be installed."
 msgstr "Suatu pemutakhiran SO (Sistem Operasi) yang penting gagal dipasang."
 
-#: src/gs-update-monitor.c:1038
+#: src/gs-update-monitor.c:1117
 msgid "Show Details"
 msgstr "Tampilkan Rincian"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1061
+#: src/gs-update-monitor.c:1140
 msgid "System Upgrade Complete"
 msgstr "Peningkatan Sistem Selesai"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1066
+#: src/gs-update-monitor.c:1145
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Selamat datang di %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1072
+#: src/gs-update-monitor.c:1151
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Pemutakhiran Perangkat Lunak Terpasang"
 msgstr[1] "Pemutakhiran Perangkat Lunak Terpasang"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1076
+#: src/gs-update-monitor.c:1155
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Pemutakhiran SO (Sistem Operasi) yang penting telah dipasang."
@@ -3448,30 +4218,30 @@ msgstr[1] "Pemutakhiran SO (Sistem Operasi) yang penting telah dipasang."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1087
+#: src/gs-update-monitor.c:1166
 msgctxt "updates"
 msgid "Review"
 msgstr "Ulasan"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1136
+#: src/gs-update-monitor.c:1215
 msgid "Failed To Update"
 msgstr "Gagal Memutakhirkan"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1142
+#: src/gs-update-monitor.c:1221
 msgid "The system was already up to date."
 msgstr "Sistem sudah pada kondisi terbaru."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1147
+#: src/gs-update-monitor.c:1226
 msgid "The update was cancelled."
 msgstr "Pemutakhiran dibatalkan."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1153
+#: src/gs-update-monitor.c:1232
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3480,7 +4250,7 @@ msgstr ""
 "Internet dan coba lagi."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1159
+#: src/gs-update-monitor.c:1238
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3490,14 +4260,14 @@ msgstr ""
 "rinci."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1165
+#: src/gs-update-monitor.c:1244
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Tidak tersedia ruang diska yang cukup. Kosongkanlah beberapa dan coba lagi."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1170
+#: src/gs-update-monitor.c:1249
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3505,57 +4275,42 @@ msgstr ""
 "Maaf: pemutakhiran gagal dipasang. Tunggulah untuk pemutakhiran yang lain "
 "dan coba lagi. Jika terus berlanjut, hubungi penyedia perangkat lunak Anda."
 
-#. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:186
-msgid "Looking for new updates…"
-msgstr "Mencari pemutakhiran baru…"
-
-#. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:255
-msgid "Setting up updates…"
-msgstr "Menyiapkan pemutakhiran…"
-
-#. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:256 src/gs-updates-page.c:263
-msgid "(This could take a while)"
-msgstr "(Ini mungkin memakan waktu)"
-
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:370
+#: src/gs-updates-page.c:252
 #, c-format
 msgid "Last checked: %s"
 msgstr "Terakhir diperiksa: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:534
+#: src/gs-updates-page.c:577
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s tidak lagi didukung."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:539
+#: src/gs-updates-page.c:582
 msgid "Your OS is no longer supported."
 msgstr "SO (Sistem Operasi) Anda tidak lagi didukung."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:544
+#: src/gs-updates-page.c:587
 msgid "This means that it does not receive security updates."
 msgstr "Ini berarti tidak menerima pemutakhiran keamanan."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:548
+#: src/gs-updates-page.c:591
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Anda sangat disarankan untuk meningkatkan ke versi yang lebih baru."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:806
+#: src/gs-updates-page.c:875
 msgid "Charges May Apply"
 msgstr "Mungkin Ada Biaya"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:810
+#: src/gs-updates-page.c:879
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3565,27 +4320,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:814
+#: src/gs-updates-page.c:883
 msgid "Check _Anyway"
 msgstr "Periksa S_aja"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:830
+#: src/gs-updates-page.c:899
 msgid "No Network"
 msgstr "Tak Ada Jaringan"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:834
+#: src/gs-updates-page.c:903
 msgid "Internet access is required to check for updates."
 msgstr "Akses internet diperlukan untuk memeriksa pemutakhiran."
 
-#. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1257
+#: src/gs-updates-page.c:1295
 msgid "Checking…"
 msgstr "Memeriksa…"
 
-#: src/gs-updates-page.c:1270
+#: src/gs-updates-page.c:1318
 msgid "Check for updates"
 msgstr "Periksa pemutakhiran"
 
@@ -3593,129 +4347,137 @@ msgstr "Periksa pemutakhiran"
 msgid "Updates page"
 msgstr "Halaman pemutakhiran"
 
-#. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:177
-msgid "Software is up to date"
-msgstr "Perangkat lunak mutakhir"
+#. TRANSLATORS: the updates panel is starting up.
+#: src/gs-updates-page.ui:96
+msgid "Loading Updates…"
+msgstr "Memuat Pemutakhiran…"
 
-#: src/gs-updates-page.ui:225
+#. TRANSLATORS: the updates panel is starting up.
+#: src/gs-updates-page.ui:110
+msgid "This could take a while."
+msgstr "Ini mungkin memakan waktu."
+
+#. TRANSLATORS: This means all software (plural) installed on this system is up to date.
+#: src/gs-updates-page.ui:222
+msgid "Up to Date"
+msgstr "Mutakhir"
+
+#: src/gs-updates-page.ui:263
+msgid "Use Mobile Data?"
+msgstr "Gunakan Data Seluler?"
+
+#: src/gs-updates-page.ui:264
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
-"charges"
+"charges."
 msgstr ""
-"Memeriksa pemutakhiran ketika memakai data seluler bisa menambah tagihan"
+"Memeriksa pemutakhiran ketika memakai data seluler bisa menambah tagihan."
 
-#: src/gs-updates-page.ui:237
+#: src/gs-updates-page.ui:267
 msgid "_Check Anyway"
 msgstr "_Periksa Saja"
 
-#: src/gs-updates-page.ui:273
-msgid "Go online to check for updates"
-msgstr "Pergi daring untuk memeriksa pemutakhiran"
+#: src/gs-updates-page.ui:282
+msgid "No Connection"
+msgstr "Tidak Ada Koneksi"
 
-#: src/gs-updates-page.ui:284
+#: src/gs-updates-page.ui:283
+msgid "Go online to check for updates."
+msgstr "Pergi daring untuk memeriksa pemutakhiran."
+
+#: src/gs-updates-page.ui:286
 msgid "_Network Settings"
 msgstr "Pe_ngaturan Jaringan"
 
-#: src/gs-updates-page.ui:357
-msgid "Updates are automatically managed"
-msgstr "Pemutakhiran dikelola secara otomatis"
+#: src/gs-updates-page.ui:312
+msgid "Error"
+msgstr "Kesalahan"
+
+#: src/gs-updates-page.ui:313
+msgid "Updates are automatically managed."
+msgstr "Pemutakhiran dikelola secara otomatis."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:290
+#: src/gs-updates-section.c:323
 msgid "Restart & Update"
 msgstr "Mulai Ulang & Mutakhirkan"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:296
+#: src/gs-updates-section.c:329
 msgid "Update All"
 msgstr "Mutakhirkan Semua"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:427
+#: src/gs-updates-section.c:457
 msgid "Integrated Firmware"
 msgstr "Perangkat Tegar Terpadu"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:431
+#: src/gs-updates-section.c:462
 msgid "Requires Restart"
 msgstr "Perlu Mulai Ulang"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:435
+#: src/gs-updates-section.c:467
 msgid "Application Updates"
 msgstr "Pemutakhiran Aplikasi"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:439
+#: src/gs-updates-section.c:472
 msgid "Device Firmware"
 msgstr "Perangkat Tegar"
 
-#: src/gs-updates-section.c:467 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:68
 msgid "_Download"
 msgstr "Un_duh"
 
-#: src/gs-upgrade-banner.c:91
-msgid ""
-"It is recommended that you back up your data and files before upgrading."
-msgstr ""
-"Disarankan untuk membuat salinan cadangan data dan berkas Anda sebelum "
-"meningkatkan."
-
-#: src/gs-upgrade-banner.c:95
-msgid "_Restart Now"
-msgstr "Mulai Ulang Seka_rang"
-
-#: src/gs-upgrade-banner.c:97
-msgid "Updates will be applied when the computer is restarted."
-msgstr "Pemutakhiran akan diterapkan ketika komputer dinyalakan ulang."
-
 #. TRANSLATORS: This is the text displayed when a distro
-#. * upgrade is available. First %s is the distro name and the
-#. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:112
+#. * upgrade is available. The first %s is the distro name
+#. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
+#: src/gs-upgrade-banner.c:86
 #, c-format
-msgid "%s %s Now Available"
-msgstr "%s %s Kini Tersedia"
+msgid "%s %s Available"
+msgstr "%s %s Tersedia"
 
-#. TRANSLATORS: This is the text displayed while waiting to
-#. * download a distro upgrade. First %s is the distro name and
-#. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:122
+#: src/gs-upgrade-banner.c:131
+msgid "Learn about the new version"
+msgstr "Pelajari tentang versi baru"
+
+#: src/gs-upgrade-banner.c:151
+msgid "Downloading…"
+msgstr "Mengunduh…"
+
+#. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
+#. with the total download size, forming text like "135 MB of 2 GB downloaded"
+#: src/gs-upgrade-banner.c:169
 #, c-format
-msgid "Waiting to Download %s %s"
-msgstr "Menunggu untuk Mengunduh %s %s"
+msgid "%s of %s downloaded"
+msgstr "%s dari %s terunduh"
 
-#. TRANSLATORS: This is the text displayed while downloading a
-#. * distro upgrade. First %s is the distro name and the 2nd %s
-#. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:132
+#. Translators: the '%u' is replaced with the actual percentage being already
+#. downloaded, forming text like "13% downloaded"
+#: src/gs-upgrade-banner.c:173
 #, c-format
-msgid "Downloading %s %s"
-msgstr "Mengunduh %s %s"
+msgid "%u%% downloaded"
+msgstr "%u%% terunduh"
 
-#. TRANSLATORS: This is the text displayed when a distro
-#. * upgrade has been downloaded and is ready to be installed.
-#. * First %s is the distro name and the 2nd %s is the version,
-#. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:143
-#, c-format
-msgid "%s %s Ready to be Installed"
-msgstr "%s %s Siap dipasang"
-
-#: src/gs-upgrade-banner.ui:30
+#: src/gs-upgrade-banner.ui:43
 msgid "A major upgrade, with new features and added polish."
 msgstr "Peningkatan mayor, dengan fitur-fitur baru dan polesan tambahan."
 
-#: src/gs-upgrade-banner.ui:50
-msgid "_Learn More"
-msgstr "Pelajari _Lebih Jauh"
+#: src/gs-upgrade-banner.ui:203
+msgid "_Restart & Upgrade"
+msgstr "Mulai Ulang & Mutakhi_rkan"
+
+#: src/gs-upgrade-banner.ui:220
+msgid "Remember to back up data and files before upgrading."
+msgstr "Ingatlah untuk mencadangkan data dan berkas sebelum memutakhirkan."
 
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
@@ -3743,66 +4505,32 @@ msgid "Includes performance, stability and security improvements."
 msgstr "Memuat perbaikan kinerja, stabilitas, dan keamanan."
 
 #. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-rewrite-resource.c:42
+#: plugins/core/gs-plugin-rewrite-resource.c:41
 msgid "Downloading featured images…"
 msgstr "Mengunduh gambar pilihan…"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:562
+#: plugins/eos-updater/gs-plugin-eos-updater.c:560
 msgid "Endless OS"
 msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:565
+#: plugins/eos-updater/gs-plugin-eos-updater.c:563
 msgid "An Endless OS update with new features and fixes."
 msgstr "Pemutakhiran Endless OS dengan fitur dan perbaikan baru."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:826
+#: plugins/eos-updater/gs-plugin-eos-updater.c:824
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
 "Layanan pemutakhiran EOS tidak dapat mengambil dan menerapkan pemutakhiran."
 
-#. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:141
-msgid "GNOME Software AppStream system-wide installer"
-msgstr "Installer seluruh sistem GNOME Software AppStream"
-
-#: plugins/external-appstream/gs-install-appstream.c:143
-msgid "Failed to parse command line arguments"
-msgstr "Gagal mengurai argumen baris perintah"
-
-#. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:150
-msgid "You need to specify exactly one filename"
-msgstr "Anda perlu menentukan satu nama berkas"
-
-#. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:157
-msgid "This program can only be used by the root user"
-msgstr "Program ini hanya dapat digunakan oleh pengguna root"
-
-#. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:165
-msgid "Failed to validate content type"
-msgstr "Gagal untuk memvalidasi jenis konten"
-
-#. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:175
-msgid "Failed to copy"
-msgstr "Gagal menyalin"
-
 #. TRANSLATORS: status text when downloading
-#: plugins/external-appstream/gs-plugin-external-appstream.c:235
-msgid "Downloading extra metadata files…"
-msgstr "Mengunduh berkas ekstra metadata…"
-
-#. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:193
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:195
 msgid "Downloading upgrade information…"
 msgstr "Mengunduh informasi peningkatan…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:283
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:314
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr "Tingkatkan untuk fitur, kinerja, dan stabilitas terbaru."
@@ -3816,22 +4544,30 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak adalah kerangka kerja untuk aplikasi destop di Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1008
+#: plugins/flatpak/gs-flatpak.c:1132
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Mendapatkan metadata flatpak untuk %s…"
 
-#: plugins/flatpak/gs-flatpak.c:2930
+#: plugins/flatpak/gs-flatpak.c:3105
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Gagal memperbaiki tambahan '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:803
+#: plugins/flatpak/gs-flatpak-utils.c:89
+msgid "User Installation"
+msgstr "Pemasangan Pengguna"
+
+#: plugins/flatpak/gs-flatpak-utils.c:89
+msgid "System Installation"
+msgstr "Instalasi Sistem"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:821
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Gagal menambahkan ke memasang untuk tambahan '%s': %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:817
+#: plugins/flatpak/gs-plugin-flatpak.c:835
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Gagal menambahkan ke menghapus untuk tambahan '%s': %s"
@@ -3908,15 +4644,56 @@ msgstr "%s Pemutakhiran Mikrokode CPU"
 msgid "%s Configuration Update"
 msgstr "%s Pemutakhiran Konfigurasi"
 
+#. TRANSLATORS: battery refers to the system power source
+#: plugins/fwupd/gs-fwupd-app.c:186
+#, c-format
+msgid "%s Battery Update"
+msgstr "%s Pemutakhiran Baterai"
+
+#. TRANSLATORS: camera can refer to the laptop internal
+#. * camera in the bezel or external USB webcam
+#: plugins/fwupd/gs-fwupd-app.c:191
+#, c-format
+msgid "%s Camera Update"
+msgstr "%s Pemutakhiran Kamera"
+
+#. TRANSLATORS: TPM refers to a Trusted Platform Module
+#: plugins/fwupd/gs-fwupd-app.c:195
+#, c-format
+msgid "%s TPM Update"
+msgstr "%s Pemutakhiran TPM"
+
+#. TRANSLATORS: TouchPad refers to a flat input device
+#: plugins/fwupd/gs-fwupd-app.c:199
+#, c-format
+msgid "%s Touchpad Update"
+msgstr "%s Pemutakhiran Touchpad"
+
+#. TRANSLATORS: Mouse refers to a handheld input device
+#: plugins/fwupd/gs-fwupd-app.c:203
+#, c-format
+msgid "%s Mouse Update"
+msgstr "%s Pemutakhiran Tetikus"
+
+#. TRANSLATORS: Keyboard refers to an input device for typing
+#: plugins/fwupd/gs-fwupd-app.c:207
+#, c-format
+msgid "%s Keyboard Update"
+msgstr "%s Pemutakhiran Papan Tik"
+
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:716
 msgid "Downloading firmware update signature…"
 msgstr "Mengunduh tanda tangan pemutakhiran perangkat tegar…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:748
+#: plugins/fwupd/gs-plugin-fwupd.c:758
 msgid "Downloading firmware update metadata…"
 msgstr "Mengunduh metadata pemutakhiran perangkat tegar…"
+
+#: plugins/fwupd/gs-plugin-fwupd.c:1180
+msgid "Firmware"
+msgstr "Perangkat Tegar (Firmware)"
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
 msgid "Firmware Upgrade Support"
@@ -3926,23 +4703,13 @@ msgstr "Dukungan Peningkatan Perangkat Tegar"
 msgid "Provides support for firmware upgrades"
 msgstr "Menyediakan dukungan untuk peningkatan perangkat tegar"
 
-#: plugins/odrs/gs-plugin-odrs.c:159
-msgctxt "Distribution name"
-msgid "Unknown"
-msgstr "Tak diketahui"
+#: plugins/packagekit/gs-plugin-packagekit.c:301
+msgid "Packages"
+msgstr "Paket"
 
-#. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:306
-msgid "Downloading application ratings…"
-msgstr "Mengunduh peringkat aplikasi…"
-
-#: plugins/odrs/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:6
-msgid "Open Desktop Ratings Support"
-msgstr "Open Desktop Ratings Support"
-
-#: plugins/odrs/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
-msgid "ODRS is a service providing user reviews of applications"
-msgstr "ODRS adalah layanan yang menyediakan ulasan pengguna dari aplikasi"
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2151
+msgid "Operating System (OSTree)"
+msgstr "Sistem Operasi (OSTree)"
 
 #. TRANSLATORS: default snap store name
 #: plugins/snap/gs-plugin-snap.c:239
@@ -3957,8 +4724,306 @@ msgstr "Dukungan Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap adalah paket Linux yang universal"
 
-#~ msgid "No cartoon violence"
-#~ msgstr "Tidak ada kekerasan kartun"
+#~ msgid "Show the prompt to install nonfree software repositories"
+#~ msgstr ""
+#~ "Tampilkan pertanyaan untuk memasang repositori perangkat lunak tak bebas"
+
+#~ msgid "Select All"
+#~ msgstr "Pilih Semua"
+
+#~ msgid "Select None"
+#~ msgstr "Pilih Tak Satupun"
+
+#~ msgid "_Installed"
+#~ msgstr "Ter_pasang"
+
+#~ msgid "_Updates"
+#~ msgstr "Pem_utakhiran"
+
+#~ msgid "Featured %s"
+#~ msgstr "%s Pilihan"
+
+#~ msgid "Show"
+#~ msgstr "Tampilkan"
+
+#~ msgid "Subcategories filter menu"
+#~ msgstr "Menu penyaringan subkategori"
+
+#~ msgid "Sort"
+#~ msgstr "Urutkan"
+
+#~ msgid "Subcategories sorting menu"
+#~ msgstr "Menu pengurutan subkategori"
+
+#~ msgctxt "Menu of Games"
+#~ msgid "All"
+#~ msgstr "Semua"
+
+#~ msgctxt "Menu of Games"
+#~ msgid "Featured"
+#~ msgstr "Pilihan"
+
+#~ msgctxt "Menu of Utilities"
+#~ msgid "All"
+#~ msgstr "Semua"
+
+#~ msgctxt "Menu of Utilities"
+#~ msgid "Featured"
+#~ msgstr "Pilihan"
+
+#~ msgctxt "Menu of Reference"
+#~ msgid "All"
+#~ msgstr "Semua"
+
+#~ msgctxt "Menu of Reference"
+#~ msgid "Featured"
+#~ msgstr "Pilihan"
+
+#~ msgid "Audio & Video"
+#~ msgstr "Audio & Video"
+
+#~ msgid "Developer Tools"
+#~ msgstr "Alat Pengembangan"
+
+#~ msgid "Education & Science"
+#~ msgstr "Edukasi & Sains"
+
+#~ msgid "Games"
+#~ msgstr "Permainan"
+
+#~ msgid "Graphics & Photography"
+#~ msgstr "Grafis & Fotografi"
+
+#~ msgid "Productivity"
+#~ msgstr "Produktivitas"
+
+#~ msgid "Communication & News"
+#~ msgstr "Komunikasi & Berita"
+
+#~ msgid "Reference"
+#~ msgstr "Rujukan"
+
+#~ msgid "Utilities"
+#~ msgstr "Utilitas"
+
+#~ msgid "_Read More"
+#~ msgstr "_Baca Lebih Lanjut"
+
+#~ msgid "_Read Less"
+#~ msgstr "_Baca Lebih Sedikit"
+
+#~ msgid "_Launch"
+#~ msgstr "_Luncurkan"
+
+#~ msgid ""
+#~ "Unable to determine which parts of the system this application accesses. "
+#~ "This is typical for older applications."
+#~ msgstr ""
+#~ "Tidak dapat menentukan bagian mana dari sistem yang diakses aplikasi ini. "
+#~ "Ini tipikal untuk aplikasi yang lebih lama."
+
+#~ msgctxt "updated"
+#~ msgid "Never"
+#~ msgstr "Tak Pernah"
+
+#~ msgctxt "App permissions"
+#~ msgid "Low"
+#~ msgstr "Rendah"
+
+#~ msgctxt "App permissions"
+#~ msgid "Medium"
+#~ msgstr "Sedang"
+
+#~ msgctxt "App permissions"
+#~ msgid "High"
+#~ msgstr "Tinggi"
+
+#~ msgctxt "App permissions"
+#~ msgid "Unknown"
+#~ msgstr "Tak diketahui"
+
+#~ msgid "Public domain"
+#~ msgstr "Domain publik"
+
+#~ msgid "https://en.wikipedia.org/wiki/Public_domain"
+#~ msgstr "https://en.wikipedia.org/wiki/Public_domain"
+
+#~ msgid "https://www.gnu.org/philosophy/free-sw"
+#~ msgstr "https://www.gnu.org/philosophy/free-sw"
+
+#~ msgid "Free Software"
+#~ msgstr "Perangkat Lunak Bebas"
+
+#~ msgid "Users are bound by the following license:"
+#~ msgid_plural "Users are bound by the following licenses:"
+#~ msgstr[0] "Pengguna terikat oleh lisensi-lisensi berikut:"
+#~ msgstr[1] "Pengguna terikat oleh lisensi-lisensi berikut:"
+
+#~ msgid "Localized in your Language"
+#~ msgstr "Terlokalisasi dalam Bahasa Anda"
+
+#~ msgid "Release Activity"
+#~ msgstr "Aktivitas Rilis"
+
+#~ msgid "Sandboxed"
+#~ msgstr "Sandbox"
+
+#~ msgid "Category"
+#~ msgstr "Kategori"
+
+#~ msgid "Free"
+#~ msgstr "Bebas"
+
+#~ msgctxt "Application license"
+#~ msgid "Unknown"
+#~ msgstr "Tak diketahui"
+
+#~ msgid ""
+#~ "This means that the software can be freely run, copied, distributed, "
+#~ "studied and modified."
+#~ msgstr ""
+#~ "Ini berarti bahwa perangkat lunak dapat secara bebas dijalankan, disalin, "
+#~ "didistribusikan, dipelajari, dan dimodifikasi."
+
+#~ msgid "Proprietary Software"
+#~ msgstr "Perangkat Lunak Proprietari"
+
+#~ msgid ""
+#~ "This means that the software is owned by an individual or a company. "
+#~ "There are often restrictions on its use and its source code cannot "
+#~ "usually be accessed."
+#~ msgstr ""
+#~ "Ini berarti bahwa perangkat lunak tersebut dimiliki oleh seorang individu "
+#~ "atau perusahaan. Sering ada pembatasan pada penggunaan dan kode sumber "
+#~ "biasanya tidak dapat diakses."
+
+#~ msgid "Unknown Software License"
+#~ msgstr "Lisensi Perangkat Lunak Tidak Diketahui"
+
+#~ msgid "The license terms of this software are unknown."
+#~ msgstr "Persyaratan lisensi perangkat lunak ini tidak diketahui."
+
+#~ msgid "The application was rated this way because it features:"
+#~ msgstr "Aplikasi ini dinilai dengan cara ini karena fitur:"
+
+#~ msgid "No details were available for this rating."
+#~ msgstr "Tak ada rincian yang tersedia bagi peringkat ini."
+
+#~ msgctxt "app status"
+#~ msgid "Uninstalled"
+#~ msgstr "Pemasangan Terhapus"
+
+#~ msgctxt "app status"
+#~ msgid "Installed"
+#~ msgstr "Terpasang"
+
+#~ msgctxt "app status"
+#~ msgid "Updated"
+#~ msgstr "Dimutakhirkan"
+
+#~ msgctxt "app status"
+#~ msgid "Unknown"
+#~ msgstr "Tak diketahui"
+
+#~ msgid "History"
+#~ msgstr "Sejarah"
+
+#~ msgid "More…"
+#~ msgstr "Lebih banyak…"
+
+#~ msgid "Recommended Audio & Video Applications"
+#~ msgstr "Aplikasi Audio & Video yang Disarankan"
+
+#~ msgid "Recommended Games"
+#~ msgstr "Permainan yang Disarankan"
+
+#~ msgid "Recommended Graphics Applications"
+#~ msgstr "Aplikasi Grafik yang Disarankan"
+
+#~ msgid "Recommended Productivity Applications"
+#~ msgstr "Aplikasi Produktivitas yang Disarankan"
+
+#~ msgid ""
+#~ "Some of this software is proprietary and therefore has restrictions on "
+#~ "use, sharing, and access to source code."
+#~ msgstr ""
+#~ "Sebagian dari perangkat lunak ini proprietary sehingga memiliki "
+#~ "pembatasan pada penggunaan, pemakaian bersama, dan akses ke kode sumber."
+
+#~ msgid "Find out more…"
+#~ msgstr "Temukan lebih jauh…"
+
+#~ msgid "Editor’s Picks"
+#~ msgstr "Pilihan Penyunting"
+
+#~ msgid "Recent Releases"
+#~ msgstr "Rilis Terbaru"
+
+#~ msgid "Categories"
+#~ msgstr "Kategori"
+
+#~ msgid "Remove “%s”?"
+#~ msgstr "Hapus \"%s\"?"
+
+#~ msgid "Disable “%s”?"
+#~ msgstr "Nonaktifkan \"%s\"?"
+
+#~ msgid "Remove"
+#~ msgstr "Hapus"
+
+#~ msgid "No Additional Repositories"
+#~ msgstr "Tidak Ada Repositori Tambahan"
+
+#~ msgid "_Enable"
+#~ msgstr "_Fungsikan"
+
+#~ msgid "_Remove…"
+#~ msgstr "_Hapus…"
+
+#~ msgid "_Disable…"
+#~ msgstr "_Nonaktifkan…"
+
+#~ msgid "Disabling"
+#~ msgstr "Menonaktifkan"
+
+#~ msgid "Enabled"
+#~ msgstr "Difungsikan"
+
+#~ msgid "Disabled"
+#~ msgstr "Dinonaktifkan"
+
+#~ msgid "ratings in total"
+#~ msgstr "total peringkat"
+
+#~ msgid "_Remove All"
+#~ msgstr "_Hapus Semua"
+
+#~ msgid "Looking for new updates…"
+#~ msgstr "Mencari pemutakhiran baru…"
+
+#~ msgid "Setting up updates…"
+#~ msgstr "Menyiapkan pemutakhiran…"
+
+#~ msgid "Software is up to date"
+#~ msgstr "Perangkat lunak mutakhir"
+
+#~ msgid "_Restart Now"
+#~ msgstr "Mulai Ulang Seka_rang"
+
+#~ msgid "Updates will be applied when the computer is restarted."
+#~ msgstr "Pemutakhiran akan diterapkan ketika komputer dinyalakan ulang."
+
+#~ msgid "Waiting to Download %s %s"
+#~ msgstr "Menunggu untuk Mengunduh %s %s"
+
+#~ msgid "Downloading %s %s"
+#~ msgstr "Mengunduh %s %s"
+
+#~ msgid "%s %s Ready to be Installed"
+#~ msgstr "%s %s Siap dipasang"
+
+#~ msgid "ODRS is a service providing user reviews of applications"
+#~ msgstr "ODRS adalah layanan yang menyediakan ulasan pengguna dari aplikasi"
 
 #~ msgid "Cartoon characters in unsafe situations"
 #~ msgstr "Karakter kartun dalam situasi yang tidak aman"
@@ -3968,9 +5033,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Graphic violence involving cartoon characters"
 #~ msgstr "Kekerasan grafis yang melibatkan karakter kartun"
-
-#~ msgid "No fantasy violence"
-#~ msgstr "Tidak ada kekerasan fantasi"
 
 #~ msgid "Characters in unsafe situations easily distinguishable from reality"
 #~ msgstr ""
@@ -3983,9 +5045,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Graphic violence easily distinguishable from reality"
 #~ msgstr "Kekerasan grafis dengan mudah dibedakan dari realitas"
-
-#~ msgid "No realistic violence"
-#~ msgstr "Tidak ada kekerasan realistis"
 
 #~ msgid "Mildly realistic characters in unsafe situations"
 #~ msgstr "Sedikit karakter realistis dalam situasi yang tidak aman"
@@ -4007,9 +5066,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Depictions of bloodshed and the mutilation of body parts"
 #~ msgstr "Penggambaran pertumpahan darah dan mutilasi bagian tubuh"
-
-#~ msgid "No sexual violence"
-#~ msgstr "Tidak ada kekerasan seksual"
 
 #~ msgid "Rape or other violent sexual behavior"
 #~ msgstr "Perkosaan atau perilaku seksual kekerasan lainnya"
@@ -4073,9 +5129,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Strong or frequent use of profanity"
 #~ msgstr "Penggunaan kuat atau sering kata-kata tidak senonoh"
-
-#~ msgid "No inappropriate humor"
-#~ msgstr "Tidak ada humor yang tidak pantas"
 
 #~ msgid "Slapstick humor"
 #~ msgstr "Humor slapstick"
@@ -4215,9 +5268,6 @@ msgstr "Snap adalah paket Linux yang universal"
 #~ msgid "Graphic depictions of the act of adultery"
 #~ msgstr "Penggambaran grafis dari tindakan perzinaan"
 
-#~ msgid "No sexualized characters"
-#~ msgstr "Tidak ada karakter seksual"
-
 #~ msgid "Scantily clad human characters"
 #~ msgstr "Karakter manusia berpakaian minim"
 
@@ -4265,12 +5315,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "ALL"
 #~ msgstr "SEMUA"
-
-#~ msgid "Adults Only"
-#~ msgstr "Hanya untuk orang dewasa"
-
-#~ msgid "Mature"
-#~ msgstr "Dewasa"
 
 #~ msgid "Teen"
 #~ msgstr "Remaja"
@@ -4320,9 +5364,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Two weeks ago"
 #~ msgstr "Dua minggu yang lalu"
-
-#~ msgid "_Remove"
-#~ msgstr "_Hapus"
 
 #~ msgctxt "app status"
 #~ msgid "Removed"
@@ -4437,9 +5478,6 @@ msgstr "Snap adalah paket Linux yang universal"
 #~ msgid "Open AppStream File"
 #~ msgstr "Buka berkas AppStream"
 
-#~ msgid "_Open"
-#~ msgstr "_Buka"
-
 #~ msgid "Save AppStream File"
 #~ msgstr "Simpan berkas AppStream"
 
@@ -4472,9 +5510,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "App ID"
 #~ msgstr "ID aplikasi"
-
-#~ msgid "Editor’s Pick"
-#~ msgstr "Pilihan Penyunting"
 
 #~ msgid "Category Featured"
 #~ msgstr "Kategori Pilihan"
@@ -4563,9 +5598,6 @@ msgstr "Snap adalah paket Linux yang universal"
 #~ msgid "%s will be installed, and you will be charged %s."
 #~ msgstr "%s akan dipasang, dan Anda akan dikenakan biaya %s."
 
-#~ msgid "Purchase"
-#~ msgstr "Pembelian"
-
 #~ msgid "A$%.2f"
 #~ msgstr "A$%.2f"
 
@@ -4592,9 +5624,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "US$%.2f"
 #~ msgstr "US$%.2f"
-
-#~ msgid "%s %f"
-#~ msgstr "%s %f"
 
 #~ msgid "Unable to purchase %s: authentication was required"
 #~ msgstr "Tidak bisa membeli %s: perlu autentikasi"
@@ -4682,9 +5711,6 @@ msgstr "Snap adalah paket Linux yang universal"
 #~ msgid "Downloading application page…"
 #~ msgstr "Mengunduh laman aplikasi…"
 
-#~ msgid "Steam Support"
-#~ msgstr "Dukungan Steam"
-
 #~ msgid "The ultimate entertainment platform from Valve"
 #~ msgstr "Platform hiburan paling pamungkas dari Valve"
 
@@ -4693,9 +5719,6 @@ msgstr "Snap adalah paket Linux yang universal"
 
 #~ msgid "Includes: ."
 #~ msgstr "Termasuk: ."
-
-#~ msgid "_Restart & Update"
-#~ msgstr "Mulai Ulang & Pe_rbarui"
 
 #~ msgid "U_pdate All"
 #~ msgstr "_Perbarui Semua"
