@@ -631,16 +631,14 @@ _gs_utils_locale_has_translations (const gchar *locale)
 	g_autofree gchar *locale_copy = g_strdup (locale);
 	gchar *separator;
 
-	/* Strip off the codeset and modifier, if present. */
-	separator = strpbrk (locale_copy, ".@");
+	/* Strip off the territory, codeset and modifier, if present. */
+	separator = strpbrk (locale_copy, "_.@");
 	if (separator != NULL)
 		*separator = '\0';
 
 	if (g_strcmp0 (locale_copy, "C") == 0)
 		return FALSE;
 	if (g_strcmp0 (locale_copy, "en") == 0)
-		return FALSE;
-	if (g_strcmp0 (locale_copy, "en_US") == 0)
 		return FALSE;
 	return TRUE;
 }
