@@ -52,6 +52,7 @@ struct _GsStorageContextDialog
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
 	GtkListBox		*sizes_list;
+	GtkLabel		*manage_storage_label;
 };
 
 G_DEFINE_TYPE (GsStorageContextDialog, gs_storage_context_dialog, HDY_TYPE_WINDOW)
@@ -105,6 +106,7 @@ update_sizes_list (GsStorageContextDialog *self)
 	guint64 title_size_bytes;
 	g_autofree gchar *title_size_bytes_str = NULL;
 	const gchar *title;
+	gboolean cache_row_added = FALSE;
 
 	gs_container_remove_all (GTK_CONTAINER (self->sizes_list));
 
@@ -142,9 +144,8 @@ update_sizes_list (GsStorageContextDialog *self)
 				      _("Cache Data"),
 				      _("Temporary cached data"));
 			title_size_bytes += size_cache_data;
+			cache_row_added = TRUE;
 		}
-
-		/* FIXME: ‘Manage Storage’ button */
 	} else {
 		guint64 size_download;
 		guint64 size_download_dependencies;
@@ -172,6 +173,9 @@ update_sizes_list (GsStorageContextDialog *self)
 	title_size_bytes_str = g_format_size (title_size_bytes);
 	gtk_label_set_text (self->lozenge_content, title_size_bytes_str);
 	gtk_label_set_text (self->title, title);
+
+	/* Update the Manage Storage label. */
+	gtk_widget_set_visible (GTK_WIDGET (self->manage_storage_label), cache_row_added);
 }
 
 static void
@@ -219,6 +223,41 @@ key_press_event_cb (GtkWidget            *sender,
 	}
 
 	return GDK_EVENT_PROPAGATE;
+}
+
+static gboolean
+manage_storage_activate_link_cb (GtkLabel    *label,
+                                 const gchar *uri,
+                                 gpointer     user_data)
+{
+	GsStorageContextDialog *self = GS_STORAGE_CONTEXT_DIALOG (user_data);
+	g_autoptr(GError) local_error = NULL;
+	const gchar *desktop_id;
+	const gchar *argv[] = {
+		"gnome-control-center",
+		"applications",
+		"",  /* application ID */
+		NULL
+	};
+
+	/* Button shouldn’t have been sensitive if the launchable ID isn’t available. */
+	desktop_id = gs_app_get_launchable (self->app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	g_assert (desktop_id != NULL);
+
+	argv[2] = desktop_id;
+
+	if (!g_spawn_async (NULL, (gchar **) argv, NULL,
+			    G_SPAWN_SEARCH_PATH |
+			    G_SPAWN_STDOUT_TO_DEV_NULL |
+			    G_SPAWN_STDERR_TO_DEV_NULL |
+			    G_SPAWN_CLOEXEC_PIPES,
+			    NULL, NULL, NULL, &local_error)) {
+		g_warning ("Error opening GNOME Control Center: %s",
+			   local_error->message);
+		return TRUE;
+	}
+
+	return TRUE;
 }
 
 static void
@@ -307,8 +346,10 @@ gs_storage_context_dialog_class_init (GsStorageContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, sizes_list);
+	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, manage_storage_label);
 
 	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
+	gtk_widget_class_bind_template_callback (widget_class, manage_storage_activate_link_cb);
 }
 
 /**
