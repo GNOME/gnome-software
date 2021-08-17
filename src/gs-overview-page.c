@@ -21,7 +21,9 @@
 #include "gs-common.h"
 #include "gs-summary-tile.h"
 
-#define N_TILES					9
+/* Chosen as it has 2 and 3 as factors, so will form an even 2-column and
+ * 3-column layout. */
+#define N_TILES 12
 
 struct _GsOverviewPage
 {
