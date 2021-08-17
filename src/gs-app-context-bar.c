@@ -545,7 +545,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 		} else {
 			icon_name = "desktop-symbolic";
 			title = _("Desktop Only");
-			description = _("Not optimized for touch devices or phones");
+			description = _("Works on desktops and laptops");
 			css_class = "grey";
 		}
 	}
