@@ -450,10 +450,43 @@ gs_category_page_get_category (GsCategoryPage *self)
 	return self->category;
 }
 
+static gint
+recently_updated_sort_cb (GtkFlowBoxChild *child1,
+                          GtkFlowBoxChild *child2,
+                          gpointer         user_data)
+{
+	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child1)));
+	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child2)));
+	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
+	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
+	guint64 release_date1 = 0, release_date2 = 0;
+
+	/* Placeholder tiles have no app. */
+	if (app1 != NULL)
+		release_date1 = gs_app_get_release_date (app1);
+	if (app2 != NULL)
+		release_date2 = gs_app_get_release_date (app2);
+
+	/* Don’t use the normal subtraction trick, as there’s the possibility
+	 * for overflow in the conversion from guint64 to gint. */
+	if (release_date1 > release_date2)
+		return -1;
+	else if (release_date2 > release_date1)
+		return 1;
+	else
+		return 0;
+}
+
 static void
 gs_category_page_init (GsCategoryPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
+
+	/* Sort the recently updated apps by update date. */
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->recently_updated_flow_box),
+				    recently_updated_sort_cb,
+				    NULL,
+				    NULL);
 }
 
 static void
