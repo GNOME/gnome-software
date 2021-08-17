@@ -804,7 +804,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
-			     "background-size: 100% 100%;");
+			     "background-size: 100% 100%;"
+			     "border-width: 0;");
 	gs_app_add_icon (app, ic);
 	gs_app_list_add (list, app);
 
