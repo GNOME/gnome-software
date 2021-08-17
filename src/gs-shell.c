@@ -94,6 +94,7 @@ struct _GsShell
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
 	GtkWidget		*button_back;
+	GtkWidget		*button_back2;
 	GtkWidget		*notification_event;
 	GtkWidget		*button_events_sources;
 	GtkWidget		*button_events_no_space;
@@ -981,7 +982,9 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
 	    event->keyval == GDK_KEY_Back) {
+		/* GTK will only actually activate the one which is visible */
 		gtk_widget_activate (shell->button_back);
+		gtk_widget_activate (shell->button_back2);
 		return GDK_EVENT_STOP;
 	}
 
@@ -995,7 +998,9 @@ window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell
 	if (event->button != 8)
 		return GDK_EVENT_PROPAGATE;
 
+	/* GTK will only actually activate the one which is visible */
 	gtk_widget_activate (shell->button_back);
+	gtk_widget_activate (shell->button_back2);
 	return GDK_EVENT_STOP;
 }
 
@@ -2566,6 +2571,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back2);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, notification_event);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_sources);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_no_space);
