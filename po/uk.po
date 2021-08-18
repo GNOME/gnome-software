@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-13 15:13+0000\n"
-"PO-Revision-Date: 2021-08-13 20:37+0300\n"
+"POT-Creation-Date: 2021-08-18 11:01+0000\n"
+"PO-Revision-Date: 2021-08-18 15:14+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -66,7 +66,7 @@ msgstr "Панель оновлення"
 msgid "The update details"
 msgstr "Подробиці оновлення"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1744
+#: data/appdata/org.gnome.Software.appdata.xml.in:1774
 msgid "The GNOME Project"
 msgstr "Проєкт GNOME"
 
@@ -785,27 +785,27 @@ msgstr "Віддавати перевагу локальним джерелам 
 msgid "Show version number"
 msgstr "Показати номер версії"
 
-#: src/gs-application.c:360
+#: src/gs-application.c:358
 msgid "Copyright © 2016–2021 GNOME Software contributors"
 msgstr "© Учасники розробки «Програм GNOME», 2016–2021"
 
-#: src/gs-application.c:363
+#: src/gs-application.c:361
 msgid "translator-credits"
 msgstr "Daniel Korostil <ted.korostiled@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:376 src/gs-shell.c:2132
+#: src/gs-application.c:374 src/gs-shell.c:2132
 msgid "About Software"
 msgstr "Про «Програми»"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:379
+#: src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
 msgstr "Гарний спосіб керуванням програмами на вашій системі."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:568
+#: src/gs-application.c:566
 msgid "Sorry! There are no details for that application."
 msgstr "Вибачте! Не маємо подробиць щодо цієї програми."
 
@@ -978,7 +978,7 @@ msgstr "Розробник програми є перевіреним"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:359 src/gs-app-context-bar.c:621
+#: src/gs-app-context-bar.c:359 src/gs-app-context-bar.c:616
 msgid "; "
 msgstr "; "
 
@@ -1001,7 +1001,7 @@ msgid "Unsafe"
 msgstr "Небезпечна"
 
 #: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:488
-#: src/gs-hardware-support-context-dialog.c:584
+#: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Лише для мобільних"
 
@@ -1010,9 +1010,8 @@ msgid "Only works on a small screen"
 msgstr "Працює лише на малих екранах"
 
 #: src/gs-app-context-bar.c:462 src/gs-app-context-bar.c:495
-#: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:507
-#: src/gs-app-context-bar.c:547 src/gs-app-context-bar.c:552
-#: src/gs-hardware-support-context-dialog.c:564
+#: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:547 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Лише для комп'ютерів"
 
@@ -1020,21 +1019,21 @@ msgstr "Лише для комп'ютерів"
 msgid "Only works on a large screen"
 msgstr "Працює лише на великих екранах"
 
-#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:602
+#: src/gs-app-context-bar.c:467 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "Невідповідність розміру екрана"
 
-#: src/gs-app-context-bar.c:468 src/gs-hardware-support-context-dialog.c:603
+#: src/gs-app-context-bar.c:468 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Підтримки поточних розмірів екрана не передбачено"
 
-#: src/gs-app-context-bar.c:489 src/gs-hardware-support-context-dialog.c:655
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-app-context-bar.c:489 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Потребує сенсорного екрана"
 
-#: src/gs-app-context-bar.c:496 src/gs-hardware-support-context-dialog.c:615
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:496 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "Потребує клавіатури"
 
@@ -1042,41 +1041,42 @@ msgstr "Потребує клавіатури"
 msgid "Requires a mouse"
 msgstr "Потребує миші"
 
-#: src/gs-app-context-bar.c:508 src/gs-app-context-bar.c:553
-msgid "Not optimized for touch devices or phones"
-msgstr "Не оптимізовано для сенсорних пристроїв або телефонів"
-
-#: src/gs-app-context-bar.c:519
+#: src/gs-app-context-bar.c:514
 msgid "Gamepad Needed"
 msgstr "Потрібен ігровий пульт"
 
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:515
 msgid "Requires a gamepad to play"
 msgstr "Потребує для гри ігрового пульта"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:534
+#: src/gs-app-context-bar.c:529
 msgid "Adaptive"
 msgstr "Адаптивна"
 
-#: src/gs-app-context-bar.c:535
+#: src/gs-app-context-bar.c:530
 msgid "Works on phones, tablets and desktops"
 msgstr "Працює на телефонах, планшетах та комп'ютерах"
 
-#: src/gs-app-context-bar.c:548
+#: src/gs-app-context-bar.c:543
 msgid "Probably requires a keyboard or mouse"
 msgstr "Можливо, потребує клавіатури або миші"
+
+#: src/gs-app-context-bar.c:548
+#| msgid "Works on phones, tablets and desktops"
+msgid "Works on desktops and laptops"
+msgstr "Працює на комп'ютерах та ноутбуках"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:596
+#: src/gs-app-context-bar.c:591
 msgid "Contains no age-inappropriate content"
 msgstr "Місить неприйнятні для заданого віку дані"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:636
 msgid "No age rating information available"
 msgstr "Дані щодо обмежень за віком є недоступними"
 
@@ -1150,8 +1150,7 @@ msgstr "Перейменовано з %s"
 #: src/gs-app-translation-dialog.c:67
 #, c-format
 msgid "Help Translate %s"
-msgstr ""
-"Допомогти у перекладі %s"
+msgstr "Допомогти у перекладі %s"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:70
@@ -1163,17 +1162,17 @@ msgid ""
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
-"%s спроєктовано, розроблено і перекладено міжнародною спільнотою охочих людей.\n"
+"%s спроєктовано, розроблено і перекладено міжнародною спільнотою охочих "
+"людей.\n"
 "\n"
-"Це означає, що хоча програма ще не доступна вашою рідною мовою, ви можете взяти участь у проєкті і допомогти із її перекладом власноруч."
+"Це означає, що хоча програма ще не доступна вашою рідною мовою, ви можете "
+"взяти участь у проєкті і допомогти із її перекладом власноруч."
 
 #: src/gs-app-translation-dialog.ui:9
-#| msgid "_Contribute Translations"
 msgid "Translations"
 msgstr "Переклади"
 
 #: src/gs-app-translation-dialog.ui:133
-#| msgid "Visit Website"
 msgid "_Translation Website"
 msgstr "С_айт перекладу"
 
@@ -1860,7 +1859,6 @@ msgid "_Show More"
 msgstr "_Показати більше"
 
 #: src/gs-description-box.c:64
-#| msgid "_Show More"
 msgid "_Show Less"
 msgstr "_Показати менше"
 
@@ -1895,7 +1893,6 @@ msgstr "Приготування…"
 
 #. Translators: This string is shown when uninstalling an app.
 #: src/gs-details-page.c:407
-#| msgid "Uninstalling"
 msgid "Uninstalling…"
 msgstr "Вилучаємо…"
 
@@ -1948,18 +1945,17 @@ msgstr "Завантаження подробиць щодо програми…
 msgid ""
 "This app is not available in your language and will appear in US English."
 msgstr ""
-"Інтерфейс цієї програми ще не перекладено вашою рідною мовою — його буде показано англійською мовою."
+"Інтерфейс цієї програми ще не перекладено вашою рідною мовою — його буде "
+"показано англійською мовою."
 
 #: src/gs-details-page.ui:87
 msgid "Help _Translate"
-msgstr ""
-"Допомогти у п_ерекладі"
+msgstr "Допомогти у п_ерекладі"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
 #: src/gs-details-page.ui:256
 msgid "_Open"
-msgstr ""
-"_Відкрити"
+msgstr "_Відкрити"
 
 #: src/gs-details-page.ui:269
 msgid "_Update"
@@ -2337,15 +2333,15 @@ msgstr "Далі"
 msgid "Featured Apps List"
 msgstr "Список рекомендованих програм"
 
-#: src/gs-first-run-dialog.ui:6 src/gs-first-run-dialog.ui:15
+#: src/gs-first-run-dialog.ui:10
 msgid "Welcome"
 msgstr "Вітаємо"
 
-#: src/gs-first-run-dialog.ui:43
+#: src/gs-first-run-dialog.ui:27
 msgid "Welcome to Software"
 msgstr "Ласкаво просимо в Програми"
 
-#: src/gs-first-run-dialog.ui:53
+#: src/gs-first-run-dialog.ui:28
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2355,201 +2351,201 @@ msgstr ""
 "можливості зібрано докупи: перегляньте наші рекомендації, ознайомтеся із "
 "категоріями або просто знайдіть бажані програми."
 
-#: src/gs-first-run-dialog.ui:62
+#: src/gs-first-run-dialog.ui:31
 msgid "_Browse Software"
 msgstr "_Навігація програмами"
 
-#: src/gs-hardware-support-context-dialog.c:558
-#: src/gs-hardware-support-context-dialog.c:567
+#: src/gs-hardware-support-context-dialog.c:561
+#: src/gs-hardware-support-context-dialog.c:570
 msgid "Desktop Support"
 msgstr "Підтримка звичайних комп'ютерів"
 
-#: src/gs-hardware-support-context-dialog.c:559
-#: src/gs-hardware-support-context-dialog.c:568
+#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:571
 msgid "Supports being used on a large screen"
 msgstr "Підтримка користування на великому екрані"
 
-#: src/gs-hardware-support-context-dialog.c:561
+#: src/gs-hardware-support-context-dialog.c:564
 msgid "Desktop Support Unknown"
 msgstr "Немає даних щодо підтримки звичайних комп'ютерів"
 
-#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:565
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
 "Недостатньо даних для визначення, чи передбачено підтримку великих екранів"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:568
 msgid "Requires a large screen"
 msgstr "Потребує великого екрана"
 
-#: src/gs-hardware-support-context-dialog.c:570
+#: src/gs-hardware-support-context-dialog.c:573
 msgid "Desktop Not Supported"
 msgstr "Не передбачено підтримки звичайних комп'ютерів"
 
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:574
 msgid "Cannot be used on a large screen"
 msgstr "Не можна користуватися на великих екранах"
 
-#: src/gs-hardware-support-context-dialog.c:578
-#: src/gs-hardware-support-context-dialog.c:587
+#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:590
 msgid "Mobile Support"
 msgstr "Підтримка мобільних пристроїв"
 
-#: src/gs-hardware-support-context-dialog.c:579
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:591
 msgid "Supports being used on a small screen"
 msgstr "Підтримка користування на малому екрані"
 
-#: src/gs-hardware-support-context-dialog.c:581
+#: src/gs-hardware-support-context-dialog.c:584
 msgid "Mobile Support Unknown"
 msgstr "Немає даних щодо підтримки мобільних пристроїв"
 
-#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:585
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
 "Недостатньо даних для визначення, чи передбачено підтримку малих екранів"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:588
 msgid "Requires a small screen"
 msgstr "Потребує малого екрана"
 
-#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:593
 msgid "Mobile Not Supported"
 msgstr "Підтримки мобільних пристроїв не передбачено"
 
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:594
 msgid "Cannot be used on a small screen"
 msgstr "Не можна користуватися на малих екранах"
 
-#: src/gs-hardware-support-context-dialog.c:614
-#: src/gs-hardware-support-context-dialog.c:623
+#: src/gs-hardware-support-context-dialog.c:617
+#: src/gs-hardware-support-context-dialog.c:626
 msgid "Keyboard Support"
 msgstr "Підтримка клавіатури"
 
-#: src/gs-hardware-support-context-dialog.c:617
+#: src/gs-hardware-support-context-dialog.c:620
 msgid "Keyboard Support Unknown"
 msgstr "Немає даних щодо підтримки клавіатури"
 
-#: src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:621
 msgid "Not enough information to know if keyboards are supported"
 msgstr "Недостатньо даних для визначення, чи передбачено підтримку клавіатур"
 
-#: src/gs-hardware-support-context-dialog.c:620
+#: src/gs-hardware-support-context-dialog.c:623
 msgid "Keyboard Required"
 msgstr "Потрібна клавіатура"
 
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-hardware-support-context-dialog.c:627
 msgid "Supports keyboards"
 msgstr "Підтримує клавіатуру"
 
-#: src/gs-hardware-support-context-dialog.c:626
+#: src/gs-hardware-support-context-dialog.c:629
 msgid "Keyboard Not Supported"
 msgstr "Не передбачено підтримки клавіатури"
 
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:630
 msgid "Cannot be used with a keyboard"
 msgstr "Не можна користуватися за допомогою клавіатури"
 
-#: src/gs-hardware-support-context-dialog.c:634
-#: src/gs-hardware-support-context-dialog.c:643
+#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:646
 msgid "Mouse Support"
 msgstr "Підтримка миші"
 
-#: src/gs-hardware-support-context-dialog.c:635
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:644
 msgid "Requires a mouse or pointing device"
 msgstr "Потрібна миша або координатний пристрій"
 
-#: src/gs-hardware-support-context-dialog.c:637
+#: src/gs-hardware-support-context-dialog.c:640
 msgid "Mouse Support Unknown"
 msgstr "Немає даних щодо підтримки миші"
 
-#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:641
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
 "Недостатньо даних для визначення, чи передбачено підтримку мишей або "
 "координатних пристроїв"
 
-#: src/gs-hardware-support-context-dialog.c:640
+#: src/gs-hardware-support-context-dialog.c:643
 msgid "Mouse Required"
 msgstr "Потрібна миша"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:647
 msgid "Supports mice and pointing devices"
 msgstr "Підтримує миші і координатні пристрої"
 
-#: src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:649
 msgid "Mouse Not Supported"
 msgstr "Підтримки миші не передбачено"
 
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:650
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "Не можна користуватися за допомогою миші або координатного пристрою"
 
-#: src/gs-hardware-support-context-dialog.c:654
-#: src/gs-hardware-support-context-dialog.c:663
+#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:666
 msgid "Touchscreen Support"
 msgstr "Підтримка сенсорних екранів"
 
-#: src/gs-hardware-support-context-dialog.c:657
+#: src/gs-hardware-support-context-dialog.c:660
 msgid "Touchscreen Support Unknown"
 msgstr "Немає даних щодо підтримки сенсорних екранів"
 
-#: src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:661
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
 "Недостатньо даних для визначення, чи передбачено підтримку сенсорних екранів"
 
-#: src/gs-hardware-support-context-dialog.c:660
+#: src/gs-hardware-support-context-dialog.c:663
 msgid "Touchscreen Required"
 msgstr "Потрібен сенсорний екран"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:667
 msgid "Supports touchscreens"
 msgstr "Підтримує сенсорні екрани"
 
-#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:669
 msgid "Touchscreen Not Supported"
 msgstr "Підтримки сенсорних екранів не передбачено"
 
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:670
 msgid "Cannot be used with a touchscreen"
 msgstr "Не можна користуватися за допомогою сенсорного екрана"
 
-#: src/gs-hardware-support-context-dialog.c:680
+#: src/gs-hardware-support-context-dialog.c:683
 msgid "Gamepad Required"
 msgstr "Потрібен ігровий пульт"
 
-#: src/gs-hardware-support-context-dialog.c:681
+#: src/gs-hardware-support-context-dialog.c:684
 msgid "Requires a gamepad"
 msgstr "Потребує ігрового пульта"
 
-#: src/gs-hardware-support-context-dialog.c:683
+#: src/gs-hardware-support-context-dialog.c:686
 msgid "Gamepad Support"
 msgstr "Підтримка ігрових пультів"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:687
 msgid "Supports gamepads"
 msgstr "Підтримує ігрові пульти"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:700
+#: src/gs-hardware-support-context-dialog.c:703
 #, c-format
 msgid "%s works on this device"
 msgstr "%s працюватиме на цьому пристрої"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:707
+#: src/gs-hardware-support-context-dialog.c:710
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s не працюватиме належним чином на цьому пристрої"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:714
+#: src/gs-hardware-support-context-dialog.c:717
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s на працюватиме на цьому пристрої"
@@ -2600,13 +2596,6 @@ msgid "Proprietary"
 msgstr "Закритий код"
 
 #: src/gs-license-tile.c:113
-#| msgid ""
-#| "This app is not developed in the open, so only its developers know how it "
-#| "works. It could be insecure, or actively do nefarious things that are "
-#| "hard to detect or prevent.\n"
-#| "\n"
-#| "By installing this app you are putting a high amount of trust in the "
-#| "developers."
 msgid ""
 "This app is not developed in the open, so only its developers know how it "
 "works. There may be restrictions on its use, and it may be harder to tell if "
@@ -2616,7 +2605,8 @@ msgid ""
 "developers."
 msgstr ""
 "Розробка цієї програми виконується у закритому режимі, отже лише розробникам "
-"відомі принципи її роботи. Можливості програми може бути певним чином обмежено, а безпечність користування нею буде складніше визначити.\n"
+"відомі принципи її роботи. Можливості програми може бути певним чином "
+"обмежено, а безпечність користування нею буде складніше визначити.\n"
 "\n"
 "Встановленням цієї програми ви висловлюєте високий рівень довіри до її "
 "розробників."
@@ -2754,18 +2744,17 @@ msgstr "Зниження версій"
 #. Some proprietary software is included."
 #: src/gs-overview-page.c:688
 msgid "selected external sources"
-msgstr ""
-"вибраних зовнішніх джерел"
+msgstr "вибраних зовнішніх джерел"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:690
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
 msgstr ""
-"Надає доступ до додаткового програмного забезпечення з %s. Включено частину програмного забезпечення із закритим кодом."
+"Надає доступ до додаткового програмного забезпечення з %s. Включено частину "
+"програмного забезпечення із закритим кодом."
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
@@ -2797,7 +2786,6 @@ msgid "Unknown"
 msgstr "Невідома"
 
 #: src/gs-page.c:276
-#| msgid "User Installation"
 msgid "User declined installation"
 msgstr "Користувач відмовив у встановленні"
 
@@ -2923,14 +2911,12 @@ msgid "_Remove"
 msgstr "В_илучити"
 
 #: src/gs-repos-dialog.c:597
-#| msgid "No Repositories"
 msgid "Enable New Repositories"
 msgstr "Увімкнути нові сховища"
 
 #: src/gs-repos-dialog.c:598
 msgid "Turn on new repositories when they are added."
-msgstr ""
-"Увімкнути нові сховища після додавання."
+msgstr "Увімкнути нові сховища після додавання."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -4415,7 +4401,6 @@ msgstr "Дія може бути досить тривалою."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
-#| msgid "Up To Date"
 msgid "Up to Date"
 msgstr "Актуальне"
 
@@ -4784,6 +4769,9 @@ msgstr "Підтримка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
+
+#~ msgid "Not optimized for touch devices or phones"
+#~ msgstr "Не оптимізовано для сенсорних пристроїв або телефонів"
 
 #~ msgid "Show the prompt to install nonfree software repositories"
 #~ msgstr ""
