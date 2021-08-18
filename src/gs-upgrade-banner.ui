@@ -52,177 +52,189 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="box_upgrades_download">
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
-            <property name="halign">center</property>
-            <property name="valign">end</property>
-            <property name="spacing">12</property>
-            <property name="margin">18</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <style>
-              <class name="upgrade-buttons"/>
+              <class name="upgrade-banner-bottom-box"/>
             </style>
 
             <child>
-              <object class="GtkButton" id="button_upgrades_download">
-                <property name="label" translatable="yes">_Download</property>
-                <property name="width_request">150</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
-                <property name="relief">normal</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular"/>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label_download_info">
-                <property name="visible">True</property>
-                <property name="label"></property> <!-- set in the code -->
-                <property name="halign">center</property>
-                <property name="justify">center</property>
-                <attributes>
-                  <attribute name="scale" value="0.8"/>
-                </attributes>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_upgrades_downloading">
-            <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="halign">fill</property>
-            <property name="hexpand">True</property>
-            <property name="valign">end</property>
-            <property name="spacing">12</property>
-            <property name="margin">18</property>
-            <style>
-              <class name="upgrade-buttons"/>
-            </style>
-            <child>
-              <object class="GtkLabel" id="label_upgrades_downloading_spacer">
-                <property name="visible">True</property>
-                <property name="label"></property> <!-- space-taker -->
-                <property name="halign">start</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="hbox_upgrades_downloading">
+              <object class="GtkBox" id="box_upgrades_download">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
-                <property name="halign">fill</property>
-                <property name="hexpand">True</property>
-                <property name="valign">center</property>
-                <property name="spacing">8</property>
+                <property name="halign">center</property>
+                <property name="valign">end</property>
+                <property name="spacing">12</property>
+                <property name="margin">18</property>
                 <style>
                   <class name="upgrade-buttons"/>
                 </style>
+
                 <child>
-                  <object class="GtkLabel" id="label_upgrades_downloading">
+                  <object class="GtkButton" id="button_upgrades_download">
+                    <property name="label" translatable="yes">_Download</property>
+                    <property name="width_request">150</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="use_underline">True</property>
+                    <property name="relief">normal</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="circular"/>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_download_info">
                     <property name="visible">True</property>
                     <property name="label"></property> <!-- set in the code -->
                     <property name="halign">center</property>
                     <property name="justify">center</property>
                     <attributes>
                       <attribute name="scale" value="0.8"/>
-                      <attribute name="font-features" value="tnum=1"/>
                     </attributes>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="box_upgrades_downloading">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="halign">fill</property>
+                <property name="hexpand">True</property>
+                <property name="valign">end</property>
+                <property name="spacing">12</property>
+                <property name="margin">18</property>
+                <style>
+                  <class name="upgrade-buttons"/>
+                </style>
                 <child>
-                  <object class="GtkProgressBar" id="progressbar">
+                  <object class="GtkLabel" id="label_upgrades_downloading_spacer">
                     <property name="visible">True</property>
+                    <property name="label"></property> <!-- space-taker -->
+                    <property name="halign">start</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="hbox_upgrades_downloading">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="halign">fill</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">center</property>
+                    <property name="spacing">8</property>
+                    <style>
+                      <class name="upgrade-buttons"/>
+                    </style>
+                    <child>
+                      <object class="GtkLabel" id="label_upgrades_downloading">
+                        <property name="visible">True</property>
+                        <property name="label"></property> <!-- set in the code -->
+                        <property name="halign">center</property>
+                        <property name="justify">center</property>
+                        <attributes>
+                          <attribute name="scale" value="0.8"/>
+                          <attribute name="font-features" value="tnum=1"/>
+                        </attributes>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="progressbar">
+                        <property name="visible">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="fraction">0.3</property>
+                        <property name="width-request">340</property>
+                        <style>
+                          <class name="upgrade-progressbar"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="button_upgrades_cancel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="use_underline">True</property>
+                    <property name="relief">normal</property>
+                    <property name="always-show-image">True</property>
+                    <property name="halign">end</property>
+                    <property name="hexpand">False</property>
+                    <property name="valign">center</property>
+                    <property name="margin-start">2</property>
+                    <property name="margin-end">2</property>
+                    <style>
+                      <class name="circular"/>
+                    </style>
+                    <child>
+                      <object class="GtkImage" id="button_upgrades_cancel_image">
+                        <property name="icon-name">window-close-symbolic</property>
+                        <property name="icon-size">4</property>
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="box_upgrades_install">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <property name="halign">center</property>
+                <property name="valign">end</property>
+                <property name="spacing">12</property>
+                <property name="margin">18</property>
+                <style>
+                  <class name="upgrade-buttons"/>
+                </style>
+                <child>
+                  <object class="GtkButton" id="button_upgrades_install">
+                    <property name="label" translatable="yes">_Restart &amp; Upgrade</property>
+                    <property name="name">button_upgrades_install</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="use_underline">True</property>
+                    <property name="relief">normal</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="fraction">0.3</property>
-                    <property name="width-request">340</property>
                     <style>
-                      <class name="upgrade-progressbar"/>
+                      <class name="circular"/>
+                      <class name="suggested-action"/>
                     </style>
                   </object>
                 </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-              </packing>
-            </child>
-
-            <child>
-              <object class="GtkButton" id="button_upgrades_cancel">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
-                <property name="relief">normal</property>
-                <property name="always-show-image">True</property>
-                <property name="halign">end</property>
-                <property name="hexpand">False</property>
-                <property name="valign">center</property>
-                <property name="margin-start">2</property>
-                <property name="margin-end">2</property>
-                <style>
-                  <class name="circular"/>
-                </style>
                 <child>
-                  <object class="GtkImage" id="button_upgrades_cancel_image">
-                    <property name="icon-name">window-close-symbolic</property>
-                    <property name="icon-size">4</property>
+                  <object class="GtkLabel" id="label_upgrade_warning">
                     <property name="visible">True</property>
+                    <property name="label" translatable="yes">Remember to back up data and files before upgrading.</property>
+                    <property name="halign">center</property>
+                    <property name="justify">center</property>
+                    <attributes>
+                      <attribute name="scale" value="0.8"/>
+                    </attributes>
                   </object>
                 </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_upgrades_install">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="halign">center</property>
-            <property name="valign">end</property>
-            <property name="spacing">12</property>
-            <property name="margin">18</property>
-            <style>
-              <class name="upgrade-buttons"/>
-            </style>
-            <child>
-              <object class="GtkButton" id="button_upgrades_install">
-                <property name="label" translatable="yes">_Restart &amp; Upgrade</property>
-                <property name="name">button_upgrades_install</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
-                <property name="relief">normal</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="circular"/>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label_upgrade_warning">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Remember to back up data and files before upgrading.</property>
-                <property name="halign">center</property>
-                <property name="justify">center</property>
-                <attributes>
-                  <attribute name="scale" value="0.8"/>
-                </attributes>
               </object>
             </child>
           </object>

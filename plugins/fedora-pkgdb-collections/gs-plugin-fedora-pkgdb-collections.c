@@ -326,13 +326,15 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 			       item->version);
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
-	/* use a fancy background if possible */
+	/* use a fancy background if possible, and suppress the border which is
+	 * shown by default; the background image is designed to be borderless */
 	background = _get_upgrade_css_background (item->version);
 	if (background != NULL) {
 		css = g_strdup_printf ("background: %s;"
 				       "background-position: top;"
 				       "background-size: 100%% 100%%;"
-				       "color: white;",
+				       "color: white;"
+				       "border-width: 0;",
 				       background);
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 	}
