@@ -76,6 +76,41 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
 
+/* Certain tiles only make sense for applications which the user can run, and
+ * not for (say) fonts.
+ *
+ * Update the visibility of the tile’s parent box to hide it if both tiles
+ * are hidden. */
+static gboolean
+show_tile_for_non_applications (GsAppContextBar      *self,
+                                GsAppContextTileType  tile_type)
+{
+	GtkBox *parent_box;
+	g_autoptr(GList) siblings = NULL;
+	gboolean any_siblings_visible;
+	AsComponentKind app_kind = gs_app_get_kind (self->app);
+	gboolean is_application = (app_kind == AS_COMPONENT_KIND_DESKTOP_APP ||
+				   app_kind == AS_COMPONENT_KIND_CONSOLE_APP ||
+				   app_kind == AS_COMPONENT_KIND_WEB_APP);
+
+	gtk_widget_set_visible (self->tiles[tile_type].tile, is_application);
+
+	parent_box = GTK_BOX (gtk_widget_get_parent (self->tiles[tile_type].tile));
+	g_assert (GTK_IS_BOX (parent_box));
+
+	siblings = gtk_container_get_children (GTK_CONTAINER (parent_box));
+	any_siblings_visible = FALSE;
+	for (GList *l = siblings; l != NULL; l = l->next) {
+		GtkWidget *sibling = GTK_WIDGET (l->data);
+		g_assert (GTK_IS_BUTTON (sibling));
+		any_siblings_visible |= gtk_widget_is_visible (sibling);
+	}
+
+	gtk_widget_set_visible (GTK_WIDGET (parent_box), any_siblings_visible);
+
+	return is_application;
+}
+
 static void
 update_storage_tile (GsAppContextBar *self)
 {
@@ -417,6 +452,10 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	g_assert (self->app != NULL);
 
+	/* Don’t show the hardware support tile for non-desktop applications. */
+	if (!show_tile_for_non_applications (self, HARDWARE_SUPPORT_TILE))
+		return;
+
 	relations = gs_app_get_relations (self->app);
 
 	/* Extract the %AS_RELATION_ITEM_KIND_CONTROL relations and summarise
@@ -624,6 +663,10 @@ update_age_rating_tile (GsAppContextBar *self)
 	g_autofree gchar *description = NULL;
 
 	g_assert (self->app != NULL);
+
+	/* Don’t show the age rating tile for non-desktop applications. */
+	if (!show_tile_for_non_applications (self, AGE_RATING_TILE))
+		return;
 
 	content_rating = gs_app_get_content_rating (self->app);
 	gs_age_rating_context_dialog_update_lozenge (self->app,
