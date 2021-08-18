@@ -502,11 +502,6 @@ update_hardware_support_tile (GsAppContextBar *self)
 		title = _("Desktop Only");
 		description = _("Requires a mouse");
 		css_class = "red";
-	} else if (icon_name == NULL && !any_control_relations_set) {
-		icon_name = "desktop-symbolic";
-		title = _("Desktop Only");
-		description = _("Not optimized for touch devices or phones");
-		css_class = "grey";
 	}
 
 	/* Say if the app requires a gamepad. We can’t reliably detect whether
@@ -550,7 +545,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 		} else {
 			icon_name = "desktop-symbolic";
 			title = _("Desktop Only");
-			description = _("Not optimized for touch devices or phones");
+			description = _("Works on desktops and laptops");
 			css_class = "grey";
 		}
 	}
