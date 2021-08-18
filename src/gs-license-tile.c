@@ -112,7 +112,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 
 		description = g_strdup (_("This app is not developed in the open, so only its developers know how it works. There may be restrictions on its use, and it may be harder to tell if the app is insecure."
 					  "\n\n"
-					  "By installing this app you are putting a high amount of trust in the developers."));
+					  "You may not be able to contribute to this app or influence its development."));
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
