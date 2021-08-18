@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-13 17:38+0000\n"
-"PO-Revision-Date: 2021-08-14 16:22+0100\n"
+"POT-Creation-Date: 2021-08-18 11:01+0000\n"
+"PO-Revision-Date: 2021-08-18 12:13+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -1010,7 +1010,7 @@ msgstr "O programador da aplicação está verificado"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:359 src/gs-app-context-bar.c:621
+#: src/gs-app-context-bar.c:359 src/gs-app-context-bar.c:616
 msgid "; "
 msgstr "; "
 
@@ -1042,9 +1042,8 @@ msgid "Only works on a small screen"
 msgstr "Apenas funciona num ecrã pequeno"
 
 #: src/gs-app-context-bar.c:462 src/gs-app-context-bar.c:495
-#: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:507
-#: src/gs-app-context-bar.c:547 src/gs-app-context-bar.c:552
-#: src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:502 src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:547 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Apenas no computador"
 
@@ -1074,41 +1073,41 @@ msgstr "Requer um teclado"
 msgid "Requires a mouse"
 msgstr "Requer um rato"
 
-#: src/gs-app-context-bar.c:508 src/gs-app-context-bar.c:553
-msgid "Not optimized for touch devices or phones"
-msgstr "Não optimizado para dispositivos de toque ou telefones"
-
-#: src/gs-app-context-bar.c:519
+#: src/gs-app-context-bar.c:514
 msgid "Gamepad Needed"
 msgstr "É necessário um controlador"
 
-#: src/gs-app-context-bar.c:520
+#: src/gs-app-context-bar.c:515
 msgid "Requires a gamepad to play"
 msgstr "Requer um controlador para jogar"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:534
+#: src/gs-app-context-bar.c:529
 msgid "Adaptive"
 msgstr "Adaptável"
 
-#: src/gs-app-context-bar.c:535
+#: src/gs-app-context-bar.c:530
 msgid "Works on phones, tablets and desktops"
 msgstr "Funciona em telefones, tablets e computadores"
 
-#: src/gs-app-context-bar.c:548
+#: src/gs-app-context-bar.c:543
 msgid "Probably requires a keyboard or mouse"
 msgstr "Provavelmente requer um teclado ou rato"
+
+#: src/gs-app-context-bar.c:548
+msgid "Works on desktops and laptops"
+msgstr "Funciona em computadores de secretária e portáteis"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:596
+#: src/gs-app-context-bar.c:591
 msgid "Contains no age-inappropriate content"
 msgstr "Não contém conteúdo impróprio para a idade"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:636
 msgid "No age rating information available"
 msgstr "Nenhuma informação de classificação etária disponível"
 
@@ -4761,6 +4760,9 @@ msgstr "Suporte para Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal para Linux"
+
+#~ msgid "Not optimized for touch devices or phones"
+#~ msgstr "Não optimizado para dispositivos de toque ou telefones"
 
 #~ msgid "Show the prompt to install nonfree software repositories"
 #~ msgstr ""
