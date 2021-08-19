@@ -455,7 +455,7 @@
                         <property name="show-close-button">True</property>
                         <property name="title" bind-source="details_page" bind-property="title" bind-flags="sync-create"/>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="button_back2">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <signal name="clicked" handler="gs_shell_details_back_button_cb"/>
