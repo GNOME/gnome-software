@@ -680,7 +680,6 @@
                             <child>
                               <object class="GtkBox" id="box_license">
                                 <property name="visible">True</property>
-                                <property name="homogeneous">True</property>
                                 <property name="orientation">horizontal</property>
                                 <property name="spacing">12</property>
                                 <property name="homogeneous" bind-source="GsDetailsPage" bind-property="is-narrow" bind-flags="sync-create|invert-boolean"/>
@@ -696,6 +695,7 @@
 
                                 <child>
                                   <object class="GtkStack" id="links_stack">
+                                    <property name="homogeneous">False</property>
                                     <property name="visible">True</property>
 
                                     <child>
