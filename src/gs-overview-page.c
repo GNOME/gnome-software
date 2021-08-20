@@ -51,6 +51,8 @@ struct _GsOverviewPage
 	GtkWidget		*box_popular;
 	GtkWidget		*box_recent;
 	GtkWidget		*flowbox_categories;
+	GtkWidget		*flowbox_iconless_categories;
+	GtkWidget		*iconless_categories_heading;
 	GtkWidget		*popular_heading;
 	GtkWidget		*recent_heading;
 	GtkWidget		*scrolledwindow_overview;
@@ -323,9 +325,14 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 			g_warning ("failed to get categories: %s", error->message);
 		goto out;
 	}
-	gs_container_remove_all (GTK_CONTAINER (self->flowbox_categories));
 
-	/* add categories to the correct flowboxes, the second being hidden */
+	gs_container_remove_all (GTK_CONTAINER (self->flowbox_categories));
+	gs_container_remove_all (GTK_CONTAINER (self->flowbox_iconless_categories));
+
+	/* Add categories to the flowboxes. Categories with icons are deemed to
+	 * be visually important, and are listed near the top of the page.
+	 * Categories without icons are listed in a separate flowbox at the
+	 * bottom of the page. Typically they are addons. */
 	for (i = 0; i < list->len; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (gs_category_get_size (cat) == 0)
@@ -333,7 +340,12 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
-		flowbox = GTK_FLOW_BOX (self->flowbox_categories);
+
+		if (gs_category_get_icon_name (cat) != NULL)
+			flowbox = GTK_FLOW_BOX (self->flowbox_categories);
+		else
+			flowbox = GTK_FLOW_BOX (self->flowbox_iconless_categories);
+
 		gtk_flow_box_insert (flowbox, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		added_cnt++;
@@ -345,6 +357,10 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 	}
 
 out:
+	/* Show the heading for the iconless categories iff there are any. */
+	gtk_widget_set_visible (self->iconless_categories_heading,
+				gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->flowbox_iconless_categories), 0) != NULL);
+
 	if (added_cnt > 0)
 		self->empty = FALSE;
 
@@ -826,6 +842,8 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_popular);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_categories);
+	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_iconless_categories);
+	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, iconless_categories_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, popular_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, recent_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, scrolledwindow_overview);
