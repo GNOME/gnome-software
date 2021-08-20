@@ -32,6 +32,7 @@ struct _GsCategoryTile
 	GsCategory	*category;  /* (owned) (not nullable) */
 	GtkWidget	*label;
 	GtkWidget	*image;
+	GtkBox		*box;
 };
 
 G_DEFINE_TYPE (GsCategoryTile, gs_category_tile, GTK_TYPE_BUTTON)
@@ -92,12 +93,28 @@ gs_category_tile_get_category (GsCategoryTile *tile)
 static void
 gs_category_tile_refresh (GsCategoryTile *tile)
 {
+	GtkStyleContext *context;
+	const gchar *icon_name = gs_category_get_icon_name (tile->category);
+
 	/* set labels */
 	gtk_label_set_label (GTK_LABEL (tile->label),
 			     gs_category_get_name (tile->category));
+
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				      gs_category_get_icon_name (tile->category),
+				      icon_name,
 				      GTK_ICON_SIZE_DND);
+	gtk_widget_set_visible (tile->image, icon_name != NULL);
+
+	/* Update the icon class. */
+	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
+	if (icon_name != NULL)
+		gtk_style_context_remove_class (context, "category-tile-iconless");
+	else
+		gtk_style_context_add_class (context, "category-tile-iconless");
+
+	/* The label should be left-aligned for iconless categories and centred otherwise. */
+	gtk_widget_set_halign (GTK_WIDGET (tile->box),
+			       (icon_name != NULL) ? GTK_ALIGN_CENTER : GTK_ALIGN_START);
 }
 
 /**
@@ -184,6 +201,7 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, image);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, box);
 }
 
 /**
