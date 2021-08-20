@@ -34,17 +34,17 @@
 	border-color: #000000;
 }
 
+.content-box {
+	border-color: alpha(@borders, 0.7);
+}
+
 star-image {
 	color: #000000;
 	-GsStarImage-star-bg: #777777;
 }
 
-app-context-bar {
-	border: 1px solid #877b6e;
-}
-
 app-context-bar .context-tile {
-	border-right: 1px solid #877b6e;
+	border-color: alpha(@borders, 0.7);
 }
 
 .context-tile-lozenge.grey { background-color: #deddda; color: @theme_fg_color }
