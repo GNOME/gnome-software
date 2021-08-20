@@ -42,15 +42,9 @@ static const GsDesktopMap map_create[] = {
 					  "AudioVideo::DiscBurning",
 					  "AudioVideo::Sequencer",
 					  NULL} },
-	{ "fonts",		NC_("Menu of Add-ons", "Fonts"),
-					{ "Addon::Font",
-					  NULL} },
 	{ "music-players",	NC_("Menu of Audio & Video", "Music Players"),
 					{ "AudioVideo::Music",
 					  "AudioVideo::Player",
-					  NULL} },
-	{ "codecs",		NC_("Menu of Add-ons", "Codecs"),
-					{ "Addon::Codec",
 					  NULL} },
 	{ NULL }
 };
@@ -59,7 +53,6 @@ static const GsDesktopMap map_work[] = {
 	{ "all",		NC_("Menu of Productivity", "All"),
 					{ "Office",
 					  "Utility",
-					  "Addon",
 					  "Network::WebBrowser",
 					  NULL } },
 	{ "featured",		NC_("Menu of Productivity", "Featured"),
@@ -86,18 +79,6 @@ static const GsDesktopMap map_work[] = {
 					  NULL} },
 	{ "web-browsers",	NC_("Menu of Communication & News", "Web Browsers"),
 					{ "Network::WebBrowser",
-					  NULL} },
-	{ "input-sources",	NC_("Menu of Add-ons", "Input Sources"),
-					{ "Addon::InputSource",
-					  NULL} },
-	{ "language-packs",	NC_("Menu of Add-ons", "Language Packs"),
-					{ "Addon::LanguagePack",
-					  NULL} },
-	{ "localization",	NC_("Menu of Add-ons", "Localization"),
-					{ "Addon::Localization",
-					  NULL} },
-	{ "drivers",		NC_("Menu of Add-ons", "Hardware Drivers"),
-					{ "Addon::Driver",
 					  NULL} },
 	{ NULL }
 };
@@ -255,6 +236,48 @@ static const GsDesktopMap map_develop[] = {
 	{ NULL }
 };
 
+static const GsDesktopMap map_addon_codecs[] = {
+	{ "all",		NC_("Menu of Add-ons", "Codecs"),
+					{ "Addon::Codec",
+					  NULL } },
+	{ NULL }
+};
+
+static const GsDesktopMap map_addon_drivers[] = {
+	{ "all",		NC_("Menu of Add-ons", "Hardware Drivers"),
+					{ "Addon::Driver",
+					  NULL } },
+	{ NULL }
+};
+
+static const GsDesktopMap map_addon_fonts[] = {
+	{ "all",		NC_("Menu of Add-ons", "Fonts"),
+					{ "Addon::Font",
+					  NULL } },
+	{ NULL }
+};
+
+static const GsDesktopMap map_addon_input_sources[] = {
+	{ "all",		NC_("Menu of Add-ons", "Input Sources"),
+					{ "Addon::InputSource",
+					  NULL } },
+	{ NULL }
+};
+
+static const GsDesktopMap map_addon_language_packs[] = {
+	{ "all",		NC_("Menu of Add-ons", "Language Packs"),
+					{ "Addon::LanguagePack",
+					  NULL } },
+	{ NULL }
+};
+
+static const GsDesktopMap map_addon_localization[] = {
+	{ "all",		NC_("Menu of Add-ons", "Localization"),
+					{ "Addon::Localization",
+					  NULL } },
+	{ NULL }
+};
+
 /* main categories */
 /* Please keep category name and subcategory context synchronized!!! */
 static const GsDesktopData msdata[] = {
@@ -270,6 +293,19 @@ static const GsDesktopData msdata[] = {
 	{ "learn", map_learn, N_("Learn"), "org.gnome.Software.Learn", 60 },
 	/* Translators: this is a menu category */
 	{ "develop", map_develop, N_("Develop"), "org.gnome.Software.Develop", 50 },
+
+	/* Translators: this is a menu category */
+	{ "codecs", map_addon_codecs, N_("Codecs"), NULL, 10 },
+	/* Translators: this is a menu category */
+	{ "drivers", map_addon_drivers, N_("Hardware Drivers"), NULL, 10 },
+	/* Translators: this is a menu category */
+	{ "fonts", map_addon_fonts, N_("Fonts"), NULL, 10 },
+	/* Translators: this is a menu category */
+	{ "input-sources", map_addon_input_sources, N_("Input Sources"), NULL, 10 },
+	/* Translators: this is a menu category */
+	{ "language-packs", map_addon_language_packs, N_("Language Packs"), NULL, 10 },
+	/* Translators: this is a menu category */
+	{ "localization", map_addon_localization, N_("Localization"), NULL, 10 },
 
 	{ NULL }
 };
