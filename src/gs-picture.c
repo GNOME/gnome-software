@@ -235,7 +235,7 @@ css_size_allocate_self (GtkWidget *widget, GtkAllocation *allocation)
 	GtkBorder margin;
 
 	/* Manually apply the border, the padding and the margin as we can't use the
-	 * private GtkGagdet.
+	 * private GtkGadget.
 	 */
 	style_context = gtk_widget_get_style_context (widget);
 	state_flags = gtk_widget_get_state_flags (widget);
