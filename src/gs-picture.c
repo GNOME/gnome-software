@@ -155,7 +155,10 @@ gs_picture_measure (GtkWidget		*widget,
 			gdouble width = gdk_pixbuf_get_width (picture->pixbuf);
 			gdouble height = gdk_pixbuf_get_height (picture->pixbuf);
 
-			*natural = height <= 0 ? 0 : (width * for_size) / height;
+			if (for_size < 0)
+				*natural = width;
+			else
+				*natural = height <= 0 ? 0 : (width * for_size) / height;
 		} else {
 			*natural = gdk_pixbuf_get_height (picture->pixbuf);
 		}
