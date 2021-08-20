@@ -98,7 +98,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL);
 
 		/* Translators: The placeholder here is the name of a software license. */
-		description = g_strdup_printf (_("This app is developed in the open by a community of volunteers, and released under the %s license."
+		description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
 						 "\n\n"
 						 "You can contribute and help make it even better."),
 						 gs_app_get_license (self->app));
@@ -110,9 +110,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[2] = "padlock-open-symbolic";
 		get_involved_visible = FALSE;
 
-		description = g_strdup (_("This app is not developed in the open, so only its developers know how it works. There may be restrictions on its use, and it may be harder to tell if the app is insecure."
+		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. There may be restrictions on its use, and it may be harder to tell if the software is insecure."
 					  "\n\n"
-					  "You may not be able to contribute to this app or influence its development."));
+					  "You may not be able to contribute to this software or influence its development."));
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {

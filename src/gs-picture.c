@@ -155,7 +155,10 @@ gs_picture_measure (GtkWidget		*widget,
 			gdouble width = gdk_pixbuf_get_width (picture->pixbuf);
 			gdouble height = gdk_pixbuf_get_height (picture->pixbuf);
 
-			*natural = height <= 0 ? 0 : (width * for_size) / height;
+			if (for_size < 0)
+				*natural = width;
+			else
+				*natural = height <= 0 ? 0 : (width * for_size) / height;
 		} else {
 			*natural = gdk_pixbuf_get_height (picture->pixbuf);
 		}
@@ -235,7 +238,7 @@ css_size_allocate_self (GtkWidget *widget, GtkAllocation *allocation)
 	GtkBorder margin;
 
 	/* Manually apply the border, the padding and the margin as we can't use the
-	 * private GtkGagdet.
+	 * private GtkGadget.
 	 */
 	style_context = gtk_widget_get_style_context (widget);
 	state_flags = gtk_widget_get_state_flags (widget);

@@ -103,41 +103,6 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 	g_return_if_fail (GS_IS_SCREENSHOT_CAROUSEL (self));
 	g_return_if_fail (GS_IS_APP (app));
 
-	/* treat screenshots differently */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FONT) {
-		gs_container_remove_all (GTK_CONTAINER (self->carousel));
-		screenshots = gs_app_get_screenshots (app);
-		for (guint i = 0; i < screenshots->len && !g_cancellable_is_cancelled (cancellable); i++) {
-			AsScreenshot *ss = g_ptr_array_index (screenshots, i);
-			GtkWidget *ssimg;
-			GtkWidget *label;
-
-			/* set caption */
-			label = gtk_label_new (as_screenshot_get_caption (ss));
-			g_object_set (label,
-				      "xalign", 0.0,
-				      "max-width-chars", 10,
-				      "wrap", TRUE,
-				      NULL);
-			gtk_container_add (GTK_CONTAINER (self->carousel), label);
-			gtk_widget_set_visible (label, TRUE);
-
-			/* set images */
-			ssimg = gs_screenshot_image_new (self->session);
-			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
-			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-						      640,
-						      48);
-			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), cancellable);
-			gtk_container_add (GTK_CONTAINER (self->carousel), ssimg);
-			gtk_widget_set_visible (ssimg, TRUE);
-			gs_screenshot_image_set_description (GS_SCREENSHOT_IMAGE (ssimg),
-							     as_screenshot_get_caption (ss));
-		}
-		_set_state (self, screenshots->len, TRUE, is_online);
-		return;
-	}
-
 	/* fallback warning */
 	screenshots = gs_app_get_screenshots (app);
 	switch (gs_app_get_kind (app)) {
