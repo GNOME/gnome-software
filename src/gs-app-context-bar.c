@@ -345,7 +345,7 @@ update_safety_tile (GsAppContextBar *self)
 				      SAFETY_POTENTIALLY_UNSAFE,
 				      /* Translators: This indicates that we don’t know what permissions an app requires to run.
 				       * It’s used in a context tile, so should be short. */
-				      _("App has unknown permissions"));
+				      _("Software has unknown permissions"));
 
 	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
 	 * between closed source and open-source-but-not-FOSS software, even
@@ -372,14 +372,14 @@ update_safety_tile (GsAppContextBar *self)
 				      SAFETY_SAFE,
 				      /* Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 				       * It’s used in a context tile, so should be short. */
-				      _("App comes from a trusted source"));
+				      _("Software comes from a trusted source"));
 
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
 				      /* Translators: This indicates an app was written and released by a developer who has been verified.
 				       * It’s used in a context tile, so should be short. */
-				      _("App developer is verified"));
+				      _("Software developer is verified"));
 
 	g_assert (descriptions->len > 0);
 
