@@ -55,14 +55,25 @@ gs_appstream_format_description (XbNode *root, GError **error)
 
 		/* support <p>, <ul>, <ol> and <li>, ignore all else */
 		if (g_strcmp0 (xb_node_get_element (n), "p") == 0) {
-			g_string_append_printf (str, "%s\n\n", xb_node_get_text (n));
+			const gchar *node_text = xb_node_get_text (n);
+
+			/* Treat a self-closing paragraph (`<p/>`) as
+			 * nonexistent. This is consistent with Firefox. */
+			if (node_text != NULL)
+				g_string_append_printf (str, "%s\n\n", node_text);
 		} else if (g_strcmp0 (xb_node_get_element (n), "ul") == 0) {
 			g_autoptr(GPtrArray) children = xb_node_get_children (n);
+
 			for (guint i = 0; i < children->len; i++) {
 				XbNode *nc = g_ptr_array_index (children, i);
 				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
+					const gchar *node_text = xb_node_get_text (nc);
+
+					/* Treat a self-closing `<li/>` as an empty
+					 * list element (equivalent to `<li></li>`).
+					 * This is consistent with Firefox. */
 					g_string_append_printf (str, " • %s\n",
-								xb_node_get_text (nc));
+								(node_text != NULL) ? node_text : "");
 				}
 			}
 			g_string_append (str, "\n");
@@ -71,9 +82,12 @@ gs_appstream_format_description (XbNode *root, GError **error)
 			for (guint i = 0; i < children->len; i++) {
 				XbNode *nc = g_ptr_array_index (children, i);
 				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
+					const gchar *node_text = xb_node_get_text (nc);
+
+					/* Treat self-closing elements as with `<ul>` above. */
 					g_string_append_printf (str, " %u. %s\n",
 								i + 1,
-								xb_node_get_text (nc));
+								(node_text != NULL) ? node_text : "");
 				}
 			}
 			g_string_append (str, "\n");
