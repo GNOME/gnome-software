@@ -145,7 +145,11 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (permissions & GS_APP_PERMISSIONS_NETWORK) != 0,
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    /* This isn’t actually unimportant (network access can expand a local
+				     * vulnerability into a remotely exploitable one), but it’s
+				     * needed commonly enough that marking it as
+				     * %GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING is too noisy. */
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 				    "network-wireless-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Network Access"),

@@ -258,7 +258,11 @@ update_safety_tile (GsAppContextBar *self)
 			break;
 		case GS_APP_PERMISSIONS_NETWORK:
 			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_POTENTIALLY_UNSAFE,
+					      /* This isn’t actually safe (network access can expand a local
+					       * vulnerability into a remotely exploitable one), but it’s
+					       * needed commonly enough that marking it as
+					       * %SAFETY_POTENTIALLY_UNSAFE is too noisy. */
+					      SAFETY_SAFE,
 					      /* Translators: This indicates an app uses the network.
 					       * It’s used in a context tile, so should be short. */
 					      _("Has network access"));
