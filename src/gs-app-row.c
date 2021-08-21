@@ -698,7 +698,7 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 }
 
 static void
-gs_app_row_destroy (GtkWidget *object)
+gs_app_row_dispose (GObject *object)
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
@@ -712,7 +712,7 @@ gs_app_row_destroy (GtkWidget *object)
 		priv->pending_refresh_id = 0;
 	}
 
-	GTK_WIDGET_CLASS (gs_app_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_app_row_parent_class)->dispose (object);
 }
 
 static void
@@ -723,7 +723,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 
 	object_class->get_property = gs_app_row_get_property;
 	object_class->set_property = gs_app_row_set_property;
-	widget_class->destroy = gs_app_row_destroy;
+	object_class->dispose = gs_app_row_dispose;
 
 	/**
 	 * GsAppRow:app:

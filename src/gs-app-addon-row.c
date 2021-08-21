@@ -207,7 +207,7 @@ gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 }
 
 static void
-gs_app_addon_row_destroy (GtkWidget *object)
+gs_app_addon_row_dispose (GObject *object)
 {
 	GsAppAddonRow *row = GS_APP_ADDON_ROW (object);
 
@@ -216,7 +216,7 @@ gs_app_addon_row_destroy (GtkWidget *object)
 
 	g_clear_object (&row->app);
 
-	GTK_WIDGET_CLASS (gs_app_addon_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_app_addon_row_parent_class)->dispose (object);
 }
 
 static void
@@ -256,10 +256,9 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->dispose = gs_app_addon_row_dispose;
 	object_class->set_property = gs_app_addon_row_set_property;
 	object_class->get_property = gs_app_addon_row_get_property;
-
-	widget_class->destroy = gs_app_addon_row_destroy;
 
 	pspec = g_param_spec_boolean ("selected", NULL, NULL,
 				      FALSE, G_PARAM_READWRITE);

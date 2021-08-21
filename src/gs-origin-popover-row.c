@@ -136,14 +136,14 @@ gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *siz
 }
 
 static void
-gs_origin_popover_row_destroy (GtkWidget *object)
+gs_origin_popover_row_dispose (GObject *object)
 {
 	GsOriginPopoverRow *row = GS_ORIGIN_POPOVER_ROW (object);
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 
 	g_clear_object (&priv->app);
 
-	GTK_WIDGET_CLASS (gs_origin_popover_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_origin_popover_row_parent_class)->dispose (object);
 }
 
 static void
@@ -155,9 +155,10 @@ gs_origin_popover_row_init (GsOriginPopoverRow *row)
 static void
 gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_origin_popover_row_destroy;
+	object_class->dispose = gs_origin_popover_row_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-origin-popover-row.ui");
 

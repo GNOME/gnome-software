@@ -309,17 +309,6 @@ gs_upgrade_banner_dispose (GObject *object)
 	GsUpgradeBanner *self = GS_UPGRADE_BANNER (object);
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
 
-	g_clear_object (&priv->banner_provider);
-
-	G_OBJECT_CLASS (gs_upgrade_banner_parent_class)->dispose (object);
-}
-
-static void
-gs_upgrade_banner_destroy (GtkWidget *widget)
-{
-	GsUpgradeBanner *self = GS_UPGRADE_BANNER (widget);
-	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-
 	stop_progress_pulsing (self);
 
 	if (priv->app) {
@@ -328,8 +317,9 @@ gs_upgrade_banner_destroy (GtkWidget *widget)
 	}
 
 	g_clear_object (&priv->app);
+	g_clear_object (&priv->banner_provider);
 
-	GTK_WIDGET_CLASS (gs_upgrade_banner_parent_class)->destroy (widget);
+	G_OBJECT_CLASS (gs_upgrade_banner_parent_class)->dispose (object);
 }
 
 static void
@@ -361,7 +351,6 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_upgrade_banner_dispose;
-	widget_class->destroy = gs_upgrade_banner_destroy;
 
 	signals [SIGNAL_DOWNLOAD_CLICKED] =
 		g_signal_new ("download-clicked",

@@ -651,9 +651,9 @@ gs_screenshot_image_set_description (GsScreenshotImage *ssimg,
 }
 
 static void
-gs_screenshot_image_destroy (GtkWidget *widget)
+gs_screenshot_image_dispose (GObject *object)
 {
-	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (widget);
+	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (object);
 
 	if (ssimg->load_timeout_id) {
 		g_source_remove (ssimg->load_timeout_id);
@@ -672,7 +672,7 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 
 	g_clear_pointer (&ssimg->filename, g_free);
 
-	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);
+	G_OBJECT_CLASS (gs_screenshot_image_parent_class)->dispose (object);
 }
 
 static void
@@ -714,9 +714,11 @@ gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
 static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_screenshot_image_destroy;
+	object_class->dispose = gs_screenshot_image_dispose;
+
 	widget_class->draw = gs_screenshot_image_draw;
 
 	gtk_widget_class_set_template_from_resource (widget_class,

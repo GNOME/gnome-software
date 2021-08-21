@@ -275,7 +275,7 @@ gs_repo_row_remove_button_clicked_cb (GtkWidget *button,
 }
 
 static void
-gs_repo_row_destroy (GtkWidget *object)
+gs_repo_row_dispose (GObject *object)
 {
 	GsRepoRow *self = GS_REPO_ROW (object);
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
@@ -292,7 +292,7 @@ gs_repo_row_destroy (GtkWidget *object)
 
 	g_clear_object (&priv->plugin_loader);
 
-	GTK_WIDGET_CLASS (gs_repo_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_repo_row_parent_class)->dispose (object);
 }
 
 static void
@@ -316,7 +316,7 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	widget_class->destroy = gs_repo_row_destroy;
+	object_class->dispose = gs_repo_row_dispose;
 
 	signals [SIGNAL_REMOVE_CLICKED] =
 		g_signal_new ("remove-clicked",

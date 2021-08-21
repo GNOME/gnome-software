@@ -234,12 +234,6 @@ gs_star_widget_set_property (GObject *object,
 }
 
 static void
-gs_star_widget_destroy (GtkWidget *widget)
-{
-	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->destroy (widget);
-}
-
-static void
 gs_star_widget_realize (GtkWidget *widget)
 {
 	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->realize (widget);
@@ -260,7 +254,6 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_star_widget_destroy;
 	widget_class->realize = gs_star_widget_realize;
 	object_class->get_property = gs_star_widget_get_property;
 	object_class->set_property = gs_star_widget_set_property;
