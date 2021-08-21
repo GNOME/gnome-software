@@ -4289,11 +4289,13 @@ calculate_key_colors (GsApp *app)
 		g_autoptr(GInputStream) icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon_small), 32, NULL, NULL, NULL);
 		pb_small = gdk_pixbuf_new_from_stream_at_scale (icon_stream, 32, 32, TRUE, NULL, NULL);
 	} else if (G_IS_THEMED_ICON (icon_small)) {
+		g_autoptr(GtkIconPaintable) icon_paintable = NULL;
 		g_autoptr(GtkIconTheme) theme = NULL;
-		g_autoptr(GtkIconInfo) icon_info = NULL;
+		GdkDisplay *display;
 
-		if (gdk_screen_get_default () != NULL) {
-			theme = g_object_ref (gtk_icon_theme_get_default ());
+		display = gdk_display_get_default ();
+		if (display != NULL) {
+			theme = g_object_ref (gtk_icon_theme_get_for_display (display));
 		} else {
 			const gchar *test_search_path;
 
@@ -4306,16 +4308,51 @@ calculate_key_colors (GsApp *app)
 			test_search_path = g_getenv ("GS_SELF_TEST_ICON_THEME_PATH");
 			if (test_search_path != NULL) {
 				g_auto(GStrv) dirs = g_strsplit (test_search_path, ":", -1);
+				gtk_icon_theme_set_search_path (theme, (const char * const *)dirs);
 
-				/* This prepends, so we have to iterate in reverse to preserve order */
-				for (gsize i = g_strv_length (dirs); i > 0; i--)
-					gtk_icon_theme_prepend_search_path (theme, dirs[i - 1]);
 			}
 		}
 
-		icon_info = gtk_icon_theme_lookup_by_gicon (theme, icon_small, 32, GTK_ICON_LOOKUP_USE_BUILTIN);
-		if (icon_info != NULL)
-			pb_small = gtk_icon_info_load_icon (icon_info, NULL);
+		icon_paintable = gtk_icon_theme_lookup_by_gicon (theme, icon_small,
+								 32, 1,
+								 gtk_get_locale_direction (),
+								 0);
+		if (icon_paintable != NULL) {
+			g_autoptr(GFile) file = NULL;
+			g_autofree gchar *path = NULL;
+
+			file = gtk_icon_paintable_get_file (icon_paintable);
+			if (file != NULL)
+				path = g_file_get_path (file);
+
+			if (path != NULL) {
+				pb_small = gdk_pixbuf_new_from_file_at_size (path, 32, 32, NULL);
+			} else {
+				g_autoptr(GskRenderNode) render_node = NULL;
+				g_autoptr(GtkSnapshot) snapshot = NULL;
+				cairo_surface_t *surface;
+				cairo_t *cr;
+
+				surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, 32, 32);
+				cr = cairo_create (surface);
+
+				/* TODO: this can be done entirely on the GPU using shaders */
+				snapshot = gtk_snapshot_new ();
+				gdk_paintable_snapshot (GDK_PAINTABLE (icon_paintable),
+							GDK_SNAPSHOT (snapshot),
+							32.0,
+							32.0);
+
+				render_node = gtk_snapshot_free_to_node (g_steal_pointer (&snapshot));
+				gsk_render_node_draw (render_node, cr);
+
+				pb_small = gdk_pixbuf_get_from_surface (surface, 0, 0, 32, 32);
+
+				cairo_surface_destroy (surface);
+				cairo_destroy (cr);
+			}
+		}
+
 	} else {
 		g_debug ("unsupported pixbuf, so no key colors");
 		return;
