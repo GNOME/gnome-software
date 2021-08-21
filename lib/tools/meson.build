@@ -12,7 +12,7 @@ executable(
   ],
   dependencies : [
     glib,
-    dependency('gdk-3.0'),
+    gtk,
     gdk_pixbuf,
     libm,
   ],

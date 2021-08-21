@@ -99,7 +99,7 @@ gnome_software_dependencies = [
   gtk,
   json_glib,
   libgnomesoftware_dep,
-  libhandy,
+  libadwaita,
   libm,
   libsoup,
   libxmlb,
