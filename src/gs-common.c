@@ -329,9 +329,12 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 				      GError *error,
 				      gpointer user_data)
 {
-	g_warning ("CSS parse error %u:%u: %s",
-		   gtk_css_section_get_start_line (section),
-		   gtk_css_section_get_start_position (section),
+	const GtkCssLocation *start_location;
+
+	start_location = gtk_css_section_get_start_location (section);
+	g_warning ("CSS parse error %lu:%lu: %s",
+		   start_location->lines + 1,
+		   start_location->line_chars,
 		   error->message);
 }
 
@@ -445,7 +448,7 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 	gtk_style_context_add_class (context, class_name);
 
 	/* set up custom provider and store on the widget */
-	gtk_css_provider_load_from_data (*provider, str->str, -1, NULL);
+	gtk_css_provider_load_from_data (*provider, str->str, -1);
 	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (*provider),
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }

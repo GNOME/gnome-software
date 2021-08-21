@@ -255,7 +255,7 @@ theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 	} else {
 		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
 	}
-	gtk_css_provider_load_from_file (app->provider, file, NULL);
+	gtk_css_provider_load_from_file (app->provider, file);
 }
 
 static void
@@ -277,9 +277,9 @@ gs_application_initialize_ui (GsApplication *app)
 
 	/* get CSS */
 	app->provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (app->provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+						    GTK_STYLE_PROVIDER (app->provider),
+						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	g_signal_connect (gtk_settings_get_default (), "notify::gtk-theme-name",
 			  G_CALLBACK (theme_changed), app);
