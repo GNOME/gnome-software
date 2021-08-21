@@ -142,7 +142,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (_app_row_button_clicked_cb),
 			  self);
-	gtk_box_append (GTK_BOX (self), app_row);
+	gtk_list_box_insert (GTK_LIST_BOX (self->listbox), app_row, -1);
 	gs_app_list_add (self->list, app);
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
@@ -524,56 +524,6 @@ gs_updates_section_show (GtkWidget *widget)
 }
 
 static void
-gs_updates_section_forall (GtkContainer *container,
-			   gboolean include_internals,
-			   GtkCallback callback,
-			   gpointer callback_data)
-{
-	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
-
-	if (include_internals) {
-		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->forall (GTK_CONTAINER (self), include_internals, callback, callback_data);
-
-		return;
-	}
-
-	if (self->listbox)
-		GTK_CONTAINER_GET_CLASS (self->listbox)->forall (GTK_CONTAINER (self->listbox), include_internals, callback, callback_data);
-}
-
-static void
-gs_updates_section_add (GtkContainer *container, GtkWidget *child)
-{
-	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
-
-	if (self->section_header == NULL ||
-	    self->description == NULL ||
-	    self->listbox_box == NULL) {
-		/* Add internal children, used when building the widget. */
-		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->add (container, child);
-	} else {
-		/* Add external children to the listbox. */
-		gtk_list_box_insert (GTK_LIST_BOX (self->listbox), child, -1);
-	}
-}
-
-static void
-gs_updates_section_remove (GtkContainer *container, GtkWidget *child)
-{
-	GsUpdatesSection *self = GS_UPDATES_SECTION (container);
-
-	if (child == self->section_header ||
-	    child == self->description ||
-	    child == self->listbox_box) {
-		/* Remove internal children, used when destroying the widget. */
-		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->remove (container, child);
-	} else {
-		/* Remove external children from the listbox. */
-		gtk_container_remove (GTK_CONTAINER (self->listbox), child);
-	}
-}
-
-static void
 gs_updates_section_get_property (GObject    *object,
                                  guint       prop_id,
                                  GValue     *value,
@@ -637,16 +587,11 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	GtkContainerClass *container_class = GTK_CONTAINER_CLASS (klass);
 
 	object_class->get_property = gs_updates_section_get_property;
 	object_class->set_property = gs_updates_section_set_property;
 	object_class->dispose = gs_updates_section_dispose;
 	widget_class->show = gs_updates_section_show;
-
-	container_class->add = gs_updates_section_add;
-	container_class->remove = gs_updates_section_remove;
-	container_class->forall = gs_updates_section_forall;
 
 	/**
 	 * GsUpdatesSection:is-narrow:
