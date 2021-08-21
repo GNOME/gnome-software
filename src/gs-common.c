@@ -86,17 +86,17 @@ gs_start_spinner (GtkSpinner *spinner)
 				GUINT_TO_POINTER (id), remove_source);
 }
 
-static void
-remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
 void
-gs_container_remove_all (GtkContainer *container)
+gs_widget_remove_all (GtkWidget    *container,
+                      GsRemoveFunc  remove_func)
 {
-	gtk_container_foreach (container, remove_all_cb, container);
+	GtkWidget *child;
+	while ((child = gtk_widget_get_first_child (container)) != NULL) {
+		if (remove_func)
+			remove_func (container, child);
+		else
+			gtk_widget_unparent (child);
+	}
 }
 
 static void

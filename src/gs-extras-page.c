@@ -702,7 +702,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 	self->pending_search_cnt = 0;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_results));
+	gs_widget_remove_all (self->list_box_results, (GsRemoveFunc) gtk_list_box_remove);
 
 	/* set state as loading */
 	self->state = GS_EXTRAS_PAGE_STATE_LOADING;

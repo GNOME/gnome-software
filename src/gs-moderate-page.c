@@ -233,7 +233,7 @@ gs_moderate_page_load (GsModeratePage *self)
 	g_autoptr(GError) local_error = NULL;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
+	gs_widget_remove_all (self->list_box_install, (GsRemoveFunc) gtk_list_box_remove);
 
 	/* get unvoted reviews as apps */
 	if (!gs_odrs_provider_add_unvoted_reviews (self->odrs_provider, list,

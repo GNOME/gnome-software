@@ -88,7 +88,7 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
                                    GtkFlowBox     *flow_box,
                                    guint           n_placeholders)
 {
-	gs_container_remove_all (GTK_CONTAINER (flow_box));
+	gs_widget_remove_all (GTK_WIDGET (flow_box), (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
@@ -264,9 +264,9 @@ load_category_finish (LoadCategoryData *data)
 		return;
 
 	/* Remove the loading tiles. */
-	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
-	gs_container_remove_all (GTK_CONTAINER (self->recently_updated_flow_box));
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+	gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->recently_updated_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->category_detail_box, (GsRemoveFunc) gtk_flow_box_remove);
 
 	/* Last 30 days */
 	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
@@ -344,7 +344,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 		 * indicator that there will be featured apps */
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
 	} else {
-		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+		gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
 		gtk_widget_hide (self->featured_flow_box);
 	}
 

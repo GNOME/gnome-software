@@ -126,7 +126,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
-	gs_container_remove_all (GTK_CONTAINER (dialog->list_box_installed_updates));
+	gs_widget_remove_all (dialog->list_box_installed_updates, (GsRemoveFunc) gtk_list_box_remove);
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
 					gs_app_list_index (list, i));

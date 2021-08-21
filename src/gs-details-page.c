@@ -639,7 +639,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	gint origin_row_by_packaging_format_index = 0;
 
 	self->origin_by_packaging_format = FALSE;
-	gs_container_remove_all (GTK_CONTAINER (self->origin_popover_list_box));
+	gs_widget_remove_all (self->origin_popover_list_box, (GsRemoveFunc) gtk_list_box_remove);
 
 	/* Did we switch away from the page in the meantime? */
 	if (!gs_page_is_active (GS_PAGE (self))) {
@@ -1202,7 +1202,7 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 	GsAppList *addons;
 	guint i;
 
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_addons));
+	gs_widget_remove_all (self->list_box_addons, (GsRemoveFunc) gtk_list_box_remove);
 
 	addons = gs_app_get_addons (self->app);
 	for (i = 0; i < gs_app_list_length (addons); i++) {
@@ -1367,7 +1367,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	}
 
 	/* add all the reviews */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_reviews));
+	gs_widget_remove_all (self->list_box_reviews, (GsRemoveFunc) gtk_list_box_remove);
 	reviews = gs_app_get_reviews (self->app);
 	for (i = 0; i < reviews->len; i++) {
 		AsReview *review = g_ptr_array_index (reviews, i);

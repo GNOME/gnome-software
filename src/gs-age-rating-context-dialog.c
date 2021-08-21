@@ -653,7 +653,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	gboolean is_unknown;
 	g_autofree gchar *title = NULL;
 
-	gs_container_remove_all (GTK_CONTAINER (self->attributes_list));
+	gs_widget_remove_all (GTK_WIDGET (self->attributes_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)

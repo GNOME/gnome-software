@@ -31,7 +31,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 	g_autoptr(GPtrArray) version_history = NULL;
 
 	/* remove previous */
-	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
+	gs_widget_remove_all (dialog->listbox, (GsRemoveFunc) gtk_list_box_remove);
 
 	version_history = gs_app_get_version_history (app);
 	if (version_history == NULL || version_history->len == 0) {

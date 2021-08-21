@@ -425,7 +425,7 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 		return;
 
 	stop_rotation_timer (self);
-	gs_container_remove_all (GTK_CONTAINER (self->carousel));
+	gs_widget_remove_all (GTK_WIDGET (self->carousel), (GsRemoveFunc) adw_carousel_remove);
 
 	g_set_object (&self->apps, apps);
 

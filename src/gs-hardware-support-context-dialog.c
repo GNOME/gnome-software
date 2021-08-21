@@ -515,7 +515,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 	 * support based on app properties. */
 	chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
 
-	gs_container_remove_all (GTK_CONTAINER (self->relations_list));
+	gs_widget_remove_all (GTK_WIDGET (self->relations_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)

@@ -118,7 +118,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * based on app properties. */
 	chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
 
-	gs_container_remove_all (GTK_CONTAINER (self->permissions_list));
+	gs_widget_remove_all (GTK_WIDGET (self->permissions_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)

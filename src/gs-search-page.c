@@ -140,7 +140,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 	}
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
+	gs_widget_remove_all (self->list_box_search, (GsRemoveFunc) gtk_list_box_remove);
 
 	gs_stop_spinner (GTK_SPINNER (self->spinner_search));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");

@@ -455,6 +455,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GSList) other_repos = NULL;
 	g_autoptr(GList) sections = NULL;
+	AdwPreferencesGroup *added_section;
+	GHashTableIter iter;
 
 	/* get the results */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
@@ -472,8 +474,12 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* remove previous */
-	g_hash_table_remove_all (dialog->sections);
-	gs_container_remove_all (GTK_CONTAINER (dialog->content_page));
+	g_hash_table_iter_init (&iter, dialog->sections);
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&added_section)) {
+		adw_preferences_page_remove (ADW_PREFERENCES_PAGE (dialog->content_page),
+					     added_section);
+		g_hash_table_iter_remove (&iter);
+	}
 
 	/* stop the spinner */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));

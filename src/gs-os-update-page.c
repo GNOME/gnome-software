@@ -400,7 +400,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 	for (guint i = 0; i < GS_OS_UPDATE_PAGE_SECTION_LAST; i++) {
 		if (page->list_boxes[i] == NULL)
 			continue;
-		gs_container_remove_all (GTK_CONTAINER (page->list_boxes[i]));
+		gs_widget_remove_all (page->list_boxes[i], (GsRemoveFunc) gtk_list_box_remove);
 	}
 
 	if (app) {

@@ -125,7 +125,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 	}
 
 	/* reset screenshots */
-	gs_container_remove_all (GTK_CONTAINER (self->carousel));
+	gs_widget_remove_all (self->carousel, (GsRemoveFunc) adw_carousel_remove);
 
 	for (guint i = 0; i < screenshots->len && !g_cancellable_is_cancelled (cancellable); i++) {
 		AsScreenshot *ss = g_ptr_array_index (screenshots, i);

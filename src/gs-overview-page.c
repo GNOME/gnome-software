@@ -150,7 +150,7 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	gs_app_list_randomize (list);
 
-	gs_container_remove_all (GTK_CONTAINER (self->box_popular));
+	gs_widget_remove_all (self->box_popular, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
@@ -199,7 +199,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 
 	gs_app_list_randomize (list);
 
-	gs_container_remove_all (GTK_CONTAINER (self->box_recent));
+	gs_widget_remove_all (self->box_recent, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
@@ -316,8 +316,8 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		goto out;
 	}
 
-	gs_container_remove_all (GTK_CONTAINER (self->flowbox_categories));
-	gs_container_remove_all (GTK_CONTAINER (self->flowbox_iconless_categories));
+	gs_widget_remove_all (self->flowbox_categories, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->flowbox_iconless_categories, (GsRemoveFunc) gtk_flow_box_remove);
 
 	/* Add categories to the flowboxes. Categories with icons are deemed to
 	 * be visually important, and are listed near the top of the page.

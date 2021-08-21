@@ -119,7 +119,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		return;
 
 	/* remove all existing widgets */
-	gs_container_remove_all (GTK_CONTAINER (priv->box1));
+	gs_widget_remove_all (priv->box1, (GsRemoveFunc) gtk_box_remove);
 
 	for (guint i = 0; i < G_N_ELEMENTS (priv->images); i++) {
 		GtkWidget *w;

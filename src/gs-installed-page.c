@@ -305,10 +305,10 @@ gs_installed_page_load (GsInstalledPage *self)
 	self->waiting = TRUE;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install_in_progress));
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install_apps));
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install_system_apps));
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install_addons));
+	gs_widget_remove_all (self->list_box_install_in_progress, (GsRemoveFunc) gtk_list_box_remove);
+	gs_widget_remove_all (self->list_box_install_apps, (GsRemoveFunc) gtk_list_box_remove);
+	gs_widget_remove_all (self->list_box_install_system_apps, (GsRemoveFunc) gtk_list_box_remove);
+	gs_widget_remove_all (self->list_box_install_addons, (GsRemoveFunc) gtk_list_box_remove);
 
 	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 		GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
