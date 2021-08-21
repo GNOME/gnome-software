@@ -726,7 +726,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		}
 		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
 		                                      self->size_group_origin_popover);
-		gtk_container_add (GTK_CONTAINER (self->origin_popover_list_box), row);
+		gtk_list_box_insert (GTK_LIST_BOX (self->origin_popover_list_box), row, -1);
 
 		if (origin_by_packaging_format) {
 			const gchar *packaging_format = gs_app_get_packaging_format_raw (app);
@@ -1226,7 +1226,7 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 				  G_CALLBACK (gs_details_page_addon_remove_cb),
 				  self);
 
-		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
+		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_addons), row, -1);
 		gtk_widget_show (row);
 
 	}
@@ -1383,7 +1383,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
-		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
+		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_reviews), row, -1);
 		gtk_widget_set_visible (row, self->show_all_reviews ||
 					     i < SHOW_NR_REVIEWS_INITIAL);
 		gs_review_row_set_network_available (GS_REVIEW_ROW (row),

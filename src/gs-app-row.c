@@ -557,7 +557,7 @@ gs_app_row_unreveal (GsAppRow *app_row)
 
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 
-	child = gtk_bin_get_child (GTK_BIN (app_row));
+	child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (app_row));
 	gtk_widget_set_sensitive (child, FALSE);
 
 	revealer = gtk_revealer_new ();
@@ -565,11 +565,10 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	gtk_widget_show (revealer);
 
 	g_object_ref (child);
-	gtk_container_remove (GTK_CONTAINER (app_row), child);
-	gtk_container_add (GTK_CONTAINER (revealer), child);
+	gtk_list_box_row_set_child (GTK_LIST_BOX_ROW (app_row), revealer);
+	gtk_revealer_set_child (GTK_REVEALER (revealer), child);
 	g_object_unref (child);
 
-	gtk_container_add (GTK_CONTAINER (app_row), revealer);
 	g_signal_connect (revealer, "notify::child-revealed",
 			  G_CALLBACK (child_unrevealed), app_row);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);

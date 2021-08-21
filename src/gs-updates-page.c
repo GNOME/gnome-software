@@ -1247,7 +1247,7 @@ gs_updates_page_setup (GsPage *page,
 		g_object_bind_property (G_OBJECT (self), "is-narrow",
 					self->sections[i], "is-narrow",
 					G_BINDING_SYNC_CREATE);
-		gtk_container_add (GTK_CONTAINER (self->updates_box), GTK_WIDGET (self->sections[i]));
+		gtk_box_append (GTK_BOX (self->updates_box), GTK_WIDGET (self->sections[i]));
 	}
 
 	self->shell = shell;
@@ -1289,20 +1289,20 @@ gs_updates_page_setup (GsPage *page,
 
 	widget = gtk_label_new (_("Checking…"));
 	gtk_widget_show (widget);
-	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+	adw_squeezer_add (ADW_SQUEEZER (self->header_checking_label), widget);
 
 	/* FIXME: This box is just a 0x0 widget the squeezer will show when it
 	 * hasn't enough space to show the label. In GTK 4, we will be able to
 	 * use AdwSqueezer:allow-none instead. */
 	widget = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_show (widget);
-	gtk_container_add (GTK_CONTAINER (self->header_checking_label), widget);
+	adw_squeezer_add (ADW_SQUEEZER (self->header_checking_label), widget);
 
-	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_checking_label);
+	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_checking_label);
 	gtk_container_child_set(GTK_CONTAINER (self->header_start_box), self->header_checking_label,
 				"pack-type", GTK_PACK_END, NULL);
 	self->header_spinner_start = gtk_spinner_new ();
-	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_spinner_start);
+	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_spinner_start);
 	gtk_container_child_set (GTK_CONTAINER (self->header_start_box), self->header_spinner_start,
 				 "pack-type", GTK_PACK_END, NULL);
 
@@ -1311,7 +1311,7 @@ gs_updates_page_setup (GsPage *page,
 	accessible = gtk_widget_get_accessible (self->button_refresh);
 	if (accessible != NULL)
 		atk_object_set_name (accessible, _("Check for updates"));
-	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->button_refresh);
+	gtk_box_prepend (GTK_BOX (self->header_start_box), self->button_refresh);
 	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_updates_page_button_refresh_cb),
 			  self);

@@ -142,7 +142,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (_app_row_button_clicked_cb),
 			  self);
-	gtk_container_add (GTK_CONTAINER (self), app_row);
+	gtk_box_append (GTK_BOX (self), app_row);
 	gs_app_list_add (self->list, app);
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
@@ -553,7 +553,7 @@ gs_updates_section_add (GtkContainer *container, GtkWidget *child)
 		GTK_CONTAINER_CLASS (gs_updates_section_parent_class)->add (container, child);
 	} else {
 		/* Add external children to the listbox. */
-		gtk_container_add (GTK_CONTAINER (self->listbox), child);
+		gtk_list_box_insert (GTK_LIST_BOX (self->listbox), child, -1);
 	}
 }
 

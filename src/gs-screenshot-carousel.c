@@ -148,8 +148,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 			continue;
 		}
 
-		gtk_container_add (GTK_CONTAINER (self->carousel),
-				   ssimg);
+		adw_carousel_append (ADW_CAROUSEL (self->carousel), ssimg);
 		gtk_widget_show (ssimg);
 		gs_screenshot_image_set_description (GS_SCREENSHOT_IMAGE (ssimg),
 						     as_screenshot_get_caption (ss));

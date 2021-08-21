@@ -502,7 +502,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	/* make the hbox expand */
 	box = gtk_widget_get_parent (message_area);
 	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
-	                         "expand", TRUE, "fill", TRUE, NULL);
+				 "expand", TRUE, "fill", TRUE, NULL);
 	/* make the labels not expand */
 	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
 
@@ -516,7 +516,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	label = gtk_label_new (_("Details"));
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_visible (label, TRUE);
-	gtk_container_add (GTK_CONTAINER (message_area), label);
+	gtk_box_append (GTK_BOX (message_area), label);
 
 	sw = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
@@ -536,10 +536,9 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_text_buffer_set_text (buffer, msg->str, -1);
 	gtk_widget_set_visible (tv, TRUE);
 
-	gtk_container_add (GTK_CONTAINER (sw), tv);
+	gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (sw), tv);
 	gtk_widget_set_vexpand (sw, TRUE);
-	gtk_container_add (GTK_CONTAINER (message_area), sw);
-	gtk_container_child_set (GTK_CONTAINER (message_area), sw, "pack-type", GTK_PACK_END, NULL);
+	gtk_box_append (GTK_BOX (message_area), sw);
 
 	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
 }

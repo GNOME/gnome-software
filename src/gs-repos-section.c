@@ -125,7 +125,7 @@ gs_repos_section_init (GsReposSection *self)
 	style_context = gtk_widget_get_style_context (GTK_WIDGET (self->list));
 	gtk_style_context_add_class (style_context, "content");
 
-	gtk_container_add (GTK_CONTAINER (self), GTK_WIDGET (self->list));
+	adw_preferences_group_add (ADW_PREFERENCES_GROUP (self), GTK_WIDGET (self->list));
 
 	g_signal_connect (self->list, "row-activated",
 			  G_CALLBACK (gs_repos_section_row_activated_cb), self);

@@ -437,7 +437,7 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 		gtk_widget_set_can_focus (tile, FALSE);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked_cb), self);
-		gtk_container_add (GTK_CONTAINER (self->carousel), tile);
+		adw_carousel_append (self->carousel, tile);
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (self->next_button), self->apps != NULL && gs_app_list_length (self->apps) > 1);

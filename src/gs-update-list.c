@@ -44,7 +44,7 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 	gs_app_row_set_show_description (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), FALSE);
-	gtk_container_add (GTK_CONTAINER (update_list), app_row);
+	gtk_list_box_insert (GTK_LIST_BOX (update_list), app_row, -1);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    priv->sizegroup_image,
 				    priv->sizegroup_name,

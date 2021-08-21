@@ -92,7 +92,7 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 
 	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (flow_box), tile);
+		gtk_flow_box_insert (flow_box, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
@@ -293,11 +293,11 @@ load_category_finish (LoadCategoryData *data)
 				  G_CALLBACK (app_tile_clicked), self);
 
 		if (is_featured)
-			gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->featured_flow_box), tile, -1);
 		else if (is_recently_updated)
-			gtk_container_add (GTK_CONTAINER (self->recently_updated_flow_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
 		else
-			gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
 
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}

@@ -157,7 +157,7 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_popular, TRUE);
 	gtk_widget_set_visible (self->popular_heading, TRUE);
@@ -213,8 +213,8 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		 */
 		gtk_widget_set_can_focus (child, FALSE);
 		gtk_widget_show (child);
-		gtk_container_add (GTK_CONTAINER (child), tile);
-		gtk_container_add (GTK_CONTAINER (self->box_recent), child);
+		gtk_flow_box_child_set_child (GTK_FLOW_BOX_CHILD (child), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), child, -1);
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
@@ -627,12 +627,12 @@ gs_overview_page_setup (GsPage *page,
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
 	}
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->box_recent), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
 	}
 
 	return TRUE;

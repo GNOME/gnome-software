@@ -501,8 +501,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	sections = g_hash_table_get_values (dialog->sections);
 	sections = g_list_sort (sections, repos_dialog_compare_sections_cb);
 	for (GList *link = sections; link; link = g_list_next (link)) {
-		GtkWidget *section = link->data;
-		gtk_container_add (GTK_CONTAINER (dialog->content_page), section);
+		AdwPreferencesGroup *section = link->data;
+		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page), section);
 	}
 
 	gtk_widget_set_visible (dialog->content_page, sections != NULL);
@@ -525,7 +525,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added."));
 		adw_action_row_set_activatable_widget (ADW_ACTION_ROW (row), widget);
-		gtk_container_add (GTK_CONTAINER (row), widget);
+		adw_action_row_add_suffix (ADW_ACTION_ROW (row), widget);
 		gtk_widget_show (row);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
@@ -552,8 +552,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 #endif
 
 		gtk_widget_show (widget);
-		gtk_container_add (GTK_CONTAINER (widget), row);
-		gtk_container_add (GTK_CONTAINER (dialog->content_page), widget);
+		adw_preferences_group_add (ADW_PREFERENCES_GROUP (widget), row);
+		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
+					  ADW_PREFERENCES_GROUP (widget));
 
 		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, TRUE));
 		gs_repos_section_set_sort_key (section, "900");
@@ -566,7 +567,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			gs_repos_section_add_repo (section, repo);
 		}
 
-		gtk_container_add (GTK_CONTAINER (dialog->content_page), GTK_WIDGET (section));
+		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
+					  ADW_PREFERENCES_GROUP (widget));
 	}
 }
 

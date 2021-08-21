@@ -139,7 +139,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 			g_object_set_data (G_OBJECT (w),
 					   "GsStarWidget::value",
 					   GINT_TO_POINTER (rate_to_star[i]));
-			gtk_container_add (GTK_CONTAINER (w), im);
+			gtk_button_set_child (GTK_BUTTON (w), im);
 			gtk_widget_set_visible (im, TRUE);
 		} else {
 			w = im;
@@ -147,7 +147,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		gtk_widget_set_sensitive (w, priv->interactive);
 		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
 		gtk_widget_set_visible (w, TRUE);
-		gtk_container_add (GTK_CONTAINER (priv->box1), w);
+		gtk_box_append (GTK_BOX (priv->box1), w);
 	}
 
 	gs_star_widget_refresh_rating (star);

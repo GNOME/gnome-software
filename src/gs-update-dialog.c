@@ -210,7 +210,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	gtk_widget_show (page);
 
-	gtk_container_add (GTK_CONTAINER (dialog->deck), page);
+	adw_deck_add (ADW_DECK (dialog->deck), page);
 	adw_deck_set_visible_child (ADW_DECK (dialog->deck), page);
 }
 

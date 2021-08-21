@@ -104,24 +104,24 @@ populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissio
 			gtk_widget_set_opacity (image, 0);
 
 		gtk_widget_show (image);
-		gtk_container_add (GTK_CONTAINER (row), image);
+		gtk_box_append (GTK_BOX (row), image);
 
 		box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 		gtk_widget_show (box);
-		gtk_container_add (GTK_CONTAINER (row), box);
+		gtk_box_append (GTK_BOX (row), box);
 
 		label = gtk_label_new (_(permission_display_data[i].title));
 		gtk_label_set_xalign (GTK_LABEL (label), 0);
 		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (box), label);
+		gtk_box_append (GTK_BOX (row), label);
 
 		label = gtk_label_new (_(permission_display_data[i].subtitle));
 		gtk_label_set_xalign (GTK_LABEL (label), 0);
 		gtk_style_context_add_class (gtk_widget_get_style_context (label), "dim-label");
 		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (box), label);
+		gtk_box_append (GTK_BOX (row), label);
 
-		gtk_container_add (GTK_CONTAINER (page->permissions_section_content), row);
+		gtk_box_append (GTK_BOX (page->permissions_section_content), row);
 	}
 }
 

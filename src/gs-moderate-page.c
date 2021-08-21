@@ -158,7 +158,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 	/* add top level app */
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
-	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
+	gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install), app_row, -1);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name,
@@ -183,7 +183,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 		g_object_set_data_full (G_OBJECT (row), "GsApp",
 					g_object_ref (app),
 					(GDestroyNotify) g_object_unref);
-		gtk_container_add (GTK_CONTAINER (self->list_box_install), row);
+		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install), row, -1);
 	}
 	gtk_widget_show (app_row);
 }

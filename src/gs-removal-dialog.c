@@ -53,7 +53,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
 	gtk_widget_set_tooltip_text (widget, gs_app_get_name (app));
 	gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
-	gtk_container_add (GTK_CONTAINER (box), widget);
+	gtk_box_append (GTK_BOX (box), widget);
 
 	if (gs_app_get_name (app) != NULL) {
 		sort_key = gs_utils_sort_key (gs_app_get_name (app));
@@ -91,7 +91,7 @@ insert_details_widget (GtkMessageDialog *dialog, GtkWidget *widget)
 		gtk_label_set_max_width_chars (GTK_LABEL (l->data), 40);
 	}
 
-	gtk_container_add (GTK_CONTAINER (message_area), widget);
+	gtk_box_append (GTK_BOX (message_area), widget);
 }
 
 void

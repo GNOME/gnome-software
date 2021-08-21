@@ -145,7 +145,7 @@ create_app_row (GsApp *app)
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_hexpand (label, TRUE);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_container_add (GTK_CONTAINER (row), label);
+	gtk_box_append (GTK_BOX (row), label);
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
 	    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
 		g_autofree gchar *verstr = format_version_update (app, gtk_widget_get_direction (row));
@@ -163,7 +163,7 @@ create_app_row (GsApp *app)
 	              NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_END);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_container_add (GTK_CONTAINER (row), label);
+	gtk_box_append (GTK_BOX (row), label);
 	gtk_widget_show_all (row);
 
 	return row;
@@ -292,7 +292,7 @@ get_section_header (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 
 	/* put label into the header */
 	gtk_widget_set_hexpand (label, TRUE);
-	gtk_container_add (GTK_CONTAINER (header), label);
+	gtk_box_append (GTK_BOX (header), label);
 	gtk_widget_set_visible (label, TRUE);
 	gtk_widget_set_margin_start (label, 6);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
@@ -338,7 +338,7 @@ create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 			  G_CALLBACK (row_activated_cb), page);
 	gtk_widget_set_visible (page->list_boxes[section], TRUE);
 	gtk_widget_set_vexpand (page->list_boxes[section], TRUE);
-	gtk_container_add (GTK_CONTAINER (page->box), page->list_boxes[section]);
+	gtk_box_append (GTK_BOX (page->box), page->list_boxes[section]);
 	gtk_widget_set_margin_top (page->list_boxes[section], 24);
 
 	/* reorder the children */
