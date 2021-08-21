@@ -381,7 +381,7 @@ about_activated (GSimpleAction *action,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void

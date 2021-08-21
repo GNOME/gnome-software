@@ -1187,10 +1187,6 @@ version_history_list_row_activated_cb (GtkListBox *list_box,
 	dialog = gs_app_version_history_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW)),
 						    self->app);
 	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
@@ -1962,7 +1958,7 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {
-		gtk_widget_destroy (GTK_WIDGET (dialog));
+		gtk_window_destroy (GTK_WINDOW (dialog));
 		return;
 	}
 
@@ -1991,7 +1987,7 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	gs_details_page_refresh_reviews (self);
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void

@@ -73,7 +73,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
 static void
 gs_page_update_app_response_close_cb (GtkDialog *dialog, gint response, gpointer user_data)
 {
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void
@@ -312,7 +312,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK)
@@ -438,7 +438,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK)

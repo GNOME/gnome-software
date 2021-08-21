@@ -307,7 +307,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 		response = GTK_RESPONSE_OK;
 		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
 	}
-	gtk_widget_destroy (dialog);
+	gtk_window_destroy (GTK_WINDOW (dialog));
 	return response;
 }
 
@@ -571,7 +571,7 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details);
 
 	g_signal_connect_swapped (dialog, "response",
-	                          G_CALLBACK (gtk_widget_destroy),
+	                          G_CALLBACK (gtk_window_destroy),
 	                          dialog);
 	gtk_widget_show (dialog);
 }

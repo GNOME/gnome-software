@@ -141,7 +141,7 @@ enable_repo_response_cb (GtkDialog *confirm_dialog,
 	g_autoptr(InstallRemoveData) install_data = (InstallRemoveData *) user_data;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (confirm_dialog));
+	gtk_window_destroy (GTK_WINDOW (confirm_dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {
@@ -222,7 +222,7 @@ remove_repo_response_cb (GtkDialog *confirm_dialog,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (confirm_dialog));
+	gtk_window_destroy (GTK_WINDOW (confirm_dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {

@@ -804,7 +804,7 @@ gs_updates_page_refresh_confirm_cb (GtkDialog *dialog,
                                     GsUpdatesPage *self)
 {
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	switch (response_type) {
 	case GTK_RESPONSE_REJECT:
@@ -1069,7 +1069,7 @@ gs_updates_page_upgrade_confirm_cb (GtkDialog *dialog,
                                     GsUpdatesPage *self)
 {
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	switch (response_type) {
 	case GTK_RESPONSE_ACCEPT:

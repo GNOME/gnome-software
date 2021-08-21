@@ -270,7 +270,7 @@ gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
@@ -412,7 +412,7 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
@@ -2630,7 +2630,7 @@ gs_shell_init (GsShell *shell)
 	adw_search_bar_connect_entry (ADW_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
-	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
+	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_window_destroy);
 }
 
 GsShell *

@@ -205,7 +205,7 @@ gs_review_row_confirm_cb (GtkDialog *dialog, gint response_id, GsReviewRow *row)
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
 			       GS_REVIEW_ACTION_REPORT);
 	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void
