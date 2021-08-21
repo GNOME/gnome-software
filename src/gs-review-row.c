@@ -140,7 +140,6 @@ gs_review_row_init (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	priv->network_available = TRUE;
-	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 }
 

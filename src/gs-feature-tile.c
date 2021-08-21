@@ -436,7 +436,6 @@ gs_feature_tile_size_allocate (GtkWidget     *widget,
 static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 

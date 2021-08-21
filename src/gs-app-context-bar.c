@@ -771,7 +771,6 @@ tile_clicked_cb (GtkWidget *widget,
 static void
 gs_app_context_bar_init (GsAppContextBar *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

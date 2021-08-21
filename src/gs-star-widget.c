@@ -251,7 +251,6 @@ gs_star_widget_realize (GtkWidget *widget)
 static void
 gs_star_widget_init (GsStarWidget *star)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (star), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (star));
 }
 

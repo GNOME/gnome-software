@@ -189,7 +189,6 @@ app_tile_clicked_cb (GsAppTile *app_tile,
 static void
 gs_featured_carousel_init (GsFeaturedCarousel *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* Ensure the text directions are up to date */

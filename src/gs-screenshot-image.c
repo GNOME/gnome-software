@@ -683,8 +683,6 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 
-	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
-
 	g_type_ensure (GS_TYPE_PICTURE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
 

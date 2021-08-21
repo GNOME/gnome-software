@@ -79,7 +79,6 @@ gs_info_bar_set_property (GObject *object,
 static void
 gs_info_bar_init (GsInfoBar *infobar)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (infobar), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (infobar));
 }
 

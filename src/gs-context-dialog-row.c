@@ -77,7 +77,6 @@ css_class_for_importance (GsContextDialogRowImportance importance)
 static void
 gs_context_dialog_row_init (GsContextDialogRow *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

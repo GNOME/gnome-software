@@ -167,7 +167,6 @@ gs_category_tile_dispose (GObject *object)
 static void
 gs_category_tile_init (GsCategoryTile *tile)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 

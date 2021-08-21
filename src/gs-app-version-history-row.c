@@ -40,7 +40,6 @@ gs_app_version_history_row_class_init (GsAppVersionHistoryRowClass *klass)
 static void
 gs_app_version_history_row_init (GsAppVersionHistoryRow *row)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 }
 

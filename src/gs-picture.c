@@ -382,8 +382,6 @@ gs_picture_init (GsPicture *picture)
 {
 	AtkObject *accessible;
 
-	gtk_widget_set_has_window (GTK_WIDGET (picture), FALSE);
-
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (picture));
 	if (accessible != NULL) {
 		atk_object_set_role (accessible, ATK_ROLE_IMAGE);

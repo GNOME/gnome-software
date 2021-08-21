@@ -855,7 +855,6 @@ gs_app_row_init (GsAppRow *app_row)
 
 	priv->show_description = TRUE;
 
-	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	g_signal_connect (priv->button, "clicked",

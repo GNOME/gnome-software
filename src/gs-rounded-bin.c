@@ -68,7 +68,6 @@ static void clear_masks (GsRoundedBin *self);
 static void
 gs_rounded_bin_init (GsRoundedBin *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 }
 
 static void

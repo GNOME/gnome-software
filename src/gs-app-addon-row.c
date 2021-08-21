@@ -283,7 +283,6 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 static void
 gs_app_addon_row_init (GsAppAddonRow *row)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 
 	g_signal_connect (row->checkbox, "toggled",

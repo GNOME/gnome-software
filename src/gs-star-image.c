@@ -222,7 +222,6 @@ gs_star_image_init (GsStarImage *self)
 {
 	self->fraction = 1.0;
 
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_set_size_request (GTK_WIDGET (self), 16, 16);
 }
 
