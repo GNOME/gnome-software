@@ -331,12 +331,11 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	gtk_init (&argc, &argv);
+	gtk_init ();
 
 	context = g_option_context_new (NULL);
 	g_option_context_set_summary (context, "GNOME Software Test Program");
 	g_option_context_add_main_entries (context, options, NULL);
-	g_option_context_add_group (context, gtk_get_option_group (TRUE));
 	ret = g_option_context_parse (context, &argc, &argv, &error);
 	if (!ret) {
 		g_print ("Failed to parse options: %s\n", error->message);
