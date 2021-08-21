@@ -453,7 +453,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
-		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_failed_page),
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page),
 						 error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		refresh_headerbar_updates_counter (self);
@@ -751,7 +751,7 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 			return;
 		}
 		g_warning ("failed to refresh: %s", error->message);
-		hdy_status_page_set_description (HDY_STATUS_PAGE (self->updates_failed_page),
+		adw_status_page_set_description (ADW_STATUS_PAGE (self->updates_failed_page),
 						 error->message);
 		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		return;
@@ -1283,9 +1283,9 @@ gs_updates_page_setup (GsPage *page,
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
 	/* This label indicates that the update check is in progress */
-	self->header_checking_label = hdy_squeezer_new ();
-	hdy_squeezer_set_xalign (HDY_SQUEEZER (self->header_checking_label), 0);
-	hdy_squeezer_set_transition_type (HDY_SQUEEZER (self->header_checking_label), HDY_SQUEEZER_TRANSITION_TYPE_CROSSFADE);
+	self->header_checking_label = adw_squeezer_new ();
+	adw_squeezer_set_xalign (ADW_SQUEEZER (self->header_checking_label), 0);
+	adw_squeezer_set_transition_type (ADW_SQUEEZER (self->header_checking_label), ADW_SQUEEZER_TRANSITION_TYPE_CROSSFADE);
 
 	widget = gtk_label_new (_("Checking…"));
 	gtk_widget_show (widget);

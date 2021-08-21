@@ -8,7 +8,7 @@
       </object>
     </child>
     <child>
-      <object class="HdyStatusPage" id="status_page">
+      <object class="AdwStatusPage" id="status_page">
         <property name="visible">True</property>
         <property name="icon_name">org.gnome.Software</property>
         <property name="title" translatable="yes">Starting up…</property>
@@ -16,10 +16,10 @@
           <class name="icon-dropshadow"/>
         </style>
         <child>
-          <object class="HdyClamp">
+          <object class="AdwClamp">
             <property name="visible">True</property>
-            <!-- We explicitly want to use the default HdyClamp sizes here, as
-                 does HdyStatusPage. -->
+            <!-- We explicitly want to use the default AdwClamp sizes here, as
+                 does AdwStatusPage. -->
             <child>
               <object class="GtkProgressBar" id="progressbar">
                 <property name="visible">True</property>

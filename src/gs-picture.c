@@ -83,7 +83,7 @@ gs_picture_set_pixbuf (GsPicture *picture, GdkPixbuf *pixbuf)
 	g_object_notify_by_pspec (G_OBJECT (picture), obj_props[PROP_PIXBUF]);
 }
 
-/* This is derived from the private hdy_css_measure() from Libhandy. */
+/* This is derived from the private adw_css_measure() from Libhandy. */
 static void
 css_measure (GtkWidget *widget, GtkOrientation orientation, gint *minimum, gint *natural)
 {
@@ -229,7 +229,7 @@ gs_picture_get_preferred_height (GtkWidget	*widget,
 			    minimum, natural, NULL, NULL);
 }
 
-/* This is derived from the private hdy_css_size_allocate_self() from Libhandy. */
+/* This is derived from the private adw_css_size_allocate_self() from Libhandy. */
 static void
 css_size_allocate_self (GtkWidget *widget, GtkAllocation *allocation)
 {

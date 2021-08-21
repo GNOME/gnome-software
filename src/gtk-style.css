@@ -655,10 +655,10 @@ overlay > headerbar {
   border: none;
 }
 
-/* The following style are taken from libhandy's HdyPreferencesPage style, which
+/* The following style are taken from libhandy's AdwPreferencesPage style, which
  * implements the style for titled lists of lists.
  * FIXME: Drop these styles if the pages using it are ported to
- * HdyPreferencesPage or its successor in Libadwaita, if their clamp size can be
+ * AdwPreferencesPage or its successor in Libadwaita, if their clamp size can be
  * set as a property. */
 
 scrolledwindow.list-page > viewport > clamp {
@@ -700,17 +700,17 @@ scrolledwindow.list-page > viewport > clamp.large .section {
   margin-top: 18px;
 }
 
-/* The following style is taken from libhandy's HdyPreferencesGroup style, which
+/* The following style is taken from libhandy's AdwPreferencesGroup style, which
  * implements the style for titled and described sections with a list box.
- * FIXME: Drop this style if we use the successor of HdyPreferencesGroup in
+ * FIXME: Drop this style if we use the successor of AdwPreferencesGroup in
  * Libadwaita when porting to GTK 4. */
 
 .section > label:not(:first-child) { margin-top: 6px; }
 
 .section > box:not(:first-child) { margin-top: 12px; }
 
-/* The following style is taken from libhandy's HdyStatusPage style.
- * FIXME: Drop this style if HdyStatusPage or its GTK 4 successor allows setting
+/* The following style is taken from libhandy's AdwStatusPage style.
+ * FIXME: Drop this style if AdwStatusPage or its GTK 4 successor allows setting
  * a spinner and the updates spinner page can be ported to it. */
 
 clamp.status-page {
@@ -831,12 +831,12 @@ window.narrow .app-developer {
 
 .install-progress-label { font-size: smaller }
 
-/* FIXME: These are needed in the updates page until we can use HdyStatusPage
+/* FIXME: These are needed in the updates page until we can use AdwStatusPage
  * again. See the note in gs-updates-page.ui. */
-scrolledwindow.fake-hdy-status-page > viewport > box { margin: 36px 12px; }
-scrolledwindow.fake-hdy-status-page > viewport > box > clamp:not(:last-child) > box { margin-bottom: 36px; }
-scrolledwindow.fake-hdy-status-page > viewport > box > clamp > box > .icon:not(:last-child) { margin-bottom: 36px; }
-scrolledwindow.fake-hdy-status-page > viewport > box > clamp > box > .title:not(:last-child) { margin-bottom: 12px; }
+scrolledwindow.fake-adw-status-page > viewport > box { margin: 36px 12px; }
+scrolledwindow.fake-adw-status-page > viewport > box > clamp:not(:last-child) > box { margin-bottom: 36px; }
+scrolledwindow.fake-adw-status-page > viewport > box > clamp > box > .icon:not(:last-child) { margin-bottom: 36px; }
+scrolledwindow.fake-adw-status-page > viewport > box > clamp > box > .title:not(:last-child) { margin-bottom: 12px; }
 
 statuspage.icon-dropshadow image.icon {
   /* This copies the style of .icon-dropshadow from Adwaita. */

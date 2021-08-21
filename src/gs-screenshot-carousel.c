@@ -26,8 +26,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 #include <locale.h>
 #include <math.h>
 #include <string.h>
@@ -178,7 +178,7 @@ gs_screenshot_carousel_get_has_screenshots (GsScreenshotCarousel *self)
 }
 
 static void
-_carousel_navigate (HdyCarousel *carousel, HdyNavigationDirection direction)
+_carousel_navigate (AdwCarousel *carousel, AdwNavigationDirection direction)
 {
 	g_autoptr (GList) children = NULL;
 	GtkWidget *child;
@@ -188,8 +188,8 @@ _carousel_navigate (HdyCarousel *carousel, HdyNavigationDirection direction)
 	children = gtk_container_get_children (GTK_CONTAINER (carousel));
 	n_children = g_list_length (children);
 
-	position = hdy_carousel_get_position (carousel);
-	position += (direction == HDY_NAVIGATION_DIRECTION_BACK) ? -1 : 1;
+	position = adw_carousel_get_position (carousel);
+	position += (direction == ADW_NAVIGATION_DIRECTION_BACK) ? -1 : 1;
 	/* Round the position to the closest integer in the valid range. */
 	position = round (position);
 	position = MIN (position, n_children - 1);
@@ -197,14 +197,14 @@ _carousel_navigate (HdyCarousel *carousel, HdyNavigationDirection direction)
 
 	child = g_list_nth_data (children, position);
 	if (child)
-		hdy_carousel_scroll_to (carousel, child);
+		adw_carousel_scroll_to (carousel, child);
 }
 
 static void
 gs_screenshot_carousel_update_buttons (GsScreenshotCarousel *self)
 {
-	gdouble position = hdy_carousel_get_position (HDY_CAROUSEL (self->carousel));
-	guint n_pages = hdy_carousel_get_n_pages (HDY_CAROUSEL (self->carousel));
+	gdouble position = adw_carousel_get_position (ADW_CAROUSEL (self->carousel));
+	guint n_pages = adw_carousel_get_n_pages (ADW_CAROUSEL (self->carousel));
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->button_previous_revealer), position >= 0.5);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->button_next_revealer), position < n_pages - 1.5);
 }
@@ -224,15 +224,15 @@ gs_screenshot_carousel_notify_position_cb (GsScreenshotCarousel *self)
 static void
 gs_screenshot_carousel_button_previous_clicked_cb (GsScreenshotCarousel *self)
 {
-	_carousel_navigate (HDY_CAROUSEL (self->carousel),
-			    HDY_NAVIGATION_DIRECTION_BACK);
+	_carousel_navigate (ADW_CAROUSEL (self->carousel),
+			    ADW_NAVIGATION_DIRECTION_BACK);
 }
 
 static void
 gs_screenshot_carousel_button_next_clicked_cb (GsScreenshotCarousel *self)
 {
-	_carousel_navigate (HDY_CAROUSEL (self->carousel),
-			    HDY_NAVIGATION_DIRECTION_FORWARD);
+	_carousel_navigate (ADW_CAROUSEL (self->carousel),
+			    ADW_NAVIGATION_DIRECTION_FORWARD);
 }
 
 static void
@@ -349,10 +349,10 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_next_image), GTK_TEXT_DIR_NONE, self);
 	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_previous_image), GTK_TEXT_DIR_NONE, self);
 
-#if HDY_CHECK_VERSION(1, 3, 0)
+#if ADW_CHECK_VERSION(1, 3, 0)
 	/* Disable scrolling through the carousel, as it’s typically used
 	 * in application pages which are themselves scrollable. */
-	hdy_carousel_set_allow_scroll_wheel (HDY_CAROUSEL (self->carousel), FALSE);
+	adw_carousel_set_allow_scroll_wheel (ADW_CAROUSEL (self->carousel), FALSE);
 #endif
 
 	/* setup networking */

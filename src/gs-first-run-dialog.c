@@ -14,17 +14,17 @@
 
 struct _GsFirstRunDialog
 {
-	HdyWindow	 parent_instance;
+	AdwWindow	 parent_instance;
 
 	GtkWidget	*button;
 };
 
-G_DEFINE_TYPE (GsFirstRunDialog, gs_first_run_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsFirstRunDialog, gs_first_run_dialog, ADW_TYPE_WINDOW)
 
 static gboolean
 key_press_event_cb (GtkWidget            *sender,
                     GdkEvent             *event,
-                    HdyPreferencesWindow *self)
+                    AdwPreferencesWindow *self)
 {
 	guint keyval;
 	GdkModifierType state;

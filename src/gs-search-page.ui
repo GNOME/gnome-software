@@ -11,7 +11,7 @@
       <object class="GtkStack" id="stack_search">
         <property name="visible">True</property>
         <child>
-          <object class="HdyStatusPage">
+          <object class="AdwStatusPage">
             <property name="visible">True</property>
             <property name="icon_name">org.gnome.Software-symbolic</property>
             <property name="title" translatable="yes">Search for Apps</property>
@@ -33,7 +33,7 @@
           </packing>
         </child>
         <child>
-          <object class="HdyStatusPage" id="noresults_grid_search">
+          <object class="AdwStatusPage" id="noresults_grid_search">
             <property name="visible">True</property>
             <property name="icon_name">org.gnome.Software-symbolic</property>
             <property name="title" translatable="yes">No Application Found</property>
@@ -53,7 +53,7 @@
               <class name="list-page"/>
             </style>
             <child>
-              <object class="HdyClamp">
+              <object class="AdwClamp">
                 <property name="visible">True</property>
                 <property name="maximum-size">860</property>
                 <!-- ~⅔ of the maximum size. -->

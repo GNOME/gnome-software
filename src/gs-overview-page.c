@@ -9,8 +9,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 #include <math.h>
 
 #include "gs-shell.h"

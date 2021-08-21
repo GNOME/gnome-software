@@ -20,7 +20,7 @@
 
 struct _GsUpdateDialog
 {
-	HdyWindow	 parent_instance;
+	AdwWindow	 parent_instance;
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
@@ -31,7 +31,7 @@ struct _GsUpdateDialog
 	GtkWidget	*stack;
 };
 
-G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_WINDOW)
 
 typedef enum {
 	PROP_PLUGIN_LOADER = 1,
@@ -44,14 +44,14 @@ static void gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog);
 static void gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app);
 
 static void
-deck_child_transition_cb (HdyDeck *deck, GParamSpec *pspec, GsUpdateDialog *dialog)
+deck_child_transition_cb (AdwDeck *deck, GParamSpec *pspec, GsUpdateDialog *dialog)
 {
 	GtkWidget *child;
 
-	if (hdy_deck_get_transition_running (deck))
+	if (adw_deck_get_transition_running (deck))
 		return;
 
-	while ((child = hdy_deck_get_adjacent_child (deck, HDY_NAVIGATION_DIRECTION_FORWARD)))
+	while ((child = adw_deck_get_adjacent_child (deck, ADW_NAVIGATION_DIRECTION_FORWARD)))
 		gtk_widget_destroy (child);
 }
 
@@ -169,7 +169,7 @@ unset_focus (GtkWidget *widget)
 static void
 back_clicked_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
-	hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
+	adw_deck_navigate (ADW_DECK (dialog->deck), ADW_NAVIGATION_DIRECTION_BACK);
 }
 
 static void
@@ -211,7 +211,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	gtk_widget_show (page);
 
 	gtk_container_add (GTK_CONTAINER (dialog->deck), page);
-	hdy_deck_set_visible_child (HDY_DECK (dialog->deck), page);
+	adw_deck_set_visible_child (ADW_DECK (dialog->deck), page);
 }
 
 static gboolean
@@ -237,7 +237,7 @@ key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
 	    event->keyval == GDK_KEY_Back) {
-		hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
+		adw_deck_navigate (ADW_DECK (dialog->deck), ADW_NAVIGATION_DIRECTION_BACK);
 		return GDK_EVENT_STOP;
 	}
 
@@ -251,7 +251,7 @@ button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
 	if (event->button != 8)
 		return GDK_EVENT_PROPAGATE;
 
-	hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
+	adw_deck_navigate (ADW_DECK (dialog->deck), ADW_NAVIGATION_DIRECTION_BACK);
 	return GDK_EVENT_STOP;
 }
 
@@ -307,12 +307,12 @@ gs_update_dialog_constructed (GObject *object)
 	if (dialog->app) {
 		GtkWidget *child;
 
-		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
+		child = adw_deck_get_visible_child (ADW_DECK (dialog->deck));
 		gtk_container_remove (GTK_CONTAINER (dialog->deck), child);
 
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 
-		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
+		child = adw_deck_get_visible_child (ADW_DECK (dialog->deck));
 		/* It can be either the app details page or the OS update page */
 		if (GS_IS_APP_DETAILS_PAGE (child))
 			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);

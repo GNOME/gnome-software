@@ -15,7 +15,7 @@
 
 struct _GsReposSection
 {
-	HdyPreferencesGroup	 parent_instance;
+	AdwPreferencesGroup	 parent_instance;
 	GtkWidget		*title;
 	GtkListBox		*list;
 	GsPluginLoader		*plugin_loader;
@@ -23,7 +23,7 @@ struct _GsReposSection
 	gboolean		 always_allow_enable_disable;
 };
 
-G_DEFINE_TYPE (GsReposSection, gs_repos_section, HDY_TYPE_PREFERENCES_GROUP)
+G_DEFINE_TYPE (GsReposSection, gs_repos_section, ADW_TYPE_PREFERENCES_GROUP)
 
 enum {
 	SIGNAL_REMOVE_CLICKED,

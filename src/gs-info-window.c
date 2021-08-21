@@ -25,7 +25,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
+#include <adwaita.h>
 #include <locale.h>
 
 #include "gs-common.h"
@@ -39,12 +39,12 @@ typedef struct
 } GsInfoWindowPrivate;
 
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsInfoWindow, gs_info_window, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE_WITH_PRIVATE (GsInfoWindow, gs_info_window, ADW_TYPE_WINDOW)
 
 static gboolean
 key_press_event_cb (GtkWidget            *sender,
                     GdkEvent             *event,
-                    HdyPreferencesWindow *self)
+                    AdwPreferencesWindow *self)
 {
 	guint keyval;
 	GdkModifierType state;

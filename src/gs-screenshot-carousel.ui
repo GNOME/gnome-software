@@ -16,7 +16,7 @@
           <object class="GtkOverlay">
             <property name="visible">True</property>
             <child>
-              <object class="HdyCarousel" id="carousel">
+              <object class="AdwCarousel" id="carousel">
                 <property name="visible">True</property>
                 <signal name="notify::n-pages" handler="gs_screenshot_carousel_notify_n_pages_cb" swapped="yes"/>
                 <signal name="notify::position" handler="gs_screenshot_carousel_notify_position_cb" swapped="yes"/>
@@ -107,7 +107,7 @@
           </object>
         </child>
         <child>
-          <object class="HdyCarouselIndicatorDots" id="carousel_indicator">
+          <object class="AdwCarouselIndicatorDots" id="carousel_indicator">
             <property name="carousel">carousel</property>
             <property name="visible">True</property>
           </object>

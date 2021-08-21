@@ -14,7 +14,7 @@
     </item>
   </menu>
 
-  <template class="GsShell" parent="HdyApplicationWindow">
+  <template class="GsShell" parent="AdwApplicationWindow">
     <property name="visible">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
@@ -139,11 +139,11 @@
               </object>
             </child>
             <child>
-              <object class="HdyDeck" id="details_deck">
+              <object class="AdwDeck" id="details_deck">
                 <property name="visible">True</property>
                 <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                 <child>
-                  <object class="HdyDeck" id="main_deck">
+                  <object class="AdwDeck" id="main_deck">
                     <property name="visible">True</property>
                     <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                     <child>
@@ -151,7 +151,7 @@
                         <property name="visible">True</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="HdyHeaderBar" id="main_header">
+                          <object class="AdwHeaderBar" id="main_header">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="hexpand">True</property>
@@ -210,7 +210,7 @@
                               </packing>
                             </child>
                             <child type="title">
-                              <object class="HdyViewSwitcherTitle" id="title_switcher">
+                              <object class="AdwViewSwitcherTitle" id="title_switcher">
                                 <property name="visible">True</property>
                                 <property name="stack">stack_main</property>
                                 <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
@@ -219,10 +219,10 @@
                           </object>
                         </child>
                         <child>
-                          <object class="HdySearchBar" id="search_bar">
+                          <object class="AdwSearchBar" id="search_bar">
                             <property name="visible">True</property>
                             <child>
-                              <object class="HdyClamp">
+                              <object class="AdwClamp">
                                 <property name="visible">True</property>
                                 <property name="hexpand">True</property>
                                 <property name="maximum_size">500</property>
@@ -343,7 +343,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="HdyViewSwitcherBar" id="sidebar_switcher">
+                          <object class="AdwViewSwitcherBar" id="sidebar_switcher">
                             <property name="visible">True</property>
                             <property name="reveal" bind-source="title_switcher" bind-property="title-visible" bind-flags="sync-create"/>
                             <property name="stack">stack_main</property>
@@ -359,7 +359,7 @@
                         <property name="visible">True</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="HdyHeaderBar" id="sub_header">
+                          <object class="AdwHeaderBar" id="sub_header">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="hexpand">True</property>
@@ -446,7 +446,7 @@
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="HdyHeaderBar" id="details_header">
+                      <object class="AdwHeaderBar" id="details_header">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="hexpand">True</property>
@@ -505,7 +505,7 @@
               </object>
             </child>
             <child>
-              <object class="HdyWindowHandle">
+              <object class="AdwWindowHandle">
                 <property name="visible">True</property>
                 <child>
                   <object class="GsLoadingPage" id="loading_page">

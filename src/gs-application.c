@@ -13,10 +13,10 @@
 #include "gs-application.h"
 
 #include <stdlib.h>
+#include <adwaita.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
-#include <handy.h>
 #include <libsoup/soup.h>
 
 #ifdef GDK_WINDOWING_X11
@@ -1030,7 +1030,7 @@ gs_application_startup (GApplication *application)
 	GsApplication *app = GS_APPLICATION (application);
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
-	hdy_init ();
+	adw_init ();
 
 	gs_application_add_wrapper_actions (application);
 

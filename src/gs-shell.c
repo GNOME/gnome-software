@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-#include <handy.h>
+#include <adwaita.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -61,7 +61,7 @@ typedef struct {
 
 struct _GsShell
 {
-	HdyApplicationWindow	 parent_object;
+	AdwApplicationWindow	 parent_object;
 
 	GSettings		*settings;
 	GCancellable		*cancellable;
@@ -72,8 +72,8 @@ struct _GsShell
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
-	HdyDeck			*main_deck;
-	HdyDeck			*details_deck;
+	AdwDeck			*main_deck;
+	AdwDeck			*details_deck;
 	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
 	GtkStack		*stack_sub;
@@ -112,7 +112,7 @@ struct _GsShell
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
-G_DEFINE_TYPE (GsShell, gs_shell, HDY_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE (GsShell, gs_shell, ADW_TYPE_APPLICATION_WINDOW)
 
 typedef enum {
 	PROP_IS_NARROW = 1,
@@ -179,7 +179,7 @@ gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_start (HDY_HEADER_BAR (shell->main_header), widget);
+		adw_header_bar_pack_start (ADW_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_start_widget = widget;
@@ -202,7 +202,7 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->main_header), widget);
+		adw_header_bar_pack_end (ADW_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_end_widget = widget;
@@ -225,7 +225,7 @@ gs_shell_set_details_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->details_header), widget);
+		adw_header_bar_pack_end (ADW_HEADER_BAR (shell->details_header), widget);
 	}
 
 	shell->details_header_end_widget = widget;
@@ -468,7 +468,7 @@ update_header_widgets (GsShell *shell)
 	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
-	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
+	adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
 	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
@@ -597,15 +597,15 @@ gs_shell_change_mode (GsShell *shell,
 
 	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
 	if (mode == GS_SHELL_MODE_DETAILS) {
-		hdy_deck_set_visible_child_name (shell->details_deck, "details");
+		adw_deck_set_visible_child_name (shell->details_deck, "details");
 	} else {
-		hdy_deck_set_visible_child_name (shell->details_deck, "main");
+		adw_deck_set_visible_child_name (shell->details_deck, "main");
 		/* We only change the main deck when not reaching the details
 		 * page to preserve the navigation history in the UI's state.
 		 * First change the page, then the deck, to avoid load of
 		 * the previously shown page, which will be changed shortly after. */
 		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
-		hdy_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
+		adw_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
 	}
 
 	/* do any mode-specific actions */
@@ -648,7 +648,7 @@ overlay_get_child_position_cb (GtkOverlay   *overlay,
 	 * to position it below the header bar. The overlay can’t easily be
 	 * moved in the widget hierarchy so it doesn’t have the header bar as
 	 * a child, since there are several header bars in different pages of
-	 * a HdyDeck. */
+	 * a AdwDeck. */
 	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
 
 	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
@@ -912,10 +912,10 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 		GdkEventKey *e = (GdkEventKey *) event;
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
-			if (!hdy_search_bar_get_search_mode (HDY_SEARCH_BAR (shell->search_bar))) {
+			if (!adw_search_bar_get_search_mode (ADW_SEARCH_BAR (shell->search_bar))) {
 				GsShellMode mode = gs_shell_get_mode (shell);
 
-				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), TRUE);
+				adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), TRUE);
 				gtk_widget_grab_focus (shell->entry_search);
 
 				/* If the mode doesn't have a search button,
@@ -932,14 +932,14 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 					break;
 				}
 			} else {
-				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), FALSE);
+				adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), FALSE);
 			}
 			return GDK_EVENT_STOP;
 		}
 	}
 
 	/* pass to search bar */
-	return hdy_search_bar_handle_event (HDY_SEARCH_BAR (shell->search_bar), event);
+	return adw_search_bar_handle_event (ADW_SEARCH_BAR (shell->search_bar), event);
 }
 
 static void
@@ -2269,10 +2269,10 @@ gs_shell_get_mode (GsShell *shell)
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
-	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->details_deck), "details") == 0)
+	if (g_strcmp0 (adw_deck_get_visible_child_name (shell->details_deck), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
-	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->main_deck), "main") == 0)
+	if (g_strcmp0 (adw_deck_get_visible_child_name (shell->main_deck), "main") == 0)
 		name = gtk_stack_get_visible_child_name (shell->stack_main);
 	else
 		name = gtk_stack_get_visible_child_name (shell->stack_sub);
@@ -2627,7 +2627,7 @@ gs_shell_init (GsShell *shell)
 {
 	gtk_widget_init_template (GTK_WIDGET (shell));
 
-	hdy_search_bar_connect_entry (HDY_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
+	adw_search_bar_connect_entry (ADW_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
 	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);

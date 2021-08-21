@@ -29,11 +29,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 #include <locale.h>
 
 #include "gs-app.h"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsUpdateDialog" parent="HdyWindow">
+  <template class="GsUpdateDialog" parent="AdwWindow">
     <property name="modal">True</property>
     <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
@@ -13,7 +13,7 @@
     <property name="default-height">576</property>
 
     <child>
-      <object class="HdyDeck" id="deck">
+      <object class="AdwDeck" id="deck">
         <property name="visible">True</property>
         <property name="can_swipe_back">True</property>
         <!-- We need both signals to support the animations being disabled, as
@@ -25,7 +25,7 @@
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="HdyHeaderBar">
+              <object class="AdwHeaderBar">
                 <property name="show_close_button">True</property>
                 <property name="visible">True</property>
                 <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
@@ -64,7 +64,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="HdyStatusPage">
+                  <object class="AdwStatusPage">
                     <property name="visible">True</property>
                     <property name="icon_name">org.gnome.Software-symbolic</property>
                     <property name="title" translatable="yes">No updates have been installed on this system.</property>
@@ -74,10 +74,10 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="HdyPreferencesPage">
+                  <object class="AdwPreferencesPage">
                     <property name="visible">True</property>
                     <child>
-                      <object class="HdyPreferencesGroup">
+                      <object class="AdwPreferencesGroup">
                         <property name="visible">True</property>
                         <child>
                           <object class="GsUpdateList" id="list_box_installed_updates">

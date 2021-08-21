@@ -66,11 +66,11 @@
           <object class="GtkStack" id="stack_updates">
             <property name="visible">True</property>
             <child>
-              <object class="HdyClamp">
+              <object class="AdwClamp">
                 <property name="visible">True</property>
                 <property name="valign">center</property>
-                <!-- We explicitly want to use the default HdyClamp sizes here,
-                     as does HdyStatusPage. -->
+                <!-- We explicitly want to use the default AdwClamp sizes here,
+                     as does AdwStatusPage. -->
                 <style>
                   <class name="status-page"/>
                 </style>
@@ -132,7 +132,7 @@
                   <class name="list-page"/>
                 </style>
                 <child>
-                  <object class="HdyClamp">
+                  <object class="AdwClamp">
                     <property name="visible">True</property>
                     <property name="maximum-size">600</property>
                     <property name="tightening-threshold">400</property>
@@ -180,7 +180,7 @@
                 </child>
                 <child>
 
-                  <!-- FIXME: This should be a HdyStatusPage but it doesn’t
+                  <!-- FIXME: This should be a AdwStatusPage but it doesn’t
                        currently support non-icon images
                        See https://gitlab.gnome.org/GNOME/libhandy/-/issues/448 -->
                   <object class="GtkScrolledWindow">
@@ -188,7 +188,7 @@
                     <property name="hscrollbar-policy">never</property>
                     <property name="propagate-natural-height">True</property>
                     <style>
-                      <class name="fake-hdy-status-page"/>
+                      <class name="fake-adw-status-page"/>
                     </style>
                     <child>
                       <object class="GtkBox">
@@ -196,7 +196,7 @@
                         <property name="orientation">vertical</property>
                         <property name="valign">center</property>
                         <child>
-                          <object class="HdyClamp">
+                          <object class="AdwClamp">
                             <property name="visible">True</property>
                             <child>
                               <object class="GtkBox">
@@ -257,7 +257,7 @@
               </packing>
             </child>
             <child>
-              <object class="HdyStatusPage">
+              <object class="AdwStatusPage">
                 <property name="visible">True</property>
                 <property name="icon_name">dialog-warning-symbolic</property>
                 <property name="title" translatable="yes">Use Mobile Data?</property>
@@ -276,7 +276,7 @@
               </packing>
             </child>
             <child>
-              <object class="HdyStatusPage">
+              <object class="AdwStatusPage">
                 <property name="visible">True</property>
                 <property name="icon_name">network-offline-symbolic</property>
                 <property name="title" translatable="yes">No Connection</property>
@@ -295,7 +295,7 @@
               </packing>
             </child>
             <child>
-              <object class="HdyStatusPage" id="updates_failed_page">
+              <object class="AdwStatusPage" id="updates_failed_page">
                 <property name="visible">True</property>
                 <property name="icon_name">action-unavailable-symbolic</property>
                 <property name="title" translatable="No">Error</property>
@@ -306,7 +306,7 @@
               </packing>
             </child>
             <child>
-              <object class="HdyStatusPage">
+              <object class="AdwStatusPage">
                 <property name="visible">True</property>
                 <property name="icon_name">action-unavailable-symbolic</property>
                 <property name="title" translatable="yes">Error</property>

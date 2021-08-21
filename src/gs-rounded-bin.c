@@ -28,7 +28,7 @@
  * ]|
  *
  * Adapted from
- *  * https://gitlab.gnome.org/GNOME/libhandy/-/blob/1.0.0/src/hdy-window-mixin.c
+ *  * https://gitlab.gnome.org/GNOME/libhandy/-/blob/1.0.0/src/adw-window-mixin.c
  *  * https://gitlab.gnome.org/GNOME/fractal/-/blob/c69aacc4/fractal-gtk/src/widgets/clip_container.rs
  *
  * Since: 40

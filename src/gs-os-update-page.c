@@ -20,8 +20,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 
 #include "gs-os-update-page.h"
 #include "gs-common.h"
@@ -404,9 +404,9 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 	}
 
 	if (app) {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
 					  gs_app_get_name (app));
-		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (page->group),
+		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group),
 						       gs_app_get_description (app));
 
 		/* add new apps */
@@ -422,8 +422,8 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 			gtk_list_box_insert (GTK_LIST_BOX (page->list_boxes[section]), row, -1);
 		}
 	} else {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar), NULL);
-		hdy_preferences_group_set_description (HDY_PREFERENCES_GROUP (page->group), NULL);
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar), NULL);
+		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group), NULL);
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APP]);

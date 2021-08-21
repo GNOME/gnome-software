@@ -103,11 +103,11 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
 	GtkStack		*links_stack;
-	HdyActionRow		*project_website_row;
-	HdyActionRow		*donate_row;
-	HdyActionRow		*translate_row;
-	HdyActionRow		*report_an_issue_row;
-	HdyActionRow		*help_row;
+	AdwActionRow		*project_website_row;
+	AdwActionRow		*donate_row;
+	AdwActionRow		*translate_row;
+	AdwActionRow		*report_an_issue_row;
+	AdwActionRow		*help_row;
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
@@ -514,9 +514,9 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
 }
 
 static void
-gs_details_page_link_row_activated_cb (HdyActionRow *row, GsDetailsPage *self)
+gs_details_page_link_row_activated_cb (AdwActionRow *row, GsDetailsPage *self)
 {
-	gs_shell_show_uri (self->shell, hdy_action_row_get_subtitle (row));
+	gs_shell_show_uri (self->shell, adw_action_row_get_subtitle (row));
 }
 
 static void
@@ -953,13 +953,13 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 }
 
 static gboolean
-update_action_row_from_link (HdyActionRow *row,
+update_action_row_from_link (AdwActionRow *row,
                              GsApp        *app,
                              AsUrlKind     url_kind)
 {
 	const gchar *url = gs_app_get_url (app, url_kind);
 	if (url != NULL)
-		hdy_action_row_set_subtitle (row, url);
+		adw_action_row_set_subtitle (row, url);
 	gtk_widget_set_visible (GTK_WIDGET (row), url != NULL);
 
 	return (url != NULL);

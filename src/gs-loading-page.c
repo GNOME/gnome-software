@@ -67,7 +67,7 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* update title */
-	hdy_status_page_set_title (HDY_STATUS_PAGE (priv->status_page), str);
+	adw_status_page_set_title (ADW_STATUS_PAGE (priv->status_page), str);
 
 	/* update progresbar */
 	if (app != NULL) {

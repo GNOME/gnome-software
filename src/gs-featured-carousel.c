@@ -24,11 +24,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 
 #include "gs-app-list.h"
 #include "gs-common.h"
@@ -44,7 +44,7 @@ struct _GsFeaturedCarousel
 	GsAppList	*apps;  /* (nullable) (owned) */
 	guint		 rotation_timer_id;
 
-	HdyCarousel	*carousel;
+	AdwCarousel	*carousel;
 	GtkButton	*next_button;
 	GtkImage	*next_button_image;
 	GtkButton	*previous_button;
@@ -70,17 +70,17 @@ static void
 show_relative_page (GsFeaturedCarousel *self,
                     gint                delta)
 {
-	gdouble current_page = hdy_carousel_get_position (self->carousel);
-	guint n_pages = hdy_carousel_get_n_pages (self->carousel);
+	gdouble current_page = adw_carousel_get_position (self->carousel);
+	guint n_pages = adw_carousel_get_n_pages (self->carousel);
 	gdouble new_page;
 	g_autoptr(GList) children = gtk_container_get_children (GTK_CONTAINER (self->carousel));
 	GtkWidget *new_page_widget;
-	gint64 animation_duration_ms = hdy_carousel_get_animation_duration (self->carousel);
+	gint64 animation_duration_ms = adw_carousel_get_animation_duration (self->carousel);
 
 	if (n_pages == 0)
 		return;
 
-	/* FIXME: This would be simpler if HdyCarousel had a way to scroll to
+	/* FIXME: This would be simpler if AdwCarousel had a way to scroll to
 	 * a page by index, rather than by GtkWidget pointer.
 	 * See https://gitlab.gnome.org/GNOME/libhandy/-/issues/413 */
 	new_page = ((guint) current_page + delta + n_pages) % n_pages;
@@ -93,7 +93,7 @@ show_relative_page (GsFeaturedCarousel *self,
 	if ((new_page == 0.0 && delta > 0) || (new_page == n_pages - 1 && delta < 0))
 		animation_duration_ms = 0;
 
-	hdy_carousel_scroll_to_full (self->carousel, new_page_widget, animation_duration_ms);
+	adw_carousel_scroll_to_full (self->carousel, new_page_widget, animation_duration_ms);
 }
 
 static gboolean
@@ -280,7 +280,7 @@ carousel_clicked_cb (GsFeaturedCarousel *carousel,
 	g_autoptr(GList) children = NULL;
 
 	/* Get the currently visible tile. */
-	current_page = hdy_carousel_get_position (self->carousel);
+	current_page = adw_carousel_get_position (self->carousel);
 	children = gtk_container_get_children (GTK_CONTAINER (self->carousel));
 
 	current_tile = g_list_nth_data (children, current_page);

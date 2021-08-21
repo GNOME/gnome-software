@@ -20,8 +20,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 
 #include "gs-app-details-page.h"
 #include "gs-app-row.h"
@@ -145,7 +145,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	kind = gs_app_get_kind (app);
 	if (kind == AS_COMPONENT_KIND_GENERIC &&
 	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
 					  gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL &&
 		   gs_app_get_update_version (app) != NULL) {
@@ -159,12 +159,12 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		tmp = g_strdup_printf (_("%s %s"),
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar), tmp);
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar), tmp);
 	} else if (gs_app_get_source_default (app) != NULL) {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
 					  gs_app_get_source_default (app));
 	} else {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
+		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
 					  gs_app_get_update_version (app));
 	}
 
