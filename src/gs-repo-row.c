@@ -44,6 +44,7 @@ static void
 refresh_ui (GsRepoRow *row)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+	GtkListBox *listbox;
 	gboolean active = FALSE;
 	gboolean state_sensitive = FALSE;
 	gboolean busy = priv->busy_counter> 0;
@@ -77,7 +78,9 @@ refresh_ui (GsRepoRow *row)
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
 		g_signal_handler_unblock (priv->disable_switch, priv->switch_handler_id);
-		gtk_widget_destroy (GTK_WIDGET (row));
+		listbox = GTK_LIST_BOX (gtk_widget_get_parent (GTK_WIDGET (row)));
+		g_assert (listbox != NULL);
+		gtk_list_box_remove (listbox, GTK_WIDGET (row));
 		return;
 	default:
 		state_sensitive = TRUE;

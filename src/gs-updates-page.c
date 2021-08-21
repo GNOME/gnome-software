@@ -1402,7 +1402,7 @@ gs_updates_page_dispose (GObject *object)
 
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		if (self->sections[i] != NULL) {
-			gtk_widget_destroy (GTK_WIDGET (self->sections[i]));
+			gtk_widget_unparent (GTK_WIDGET (self->sections[i]));
 			self->sections[i] = NULL;
 		}
 	}

@@ -52,7 +52,7 @@ deck_child_transition_cb (AdwDeck *deck, GParamSpec *pspec, GsUpdateDialog *dial
 		return;
 
 	while ((child = adw_deck_get_adjacent_child (deck, ADW_NAVIGATION_DIRECTION_FORWARD)))
-		gtk_widget_destroy (child);
+		adw_deck_remove (deck, child);
 }
 
 static void
