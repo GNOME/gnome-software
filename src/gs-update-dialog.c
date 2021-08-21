@@ -308,7 +308,7 @@ gs_update_dialog_constructed (GObject *object)
 		GtkWidget *child;
 
 		child = adw_deck_get_visible_child (ADW_DECK (dialog->deck));
-		gtk_container_remove (GTK_CONTAINER (dialog->deck), child);
+		adw_deck_remove (ADW_DECK (dialog->deck), child);
 
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 

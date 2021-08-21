@@ -115,7 +115,7 @@ row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 	list = gtk_widget_get_parent (GTK_WIDGET (row));
 	if (list == NULL)
 		return;
-	gtk_container_remove (GTK_CONTAINER (list), GTK_WIDGET (row));
+	gtk_list_box_remove (GTK_LIST_BOX (list), GTK_WIDGET (row));
 }
 
 static void

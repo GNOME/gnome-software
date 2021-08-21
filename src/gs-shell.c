@@ -185,7 +185,7 @@ gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 	shell->header_start_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -208,7 +208,7 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 	shell->header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -231,7 +231,7 @@ gs_shell_set_details_header_end_widget (GsShell *shell, GtkWidget *widget)
 	shell->details_header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->details_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->details_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
