@@ -298,24 +298,6 @@ back_clicked_cb (GtkWidget *widget, GsAppDetailsPage *page)
 }
 
 static void
-scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
-{
-	GtkWidget *frame;
-
-	frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
-
-	if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-	} else {
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
-	}
-}
-
-static void
 gs_app_details_page_dispose (GObject *object)
 {
 	GsAppDetailsPage *page = GS_APP_DETAILS_PAGE (object);
@@ -364,14 +346,7 @@ gs_app_details_page_set_property (GObject *object, guint prop_id, const GValue *
 static void
 gs_app_details_page_init (GsAppDetailsPage *page)
 {
-	GtkWidget *scrollbar;
-
 	gtk_widget_init_template (GTK_WIDGET (page));
-
-	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (page->scrolledwindow_details));
-	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), page->scrolledwindow_details);
-	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), page->scrolledwindow_details);
-
 }
 
 static void
