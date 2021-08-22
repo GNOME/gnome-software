@@ -693,7 +693,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		icon_name = "desktop-symbolic";
 		/* Translators: It’s unknown whether this app is supported on
 		 * the current hardware. The placeholder is the app name. */
-		title = g_strdup_printf (("%s probably works on this device"), gs_app_get_name (self->app));
+		title = g_strdup_printf (_("%s probably works on this device"), gs_app_get_name (self->app));
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
