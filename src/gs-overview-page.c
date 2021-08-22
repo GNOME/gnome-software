@@ -585,7 +585,6 @@ gs_overview_page_setup (GsPage *page,
                         GError **error)
 {
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
-	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
 	g_autofree gchar *text = NULL;
@@ -621,9 +620,6 @@ gs_overview_page_setup (GsPage *page,
 
 	/* avoid a ref cycle */
 	self->shell = shell;
-
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_overview), adj);
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);

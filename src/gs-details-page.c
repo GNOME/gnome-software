@@ -2063,7 +2063,6 @@ gs_details_page_setup (GsPage *page,
                        GError **error)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	GtkAdjustment *adj;
 
 	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), FALSE);
 
@@ -2080,9 +2079,6 @@ gs_details_page_setup (GsPage *page,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->origin_popover_list_box),
 	                            origin_popover_list_sort_func,
 	                            NULL, NULL);
-
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);
 	return TRUE;
 }
 

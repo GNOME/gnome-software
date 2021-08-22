@@ -2160,6 +2160,7 @@ updates_page_notify_counter_cb (GObject    *obj,
 {
 	GsPage *page = GS_PAGE (obj);
 	GsShell *shell = GS_SHELL (user_data);
+	GtkStackPage *stack_page;
 	gboolean needs_attention;
 
 	/* Update the needs-attention child property of the page in the
@@ -2169,9 +2170,8 @@ updates_page_notify_counter_cb (GObject    *obj,
 	 * property and a child property. */
 	needs_attention = (gs_page_get_counter (page) > 0);
 
-	gtk_container_child_set (GTK_CONTAINER (shell->stack_main), GTK_WIDGET (page),
-				 "needs-attention", needs_attention,
-				 NULL);
+	stack_page = gtk_stack_get_page (shell->stack_main, GTK_WIDGET (page));
+	gtk_stack_page_set_needs_attention (stack_page, needs_attention);
 }
 
 static void

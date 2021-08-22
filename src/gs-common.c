@@ -453,13 +453,6 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-static void
-do_not_expand (GtkWidget *child, gpointer data)
-{
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
-				 child, "expand", FALSE, "fill", FALSE, NULL);
-}
-
 static gboolean
 unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -479,7 +472,7 @@ static void
 insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 {
 	GtkWidget *message_area, *sw, *label;
-	GtkWidget *box, *tv;
+	GtkWidget *tv;
 	GtkWidget *child;
 	GtkTextBuffer *buffer;
 	g_autoptr(GString) msg = NULL;
@@ -499,12 +492,6 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 
 	message_area = gtk_message_dialog_get_message_area (dialog);
 	g_assert (GTK_IS_BOX (message_area));
-	/* make the hbox expand */
-	box = gtk_widget_get_parent (message_area);
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
-				 "expand", TRUE, "fill", TRUE, NULL);
-	/* make the labels not expand */
-	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
 
 	/* Find the secondary label and set its width_chars.   */
 	/* Otherwise the label will tend to expand vertically. */

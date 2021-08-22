@@ -212,12 +212,6 @@ gs_rounded_bin_draw (GtkWidget *widget,
 		gtk_render_frame (ctx, surface_ctx, xy, xy, w, h);
 	}
 
-	if (gtk_bin_get_child (GTK_BIN (widget)) != NULL) {
-		gtk_container_propagate_draw (GTK_CONTAINER (widget),
-					      gtk_bin_get_child (GTK_BIN (widget)),
-					      surface_ctx);
-	}
-
 	cairo_set_source_surface (cr, surface, 0.0, 0.0);
 	cairo_rectangle (cr, xy + r, xy, w - r * 2.0, r);
 	cairo_rectangle (cr, xy + r, xy + h - r, w - r * 2.0, r);

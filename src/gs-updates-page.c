@@ -1299,12 +1299,8 @@ gs_updates_page_setup (GsPage *page,
 	adw_squeezer_add (ADW_SQUEEZER (self->header_checking_label), widget);
 
 	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_checking_label);
-	gtk_container_child_set(GTK_CONTAINER (self->header_start_box), self->header_checking_label,
-				"pack-type", GTK_PACK_END, NULL);
 	self->header_spinner_start = gtk_spinner_new ();
 	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_spinner_start);
-	gtk_container_child_set (GTK_CONTAINER (self->header_start_box), self->header_spinner_start,
-				 "pack-type", GTK_PACK_END, NULL);
 
 	/* setup update details window */
 	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
