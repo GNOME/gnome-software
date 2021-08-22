@@ -141,7 +141,7 @@ image_set_icon_for_direction (GtkImage    *image,
                               const gchar *rtl_icon_name)
 {
 	const gchar *icon_name = (gtk_widget_get_direction (GTK_WIDGET (image)) == GTK_TEXT_DIR_RTL) ? rtl_icon_name : ltr_icon_name;
-	gtk_image_set_from_icon_name (image, icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (image, icon_name);
 }
 
 static void

@@ -100,9 +100,7 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 	gtk_label_set_label (GTK_LABEL (tile->label),
 			     gs_category_get_name (tile->category));
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				      icon_name,
-				      GTK_ICON_SIZE_DND);
+	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image), icon_name);
 	gtk_widget_set_visible (tile->image, icon_name != NULL);
 
 	/* Update the icon class. */

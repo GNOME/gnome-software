@@ -99,7 +99,7 @@ populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissio
 			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
 		}
 
-		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
+		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
 		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
 			gtk_widget_set_opacity (image, 0);
 
@@ -197,8 +197,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	}
 
 	gtk_image_set_pixel_size (GTK_IMAGE (page->image_icon), icon_size);
-	gtk_image_set_from_gicon (GTK_IMAGE (page->image_icon), icon,
-				  GTK_ICON_SIZE_INVALID);
+	gtk_image_set_from_gicon (GTK_IMAGE (page->image_icon), icon);
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		gtk_widget_show (page->permissions_section_box);

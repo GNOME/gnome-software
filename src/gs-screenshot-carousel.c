@@ -259,7 +259,7 @@ gs_screenshot_carousel_navigate_button_direction_changed_cb (GtkWidget        *w
 	}
 
 	icon_name = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL) ? rtl_icon_name : ltr_icon_name;
-	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name, GTK_ICON_SIZE_MENU);
+	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name);
 }
 
 static void

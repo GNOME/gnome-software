@@ -123,7 +123,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenge_images); i++)
-		gtk_image_set_from_icon_name (self->lozenge_images[i], lozenge_icon_names[i], GTK_ICON_SIZE_BUTTON);
+		gtk_image_set_from_icon_name (self->lozenge_images[i], lozenge_icon_names[i]);
 
 	gtk_label_set_label (self->title_label, title);
 	gtk_label_set_label (self->description_label, description);

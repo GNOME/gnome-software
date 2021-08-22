@@ -1028,8 +1028,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		}
 	}
 
-	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon,
-				  GTK_ICON_SIZE_INVALID);
+	gtk_image_set_from_gicon (GTK_IMAGE (self->application_details_icon), icon);
 
 	/* Set various external links. If none are visible, show a fallback
 	 * message instead. */

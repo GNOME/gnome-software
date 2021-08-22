@@ -62,7 +62,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
 					 gtk_widget_get_scale_factor (tile->image),
 					 "system-component-application");
-	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_DIALOG);
+	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

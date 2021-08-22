@@ -420,7 +420,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 					 gtk_image_get_pixel_size (GTK_IMAGE (priv->image)),
 					 gtk_widget_get_scale_factor (priv->image),
 					 "system-component-application");
-	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon, GTK_ICON_SIZE_DIALOG);
+	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon);
 
 	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)

@@ -454,7 +454,7 @@ update_safety_tile (GsAppContextBar *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[SAFETY_TILE].lozenge_content), icon_name, GTK_ICON_SIZE_BUTTON);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[SAFETY_TILE].lozenge_content), icon_name);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].title, title);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].description, description);
 
@@ -626,7 +626,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 	/* Update the UI. The `adaptive-symbolic` icon needs a special size to
 	 * be set, as it is wider than it is tall. Setting the size ensures it’s
 	 * rendered at the right height. */
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name, GTK_ICON_SIZE_BUTTON);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name);
 	gtk_image_set_pixel_size (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
 
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);

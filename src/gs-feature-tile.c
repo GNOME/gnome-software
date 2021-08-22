@@ -214,7 +214,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	}
 
 	if (icon != NULL) {
-		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_INVALID);
+		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 		gtk_image_set_pixel_size (GTK_IMAGE (tile->image), icon_size);
 		gtk_widget_show (tile->image);
 	} else {

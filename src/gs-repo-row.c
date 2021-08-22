@@ -304,7 +304,7 @@ gs_repo_row_init (GsRepoRow *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 	priv->switch_handler_id = g_signal_connect (priv->disable_switch, "notify::active",
 						    G_CALLBACK (disable_switch_clicked_cb), self);
-	image = gtk_image_new_from_icon_name ("user-trash-symbolic", GTK_ICON_SIZE_BUTTON);
+	image = gtk_image_new_from_icon_name ("user-trash-symbolic");
 	gtk_button_set_image (GTK_BUTTON (priv->remove_button), image);
 	g_signal_connect (priv->remove_button, "clicked",
 		G_CALLBACK (gs_repo_row_remove_button_clicked_cb), self);
