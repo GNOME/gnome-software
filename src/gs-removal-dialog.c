@@ -75,20 +75,20 @@ add_app (GtkListBox *listbox, GsApp *app)
 static void
 insert_details_widget (GtkMessageDialog *dialog, GtkWidget *widget)
 {
-	GList *children, *l;
-	GtkWidget *message_area;
+	GtkWidget *message_area, *child;
 
 	message_area = gtk_message_dialog_get_message_area (dialog);
 	g_assert (GTK_IS_BOX (message_area));
 
 	/* find all label children and set the width chars properties */
-	children = gtk_container_get_children (GTK_CONTAINER (message_area));
-	for (l = children; l != NULL; l = l->next) {
-		if (!GTK_IS_LABEL (l->data))
+	for (child = gtk_widget_get_first_child (message_area);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		if (!GTK_IS_LABEL (child))
 			continue;
 
-		gtk_label_set_width_chars (GTK_LABEL (l->data), 40);
-		gtk_label_set_max_width_chars (GTK_LABEL (l->data), 40);
+		gtk_label_set_width_chars (GTK_LABEL (child), 40);
+		gtk_label_set_max_width_chars (GTK_LABEL (child), 40);
 	}
 
 	gtk_box_append (GTK_BOX (message_area), widget);

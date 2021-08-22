@@ -292,18 +292,17 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 static void
 gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchData *search_data)
 {
-	GtkWidget *app_row;
-	g_autoptr(GList) existing_apps = NULL;
+	GtkWidget *app_row, *child;
 
 	/* Don't add same app twice */
-	existing_apps = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
-	for (GList *l = existing_apps; l != NULL; l = l->next) {
+	for (child = gtk_widget_get_first_child (self->list_box_results);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
 		GsApp *existing_app;
 
-		existing_app = gs_app_row_get_app (GS_APP_ROW (l->data));
+		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (app == existing_app)
-			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results),
-					     GTK_WIDGET (l->data));
+			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
 	}
 
 	app_row = gs_app_row_new (app);
@@ -452,22 +451,20 @@ static gchar *
 build_no_results_label (GsExtrasPage *self)
 {
 	GsApp *app = NULL;
-	guint num;
+	guint num = 0;
 	g_autofree gchar *codec_titles = NULL;
 	g_autofree gchar *url = NULL;
-	g_autoptr(GList) list = NULL;
 	g_autoptr(GPtrArray) array = NULL;
-
-	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
-	num = g_list_length (list);
-
-	g_assert (num > 0);
+	GtkWidget *child;
 
 	array = g_ptr_array_new ();
-	for (GList *l = list; l != NULL; l = l->next) {
-		app = gs_app_row_get_app (GS_APP_ROW (l->data));
+	for (child = gtk_widget_get_first_child (self->list_box_results);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		app = gs_app_row_get_app (GS_APP_ROW (child));
 		g_ptr_array_add (array,
-		                 g_object_get_data (G_OBJECT (l->data), "missing-title"));
+		                 g_object_get_data (G_OBJECT (child), "missing-title"));
+		num++;
 	}
 	g_ptr_array_add (array, NULL);
 
@@ -499,21 +496,22 @@ build_no_results_label (GsExtrasPage *self)
 static void
 show_search_results (GsExtrasPage *self)
 {
+	GtkWidget *first_child, *child;
 	GsApp *app;
 	guint n_children;
 	guint n_missing;
-	g_autoptr(GList) list = NULL;
-
-	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
-	n_children = g_list_length (list);
 
 	/* count the number of rows with missing codecs */
-	n_missing = 0;
-	for (GList *l = list; l != NULL; l = l->next) {
-		app = gs_app_row_get_app (GS_APP_ROW (l->data));
+	n_children = n_missing = 0;
+	first_child = gtk_widget_get_first_child (self->list_box_results);
+	for (child = first_child;
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (g_strcmp0 (gs_app_get_id (app), "missing-codec") == 0) {
 			n_missing++;
 		}
+		n_children++;
 	}
 
 	if (n_children == 0 || n_children == n_missing) {
@@ -527,8 +525,8 @@ show_search_results (GsExtrasPage *self)
 	} else if (n_children == 1) {
 		/* switch directly to details view */
 		g_debug ("extras: found one result, showing in details view");
-		g_assert (list != NULL);
-		app = gs_app_row_get_app (GS_APP_ROW (list->data));
+		g_assert (first_child != NULL);
+		app = gs_app_row_get_app (GS_APP_ROW (first_child));
 		gs_shell_show_app (self->shell, app);
 		if (gs_app_is_installed (app))
 			gs_extras_page_maybe_emit_installed_resources_done (self);

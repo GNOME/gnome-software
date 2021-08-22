@@ -139,11 +139,10 @@ gs_installed_page_app_removed (GsPage *page, GsApp *app)
 	};
 
 	for (gsize i = 0; lists[i]; i++) {
-		g_autoptr(GList) children = NULL;
-
-		children = gtk_container_get_children (GTK_CONTAINER (lists[i]));
-		for (GList *l = children; l; l = l->next) {
-			GsAppRow *app_row = GS_APP_ROW (l->data);
+		for (GtkWidget *child = gtk_widget_get_first_child (lists[i]);
+		     child != NULL;
+		     child = gtk_widget_get_next_sibling (child)) {
+			GsAppRow *app_row = GS_APP_ROW (child);
 			if (gs_app_row_get_app (app_row) == app) {
 				gs_installed_page_unreveal_row (app_row);
 			}
@@ -490,11 +489,10 @@ gs_installed_page_has_app (GsInstalledPage *self,
 	};
 
 	for (gsize i = 0; lists[i]; i++) {
-		g_autoptr(GList) children = NULL;
-
-		children = gtk_container_get_children (GTK_CONTAINER (lists[i]));
-		for (GList *l = children; l; l = l->next) {
-			GsAppRow *app_row = GS_APP_ROW (l->data);
+		for (GtkWidget *child = gtk_widget_get_first_child (lists[i]);
+		     child != NULL;
+		     child = gtk_widget_get_next_sibling (child)) {
+			GsAppRow *app_row = GS_APP_ROW (child);
 			if (gs_app_row_get_app (app_row) == app)
 				return TRUE;
 		}
@@ -643,10 +641,7 @@ update_group_visibility_cb (GtkWidget *group,
 			    GtkWidget *widget,
 			    GtkWidget *list_box)
 {
-	g_autoptr(GList) children = NULL;
-
-	children = gtk_container_get_children (GTK_CONTAINER (list_box));
-	gtk_widget_set_visible (group, children != NULL);
+	gtk_widget_set_visible (group, gtk_widget_get_first_child (list_box) != NULL);
 }
 
 static void

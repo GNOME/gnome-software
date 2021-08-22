@@ -85,8 +85,8 @@ static gboolean
 show_tile_for_non_applications (GsAppContextBar      *self,
                                 GsAppContextTileType  tile_type)
 {
+	GtkWidget *sibling;
 	GtkBox *parent_box;
-	g_autoptr(GList) siblings = NULL;
 	gboolean any_siblings_visible;
 	AsComponentKind app_kind = gs_app_get_kind (self->app);
 	gboolean is_application = (app_kind == AS_COMPONENT_KIND_DESKTOP_APP ||
@@ -98,10 +98,11 @@ show_tile_for_non_applications (GsAppContextBar      *self,
 	parent_box = GTK_BOX (gtk_widget_get_parent (self->tiles[tile_type].tile));
 	g_assert (GTK_IS_BOX (parent_box));
 
-	siblings = gtk_container_get_children (GTK_CONTAINER (parent_box));
 	any_siblings_visible = FALSE;
-	for (GList *l = siblings; l != NULL; l = l->next) {
-		GtkWidget *sibling = GTK_WIDGET (l->data);
+
+	for (sibling = gtk_widget_get_first_child (GTK_WIDGET (parent_box));
+	     sibling != NULL;
+	     sibling = gtk_widget_get_next_sibling (sibling)) {
 		g_assert (GTK_IS_BUTTON (sibling));
 		any_siblings_visible |= gtk_widget_get_visible (sibling);
 	}

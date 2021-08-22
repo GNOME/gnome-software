@@ -163,12 +163,9 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 void
 gs_updates_section_remove_all (GsUpdatesSection *self)
 {
-	g_autoptr(GList) children = NULL;
-	children = gtk_container_get_children (GTK_CONTAINER (self));
-	for (GList *l = children; l != NULL; l = l->next) {
-		GtkWidget *w = GTK_WIDGET (l->data);
-		gtk_list_box_remove (GTK_LIST_BOX (self->listbox), GTK_WIDGET (w));
-	}
+	GtkWidget *child;
+	while ((child = gtk_widget_get_first_child (self->listbox)) != NULL)
+		gtk_list_box_remove (GTK_LIST_BOX (self->listbox), child);
 	gs_app_list_remove_all (self->list);
 	gtk_widget_hide (GTK_WIDGET (self));
 }

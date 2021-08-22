@@ -480,8 +480,8 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 {
 	GtkWidget *message_area, *sw, *label;
 	GtkWidget *box, *tv;
+	GtkWidget *child;
 	GtkTextBuffer *buffer;
-	GList *children;
 	g_autoptr(GString) msg = NULL;
 
 	g_assert (GTK_IS_MESSAGE_DIALOG (dialog));
@@ -508,9 +508,11 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 
 	/* Find the secondary label and set its width_chars.   */
 	/* Otherwise the label will tend to expand vertically. */
-	children = gtk_container_get_children (GTK_CONTAINER (message_area));
-	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
-		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
+	child = gtk_widget_get_first_child (message_area);
+	if (child) {
+		GtkWidget *next = gtk_widget_get_next_sibling (child);
+		if (next && GTK_IS_LABEL (next))
+			gtk_label_set_width_chars (GTK_LABEL (next), 40);
 	}
 
 	label = gtk_label_new (_("Details"));

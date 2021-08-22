@@ -66,6 +66,18 @@ typedef enum {
 
 static guint obj_signals[SIGNAL_CLICKED + 1] = { 0, };
 
+static GtkWidget *
+get_nth_page_widget (GsFeaturedCarousel *self,
+                     guint               page_number)
+{
+	GtkWidget *page = gtk_widget_get_first_child (GTK_WIDGET (self->carousel));
+	guint i = 0;
+
+	while (page && i++ < page_number)
+		page = gtk_widget_get_next_sibling (page);
+	return page;
+}
+
 static void
 show_relative_page (GsFeaturedCarousel *self,
                     gint                delta)
@@ -73,7 +85,6 @@ show_relative_page (GsFeaturedCarousel *self,
 	gdouble current_page = adw_carousel_get_position (self->carousel);
 	guint n_pages = adw_carousel_get_n_pages (self->carousel);
 	gdouble new_page;
-	g_autoptr(GList) children = gtk_container_get_children (GTK_CONTAINER (self->carousel));
 	GtkWidget *new_page_widget;
 	gint64 animation_duration_ms = adw_carousel_get_animation_duration (self->carousel);
 
@@ -84,7 +95,7 @@ show_relative_page (GsFeaturedCarousel *self,
 	 * a page by index, rather than by GtkWidget pointer.
 	 * See https://gitlab.gnome.org/GNOME/libhandy/-/issues/413 */
 	new_page = ((guint) current_page + delta + n_pages) % n_pages;
-	new_page_widget = g_list_nth_data (children, new_page);
+	new_page_widget = get_nth_page_widget (self, new_page);
 	g_assert (new_page_widget != NULL);
 
 	/* Don’t animate if we’re wrapping from the last page back to the first
@@ -276,13 +287,11 @@ carousel_clicked_cb (GsFeaturedCarousel *carousel,
 	GsAppTile *current_tile;
 	GsApp *app;
 	gdouble current_page;
-	g_autoptr(GList) children = NULL;
 
 	/* Get the currently visible tile. */
 	current_page = adw_carousel_get_position (self->carousel);
-	children = gtk_container_get_children (GTK_CONTAINER (self->carousel));
+	current_tile = GS_APP_TILE (get_nth_page_widget (self, current_page));
 
-	current_tile = g_list_nth_data (children, current_page);
 	if (current_tile == NULL)
 		return;
 

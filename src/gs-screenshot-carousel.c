@@ -184,8 +184,14 @@ _carousel_navigate (AdwCarousel *carousel, AdwNavigationDirection direction)
 	gdouble position;
 	guint n_children;
 
-	children = gtk_container_get_children (GTK_CONTAINER (carousel));
-	n_children = g_list_length (children);
+	n_children = 0;
+	for (child = gtk_widget_get_first_child (GTK_WIDGET (carousel));
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		children = g_list_prepend (children, child);
+		n_children++;
+	}
+	children = g_list_reverse (children);
 
 	position = adw_carousel_get_position (carousel);
 	position += (direction == ADW_NAVIGATION_DIRECTION_BACK) ? -1 : 1;

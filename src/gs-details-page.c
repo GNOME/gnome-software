@@ -969,7 +969,6 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	g_autoptr(GIcon) icon = NULL;
-	GList *addons;
 	const gchar *tmp;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
@@ -1142,9 +1141,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* update progress */
 	gs_details_page_refresh_progress (self);
 
-	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
-	gtk_widget_set_visible (self->box_addons, addons != NULL);
-	g_list_free (addons);
+	gtk_widget_set_visible (self->box_addons, gtk_widget_get_first_child (self->list_box_addons) != NULL);
 }
 
 static gint
@@ -1829,7 +1826,7 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	g_autoptr(GList) addons = NULL;
+	GtkWidget *child;
 
 	switch (gs_app_get_state (self->app)) {
 	case GS_APP_STATE_PENDING_INSTALL:
@@ -1842,10 +1839,12 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	}
 
 	/* Mark ticked addons to be installed together with the app */
-	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
-	for (GList *l = addons; l; l = l->next) {
-		if (gs_app_addon_row_get_selected (l->data)) {
-			GsApp *addon = gs_app_addon_row_get_addon (l->data);
+	for (child = gtk_widget_get_first_child (self->list_box_addons);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		GsAppAddonRow *row = GS_APP_ADDON_ROW (child);
+		if (gs_app_addon_row_get_selected (row)) {
+			GsApp *addon = gs_app_addon_row_get_addon (row);
 
 			if (gs_app_get_state (addon) == GS_APP_STATE_AVAILABLE)
 				gs_app_set_to_be_installed (addon, TRUE);
@@ -2027,17 +2026,18 @@ gs_details_page_app_removed (GsPage *page, GsApp *app)
 }
 
 static void
-show_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	gtk_widget_show (widget);
-}
-
-static void
 gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
+	GtkWidget *child;
+
 	self->show_all_reviews = TRUE;
-	gtk_container_foreach (GTK_CONTAINER (self->list_box_reviews),
-	                       show_all_cb, NULL);
+
+	for (child = gtk_widget_get_first_child (self->list_box_reviews);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		gtk_widget_show (child);
+	}
+
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
