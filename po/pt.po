@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-20 16:17+0000\n"
-"PO-Revision-Date: 2021-08-21 22:48+0100\n"
+"POT-Creation-Date: 2021-08-22 21:44+0000\n"
+"PO-Revision-Date: 2021-08-23 22:55+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -65,22 +65,24 @@ msgid "Overview panel"
 msgstr "Painel de visão geral"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:29
+#: data/appdata/org.gnome.Software.appdata.xml.in:33
 msgid "Details panel"
 msgstr "Painel de detalhes"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:33
+#: data/appdata/org.gnome.Software.appdata.xml.in:37
 msgid "Installed panel"
 msgstr "Painel das aplicações instaladas"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:37
+#: data/appdata/org.gnome.Software.appdata.xml.in:41
+#: data/appdata/org.gnome.Software.appdata.xml.in:45
 msgid "Updates panel"
 msgstr "Painel das atualizações"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:41
+#: data/appdata/org.gnome.Software.appdata.xml.in:49
 msgid "The update details"
 msgstr "Detalhes sobre as atualizações"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1774
+#: data/appdata/org.gnome.Software.appdata.xml.in:1782
 msgid "The GNOME Project"
 msgstr "O Projeto GNOME"
 
@@ -547,6 +549,49 @@ msgstr "Todas"
 msgid "?"
 msgstr "?"
 
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for all ages. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:684
+#, c-format
+msgid "%s is suitable for everyone"
+msgstr "%s é adequado para todos"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 3. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:688
+#, c-format
+msgid "%s is suitable for toddlers"
+msgstr "%s é adequado para crianças"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 5. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:692
+#, c-format
+msgid "%s is suitable for young children"
+msgstr "%s é adequado para crianças pequenas"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people up to around age 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:700
+#, c-format
+msgid "%s is suitable for teenagers"
+msgstr "%s é adequado para adolescentes"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people aged up to and over 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:704
+#, c-format
+msgid "%s is suitable for adults"
+msgstr "%s é adequado para adultos"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for a specified age group. The first placeholder is the app name, the second
+#. * is the age group.
+#: src/gs-age-rating-context-dialog.c:709
+#, c-format
+msgid "%s is suitable for %s"
+msgstr "%s é adequado para %s"
+
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
 #: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
@@ -568,7 +613,7 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:392
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:396
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -908,97 +953,97 @@ msgstr "Sem permissões"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:264
+#: src/gs-app-context-bar.c:268
 msgid "Has network access"
 msgstr "Tem acesso à rede"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:271
+#: src/gs-app-context-bar.c:275
 msgid "Uses system services"
 msgstr "Usa serviços do sistema"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:278
+#: src/gs-app-context-bar.c:282
 msgid "Uses session services"
 msgstr "Usa serviços de sessão"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:285
+#: src/gs-app-context-bar.c:289
 msgid "Can access hardware devices"
 msgstr "Pode aceder aos dispositivos do equipamento"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:293
+#: src/gs-app-context-bar.c:297
 msgid "Can read/write all your data"
 msgstr "Pode ler/gravar todos os seus dados"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:301
+#: src/gs-app-context-bar.c:305
 msgid "Can read all your data"
 msgstr "Pode ler todos os seus dados"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:308
+#: src/gs-app-context-bar.c:312
 msgid "Can read/write your downloads"
 msgstr "Pode ler/gravar as suas transferências"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:315
+#: src/gs-app-context-bar.c:319
 msgid "Can read your downloads"
 msgstr "Pode ler as suas transferências"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:322 src/gs-safety-context-dialog.c:206
+#: src/gs-app-context-bar.c:326 src/gs-safety-context-dialog.c:210
 msgid "Can access and change user settings"
 msgstr "Pode aceder e alterar as definições do utilizador"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:329 src/gs-safety-context-dialog.c:190
+#: src/gs-app-context-bar.c:333 src/gs-safety-context-dialog.c:194
 msgid "Uses a legacy windowing system"
 msgstr "Usa um sistema de janelas antigo"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:336 src/gs-safety-context-dialog.c:198
+#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:202
 msgid "Can acquire arbitrary permissions"
 msgstr "Pode adquirir permissões arbitrárias"
 
 #. Translators: This indicates that we don’t know what permissions an app requires to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:348
+#: src/gs-app-context-bar.c:352
 msgid "Software has unknown permissions"
 msgstr "O software tem permissões desconhecidas"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:360
+#: src/gs-app-context-bar.c:364
 msgid "Proprietary code"
 msgstr "Código proprietário"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:366
+#: src/gs-app-context-bar.c:370
 msgid "Auditable code"
 msgstr "Código auditável"
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:375
+#: src/gs-app-context-bar.c:379
 msgid "Software comes from a trusted source"
 msgstr "O software vem de uma fonte confiável"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:382
+#: src/gs-app-context-bar.c:386
 msgid "Software developer is verified"
 msgstr "O programador do software está verificado"
 
@@ -1016,104 +1061,104 @@ msgstr "O programador do software está verificado"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:394 src/gs-app-context-bar.c:655
+#: src/gs-app-context-bar.c:398 src/gs-app-context-bar.c:659
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:402
+#: src/gs-app-context-bar.c:406
 msgid "Safe"
 msgstr "Seguro"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:409
+#: src/gs-app-context-bar.c:413
 msgid "Potentially Unsafe"
 msgstr "Potencialmente Inseguro"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:416
+#: src/gs-app-context-bar.c:420
 msgid "Unsafe"
 msgstr "Inseguro"
 
-#: src/gs-app-context-bar.c:495 src/gs-app-context-bar.c:527
+#: src/gs-app-context-bar.c:499 src/gs-app-context-bar.c:531
 #: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Apenas no telemóvel"
 
-#: src/gs-app-context-bar.c:496
+#: src/gs-app-context-bar.c:500
 msgid "Only works on a small screen"
 msgstr "Apenas funciona num ecrã pequeno"
 
-#: src/gs-app-context-bar.c:501 src/gs-app-context-bar.c:534
-#: src/gs-app-context-bar.c:541 src/gs-app-context-bar.c:581
-#: src/gs-app-context-bar.c:586 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:538
+#: src/gs-app-context-bar.c:545 src/gs-app-context-bar.c:585
+#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Apenas no computador"
 
-#: src/gs-app-context-bar.c:502
+#: src/gs-app-context-bar.c:506
 msgid "Only works on a large screen"
 msgstr "Apenas funciona num ecrã grande"
 
-#: src/gs-app-context-bar.c:506 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:510 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "Incompatibilidade de tamanho do ecrã"
 
-#: src/gs-app-context-bar.c:507 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Não suporta o tamanho atual do ecrã"
 
-#: src/gs-app-context-bar.c:528 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Requer um ecrã sensível ao toque"
 
-#: src/gs-app-context-bar.c:535 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "Requer um teclado"
 
-#: src/gs-app-context-bar.c:542
+#: src/gs-app-context-bar.c:546
 msgid "Requires a mouse"
 msgstr "Requer um rato"
 
-#: src/gs-app-context-bar.c:553
+#: src/gs-app-context-bar.c:557
 msgid "Gamepad Needed"
 msgstr "É necessário um controlador"
 
-#: src/gs-app-context-bar.c:554
+#: src/gs-app-context-bar.c:558
 msgid "Requires a gamepad to play"
 msgstr "Requer um controlador para jogar"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:568
+#: src/gs-app-context-bar.c:572
 msgid "Adaptive"
 msgstr "Adaptável"
 
-#: src/gs-app-context-bar.c:569
+#: src/gs-app-context-bar.c:573
 msgid "Works on phones, tablets and desktops"
 msgstr "Funciona em telefones, tablets e computadores"
 
-#: src/gs-app-context-bar.c:582
+#: src/gs-app-context-bar.c:586
 msgid "Probably requires a keyboard or mouse"
 msgstr "Provavelmente requer um teclado ou rato"
 
-#: src/gs-app-context-bar.c:587
+#: src/gs-app-context-bar.c:591
 msgid "Works on desktops and laptops"
 msgstr "Funciona em computadores de secretária e portáteis"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:630
+#: src/gs-app-context-bar.c:634
 msgid "Contains no age-inappropriate content"
 msgstr "Não contém conteúdo impróprio para a idade"
 
-#: src/gs-app-context-bar.c:679
+#: src/gs-app-context-bar.c:683
 msgid "No age rating information available"
 msgstr "Nenhuma informação de classificação etária disponível"
 
@@ -2537,6 +2582,13 @@ msgstr "Suporte a controlador de jogo"
 msgid "Supports gamepads"
 msgstr "Tem suporte a controladores de jogo"
 
+#. Translators: It’s unknown whether this app is supported on
+#. * the current hardware. The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:696
+#, c-format
+msgid "%s probably works on this device"
+msgstr "%s provavelmente funciona neste dispositivo"
+
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:703
@@ -3209,145 +3261,145 @@ msgid "App is fully sandboxed"
 msgstr "A aplicação é totalmente executada numa caixa de proteção"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:155
 msgid "Network Access"
 msgstr "Acesso à rede"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:156
 msgid "Can access the internet"
 msgstr "Pode aceder à Internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:155
+#: src/gs-safety-context-dialog.c:159
 msgid "No Network Access"
 msgstr "Sem acesso à rede"
 
-#: src/gs-safety-context-dialog.c:156
+#: src/gs-safety-context-dialog.c:160
 msgid "Cannot access the internet"
 msgstr "Não é possível aceder à Internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:162
+#: src/gs-safety-context-dialog.c:166
 msgid "Uses System Services"
 msgstr "Usa serviços do sistema"
 
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:167
 msgid "Can request data from system services"
 msgstr "Pode requisitar dados aos serviços do sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:170
+#: src/gs-safety-context-dialog.c:174
 msgid "Uses Session Services"
 msgstr "Usa serviços da sessão"
 
-#: src/gs-safety-context-dialog.c:171
+#: src/gs-safety-context-dialog.c:175
 msgid "Can request data from session services"
 msgstr "Pode requisitar dados dos serviços da sessão"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:178
+#: src/gs-safety-context-dialog.c:182
 msgid "Device Access"
 msgstr "Acesso ao dispositivo"
 
-#: src/gs-safety-context-dialog.c:179
+#: src/gs-safety-context-dialog.c:183
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Pode aceder a dispositivos tais como webcams ou controladores de jogos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:186
 msgid "No Device Access"
 msgstr "Sem acesso ao dispositivo"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:187
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
 "Não é possível aceder a dispositivos tais como webcams ou controladores de "
 "jogos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:189
+#: src/gs-safety-context-dialog.c:193
 msgid "Legacy Windowing System"
 msgstr "Sistema de janelas antigo"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:197
+#: src/gs-safety-context-dialog.c:201
 msgid "Arbitrary Permissions"
 msgstr "Permissões arbitrárias"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:205
+#: src/gs-safety-context-dialog.c:209
 msgid "User Settings"
 msgstr "Definições do utilizador"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:221
 msgid "Full File System Read/Write Access"
 msgstr "Acesso de leitura/gravar a todo o sistema de ficheiros"
 
-#: src/gs-safety-context-dialog.c:218
+#: src/gs-safety-context-dialog.c:222
 msgid "Can read and write all data on the file system"
 msgstr "Pode ler e gravar todos os dados no sistema de ficheiros"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:226
+#: src/gs-safety-context-dialog.c:230
 msgid "Home Folder Read/Write Access"
 msgstr "Acesso de leitura/gravar na pasta pessoal"
 
-#: src/gs-safety-context-dialog.c:227
+#: src/gs-safety-context-dialog.c:231
 msgid "Can read and write all data in your home directory"
 msgstr "Pode ler e gravar todos os seus dados na sua pasta pessoal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:235
+#: src/gs-safety-context-dialog.c:239
 msgid "Full File System Read Access"
 msgstr "Acesso de leitura a todo o sistema de ficheiros"
 
-#: src/gs-safety-context-dialog.c:236
+#: src/gs-safety-context-dialog.c:240
 msgid "Can read all data on the file system"
 msgstr "Pode ler todos os dados no sistema de ficheiros"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:245
+#: src/gs-safety-context-dialog.c:249
 msgid "Home Folder Read Access"
 msgstr "Acesso de leitura da pasta pessoal"
 
-#: src/gs-safety-context-dialog.c:246
+#: src/gs-safety-context-dialog.c:250
 msgid "Can read all data in your home directory"
 msgstr "Pode ler todos os dados no diretório da pasta pessoal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:255
+#: src/gs-safety-context-dialog.c:259
 msgid "Download Folder Read/Write Access"
 msgstr "Acesso de leitura/gravar à pasta de Transferências"
 
-#: src/gs-safety-context-dialog.c:256
+#: src/gs-safety-context-dialog.c:260
 msgid "Can read and write all data in your downloads directory"
 msgstr "Pode ler e gravar todos os dados no seu diretório de transferências"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:271
 msgid "Download Folder Read Access"
 msgstr "Acesso de leitura à pasta de Transferências"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:272
 msgid "Can read all data in your downloads directory"
 msgstr "Pode ler todos os dados no seu diretório de transferências"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:281
+#: src/gs-safety-context-dialog.c:285
 msgid "No File System Access"
 msgstr "Sem acesso ao sistema de ficheiros"
 
-#: src/gs-safety-context-dialog.c:282
+#: src/gs-safety-context-dialog.c:286
 msgid "Cannot access the file system at all"
 msgstr "Não é possível aceder ao sistema de ficheiros"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:296
+#: src/gs-safety-context-dialog.c:300
 msgid "Proprietary Code"
 msgstr "Código proprietário"
 
-#: src/gs-safety-context-dialog.c:297
+#: src/gs-safety-context-dialog.c:301
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3356,11 +3408,11 @@ msgstr ""
 "independente e pode não ser seguro"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:300
+#: src/gs-safety-context-dialog.c:304
 msgid "Auditable Code"
 msgstr "Código auditável"
 
-#: src/gs-safety-context-dialog.c:301
+#: src/gs-safety-context-dialog.c:305
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3370,41 +3422,41 @@ msgstr ""
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:311
+#: src/gs-safety-context-dialog.c:315
 msgid "App comes from a trusted source"
 msgstr "A aplicação vem de uma fonte confiável"
 
-#: src/gs-safety-context-dialog.c:312
+#: src/gs-safety-context-dialog.c:316
 msgid "Your distribution has verified that this app can be trusted"
 msgstr "A distribuição verificou que esta aplicação pode ser confiável"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:325
 msgid "App developer is verified"
 msgstr "O programador da aplicação está verificado"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:326
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Foi verificado que o programador desta aplicação é quem diz ser"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:331
+#: src/gs-safety-context-dialog.c:335
 #, c-format
 msgid "%s is safe"
 msgstr "%s é segura"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:338
+#: src/gs-safety-context-dialog.c:342
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s é potencialmente inseguro"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:345
+#: src/gs-safety-context-dialog.c:349
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s é inseguro"
