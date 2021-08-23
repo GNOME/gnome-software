@@ -507,7 +507,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_widget_set_visible (label, TRUE);
 	gtk_box_append (GTK_BOX (message_area), label);
 
-	sw = gtk_scrolled_window_new (NULL, NULL);
+	sw = gtk_scrolled_window_new ();
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
 	                                GTK_POLICY_NEVER,
 	                                GTK_POLICY_AUTOMATIC);
