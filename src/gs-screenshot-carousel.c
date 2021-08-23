@@ -40,7 +40,7 @@
 
 struct _GsScreenshotCarousel
 {
-	GtkStack		 parent_instance;
+	GtkWidget		 parent_instance;
 
 	SoupSession		*session;  /* (owned) (not nullable) */
 	gboolean		 has_screenshots;
@@ -53,6 +53,7 @@ struct _GsScreenshotCarousel
 	GtkWidget		*button_previous_revealer;
 	GtkWidget		*carousel;
 	GtkWidget		*carousel_indicator;
+	GtkStack                *stack;
 };
 
 typedef enum {
@@ -61,7 +62,7 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_HAS_SCREENSHOTS + 1] = { NULL, };
 
-G_DEFINE_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GTK_TYPE_STACK)
+G_DEFINE_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GTK_TYPE_WIDGET)
 
 static void
 _set_state (GsScreenshotCarousel *self, guint length, gboolean allow_fallback, gboolean is_online)
@@ -69,7 +70,7 @@ _set_state (GsScreenshotCarousel *self, guint length, gboolean allow_fallback, g
 	gboolean has_screenshots;
 
 	gtk_widget_set_visible (self->carousel_indicator, length > 1);
-	gtk_stack_set_visible_child_name (GTK_STACK (self), length > 0 ? "carousel" : "fallback");
+	gtk_stack_set_visible_child_name (self->stack, length > 0 ? "carousel" : "fallback");
 
 	has_screenshots = length > 0 || (allow_fallback && is_online);
 	if (self->has_screenshots != has_screenshots) {
@@ -335,6 +336,7 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_previous_revealer);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel_indicator);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, stack);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_notify_n_pages_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_notify_position_cb);
@@ -342,6 +344,7 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_button_next_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_navigate_button_direction_changed_cb);
 
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 	gtk_widget_class_set_css_name (widget_class, "screenshot-carousel");
 }
 
