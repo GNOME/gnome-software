@@ -229,36 +229,6 @@ gs_picture_get_preferred_height (GtkWidget	*widget,
 			    minimum, natural, NULL, NULL);
 }
 
-/* This is derived from the private adw_css_size_allocate_self() from Libhandy. */
-static void
-css_size_allocate_self (GtkWidget *widget, GtkAllocation *allocation)
-{
-	GtkStyleContext *style_context;
-	GtkStateFlags state_flags;
-	GtkBorder margin;
-
-	/* Manually apply the border, the padding and the margin as we can't use the
-	 * private GtkGadget.
-	 */
-	style_context = gtk_widget_get_style_context (widget);
-	state_flags = gtk_widget_get_state_flags (widget);
-
-	gtk_style_context_get_margin (style_context, state_flags, &margin);
-
-	allocation->width -= margin.left + margin.right;
-	allocation->height -= margin.top + margin.bottom;
-	allocation->x += margin.left;
-	allocation->y += margin.top;
-}
-
-static void
-gs_picture_size_allocate (GtkWidget	*widget,
-			  GtkAllocation	*allocation)
-{
-	css_size_allocate_self (widget, allocation);
-	gtk_widget_set_allocation (widget, allocation);
-}
-
 /* This is derived from the private get_video_box() from RetroGTK.
  * I (Adrien Plazas) wrote that original code and the initial GsPicture, I
  * accept to license it as GPL-2.0+ so it can be used here. */
@@ -406,7 +376,6 @@ gs_picture_class_init (GsPictureClass *klass)
 	widget_class->get_preferred_height = gs_picture_get_preferred_height;
 	widget_class->get_preferred_height_for_width = gs_picture_get_preferred_height_for_width;
 	widget_class->get_preferred_height_and_baseline_for_width = gs_picture_get_preferred_height_and_baseline_for_width;
-	widget_class->size_allocate = gs_picture_size_allocate;
 	widget_class->draw = gs_picture_draw;
 
 	/**

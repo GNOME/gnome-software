@@ -415,18 +415,23 @@ gs_feature_tile_style_updated (GtkWidget *widget)
 }
 
 static void
-gs_feature_tile_size_allocate (GtkWidget     *widget,
-                               GtkAllocation *allocation)
+gs_feature_tile_size_allocate (GtkWidget *widget,
+                               gint       width,
+                               gint       height,
+                               gint       baseline)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 	gboolean narrow_mode;
 
 	/* Chain up. */
-	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget,
+									width,
+									height,
+									baseline);
 
 	/* Engage ‘narrow mode’ if the allocation becomes too narrow. The exact
 	 * choice of width is arbitrary here. */
-	narrow_mode = (allocation->width < 600);
+	narrow_mode = (width < 600);
 	if (tile->narrow_mode != narrow_mode) {
 		tile->narrow_mode = narrow_mode;
 		gs_feature_tile_refresh (GS_APP_TILE (tile));

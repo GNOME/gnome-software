@@ -117,11 +117,16 @@ gs_description_box_read_button_clicked_cb (GtkButton *button,
 
 static void
 gs_description_box_size_allocate (GtkWidget *widget,
-				  GtkAllocation *allocation)
+                                  int        width,
+                                  int        height,
+                                  int        baseline)
 {
 	GsDescriptionBox *box = GS_DESCRIPTION_BOX (widget);
 
-	GTK_WIDGET_CLASS (gs_description_box_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_description_box_parent_class)->size_allocate (widget,
+									   width,
+									   height,
+									   baseline);
 
 	gs_description_box_update_content (box);
 }

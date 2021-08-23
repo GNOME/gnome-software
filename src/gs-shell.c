@@ -2505,11 +2505,17 @@ allocation_changed_cb (gpointer user_data)
 }
 
 static void
-gs_shell_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+gs_shell_size_allocate (GtkWidget *widget,
+                        gint       width,
+                        gint       height,
+                        gint       baseline)
 {
 	GsShell *shell = GS_SHELL (widget);
 
-	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget,
+								 width,
+								 height,
+								 baseline);
 
 	/* Delay updating is-narrow so children can adapt to it, which isn't
 	 * possible during the widget's allocation phase as it would break their
