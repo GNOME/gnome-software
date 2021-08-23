@@ -38,12 +38,10 @@
                         <property name="height-request">64</property>
                         <property name="margin">9</property>
                         <signal name="clicked" handler="gs_screenshot_carousel_button_previous_clicked_cb" swapped="yes"/>
-                        <child internal-child="accessible">
-                          <object class="AtkObject">
-                            <!-- Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel. -->
-                            <property name="accessible-name" translatable="yes">Previous Screenshot</property>
-                          </object>
-                        </child>
+                        <accessibility>
+                          <!-- Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel. -->
+                          <property name="label" translatable="yes">Previous Screenshot</property>
+                        </accessibility>
                         <style>
                           <class name="circular"/>
                           <class name="osd"/>
@@ -79,12 +77,10 @@
                         <property name="height-request">64</property>
                         <property name="margin">9</property>
                         <signal name="clicked" handler="gs_screenshot_carousel_button_next_clicked_cb" swapped="yes"/>
-                        <child internal-child="accessible">
-                          <object class="AtkObject">
-                            <!-- Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel. -->
-                            <property name="accessible-name" translatable="yes">Next Screenshot</property>
-                          </object>
-                        </child>
+                        <accessibility>
+                          <!-- Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel. -->
+                          <property name="label" translatable="yes">Next Screenshot</property>
+                        </accessibility>
                         <style>
                           <class name="circular"/>
                           <class name="osd"/>

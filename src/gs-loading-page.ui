@@ -2,11 +2,9 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsLoadingPage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="loading-accessible">
-        <property name="accessible-name" translatable="yes">Loading page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Loading page</property>
+    </accessibility>
     <child>
       <object class="AdwStatusPage" id="status_page">
         <property name="visible">True</property>

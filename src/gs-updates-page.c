@@ -1226,7 +1226,6 @@ gs_updates_page_setup (GsPage *page,
                        GError **error)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
-	AtkObject *accessible;
 	GtkWidget *widget;
 
 	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
@@ -1301,9 +1300,9 @@ gs_updates_page_setup (GsPage *page,
 
 	/* setup update details window */
 	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
-	accessible = gtk_widget_get_accessible (self->button_refresh);
-	if (accessible != NULL)
-		atk_object_set_name (accessible, _("Check for updates"));
+	gtk_accessible_update_property (GTK_ACCESSIBLE (self->button_refresh),
+					GTK_ACCESSIBLE_PROPERTY_LABEL, _("Check for updates"),
+					-1);
 	gtk_box_prepend (GTK_BOX (self->header_start_box), self->button_refresh);
 	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_updates_page_button_refresh_cb),

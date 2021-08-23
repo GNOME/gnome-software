@@ -163,11 +163,9 @@
                                 <property name="can_focus">True</property>
                                 <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional"/>
                                 <signal name="clicked" handler="search_button_clicked_cb"/>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject">
-                                    <property name="accessible-name" translatable="yes">Search</property>
-                                  </object>
-                                </child>
+                                <accessibility>
+                                  <property name="label" translatable="yes">Search</property>
+                                </accessibility>
                                 <style>
                                   <class name="image-button"/>
                                 </style>
@@ -189,11 +187,9 @@
                                 <property name="can_focus">True</property>
                                 <property name="sensitive">True</property>
                                 <property name="menu_model">primary_menu</property>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject">
-                                    <property name="accessible-name" translatable="yes">Primary Menu</property>
-                                  </object>
-                                </child>
+                                <accessibility>
+                                  <property name="label" translatable="yes">Primary Menu</property>
+                                </accessibility>
                                 <child>
                                   <object class="GtkImage">
                                     <property name="visible">True</property>
@@ -369,11 +365,9 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <signal name="clicked" handler="gs_shell_back_button_cb"/>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject">
-                                    <property name="accessible-name" translatable="yes">Go back</property>
-                                  </object>
-                                </child>
+                                <accessibility>
+                                  <property name="label" translatable="yes">Go back</property>
+                                </accessibility>
                                 <style>
                                   <class name="image-button"/>
                                 </style>
@@ -457,11 +451,9 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <signal name="clicked" handler="gs_shell_details_back_button_cb"/>
-                            <child internal-child="accessible">
-                              <object class="AtkObject">
-                                <property name="accessible-name" translatable="yes">Go back</property>
-                              </object>
-                            </child>
+                            <accessibility>
+                              <property name="label" translatable="yes">Go back</property>
+                            </accessibility>
                             <style>
                               <class name="image-button"/>
                             </style>

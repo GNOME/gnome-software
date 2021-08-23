@@ -41,7 +41,7 @@
                             <property name="icon-size">3</property><!-- GTK_ICON_SIZE_LARGE_TOOLBAR -->
                             <property name="visible">True</property>
                             <accessibility>
-                              <relation target="title" type="labelled-by"/>
+                              <relation name="labelled-by">title</relation>
                             </accessibility>
                           </object>
                           <packing>
@@ -65,9 +65,6 @@
                         <style>
                           <class name="title-1"/>
                         </style>
-                        <accessibility>
-                          <relation target="lozenge" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="context-tile-title"/>
                         </style>

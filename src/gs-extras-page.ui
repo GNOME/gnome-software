@@ -2,11 +2,9 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsExtrasPage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="codecs-accessible">
-        <property name="accessible-name" translatable="yes">Codecs page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Codecs page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack">
         <property name="visible">True</property>

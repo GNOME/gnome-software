@@ -3,11 +3,9 @@
   <requires lib="gtk+" version="3.10"/>
   <requires lib="handy" version="1.0"/>
   <template class="GsOverviewPage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="overview-accessible">
-        <property name="accessible-name" translatable="yes">Overview page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Overview page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack_overview">
         <property name="visible">True</property>
@@ -117,9 +115,6 @@
                                 <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Choice</property>
                                 <property name="margin-top">21</property>
                                 <property name="margin-bottom">6</property>
-                                <accessibility>
-                                  <relation target="box_popular" type="label-for"/>
-                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -133,7 +128,7 @@
                                 <property name="row-spacing">14</property>
                                 <property name="valign">start</property>
                                 <accessibility>
-                                  <relation target="popular_heading" type="labelled-by"/>
+                                  <relation name="labelled-by">popular_heading</relation>
                                 </accessibility>
                               </object>
                             </child>
@@ -145,9 +140,6 @@
                                 <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">New &amp; Updated</property>
                                 <property name="margin-top">21</property>
                                 <property name="margin-bottom">6</property>
-                                <accessibility>
-                                  <relation target="box_recent" type="label-for"/>
-                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -162,7 +154,7 @@
                                 <property name="valign">start</property>
                                 <property name="selection-mode">none</property>
                                 <accessibility>
-                                  <relation target="recent_heading" type="labelled-by"/>
+                                  <relation name="labelled-by">recent_heading</relation>
                                 </accessibility>
                               </object>
                             </child>
@@ -174,9 +166,6 @@
                                 <property name="label" translatable="yes" comments="Translators: This is a heading for a list of categories.">Other Categories</property>
                                 <property name="margin-top">21</property>
                                 <property name="margin-bottom">6</property>
-                                <accessibility>
-                                  <relation target="flowbox_iconless_categories" type="label-for"/>
-                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -191,6 +180,9 @@
                                 <property name="min_children_per_line">2</property>
                                 <property name="max_children_per_line">3</property>
                                 <property name="selection_mode">none</property>
+                                <accessibility>
+                                  <relation name="labelled-by">iconless_categories_heading</relation>
+                                </accessibility>
                               </object>
                             </child>
                           </object>

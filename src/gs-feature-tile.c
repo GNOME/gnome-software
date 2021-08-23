@@ -177,7 +177,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
-	AtkObject *accessible;
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
 	GtkStyleContext *context;
@@ -369,8 +368,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 		}
 	}
 
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
-
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_REMOVING:
@@ -387,9 +384,11 @@ gs_feature_tile_refresh (GsAppTile *self)
 		break;
 	}
 
-	if (GTK_IS_ACCESSIBLE (accessible) && name != NULL) {
-		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (app));
+	if (name != NULL) {
+		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
+						GTK_ACCESSIBLE_PROPERTY_LABEL, name,
+						GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, gs_app_get_summary (app),
+						-1);
 	}
 }
 

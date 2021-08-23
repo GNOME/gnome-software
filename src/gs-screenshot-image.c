@@ -643,11 +643,12 @@ void
 gs_screenshot_image_set_description (GsScreenshotImage *ssimg,
 				     const gchar *description)
 {
-	AtkImage *atk_image;
-	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image1));
-	atk_image_set_image_description (atk_image, description);
-	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image2));
-	atk_image_set_image_description (atk_image, description);
+	gtk_accessible_update_property (GTK_ACCESSIBLE (ssimg->image1),
+					GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, description,
+					-1);
+	gtk_accessible_update_property (GTK_ACCESSIBLE (ssimg->image2),
+					GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, description,
+					-1);
 }
 
 static void
@@ -678,19 +679,11 @@ gs_screenshot_image_dispose (GObject *object)
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
-	AtkObject *accessible;
-
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 
 	g_type_ensure (GS_TYPE_PICTURE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
-
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
-	if (accessible != 0) {
-		atk_object_set_role (accessible, ATK_ROLE_IMAGE);
-		atk_object_set_name (accessible, _("Screenshot"));
-	}
 }
 
 static gboolean
@@ -724,6 +717,7 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");
 	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
+	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_IMG);
 
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);

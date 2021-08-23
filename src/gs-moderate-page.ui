@@ -2,11 +2,9 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsModeratePage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="moderate-accessible">
-        <property name="accessible-name" translatable="yes">Moderate page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Moderate page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack_install">
         <property name="visible">True</property>

@@ -38,11 +38,9 @@
             <property name="height-request">56</property>
             <property name="margin">9</property>
             <signal name="clicked" handler="previous_button_clicked_cb"/>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="accessible-name" translatable="yes">Previous</property>
-              </object>
-            </child>
+            <accessibility>
+              <property name="label" translatable="yes">Previous</property>
+            </accessibility>
             <style>
               <class name="osd"/>
               <class name="featured-button-left"/>
@@ -68,11 +66,9 @@
             <property name="height-request">56</property>
             <property name="margin">9</property>
             <signal name="clicked" handler="next_button_clicked_cb"/>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="accessible-name" translatable="yes">Next</property>
-              </object>
-            </child>
+            <accessibility>
+              <property name="label" translatable="yes">Next</property>
+            </accessibility>
             <style>
               <class name="osd"/>
               <class name="featured-button-right"/>
@@ -95,11 +91,8 @@
         <property name="visible">True</property>
       </object>
     </child>
-    <child internal-child="accessible">
-      <object class="AtkObject">
-        <property name="accessible-name" translatable="yes">Featured Apps List</property>
-        <property name="accessible-role">grouping</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Featured Apps List</property>
+    </accessibility>
   </template>
 </interface>

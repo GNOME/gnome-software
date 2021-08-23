@@ -17,11 +17,9 @@
             <style>
               <class name="image-button"/>
             </style>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="accessible-name" translatable="yes">Go back</property>
-              </object>
-            </child>
+            <accessibility>
+              <property name="label" translatable="yes">Go back</property>
+            </accessibility>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>

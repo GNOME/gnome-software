@@ -39,7 +39,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 {
 	GsSummaryTile *tile = GS_SUMMARY_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
-	AtkObject *accessible;
 	g_autoptr(GIcon) icon = NULL;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
@@ -63,8 +62,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 					 gtk_widget_get_scale_factor (tile->image),
 					 "system-component-application");
 	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
-
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
@@ -94,9 +91,11 @@ gs_summary_tile_refresh (GsAppTile *self)
 
 	gtk_widget_set_visible (tile->eventbox, installed);
 
-	if (GTK_IS_ACCESSIBLE (accessible) && name != NULL) {
-		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (app));
+	if (name != NULL) {
+		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
+						GTK_ACCESSIBLE_PROPERTY_LABEL, name,
+						GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, gs_app_get_summary (app),
+						-1);
 	}
 }
 

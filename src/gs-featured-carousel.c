@@ -363,6 +363,7 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	widget_class->activate_signal = obj_signals[SIGNAL_CLICKED];
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-featured-carousel.ui");
+	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_GROUP);
 
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, next_button);

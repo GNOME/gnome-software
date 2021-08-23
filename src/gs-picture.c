@@ -21,7 +21,6 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk-a11y.h>
 
 #include "gs-picture.h"
 #include "gs-common.h"
@@ -350,14 +349,9 @@ gs_picture_set_property (GObject *object, guint prop_id, const GValue *value, GP
 static void
 gs_picture_init (GsPicture *picture)
 {
-	AtkObject *accessible;
-
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (picture));
-	if (accessible != NULL) {
-		atk_object_set_role (accessible, ATK_ROLE_IMAGE);
-		/* Translators: This is the accessibility label for a screenshot. */
-		atk_object_set_name (accessible, _("Picture"));
-	}
+	gtk_accessible_update_property (GTK_ACCESSIBLE (picture),
+					GTK_ACCESSIBLE_PROPERTY_LABEL, _("Picture"),
+					-1);
 }
 
 static void
@@ -394,7 +388,7 @@ gs_picture_class_init (GsPictureClass *klass)
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
-	gtk_widget_class_set_accessible_type (widget_class, GTK_TYPE_IMAGE_ACCESSIBLE);
+	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_IMG);
 	gtk_widget_class_set_css_name (widget_class, "picture");
 }
 

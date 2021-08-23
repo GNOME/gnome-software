@@ -43,9 +43,6 @@
                         <property name="xalign">0</property>
                         <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for featured apps on a category page">Editor’s Choice</property>
-                        <accessibility>
-                          <relation target="featured_flow_box" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="index-title-alignment-software"/>
                         </style>
@@ -62,6 +59,9 @@
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
                         <property name="selection-mode">none</property>
+                        <accessibility>
+                          <relation name="labelled-by">featured_heading</relation>
+                        </accessibility>
                       </object>
                     </child>
 
@@ -71,9 +71,6 @@
                         <property name="xalign">0</property>
                         <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for recently updated apps on a category page">New &amp; Updated</property>
-                        <accessibility>
-                          <relation target="recently_updated_flow_box" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="index-title-alignment-software"/>
                         </style>
@@ -90,6 +87,9 @@
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
                         <property name="selection-mode">none</property>
+                        <accessibility>
+                          <relation name="labelled-by">recently_updated_heading</relation>
+                        </accessibility>
                       </object>
                     </child>
 
@@ -99,9 +99,6 @@
                         <property name="xalign">0</property>
                         <property name="margin_top">24</property>
                         <property name="label" translatable="yes" comments="Heading for the rest of the apps on a category page">Other Software</property>
-                        <accessibility>
-                          <relation target="category_detail_box" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="index-title-alignment-software"/>
                         </style>
@@ -118,6 +115,9 @@
                         <property name="vexpand">True</property>
                         <property name="valign">start</property>
                         <property name="selection-mode">none</property>
+                        <accessibility>
+                          <relation name="labelled-by">other_heading</relation>
+                        </accessibility>
                       </object>
                     </child>
                   </object>

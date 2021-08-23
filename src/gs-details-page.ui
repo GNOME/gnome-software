@@ -3,11 +3,9 @@
   <requires lib="gtk+" version="3.10"/>
   <requires lib="handy" version="1.0"/>
   <template class="GsDetailsPage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="details-accessible">
-        <property name="accessible-name" translatable="yes">Details page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Details page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack_details">
         <property name="visible">True</property>
@@ -289,12 +287,10 @@
                                                 <property name="visible">True</property>
                                               </object>
                                             </child>
-                                            <child internal-child="accessible">
-                                              <object class="AtkObject">
-                                                <!-- TRANSLATORS: button text in the header when an application can be erased -->
-                                                <property name="accessible-name" translatable="yes">Uninstall</property>
-                                              </object>
-                                            </child>
+                                            <accessibility>
+                                              <!-- TRANSLATORS: button text in the header when an application can be erased -->
+                                              <property name="label" translatable="yes">Uninstall</property>
+                                            </accessibility>
                                           </object>
                                         </child>
                                         <child>

@@ -3,6 +3,9 @@
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsScreenshotImage" parent="GtkWidget">
     <property name="visible">True</property>
+    <accessibility>
+      <property name="label" translatable="yes">Screenshot</property>
+    </accessibility>
     <style>
       <class name="screenshot-image"/>
     </style>

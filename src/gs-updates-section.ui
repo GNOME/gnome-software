@@ -21,9 +21,6 @@
             <style>
               <class name="heading"/>
             </style>
-            <accessibility>
-              <relation target="listbox_box" type="label-for"/>
-            </accessibility>
           </object>
         </child>
         <child>
@@ -93,7 +90,7 @@
         <property name="orientation">vertical</property>
         <property name="visible">True</property>
         <accessibility>
-          <relation target="title" type="labelled-by"/>
+          <relation name="labelled-by">title</relation>
         </accessibility>
         <child>
           <object class="GtkListBox" id="listbox">

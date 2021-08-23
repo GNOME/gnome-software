@@ -44,8 +44,8 @@
                         <property name="visible">True</property>
                         <property name="xalign">0.5</property>
                         <accessibility>
-                          <relation target="storage_tile_title" type="labelled-by"/>
-                          <relation target="storage_tile_description" type="details"/>
+                          <relation name="labelled-by">storage_tile_title</relation>
+                          <relation name="details">storage_tile_description</relation>
                         </accessibility>
                       </object>
                       <packing>
@@ -63,9 +63,6 @@
                     <property name="label">Download Size</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="storage_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -79,9 +76,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="storage_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -120,8 +114,8 @@
                         <property name="icon-name">safety-symbolic</property>
                         <property name="visible">True</property>
                         <accessibility>
-                          <relation target="safety_tile_title" type="labelled-by"/>
-                          <relation target="safety_tile_description" type="details"/>
+                          <relation name="labelled-by">safety_tile_title</relation>
+                          <relation name="details">safety_tile_description</relation>
                         </accessibility>
                       </object>
                       <packing>
@@ -139,9 +133,6 @@
                     <property name="label">Safe</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="safety_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -155,9 +146,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="safety_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -206,8 +194,8 @@
                         <property name="pixel-size">56</property>
                         <property name="visible">True</property>
                         <accessibility>
-                          <relation target="hardware_support_tile_title" type="labelled-by"/>
-                          <relation target="hardware_support_tile_description" type="details"/>
+                          <relation name="labelled-by">hardware_support_tile_title</relation>
+                          <relation name="details">hardware_support_tile_description</relation>
                         </accessibility>
                       </object>
                       <packing>
@@ -225,9 +213,6 @@
                     <property name="label">Adaptive</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="hardware_support_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -241,9 +226,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="hardware_support_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -283,8 +265,8 @@
                         <property name="visible">True</property>
                         <property name="xalign">0.5</property>
                         <accessibility>
-                          <relation target="age_rating_tile_title" type="labelled-by"/>
-                          <relation target="age_rating_tile_description" type="details"/>
+                          <relation name="labelled-by">age_rating_tile_title</relation>
+                          <relation name="details">age_rating_tile_description</relation>
                         </accessibility>
                       </object>
                       <packing>
@@ -302,9 +284,6 @@
                     <property name="label" translatable="yes">Age Rating</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="age_rating_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -318,9 +297,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="age_rating_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>

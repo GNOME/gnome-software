@@ -2,11 +2,9 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsSearchPage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="search-accessible">
-        <property name="accessible-name" translatable="yes">Search page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Search page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack_search">
         <property name="visible">True</property>

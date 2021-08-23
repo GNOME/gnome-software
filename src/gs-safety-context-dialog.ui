@@ -40,7 +40,7 @@
                             <property name="pixel-size">24</property>
                             <property name="visible">True</property>
                             <accessibility>
-                              <relation target="title" type="labelled-by"/>
+                              <relation name="labelled-by">title</relation>
                             </accessibility>
                           </object>
                           <packing>
@@ -64,9 +64,6 @@
                         <style>
                           <class name="title-1"/>
                         </style>
-                        <accessibility>
-                          <relation target="lozenge" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="context-tile-title"/>
                         </style>
@@ -123,9 +120,6 @@
                                     <property name="xalign">0</property>
                                     <property name="yalign">0.5</property>
                                     <property name="label" translatable="yes">License</property>
-                                    <accessibility>
-                                      <relation target="license_label" type="label-for"/>
-                                    </accessibility>
                                   </object>
                                 </child>
                                 <child>
@@ -139,7 +133,7 @@
                                       <class name="dim-label"/>
                                     </style>
                                     <accessibility>
-                                      <relation target="license_title" type="labelled-by"/>
+                                      <relation name="labelled-by">license_title</relation>
                                     </accessibility>
                                   </object>
                                 </child>
@@ -166,9 +160,6 @@
                                     <property name="xalign">0</property>
                                     <property name="yalign">0.5</property>
                                     <property name="label" translatable="yes" comments="Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).">Source</property>
-                                    <accessibility>
-                                      <relation target="source_label" type="label-for"/>
-                                    </accessibility>
                                   </object>
                                 </child>
                                 <child>
@@ -182,7 +173,7 @@
                                       <class name="dim-label"/>
                                     </style>
                                     <accessibility>
-                                      <relation target="source_title" type="labelled-by"/>
+                                      <relation name="labelled-by">source_title</relation>
                                     </accessibility>
                                   </object>
                                 </child>
@@ -209,9 +200,6 @@
                                     <property name="xalign">0</property>
                                     <property name="yalign">0.5</property>
                                     <property name="label" translatable="yes">SDK</property>
-                                    <accessibility>
-                                      <relation target="sdk_label" type="label-for"/>
-                                    </accessibility>
                                   </object>
                                 </child>
                                 <child>
@@ -225,7 +213,7 @@
                                       <class name="dim-label"/>
                                     </style>
                                     <accessibility>
-                                      <relation target="sdk_title" type="labelled-by"/>
+                                      <relation name="labelled-by">sdk_title</relation>
                                     </accessibility>
                                   </object>
                                 </child>
@@ -237,13 +225,9 @@
                                       <class name="eol-red"/>
                                     </style>
                                     <accessibility>
-                                      <relation target="sdk_title" type="labelled-by"/>
+                                      <property name="label" translatable="yes">Outdated SDK version</property>
+                                      <relation name="labelled-by">sdk_title</relation>
                                     </accessibility>
-                                    <child internal-child="accessible">
-                                      <object class="AtkObject">
-                                        <property name="accessible-name" translatable="yes">Outdated SDK version</property>
-                                      </object>
-                                    </child>
                                   </object>
                                 </child>
                               </object>
