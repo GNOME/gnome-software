@@ -106,18 +106,9 @@ button_clicked_cb (GtkButton *button,
                    gpointer   user_data)
 {
 	GsAppTranslationDialog *self = GS_APP_TRANSLATION_DIALOG (user_data);
-	g_autoptr(GError) error = NULL;
-	const gchar *url;
+	const gchar *url = get_url_for_app (self->app);
 
-	url = get_url_for_app (self->app);
-
-	if (!gtk_show_uri_on_window (GTK_WINDOW (self),
-	                             url,
-	                             GDK_CURRENT_TIME,
-	                             &error)) {
-		g_warning ("failed to show URI %s: %s",
-		           url, error->message);
-	}
+	gtk_show_uri (GTK_WINDOW (self), url, GDK_CURRENT_TIME);
 }
 
 static void

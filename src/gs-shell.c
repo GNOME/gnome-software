@@ -2386,15 +2386,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 void
 gs_shell_show_uri (GsShell *shell, const gchar *url)
 {
-	g_autoptr(GError) error = NULL;
-
-	if (!gtk_show_uri_on_window (GTK_WINDOW (shell),
-	                             url,
-	                             GDK_CURRENT_TIME,
-	                             &error)) {
-		g_warning ("failed to show URI %s: %s",
-		           url, error->message);
-	}
+	gtk_show_uri (GTK_WINDOW (shell), url, GDK_CURRENT_TIME);
 }
 
 /**
