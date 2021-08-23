@@ -750,9 +750,9 @@ tile_clicked_cb (GtkWidget *widget,
 {
 	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
 	GtkWindow *dialog;
-	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+	GtkRoot *root = gtk_widget_get_root (widget);
 
-	if (GTK_IS_WINDOW (toplevel)) {
+	if (GTK_IS_WINDOW (root)) {
 		if (widget == self->tiles[STORAGE_TILE].tile)
 			dialog = GTK_WINDOW (gs_storage_context_dialog_new (self->app));
 		else if (widget == self->tiles[SAFETY_TILE].tile)
@@ -764,7 +764,7 @@ tile_clicked_cb (GtkWidget *widget,
 		else
 			g_assert_not_reached ();
 
-		gtk_window_set_transient_for (dialog, GTK_WINDOW (toplevel));
+		gtk_window_set_transient_for (dialog, GTK_WINDOW (root));
 		gtk_widget_show (GTK_WIDGET (dialog));
 	}
 }

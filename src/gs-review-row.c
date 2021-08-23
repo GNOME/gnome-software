@@ -212,7 +212,7 @@ static void
 gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 {
 	GtkWidget *dialog;
-	GtkWidget *toplevel;
+	GtkRoot *root;
 	GtkWidget *widget;
 	g_autoptr(GString) str = NULL;
 
@@ -227,8 +227,8 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 	g_string_append (str, _("Once reported, a review will be hidden until "
 				"it has been checked by an administrator."));
 
-	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
-	dialog = gtk_message_dialog_new (GTK_WINDOW (toplevel),
+	root = gtk_widget_get_root (GTK_WIDGET (button));
+	dialog = gtk_message_dialog_new (GTK_WINDOW (root),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_USE_HEADER_BAR,

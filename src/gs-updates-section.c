@@ -66,15 +66,15 @@ gs_updates_section_get_list (GsUpdatesSection *self)
 static gboolean
 _listbox_keynav_failed_cb (GsAppRow *app_row, GtkDirectionType direction)
 {
-	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (app_row));
+	GtkRoot *root = gtk_widget_get_root (GTK_WIDGET (app_row));
 
-	if (!toplevel)
+	if (!root)
 		return FALSE;
 
 	if (direction != GTK_DIR_UP && direction != GTK_DIR_DOWN)
 		return FALSE;
 
-	return gtk_widget_child_focus (toplevel, direction == GTK_DIR_UP ? GTK_DIR_TAB_BACKWARD : GTK_DIR_TAB_FORWARD);
+	return gtk_widget_child_focus (GTK_WIDGET (root), direction == GTK_DIR_UP ? GTK_DIR_TAB_BACKWARD : GTK_DIR_TAB_FORWARD);
 }
 
 static void
