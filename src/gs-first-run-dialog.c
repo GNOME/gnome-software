@@ -21,35 +21,6 @@ struct _GsFirstRunDialog
 
 G_DEFINE_TYPE (GsFirstRunDialog, gs_first_run_dialog, ADW_TYPE_WINDOW)
 
-static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    AdwPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
 static void
 button_clicked_cb (GtkWidget *widget, GsFirstRunDialog *dialog)
 {
@@ -79,7 +50,7 @@ gs_first_run_dialog_class_init (GsFirstRunDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsFirstRunDialog, button);
 
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *

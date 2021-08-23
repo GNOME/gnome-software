@@ -228,12 +228,6 @@ key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	state = state & gtk_accelerator_get_default_mod_mask ();
 	is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
 
-	if (event->keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (dialog));
-
-		return GDK_EVENT_STOP;
-	}
-
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
 	    event->keyval == GDK_KEY_Back) {
@@ -402,6 +396,8 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
 	gtk_widget_class_bind_template_callback (widget_class, deck_child_transition_cb);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *
