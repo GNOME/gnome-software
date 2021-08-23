@@ -19,13 +19,6 @@
 #include <gio/gdesktopappinfo.h>
 #include <libsoup/soup.h>
 
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/gdkwayland.h>
-#endif
-
 #ifdef HAVE_PACKAGEKIT
 #include "gs-dbus-helper.h"
 #endif
@@ -877,7 +870,6 @@ install_resources_activated (GSimpleAction *action,
                              gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	GdkDisplay *display;
 	const gchar *mode;
 	const gchar *startup_id;
 	const gchar *desktop_id;
@@ -885,22 +877,6 @@ install_resources_activated (GSimpleAction *action,
 	g_autofree gchar **resources = NULL;
 
 	g_variant_get (parameter, "(&s^a&s&s&s&s)", &mode, &resources, &startup_id, &desktop_id, &ident);
-
-	display = gdk_display_get_default ();
-#ifdef GDK_WINDOWING_X11
-	if (GDK_IS_X11_DISPLAY (display)) {
-		if (startup_id != NULL && startup_id[0] != '\0')
-			gdk_x11_display_set_startup_notification_id (display,
-			                                             startup_id);
-	}
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-	if (GDK_IS_WAYLAND_DISPLAY (display)) {
-		if (startup_id != NULL && startup_id[0] != '\0')
-			gdk_wayland_display_set_startup_notification_id (display,
-			                                                 startup_id);
-	}
-#endif
 
 	gs_application_present_window (app, startup_id);
 
