@@ -130,7 +130,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 	for (guint i = 0; i < screenshots->len && !g_cancellable_is_cancelled (cancellable); i++) {
 		AsScreenshot *ss = g_ptr_array_index (screenshots, i);
 		GtkWidget *ssimg = gs_screenshot_image_new (self->session);
-		gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
+		gtk_widget_set_can_focus (gtk_widget_get_first_child (ssimg), FALSE);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      AS_IMAGE_NORMAL_WIDTH,

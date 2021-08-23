@@ -63,7 +63,7 @@ gs_first_run_dialog_init (GsFirstRunDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	button_label = gtk_bin_get_child (GTK_BIN (dialog->button));
+	button_label = gtk_button_get_child (GTK_BUTTON (dialog->button));
 	gtk_widget_set_margin_start (button_label, 16);
 	gtk_widget_set_margin_end (button_label, 16);
 

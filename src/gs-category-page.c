@@ -455,8 +455,8 @@ recently_updated_sort_cb (GtkFlowBoxChild *child1,
                           GtkFlowBoxChild *child2,
                           gpointer         user_data)
 {
-	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child1)));
-	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child2)));
+	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child1));
+	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child2));
 	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
 	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
 	guint64 release_date1 = 0, release_date2 = 0;

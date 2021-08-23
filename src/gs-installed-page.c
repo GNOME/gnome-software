@@ -461,12 +461,6 @@ gs_installed_page_sort_func (GtkListBoxRow *a,
 	g_autofree gchar *key1 = NULL;
 	g_autofree gchar *key2 = NULL;
 
-	/* check valid */
-	if (!GTK_IS_BIN(a) || !GTK_IS_BIN(b)) {
-		g_warning ("GtkListBoxRow not valid");
-		return 0;
-	}
-
 	a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	a2 = gs_app_row_get_app (GS_APP_ROW (b));
 	key1 = gs_installed_page_get_app_sort_key (a1);

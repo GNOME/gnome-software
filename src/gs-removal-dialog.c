@@ -28,8 +28,8 @@ list_sort_func (GtkListBoxRow *a,
                 GtkListBoxRow *b,
                 gpointer user_data)
 {
-	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
-	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
+	GObject *o1 = G_OBJECT (gtk_list_box_row_get_child (a));
+	GObject *o2 = G_OBJECT (gtk_list_box_row_get_child (b));
 	const gchar *key1 = g_object_get_data (o1, "sort");
 	const gchar *key2 = g_object_get_data (o2, "sort");
 	return g_strcmp0 (key1, key2);

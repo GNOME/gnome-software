@@ -68,7 +68,7 @@ row_activated_cb (GtkListBox *list_box,
 {
 	GsApp *app;
 
-	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
+	app = GS_APP (g_object_get_data (G_OBJECT (gtk_list_box_row_get_child (row)), "app"));
 	g_assert (app != NULL);
 
 	g_signal_emit (page, signals[SIGNAL_APP_ACTIVATED], 0, app);
@@ -247,8 +247,8 @@ os_updates_sort_func (GtkListBoxRow *a,
 		      GtkListBoxRow *b,
 		      gpointer user_data)
 {
-	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
-	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
+	GObject *o1 = G_OBJECT (gtk_list_box_row_get_child (a));
+	GObject *o2 = G_OBJECT (gtk_list_box_row_get_child (b));
 	GsApp *a1 = g_object_get_data (o1, "app");
 	GsApp *a2 = g_object_get_data (o2, "app");
 	const gchar *key1 = gs_app_get_source_default (a1);
@@ -309,7 +309,7 @@ list_header_func (GtkListBoxRow *row,
 		  gpointer user_data)
 {
 	GsOsUpdatePage *page = (GsOsUpdatePage *) user_data;
-	GObject *o = G_OBJECT (gtk_bin_get_child (GTK_BIN (row)));
+	GObject *o = G_OBJECT (gtk_list_box_row_get_child (row));
 	GsApp *app = g_object_get_data (o, "app");
 	GtkWidget *header = NULL;
 
