@@ -33,7 +33,7 @@
 
 struct _GsLicenseTile
 {
-	GtkListBox	 parent_instance;
+	GtkWidget	 parent_instance;
 
 	GsApp		*app;  /* (nullable) (owned) */
 	gulong		 notify_license_handler;
@@ -46,7 +46,7 @@ struct _GsLicenseTile
 	GtkListBoxRow	*get_involved_row;
 };
 
-G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_LIST_BOX)
+G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_APP = 1,
@@ -240,6 +240,8 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_row);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_license_tile_row_activated_cb);
+
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 /**
