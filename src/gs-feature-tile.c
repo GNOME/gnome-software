@@ -401,7 +401,8 @@ gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_
 }
 
 static void
-gs_feature_tile_style_updated (GtkWidget *widget)
+gs_feature_tile_css_changed (GtkWidget         *widget,
+                             GtkCssStyleChange *css_change)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 
@@ -411,6 +412,8 @@ gs_feature_tile_style_updated (GtkWidget *widget)
 	tile->key_colors_cache = NULL;
 
 	gs_feature_tile_refresh (GS_APP_TILE (tile));
+
+	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->css_changed (widget, css_change);
 }
 
 static void
@@ -452,8 +455,8 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	object_class->dispose = gs_feature_tile_dispose;
 
+	widget_class->css_changed = gs_feature_tile_css_changed;
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
-	widget_class->style_updated = gs_feature_tile_style_updated;
 	widget_class->size_allocate = gs_feature_tile_size_allocate;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;
