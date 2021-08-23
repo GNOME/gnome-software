@@ -166,7 +166,7 @@ gs_description_box_init (GsDescriptionBox *box)
 		"xalign", 0.0,
 		NULL);
 
-	gtk_box_pack_start (GTK_BOX (box), widget, TRUE, TRUE, 0);
+	gtk_box_append (GTK_BOX (box), widget);
 
 	style_context = gtk_widget_get_style_context (widget);
 	gtk_style_context_add_class (style_context, "label");
@@ -183,7 +183,7 @@ gs_description_box_init (GsDescriptionBox *box)
 		"visible", TRUE,
 		NULL);
 
-	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+	gtk_box_append (GTK_BOX (box), widget);
 
 	style_context = gtk_widget_get_style_context (widget);
 	gtk_style_context_add_class (style_context, "button");
