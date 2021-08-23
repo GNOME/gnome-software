@@ -224,7 +224,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
-	gtk_label_set_line_wrap (GTK_LABEL (tile->subtitle), tile->narrow_mode);
+	gtk_label_set_wrap (GTK_LABEL (tile->subtitle), tile->narrow_mode);
 	gtk_label_set_lines (GTK_LABEL (tile->subtitle), tile->narrow_mode ? 2 : 1);
 
 	/* perhaps set custom css; cache it so that images don’t get reloaded
