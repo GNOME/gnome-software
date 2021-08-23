@@ -613,7 +613,7 @@ gs_shell_change_mode (GsShell *shell,
 
 	if (mode == GS_SHELL_MODE_SEARCH) {
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
-		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), data);
+		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), data);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 	} else if (mode == GS_SHELL_MODE_DETAILS) {
 		app = GS_APP (data);
@@ -802,7 +802,7 @@ gs_shell_go_back (GsShell *shell)
 
 		/* set the text in the entry and move cursor to the end */
 		block_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
-		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), entry->search);
+		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), entry->search);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 		unblock_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
 
@@ -947,7 +947,7 @@ search_changed_handler (GObject *entry, GsShell *shell)
 {
 	const gchar *text;
 
-	text = gtk_entry_get_text (GTK_ENTRY (entry));
+	text = gtk_editable_get_text (GTK_EDITABLE (entry));
 	if (strlen (text) >= 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			save_back_entry (shell);

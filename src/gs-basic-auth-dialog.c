@@ -45,8 +45,8 @@ login_button_clicked_cb (GsBasicAuthDialog *dialog)
 	const gchar *user;
 	const gchar *password;
 
-	user = gtk_entry_get_text (dialog->user_entry);
-	password = gtk_entry_get_text (dialog->password_entry);
+	user = gtk_editable_get_text (GTK_EDITABLE (dialog->user_entry));
+	password = gtk_editable_get_text (GTK_EDITABLE (dialog->password_entry));
 
 	/* submit the user/password to basic auth */
 	dialog->callback (user, password, dialog->callback_data);
@@ -63,11 +63,11 @@ dialog_validate (GsBasicAuthDialog *dialog)
 	gboolean valid_password;
 
 	/* require user */
-	user = gtk_entry_get_text (dialog->user_entry);
+	user = gtk_editable_get_text (GTK_EDITABLE (dialog->user_entry));
 	valid_user = user != NULL && strlen (user) != 0;
 
 	/* require password */
-	password = gtk_entry_get_text (dialog->password_entry);
+	password = gtk_editable_get_text (GTK_EDITABLE (dialog->password_entry));
 	valid_password = password != NULL && strlen (password) != 0;
 
 	gtk_widget_set_sensitive (GTK_WIDGET (dialog->login_button), valid_user && valid_password);
