@@ -56,14 +56,10 @@ deck_child_transition_cb (AdwDeck *deck, GParamSpec *pspec, GsUpdateDialog *dial
 }
 
 static void
-installed_updates_row_activated_cb (GtkListBox *list_box,
-				    GtkListBoxRow *row,
+installed_updates_row_activated_cb (GsUpdateList *update_list,
+				    GsApp *app,
 				    GsUpdateDialog *dialog)
 {
-	GsApp *app;
-
-	app = gs_app_row_get_app (GS_APP_ROW (row));
-
 	gs_update_dialog_show_update_details (dialog, app);
 }
 
@@ -126,7 +122,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
-	gs_widget_remove_all (dialog->list_box_installed_updates, (GsRemoveFunc) gtk_list_box_remove);
+	gs_update_list_remove_all (GS_UPDATE_LIST (dialog->list_box_installed_updates));
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
 					gs_app_list_index (list, i));
@@ -338,7 +334,7 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 
 	dialog->cancellable = g_cancellable_new ();
 
-	g_signal_connect (GTK_LIST_BOX (dialog->list_box_installed_updates), "row-activated",
+	g_signal_connect (dialog->list_box_installed_updates, "show-update",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
