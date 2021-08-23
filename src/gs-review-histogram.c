@@ -30,7 +30,7 @@ typedef struct
 	GtkWidget	*star_value_5;
 } GsReviewHistogramPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_WIDGET)
 
 void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
@@ -99,6 +99,7 @@ gs_review_histogram_class_init (GsReviewHistogramClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-histogram.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar5);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, bar4);

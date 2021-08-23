@@ -36,7 +36,7 @@ typedef struct
 	GtkCssProvider	*banner_provider;  /* (owned) (nullable) */
 } GsUpgradeBannerPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsUpgradeBanner, gs_upgrade_banner, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsUpgradeBanner, gs_upgrade_banner, GTK_TYPE_WIDGET)
 
 enum {
 	SIGNAL_DOWNLOAD_CLICKED,
@@ -374,6 +374,7 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 		              G_TYPE_NONE, 0);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-upgrade-banner.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_info);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_download);

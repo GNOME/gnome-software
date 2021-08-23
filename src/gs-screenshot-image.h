@@ -19,7 +19,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_SCREENSHOT_IMAGE (gs_screenshot_image_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsScreenshotImage, gs_screenshot_image, GS, SCREENSHOT_IMAGE, GtkBin)
+G_DECLARE_FINAL_TYPE (GsScreenshotImage, gs_screenshot_image, GS, SCREENSHOT_IMAGE, GtkWidget)
 
 GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 

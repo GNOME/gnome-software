@@ -15,11 +15,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_PAGE (gs_page_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsPage, gs_page, GS, PAGE, GtkBin)
+G_DECLARE_DERIVABLE_TYPE (GsPage, gs_page, GS, PAGE, GtkWidget)
 
 struct _GsPageClass
 {
-	GtkBinClass	 parent_class;
+	GtkWidgetClass	 parent_class;
 
 	void		(*app_installed)	(GsPage		 *page,
 						 GsApp		 *app);

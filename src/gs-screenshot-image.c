@@ -20,7 +20,7 @@
 
 struct _GsScreenshotImage
 {
-	GtkBin		 parent_instance;
+	GtkWidget	 parent_instance;
 
 	AsScreenshot	*screenshot;
 	GtkWidget	*spinner;
@@ -41,7 +41,7 @@ struct _GsScreenshotImage
 	gboolean	 showing_image;
 };
 
-G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_WIDGET)
 
 AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
@@ -723,6 +723,7 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);

@@ -17,11 +17,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_STAR_WIDGET (gs_star_widget_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsStarWidget, gs_star_widget, GS, STAR_WIDGET, GtkBin)
+G_DECLARE_DERIVABLE_TYPE (GsStarWidget, gs_star_widget, GS, STAR_WIDGET, GtkWidget)
 
 struct _GsStarWidgetClass
 {
-	GtkBinClass	 parent_class;
+	GtkWidgetClass	 parent_class;
 
 	void			(*rating_changed)		(GsStarWidget	*star);
 };

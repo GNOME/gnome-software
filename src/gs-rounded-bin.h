@@ -18,6 +18,6 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_ROUNDED_BIN (gs_rounded_bin_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsRoundedBin, gs_rounded_bin, GS, ROUNDED_BIN, GtkBin)
+G_DECLARE_FINAL_TYPE (GsRoundedBin, gs_rounded_bin, GS, ROUNDED_BIN, GtkWidget)
 
 G_END_DECLS

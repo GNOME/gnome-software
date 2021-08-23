@@ -24,7 +24,7 @@ typedef struct
 	GtkWidget	*images[5];
 } GsStarWidgetPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_ICON_SIZE = 1,
@@ -311,6 +311,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (properties), properties);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-star-widget.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, box1);
 }
 

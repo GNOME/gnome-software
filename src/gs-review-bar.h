@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_REVIEW_BAR (gs_review_bar_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReviewBar, gs_review_bar, GS, REVIEW_BAR, GtkBin)
+G_DECLARE_FINAL_TYPE (GsReviewBar, gs_review_bar, GS, REVIEW_BAR, GtkWidget)
 
 GtkWidget	*gs_review_bar_new		(void);
 

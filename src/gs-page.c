@@ -26,7 +26,7 @@ typedef struct
 	gboolean		 is_active;
 } GsPagePrivate;
 
-G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_TITLE = 1,
@@ -831,6 +831,7 @@ static void
 gs_page_class_init (GsPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_page_get_property;
 	object_class->dispose = gs_page_dispose;
@@ -875,6 +876,8 @@ gs_page_class_init (GsPageClass *klass)
 				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 GsPage *

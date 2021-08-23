@@ -55,13 +55,13 @@ typedef enum {
 
 struct _GsRoundedBin
 {
-	GtkBin		 parent_instance;
+	GtkWidget	 parent_instance;
 
 	gint		 last_border_radius;
 	cairo_surface_t	*masks[4];  /* (owned) (indexed-by GsCornerType) */
 };
 
-G_DEFINE_TYPE (GsRoundedBin, gs_rounded_bin, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsRoundedBin, gs_rounded_bin, GTK_TYPE_WIDGET)
 
 static void clear_masks (GsRoundedBin *self);
 
@@ -256,4 +256,5 @@ gs_rounded_bin_class_init (GsRoundedBinClass *klass)
 	widget_class->draw = gs_rounded_bin_draw;
 
 	gtk_widget_class_set_css_name (widget_class, "rounded-bin");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }

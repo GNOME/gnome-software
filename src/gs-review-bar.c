@@ -14,11 +14,11 @@
 
 struct _GsReviewBar
 {
-	GtkBin		 parent_instance;
+	GtkWidget	 parent_instance;
 	gdouble		 fraction;
 };
 
-G_DEFINE_TYPE (GsReviewBar, gs_review_bar, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsReviewBar, gs_review_bar, GTK_TYPE_WIDGET)
 
 void
 gs_review_bar_set_fraction (GsReviewBar *bar, gdouble fraction)
