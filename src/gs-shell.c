@@ -72,8 +72,8 @@ struct _GsShell
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
-	AdwDeck			*main_deck;
-	AdwDeck			*details_deck;
+	AdwLeaflet		*main_leaflet;
+	AdwLeaflet		*details_leaflet;
 	GtkStack		*stack_loading;
 	GtkStack		*stack_main;
 	GtkStack		*stack_sub;
@@ -597,15 +597,15 @@ gs_shell_change_mode (GsShell *shell,
 
 	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
 	if (mode == GS_SHELL_MODE_DETAILS) {
-		adw_deck_set_visible_child_name (shell->details_deck, "details");
+		adw_leaflet_set_visible_child_name (shell->details_leaflet, "details");
 	} else {
-		adw_deck_set_visible_child_name (shell->details_deck, "main");
-		/* We only change the main deck when not reaching the details
+		adw_leaflet_set_visible_child_name (shell->details_leaflet, "main");
+		/* We only change the main leaflet when not reaching the details
 		 * page to preserve the navigation history in the UI's state.
-		 * First change the page, then the deck, to avoid load of
+		 * First change the page, then the leaflet, to avoid load of
 		 * the previously shown page, which will be changed shortly after. */
 		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
-		adw_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
+		adw_leaflet_set_visible_child_name (shell->main_leaflet, mode_is_main ? "main" : "sub");
 	}
 
 	/* do any mode-specific actions */
@@ -648,7 +648,7 @@ overlay_get_child_position_cb (GtkOverlay   *overlay,
 	 * to position it below the header bar. The overlay can’t easily be
 	 * moved in the widget hierarchy so it doesn’t have the header bar as
 	 * a child, since there are several header bars in different pages of
-	 * a AdwDeck. */
+	 * a AdwLeaflet. */
 	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
 
 	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
@@ -2268,10 +2268,10 @@ gs_shell_get_mode (GsShell *shell)
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
-	if (g_strcmp0 (adw_deck_get_visible_child_name (shell->details_deck), "details") == 0)
+	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->details_leaflet), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
-	if (g_strcmp0 (adw_deck_get_visible_child_name (shell->main_deck), "main") == 0)
+	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->main_leaflet), "main") == 0)
 		name = gtk_stack_get_visible_child_name (shell->stack_main);
 	else
 		name = gtk_stack_get_visible_child_name (shell->stack_sub);
@@ -2561,9 +2561,9 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
