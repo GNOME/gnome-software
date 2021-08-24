@@ -324,6 +324,7 @@ static void
 create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 {
 	GtkStyleContext *context;
+	GtkWidget *previous = NULL;
 
 	page->list_boxes[section] = gtk_list_box_new ();
 	gtk_list_box_set_selection_mode (GTK_LIST_BOX (page->list_boxes[section]),
@@ -345,8 +346,10 @@ create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 	for (guint i = 0; i < GS_OS_UPDATE_PAGE_SECTION_LAST; i++) {
 		if (page->list_boxes[i] == NULL)
 			continue;
-		gtk_box_reorder_child (GTK_BOX (page->box),
-				       page->list_boxes[i], i);
+		gtk_box_reorder_child_after (GTK_BOX (page->box),
+					     page->list_boxes[i],
+					     previous);
+		previous = page->list_boxes[i];
 	}
 
 	/* make rounded edges */
