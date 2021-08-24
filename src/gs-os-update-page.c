@@ -165,7 +165,6 @@ create_app_row (GsApp *app)
 	gtk_widget_set_halign (label, GTK_ALIGN_END);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_box_append (GTK_BOX (row), label);
-	gtk_widget_show_all (row);
 
 	return row;
 }
