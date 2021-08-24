@@ -1065,18 +1065,21 @@ static void
 gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 {
 	GdkRectangle geometry;
+	GdkSurface *surface;
 	GdkDisplay *display;
 	GdkMonitor *monitor;
 
 	display = gtk_widget_get_display (GTK_WIDGET (shell));
-	monitor = gdk_display_get_monitor_at_window (display,
-						     gtk_widget_get_window (GTK_WIDGET (shell)));
+	surface = gtk_native_get_surface (GTK_NATIVE (shell));
+	monitor = gdk_display_get_monitor_at_surface (display, surface);
 
 	/* adapt the window for low and medium resolution screens */
-	gdk_monitor_get_geometry (monitor, &geometry);
-	if (geometry.width < 800 || geometry.height < 600) {
-	} else if (geometry.width < 1366 || geometry.height < 768) {
-		gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
+	if (monitor != NULL) {
+		gdk_monitor_get_geometry (monitor, &geometry);
+		if (geometry.width < 800 || geometry.height < 600) {
+		} else if (geometry.width < 1366 || geometry.height < 768) {
+			gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
+		}
 	}
 }
 

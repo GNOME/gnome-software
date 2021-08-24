@@ -161,17 +161,20 @@ add_relation_row (GtkListBox                   *list_box,
 GdkMonitor *
 gs_hardware_support_context_dialog_get_largest_monitor (GdkDisplay *display)
 {
+	GListModel *monitors;  /* (unowned) */
 	GdkMonitor *monitor;  /* (unowned) */
-	int n_monitors, monitor_max_dimension;
+	int monitor_max_dimension;
+	guint n_monitors;
 
 	g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
 
-	n_monitors = gdk_display_get_n_monitors (display);
+	monitors = gdk_display_get_monitors (display);
+	n_monitors = g_list_model_get_n_items (monitors);
 	monitor_max_dimension = 0;
 	monitor = NULL;
 
-	for (int i = 0; i < n_monitors; i++) {
-		GdkMonitor *monitor2 = gdk_display_get_monitor (display, i);
+	for (guint i = 0; i < n_monitors; i++) {
+		g_autoptr(GdkMonitor) monitor2 = g_list_model_get_item (monitors, i);
 		GdkRectangle monitor_geometry;
 		int monitor2_max_dimension;
 
@@ -181,9 +184,7 @@ gs_hardware_support_context_dialog_get_largest_monitor (GdkDisplay *display)
 		gdk_monitor_get_geometry (monitor2, &monitor_geometry);
 		monitor2_max_dimension = MAX (monitor_geometry.width, monitor_geometry.height);
 
-		if (monitor2_max_dimension > monitor_max_dimension ||
-		    (gdk_monitor_is_primary (monitor2) &&
-		     monitor2_max_dimension == monitor_max_dimension)) {
+		if (monitor2_max_dimension > monitor_max_dimension) {
 			monitor = monitor2;
 			monitor_max_dimension = monitor2_max_dimension;
 			continue;
