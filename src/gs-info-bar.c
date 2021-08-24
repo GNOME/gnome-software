@@ -12,20 +12,22 @@
 
 struct _GsInfoBar
 {
-	GtkInfoBar	 parent_instance;
+	GtkWidget	 parent_instance;
 
+	GtkInfoBar	*info_bar;
 	GtkWidget	*label_title;
 	GtkWidget	*label_body;
 	GtkWidget	*label_warning;
 };
 
-G_DEFINE_TYPE (GsInfoBar, gs_info_bar, GTK_TYPE_INFO_BAR)
+G_DEFINE_TYPE (GsInfoBar, gs_info_bar, GTK_TYPE_WIDGET)
 
 enum {
 	PROP_0,
 	PROP_TITLE,
 	PROP_BODY,
-	PROP_WARNING
+	PROP_WARNING,
+	PROP_MESSAGE_TYPE,
 };
 
 static void
@@ -45,6 +47,9 @@ gs_info_bar_get_property (GObject *object,
 		break;
 	case PROP_WARNING:
 		g_value_set_string (value, gs_info_bar_get_warning (infobar));
+		break;
+	case PROP_MESSAGE_TYPE:
+		g_value_set_enum (value, gtk_info_bar_get_message_type (infobar->info_bar));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -69,6 +74,9 @@ gs_info_bar_set_property (GObject *object,
 		break;
 	case PROP_WARNING:
 		gs_info_bar_set_warning (infobar, g_value_get_string (value));
+		break;
+	case PROP_MESSAGE_TYPE:
+		gtk_info_bar_set_message_type (infobar->info_bar, g_value_get_enum (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -112,8 +120,20 @@ gs_info_bar_class_init (GsInfoBarClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE));
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-bar.ui");
+	g_object_class_install_property (object_class, PROP_MESSAGE_TYPE,
+		g_param_spec_enum ("message-type",
+				   "Message Type",
+				   "The type of message",
+				   GTK_TYPE_MESSAGE_TYPE,
+				   GTK_MESSAGE_INFO,
+				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-bar.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
+
+	gtk_widget_class_bind_template_child (widget_class,
+					      GsInfoBar, info_bar);
 	gtk_widget_class_bind_template_child (widget_class,
 					      GsInfoBar, label_title);
 	gtk_widget_class_bind_template_child (widget_class,
