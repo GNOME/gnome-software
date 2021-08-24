@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-20 16:58+0000\n"
-"PO-Revision-Date: 2021-08-20 22:01-0300\n"
+"POT-Creation-Date: 2021-08-22 21:44+0000\n"
+"PO-Revision-Date: 2021-08-24 10:23-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -546,6 +546,50 @@ msgstr "Todos"
 msgid "?"
 msgstr "?"
 
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for all ages. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:684
+#, c-format
+msgid "%s is suitable for everyone"
+msgstr "%s é adequado para todo mundo"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 3. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:688
+#, c-format
+msgid "%s is suitable for toddlers"
+msgstr "%s é adequado para crianças de colo"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 5. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:692
+#, c-format
+msgid "%s is suitable for young children"
+msgstr "%s é adequado para crianças pequenas"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people up to around age 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:700
+#, c-format
+msgid "%s is suitable for teenagers"
+msgstr "%s é adequado para adolescentes"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people aged up to and over 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:704
+#, c-format
+#| msgid "%s file format"
+msgid "%s is suitable for adults"
+msgstr "%s é adequado para adultos"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for a specified age group. The first placeholder is the app name, the second
+#. * is the age group.
+#: src/gs-age-rating-context-dialog.c:709
+#, c-format
+msgid "%s is suitable for %s"
+msgstr "%s é adequado para %s"
+
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
 #: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
@@ -555,7 +599,6 @@ msgstr "Classificação por idade"
 #: src/gs-age-rating-context-dialog.ui:116
 #: src/gs-hardware-support-context-dialog.ui:115
 #: src/gs-safety-context-dialog.ui:264
-#| msgid "Show verbose debugging information"
 msgid "How to add missing information"
 msgstr "Como adicionar informações em falta"
 
@@ -975,7 +1018,6 @@ msgstr "Pode obter permissões arbitrárias"
 #. Translators: This indicates that we don’t know what permissions an app requires to run.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:352
-#| msgid "App has unknown permissions"
 msgid "Software has unknown permissions"
 msgstr "O programa tem permissões desconhecidas"
 
@@ -994,14 +1036,12 @@ msgstr "Código auditável"
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:379
-#| msgid "App comes from a trusted source"
 msgid "Software comes from a trusted source"
 msgstr "O programa vem de uma fonte confiável"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:386
-#| msgid "App developer is verified"
 msgid "Software developer is verified"
 msgstr "O desenvolvedor do programa é verificado"
 
@@ -1269,7 +1309,6 @@ msgstr "Novos & atualizados"
 
 #. Heading for the rest of the apps on a category page
 #: src/gs-category-page.ui:102
-#| msgid "Software"
 msgid "Other Software"
 msgstr "Outros programas"
 
@@ -1966,8 +2005,6 @@ msgid "Loading application details…"
 msgstr "Carregando detalhes do aplicativo…"
 
 #: src/gs-details-page.ui:79
-#| msgid ""
-#| "This app is not available in your language and will appear in US English."
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
@@ -2068,9 +2105,6 @@ msgid "No Metadata"
 msgstr "Sem metadados"
 
 #: src/gs-details-page.ui:741
-#| msgid ""
-#| "This app doesn’t provide any links to a website, code repository or issue "
-#| "tracker."
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2087,7 +2121,6 @@ msgid "_Donate"
 msgstr "_Doar"
 
 #: src/gs-details-page.ui:821
-#| msgid "_Contribute Translations"
 msgid "Contribute _Translations"
 msgstr "Contribuir com _tradução"
 
@@ -2544,6 +2577,14 @@ msgstr "Suporte a gamepad"
 msgid "Supports gamepads"
 msgstr "Tem suporte a gamepads"
 
+#. Translators: It’s unknown whether this app is supported on
+#. * the current hardware. The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:696
+#, c-format
+#| msgid "%s works on this device"
+msgid "%s probably works on this device"
+msgstr "%s provavelmente funciona neste dispositivo"
+
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:703
@@ -2595,11 +2636,6 @@ msgstr "Construído pela comunidade"
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:101
 #, c-format
-#| msgid ""
-#| "This app is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
 "released under the %s license.\n"
@@ -2616,13 +2652,6 @@ msgid "Proprietary"
 msgstr "Privativo"
 
 #: src/gs-license-tile.c:113
-#| msgid ""
-#| "This app is not developed in the open, so only its developers know how it "
-#| "works. It could be insecure, or actively do nefarious things that are "
-#| "hard to detect or prevent.\n"
-#| "\n"
-#| "By installing this app you are putting a high amount of trust in the "
-#| "developers."
 msgid ""
 "This software is not developed in the open, so only its developers know how "
 "it works. There may be restrictions on its use, and it may be harder to tell "
@@ -2639,7 +2668,6 @@ msgstr ""
 "desenvolvimento."
 
 #: src/gs-license-tile.ui:132
-#| msgid "Get _Involved"
 msgid "_Get Involved"
 msgstr "_Participe"
 
@@ -2776,7 +2804,6 @@ msgstr "fontes externas selecionadas"
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:692
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
@@ -2814,7 +2841,6 @@ msgid "Unknown"
 msgstr "Desconhecida"
 
 #: src/gs-page.c:276
-#| msgid "User Installation"
 msgid "User declined installation"
 msgstr "Instalação recusada pelo usuário"
 
@@ -2938,7 +2964,6 @@ msgid "_Remove"
 msgstr "_Remover"
 
 #: src/gs-repos-dialog.c:597
-#| msgid "No Repositories"
 msgid "Enable New Repositories"
 msgstr "Habilitar novos repositórios"
 
@@ -3310,7 +3335,6 @@ msgstr "Pode ler e escrever todos os dados no sistema de arquivos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
-#| msgid "Home Read/Write Access"
 msgid "Home Folder Read/Write Access"
 msgstr "Acesso de leitura/escrita à pasta Home"
 
@@ -3329,7 +3353,6 @@ msgstr "Pode ler todos os dados no sistema de arquivos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:249
-#| msgid "Home Read Access"
 msgid "Home Folder Read Access"
 msgstr "Acesso de leitura à pasta Home"
 
@@ -3339,7 +3362,6 @@ msgstr "Pode ler todos os dados em seu diretório pessoal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:259
-#| msgid "Downloads Read/Write Access"
 msgid "Download Folder Read/Write Access"
 msgstr "Acesso de leitura/escrita a pasta Downloads"
 
@@ -3349,7 +3371,6 @@ msgstr "Pode ler e escrever todos os dados em seu diretório de downloads"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:271
-#| msgid "Downloads Read Access"
 msgid "Download Folder Read Access"
 msgstr "Acesso de leitura à pasta downloads"
 
@@ -4069,7 +4090,6 @@ msgid "None"
 msgstr "Nada"
 
 #: src/gs-storage-context-dialog.c:132
-#| msgid "Application Updates"
 msgid "Application Data"
 msgstr "Dados do aplicativo"
 
@@ -4078,12 +4098,10 @@ msgid "Data needed for the application to run"
 msgstr "Dados necessários para o aplicativo ser executado"
 
 #: src/gs-storage-context-dialog.c:137
-#| msgid "Use Mobile Data?"
 msgid "User Data"
 msgstr "Dados do usuário"
 
 #: src/gs-storage-context-dialog.c:138
-#| msgid "Please restart the application."
 msgid "Data created by you in the application"
 msgstr "Dados criados por você no aplicativo"
 
@@ -4096,8 +4114,6 @@ msgid "Temporary cached data"
 msgstr "Dados armazenados temporariamente em cache"
 
 #: src/gs-storage-context-dialog.c:161
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "The application itself"
 msgstr "O aplicativo em si"
 
@@ -4454,7 +4470,6 @@ msgstr "Isso pode levar um tempo."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
-#| msgid "Up To Date"
 msgid "Up to Date"
 msgstr "Atualizado"
 
@@ -4539,7 +4554,6 @@ msgstr "_Baixar"
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
 #: src/gs-upgrade-banner.c:86
 #, c-format
-#| msgid "%s %s Now Available"
 msgid "%s %s Available"
 msgstr "%s %s disponível"
 
@@ -4548,7 +4562,6 @@ msgid "Learn about the new version"
 msgstr "Saiba mais sobre a nova versão"
 
 #: src/gs-upgrade-banner.c:151
-#| msgid "Downloading"
 msgid "Downloading…"
 msgstr "Baixando…"
 
@@ -4571,13 +4584,10 @@ msgid "A major upgrade, with new features and added polish."
 msgstr "Uma atualização importante, com novos recursos e polimento adicionado."
 
 #: src/gs-upgrade-banner.ui:213
-#| msgid "Restart & Update"
 msgid "_Restart & Upgrade"
 msgstr "_Reiniciar & atualizar"
 
 #: src/gs-upgrade-banner.ui:230
-#| msgid ""
-#| "It is recommended that you back up your data and files before upgrading."
 msgid "Remember to back up data and files before upgrading."
 msgstr "Lembre-se de fazer backup dos dados e arquivos antes de atualizar."
 
