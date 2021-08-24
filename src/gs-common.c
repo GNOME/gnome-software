@@ -185,11 +185,48 @@ typedef enum {
 	GS_APP_LICENSE_PATENT_CONCERN	= 2
 } GsAppLicenseHint;
 
+typedef struct
+{
+	GtkDialog *dialog;
+	gint response_id;
+	GMainLoop *loop;
+} RunInfo;
+
+static void
+shutdown_loop (RunInfo *run_info)
+{
+	if (g_main_loop_is_running (run_info->loop))
+		g_main_loop_quit (run_info->loop);
+}
+
+static void
+unmap_cb (GtkDialog *dialog,
+          RunInfo   *run_info)
+{
+	shutdown_loop (run_info);
+}
+
+static void
+response_cb (GtkDialog *dialog,
+             gint       response_id,
+             RunInfo   *run_info)
+{
+	run_info->response_id = response_id;
+	shutdown_loop (run_info);
+}
+
+static gboolean
+close_requested_cb (GtkDialog *dialog,
+                    RunInfo   *run_info)
+{
+	shutdown_loop (run_info);
+	return GDK_EVENT_PROPAGATE;
+}
+
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
 	GsAppLicenseHint hint = GS_APP_LICENSE_FREE;
-	GtkResponseType response;
 	GtkWidget *dialog;
 	const gchar *license;
 	gboolean already_enabled = FALSE;	/* FIXME */
@@ -206,6 +243,12 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(GString) body = NULL;
 	g_autoptr(GString) title = NULL;
+
+	RunInfo run_info = {
+		NULL,
+		GTK_RESPONSE_NONE,
+		NULL,
+	};
 
 	/* this is very crude */
 	license = gs_app_get_license (app);
@@ -302,13 +345,25 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 				       _("Enable and Install"),
 				       GTK_RESPONSE_OK);
 	}
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_YES) {
-		response = GTK_RESPONSE_OK;
+
+
+	/* Run */
+	if (!gtk_widget_get_visible (dialog))
+		gtk_window_present (GTK_WINDOW (dialog));
+
+	g_signal_connect (dialog, "close-request", G_CALLBACK (close_requested_cb), &run_info);
+	g_signal_connect (dialog, "response", G_CALLBACK (response_cb), &run_info);
+	g_signal_connect (dialog, "unmap", G_CALLBACK (unmap_cb), &run_info);
+
+	run_info.loop = g_main_loop_new (NULL, FALSE);
+	g_main_loop_run (run_info.loop);
+	g_clear_pointer (&run_info.loop, g_main_loop_unref);
+
+	if (run_info.response_id == GTK_RESPONSE_YES) {
+		run_info.response_id = GTK_RESPONSE_OK;
 		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
 	}
-	gtk_window_destroy (GTK_WINDOW (dialog));
-	return response;
+	return run_info.response_id;
 }
 
 gboolean
