@@ -137,11 +137,12 @@ gs_star_image_set_property (GObject *object,
 	}
 }
 
-static gboolean
-gs_star_image_draw (GtkWidget *widget,
-		    cairo_t *cr)
+static void
+gs_star_image_snapshot (GtkWidget   *widget,
+                        GtkSnapshot *snapshot)
 {
 	GtkAllocation allocation;
+	cairo_t *cr;
 	gdouble fraction;
 	gint radius;
 
@@ -150,6 +151,11 @@ gs_star_image_draw (GtkWidget *widget,
 	gtk_widget_get_allocation (widget, &allocation);
 
 	radius = MIN (allocation.width, allocation.height) / 2;
+
+	cr = gtk_snapshot_append_cairo (snapshot,
+					&GRAPHENE_RECT_INIT (0, 0,
+							     gtk_widget_get_width (widget),
+							     gtk_widget_get_height (widget)));
 
 	if (radius > 0) {
 		GtkStyleContext *style_context;
@@ -187,7 +193,7 @@ gs_star_image_draw (GtkWidget *widget,
 		g_clear_pointer (&star_bg, gdk_rgba_free);
 	}
 
-	return FALSE;
+	cairo_destroy (cr);
 }
 
 static void
@@ -201,7 +207,7 @@ gs_star_image_class_init (GsStarImageClass *klass)
 	object_class->set_property = gs_star_image_set_property;
 
 	widget_class = GTK_WIDGET_CLASS (klass);
-	widget_class->draw = gs_star_image_draw;
+	widget_class->snapshot = gs_star_image_snapshot;
 
 	g_object_class_install_property (object_class,
 					 PROP_FRACTION,
