@@ -978,8 +978,8 @@ window_key_pressed_cb (GtkEventControllerKey *key_controller,
 {
 	gboolean is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
 
-	if ((!is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Right) ||
+	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
 	    keyval == GDK_KEY_Back) {
 		/* GTK will only actually activate the one which is visible */
 		gtk_widget_activate (shell->button_back);

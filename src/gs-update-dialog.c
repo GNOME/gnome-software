@@ -218,8 +218,8 @@ key_pressed_cb (GtkEventControllerKey *key_controller,
 {
 	gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
 
-	if ((!is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Right) ||
+	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
 	    keyval == GDK_KEY_Back) {
 		adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
 		return GDK_EVENT_STOP;
