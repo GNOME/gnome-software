@@ -60,7 +60,6 @@ gnome_software_sources = [
   'gs-origin-popover-row.c',
   'gs-os-update-page.c',
   'gs-page.c',
-  'gs-picture.c',
   'gs-prefs-dialog.c',
   'gs-progress-button.c',
   'gs-removal-dialog.c',

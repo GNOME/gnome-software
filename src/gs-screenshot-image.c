@@ -14,7 +14,6 @@
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
-#include "gs-picture.h"
 
 #define SPINNER_TIMEOUT_SECS 2
 
@@ -99,13 +98,13 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	/* show icon */
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		if (pixbuf != NULL) {
-			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pixbuf);
+			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
 		ssimg->current_image = "image2";
 	} else {
 		if (pixbuf != NULL) {
-			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pixbuf);
+			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
 		ssimg->current_image = "image1";
@@ -223,9 +222,9 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 		return;
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pb);
+		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pb);
 	} else {
-		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pb);
+		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pb);
 	}
 }
 
@@ -682,7 +681,6 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 
-	g_type_ensure (GS_TYPE_PICTURE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
 }
 
