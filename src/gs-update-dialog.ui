@@ -13,6 +13,19 @@
     <property name="default-height">576</property>
 
     <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="key_pressed_cb"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGestureClick">
+        <!-- Mouse hardware back button -->
+        <property name="button">8</property>
+        <signal name="pressed" handler="button_pressed_cb"/>
+      </object>
+    </child>
+
+    <child>
       <object class="AdwDeck" id="deck">
         <property name="visible">True</property>
         <property name="can_swipe_back">True</property>

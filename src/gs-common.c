@@ -453,12 +453,11 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-static gboolean
-unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
+static void
+unset_focus (GtkWidget *widget, gpointer data)
 {
 	if (GTK_IS_WINDOW (widget))
 		gtk_window_set_focus (GTK_WINDOW (widget), NULL);
-	return FALSE;
 }
 
 /**
@@ -527,7 +526,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_widget_set_vexpand (sw, TRUE);
 	gtk_box_append (GTK_BOX (message_area), sw);
 
-	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
+	g_signal_connect (dialog, "map", G_CALLBACK (unset_focus), NULL);
 }
 
 /**

@@ -135,7 +135,6 @@ struct _GsDetailsPage
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
-	GtkWidget		*star_eventbox;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
@@ -1392,14 +1391,14 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	if (gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED) {
 		gtk_widget_set_visible (self->button_review, FALSE);
 		gtk_widget_set_sensitive (self->button_review, FALSE);
-		gtk_widget_set_sensitive (self->star_eventbox, FALSE);
+		gtk_widget_set_sensitive (self->star, FALSE);
 	} else if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
 		gtk_widget_set_sensitive (self->button_review, TRUE);
-		gtk_widget_set_sensitive (self->star_eventbox, TRUE);
+		gtk_widget_set_sensitive (self->star, TRUE);
 		gtk_widget_set_tooltip_text (self->button_review, NULL);
 	} else {
 		gtk_widget_set_sensitive (self->button_review, FALSE);
-		gtk_widget_set_sensitive (self->star_eventbox, FALSE);
+		gtk_widget_set_sensitive (self->star, FALSE);
 		gtk_widget_set_tooltip_text (self->button_review,
 					     /* TRANSLATORS: we need a remote server to process */
 					     _("You need internet access to write a review"));
@@ -2049,7 +2048,11 @@ gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_details_page_star_pressed_cb(GtkWidget *widget, GdkEventButton *event, GsDetailsPage *self)
+gs_details_page_star_pressed_cb (GtkGestureClick *click,
+                                 gint             n_press,
+                                 gdouble          x,
+                                 gdouble          y,
+                                 GsDetailsPage   *self)
 {
 	gs_details_page_write_review_cb(GTK_BUTTON (self->button_review), self);
 }
@@ -2296,7 +2299,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);

@@ -23,9 +23,24 @@
     <signal name="map" handler="gs_shell_main_window_mapped_cb"/>
     <signal name="realize" handler="gs_shell_main_window_realized_cb"/>
     <signal name="delete-event" handler="main_window_closed_cb"/>
-    <signal name="key-press-event" handler="window_key_press_event" after="yes"/>
-    <signal name="key-press-event" handler="window_keypress_handler"/>
-    <signal name="button-press-event" handler="window_button_press_event" after="yes"/>
+    <child>
+      <object class="GtkEventControllerKey">
+        <property name="propagation-phase">capture</property>
+        <signal name="key-pressed" handler="window_keypress_handler"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="window_key_pressed_cb"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGestureClick">
+        <!-- Mouse hardware back button -->
+        <property name="button">8</property>
+        <signal name="pressed" handler="window_button_pressed_cb"/>
+      </object>
+    </child>
     <child>
       <object class="GtkStack" id="stack_loading">
         <property name="visible">True</property>

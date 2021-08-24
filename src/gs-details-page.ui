@@ -197,15 +197,16 @@
                                             <property name="visible">True</property>
                                             <property name="valign">start</property>
                                             <child>
-                                              <object class="GtkEventBox" id="star_eventbox">
+                                              <object class="GsStarWidget" id="star">
                                                 <property name="visible">True</property>
-                                                <signal name="button-press-event" handler="gs_details_page_star_pressed_cb"/>
+                                                <property name="halign">start</property>
+                                                <property name="valign">center</property>
+                                                <property name="icon-size">16</property>
                                                 <child>
-                                                  <object class="GsStarWidget" id="star">
-                                                    <property name="visible">True</property>
-                                                    <property name="halign">start</property>
-                                                    <property name="valign">center</property>
-                                                    <property name="icon-size">16</property>
+                                                  <object class="GtkGestureClick">
+                                                    <!-- GDK_BUTTON_PRIMARY -->
+                                                    <property name="button">1</property>
+                                                    <signal name="pressed" handler="gs_details_page_star_pressed_cb" object="GsDetailsPage" swapped="no" />
                                                   </object>
                                                 </child>
                                               </object>

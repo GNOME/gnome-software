@@ -905,37 +905,37 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 }
 
 static gboolean
-window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
+window_keypress_handler (GtkEventControllerKey *key_controller,
+                         guint                  keyval,
+                         guint                  keycode,
+                         GdkModifierType        state,
+                         GsShell               *shell)
 {
 	/* handle ctrl+f shortcut */
-	if (event->type == GDK_KEY_PRESS) {
-		GdkEventKey *e = (GdkEventKey *) event;
-		if ((e->state & GDK_CONTROL_MASK) > 0 &&
-		    e->keyval == GDK_KEY_f) {
-			if (!adw_search_bar_get_search_mode (ADW_SEARCH_BAR (shell->search_bar))) {
-				GsShellMode mode = gs_shell_get_mode (shell);
+	if ((state & GDK_CONTROL_MASK) > 0 && keyval == GDK_KEY_f) {
+		if (!adw_search_bar_get_search_mode (ADW_SEARCH_BAR (shell->search_bar))) {
+			GsShellMode mode = gs_shell_get_mode (shell);
 
-				adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), TRUE);
-				gtk_widget_grab_focus (shell->entry_search);
+			adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), TRUE);
+			gtk_widget_grab_focus (shell->entry_search);
 
-				/* If the mode doesn't have a search button,
-				 * switch to the search page right away,
-				 * otherwise we would show the search bar
-				 * without a button to toggle it. */
-				switch (mode) {
-				case GS_SHELL_MODE_OVERVIEW:
-				case GS_SHELL_MODE_INSTALLED:
-				case GS_SHELL_MODE_SEARCH:
-					break;
-				default:
-					gs_shell_show_search (shell, "");
-					break;
-				}
-			} else {
-				adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), FALSE);
+			/* If the mode doesn't have a search button,
+			 * switch to the search page right away,
+			 * otherwise we would show the search bar
+			 * without a button to toggle it. */
+			switch (mode) {
+			case GS_SHELL_MODE_OVERVIEW:
+			case GS_SHELL_MODE_INSTALLED:
+			case GS_SHELL_MODE_SEARCH:
+				break;
+			default:
+				gs_shell_show_search (shell, "");
+				break;
 			}
-			return GDK_EVENT_STOP;
+		} else {
+			adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), FALSE);
 		}
+		return GDK_EVENT_STOP;
 	}
 
 	/* pass to search bar */
@@ -971,21 +971,17 @@ search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 }
 
 static gboolean
-window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
+window_key_pressed_cb (GtkEventControllerKey *key_controller,
+                       guint                  keyval,
+                       guint                  keycode,
+                       GdkModifierType        state,
+                       GsShell               *shell)
 {
-	GdkKeymap *keymap;
-	GdkModifierType state;
-	gboolean is_rtl;
+	gboolean is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
 
-	state = event->state;
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (win));
-	gdk_keymap_add_virtual_modifiers (keymap, &state);
-	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
-
-	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
-	    event->keyval == GDK_KEY_Back) {
+	if ((!is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Right) ||
+	    keyval == GDK_KEY_Back) {
 		/* GTK will only actually activate the one which is visible */
 		gtk_widget_activate (shell->button_back);
 		gtk_widget_activate (shell->button_back2);
@@ -995,17 +991,18 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	return GDK_EVENT_PROPAGATE;
 }
 
-static gboolean
-window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell)
+static void
+window_button_pressed_cb (GtkGestureClick *click_gesture,
+                          gint             n_press,
+                          gdouble          x,
+                          gdouble          y,
+                          GsShell         *shell)
 {
-	/* Mouse hardware back button is 8 */
-	if (event->button != 8)
-		return GDK_EVENT_PROPAGATE;
-
 	/* GTK will only actually activate the one which is visible */
 	gtk_widget_activate (shell->button_back);
 	gtk_widget_activate (shell->button_back2);
-	return GDK_EVENT_STOP;
+
+	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static gboolean
@@ -2598,9 +2595,9 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_mapped_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_realized_cb);
 	gtk_widget_class_bind_template_callback (widget_class, main_window_closed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, window_key_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, window_key_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
-	gtk_widget_class_bind_template_callback (widget_class, window_button_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, window_button_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);

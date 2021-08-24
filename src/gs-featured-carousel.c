@@ -255,23 +255,24 @@ gs_featured_carousel_dispose (GObject *object)
 }
 
 static gboolean
-gs_featured_carousel_key_press_event (GtkWidget   *widget,
-                                      GdkEventKey *event)
+key_pressed_cb (GtkEventControllerKey *controller,
+                guint                  keyval,
+                guint                  keycode,
+                GdkModifierType        state,
+                GsFeaturedCarousel    *self)
 {
-	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (widget);
-
 	if (gtk_widget_is_visible (GTK_WIDGET (self->previous_button)) &&
 	    gtk_widget_is_sensitive (GTK_WIDGET (self->previous_button)) &&
-	    ((gtk_widget_get_direction (GTK_WIDGET (self->previous_button)) == GTK_TEXT_DIR_LTR && event->keyval == GDK_KEY_Left) ||
-	     (gtk_widget_get_direction (GTK_WIDGET (self->previous_button)) == GTK_TEXT_DIR_RTL && event->keyval == GDK_KEY_Right))) {
+	    ((gtk_widget_get_direction (GTK_WIDGET (self->previous_button)) == GTK_TEXT_DIR_LTR && keyval == GDK_KEY_Left) ||
+	     (gtk_widget_get_direction (GTK_WIDGET (self->previous_button)) == GTK_TEXT_DIR_RTL && keyval == GDK_KEY_Right))) {
 		gtk_widget_activate (GTK_WIDGET (self->previous_button));
 		return GDK_EVENT_STOP;
 	}
 
 	if (gtk_widget_is_visible (GTK_WIDGET (self->next_button)) &&
 	    gtk_widget_is_sensitive (GTK_WIDGET (self->next_button)) &&
-	    ((gtk_widget_get_direction (GTK_WIDGET (self->next_button)) == GTK_TEXT_DIR_LTR && event->keyval == GDK_KEY_Right) ||
-	     (gtk_widget_get_direction (GTK_WIDGET (self->next_button)) == GTK_TEXT_DIR_RTL && event->keyval == GDK_KEY_Left))) {
+	    ((gtk_widget_get_direction (GTK_WIDGET (self->next_button)) == GTK_TEXT_DIR_LTR && keyval == GDK_KEY_Right) ||
+	     (gtk_widget_get_direction (GTK_WIDGET (self->next_button)) == GTK_TEXT_DIR_RTL && keyval == GDK_KEY_Left))) {
 		gtk_widget_activate (GTK_WIDGET (self->next_button));
 		return GDK_EVENT_STOP;
 	}
@@ -308,8 +309,6 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	object_class->get_property = gs_featured_carousel_get_property;
 	object_class->set_property = gs_featured_carousel_set_property;
 	object_class->dispose = gs_featured_carousel_dispose;
-
-	widget_class->key_press_event = gs_featured_carousel_key_press_event;
 
 	/**
 	 * GsFeaturedCarousel:apps: (nullable)
@@ -375,6 +374,7 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_direction_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, carousel_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
 }
 
 /**

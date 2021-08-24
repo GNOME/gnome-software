@@ -211,22 +211,17 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 }
 
 static gboolean
-key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+key_pressed_cb (GtkEventControllerKey *key_controller,
+                guint                  keyval,
+                guint                  keycode,
+                GdkModifierType        state,
+                GsUpdateDialog        *dialog)
 {
-	GsUpdateDialog *dialog = (GsUpdateDialog *) widget;
-	GdkKeymap *keymap;
-	GdkModifierType state;
-	gboolean is_rtl;
+	gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
 
-	state = event->state;
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (widget));
-	gdk_keymap_add_virtual_modifiers (keymap, &state);
-	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
-
-	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
-	    event->keyval == GDK_KEY_Back) {
+	if ((!is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_MOD1_MASK && keyval == GDK_KEY_Right) ||
+	    keyval == GDK_KEY_Back) {
 		adw_deck_navigate (ADW_DECK (dialog->deck), ADW_NAVIGATION_DIRECTION_BACK);
 		return GDK_EVENT_STOP;
 	}
@@ -234,15 +229,15 @@ key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	return GDK_EVENT_PROPAGATE;
 }
 
-static gboolean
-button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
+static void
+button_pressed_cb (GtkGestureClick *click_gesture,
+                   gint             n_press,
+                   gdouble          x,
+                   gdouble          y,
+                   GsUpdateDialog  *dialog)
 {
-	/* Mouse hardware back button is 8 */
-	if (event->button != 8)
-		return GDK_EVENT_PROPAGATE;
-
 	adw_deck_navigate (ADW_DECK (dialog->deck), ADW_NAVIGATION_DIRECTION_BACK);
-	return GDK_EVENT_STOP;
+	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static void
@@ -338,12 +333,6 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
-
-	/* global keynav and mouse back button */
-	g_signal_connect (dialog, "key-press-event",
-			  G_CALLBACK (key_press_event), NULL);
-	g_signal_connect (dialog, "button-press-event",
-			  G_CALLBACK (button_press_event), NULL);
 }
 
 static void
@@ -391,7 +380,9 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
+	gtk_widget_class_bind_template_callback (widget_class, button_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, deck_child_transition_cb);
+	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }

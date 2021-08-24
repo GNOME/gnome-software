@@ -8,6 +8,11 @@
     <property name="spacing">12</property>
     <property name="visible">True</property>
     <property name="can-focus">True</property>
+    <child>
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="key_pressed_cb"/>
+      </object>
+    </child>
     <signal name="clicked" handler="carousel_clicked_cb"/>
     <style>
       <class name="featured-carousel"/>
