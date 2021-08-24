@@ -1299,7 +1299,7 @@ gs_updates_page_setup (GsPage *page,
 	gtk_box_prepend (GTK_BOX (self->header_start_box), self->header_spinner_start);
 
 	/* setup update details window */
-	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
+	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic");
 	gtk_accessible_update_property (GTK_ACCESSIBLE (self->button_refresh),
 					GTK_ACCESSIBLE_PROPERTY_LABEL, _("Check for updates"),
 					-1);
