@@ -230,8 +230,9 @@
                           </object>
                         </child>
                         <child>
-                          <object class="AdwSearchBar" id="search_bar">
+                          <object class="GtkSearchBar" id="search_bar">
                             <property name="visible">True</property>
+                            <property name="key-capture-widget">GsShell</property>
                             <child>
                               <object class="AdwClamp">
                                 <property name="visible">True</property>

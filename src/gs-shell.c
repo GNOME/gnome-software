@@ -468,7 +468,7 @@ update_header_widgets (GsShell *shell)
 	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
 
 	/* hide unless we're going to search */
-	adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar),
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
 	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
@@ -913,10 +913,10 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 {
 	/* handle ctrl+f shortcut */
 	if ((state & GDK_CONTROL_MASK) > 0 && keyval == GDK_KEY_f) {
-		if (!adw_search_bar_get_search_mode (ADW_SEARCH_BAR (shell->search_bar))) {
+		if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
 			GsShellMode mode = gs_shell_get_mode (shell);
 
-			adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), TRUE);
+			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
 			gtk_widget_grab_focus (shell->entry_search);
 
 			/* If the mode doesn't have a search button,
@@ -933,13 +933,12 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 				break;
 			}
 		} else {
-			adw_search_bar_set_search_mode (ADW_SEARCH_BAR (shell->search_bar), FALSE);
+			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), FALSE);
 		}
 		return GDK_EVENT_STOP;
 	}
 
-	/* pass to search bar */
-	return adw_search_bar_handle_event (ADW_SEARCH_BAR (shell->search_bar), event);
+	return GDK_EVENT_PROPAGATE;
 }
 
 static void
@@ -2625,7 +2624,7 @@ gs_shell_init (GsShell *shell)
 {
 	gtk_widget_init_template (GTK_WIDGET (shell));
 
-	adw_search_bar_connect_entry (ADW_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
+	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
 	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_window_destroy);
