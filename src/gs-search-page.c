@@ -179,7 +179,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gtk_widget_set_margin_start (w, 20);
 		gtk_widget_set_margin_end (w, 20);
 		context = gtk_widget_get_style_context (w);
-		gtk_style_context_add_class (context, GTK_STYLE_CLASS_DIM_LABEL);
+		gtk_style_context_add_class (context, "dim-label");
 		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_search), w, -1);
 		gtk_widget_show (w);
 	} else {
