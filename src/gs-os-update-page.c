@@ -54,6 +54,7 @@ struct _GsOsUpdatePage
 	GtkWidget	*box;
 	GtkWidget	*group;
 	GtkWidget	*header_bar;
+	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
 	GtkWidget	*list_boxes[GS_OS_UPDATE_PAGE_SECTION_LAST];
@@ -404,8 +405,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 	}
 
 	if (app) {
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
-					  gs_app_get_name (app));
+		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group),
 						       gs_app_get_description (app));
 
@@ -422,7 +422,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 			gtk_list_box_insert (GTK_LIST_BOX (page->list_boxes[section]), row, -1);
 		}
 	} else {
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar), NULL);
+		adw_window_title_set_title (page->window_title, NULL);
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (page->group), NULL);
 	}
 
@@ -520,6 +520,7 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, box);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, group);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, header_bar);
+	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, window_title);
 }
 
 /**

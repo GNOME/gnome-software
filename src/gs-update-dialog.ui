@@ -41,7 +41,11 @@
               <object class="AdwHeaderBar">
                 <property name="show_close_button">True</property>
                 <property name="visible">True</property>
-                <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
+                <property name="title-widget">
+                  <object class="AdwWindowTitle" id="window_title">
+                    <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
+                  </object>
+                </property>
               </object>
             </child>
             <child>

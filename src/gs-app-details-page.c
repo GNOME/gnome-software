@@ -56,6 +56,7 @@ struct _GsAppDetailsPage
 	GtkWidget	*permissions_section_box;
 	GtkWidget	*permissions_section_content;
 	GtkWidget	*scrolledwindow_details;
+	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
 };
@@ -139,8 +140,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	kind = gs_app_get_kind (app);
 	if (kind == AS_COMPONENT_KIND_GENERIC &&
 	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
-					  gs_app_get_name (app));
+		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL &&
 		   gs_app_get_update_version (app) != NULL) {
 		g_autofree gchar *tmp = NULL;
@@ -153,13 +153,13 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		tmp = g_strdup_printf (_("%s %s"),
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar), tmp);
+		adw_window_title_set_title (page->window_title, tmp);
 	} else if (gs_app_get_source_default (app) != NULL) {
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
-					  gs_app_get_source_default (app));
+		adw_window_title_set_title (page->window_title,
+					    gs_app_get_source_default (app));
 	} else {
-		adw_header_bar_set_title (ADW_HEADER_BAR (page->header_bar),
-					  gs_app_get_update_version (app));
+		adw_window_title_set_title (page->window_title,
+					    gs_app_get_update_version (app));
 	}
 
 	/* set update header */
@@ -411,6 +411,7 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_box);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_content);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
 

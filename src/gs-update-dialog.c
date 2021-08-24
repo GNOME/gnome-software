@@ -29,6 +29,7 @@ struct _GsUpdateDialog
 	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	AdwWindowTitle	*window_title;
 };
 
 G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_WINDOW)
@@ -103,7 +104,6 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	/* set the header title using any one of the applications */
 	install_date = gs_app_get_install_date (gs_app_list_index (list, 0));
 	if (install_date > 0) {
-		GtkWidget *header;
 		g_autoptr(GDateTime) date = NULL;
 		g_autofree gchar *date_str = NULL;
 		g_autofree gchar *subtitle = NULL;
@@ -116,8 +116,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		   The date format is defined by the locale's preferred date representation
 		   ("%x" in strftime.) */
 		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
-		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
-		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
+		adw_window_title_set_subtitle (dialog->window_title, subtitle);
 	}
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
@@ -380,6 +379,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, button_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, deck_child_transition_cb);
 	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
