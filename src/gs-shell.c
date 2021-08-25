@@ -2141,17 +2141,6 @@ gs_shell_add_about_menu_item (GsShell *shell)
 	g_menu_append_item (G_MENU (shell->primary_menu), menu_item);
 }
 
-static gboolean
-gs_shell_close_window_accel_cb (GtkAccelGroup *accel_group,
-				GObject *acceleratable,
-				guint keyval,
-				GdkModifierType modifier)
-{
-	gtk_window_close (GTK_WINDOW (acceleratable));
-
-	return TRUE;
-}
-
 static void
 updates_page_notify_counter_cb (GObject    *obj,
                                 GParamSpec *pspec,
@@ -2186,8 +2175,6 @@ category_page_app_clicked_cb (GsCategoryPage *page,
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
-	g_autoptr(GtkAccelGroup) accel_group = NULL;
-	GClosure *closure;
 	GsOdrsProvider *odrs_provider;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
@@ -2210,12 +2197,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	shell->cancellable = g_object_ref (cancellable);
 
 	shell->settings = g_settings_new ("org.gnome.software");
-
-	/* get UI */
-	accel_group = gtk_accel_group_new ();
-	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
-	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
-	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
 	/* set up pages */
 	gs_shell_setup_pages (shell);
@@ -2617,6 +2598,8 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_q, GDK_CONTROL_MASK, "window.close", NULL);
 }
 
 static void
