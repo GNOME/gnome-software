@@ -9,181 +9,188 @@
     <child>
       <object class="GtkStack" id="stack_overview">
         <property name="visible">True</property>
+
         <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-
-            <child>
-              <object class="GtkInfoBar" id="infobar_third_party">
+          <object class="GtkStackPage">
+            <property name="name">overview</property>
+            <property name="child">
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="app_paintable">True</property>
-                <property name="show_close_button">True</property>
-                <child internal-child="action_area">
-                  <object class="GtkBox">
-                    <property name="spacing">6</property>
-                    <child/>
-                  </object>
-                </child>
-                <child internal-child="content_area">
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">6</property>
-                    <property name="border_width">12</property>
-                    <child>
-                      <object class="GtkLabel" id="label_third_party_title">
-                        <property name="visible">True</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Enable Third Party Software Repositories?</property>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="label_third_party">
-                        <property name="visible">True</property>
-                        <property name="halign">start</property>
-                        <property name="label">Provides access to additional software.</property>
-                        <property name="wrap">True</property>
-                        <property name="wrap_mode">word-char</property>
-                        <property name="xalign">0</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+                <property name="orientation">vertical</property>
 
-            <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_overview">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
                 <child>
-                  <object class="GtkViewport" id="viewport_overview">
+                  <object class="GtkInfoBar" id="infobar_third_party">
                     <property name="visible">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <child>
-                      <object class="AdwClamp">
-                        <property name="visible">True</property>
-                        <!-- We use the same sizes as the category page. -->
-                        <property name="maximum-size">1000</property>
-                        <property name="tightening-threshold">600</property>
+                    <property name="app_paintable">True</property>
+                    <property name="show_close_button">True</property>
+                    <child internal-child="action_area">
+                      <object class="GtkBox">
+                        <property name="spacing">6</property>
+                        <child/>
+                      </object>
+                    </child>
+                    <child internal-child="content_area">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
+                        <property name="border_width">12</property>
                         <child>
-                          <object class="GtkBox" id="box_overview">
+                          <object class="GtkLabel" id="label_third_party_title">
                             <property name="visible">True</property>
-                            <property name="halign">center</property>
-                            <property name="hexpand">False</property>
-                            <property name="border_width">12</property>
-                            <property name="orientation">vertical</property>
-                            <property name="margin-top">12</property>
-                            <property name="margin-bottom">24</property>
-                            <property name="valign">start</property>
-                            <property name="spacing">6</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Enable Third Party Software Repositories?</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_third_party">
+                            <property name="visible">True</property>
+                            <property name="halign">start</property>
+                            <property name="label">Provides access to additional software.</property>
+                            <property name="wrap">True</property>
+                            <property name="wrap_mode">word-char</property>
+                            <property name="xalign">0</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
 
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow_overview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <child>
+                      <object class="GtkViewport" id="viewport_overview">
+                        <property name="visible">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <child>
+                          <object class="AdwClamp">
+                            <property name="visible">True</property>
+                            <!-- We use the same sizes as the category page. -->
+                            <property name="maximum-size">1000</property>
+                            <property name="tightening-threshold">600</property>
                             <child>
-                              <object class="GsFeaturedCarousel" id="featured_carousel">
+                              <object class="GtkBox" id="box_overview">
                                 <property name="visible">True</property>
-                                <property name="height-request">150</property>
+                                <property name="halign">center</property>
+                                <property name="hexpand">False</property>
+                                <property name="border_width">12</property>
+                                <property name="orientation">vertical</property>
+                                <property name="margin-top">12</property>
+                                <property name="margin-bottom">24</property>
                                 <property name="valign">start</property>
-                                <signal name="app-clicked" handler="featured_carousel_app_clicked_cb"/>
+                                <property name="spacing">6</property>
+
+                                <child>
+                                  <object class="GsFeaturedCarousel" id="featured_carousel">
+                                    <property name="visible">True</property>
+                                    <property name="height-request">150</property>
+                                    <property name="valign">start</property>
+                                    <signal name="app-clicked" handler="featured_carousel_app_clicked_cb"/>
+                                  </object>
+                                </child>
+
+                                <child>
+                                  <object class="GtkFlowBox" id="flowbox_categories">
+                                    <property name="visible">True</property>
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <property name="row_spacing">14</property>
+                                    <property name="column_spacing">14</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="min_children_per_line">2</property>
+                                    <property name="max_children_per_line">3</property>
+                                    <property name="selection_mode">none</property>
+                                  </object>
+                                </child>
+
+                                <child>
+                                  <object class="GtkLabel" id="popular_heading">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Choice</property>
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <style>
+                                      <class name="index-title-alignment-software"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFlowBox" id="box_popular">
+                                    <property name="visible">True</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="column-spacing">14</property>
+                                    <property name="row-spacing">14</property>
+                                    <property name="valign">start</property>
+                                    <accessibility>
+                                      <relation name="labelled-by">popular_heading</relation>
+                                    </accessibility>
+                                  </object>
+                                </child>
+
+                                <child>
+                                  <object class="GtkLabel" id="recent_heading">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">New &amp; Updated</property>
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <style>
+                                      <class name="index-title-alignment-software"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFlowBox" id="box_recent">
+                                    <property name="visible">True</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="column-spacing">14</property>
+                                    <property name="row-spacing">14</property>
+                                    <property name="valign">start</property>
+                                    <property name="selection-mode">none</property>
+                                    <accessibility>
+                                      <relation name="labelled-by">recent_heading</relation>
+                                    </accessibility>
+                                  </object>
+                                </child>
+
+                                <child>
+                                  <object class="GtkLabel" id="iconless_categories_heading">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes" comments="Translators: This is a heading for a list of categories.">Other Categories</property>
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <style>
+                                      <class name="index-title-alignment-software"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFlowBox" id="flowbox_iconless_categories">
+                                    <property name="visible">True</property>
+                                    <property name="row_spacing">14</property>
+                                    <property name="column_spacing">14</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="min_children_per_line">2</property>
+                                    <property name="max_children_per_line">3</property>
+                                    <property name="selection_mode">none</property>
+                                    <accessibility>
+                                      <relation name="labelled-by">iconless_categories_heading</relation>
+                                    </accessibility>
+                                  </object>
+                                </child>
                               </object>
                             </child>
 
-                            <child>
-                              <object class="GtkFlowBox" id="flowbox_categories">
-                                <property name="visible">True</property>
-                                <property name="margin-top">21</property>
-                                <property name="margin-bottom">6</property>
-                                <property name="row_spacing">14</property>
-                                <property name="column_spacing">14</property>
-                                <property name="homogeneous">True</property>
-                                <property name="min_children_per_line">2</property>
-                                <property name="max_children_per_line">3</property>
-                                <property name="selection_mode">none</property>
-                              </object>
-                            </child>
-
-                            <child>
-                              <object class="GtkLabel" id="popular_heading">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Choice</property>
-                                <property name="margin-top">21</property>
-                                <property name="margin-bottom">6</property>
-                                <style>
-                                  <class name="index-title-alignment-software"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFlowBox" id="box_popular">
-                                <property name="visible">True</property>
-                                <property name="homogeneous">True</property>
-                                <property name="column-spacing">14</property>
-                                <property name="row-spacing">14</property>
-                                <property name="valign">start</property>
-                                <accessibility>
-                                  <relation name="labelled-by">popular_heading</relation>
-                                </accessibility>
-                              </object>
-                            </child>
-
-                            <child>
-                              <object class="GtkLabel" id="recent_heading">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">New &amp; Updated</property>
-                                <property name="margin-top">21</property>
-                                <property name="margin-bottom">6</property>
-                                <style>
-                                  <class name="index-title-alignment-software"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFlowBox" id="box_recent">
-                                <property name="visible">True</property>
-                                <property name="homogeneous">True</property>
-                                <property name="column-spacing">14</property>
-                                <property name="row-spacing">14</property>
-                                <property name="valign">start</property>
-                                <property name="selection-mode">none</property>
-                                <accessibility>
-                                  <relation name="labelled-by">recent_heading</relation>
-                                </accessibility>
-                              </object>
-                            </child>
-
-                            <child>
-                              <object class="GtkLabel" id="iconless_categories_heading">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes" comments="Translators: This is a heading for a list of categories.">Other Categories</property>
-                                <property name="margin-top">21</property>
-                                <property name="margin-bottom">6</property>
-                                <style>
-                                  <class name="index-title-alignment-software"/>
-                                </style>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkFlowBox" id="flowbox_iconless_categories">
-                                <property name="visible">True</property>
-                                <property name="row_spacing">14</property>
-                                <property name="column_spacing">14</property>
-                                <property name="homogeneous">True</property>
-                                <property name="min_children_per_line">2</property>
-                                <property name="max_children_per_line">3</property>
-                                <property name="selection_mode">none</property>
-                                <accessibility>
-                                  <relation name="labelled-by">iconless_categories_heading</relation>
-                                </accessibility>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -191,59 +198,60 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="name">overview</property>
-          </packing>
         </child>
+
         <child>
-          <object class="GtkGrid" id="noresults_grid_overview">
-            <property name="visible">True</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="row-spacing">12</property>
-            <property name="column-spacing">12</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
-            <child>
-              <object class="GtkImage" id="noappdata_icon">
+          <object class="GtkStackPage">
+            <property name="name">no-results</property>
+            <property name="child">
+              <object class="GtkGrid" id="noresults_grid_overview">
                 <property name="visible">True</property>
-                <property name="icon_name">org.gnome.Software-symbolic</property>
-                <property name="pixel-size">64</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="row-spacing">12</property>
+                <property name="column-spacing">12</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <child>
+                  <object class="GtkImage" id="noappdata_icon">
+                    <property name="visible">True</property>
+                    <property name="icon_name">org.gnome.Software-symbolic</property>
+                    <property name="pixel-size">64</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="noappdata_label">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">No Application Data Found</property>
+                    <property name="halign">start</property>
+                    <property name="valign">center</property>
+                    <property name="wrap">True</property>
+                    <attributes>
+                      <attribute name="scale" value="1.4"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
               </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="noappdata_label">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">No Application Data Found</property>
-                <property name="halign">start</property>
-                <property name="valign">center</property>
-                <property name="wrap">True</property>
-                <attributes>
-                  <attribute name="scale" value="1.4"/>
-                </attributes>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="name">no-results</property>
-          </packing>
         </child>
+
       </object>
     </child>
   </template>

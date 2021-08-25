@@ -26,45 +26,55 @@
         <child>
           <object class="GtkStack" id="button_stack">
             <property name="visible">True</property>
+
             <child>
-              <object class="GsProgressButton" id="button_download">
-                <property name="visible">True</property>
-                <property name="use_underline">True</property>
-                <property name="label" translatable="yes">_Download</property>
-                <signal name="clicked" handler="_button_download_clicked_cb" swapped="yes"/>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-              <packing>
+              <object class="GtkStackPage">
                 <property name="name">download</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GsProgressButton" id="button_update">
-                <property name="visible">True</property>
-                <signal name="clicked" handler="_button_update_all_clicked_cb" swapped="yes"/>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
+                <property name="child">
+                  <object class="GsProgressButton" id="button_download">
+                    <property name="visible">True</property>
+                    <property name="use_underline">True</property>
+                    <property name="label" translatable="yes">_Download</property>
+                    <signal name="clicked" handler="_button_download_clicked_cb" swapped="yes"/>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </property>
               </object>
-              <packing>
+            </child>
+
+            <child>
+              <object class="GtkStackPage">
                 <property name="name">update</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GsProgressButton" id="button_cancel">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Cancel</property>
-                <signal name="clicked" handler="_button_cancel_clicked_cb" swapped="yes"/>
-                <style>
-                  <class name="install-progress"/>
-                </style>
+                <property name="child">
+                  <object class="GsProgressButton" id="button_update">
+                    <property name="visible">True</property>
+                    <signal name="clicked" handler="_button_update_all_clicked_cb" swapped="yes"/>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </property>
               </object>
-              <packing>
-                <property name="name">cancel</property>
-              </packing>
             </child>
+
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">cancel</property>
+                <property name="child">
+                  <object class="GsProgressButton" id="button_cancel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Cancel</property>
+                    <signal name="clicked" handler="_button_cancel_clicked_cb" swapped="yes"/>
+                    <style>
+                      <class name="install-progress"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+
           </object>
           <packing>
             <property name="pack-type">end</property>

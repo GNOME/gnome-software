@@ -8,127 +8,136 @@
     <child>
       <object class="GtkStack" id="stack_install">
         <property name="visible">True</property>
+
         <child>
-          <object class="GtkSpinner" id="spinner_install">
-            <property name="visible">True</property>
-            <property name="width_request">32</property>
-            <property name="height_request">32</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-          </object>
-          <packing>
+          <object class="GtkStackPage">
             <property name="name">spinner</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_install">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_install">
+            <property name="child">
+              <object class="GtkSpinner" id="spinner_install">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
+                <property name="width_request">32</property>
+                <property name="height_request">32</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
-                <style>
-                  <class name="list-page"/>
-                </style>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">view</property>
+            <property name="child">
+              <object class="GtkBox" id="box_install">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="AdwClamp">
+                  <object class="GtkScrolledWindow" id="scrolledwindow_install">
                     <property name="visible">True</property>
-                    <property name="maximum-size">600</property>
-                    <property name="tightening-threshold">400</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="vexpand">True</property>
+                    <style>
+                      <class name="list-page"/>
+                    </style>
                     <child>
-                      <object class="GtkBox">
+                      <object class="AdwClamp">
                         <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
+                        <property name="maximum-size">600</property>
+                        <property name="tightening-threshold">400</property>
                         <child>
-                          <object class="AdwPreferencesGroup" id="group_install_in_progress">
-                            <property name="visible">False</property>
-                            <property name="title" translatable="yes">In Progress</property>
-                            <style>
-                              <class name="section"/>
-                            </style>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkListBox" id="list_box_install_in_progress">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="selection_mode">none</property>
-                                <signal name="add" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
-                                <signal name="remove" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
-                                <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                              <object class="AdwPreferencesGroup" id="group_install_in_progress">
+                                <property name="visible">False</property>
+                                <property name="title" translatable="yes">In Progress</property>
                                 <style>
-                                  <class name="content"/>
+                                  <class name="section"/>
                                 </style>
+                                <child>
+                                  <object class="GtkListBox" id="list_box_install_in_progress">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
+                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
+                                    <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwPreferencesGroup" id="group_install_apps">
-                            <property name="visible">False</property>
-                            <property name="title" translatable="yes">Applications</property>
-                            <style>
-                              <class name="section"/>
-                            </style>
                             <child>
-                              <object class="GtkListBox" id="list_box_install_apps">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="selection_mode">none</property>
-                                <signal name="add" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
-                                <signal name="remove" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
-                                <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                              <object class="AdwPreferencesGroup" id="group_install_apps">
+                                <property name="visible">False</property>
+                                <property name="title" translatable="yes">Applications</property>
                                 <style>
-                                  <class name="content"/>
+                                  <class name="section"/>
                                 </style>
+                                <child>
+                                  <object class="GtkListBox" id="list_box_install_apps">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
+                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
+                                    <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwPreferencesGroup" id="group_install_system_apps">
-                            <property name="visible">False</property>
-                            <property name="title" translatable="yes">System Applications</property>
-                            <style>
-                              <class name="section"/>
-                            </style>
                             <child>
-                              <object class="GtkListBox" id="list_box_install_system_apps">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="selection_mode">none</property>
-                                <signal name="add" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
-                                <signal name="remove" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
-                                <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                              <object class="AdwPreferencesGroup" id="group_install_system_apps">
+                                <property name="visible">False</property>
+                                <property name="title" translatable="yes">System Applications</property>
                                 <style>
-                                  <class name="content"/>
+                                  <class name="section"/>
                                 </style>
+                                <child>
+                                  <object class="GtkListBox" id="list_box_install_system_apps">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
+                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
+                                    <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwPreferencesGroup" id="group_install_addons">
-                            <property name="visible">False</property>
-                            <property name="title" translatable="yes">Add-ons</property>
-                            <style>
-                              <class name="section"/>
-                            </style>
                             <child>
-                              <object class="GtkListBox" id="list_box_install_addons">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="selection_mode">none</property>
-                                <signal name="add" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
-                                <signal name="remove" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
-                                <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                              <object class="AdwPreferencesGroup" id="group_install_addons">
+                                <property name="visible">False</property>
+                                <property name="title" translatable="yes">Add-ons</property>
                                 <style>
-                                  <class name="content"/>
+                                  <class name="section"/>
                                 </style>
+                                <child>
+                                  <object class="GtkListBox" id="list_box_install_addons">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="selection_mode">none</property>
+                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
+                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
+                                    <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
+                                    <style>
+                                      <class name="content"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
@@ -138,12 +147,10 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="name">view</property>
-          </packing>
         </child>
+
       </object>
     </child>
   </template>
