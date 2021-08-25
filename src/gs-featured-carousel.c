@@ -61,10 +61,9 @@ static GParamSpec *obj_props[PROP_APPS + 1] = { NULL, };
 
 typedef enum {
 	SIGNAL_APP_CLICKED,
-	SIGNAL_CLICKED,
 } GsFeaturedCarouselSignal;
 
-static guint obj_signals[SIGNAL_CLICKED + 1] = { 0, };
+static guint obj_signals[SIGNAL_APP_CLICKED + 1] = { 0, };
 
 static GtkWidget *
 get_nth_page_widget (GsFeaturedCarousel *self,
@@ -281,26 +280,6 @@ key_pressed_cb (GtkEventControllerKey *controller,
 }
 
 static void
-carousel_clicked_cb (GsFeaturedCarousel *carousel,
-                     gpointer            user_data)
-{
-	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (user_data);
-	GsAppTile *current_tile;
-	GsApp *app;
-	gdouble current_page;
-
-	/* Get the currently visible tile. */
-	current_page = adw_carousel_get_position (self->carousel);
-	current_tile = GS_APP_TILE (get_nth_page_widget (self, current_page));
-
-	if (current_tile == NULL)
-		return;
-
-	app = gs_app_tile_get_app (current_tile);
-	g_signal_emit (self, obj_signals[SIGNAL_APP_CLICKED], 0, app);
-}
-
-static void
 gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -345,22 +324,6 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
-	/**
-	 * GsFeaturedCarousel::clicked:
-	 *
-	 * Emitted when the carousel is clicked, and typically emitted shortly
-	 * before #GsFeaturedCarousel::app-clicked is emitted. Most callers will
-	 * want to connect to #GsFeaturedCarousel::app-clicked instead.
-	 *
-	 * Since: 40
-	 */
-	obj_signals[SIGNAL_CLICKED] =
-		g_signal_new ("clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
-	widget_class->activate_signal = obj_signals[SIGNAL_CLICKED];
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-featured-carousel.ui");
 	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_GROUP);
 
@@ -373,7 +336,6 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, next_button_direction_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_direction_changed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, carousel_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
 }
 
