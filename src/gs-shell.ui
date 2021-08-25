@@ -319,7 +319,8 @@
                                     <child>
                                       <object class="GtkStack" id="stack_main">
                                         <property name="visible">True</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="hhomogeneous">False</property>
+                                        <property name="vhomogeneous">False</property>
                                         <property name="transition-type">crossfade</property>
                                         <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                                         <child>
@@ -435,7 +436,8 @@
                                     <child>
                                       <object class="GtkStack" id="stack_sub">
                                         <property name="visible">True</property>
-                                        <property name="homogeneous">False</property>
+                                        <property name="hhomogeneous">False</property>
+                                        <property name="vhomogeneous">False</property>
                                         <property name="transition-type">crossfade</property>
                                         <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
                                         <child>
