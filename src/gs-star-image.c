@@ -12,8 +12,8 @@
  *
  * Depending on the #GsStarImage:fraction property, the star image can be
  * drawn as filled only partially or fully or not at all. This is accomplished
- * by using a `color` style property for the filled part and a
- * `star-bg` style property for the unfilled part of the star.
+ * by using a `color` style property for the filled part. The unfilled part of
+ * the star currently uses a hardcoded colour.
  * The `background` style property controls the area outside the star.
  *
  * Since: 41
@@ -163,14 +163,10 @@ gs_star_image_snapshot (GtkWidget   *widget,
 		GdkRGBA star_fg;
 		gint min_x = -radius, max_x = radius;
 
-		gtk_widget_style_get (widget,
-			"star-bg", &star_bg,
-			NULL);
+		/* TODO: read star_bg from CSS, somehow */
 
 		style_context = gtk_widget_get_style_context (widget);
-		gtk_style_context_get_color (style_context,
-					     gtk_style_context_get_state (style_context),
-					     &star_fg);
+		gtk_style_context_get_color (style_context, &star_fg);
 
 		cairo_save (cr);
 		gs_star_image_outline_star (cr, allocation.x, allocation.y, radius, &min_x, &max_x);
@@ -214,11 +210,6 @@ gs_star_image_class_init (GsStarImageClass *klass)
 					 g_param_spec_double ("fraction", NULL, NULL,
 							      0.0, 1.0, 1.0,
 							      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY));
-
-	gtk_widget_class_install_style_property (widget_class,
-					 g_param_spec_boxed ("star-bg", NULL, NULL,
-							     GDK_TYPE_RGBA,
-							     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
 	gtk_widget_class_set_css_name (widget_class, "star-image");
 }
