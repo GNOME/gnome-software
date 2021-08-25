@@ -1,27 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkScrolledWindow" id="scrolledwindow">
-    <property name="visible">True</property>
-    <property name="can_focus">True</property>
-    <property name="min_content_height">160</property>
-    <property name="hscrollbar_policy">never</property>
-    <property name="vscrollbar_policy">automatic</property>
-    <child>
-      <object class="GtkListBox" id="listbox">
-        <property name="halign">fill</property>
-        <property name="valign">start</property>
-        <property name="visible">True</property>
-        <property name="selection_mode">none</property>
-        <style>
-          <class name="content" />
-        </style>
-      </object>
-    </child>
-  </object>
-  <template class="GsRemovalDialog" parent="GtkMessageDialog">
+  <template class="GsRemovalDialog" parent="GtkDialog">
     <property name="text" translatable="yes">Incompatible Software</property>
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
+    <child internal-child="headerbar">
+      <object class="GtkHeaderBar">
+        <property name="show-title-buttons">False</property>
+      </object>
+    </child>
+    <style>
+      <class name="message" />
+    </style>
     <child type="action">
       <object class="GtkButton" id="button_cancel">
         <property name="visible">True</property>
@@ -42,5 +32,65 @@
       <action-widget response="accept" default="true">button_continue</action-widget>
       <action-widget response="cancel">button_cancel</action-widget>
     </action-widgets>
+    <child internal-child="content_area">
+      <object class="GtkBox" id="dialog-vbox1">
+        <property name="orientation">vertical</property>
+        <property name="spacing">20</property>
+        <child>
+          <object class="GtkBox" id="box">
+            <property name="margin-start">30</property>
+            <property name="margin-end">30</property>
+            <property name="spacing">30</property>
+            <child>
+              <object class="GtkBox" id="message_area">
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <property name="hexpand">1</property>
+                <child>
+                  <object class="GtkLabel" id="label">
+                    <property name="halign">center</property>
+                    <property name="valign">start</property>
+                    <property name="wrap">1</property>
+                    <property name="width-chars">40</property>
+                    <property name="max-width-chars">40</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="secondary_label">
+                    <property name="visible">False</property>
+                    <property name="margin-bottom">2</property>
+                    <property name="halign">center</property>
+                    <property name="valign">start</property>
+                    <property name="vexpand">1</property>
+                    <property name="wrap">1</property>
+                    <property name="width-chars">40</property>
+                    <property name="max-width-chars">40</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="can_focus">True</property>
+                    <property name="min_content_height">160</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <child>
+                      <object class="GtkListBox" id="listbox">
+                        <property name="halign">fill</property>
+                        <property name="valign">start</property>
+                        <property name="visible">True</property>
+                        <property name="selection_mode">none</property>
+                        <style>
+                          <class name="content" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
 </interface>
