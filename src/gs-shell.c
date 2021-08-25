@@ -1005,7 +1005,7 @@ window_button_pressed_cb (GtkGestureClick *click_gesture,
 }
 
 static gboolean
-main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
+main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 {
 	GsShell *shell = user_data;
 
