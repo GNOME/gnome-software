@@ -37,10 +37,10 @@ struct _GsFeatureTile
  * See https://en.wikipedia.org/wiki/HSL_and_HSV */
 typedef struct
 {
-	gdouble hue;  /* [0.0, 1.0] */
-	gdouble saturation;  /* [0.0, 1.0] */
-	gdouble brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
-	gdouble contrast;  /* [-1.0, ∞], may actually be `INF` */
+	gfloat hue;  /* [0.0, 1.0] */
+	gfloat saturation;  /* [0.0, 1.0] */
+	gfloat brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
+	gfloat contrast;  /* [-1.0, ∞], may actually be `INF` */
 } GsHSBC;
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -58,8 +58,8 @@ gs_feature_tile_dispose (GObject *object)
 }
 
 /* These are subjectively chosen. See below. */
-static const gdouble min_valid_saturation = 0.5;
-static const gdouble max_valid_saturation = 0.85;
+static const gfloat min_valid_saturation = 0.5;
+static const gfloat max_valid_saturation = 0.85;
 
 /* Subjectively chosen as the minimum absolute contrast ratio between the
  * foreground and background colours.
@@ -67,7 +67,7 @@ static const gdouble max_valid_saturation = 0.85;
  * Note that contrast is in the range [-1.0, ∞], so @min_abs_contrast always has
  * to be handled with positive and negative branches.
  */
-static const gdouble min_abs_contrast = 0.78;
+static const gfloat min_abs_contrast = 0.78;
 
 /* Sort two candidate background colours for the feature tile, ranking them by
  * suitability for being chosen as the background colour, with the most suitable
@@ -88,7 +88,7 @@ static const gdouble min_abs_contrast = 0.78;
  */
 static gboolean
 saturation_is_valid (const GsHSBC *hsbc,
-                     gdouble      *distance_from_valid_range)
+                     gfloat       *distance_from_valid_range)
 {
 	*distance_from_valid_range = (hsbc->saturation > max_valid_saturation) ? hsbc->saturation - max_valid_saturation : min_valid_saturation - hsbc->saturation;
 	return (hsbc->saturation >= min_valid_saturation && hsbc->saturation <= max_valid_saturation);
@@ -100,7 +100,7 @@ colors_sort_cb (gconstpointer a,
 {
 	const GsHSBC *hsbc_a = a;
 	const GsHSBC *hsbc_b = b;
-	gdouble hsbc_a_distance_from_range, hsbc_b_distance_from_range;
+	gfloat hsbc_a_distance_from_range, hsbc_b_distance_from_range;
 	gboolean hsbc_a_saturation_in_range = saturation_is_valid (hsbc_a, &hsbc_a_distance_from_range);
 	gboolean hsbc_b_saturation_in_range = saturation_is_valid (hsbc_b, &hsbc_b_distance_from_range);
 
@@ -122,7 +122,7 @@ colors_sort_cb (gconstpointer a,
  *
  * The return value is in the range [-1.0, ∞], and may actually be `INF`.
  */
-static gdouble
+static gfloat
 weber_contrast (const GsHSBC *foreground,
                 const GsHSBC *background)
 {
@@ -141,9 +141,9 @@ weber_contrast (const GsHSBC *foreground,
  *
  * The return value is in the range [0.0, 1.0].
  */
-static gdouble
+static gfloat
 weber_contrast_find_brightness (const GsHSBC *foreground,
-                                gdouble       desired_abs_contrast)
+                                gfloat        desired_abs_contrast)
 {
 	g_assert (desired_abs_contrast >= 0.0);
 
@@ -332,7 +332,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 			if (colors != NULL && colors->len > 0) {
 				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
 				GdkRGBA chosen_rgba;
-				gdouble modified_saturation, modified_brightness;
+				gfloat modified_saturation, modified_brightness;
 
 				modified_saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
 
