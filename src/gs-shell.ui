@@ -185,7 +185,7 @@
                                         <property name="hexpand">True</property>
                                         <property name="show-end-title-buttons">True</property>
                                         <property name="centering-policy">strict</property>
-                                        <child>
+                                        <child type="start">
                                           <object class="GtkToggleButton" id="search_button">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
@@ -205,11 +205,8 @@
                                               </object>
                                             </child>
                                           </object>
-                                          <packing>
-                                            <property name="pack-type">start</property>
-                                          </packing>
                                         </child>
-                                        <child>
+                                        <child type="end">
                                           <object class="GtkMenuButton" id="menu_button">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
@@ -229,9 +226,6 @@
                                               <class name="image-button"/>
                                             </style>
                                           </object>
-                                          <packing>
-                                            <property name="pack-type">end</property>
-                                          </packing>
                                         </child>
                                         <child type="title">
                                           <object class="AdwViewSwitcherTitle" id="title_switcher">

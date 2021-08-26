@@ -36,13 +36,11 @@
                   <relation name="details">description</relation>
                 </accessibility>
               </object>
-              <packing>
-                <property name="expand">True</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lozenge_content_text">
                 <property name="halign">center</property>
+                <property name="hexpand">True</property>
                 <!-- this is a placeholder: the text is actually set in code -->
                 <property name="label">20 MB</property>
                 <property name="visible">False</property>
@@ -52,14 +50,8 @@
                   <relation name="details">description</relation>
                 </accessibility>
               </object>
-              <packing>
-                <property name="expand">True</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="fill">False</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox">

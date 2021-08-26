@@ -73,8 +73,8 @@
                             <property name="spacing">12</property>
                             <property name="visible">True</property>
                             <signal name="response" handler="gs_details_page_translation_infobar_response_cb"/>
-                            <child internal-child="content_area">
-                              <object class="GtkBox">
+                            <child>
+                              <object class="GtkCenterBox">
                                 <property name="orientation">horizontal</property>
                                 <property name="visible">True</property>
                                 <child type="center">
@@ -86,15 +86,12 @@
                                     <property name="xalign">0</property>
                                   </object>
                                 </child>
-                                <child>
+                                <child type="end">
                                   <object class="GtkButton" id="translation_infobar_button">
                                     <property name="label" translatable="yes">Help _Translate</property>
                                     <property name="use-underline">True</property>
                                     <property name="visible">True</property>
                                   </object>
-                                  <packing>
-                                    <property name="pack-type">end</property>
-                                  </packing>
                                 </child>
                               </object>
                             </child>
@@ -302,11 +299,10 @@
                                               </object>
                                             </child>
                                             <child>
-                                              <object class="GtkBox">
+                                              <object class="GtkCenterBox">
                                                 <property name="visible" bind-source="button_cancel" bind-property="visible" bind-flags="sync-create"/>
-                                                <property name="spacing">3</property>
                                                 <property name="orientation">vertical</property>
-                                                <property name="valign">fill</property>
+                                                <property name="valign">center</property>
                                                 <child type="center">
                                                   <object class="GsProgressButton" id="button_cancel">
                                                     <property name="visible">False</property>
@@ -315,13 +311,14 @@
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="valign">center</property>
+                                                    <property name="margin-bottom">3</property>
                                                     <signal name="clicked" handler="gs_details_page_app_cancel_button_cb"/>
                                                     <style>
                                                       <class name="list-button"/>
                                                     </style>
                                                   </object>
                                                 </child>
-                                                <child>
+                                                <child type="end">
                                                   <object class="GtkBox">
                                                     <property name="visible" bind-source="label_progress_status" bind-property="visible" bind-flags="sync-create"/>
                                                     <property name="spacing">3</property>
@@ -347,9 +344,6 @@
                                                       </object>
                                                     </child>
                                                   </object>
-                                                  <packing>
-                                                    <property name="pack-type">end</property>
-                                                  </packing>
                                                 </child>
                                               </object>
                                             </child>
@@ -365,9 +359,6 @@
                                                   <class name="suggested-action"/>
                                                 </style>
                                               </object>
-                                              <packing>
-                                                <property name="pack-type">end</property>
-                                              </packing>
                                             </child>
                                             <child>
                                               <object class="GtkButton" id="button_details_remove_shortcut">
@@ -378,9 +369,6 @@
                                                 <property name="valign">center</property>
                                                 <signal name="clicked" handler="gs_details_page_app_remove_shortcut_button_cb"/>
                                               </object>
-                                              <packing>
-                                                <property name="pack-type">end</property>
-                                              </packing>
                                             </child>
                                           </object>
                                         </child>
