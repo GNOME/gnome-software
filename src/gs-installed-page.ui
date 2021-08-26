@@ -64,8 +64,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="selection_mode">none</property>
-                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
-                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_in_progress" swapped="yes"/>
                                     <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
                                     <style>
                                       <class name="content"/>
@@ -86,8 +84,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="selection_mode">none</property>
-                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
-                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_apps" swapped="yes"/>
                                     <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
                                     <style>
                                       <class name="content"/>
@@ -108,8 +104,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="selection_mode">none</property>
-                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
-                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_system_apps" swapped="yes"/>
                                     <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
                                     <style>
                                       <class name="content"/>
@@ -130,8 +124,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="selection_mode">none</property>
-                                    <signal name="add" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
-                                    <signal name="remove" handler="update_group_visibility_cb" object="group_install_addons" swapped="yes"/>
                                     <signal name="row-activated" handler="gs_installed_page_app_row_activated_cb"/>
                                     <style>
                                       <class name="content"/>
