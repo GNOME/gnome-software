@@ -261,7 +261,7 @@
                                         <property name="show-close-button">False</property>
                                         <property name="revealed">False</property>
                                         <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
-                                        <child internal-child="content_area">
+                                        <child>
                                           <object class="GtkBox">
                                             <property name="visible">True</property>
                                             <property name="orientation">vertical</property>
@@ -283,7 +283,7 @@
                                             </child>
                                           </object>
                                         </child>
-                                        <child internal-child="action_area">
+                                        <child type="action">
                                           <object class="GtkBox">
                                             <property name="visible">True</property>
                                             <property name="margin_end">6</property>
