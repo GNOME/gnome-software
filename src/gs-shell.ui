@@ -188,6 +188,7 @@
                                           <object class="GtkToggleButton" id="search_button">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="icon_name">edit-find-symbolic</property>
                                             <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional"/>
                                             <signal name="clicked" handler="search_button_clicked_cb"/>
                                             <accessibility>
@@ -196,13 +197,6 @@
                                             <style>
                                               <class name="image-button"/>
                                             </style>
-                                            <child>
-                                              <object class="GtkImage">
-                                                <property name="visible">True</property>
-                                                <property name="icon_name">edit-find-symbolic</property>
-                                                <property name="icon-size">normal</property>
-                                              </object>
-                                            </child>
                                           </object>
                                         </child>
                                         <child type="end">

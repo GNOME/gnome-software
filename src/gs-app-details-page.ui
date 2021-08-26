@@ -18,6 +18,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="icon_name">go-previous-symbolic</property>
             <signal name="clicked" handler="back_clicked_cb"/>
             <style>
               <class name="image-button"/>
@@ -25,13 +26,6 @@
             <accessibility>
               <property name="label" translatable="yes">Go back</property>
             </accessibility>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="icon_name">go-previous-symbolic</property>
-                <property name="icon-size">normal</property>
-              </object>
-            </child>
           </object>
         </child>
       </object>
