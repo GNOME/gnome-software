@@ -74,9 +74,9 @@ struct _GsShell
 	gchar			*events_info_uri;
 	AdwLeaflet		*main_leaflet;
 	AdwLeaflet		*details_leaflet;
-	GtkStack		*stack_loading;
-	GtkStack		*stack_main;
-	GtkStack		*stack_sub;
+	AdwViewStack		*stack_loading;
+	AdwViewStack		*stack_main;
+	AdwViewStack		*stack_sub;
 	GsPage			*page;
 
 	GBinding		*sub_page_header_title_binding;
@@ -546,7 +546,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 
 	g_clear_object (&shell->sub_page_header_title_binding);
-	shell->sub_page_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
+	shell->sub_page_header_title_binding = g_object_bind_property (adw_view_stack_get_visible_child (shell->stack_sub), "title",
 								       shell->sub_page_header_title, "label",
 								       G_BINDING_SYNC_CREATE);
 
@@ -591,11 +591,11 @@ gs_shell_change_mode (GsShell *shell,
 
 	/* switch page */
 	if (mode == GS_SHELL_MODE_LOADING) {
-		gtk_stack_set_visible_child_name (shell->stack_loading, "loading");
+		adw_view_stack_set_visible_child_name (shell->stack_loading, "loading");
 		return;
 	}
 
-	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
+	adw_view_stack_set_visible_child_name (shell->stack_loading, "main");
 	if (mode == GS_SHELL_MODE_DETAILS) {
 		adw_leaflet_set_visible_child_name (shell->details_leaflet, "details");
 	} else {
@@ -604,7 +604,7 @@ gs_shell_change_mode (GsShell *shell,
 		 * page to preserve the navigation history in the UI's state.
 		 * First change the page, then the leaflet, to avoid load of
 		 * the previously shown page, which will be changed shortly after. */
-		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
+		adw_view_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
 		adw_leaflet_set_visible_child_name (shell->main_leaflet, mode_is_main ? "main" : "sub");
 	}
 
@@ -2148,18 +2148,18 @@ updates_page_notify_counter_cb (GObject    *obj,
 {
 	GsPage *page = GS_PAGE (obj);
 	GsShell *shell = GS_SHELL (user_data);
-	GtkStackPage *stack_page;
+	AdwViewStackPage *stack_page;
 	gboolean needs_attention;
 
 	/* Update the needs-attention child property of the page in the
-	 * GtkStack. There’s no need to account for whether it’s the currently
+	 * AdwViewStack. There’s no need to account for whether it’s the currently
 	 * visible page, as the CSS rules do that for us. This can’t be a simple
 	 * property binding, though, as it’s a binding between an object
 	 * property and a child property. */
 	needs_attention = (gs_page_get_counter (page) > 0);
 
-	stack_page = gtk_stack_get_page (shell->stack_main, GTK_WIDGET (page));
-	gtk_stack_page_set_needs_attention (stack_page, needs_attention);
+	stack_page = adw_view_stack_get_page (shell->stack_main, GTK_WIDGET (page));
+	adw_view_stack_page_set_needs_attention (stack_page, needs_attention);
 }
 
 static void
@@ -2246,16 +2246,16 @@ gs_shell_get_mode (GsShell *shell)
 {
 	const gchar *name;
 
-	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
+	if (g_strcmp0 (adw_view_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
 	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->details_leaflet), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
 	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->main_leaflet), "main") == 0)
-		name = gtk_stack_get_visible_child_name (shell->stack_main);
+		name = adw_view_stack_get_visible_child_name (shell->stack_main);
 	else
-		name = gtk_stack_get_visible_child_name (shell->stack_sub);
+		name = adw_view_stack_get_visible_child_name (shell->stack_sub);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
 		if (g_strcmp0 (page_name[i], name) == 0)
