@@ -174,11 +174,6 @@ if gsettings_desktop_schemas.found()
   conf.set('HAVE_GSETTINGS_DESKTOP_SCHEMAS', 1)
 endif
 
-if get_option('gspell')
-  gspell = dependency('gspell-1')
-  conf.set('HAVE_GSPELL', 1)
-endif
-
 if get_option('polkit')
   polkit = dependency('polkit-gobject-1')
   conf.set('HAVE_POLKIT', 1)

@@ -11,10 +11,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_GSPELL
-#include <gspell/gspell.h>
-#endif
-
 #include "gs-review-dialog.h"
 #include "gs-star-widget.h"
 
@@ -164,20 +160,6 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
 	gtk_widget_init_template (GTK_WIDGET (dialog));
-
-#ifdef HAVE_GSPELL
-	/* allow checking spelling */
-	{
-		GspellEntry *gspell_entry;
-		GspellTextView *gspell_view;
-
-		gspell_entry = gspell_entry_get_from_gtk_entry (GTK_ENTRY (dialog->summary_entry));
-		gspell_entry_basic_setup (gspell_entry);
-
-		gspell_view = gspell_text_view_get_from_gtk_text_view (GTK_TEXT_VIEW (dialog->text_view));
-		gspell_text_view_basic_setup (gspell_view);
-	}
-#endif
 
 	/* require the user to spend at least 30 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,

@@ -127,10 +127,6 @@ if gsettings_desktop_schemas.found()
   gnome_software_dependencies += [gsettings_desktop_schemas]
 endif
 
-if get_option('gspell')
-  gnome_software_dependencies += [gspell]
-endif
-
 if get_option('mogwai')
   gnome_software_dependencies += [mogwai_schedule_client]
 endif
