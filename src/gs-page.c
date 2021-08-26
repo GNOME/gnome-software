@@ -825,6 +825,8 @@ gs_page_dispose (GObject *object)
 static void
 gs_page_init (GsPage *page)
 {
+	gtk_widget_set_hexpand (GTK_WIDGET (page), TRUE);
+	gtk_widget_set_vexpand (GTK_WIDGET (page), TRUE);
 }
 
 static void
