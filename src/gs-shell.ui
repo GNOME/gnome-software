@@ -252,7 +252,6 @@
                                                 <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="activates_default">True</property>
-                                                <property name="max_length">100</property>
                                                 <signal name="search-changed" handler="search_changed_handler"/>
                                               </object>
                                             </child>
@@ -263,8 +262,6 @@
                                     <child>
                                       <object class="GtkInfoBar" id="metered_updates_bar">
                                         <property name="visible">True</property>
-                                        <property name="orientation">horizontal</property>
-                                        <property name="spacing">12</property>
                                         <property name="message-type">GTK_MESSAGE_INFO</property>
                                         <property name="show-close-button">False</property>
                                         <property name="revealed">False</property>
