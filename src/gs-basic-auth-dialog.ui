@@ -86,13 +86,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                  <property name="column-span">2</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-                <property name="width">2</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="user_label">
@@ -106,13 +106,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">3</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="password_label">
@@ -126,13 +126,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">4</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkEntry" id="user_entry">
@@ -146,13 +146,13 @@
                 <property name="input_purpose">password</property>
                 <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
                 <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">3</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">3</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkEntry" id="password_entry">
@@ -166,13 +166,13 @@
                 <property name="input_purpose">password</property>
                 <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
                 <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">4</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
           </object>
           <packing>
