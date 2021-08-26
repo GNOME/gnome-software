@@ -12,33 +12,27 @@
     <property name="default_width">600</property>
     <property name="default_height">300</property>
     <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
     <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
-        <property name="show_close_button">False</property>
-        <child>
-          <object class="GtkButton" id="cancel_button">
-            <property name="label" translatable="yes">_Cancel</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_underline">True</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="post_button">
-            <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Post</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_underline">True</property>
-            <property name="sensitive">False</property>
-          </object>
-        </child>
+    <child type="action">
+      <object class="GtkButton" id="cancel_button">
+        <property name="label" translatable="yes">_Cancel</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_underline">True</property>
       </object>
     </child>
-    <child internal-child="vbox">
+    <child type="action">
+      <object class="GtkButton" id="post_button">
+        <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Post</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_underline">True</property>
+        <property name="sensitive">False</property>
+      </object>
+    </child>
+    <child internal-child="content_area">
       <object class="GtkBox" id="dialog-vbox">
         <property name="margin_start">40</property>
         <property name="margin_end">40</property>
