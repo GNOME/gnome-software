@@ -12,6 +12,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-summary-tile.h"
+#include "gs-summary-tile-layout.h"
 #include "gs-common.h"
 
 struct _GsSummaryTile
@@ -131,52 +132,20 @@ gs_summary_tile_set_property (GObject *object,
 				 GParamSpec *pspec)
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
+	GtkLayoutManager *layout_manager;
 
 	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		app_tile->preferred_width = g_value_get_int (value);
-		gtk_widget_queue_resize (GTK_WIDGET (app_tile));
+		layout_manager = gtk_widget_get_layout_manager (GTK_WIDGET (app_tile));
+		gs_summary_tile_layout_set_preferred_width (GS_SUMMARY_TILE_LAYOUT (layout_manager),
+							    g_value_get_int (value));
 		g_object_notify_by_pspec (object, obj_props[PROP_PREFERRED_WIDTH]);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static void
-gs_summary_tile_measure (GtkWidget      *widget,
-                         GtkOrientation  orientation,
-                         gint            for_size,
-                         gint           *minimum,
-                         gint           *natural,
-                         gint           *minimum_baseline,
-                         gint           *natural_baseline)
-{
-	gint m;
-	GsSummaryTile *app_tile = GS_SUMMARY_TILE (widget);
-
-	if (app_tile->preferred_width < 0 || orientation == GTK_ORIENTATION_VERTICAL) {
-		/* Just retrieve the default values */
-		GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->measure (widget,
-									  orientation,
-									  for_size,
-									  minimum,
-									  natural,
-									  minimum_baseline,
-									  natural_baseline);
-		return;
-	}
-
-	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->measure (widget,
-								  orientation,
-								  for_size,
-								  &m, NULL,
-								  NULL, NULL);
-	if (minimum != NULL)
-		*minimum = m;
-	if (natural != NULL)
-		*natural = MAX (m, app_tile->preferred_width);
 }
 
 static void
@@ -188,8 +157,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
-
-	widget_class->measure = gs_summary_tile_measure;
 
 	tile_class->refresh = gs_summary_tile_refresh;
 
@@ -216,6 +183,7 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	gtk_widget_class_set_css_name (widget_class, "summary-tile");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-summary-tile.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GS_TYPE_SUMMARY_TILE_LAYOUT);
 
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      image);
