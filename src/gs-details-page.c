@@ -138,7 +138,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
-	GtkWidget		*origin_button_label;
+	GtkWidget		*origin_button;
 	GtkWidget		*box_license;
 	GsLicenseTile		*license_tile;
 	GtkInfoBar		*translation_infobar;
@@ -295,9 +295,9 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 
 	origin_ui = gs_app_get_origin_ui (self->app);
 	if (origin_ui != NULL)
-		gtk_label_set_text (GTK_LABEL (self->origin_button_label), origin_ui);
+		gtk_menu_button_set_label (GTK_MENU_BUTTON (self->origin_button), origin_ui);
 	else
-		gtk_label_set_text (GTK_LABEL (self->origin_button_label), "");
+		gtk_menu_button_set_label (GTK_MENU_BUTTON (self->origin_button), "");
 
 	gtk_widget_set_sensitive (self->origin_box, sensitive);
 	gtk_widget_show (self->origin_box);
@@ -2302,7 +2302,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_license);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
