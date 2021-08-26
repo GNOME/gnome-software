@@ -72,12 +72,12 @@ gs_stop_spinner (GtkSpinner *spinner)
 void
 gs_start_spinner (GtkSpinner *spinner)
 {
-	gboolean active;
+	gboolean spinning;
 	guint id;
 
 	/* Don't do anything if it's already spinning */
-	g_object_get (spinner, "active", &active, NULL);
-	if (active || g_object_get_data (G_OBJECT (spinner), "start-timeout") != NULL)
+	g_object_get (spinner, "spinning", &spinning, NULL);
+	if (spinning || g_object_get_data (G_OBJECT (spinner), "start-timeout") != NULL)
 		return;
 
 	gtk_widget_set_opacity (GTK_WIDGET (spinner), 0);
