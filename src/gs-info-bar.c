@@ -8,6 +8,7 @@
 
 #include "config.h"
 
+#include "gs-common.h"
 #include "gs-info-bar.h"
 
 struct _GsInfoBar
@@ -85,6 +86,14 @@ gs_info_bar_set_property (GObject *object,
 }
 
 static void
+gs_info_bar_dispose (GObject *object)
+{
+	gs_widget_remove_all (GTK_WIDGET (object), NULL);
+
+	G_OBJECT_CLASS (gs_info_bar_parent_class)->dispose (object);
+}
+
+static void
 gs_info_bar_init (GsInfoBar *infobar)
 {
 	gtk_widget_init_template (GTK_WIDGET (infobar));
@@ -98,6 +107,7 @@ gs_info_bar_class_init (GsInfoBarClass *klass)
 
 	object_class->get_property = gs_info_bar_get_property;
 	object_class->set_property = gs_info_bar_set_property;
+	object_class->dispose = gs_info_bar_dispose;
 
 	g_object_class_install_property (object_class, PROP_TITLE,
 		g_param_spec_string ("title",

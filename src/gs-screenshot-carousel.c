@@ -297,6 +297,8 @@ gs_screenshot_carousel_dispose (GObject *object)
 {
 	GsScreenshotCarousel *self = GS_SCREENSHOT_CAROUSEL (object);
 
+	gs_widget_remove_all (GTK_WIDGET (self), NULL);
+
 	g_clear_object (&self->session);
 
 	G_OBJECT_CLASS (gs_screenshot_carousel_parent_class)->dispose (object);

@@ -243,6 +243,14 @@ gs_star_widget_realize (GtkWidget *widget)
 }
 
 static void
+gs_star_widget_dispose (GObject *object)
+{
+	gs_widget_remove_all (GTK_WIDGET (object), NULL);
+
+	G_OBJECT_CLASS (gs_star_widget_parent_class)->dispose (object);
+}
+
+static void
 gs_star_widget_init (GsStarWidget *star)
 {
 	gtk_widget_init_template (GTK_WIDGET (star));
@@ -253,6 +261,8 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
+	object_class->dispose = gs_star_widget_dispose;
 
 	widget_class->realize = gs_star_widget_realize;
 	object_class->get_property = gs_star_widget_get_property;

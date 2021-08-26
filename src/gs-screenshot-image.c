@@ -666,6 +666,7 @@ gs_screenshot_image_dispose (GObject *object)
 		                             SOUP_STATUS_CANCELLED);
 		g_clear_object (&ssimg->message);
 	}
+	gs_widget_remove_all (GTK_WIDGET (ssimg), NULL);
 	g_clear_object (&ssimg->screenshot);
 	g_clear_object (&ssimg->session);
 	g_clear_object (&ssimg->settings);

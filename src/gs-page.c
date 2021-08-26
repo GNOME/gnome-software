@@ -815,6 +815,8 @@ gs_page_dispose (GObject *object)
 	GsPage *page = GS_PAGE (object);
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 
+	gs_widget_remove_all (GTK_WIDGET (page), NULL);
+
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);

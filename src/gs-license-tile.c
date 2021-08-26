@@ -180,6 +180,7 @@ gs_license_tile_dispose (GObject *object)
 	GsLicenseTile *self = GS_LICENSE_TILE (object);
 
 	gs_license_tile_set_app (self, NULL);
+	gs_widget_remove_all (GTK_WIDGET (self), NULL);
 
 	G_OBJECT_CLASS (gs_license_tile_parent_class)->dispose (object);
 }
