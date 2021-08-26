@@ -21,7 +21,7 @@ struct _GsSummaryTile
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
-	GtkWidget	*eventbox;
+	GtkWidget	*bin;
 	GtkWidget	*stack;
 	gint		 preferred_width;
 };
@@ -89,7 +89,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 		break;
 	}
 
-	gtk_widget_set_visible (tile->eventbox, installed);
+	gtk_widget_set_visible (tile->bin, installed);
 
 	if (name != NULL) {
 		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
@@ -224,7 +224,7 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      summary);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
-					      eventbox);
+					      bin);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      stack);
 }
