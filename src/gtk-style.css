@@ -11,30 +11,30 @@
 
 .installed-overlay-box {
 	font-size: smaller;
-	background-color: @theme_selected_bg_color;
+	background-color: @accent_bg_color;
 	border-radius: 0;
-	color: @theme_selected_fg_color;
+	color: @accent_fg_color;
 	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
 
 .installed-overlay-box:backdrop label {
-    color: @theme_selected_fg_color;
+    color: @accent_fg_color;
 }
 
 .installed-icon {
-	color: @theme_selected_bg_color;
+	color: @accent_bg_color;
 }
 
 .popular-installed-overlay-box {
 	font-size: smaller;
-	background-color: @theme_selected_bg_color;
+	background-color: @accent_bg_color;
 	border-radius: 0;
-	color: @theme_selected_fg_color;
+	color: @accent_fg_color;
 	text-shadow: none;
 }
 
 .popular-installed-overlay-box:backdrop label {
-	color: @theme_selected_fg_color;
+	color: @accent_fg_color;
 }
 
 .index-title-alignment-software {
@@ -53,16 +53,12 @@
 /* Adapted from Adwaita’s .needs-attention class for stacksidebar */
 sidebar row.needs-attention > box > label {
 	animation: needs_attention 150ms ease-in;
-	background-image: -gtk-gradient(radial,
-					center center, 0,
-					center center, 0.5,
-					to(@theme_selected_bg_color),
-					to(transparent)),
-			  -gtk-gradient(radial,
-					center center, 0,
-					center center, 0.5,
-					to(alpha(@theme_text_color, 0.5)),
-					to(transparent));
+	background-image: radial-gradient(ellipse at center,
+	                                  @accent_bg_color,
+	                                  transparent),
+	                  radial-gradient(ellipse at center,
+	                                  alpha(@theme_text_color, 0.5),
+	                                  transparent);
 	background-size: 6px 6px, 0 0;
 	background-repeat: no-repeat;
 	background-position: right 3px, right 4px;
@@ -84,12 +80,11 @@ sidebar row.needs-attention:selected > box > label {
 
 .round-button {
 	border-radius: 16px;
-	-gtk-outline-radius: 16px;
 }
 
 .kudo-pill {
-	color: @theme_selected_fg_color;
-	background-color: shade(@theme_selected_bg_color, 1.1);
+	color: @accent_fg_color;
+	background-color: shade(@accent_bg_color, 1.1);
 	background-image: none;
 	border-radius: 16px;
 	padding: 8px;
@@ -132,7 +127,7 @@ screenshot-carousel button {
 
 .app-row-tag {
 	text-shadow: none;
-	color: @theme_selected_fg_color;
+	color: @accent_fg_color;
 	background-color: #999999;
 	font-size: smaller;
 	border-radius: 4px;
@@ -158,7 +153,6 @@ summary-tile {
   border-radius: 8px;
   border: solid 1px alpha(@borders, 0.7);
   box-shadow: none;
-  -gtk-outline-radius: 7px;
   transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -183,7 +177,6 @@ summary-tile {
 	min-width: 140px;
 	padding: 20px 10px;
 	border-radius: 8px;
-	-gtk-outline-radius: 7px;
 	font-weight: 900;
 	text-shadow: none;
 	border: none;
@@ -208,7 +201,7 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 
 /* Disable highlight on hover as it doesn’t make these icons look good */
-.category-tile:hover { -gtk-icon-effect: none }
+.category-tile:hover { -gtk-icon-filter: none; }
 
 /* Styling for specific category buttons. */
 .category-tile.category-create {
@@ -372,7 +365,7 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 
 .install-progress {
-	background-image: linear-gradient(to top, @theme_selected_bg_color 2px, alpha(@theme_selected_bg_color, 0) 2px);
+	background-image: linear-gradient(to top, @accent_bg_color 2px, alpha(@accent_bg_color, 0) 2px);
 	background-repeat: no-repeat;
 	background-position: 0 bottom;
 	background-size: 0;
@@ -447,7 +440,6 @@ review-bar {
 .app-updates-section {
 	border-radius: 4px;
 	border: 1px solid darker(@theme_bg_color);
-	-gtk-outline-radius: 50%;
 }
 
 .app-listbox-header-title {
@@ -487,8 +479,8 @@ star-image {
 
 .counter-label {
 	text-shadow: none;
-	color: @theme_selected_fg_color;
-	background-color: mix(@theme_selected_bg_color, @theme_selected_fg_color, 0.3);
+	color: @accent_fg_color;
+	background-color: mix(@accent_bg_color, @accent_fg_color, 0.3);
 	font-size: smaller;
 	border-radius: 4px;
 	padding: 0px 4px;
@@ -561,13 +553,13 @@ star-image {
 }
 
 .upgrade-progressbar {
-	box-shadow: none
+	box-shadow: none;
 }
 
 .eol-box {
-	background-color: @theme_selected_bg_color;
-	border: 1px solid shade(@theme_selected_bg_color, 0.8);
-	color: @theme_selected_fg_color;
+	background-color: @accent_bg_color;
+	border: 1px solid shade(@accent_bg_color, 0.8);
+	color: @accent_fg_color;
 }
 
 .category_page_header_filter_box .radio, .category_page_header_filter_box .radio:hover {
@@ -579,11 +571,11 @@ star-image {
 }
 
 .category_page_header_filter_box .radio:hover {
-	border-bottom-color: @theme_selected_bg_color;
+	border-bottom-color: @accent_bg_color;
 }
 
 .category_page_header_filter_box .radio:checked {
-	border-bottom-color: @theme_selected_bg_color;
+	border-bottom-color: @accent_bg_color;
 }
 
 /* uses theme_bg_color and a shade with the ratio of the original color */
@@ -604,7 +596,6 @@ star-image {
 .featured-button-right {
 	padding: 2px 5px;
 	border-radius: 50%;
-	-gtk-outline-radius: 50%;
 	color: @theme_fg_color;
 }
 
@@ -660,35 +651,35 @@ overlay > headerbar {
  * AdwPreferencesPage or its successor in Libadwaita, if their clamp size can be
  * set as a property. */
 
-scrolledwindow.list-page > viewport > clamp {
+scrolledwindow.list-page > viewport > clamp > box {
   margin: 0 12px; transition: margin-bottom 200ms ease;
 }
 
-scrolledwindow.list-page > viewport > clamp .section {
+scrolledwindow.list-page > viewport > clamp > box.section {
   transition: margin-top 200ms ease;
 }
 
-scrolledwindow.list-page > viewport > clamp.small {
+scrolledwindow.list-page > viewport > clamp > box.small {
   margin-bottom: 18px;
 }
 
-scrolledwindow.list-page > viewport > clamp.small .section {
+scrolledwindow.list-page > viewport > clamp > box.small .section {
   margin-top: 18px;
 }
 
-scrolledwindow.list-page > viewport > clamp.medium {
+scrolledwindow.list-page > viewport > clamp > box.medium {
   margin-bottom: 24px;
 }
 
-scrolledwindow.list-page > viewport > clamp.medium .section {
+scrolledwindow.list-page > viewport > clamp > box.medium .section {
   margin-top: 24px;
 }
 
-scrolledwindow.list-page > viewport > clamp.large {
+scrolledwindow.list-page > viewport > clamp > box.large {
   margin-bottom: 30px;
 }
 
-scrolledwindow.list-page > viewport > clamp.large .section {
+scrolledwindow.list-page > viewport > clamp > box.large .section {
   margin-top: 30px;
 }
 
@@ -744,24 +735,20 @@ app-context-bar .context-tile {
 
 app-context-bar box:first-child .context-tile:first-child {
 	border-top-left-radius: 8px;
-	-gtk-outline-top-left-radius: 7px;
 }
 
 app-context-bar.horizontal box:last-child .context-tile:last-child,
 app-context-bar.vertical box:first-child .context-tile:last-child {
 	border-top-right-radius: 8px;
-	-gtk-outline-top-right-radius: 7px;
 }
 
 app-context-bar.horizontal box:first-child .context-tile:first-child,
 app-context-bar.vertical box:last-child .context-tile:first-child {
 	border-bottom-left-radius: 8px;
-	-gtk-outline-bottom-left-radius: 7px;
 }
 
 app-context-bar box:last-child .context-tile:last-child {
 	border-bottom-right-radius: 8px;
-	-gtk-outline-bottom-right-radius: 7px;
 }
 
 app-context-bar.horizontal box:not(:last-child) .context-tile,
@@ -797,19 +784,19 @@ app-context-bar.vertical box:not(:last-child) .context-tile {
 	 * vertical size group ensures that it does still actually have a
 	 * height. */
 	margin-top: -999px;
-	margin-bottom: -999px
+	margin-bottom: -999px;
 }
 
-.context-tile-title { font-weight: bold }
+.context-tile-title { font-weight: bold; }
 .context-tile-lozenge image { -gtk-icon-style: symbolic; }
-app-context-bar .context-tile-description { font-size: smaller }
+app-context-bar .context-tile-description { font-size: smaller; }
 
-.context-tile-lozenge.grey { background-color: #deddda; color: #5e5c64 }
-.context-tile-lozenge.green, .context-tile-lozenge.details-rating-0 { background-color: #b6f2c4; color: #208255 }
-.context-tile-lozenge.red, .context-tile-lozenge.details-rating-18 { background-color: #fbd3cf; color: #ab3342 }
-.context-tile-lozenge.details-rating-15 { background-color: #ffd7a5; color: #c75400 }
-.context-tile-lozenge.yellow, .context-tile-lozenge.details-rating-12 { background-color: #f7eb9f; color: #9c7107 }
-.context-tile-lozenge.blue, .context-tile-lozenge.details-rating-5 { background-color: #d1e4fb; color: #294d7a }
+.context-tile-lozenge.grey { background-color: #deddda; color: #5e5c64; }
+.context-tile-lozenge.green, .context-tile-lozenge.details-rating-0 { background-color: #b6f2c4; color: #208255; }
+.context-tile-lozenge.red, .context-tile-lozenge.details-rating-18 { background-color: #fbd3cf; color: #ab3342; }
+.context-tile-lozenge.details-rating-15 { background-color: #ffd7a5; color: #c75400; }
+.context-tile-lozenge.yellow, .context-tile-lozenge.details-rating-12 { background-color: #f7eb9f; color: #9c7107; }
+.context-tile-lozenge.blue, .context-tile-lozenge.details-rating-5 { background-color: #d1e4fb; color: #294d7a; }
 
 .eol-red {
 	font-weight: bold;
@@ -828,7 +815,7 @@ window.narrow .app-developer {
    font-size: small;
 }
 
-.install-progress-label { font-size: smaller }
+.install-progress-label { font-size: smaller; }
 
 /* FIXME: These are needed in the updates page until we can use AdwStatusPage
  * again. See the note in gs-updates-page.ui. */
