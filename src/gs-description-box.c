@@ -27,7 +27,8 @@
 #define MAX_COLLAPSED_LINES 4
 
 struct _GsDescriptionBox {
-	GtkBox parent;
+	GtkWidget parent;
+	GtkWidget *box;
 	GtkLabel *label;
 	GtkButton *button;
 	gchar *text;
@@ -35,9 +36,10 @@ struct _GsDescriptionBox {
 	gboolean needs_recalc;
 	gint last_width;
 	gint last_height;
+	guint idle_update_id;
 };
 
-G_DEFINE_TYPE (GsDescriptionBox, gs_description_box, GTK_TYPE_BOX)
+G_DEFINE_TYPE (GsDescriptionBox, gs_description_box, GTK_TYPE_WIDGET)
 
 static void
 gs_description_box_update_content (GsDescriptionBox *box)
@@ -116,6 +118,35 @@ gs_description_box_read_button_clicked_cb (GtkButton *button,
 }
 
 static void
+gs_description_box_measure (GtkWidget      *widget,
+                            GtkOrientation  orientation,
+                            gint            for_size,
+                            gint           *minimum,
+                            gint           *natural,
+                            gint           *minimum_baseline,
+                            gint           *natural_baseline)
+{
+	GsDescriptionBox *box = GS_DESCRIPTION_BOX (widget);
+
+	gtk_widget_measure (box->box, orientation,
+			    for_size,
+			    minimum, natural,
+			    minimum_baseline,
+			    natural_baseline);
+}
+
+static gboolean
+update_description_in_idle_cb (gpointer data)
+{
+	GsDescriptionBox *box = GS_DESCRIPTION_BOX (data);
+
+	gs_description_box_update_content (box);
+	box->idle_update_id = 0;
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
 gs_description_box_size_allocate (GtkWidget *widget,
                                   int        width,
                                   int        height,
@@ -123,12 +154,19 @@ gs_description_box_size_allocate (GtkWidget *widget,
 {
 	GsDescriptionBox *box = GS_DESCRIPTION_BOX (widget);
 
-	GTK_WIDGET_CLASS (gs_description_box_parent_class)->size_allocate (widget,
-									   width,
-									   height,
-									   baseline);
+	gtk_widget_allocate (box->box, width, height, baseline, NULL);
+	box->idle_update_id = g_idle_add (update_description_in_idle_cb, box);
+}
 
-	gs_description_box_update_content (box);
+static void
+gs_description_box_dispose (GObject *object)
+{
+	GsDescriptionBox *box = GS_DESCRIPTION_BOX (object);
+
+	g_clear_handle_id (&box->idle_update_id, g_source_remove);
+	g_clear_pointer (&box->box, gtk_widget_unparent);
+
+	G_OBJECT_CLASS (gs_description_box_parent_class)->dispose (object);
 }
 
 static void
@@ -149,6 +187,9 @@ gs_description_box_init (GsDescriptionBox *box)
 
 	box->is_collapsed = TRUE;
 
+	box->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 24);
+	gtk_widget_set_parent (GTK_WIDGET (box->box), GTK_WIDGET (box));
+
 	style_context = gtk_widget_get_style_context (GTK_WIDGET (box));
 	gtk_style_context_add_class (style_context, "application-details-description");
 
@@ -166,7 +207,7 @@ gs_description_box_init (GsDescriptionBox *box)
 		"xalign", 0.0,
 		NULL);
 
-	gtk_box_append (GTK_BOX (box), widget);
+	gtk_box_append (GTK_BOX (box->box), widget);
 
 	style_context = gtk_widget_get_style_context (widget);
 	gtk_style_context_add_class (style_context, "label");
@@ -183,7 +224,7 @@ gs_description_box_init (GsDescriptionBox *box)
 		"visible", TRUE,
 		NULL);
 
-	gtk_box_append (GTK_BOX (box), widget);
+	gtk_box_append (GTK_BOX (box->box), widget);
 
 	style_context = gtk_widget_get_style_context (widget);
 	gtk_style_context_add_class (style_context, "button");
@@ -202,19 +243,18 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	GtkWidgetClass *widget_class;
 
 	object_class = G_OBJECT_CLASS (klass);
+	object_class->dispose = gs_description_box_dispose;
 	object_class->finalize = gs_description_box_finalize;
 
 	widget_class = GTK_WIDGET_CLASS (klass);
+	widget_class->measure = gs_description_box_measure;
 	widget_class->size_allocate = gs_description_box_size_allocate;
 }
 
 GtkWidget *
 gs_description_box_new (void)
 {
-	return g_object_new (GS_TYPE_DESCRIPTION_BOX,
-		"orientation", GTK_ORIENTATION_VERTICAL,
-		"spacing", 24,
-		NULL);
+	return g_object_new (GS_TYPE_DESCRIPTION_BOX, NULL);
 }
 
 const gchar *

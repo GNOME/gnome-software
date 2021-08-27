@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_DESCRIPTION_BOX (gs_description_box_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsDescriptionBox, gs_description_box, GS, DESCRIPTION_BOX, GtkBox)
+G_DECLARE_FINAL_TYPE (GsDescriptionBox, gs_description_box, GS, DESCRIPTION_BOX, GtkWidget)
 
 GtkWidget	*gs_description_box_new		(void);
 const gchar	*gs_description_box_get_text	(GsDescriptionBox *box);
