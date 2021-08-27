@@ -190,7 +190,6 @@
                                             <property name="can_focus">True</property>
                                             <property name="icon_name">edit-find-symbolic</property>
                                             <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional"/>
-                                            <signal name="clicked" handler="search_button_clicked_cb"/>
                                             <accessibility>
                                               <property name="label" translatable="yes">Search</property>
                                             </accessibility>
@@ -229,6 +228,7 @@
                                       <object class="GtkSearchBar" id="search_bar">
                                         <property name="visible">True</property>
                                         <property name="key-capture-widget">GsShell</property>
+                                        <signal name="notify::search-mode-enabled" handler="search_bar_search_mode_enabled_changed_cb"/>
                                         <child>
                                           <object class="AdwClamp">
                                             <property name="visible">True</property>

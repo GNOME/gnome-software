@@ -456,7 +456,9 @@ gs_shell_get_mode_is_main (GsShellMode mode)
 	}
 }
 
-static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell);
+static void search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
+                                                       GParamSpec   *pspec,
+                                                       GsShell      *shell);
 static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
 
 static void
@@ -465,13 +467,13 @@ update_header_widgets (GsShell *shell)
 	GsShellMode mode = gs_shell_get_mode (shell);
 
 	/* only show the search button in overview and search pages */
-	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
+	g_signal_handlers_block_by_func (shell->search_bar, search_bar_search_mode_enabled_changed_cb, shell);
 
 	/* hide unless we're going to search */
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
-	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_bar, search_bar_search_mode_enabled_changed_cb, shell);
 }
 
 static void
@@ -961,11 +963,13 @@ search_changed_handler (GObject *entry, GsShell *shell)
 }
 
 static void
-search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
+search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
+					   GParamSpec *pspec,
+					   GsShell *shell)
 {
 	/* go back when exiting the search view */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH &&
-	    !gtk_toggle_button_get_active (toggle_button))
+	    !gtk_search_bar_get_search_mode (search_bar))
 		gs_shell_go_back (shell);
 }
 
@@ -2586,7 +2590,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
 	gtk_widget_class_bind_template_callback (widget_class, category_page_app_clicked_cb);
-	gtk_widget_class_bind_template_callback (widget_class, search_button_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, search_bar_search_mode_enabled_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_no_space_cb);
