@@ -946,9 +946,9 @@ window_keypress_handler (GtkEventControllerKey *key_controller,
 static void
 search_changed_handler (GObject *entry, GsShell *shell)
 {
-	const gchar *text;
+	g_autofree gchar *text = NULL;
 
-	text = gtk_editable_get_text (GTK_EDITABLE (entry));
+	text = g_strdup (gtk_editable_get_text (GTK_EDITABLE (entry)));
 	if (strlen (text) >= 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			save_back_entry (shell);
