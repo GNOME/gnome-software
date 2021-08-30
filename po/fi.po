@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-22 21:44+0000\n"
-"PO-Revision-Date: 2021-08-28 12:59+0300\n"
+"POT-Creation-Date: 2021-08-30 07:05+0000\n"
+"PO-Revision-Date: 2021-08-30 11:12+0300\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -338,7 +338,6 @@ msgstr "Tätä ohjelmaa voi käyttää vain root-käyttäjä"
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:165
 #, c-format
-#| msgid "Failed to validate content type"
 msgid "Failed to validate content type: %s"
 msgstr "Sisältötyypin validointi epäonnistui: %s"
 
@@ -554,7 +553,6 @@ msgstr "%s soveltuu teini-ikäisille"
 #. * for people aged up to and over 18. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:704
 #, c-format
-#| msgid "%s file format"
 msgid "%s is suitable for adults"
 msgstr "%s on aikuisille soveltuva"
 
@@ -715,7 +713,6 @@ msgstr "Voi paeta hiekkalaatikosta ja kiertää muita rajoituksia"
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
 #: src/gs-app-details-page.c:159
 #, c-format
-#| msgid "%s %f"
 msgid "%s %s"
 msgstr "%s %s"
 
@@ -868,19 +865,16 @@ msgstr "Koko asennettuna"
 
 #: src/gs-app-context-bar.c:151
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data and %s of cache"
 msgstr "Sisältää %s dataa ja %s välimuistia"
 
 #: src/gs-app-context-bar.c:154
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data"
 msgstr "Sisältää %s dataa"
 
 #: src/gs-app-context-bar.c:157
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of cache"
 msgstr "Sisältää %s välimuistia"
 
@@ -1336,304 +1330,334 @@ msgid "Audio Creation & Editing"
 msgstr "Äänen luonti ja muokkaus"
 
 #: lib/gs-desktop-data.c:45
-msgctxt "Menu of Add-ons"
-msgid "Fonts"
-msgstr "Fontit"
-
-#: lib/gs-desktop-data.c:48
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Musiikkisoittimet"
 
-#: lib/gs-desktop-data.c:52
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "Koodekit"
-
-#: lib/gs-desktop-data.c:59
+#: lib/gs-desktop-data.c:53
 msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Kaikki"
 
-#: lib/gs-desktop-data.c:65
+#: lib/gs-desktop-data.c:58
 msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Nostot"
 
-#: lib/gs-desktop-data.c:69
+#: lib/gs-desktop-data.c:62
 msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Kalenteri"
 
-#: lib/gs-desktop-data.c:73
+#: lib/gs-desktop-data.c:66
 msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Tietokanta"
 
-#: lib/gs-desktop-data.c:76
+#: lib/gs-desktop-data.c:69
 msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Talous"
 
-#: lib/gs-desktop-data.c:80
+#: lib/gs-desktop-data.c:73
 msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Tekstinkäsittely"
 
-#: lib/gs-desktop-data.c:84
+#: lib/gs-desktop-data.c:77
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Tekstimuokkaimet"
 
-#: lib/gs-desktop-data.c:87
+#: lib/gs-desktop-data.c:80
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Verkkoselaimet"
 
-#: lib/gs-desktop-data.c:90
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Syötelähteet"
-
-#: lib/gs-desktop-data.c:93
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Kielipaketit"
-
-#: lib/gs-desktop-data.c:96
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Lokalisointi"
-
-#: lib/gs-desktop-data.c:99
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Laitteistoajurit"
-
-#: lib/gs-desktop-data.c:106
+#: lib/gs-desktop-data.c:87
 msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Kaikki"
 
-#: lib/gs-desktop-data.c:109
+#: lib/gs-desktop-data.c:90
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Nostot"
 
-#: lib/gs-desktop-data.c:112
+#: lib/gs-desktop-data.c:93
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Toimintapelit"
 
-#: lib/gs-desktop-data.c:115
+#: lib/gs-desktop-data.c:96
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Seikkailupelit"
 
-#: lib/gs-desktop-data.c:118
+#: lib/gs-desktop-data.c:99
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Pelihallipelit"
 
-#: lib/gs-desktop-data.c:121
+#: lib/gs-desktop-data.c:102
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Palikkapelit"
 
-#: lib/gs-desktop-data.c:124
+#: lib/gs-desktop-data.c:105
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Lautapelit"
 
-#: lib/gs-desktop-data.c:127
+#: lib/gs-desktop-data.c:108
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Korttipelit"
 
-#: lib/gs-desktop-data.c:130
+#: lib/gs-desktop-data.c:111
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Emulaattorit"
 
-#: lib/gs-desktop-data.c:133
+#: lib/gs-desktop-data.c:114
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Lastenpelit"
 
-#: lib/gs-desktop-data.c:136
+#: lib/gs-desktop-data.c:117
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Logiikkapelit"
 
-#: lib/gs-desktop-data.c:140
+#: lib/gs-desktop-data.c:121
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Roolipelit"
 
-#: lib/gs-desktop-data.c:143
+#: lib/gs-desktop-data.c:124
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Urheilupelit"
 
-#: lib/gs-desktop-data.c:146
+#: lib/gs-desktop-data.c:127
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Strategiapelit"
 
-#: lib/gs-desktop-data.c:153
+#: lib/gs-desktop-data.c:134
 msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Kaikki"
 
-#: lib/gs-desktop-data.c:156
+#: lib/gs-desktop-data.c:137
 msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Nostot"
 
-#: lib/gs-desktop-data.c:159
+#: lib/gs-desktop-data.c:140
 msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Keskustelu"
 
-#: lib/gs-desktop-data.c:170
+#: lib/gs-desktop-data.c:151
 msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Kaikki"
 
-#: lib/gs-desktop-data.c:177
+#: lib/gs-desktop-data.c:158
 msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Nostot"
 
-#: lib/gs-desktop-data.c:182
+#: lib/gs-desktop-data.c:163
 msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Tekoäly"
 
-#: lib/gs-desktop-data.c:185
+#: lib/gs-desktop-data.c:166
 msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Astronomia"
 
-#: lib/gs-desktop-data.c:189
+#: lib/gs-desktop-data.c:170
 msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Kemia"
 
-#: lib/gs-desktop-data.c:193
+#: lib/gs-desktop-data.c:174
 msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Kielet"
 
-#: lib/gs-desktop-data.c:197
+#: lib/gs-desktop-data.c:178
 msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Matematiikka"
 
-#: lib/gs-desktop-data.c:204
+#: lib/gs-desktop-data.c:185
 msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Uutisryhmät"
 
-#: lib/gs-desktop-data.c:208
+#: lib/gs-desktop-data.c:189
 msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Robotiikka"
 
-#: lib/gs-desktop-data.c:211
+#: lib/gs-desktop-data.c:192
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Taide"
 
-#: lib/gs-desktop-data.c:214
+#: lib/gs-desktop-data.c:195
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Biografia"
 
-#: lib/gs-desktop-data.c:217
+#: lib/gs-desktop-data.c:198
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Sarjakuvat"
 
-#: lib/gs-desktop-data.c:220
+#: lib/gs-desktop-data.c:201
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Fiktio"
 
-#: lib/gs-desktop-data.c:223
+#: lib/gs-desktop-data.c:204
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Terveys"
 
-#: lib/gs-desktop-data.c:226
+#: lib/gs-desktop-data.c:207
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Historia"
 
-#: lib/gs-desktop-data.c:229
+#: lib/gs-desktop-data.c:210
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Elämäntapa"
 
-#: lib/gs-desktop-data.c:232
+#: lib/gs-desktop-data.c:213
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Politiikka"
 
-#: lib/gs-desktop-data.c:235
+#: lib/gs-desktop-data.c:216
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Urheilu"
 
-#: lib/gs-desktop-data.c:242
+#: lib/gs-desktop-data.c:223
 msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Kaikki"
 
-#: lib/gs-desktop-data.c:245
+#: lib/gs-desktop-data.c:226
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Nostot"
 
-#: lib/gs-desktop-data.c:248
+#: lib/gs-desktop-data.c:229
 msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Vianjäljittimet"
 
-#: lib/gs-desktop-data.c:251
+#: lib/gs-desktop-data.c:232
 msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "Kehitysympäristöt"
 
+#: lib/gs-desktop-data.c:240
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "Koodekit"
+
+#: lib/gs-desktop-data.c:247
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Laitteistoajurit"
+
+#: lib/gs-desktop-data.c:254
+msgctxt "Menu of Add-ons"
+msgid "Fonts"
+msgstr "Fontit"
+
+#: lib/gs-desktop-data.c:261
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Syötelähteet"
+
+#: lib/gs-desktop-data.c:268
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Kielipaketit"
+
+#: lib/gs-desktop-data.c:275
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Lokalisointi"
+
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:262
+#: lib/gs-desktop-data.c:285
 msgid "Create"
 msgstr "Luo"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:264
+#: lib/gs-desktop-data.c:287
 msgid "Work"
 msgstr "Työskentele"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:266
+#: lib/gs-desktop-data.c:289
 msgid "Play"
 msgstr "Pelaa"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:268
+#: lib/gs-desktop-data.c:291
 msgid "Socialize"
 msgstr "Ole sosiaalinen"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:270
+#: lib/gs-desktop-data.c:293
 msgid "Learn"
 msgstr "Opi"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:272
+#: lib/gs-desktop-data.c:295
 msgid "Develop"
 msgstr "Kehitä"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:298
+msgid "Codecs"
+msgstr "Koodekit"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:300
+msgid "Hardware Drivers"
+msgstr "Laitteistoajurit"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:302
+msgid "Fonts"
+msgstr "Fontit"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:304
+msgid "Input Sources"
+msgstr "Syötelähteet"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:306
+msgid "Language Packs"
+msgstr "Kielipaketit"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:308
+msgid "Localization"
+msgstr "Lokalisointi"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -1927,7 +1951,6 @@ msgstr "Valmistellaan…"
 
 #. Translators: This string is shown when uninstalling an app.
 #: src/gs-details-page.c:407
-#| msgid "Uninstalling"
 msgid "Uninstalling…"
 msgstr "Poistetaan asennus…"
 
@@ -2760,12 +2783,12 @@ msgstr "Version muutokset alempaan"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:690
+#: src/gs-overview-page.c:706
 msgid "selected external sources"
 msgstr "valituista ulkoisista lähteistä"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:692
+#: src/gs-overview-page.c:708
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2775,13 +2798,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:701 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Käytä"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:756 src/gs-shell.ui:308
+#: src/gs-overview-page.c:772 src/gs-shell.ui:308
 msgid "Explore"
 msgstr "Tutki"
 
@@ -2793,7 +2816,12 @@ msgstr "Yhteenvetosivu"
 msgid "Enable Third Party Software Repositories?"
 msgstr "Käytetäänkö kolmansien osapuolten ohjelmistolähteitä?"
 
-#: src/gs-overview-page.ui:212
+#. Translators: This is a heading for a list of categories.
+#: src/gs-overview-page.ui:175
+msgid "Other Categories"
+msgstr "Muut luokat"
+
+#: src/gs-overview-page.ui:239
 msgid "No Application Data Found"
 msgstr "Sovellustietoja ei löytynyt"
 
@@ -3403,7 +3431,6 @@ msgstr "Sovelluksen kehittäjän on vahvistettu olevan se, joka väittää oleva
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:335
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s is safe"
 msgstr "%s on turvallinen"
 
@@ -4431,7 +4458,6 @@ msgstr "Päivityssivu"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:96
-#| msgid "Pending update…"
 msgid "Loading Updates…"
 msgstr "Ladataan päivityksiä…"
 
@@ -4526,7 +4552,6 @@ msgstr "_Lataa"
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
 #: src/gs-upgrade-banner.c:86
 #, c-format
-#| msgid "%s %s Now Available"
 msgid "%s %s Available"
 msgstr "%s %s saatavilla"
 
@@ -4766,7 +4791,6 @@ msgstr "Hiiripäivitys %s"
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:207
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s Keyboard Update"
 msgstr "Näppäimistöpäivitys %s"
 
@@ -4797,7 +4821,6 @@ msgid "Packages"
 msgstr "Paketit"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2151
-#| msgid "Operating System Updates Unavailable"
 msgid "Operating System (OSTree)"
 msgstr "Käyttöjärjestelmä (OSTree)"
 
@@ -5044,9 +5067,6 @@ msgstr "Snap on yleinen Linux-paketti"
 
 #~ msgid "Recent Releases"
 #~ msgstr "Uusimmat julkaisut"
-
-#~ msgid "Categories"
-#~ msgstr "Luokat"
 
 #~ msgid "Remove “%s”?"
 #~ msgstr "Poistetaanko ohjelmistolähde “%s”?"
