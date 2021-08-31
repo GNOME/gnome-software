@@ -39,7 +39,6 @@ struct _GsOverviewPage
 	gboolean		 loading_recent;
 	gboolean		 loading_categories;
 	gboolean		 empty;
-	gchar			*category_of_day;
 	GHashTable		*category_hash;		/* id : GsCategory */
 	gchar			*third_party_cmdtool;
 	gboolean		 third_party_needs_question;
@@ -99,14 +98,6 @@ featured_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
 	gs_shell_show_app (self->shell, app);
 }
 
-static gboolean
-filter_category (GsApp *app, gpointer user_data)
-{
-	const gchar *category = (const gchar *) user_data;
-
-	return !gs_app_has_category (app, category);
-}
-
 static void
 gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 {
@@ -157,8 +148,6 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 		goto out;
 	}
 
-	/* Don't show apps from the category that's currently featured as the category of the day */
-	gs_app_list_filter (list, filter_category, self->category_of_day);
 	gs_app_list_randomize (list);
 
 	gs_container_remove_all (GTK_CONTAINER (self->box_popular));
@@ -208,8 +197,6 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		goto out;
 	}
 
-	/* Don't show apps from the category that's currently featured as the category of the day */
-	gs_app_list_filter (list, filter_category, self->category_of_day);
 	gs_app_list_randomize (list);
 
 	gs_container_remove_all (GTK_CONTAINER (self->box_recent));
@@ -276,8 +263,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	}
 
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
-		/* Don't show apps from the category that's currently featured as the category of the day */
-		gs_app_list_filter (list, filter_category, self->category_of_day);
 		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 		gs_app_list_randomize (list);
 	}
@@ -803,7 +788,6 @@ gs_overview_page_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_pointer (&self->third_party_cmdtool, g_free);
-	g_clear_pointer (&self->category_of_day, g_free);
 	g_clear_pointer (&self->category_hash, g_hash_table_unref);
 
 	G_OBJECT_CLASS (gs_overview_page_parent_class)->dispose (object);
