@@ -293,6 +293,9 @@ _all_offline_updates_downloaded (GsUpdatesSection *self)
 		guint64 size = gs_app_get_size_download (app);
 		if (size != 0)
 			return FALSE;
+		size = gs_app_get_size_download_dependencies (app);
+		if (size != 0)
+			return FALSE;
 	}
 
 	return TRUE;
