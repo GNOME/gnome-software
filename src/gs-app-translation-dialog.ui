@@ -3,122 +3,120 @@
   <requires lib="gtk+" version="3.10"/>
   <template class="GsAppTranslationDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes">Translations</property>
+    <child>
+      <object class="HdyPreferencesPage">
+        <property name="visible">True</property>
         <child>
-          <object class="HdyPreferencesPage">
+          <object class="HdyPreferencesGroup">
             <property name="visible">True</property>
+
             <child>
-              <object class="HdyPreferencesGroup">
+              <object class="GtkBox">
+                <property name="margin-left">3</property>
+                <property name="margin-right">3</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
                 <property name="visible">True</property>
 
                 <child>
                   <object class="GtkBox">
-                    <property name="margin-left">3</property>
-                    <property name="margin-right">3</property>
+                    <property name="margin">20</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">8</property>
+                    <property name="spacing">12</property>
                     <property name="visible">True</property>
 
                     <child>
-                      <object class="GtkBox">
-                        <property name="margin">20</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">12</property>
+                      <object class="GtkBox" id="lozenge">
+                        <property name="halign">center</property>
                         <property name="visible">True</property>
-
+                        <style>
+                          <class name="context-tile-lozenge"/>
+                          <class name="large"/>
+                          <class name="blue"/>
+                        </style>
                         <child>
-                          <object class="GtkBox" id="lozenge">
+                          <object class="GtkImage" id="icon">
                             <property name="halign">center</property>
+                            <property name="icon-name">flag-outline-thin-symbolic</property>
+                            <property name="icon-size">3</property><!-- GTK_ICON_SIZE_LARGE_TOOLBAR -->
                             <property name="visible">True</property>
-                            <style>
-                              <class name="context-tile-lozenge"/>
-                              <class name="large"/>
-                              <class name="blue"/>
-                            </style>
-                            <child>
-                              <object class="GtkImage" id="icon">
-                                <property name="halign">center</property>
-                                <property name="icon-name">flag-outline-thin-symbolic</property>
-                                <property name="icon-size">3</property><!-- GTK_ICON_SIZE_LARGE_TOOLBAR -->
-                                <property name="visible">True</property>
-                                <accessibility>
-                                  <relation target="title" type="labelled-by"/>
-                                </accessibility>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                              </packing>
-                            </child>
+                            <accessibility>
+                              <relation target="title" type="labelled-by"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="fill">False</property>
+                            <property name="expand">True</property>
                           </packing>
                         </child>
-
-                        <child>
-                          <object class="GtkLabel" id="title">
-                            <property name="justify">center</property>
-                            <!-- this is a placeholder: the text is actually set in code -->
-                            <property name="label">Help Translate Shortwave</property>
-                            <property name="visible">True</property>
-                            <property name="wrap">True</property>
-                            <property name="xalign">0.5</property>
-                            <style>
-                              <class name="title-1"/>
-                            </style>
-                            <accessibility>
-                              <relation target="lozenge" type="label-for"/>
-                            </accessibility>
-                            <style>
-                              <class name="context-tile-title"/>
-                            </style>
-                          </object>
-                        </child>
                       </object>
+                      <packing>
+                        <property name="fill">False</property>
+                      </packing>
                     </child>
 
                     <child>
-                      <object class="GtkLabel" id="description">
+                      <object class="GtkLabel" id="title">
                         <property name="justify">center</property>
-                        <!-- This is a placeholder: the actual label is set in code -->
-                        <property name="label">Shortwave is designed, developed, and translated by an international community of volunteers.\n\nThis means that while it’s not yet available in your language, you can get involved and help translate it yourself.</property>
+                        <!-- this is a placeholder: the text is actually set in code -->
+                        <property name="label">Help Translate Shortwave</property>
                         <property name="visible">True</property>
                         <property name="wrap">True</property>
                         <property name="xalign">0.5</property>
+                        <style>
+                          <class name="title-1"/>
+                        </style>
+                        <accessibility>
+                          <relation target="lozenge" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="context-tile-title"/>
+                        </style>
                       </object>
                     </child>
+                  </object>
+                </child>
 
+                <child>
+                  <object class="GtkLabel" id="description">
+                    <property name="justify">center</property>
+                    <!-- This is a placeholder: the actual label is set in code -->
+                    <property name="label">Shortwave is designed, developed, and translated by an international community of volunteers.\n\nThis means that while it’s not yet available in your language, you can get involved and help translate it yourself.</property>
+                    <property name="visible">True</property>
+                    <property name="wrap">True</property>
+                    <property name="xalign">0.5</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton">
+                    <property name="halign">center</property>
+                    <property name="margin">14</property>
+                    <property name="visible">True</property>
+                    <signal name="clicked" handler="button_clicked_cb"/>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
                     <child>
-                      <object class="GtkButton">
-                        <property name="halign">center</property>
-                        <property name="margin">14</property>
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <signal name="clicked" handler="button_clicked_cb"/>
-                        <style>
-                          <class name="suggested-action"/>
-                        </style>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <property name="halign">center</property>
+                        <property name="margin-left">12</property>
+                        <property name="margin-right">12</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="spacing">6</property>
-                            <property name="halign">center</property>
-                            <property name="margin-left">12</property>
-                            <property name="margin-right">12</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="yalign">0.5</property>
-                                <property name="label" translatable="yes">_Translation Website</property>
-                                <property name="use-underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="icon-name">external-link-symbolic</property>
-                              </object>
-                            </child>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0.5</property>
+                            <property name="label" translatable="yes">_Translation Website</property>
+                            <property name="use-underline">True</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon-name">external-link-symbolic</property>
                           </object>
                         </child>
                       </object>
@@ -129,5 +127,7 @@
             </child>
           </object>
         </child>
+      </object>
+    </child>
   </template>
 </interface>
