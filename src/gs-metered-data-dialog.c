@@ -16,12 +16,12 @@
 
 struct _GsMeteredDataDialog
 {
-	GtkDialog	 parent_instance;
+	GsInfoWindow	 parent_instance;
 
 	GtkWidget	*button_network_settings;
 };
 
-G_DEFINE_TYPE (GsMeteredDataDialog, gs_metered_data_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsMeteredDataDialog, gs_metered_data_dialog, GS_TYPE_INFO_WINDOW)
 
 static void
 button_network_settings_clicked_cb (GtkButton *button,
@@ -60,9 +60,7 @@ gs_metered_data_dialog_new (GtkWindow *parent)
 	GsMeteredDataDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_METERED_DATA_DIALOG,
-			       "use-header-bar", TRUE,
 			       "transient-for", parent,
-			       "modal", TRUE,
 			       NULL);
 
 	return GTK_WIDGET (dialog);
