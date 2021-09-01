@@ -42,7 +42,7 @@
 
 struct _GsStorageContextDialog
 {
-	HdyWindow		 parent_instance;
+	GsInfoWindow		 parent_instance;
 
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler;
@@ -55,7 +55,7 @@ struct _GsStorageContextDialog
 	GtkLabel		*manage_storage_label;
 };
 
-G_DEFINE_TYPE (GsStorageContextDialog, gs_storage_context_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsStorageContextDialog, gs_storage_context_dialog, GS_TYPE_INFO_WINDOW)
 
 typedef enum {
 	PROP_APP = 1,
@@ -197,35 +197,6 @@ app_notify_cb (GObject    *obj,
 }
 
 static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    HdyPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
-static gboolean
 manage_storage_activate_link_cb (GtkLabel    *label,
                                  const gchar *uri,
                                  gpointer     user_data)
@@ -348,7 +319,6 @@ gs_storage_context_dialog_class_init (GsStorageContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, sizes_list);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, manage_storage_label);
 
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 	gtk_widget_class_bind_template_callback (widget_class, manage_storage_activate_link_cb);
 }
 

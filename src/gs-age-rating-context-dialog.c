@@ -43,7 +43,7 @@
 
 struct _GsAgeRatingContextDialog
 {
-	HdyWindow		 parent_instance;
+	GsInfoWindow		 parent_instance;
 
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_content_rating;
@@ -55,7 +55,7 @@ struct _GsAgeRatingContextDialog
 	GtkListBox		*attributes_list;
 };
 
-G_DEFINE_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, GS_TYPE_INFO_WINDOW)
 
 typedef enum {
 	PROP_APP = 1,
@@ -751,35 +751,6 @@ sort_cb (GtkListBoxRow *row1,
 	return g_strcmp0 (title1, title2);
 }
 
-static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    HdyPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
 static void
 gs_age_rating_context_dialog_init (GsAgeRatingContextDialog *self)
 {
@@ -868,8 +839,6 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, attributes_list);
-
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 }
 
 /**

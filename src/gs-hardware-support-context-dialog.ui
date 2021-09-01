@@ -1,30 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsHardwareSupportContextDialog" parent="HdyWindow">
-    <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="icon_name">dialog-information</property>
+  <template class="GsHardwareSupportContextDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app">Hardware Support</property>
-    <property name="type_hint">dialog</property>
-    <property name="default-width">640</property>
-    <property name="default-height">576</property>
-    <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
-    <style>
-      <class name="toolbox"/>
-    </style>
-
-    <child>
-      <object class="GtkOverlay">
-        <property name="visible">True</property>
-        <child type="overlay">
-          <object class="HdyHeaderBar">
-            <property name="show_close_button">True</property>
-            <property name="visible">True</property>
-            <property name="valign">start</property>
-          </object>
-        </child>
         <child>
           <object class="HdyPreferencesPage">
             <property name="visible">True</property>
@@ -124,7 +102,5 @@
             </child>
           </object>
         </child>
-      </object>
-    </child>
   </template>
 </interface>

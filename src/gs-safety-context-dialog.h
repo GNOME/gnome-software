@@ -15,12 +15,13 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-info-window.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_SAFETY_CONTEXT_DIALOG (gs_safety_context_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsSafetyContextDialog, gs_safety_context_dialog, GS, SAFETY_CONTEXT_DIALOG, HdyWindow)
+G_DECLARE_FINAL_TYPE (GsSafetyContextDialog, gs_safety_context_dialog, GS, SAFETY_CONTEXT_DIALOG, GsInfoWindow)
 
 GsSafetyContextDialog	*gs_safety_context_dialog_new		(GsApp			*app);
 

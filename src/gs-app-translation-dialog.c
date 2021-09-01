@@ -40,7 +40,7 @@
 
 struct _GsAppTranslationDialog
 {
-	HdyWindow		 parent_instance;
+	GsInfoWindow		 parent_instance;
 
 	GsApp			*app;  /* (not nullable) (owned) */
 	gulong			 app_notify_name_handler;
@@ -49,7 +49,7 @@ struct _GsAppTranslationDialog
 	GtkLabel		*description;
 };
 
-G_DEFINE_TYPE (GsAppTranslationDialog, gs_app_translation_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsAppTranslationDialog, gs_app_translation_dialog, GS_TYPE_INFO_WINDOW)
 
 typedef enum {
 	PROP_APP = 1,
@@ -86,35 +86,6 @@ app_notify_cb (GObject    *obj,
 	GsAppTranslationDialog *self = GS_APP_TRANSLATION_DIALOG (user_data);
 
 	update_labels (self);
-}
-
-static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    HdyPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
 }
 
 static const gchar *
@@ -243,7 +214,6 @@ gs_app_translation_dialog_class_init (GsAppTranslationDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppTranslationDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsAppTranslationDialog, description);
 
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 	gtk_widget_class_bind_template_callback (widget_class, button_clicked_cb);
 }
 
