@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-30 07:05+0000\n"
-"PO-Revision-Date: 2021-08-30 11:04+0200\n"
+"POT-Creation-Date: 2021-08-31 13:36+0000\n"
+"PO-Revision-Date: 2021-09-03 00:34+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
-"Language-Team: Galician <Proxecto Trasno <proxecto@trasno.gal>>\n"
+"Language-Team: Galician <proxecto@trasno.gal>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgstr ""
 "X-DL-Module: gnome-software\n"
 "X-DL-Branch: main\n"
 "X-DL-Domain: po\n"
-"X-DL-State: Translating\n"
+"X-DL-State: None\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -1654,43 +1654,31 @@ msgstr "Desenvolver"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:298
-#| msgctxt "Menu of Add-ons"
-#| msgid "Codecs"
 msgid "Codecs"
 msgstr "Códecs"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:300
-#| msgctxt "Menu of Add-ons"
-#| msgid "Hardware Drivers"
 msgid "Hardware Drivers"
 msgstr "Controladores do hardware"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:302
-#| msgctxt "Menu of Add-ons"
-#| msgid "Fonts"
 msgid "Fonts"
 msgstr "Tipos de letra"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:304
-#| msgctxt "Menu of Add-ons"
-#| msgid "Input Sources"
 msgid "Input Sources"
 msgstr "Orixes de entrada"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:306
-#| msgctxt "Menu of Add-ons"
-#| msgid "Language Packs"
 msgid "Language Packs"
 msgstr "Paquetes de idiomas"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:308
-#| msgctxt "Menu of Add-ons"
-#| msgid "Localization"
 msgid "Localization"
 msgstr "Localización"
 
@@ -2863,7 +2851,6 @@ msgstr "Desexa activar os repositorios de software de terceiros?"
 
 #. Translators: This is a heading for a list of categories.
 #: src/gs-overview-page.ui:175
-#| msgid "Categories"
 msgid "Other Categories"
 msgstr "Outras categorías"
 
@@ -3168,7 +3155,7 @@ msgstr "A descrición é demasiado longa"
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
 msgid "Post Review"
-msgstr "Enviar revisión"
+msgstr "Publicar opinión"
 
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:34
@@ -3195,7 +3182,7 @@ msgstr ""
 #: src/gs-review-dialog.ui:145
 msgctxt "app review"
 msgid "Review"
-msgstr "Revisión"
+msgstr "Opinión"
 
 #: src/gs-review-dialog.ui:155
 msgid "What do you think of the app? Try to give reasons for your views."
@@ -3208,6 +3195,13 @@ msgid ""
 msgstr ""
 "Saiba que datos se envían na nosa <a href=\"https://odrs.gnome.org/privacy"
 "\">política de privacidade</a>."
+
+#: src/gs-review-histogram.c:72
+#, c-format
+msgid "%u reviews total"
+msgid_plural "%u reviews total"
+msgstr[0] "%u opinión en total"
+msgstr[1] "%u opinións en total"
 
 #: src/gs-review-histogram.ui:100
 msgid "out of 5 stars"
@@ -3223,7 +3217,7 @@ msgstr "Descoñecido"
 #: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
-"Pode reportar revisións por ser abusivas, groseiras ou conduta "
+"Pode informar de opinións por ser abusivas, groseiras ou conduta "
 "discriminatoria."
 
 #. TRANSLATORS: we ask the user if they really want to do this
@@ -3232,7 +3226,7 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
-"En canto estea reportada, a revisión ocultarase ate que sexa revisada polo "
+"En canto estea reportada, a opinión ocultarase ate que sexa revisada polo "
 "administrador."
 
 #. TRANSLATORS: window title when
@@ -3240,18 +3234,18 @@ msgstr ""
 #. * for moderation
 #: src/gs-review-row.c:242
 msgid "Report Review?"
-msgstr "Reportar revisión?"
+msgstr "Reportar opinión?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: src/gs-review-row.c:246
 msgid "Report"
-msgstr "Reportar"
+msgstr "Informar"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
 #: src/gs-review-row.ui:89
 msgid "Was this review useful to you?"
-msgstr "Esta revisión foi útil para vostede?"
+msgstr "Esta opinión foi útil para vostede?"
 
 #: src/gs-review-row.ui:106
 msgid "Yes"
@@ -3268,7 +3262,7 @@ msgstr "Meh"
 
 #: src/gs-review-row.ui:135
 msgid "Report…"
-msgstr "Reportar…"
+msgstr "Informar…"
 
 #: src/gs-review-row.ui:148
 msgid "Remove…"
