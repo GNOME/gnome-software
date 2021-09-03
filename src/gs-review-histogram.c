@@ -69,7 +69,7 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar2), fraction[2]);
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar1), fraction[1]);
 
-	text = g_strdup_printf (g_dngettext (GETTEXT_PACKAGE, "%u reviews total", "%u reviews total", total), total);
+	text = g_strdup_printf (g_dngettext (GETTEXT_PACKAGE, "%u review total", "%u reviews total", total), total);
 	gtk_label_set_text (GTK_LABEL (priv->label_total), text);
 
 	g_clear_pointer (&text, g_free);
