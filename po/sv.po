@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-20 16:58+0000\n"
-"PO-Revision-Date: 2021-08-22 16:28+0200\n"
+"POT-Creation-Date: 2021-09-03 07:01+0000\n"
+"PO-Revision-Date: 2021-09-03 12:03+0200\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -535,6 +535,49 @@ msgstr "Alla"
 #: src/gs-storage-context-dialog.c:87
 msgid "?"
 msgstr "?"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for all ages. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:684
+#, c-format
+msgid "%s is suitable for everyone"
+msgstr "%s passar för alla"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 3. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:688
+#, c-format
+msgid "%s is suitable for toddlers"
+msgstr "%s passar för småbarn"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for children up to around age 5. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:692
+#, c-format
+msgid "%s is suitable for young children"
+msgstr "%s passar för unga barn"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people up to around age 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:700
+#, c-format
+msgid "%s is suitable for teenagers"
+msgstr "%s passar för tonåringar"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for people aged up to and over 18. The placeholder is the app name.
+#: src/gs-age-rating-context-dialog.c:704
+#, c-format
+msgid "%s is suitable for adults"
+msgstr "%s passar för vuxna"
+
+#. Translators: This is a dialogue title which indicates that an app is suitable
+#. * for a specified age group. The first placeholder is the app name, the second
+#. * is the age group.
+#: src/gs-age-rating-context-dialog.c:709
+#, c-format
+msgid "%s is suitable for %s"
+msgstr "%s passar för %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
@@ -1310,304 +1353,334 @@ msgid "Audio Creation & Editing"
 msgstr "Skapande & redigering av ljud"
 
 #: lib/gs-desktop-data.c:45
-msgctxt "Menu of Add-ons"
-msgid "Fonts"
-msgstr "Typsnitt"
-
-#: lib/gs-desktop-data.c:48
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Musikspelare"
 
-#: lib/gs-desktop-data.c:52
-msgctxt "Menu of Add-ons"
-msgid "Codecs"
-msgstr "Kodekar"
-
-#: lib/gs-desktop-data.c:59
+#: lib/gs-desktop-data.c:53
 msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Alla"
 
-#: lib/gs-desktop-data.c:65
+#: lib/gs-desktop-data.c:58
 msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "I blickfånget"
 
-#: lib/gs-desktop-data.c:69
+#: lib/gs-desktop-data.c:62
 msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Kalender"
 
-#: lib/gs-desktop-data.c:73
+#: lib/gs-desktop-data.c:66
 msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Databas"
 
-#: lib/gs-desktop-data.c:76
+#: lib/gs-desktop-data.c:69
 msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Finans"
 
-#: lib/gs-desktop-data.c:80
+#: lib/gs-desktop-data.c:73
 msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Ordbehandlare"
 
-#: lib/gs-desktop-data.c:84
+#: lib/gs-desktop-data.c:77
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Textredigerare"
 
-#: lib/gs-desktop-data.c:87
+#: lib/gs-desktop-data.c:80
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Webbläsare"
 
-#: lib/gs-desktop-data.c:90
-msgctxt "Menu of Add-ons"
-msgid "Input Sources"
-msgstr "Inmatningskällor"
-
-#: lib/gs-desktop-data.c:93
-msgctxt "Menu of Add-ons"
-msgid "Language Packs"
-msgstr "Språkpaket"
-
-#: lib/gs-desktop-data.c:96
-msgctxt "Menu of Add-ons"
-msgid "Localization"
-msgstr "Lokalisering"
-
-#: lib/gs-desktop-data.c:99
-msgctxt "Menu of Add-ons"
-msgid "Hardware Drivers"
-msgstr "Hårdvarudrivrutiner"
-
-#: lib/gs-desktop-data.c:106
+#: lib/gs-desktop-data.c:87
 msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Alla"
 
-#: lib/gs-desktop-data.c:109
+#: lib/gs-desktop-data.c:90
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "I blickfånget"
 
-#: lib/gs-desktop-data.c:112
+#: lib/gs-desktop-data.c:93
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Action"
 
-#: lib/gs-desktop-data.c:115
+#: lib/gs-desktop-data.c:96
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Äventyr"
 
-#: lib/gs-desktop-data.c:118
+#: lib/gs-desktop-data.c:99
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Arkad"
 
-#: lib/gs-desktop-data.c:121
+#: lib/gs-desktop-data.c:102
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Klossar"
 
-#: lib/gs-desktop-data.c:124
+#: lib/gs-desktop-data.c:105
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Brädspel"
 
-#: lib/gs-desktop-data.c:127
+#: lib/gs-desktop-data.c:108
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Kort"
 
-#: lib/gs-desktop-data.c:130
+#: lib/gs-desktop-data.c:111
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Emulatorer"
 
-#: lib/gs-desktop-data.c:133
+#: lib/gs-desktop-data.c:114
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Barn"
 
-#: lib/gs-desktop-data.c:136
+#: lib/gs-desktop-data.c:117
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Logik"
 
-#: lib/gs-desktop-data.c:140
+#: lib/gs-desktop-data.c:121
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Rollspel"
 
-#: lib/gs-desktop-data.c:143
+#: lib/gs-desktop-data.c:124
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Sport"
 
-#: lib/gs-desktop-data.c:146
+#: lib/gs-desktop-data.c:127
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Strategi"
 
-#: lib/gs-desktop-data.c:153
+#: lib/gs-desktop-data.c:134
 msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Alla"
 
-#: lib/gs-desktop-data.c:156
+#: lib/gs-desktop-data.c:137
 msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "I blickfånget"
 
-#: lib/gs-desktop-data.c:159
+#: lib/gs-desktop-data.c:140
 msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Chatt"
 
-#: lib/gs-desktop-data.c:170
+#: lib/gs-desktop-data.c:151
 msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Alla"
 
-#: lib/gs-desktop-data.c:177
+#: lib/gs-desktop-data.c:158
 msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "I blickfånget"
 
-#: lib/gs-desktop-data.c:182
+#: lib/gs-desktop-data.c:163
 msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Artificiell intelligens"
 
-#: lib/gs-desktop-data.c:185
+#: lib/gs-desktop-data.c:166
 msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Astronomi"
 
-#: lib/gs-desktop-data.c:189
+#: lib/gs-desktop-data.c:170
 msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Kemi"
 
-#: lib/gs-desktop-data.c:193
+#: lib/gs-desktop-data.c:174
 msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Språk"
 
-#: lib/gs-desktop-data.c:197
+#: lib/gs-desktop-data.c:178
 msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Matematik"
 
-#: lib/gs-desktop-data.c:204
+#: lib/gs-desktop-data.c:185
 msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Nyheter"
 
-#: lib/gs-desktop-data.c:208
+#: lib/gs-desktop-data.c:189
 msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Robotik"
 
-#: lib/gs-desktop-data.c:211
+#: lib/gs-desktop-data.c:192
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Konst"
 
-#: lib/gs-desktop-data.c:214
+#: lib/gs-desktop-data.c:195
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Biografi"
 
-#: lib/gs-desktop-data.c:217
+#: lib/gs-desktop-data.c:198
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Serietidningar"
 
-#: lib/gs-desktop-data.c:220
+#: lib/gs-desktop-data.c:201
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Skönlitteratur"
 
-#: lib/gs-desktop-data.c:223
+#: lib/gs-desktop-data.c:204
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Hälsa"
 
-#: lib/gs-desktop-data.c:226
+#: lib/gs-desktop-data.c:207
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Historia"
 
-#: lib/gs-desktop-data.c:229
+#: lib/gs-desktop-data.c:210
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Livsstil"
 
-#: lib/gs-desktop-data.c:232
+#: lib/gs-desktop-data.c:213
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Politik"
 
-#: lib/gs-desktop-data.c:235
+#: lib/gs-desktop-data.c:216
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Sport"
 
-#: lib/gs-desktop-data.c:242
+#: lib/gs-desktop-data.c:223
 msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Alla"
 
-#: lib/gs-desktop-data.c:245
+#: lib/gs-desktop-data.c:226
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "I blickfånget"
 
-#: lib/gs-desktop-data.c:248
+#: lib/gs-desktop-data.c:229
 msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Felsökare"
 
-#: lib/gs-desktop-data.c:251
+#: lib/gs-desktop-data.c:232
 msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "IDE-miljöer"
 
+#: lib/gs-desktop-data.c:240
+msgctxt "Menu of Add-ons"
+msgid "Codecs"
+msgstr "Kodekar"
+
+#: lib/gs-desktop-data.c:247
+msgctxt "Menu of Add-ons"
+msgid "Hardware Drivers"
+msgstr "Hårdvarudrivrutiner"
+
+#: lib/gs-desktop-data.c:254
+msgctxt "Menu of Add-ons"
+msgid "Fonts"
+msgstr "Typsnitt"
+
+#: lib/gs-desktop-data.c:261
+msgctxt "Menu of Add-ons"
+msgid "Input Sources"
+msgstr "Inmatningskällor"
+
+#: lib/gs-desktop-data.c:268
+msgctxt "Menu of Add-ons"
+msgid "Language Packs"
+msgstr "Språkpaket"
+
+#: lib/gs-desktop-data.c:275
+msgctxt "Menu of Add-ons"
+msgid "Localization"
+msgstr "Lokalisering"
+
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:262
+#: lib/gs-desktop-data.c:285
 msgid "Create"
 msgstr "Skapa"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:264
+#: lib/gs-desktop-data.c:287
 msgid "Work"
 msgstr "Arbeta"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:266
+#: lib/gs-desktop-data.c:289
 msgid "Play"
 msgstr "Spela"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:268
+#: lib/gs-desktop-data.c:291
 msgid "Socialize"
 msgstr "Var social"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:270
+#: lib/gs-desktop-data.c:293
 msgid "Learn"
 msgstr "Lär dig"
 
 #. Translators: this is a menu category
-#: lib/gs-desktop-data.c:272
+#: lib/gs-desktop-data.c:295
 msgid "Develop"
 msgstr "Utveckla"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:298
+msgid "Codecs"
+msgstr "Kodekar"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:300
+msgid "Hardware Drivers"
+msgstr "Hårdvarudrivrutiner"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:302
+msgid "Fonts"
+msgstr "Typsnitt"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:304
+msgid "Input Sources"
+msgstr "Inmatningskällor"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:306
+msgid "Language Packs"
+msgstr "Språkpaket"
+
+#. Translators: this is a menu category
+#: lib/gs-desktop-data.c:308
+msgid "Localization"
+msgstr "Lokalisering"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -2519,6 +2592,13 @@ msgstr "Handkontrollsstöd"
 msgid "Supports gamepads"
 msgstr "Stöder handkontroller"
 
+#. Translators: It’s unknown whether this app is supported on
+#. * the current hardware. The placeholder is the app name.
+#: src/gs-hardware-support-context-dialog.c:696
+#, c-format
+msgid "%s probably works on this device"
+msgstr "%s fungerar troligen på denna enhet"
+
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:703
@@ -2731,12 +2811,12 @@ msgstr "Nedgraderingar"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:690
+#: src/gs-overview-page.c:706
 msgid "selected external sources"
 msgstr "utvalda externa källor"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:692
+#: src/gs-overview-page.c:708
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2747,13 +2827,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:701 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Aktivera"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:756 src/gs-shell.ui:308
+#: src/gs-overview-page.c:772 src/gs-shell.ui:308
 msgid "Explore"
 msgstr "Utforska"
 
@@ -2765,7 +2845,12 @@ msgstr "Översiktssida"
 msgid "Enable Third Party Software Repositories?"
 msgstr "Aktivera programförråd från tredje part?"
 
-#: src/gs-overview-page.ui:212
+#. Translators: This is a heading for a list of categories.
+#: src/gs-overview-page.ui:175
+msgid "Other Categories"
+msgstr "Andra kategorier"
+
+#: src/gs-overview-page.ui:239
 msgid "No Application Data Found"
 msgstr "Inga programdata hittades"
 
@@ -3108,6 +3193,13 @@ msgid ""
 msgstr ""
 "Se vilka data som skickas i vår <a href=\"https://odrs.gnome.org/privacy"
 "\">sekretesspolicy</a>."
+
+#: src/gs-review-histogram.c:72
+#, c-format
+msgid "%u review total"
+msgid_plural "%u reviews total"
+msgstr[0] "%u recension totalt"
+msgstr[1] "%u recensioner totalt"
 
 #: src/gs-review-histogram.ui:100
 msgid "out of 5 stars"
@@ -4432,37 +4524,37 @@ msgstr "Uppdateringar hanteras automatiskt."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:323
+#: src/gs-updates-section.c:326
 msgid "Restart & Update"
 msgstr "Starta om & uppdatera"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:329
+#: src/gs-updates-section.c:332
 msgid "Update All"
 msgstr "Uppdatera alla"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:457
+#: src/gs-updates-section.c:460
 msgid "Integrated Firmware"
 msgstr "Integrerad fast programvara"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:462
+#: src/gs-updates-section.c:465
 msgid "Requires Restart"
 msgstr "Kräver omstart"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:467
+#: src/gs-updates-section.c:470
 msgid "Application Updates"
 msgstr "Programuppdateringar"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:472
+#: src/gs-updates-section.c:475
 msgid "Device Firmware"
 msgstr "Fast programvara för enheter"
 
@@ -4975,9 +5067,6 @@ msgstr "En snap är ett universellt Linuxpaket"
 
 #~ msgid "Recent Releases"
 #~ msgstr "Senaste utgåvor"
-
-#~ msgid "Categories"
-#~ msgstr "Kategorier"
 
 #~ msgid "Remove “%s”?"
 #~ msgstr "Ta bort ”%s”?"
