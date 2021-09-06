@@ -598,6 +598,8 @@ sort_by_packaging_format_preference (GsApp *app1,
 	return index1 - index2;
 }
 
+static void _set_app (GsDetailsPage *self, GsApp *app);
+
 static void
 gs_details_page_get_alternates_cb (GObject *source_object,
                                    GAsyncResult *res,
@@ -702,8 +704,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		    g_strcmp0 (gs_app_get_version (app), gs_app_get_version (self->app)) == 0)) {
 			/* This can happen on reload of the page */
 			if (app != self->app) {
-				g_clear_object (&self->app);
-				self->app = g_object_ref (app);
+				_set_app (self, app);
 				instance_changed = TRUE;
 			}
 			select_row = row;
@@ -727,8 +728,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsApp *app = gs_origin_popover_row_get_app (row);
 		select_row = origin_row_by_packaging_format;
 		if (app != self->app) {
-			g_clear_object (&self->app);
-			self->app = g_object_ref (app);
+			_set_app (self, app);
 			instance_changed = TRUE;
 		}
 	}
@@ -738,8 +738,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsApp *app = gs_origin_popover_row_get_app (row);
 		select_row = first_row;
 		if (app != self->app) {
-			g_clear_object (&self->app);
-			self->app = g_object_ref (app);
+			_set_app (self, app);
 			instance_changed = TRUE;
 		}
 	}
