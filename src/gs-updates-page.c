@@ -60,7 +60,6 @@ struct _GsUpdatesPage
 	GtkWidget		*header_spinner_start;
 	GtkWidget		*header_checking_label;
 	GtkWidget		*header_start_box;
-	GtkWidget		*header_end_box;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
 	guint			 updates_counter;
@@ -1278,10 +1277,6 @@ gs_updates_page_setup (GsPage *page,
 			  G_CALLBACK (gs_updates_page_upgrade_install_cb), self);
 	g_signal_connect (self->upgrade_banner, "cancel-clicked",
 			  G_CALLBACK (gs_updates_page_upgrade_cancel_cb), self);
-
-	self->header_end_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
-	gtk_widget_set_visible (self->header_end_box, TRUE);
-	gs_page_set_header_end_widget (GS_PAGE (self), self->header_end_box);
 
 	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_start_box, TRUE);
