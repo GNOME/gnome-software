@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-03 07:01+0000\n"
-"PO-Revision-Date: 2021-09-03 15:16-0400\n"
+"POT-Creation-Date: 2021-09-04 16:58+0000\n"
+"PO-Revision-Date: 2021-09-07 14:42-0400\n"
 "Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -278,6 +278,23 @@ msgstr "指向将下载到 app-info 文件夹的 AppStream 文件的 URL 列表"
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr "为所有用户安装 AppStream 文件到系统级位置"
 
+#: data/org.gnome.software.gschema.xml:140
+msgid ""
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:145
+msgid "The URI that references the background for an upgrade banner."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:146
+msgid ""
+"The URI can contain up to three '%u', which will be replaced by the upgrade "
+"version."
+msgstr ""
+
 #: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
 msgstr "存储用于登录的 gnome-online-account id 的字符串"
@@ -525,7 +542,7 @@ msgstr "？"
 #: src/gs-age-rating-context-dialog.c:684
 #, c-format
 msgid "%s is suitable for everyone"
-msgstr ""
+msgstr "%s 适合所有人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
@@ -546,15 +563,14 @@ msgstr ""
 #: src/gs-age-rating-context-dialog.c:700
 #, c-format
 msgid "%s is suitable for teenagers"
-msgstr ""
+msgstr "%s 适合青少年"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:704
-#, fuzzy, c-format
-#| msgid "%s file format"
+#, c-format
 msgid "%s is suitable for adults"
-msgstr "%s 文件格式"
+msgstr "%s 适合成年人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
@@ -1015,18 +1031,14 @@ msgstr ""
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:379
-#, fuzzy
-#| msgid "App comes from a trusted source"
 msgid "Software comes from a trusted source"
-msgstr "App 来源可信"
+msgstr "软件由可信来源提供"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:386
-#, fuzzy
-#| msgid "Software Repository Identified"
 msgid "Software developer is verified"
-msgstr "探测到软件源"
+msgstr "软件开发者已经过认证"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1089,27 +1101,21 @@ msgstr "屏幕尺寸不匹配"
 
 #: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
-msgstr ""
+msgstr "不支持您当前的屏幕尺寸"
 
 #: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
-#, fuzzy
-#| msgid "Requires restart to finish remove"
 msgid "Requires a touchscreen"
-msgstr "需要重新启动以完成移除"
+msgstr "需要触摸屏"
 
 #: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires a keyboard"
-msgstr "重新启动"
+msgstr "需要键盘"
 
 #: src/gs-app-context-bar.c:546
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires a mouse"
-msgstr "重新启动"
+msgstr "需要鼠标"
 
 #: src/gs-app-context-bar.c:557
 msgid "Gamepad Needed"
@@ -2012,7 +2018,7 @@ msgstr "正在加载应用程序详细信息……"
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
-msgstr ""
+msgstr "此软件不提供您使用的语言的支持；它将使用美式英文界面显示。"
 
 #: src/gs-details-page.ui:87
 msgid "Help _Translate"
@@ -2375,10 +2381,8 @@ msgstr "浏览软件(_B)"
 
 #: src/gs-hardware-support-context-dialog.c:561
 #: src/gs-hardware-support-context-dialog.c:570
-#, fuzzy
-#| msgid "Open Desktop Ratings Support"
 msgid "Desktop Support"
-msgstr "开放桌面评分（ODRS）支持"
+msgstr "桌面支持"
 
 #: src/gs-hardware-support-context-dialog.c:562
 #: src/gs-hardware-support-context-dialog.c:571
@@ -2507,7 +2511,7 @@ msgstr "需要鼠标"
 
 #: src/gs-hardware-support-context-dialog.c:647
 msgid "Supports mice and pointing devices"
-msgstr ""
+msgstr "支持鼠标和指针设备"
 
 #: src/gs-hardware-support-context-dialog.c:649
 msgid "Mouse Not Supported"
@@ -2520,27 +2524,23 @@ msgstr ""
 #: src/gs-hardware-support-context-dialog.c:657
 #: src/gs-hardware-support-context-dialog.c:666
 msgid "Touchscreen Support"
-msgstr ""
+msgstr "触摸屏支持"
 
 #: src/gs-hardware-support-context-dialog.c:660
 msgid "Touchscreen Support Unknown"
-msgstr ""
+msgstr "触摸屏支持未知"
 
 #: src/gs-hardware-support-context-dialog.c:661
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:663
-#, fuzzy
-#| msgid "Login Required"
 msgid "Touchscreen Required"
-msgstr "需要登录"
+msgstr "需要触摸屏"
 
 #: src/gs-hardware-support-context-dialog.c:667
-#, fuzzy
-#| msgid "Requires restart to finish remove"
 msgid "Supports touchscreens"
-msgstr "需要重新启动以完成移除"
+msgstr "支持触摸屏"
 
 #: src/gs-hardware-support-context-dialog.c:669
 msgid "Touchscreen Not Supported"
@@ -2627,7 +2627,7 @@ msgstr "系统应用程序"
 
 #: src/gs-license-tile.c:93
 msgid "Community Built"
-msgstr ""
+msgstr "社区构建"
 
 #. Translators: The placeholder here is the name of a software license.
 #: src/gs-license-tile.c:101
@@ -2640,8 +2640,6 @@ msgid ""
 msgstr ""
 
 #: src/gs-license-tile.c:106
-#, fuzzy
-#| msgid "Proprietary"
 msgid "Proprietary"
 msgstr "专有软件"
 
@@ -2828,10 +2826,8 @@ msgid "Unknown"
 msgstr "未知"
 
 #: src/gs-page.c:276
-#, fuzzy
-#| msgid "Pending installation…"
 msgid "User declined installation"
-msgstr "等待安装……"
+msgstr "用户拒绝安装"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
@@ -2937,16 +2933,12 @@ msgid "Software that has been installed from “%s” will cease receive updates
 msgstr "从该软件源获取的软件将不再收到更新，包括安全更新。"
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "Disable Repository?"
-msgstr "软件源"
+msgstr "禁用软件源？"
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "Remove Repository?"
-msgstr "软件源"
+msgstr "移除软件源？"
 
 #. TRANSLATORS: this is button text to disable a repo
 #: src/gs-repos-dialog.c:280
@@ -2964,13 +2956,11 @@ msgstr "启用新软件源"
 
 #: src/gs-repos-dialog.c:598
 msgid "Turn on new repositories when they are added."
-msgstr ""
+msgstr "在新软件源添加的同时将其启用。"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
 #: src/gs-repos-dialog.c:607
-#, fuzzy
-#| msgid "More information"
 msgid "more information"
 msgstr "更多信息"
 
@@ -2984,10 +2974,8 @@ msgid "Additional repositories from selected third parties — %s."
 msgstr "从选中的第三方软件源获取更多软件。"
 
 #: src/gs-repos-dialog.c:617
-#, fuzzy
-#| msgid "Third Party Repositories"
 msgid "Fedora Third Party Repositories"
-msgstr "第三方软件源"
+msgstr "Fedora 第三方软件源"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
@@ -3235,198 +3223,153 @@ msgid "Remove…"
 msgstr "移除…"
 
 #: src/gs-safety-context-dialog.c:133
-#, fuzzy
-#| msgid "App has unknown permissions"
 msgid "Unknown Permissions"
-msgstr "App 所需权限未知"
+msgstr "未知权限"
 
 #: src/gs-safety-context-dialog.c:134
 msgid "The permissions needed by this app aren’t known"
-msgstr ""
+msgstr "该应用所需的权限未知"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:143
-#, fuzzy
-#| msgid "Permissions"
 msgid "No Permissions"
-msgstr "权限"
+msgstr "无需权限"
 
 #: src/gs-safety-context-dialog.c:144
-#, fuzzy
-#| msgid "This application is fully sandboxed."
 msgid "App is fully sandboxed"
-msgstr "此应用程序已完全沙盒化。"
+msgstr "应用已完全沙盒化"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:155
-#, fuzzy
-#| msgid "Network Settings"
 msgid "Network Access"
-msgstr "网络设置"
+msgstr "网络访问"
 
 #: src/gs-safety-context-dialog.c:156
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access the internet"
-msgstr "可以访问系统设备文件"
+msgstr "可以访问互联网"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:159
-#, fuzzy
-#| msgid "No Network"
 msgid "No Network Access"
-msgstr "无网络连接"
+msgstr "无网络访问"
 
 #: src/gs-safety-context-dialog.c:160
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the internet"
-msgstr "可以访问系统设备文件"
+msgstr "不能访问互联网"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:166
-#, fuzzy
-#| msgid "System Services"
 msgid "Uses System Services"
-msgstr "系统服务"
+msgstr "使用系统服务"
 
 #: src/gs-safety-context-dialog.c:167
-#, fuzzy
-#| msgid "System Services"
 msgid "Can request data from system services"
-msgstr "系统服务"
+msgstr "可以从系统服务请求数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:174
-#, fuzzy
-#| msgid "Session Services"
 msgid "Uses Session Services"
-msgstr "会话服务"
+msgstr "使用会话服务"
 
 #: src/gs-safety-context-dialog.c:175
-#, fuzzy
-#| msgid "Session Services"
 msgid "Can request data from session services"
-msgstr "会话服务"
+msgstr "可以从会话服务请求数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:182
-#, fuzzy
-#| msgid "Devices"
 msgid "Device Access"
-msgstr "设备"
+msgstr "设备访问"
 
 #: src/gs-safety-context-dialog.c:183
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "可以访问网络摄像头或游戏控制器等设备"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:186
-#, fuzzy
-#| msgctxt "Menu subcategory of Internet"
-#| msgid "Remote Access"
 msgid "No Device Access"
-msgstr "远程访问"
+msgstr "无设备访问"
 
 #: src/gs-safety-context-dialog.c:187
 msgid "Cannot access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "不能访问网络摄像头或游戏控制器等设备"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:193
-#, fuzzy
-#| msgid "Uses an old, insecure display system"
 msgid "Legacy Windowing System"
-msgstr "使用旧式、不安全的显示系统"
+msgstr "旧式窗口系统"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:201
-#, fuzzy
-#| msgid "Requires additional permissions"
 msgid "Arbitrary Permissions"
-msgstr "要求额外的权限"
+msgstr "任意权限"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:209
-#, fuzzy
-#| msgid "Settings"
 msgid "User Settings"
-msgstr "设置"
+msgstr "用户设置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:221
 msgid "Full File System Read/Write Access"
-msgstr ""
+msgstr "完全的文件系统读写权限"
 
 #: src/gs-safety-context-dialog.c:222
 msgid "Can read and write all data on the file system"
-msgstr ""
+msgstr "可以读写文件系统上的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
 msgid "Home Folder Read/Write Access"
-msgstr ""
+msgstr "家目录读写权限"
 
 #: src/gs-safety-context-dialog.c:231
 msgid "Can read and write all data in your home directory"
-msgstr ""
+msgstr "可以读写您的家目录中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:239
 msgid "Full File System Read Access"
-msgstr ""
+msgstr "完全的文件系统读取权限"
 
 #: src/gs-safety-context-dialog.c:240
 msgid "Can read all data on the file system"
-msgstr ""
+msgstr "可以读取文件系统上的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:249
 msgid "Home Folder Read Access"
-msgstr ""
+msgstr "家目录读权限"
 
 #: src/gs-safety-context-dialog.c:250
-#, fuzzy
-#| msgid "Can read all your data"
 msgid "Can read all data in your home directory"
-msgstr "允许读取当前用户所有数据"
+msgstr "可以读取您的家目录中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:259
 msgid "Download Folder Read/Write Access"
-msgstr ""
+msgstr "下载文件夹读写权限"
 
 #: src/gs-safety-context-dialog.c:260
-#, fuzzy
-#| msgid "Can read/write your downloads"
 msgid "Can read and write all data in your downloads directory"
-msgstr "允许读/写下载目录"
+msgstr "可以读写您的下载文件夹中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:271
-#, fuzzy
-#| msgid "Downloads folder"
 msgid "Download Folder Read Access"
-msgstr "下载文件夹"
+msgstr "下载文件夹读权限"
 
 #: src/gs-safety-context-dialog.c:272
-#, fuzzy
-#| msgid "Can read your downloads"
 msgid "Can read all data in your downloads directory"
-msgstr "允许读取下载目录"
+msgstr "可以读取您的下载文件夹中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:285
-#, fuzzy
-#| msgid "File system"
 msgid "No File System Access"
-msgstr "文件系统"
+msgstr "无文件系统访问"
 
 #: src/gs-safety-context-dialog.c:286
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the file system at all"
-msgstr "可以访问系统设备文件"
+msgstr "完全无法访问文件系统"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:300
@@ -3475,33 +3418,28 @@ msgstr ""
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:335
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is safe"
-msgstr "%s 已安装"
+msgstr "%s 是安全的"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:342
-#, fuzzy, c-format
-#| msgid "Potentially Unsafe"
+#, c-format
 msgid "%s is potentially unsafe"
-msgstr "潜在危险"
+msgstr "%s 可能是安全的"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:349
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is unsafe"
-msgstr "%s 已安装"
+msgstr "%s 不安全"
 
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:9
-#, fuzzy
-#| msgid "Safe"
 msgid "Safety"
-msgstr "安全的"
+msgstr "安全性"
 
 #: src/gs-safety-context-dialog.ui:146
 msgid "License"
@@ -4567,14 +4505,14 @@ msgstr "正在下载……"
 #: src/gs-upgrade-banner.c:169
 #, c-format
 msgid "%s of %s downloaded"
-msgstr ""
+msgstr "已下载 %s，共 %s"
 
 #. Translators: the '%u' is replaced with the actual percentage being already
 #. downloaded, forming text like "13% downloaded"
 #: src/gs-upgrade-banner.c:173
 #, c-format
 msgid "%u%% downloaded"
-msgstr ""
+msgstr "%u%% 已下载"
 
 #: src/gs-upgrade-banner.ui:43
 msgid "A major upgrade, with new features and added polish."
