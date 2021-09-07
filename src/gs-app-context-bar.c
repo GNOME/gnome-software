@@ -290,6 +290,10 @@ update_safety_tile (GsAppContextBar *self)
 			break;
 		case GS_APP_PERMISSIONS_HOME_FULL:
 		case GS_APP_PERMISSIONS_FILESYSTEM_FULL:
+			/* Don’t add twice. */
+			if (i == GS_APP_PERMISSIONS_HOME_FULL && (permissions & GS_APP_PERMISSIONS_FILESYSTEM_FULL))
+				break;
+
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_UNSAFE,
 					      /* Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
@@ -298,6 +302,10 @@ update_safety_tile (GsAppContextBar *self)
 			break;
 		case GS_APP_PERMISSIONS_HOME_READ:
 		case GS_APP_PERMISSIONS_FILESYSTEM_READ:
+			/* Don’t add twice. */
+			if (i == GS_APP_PERMISSIONS_HOME_READ && (permissions & GS_APP_PERMISSIONS_FILESYSTEM_READ))
+				break;
+
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_UNSAFE,
 					      /* Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
