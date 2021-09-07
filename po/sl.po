@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2021-09-01 15:06+0000\n"
-"PO-Revision-Date: 2021-09-02 21:01+0200\n"
+"PO-Revision-Date: 2021-09-07 20:50+0200\n"
 "Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -294,25 +294,26 @@ msgid "Install the AppStream files to a system-wide location for all users"
 msgstr "Namesti datoteke AppStream na sistemsko mesto za vse uporabnike"
 
 #: data/org.gnome.software.gschema.xml:140
-#, fuzzy
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last."
 msgstr ""
-"Prednostni vrstni red formatov embalaže je bolj všeč, pri tem pa so najprej "
-"naštete pomembnejše oblike. Prazna matrika pomeni privzeti vrstni red. Za "
-"izostavljene oblike se domneva, da so navedene nazadnje."
+"Prednostni vrstni red zapisov pakiranja, z bolj pomembnimi navedenimi "
+"najprej. Prazna vrednost pomeni privzeti vrstni red. Izpuščeni zapisi so "
+"nanizani nazadnje."
 
 #: data/org.gnome.software.gschema.xml:145
 msgid "The URI that references the background for an upgrade banner."
-msgstr ""
+msgstr "Naslov URI, ki pomeni sklic za ozadje pasice posodobitve"
 
 #: data/org.gnome.software.gschema.xml:146
 msgid ""
 "The URI can contain up to three '%u', which will be replaced by the upgrade "
 "version."
 msgstr ""
+"Naslov URI lahko vsebuje do tri »%u«, ki bodo zamenjanji pri posodobitveni "
+"različici."
 
 #: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
@@ -454,10 +455,8 @@ msgstr "‧Podrobnosti stikov"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:211
-#, fuzzy
-#| msgid "More Information"
 msgid "Identifying Information"
-msgstr "Več podrobnosti"
+msgstr "Določevalne podrobnosti"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:218
@@ -872,22 +871,19 @@ msgid "Installed Size"
 msgstr "Velikost namestitve"
 
 #: src/gs-app-context-bar.c:151
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of data and %s of cache"
-msgstr "Vključuje %s, %s in %s."
+msgstr "Vključuje %s podatkov in %s predpomnilnika"
 
 #: src/gs-app-context-bar.c:154
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of data"
-msgstr "Vključuje %s, %s in %s."
+msgstr "Vključuje %s podatkov"
 
 #: src/gs-app-context-bar.c:157
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of cache"
-msgstr "Vključuje %s, %s in %s."
+msgstr "Vključuje %s predpomnilnika"
 
 #: src/gs-app-context-bar.c:160
 msgid "Cache and data usage unknown"
@@ -1212,7 +1208,7 @@ msgstr "Sodelujte pri prevajanju %s"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:70
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s is designed, developed, and translated by an international community of "
 "volunteers.\n"
@@ -1223,8 +1219,8 @@ msgstr ""
 "%s je zasnovana, razvita in prevedena s strani mednarodne skupnosti "
 "prostovoljcev.\n"
 "\n"
-"To pomeni, da čeprav še ni na voljo v vašem jeziku, se lahko sami vpletete "
-"in pomagate prevajati."
+"To pomeni, da čeprav še ni na voljo v vašem jeziku, se lahko sami vključite "
+"in sodelujete pri oblikovanju prevoda."
 
 #: src/gs-app-translation-dialog.ui:9
 msgid "Translations"
@@ -1792,14 +1788,12 @@ msgstr[3] "Posodobitve so nameščene"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:705
-#, fuzzy
-#| msgid "Enter GApplication service mode"
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
-msgstr[0] "Vstopi v način GApplication"
-msgstr[1] "Vstopi v način GApplication"
-msgstr[2] "Vstopi v način GApplication"
-msgstr[3] "Vstopi v način GApplication"
+msgstr[0] "Programi so odstranjeni"
+msgstr[1] "Program je odstranjen"
+msgstr[2] "Programa sta odstranjena"
+msgstr[3] "Programi so odstranjeni"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:711
@@ -1958,10 +1952,8 @@ msgid "Requires restart to finish install"
 msgstr "Zahteva ponoven zagon za dokončanje namestitve"
 
 #: src/gs-details-page.c:364
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires restart to finish remove"
-msgstr "Zahteva ponoven zagon"
+msgstr "Zahteva ponoven zagon pred dokončanjem odstranjevanja"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
@@ -2031,13 +2023,11 @@ msgid "Loading application details…"
 msgstr "Poteka nalaganje podrobnosti programa …"
 
 #: src/gs-details-page.ui:79
-#, fuzzy
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
 msgstr ""
-"Ta programska oprema ni na voljo v vašem jeziku in bo prikazana v angleščini "
-"ZDA."
+"Ta programska oprema ni na voljo v vašem jeziku in bo prikazana v angleškem."
 
 #: src/gs-details-page.ui:87
 msgid "Help _Translate"
@@ -2978,14 +2968,10 @@ msgstr "N_adaljuj"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:265
-#, fuzzy, c-format
-#| msgid ""
-#| "Software that has been installed from this repository will no longer "
-#| "receive updates, including security fixes."
+#, c-format
 msgid "Software that has been installed from “%s” will cease receive updates."
 msgstr ""
-"Programska oprema, nameščene prek tega vira, ne bo več deležna posodobitev, "
-"niti nujnih varnostnih popravkov."
+"Programska oprema, nameščene prek vira »%s«, ne bo več deležna posodobitev."
 
 #: src/gs-repos-dialog.c:274
 msgid "Disable Repository?"
@@ -3023,10 +3009,9 @@ msgstr "Več podrobnosti"
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
 #: src/gs-repos-dialog.c:612
-#, fuzzy, c-format
-#| msgid "Access additional software from selected third party sources."
+#, c-format
 msgid "Additional repositories from selected third parties — %s."
-msgstr "Dostop do dodatne programske opreme prek izbranih virov tretjih oseb."
+msgstr "Dodatna skladišča izbranih virov tretjih oseb –%s."
 
 #: src/gs-repos-dialog.c:617
 msgid "Fedora Third Party Repositories"
@@ -3229,10 +3214,10 @@ msgstr ""
 #, c-format
 msgid "%u reviews total"
 msgid_plural "%u reviews total"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "%u mnenj"
+msgstr[1] "%u mnenje"
+msgstr[2] "%u mnenji"
+msgstr[3] "%u mnenja"
 
 #: src/gs-review-histogram.ui:100
 msgid "out of 5 stars"
@@ -3305,7 +3290,7 @@ msgstr "Neznana dovoljenja"
 
 #: src/gs-safety-context-dialog.c:134
 msgid "The permissions needed by this app aren’t known"
-msgstr ""
+msgstr "Posebne zahteve programa niso znane"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:143
@@ -3359,7 +3344,7 @@ msgstr "Zahteva dostop do povezanih naprav"
 
 #: src/gs-safety-context-dialog.c:183
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "Lahko dostopa do naprav, kot so spletne kamere in igralne konzole"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:186
@@ -3368,7 +3353,7 @@ msgstr "Ne zahteva dostopa do povezanih naprav"
 
 #: src/gs-safety-context-dialog.c:187
 msgid "Cannot access devices such as webcams or gaming controllers"
-msgstr ""
+msgstr "Nima dostopa do naprav, kot so spletne kamere in igralne konzole"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:193
@@ -3388,64 +3373,56 @@ msgstr "Uporabniške nastavitve"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:221
 msgid "Full File System Read/Write Access"
-msgstr ""
+msgstr "Poln dostop za branje/pisanje vsebine datotečnega sistema"
 
 #: src/gs-safety-context-dialog.c:222
 msgid "Can read and write all data on the file system"
-msgstr ""
+msgstr "Bere in zapisuje vse podatke datotečnega sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
-#, fuzzy
-#| msgid "Home Read/Write Access"
 msgid "Home Folder Read/Write Access"
-msgstr "Zahteva dostop za branje in pisanje v osebno mapo"
+msgstr "Dovoljenje za branje/pisanje vsebine v osebno mapo"
 
 #: src/gs-safety-context-dialog.c:231
 msgid "Can read and write all data in your home directory"
-msgstr ""
+msgstr "Bere in zapisuje vse podatke v osebni mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:239
 msgid "Full File System Read Access"
-msgstr ""
+msgstr "Poln dostop za branje vsebine datotečnega sistema"
 
 #: src/gs-safety-context-dialog.c:240
 msgid "Can read all data on the file system"
-msgstr ""
+msgstr "Bere vse podatke datotečnega sistema"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:249
-#, fuzzy
-#| msgid "Home Read Access"
 msgid "Home Folder Read Access"
-msgstr "Zahteva dostop za branje v osebni mapi"
+msgstr "Dovoljenje za branje vsebine osebne mape"
 
 #: src/gs-safety-context-dialog.c:250
 msgid "Can read all data in your home directory"
-msgstr ""
+msgstr "Bere vse podatke v osebni mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:259
-#, fuzzy
-#| msgid "Downloads Read Access"
 msgid "Download Folder Read/Write Access"
-msgstr "Zahteva dostop za branje in pisanje v osebni mapi prejema"
+msgstr "Dovoljenje za branje/pisanje vsebine v mapo prejema"
 
 #: src/gs-safety-context-dialog.c:260
 msgid "Can read and write all data in your downloads directory"
-msgstr ""
+msgstr "Bere in zapisuje vse podatke v mapi prejemov"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:271
-#, fuzzy
-#| msgid "Downloads Read Access"
 msgid "Download Folder Read Access"
-msgstr "Zahteva dostop za branje in pisanje v osebni mapi prejema"
+msgstr "Dovoljenje za branje vsebine mape prejema"
 
 #: src/gs-safety-context-dialog.c:272
 msgid "Can read all data in your downloads directory"
-msgstr ""
+msgstr "Bere vse podatke v mapi prejemov"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:285
@@ -3462,11 +3439,11 @@ msgid "Proprietary Code"
 msgstr "Lastniška programska koda"
 
 #: src/gs-safety-context-dialog.c:301
-#, fuzzy
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
-msgstr "Izvorna koda ni javna, zato je ni mogoče neodvisno revidi"
+msgstr ""
+"Izvorna koda ni javna, je ni mogoče preveriti, zato je program morda ni varen"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:304
@@ -3474,13 +3451,12 @@ msgid "Auditable Code"
 msgstr "Koda je odprta za pregled"
 
 #: src/gs-safety-context-dialog.c:305
-#, fuzzy
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
 msgstr ""
-"Izvorna koda je javna in jo je mogoče neodvisno revidovati, zaradi česar je "
-"bolj"
+"Izvorna koda je javno dostopna in jo je mogoče skrbno pregledati, kar naredi "
+"program veliko bolj varen"
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
@@ -3490,7 +3466,7 @@ msgstr "Program objavlja zaupanja vreden vir"
 
 #: src/gs-safety-context-dialog.c:316
 msgid "Your distribution has verified that this app can be trusted"
-msgstr ""
+msgstr "Program je sistemsko overjen kot varen"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
@@ -3499,11 +3475,8 @@ msgid "App developer is verified"
 msgstr "Razvijalci programa so preverjeni"
 
 #: src/gs-safety-context-dialog.c:326
-#, fuzzy
 msgid "The developer of this app has been verified to be who they say they are"
-msgstr ""
-"Razvijalec te aplikacije je bil preverjen, da je tisti, za koga pravijo, da "
-"so"
+msgstr "Istovetnost razvijalca tega programa je bila preverjena"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
@@ -4172,7 +4145,7 @@ msgstr "Podatki programa"
 
 #: src/gs-storage-context-dialog.c:133
 msgid "Data needed for the application to run"
-msgstr ""
+msgstr "Podatki, ključni za delovanje programa"
 
 #: src/gs-storage-context-dialog.c:137
 msgid "User Data"
@@ -4196,11 +4169,11 @@ msgstr "Program sam"
 
 #: src/gs-storage-context-dialog.c:165
 msgid "Required Dependencies"
-msgstr ""
+msgstr "Zahtevane odvisnosti"
 
 #: src/gs-storage-context-dialog.c:166
 msgid "Shared system components required by this application"
-msgstr ""
+msgstr "Sistemsko dodeljene knjižnice, ki jih program zahteva"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:9
@@ -4209,13 +4182,12 @@ msgstr "Mesta za shranjevanje"
 
 #. Translators: Please do not translate the markup or link href
 #: src/gs-storage-context-dialog.ui:117
-#, fuzzy
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
 msgstr ""
-"Predpomnjene podatke lahko počistite iz <a href=\"dummy\">_application "
-"nastavitev</a>."
+"Predpomnjene podatke je mogoče počistiti med <a href=\"dummy\"> nastavitvami "
+"_programa</a>."
 
 #: src/gs-summary-tile.c:74
 #, c-format
@@ -4645,7 +4617,7 @@ msgstr "Na voljo je posodobitev distribucije %s %s"
 
 #: src/gs-upgrade-banner.c:131
 msgid "Learn about the new version"
-msgstr ""
+msgstr "Več o novi različici"
 
 #: src/gs-upgrade-banner.c:151
 msgid "Downloading…"
@@ -4656,14 +4628,14 @@ msgstr "Poteka prejemanje …"
 #: src/gs-upgrade-banner.c:169
 #, c-format
 msgid "%s of %s downloaded"
-msgstr ""
+msgstr "Prejeto je %s od %s"
 
 #. Translators: the '%u' is replaced with the actual percentage being already
 #. downloaded, forming text like "13% downloaded"
 #: src/gs-upgrade-banner.c:173
 #, c-format
 msgid "%u%% downloaded"
-msgstr ""
+msgstr "Prejeto je %u%%"
 
 #: src/gs-upgrade-banner.ui:43
 msgid "A major upgrade, with new features and added polish."
