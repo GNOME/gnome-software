@@ -405,6 +405,15 @@ update_safety_tile (GsAppContextBar *self)
 				       * It’s used in a context tile, so should be short. */
 				      _("Software developer is verified"));
 
+	if (gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason") != NULL || (
+	    gs_app_get_runtime (self->app) != NULL &&
+	    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL))
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_UNSAFE,
+				      /* Translators: This indicates an app or its runtime reached its end of life.
+				       * It’s used in a context tile, so should be short. */
+				      _("Software no longer supported"));
+
 	g_assert (descriptions->len > 0);
 
 	g_ptr_array_add (descriptions, NULL);

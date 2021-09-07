@@ -328,6 +328,11 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
 		gs_flatpak_set_kind_from_flatpak (app, xref);
 	}
+
+	if (FLATPAK_IS_REMOTE_REF (xref) && flatpak_remote_ref_get_eol (FLATPAK_REMOTE_REF (xref)) != NULL)
+		gs_app_set_metadata (app, "GnomeSoftware::EolReason", flatpak_remote_ref_get_eol (FLATPAK_REMOTE_REF (xref)));
+	else if (FLATPAK_IS_INSTALLED_REF (xref) && flatpak_installed_ref_get_eol (FLATPAK_INSTALLED_REF (xref)) != NULL)
+		gs_app_set_metadata (app, "GnomeSoftware::EolReason", flatpak_installed_ref_get_eol (FLATPAK_INSTALLED_REF (xref)));
 }
 
 static GsApp *
