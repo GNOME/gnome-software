@@ -103,7 +103,7 @@ show_tile_for_non_applications (GsAppContextBar      *self,
 	for (GList *l = siblings; l != NULL; l = l->next) {
 		GtkWidget *sibling = GTK_WIDGET (l->data);
 		g_assert (GTK_IS_BUTTON (sibling));
-		any_siblings_visible |= gtk_widget_is_visible (sibling);
+		any_siblings_visible |= gtk_widget_get_visible (sibling);
 	}
 
 	gtk_widget_set_visible (GTK_WIDGET (parent_box), any_siblings_visible);
