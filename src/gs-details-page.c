@@ -283,6 +283,28 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
+gs_details_page_update_origin_button (GsDetailsPage *self,
+				      gboolean sensitive)
+{
+	g_autofree gchar *origin_ui = NULL;
+
+	if (self->app == NULL ||
+	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_DETAILS) {
+		gtk_widget_hide (self->origin_box);
+		return;
+	}
+
+	origin_ui = gs_app_get_origin_ui (self->app);
+	if (origin_ui != NULL)
+		gtk_label_set_text (GTK_LABEL (self->origin_button_label), origin_ui);
+	else
+		gtk_label_set_text (GTK_LABEL (self->origin_button_label), "");
+
+	gtk_widget_set_sensitive (self->origin_box, sensitive);
+	gtk_widget_show (self->origin_box);
+}
+
+static void
 gs_details_page_switch_to (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
@@ -609,7 +631,6 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	g_autofree gchar *origin_ui = NULL;
 	gboolean instance_changed = FALSE;
 	gboolean origin_by_packaging_format = self->origin_by_packaging_format;
 	GtkWidget *first_row = NULL;
@@ -672,12 +693,6 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gs_app_list_add (list, self->app_local_file);
 		/* Do not allow change of the app by the packaging format when it's a local file */
 		origin_by_packaging_format = FALSE;
-	}
-
-	/* no alternates to show */
-	if (gs_app_list_length (list) < 2) {
-		gtk_widget_hide (self->origin_box);
-		return;
 	}
 
 	/* Do not allow change of the app by the packaging format when it's installed */
@@ -746,13 +761,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	if (select_row)
 		gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (select_row), TRUE);
 
-	origin_ui = gs_app_get_origin_ui (self->app);
-	if (origin_ui != NULL)
-		gtk_label_set_text (GTK_LABEL (self->origin_button_label), origin_ui);
-	else
-		gtk_label_set_text (GTK_LABEL (self->origin_button_label), "");
-
-	gtk_widget_show (self->origin_box);
+	gs_details_page_update_origin_button (self, TRUE);
 
 	if (instance_changed)
 		gs_details_page_refresh_all (self);
@@ -1502,6 +1511,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
+	gs_details_page_update_origin_button (self, FALSE);
 
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
