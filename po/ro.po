@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2021-09-04 16:58+0000\n"
-"PO-Revision-Date: 2021-09-09 13:59+0200\n"
+"PO-Revision-Date: 2021-09-09 19:29+0200\n"
 "Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
@@ -307,16 +307,21 @@ msgid ""
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last."
 msgstr ""
+"Ordinea priorității a formatelor de împachetare de preferat, cu cele mai "
+"importante formate listate mai întâi. O matrice goală înseamnă ordinea "
+"implicită. Formatele omise se vor afișa la sfârșit."
 
 #: data/org.gnome.software.gschema.xml:145
 msgid "The URI that references the background for an upgrade banner."
-msgstr ""
+msgstr "URI-ul care face referință la fundalul unui banner de actualizare."
 
 #: data/org.gnome.software.gschema.xml:146
 msgid ""
 "The URI can contain up to three '%u', which will be replaced by the upgrade "
 "version."
 msgstr ""
+"URI-ul poate conține până la trei „%u”, care vor fi înlocuiți de versiunea "
+"actualizării."
 
 #: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
@@ -894,7 +899,7 @@ msgstr "Include %s de cache"
 
 #: src/gs-app-context-bar.c:160
 msgid "Cache and data usage unknown"
-msgstr ""
+msgstr "Utilizarea datelor și a cache-ului necunoscută"
 
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
@@ -904,18 +909,18 @@ msgstr "Dimensiunea descărcării"
 
 #: src/gs-app-context-bar.c:172
 msgid "Needs no additional system downloads"
-msgstr ""
+msgstr "Nu necesită descărcări adiționale de sistem"
 
 #: src/gs-app-context-bar.c:174
 msgid "Needs an unknown size of additional system downloads"
-msgstr ""
+msgstr "Necesită o dimensiune necunoscută de descărcări de sistem adiționale"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
 #: src/gs-app-context-bar.c:179
 #, c-format
 msgid "Needs %s of additional system downloads"
-msgstr ""
+msgstr "Necesită %s de descărcări de sistem adiționale"
 
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
@@ -1087,7 +1092,7 @@ msgstr "Nepotrivire a dimensiunii ecranului"
 
 #: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
-msgstr ""
+msgstr "Nu suportă dimensiunea curentă a ecranului"
 
 #: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
@@ -1211,7 +1216,7 @@ msgstr "Redenumit de la %s"
 #: src/gs-app-translation-dialog.c:67
 #, c-format
 msgid "Help Translate %s"
-msgstr ""
+msgstr "Ajutați la traducerea %s"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:70
@@ -1223,6 +1228,11 @@ msgid ""
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
+"%s este concepută, dezvoltată, și tradusă de o comunitate internațională de "
+"voluntari.\n"
+"\n"
+"Aceasta înseamnă că chiar dacă nu este disponibilă în limba dumneavoastră, "
+"puteți să vă implicați și să ajutați la traducere."
 
 #: src/gs-app-translation-dialog.ui:9
 msgid "Translations"
@@ -2022,6 +2032,8 @@ msgid ""
 "This software is not available in your language and will appear in US "
 "English."
 msgstr ""
+"Această aplicație nu este disponibilă în limba dumneavoastră și va apărea în "
+"engleză (SUA)."
 
 #: src/gs-details-page.ui:87
 msgid "Help _Translate"
@@ -2442,6 +2454,7 @@ msgstr "Suport pentru desktop necunoscut"
 #: src/gs-hardware-support-context-dialog.c:565
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
+"Nu sunt destule informații pentru a afla dacă ecranele mari sunt suportate"
 
 #: src/gs-hardware-support-context-dialog.c:568
 msgid "Requires a large screen"
@@ -2472,6 +2485,7 @@ msgstr "Suport pentru mobil necunoscut"
 #: src/gs-hardware-support-context-dialog.c:585
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
+"Nu sunt destule informații pentru a afla dacă ecranele mici sunt suportate"
 
 #: src/gs-hardware-support-context-dialog.c:588
 msgid "Requires a small screen"
@@ -2497,6 +2511,7 @@ msgstr "Suport pentru tastatură necunoscut"
 #: src/gs-hardware-support-context-dialog.c:621
 msgid "Not enough information to know if keyboards are supported"
 msgstr ""
+"Nu sunt destule informații pentru a afla dacă tastaturile sunt suportate"
 
 #: src/gs-hardware-support-context-dialog.c:623
 msgid "Keyboard Required"
@@ -2532,6 +2547,8 @@ msgstr "Suport pentru maus necunoscut"
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
+"Nu sunt destule informații pentru a afla dacă mausurile și dispozitivele de "
+"indicare sunt suportate"
 
 #: src/gs-hardware-support-context-dialog.c:643
 msgid "Mouse Required"
@@ -2547,7 +2564,7 @@ msgstr "Mausul nu este suportat"
 
 #: src/gs-hardware-support-context-dialog.c:650
 msgid "Cannot be used with a mouse or pointing device"
-msgstr ""
+msgstr "Nu poate fi folosită cu un maus sau dispozitiv de indicare"
 
 #: src/gs-hardware-support-context-dialog.c:657
 #: src/gs-hardware-support-context-dialog.c:666
@@ -2561,6 +2578,7 @@ msgstr "Suport pentru ecran tactil necunoscut"
 #: src/gs-hardware-support-context-dialog.c:661
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
+"Nu sunt destule informații pentru a afla dacă ecranele tactile sunt suportate"
 
 #: src/gs-hardware-support-context-dialog.c:663
 msgid "Touchscreen Required"
@@ -2658,6 +2676,10 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"Această aplicație este dezvoltată deschis de o comunitate de voluntari, și "
+"este lansată sub licența %s.\n"
+"\n"
+"Puteți contribui și ajuta la îmbunătățirea ei."
 
 #: src/gs-license-tile.c:106
 msgid "Proprietary"
@@ -2672,6 +2694,12 @@ msgid ""
 "You may not be able to contribute to this software or influence its "
 "development."
 msgstr ""
+"Această aplicație nu este dezvoltată deschis, așadar numai dezvoltatorii ei "
+"știu cum funcționează. Pot fi restricții de folosire, și poate fi greu de "
+"spus dacă aplicația este nesigură.\n"
+"\n"
+"Nu puteți contribui la această aplicație, nici nu puteți să-i influențați "
+"dezvoltarea."
 
 #: src/gs-license-tile.ui:132
 msgid "_Get Involved"
@@ -2804,7 +2832,7 @@ msgstr "Retrogradări"
 #. Some proprietary software is included."
 #: src/gs-overview-page.c:706
 msgid "selected external sources"
-msgstr ""
+msgstr "surse externe selectate"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:708
@@ -2949,33 +2977,23 @@ msgstr "_Continuă"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:265
-#, fuzzy, c-format
-#| msgid ""
-#| "Software that has been installed from this repository will no longer "
-#| "receive updates, including security fixes."
+#, c-format
 msgid "Software that has been installed from “%s” will cease receive updates."
 msgstr ""
-"Aplicațiile instalate din acest depozit nu vor mai primi actualizări, "
-"incluzând actualizări de securitate."
+"Aplicațiile care au fost instalate din „%s” nu vor mai primi actualizări."
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "Disable Repository?"
-msgstr "Depozite aplicații"
+msgstr "Dezactivați depozitul?"
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "Remove Repository?"
-msgstr "Depozite aplicații"
+msgstr "Eliminați depozitul?"
 
 #. TRANSLATORS: this is button text to disable a repo
 #: src/gs-repos-dialog.c:280
-#, fuzzy
-#| msgid "Disable"
 msgid "_Disable"
-msgstr "Dezactivează"
+msgstr "_Dezactivează"
 
 #. TRANSLATORS: this is button text to remove a repo
 #: src/gs-repos-dialog.c:283
@@ -2983,14 +3001,12 @@ msgid "_Remove"
 msgstr "_Elimină"
 
 #: src/gs-repos-dialog.c:597
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "Enable New Repositories"
-msgstr "Depozite aplicații"
+msgstr "Activează noi depozite"
 
 #: src/gs-repos-dialog.c:598
 msgid "Turn on new repositories when they are added."
-msgstr ""
+msgstr "Activează noile depozite când sunt adăugate."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -3002,16 +3018,13 @@ msgstr "mai multe informații"
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
 #: src/gs-repos-dialog.c:612
-#, fuzzy, c-format
-#| msgid "Access additional software from selected third party sources."
+#, c-format
 msgid "Additional repositories from selected third parties — %s."
-msgstr "Accesați aplicații adiționale din surse de părți terțe selecte."
+msgstr "Depozite adiționale din părțile terțe selectate — %s."
 
 #: src/gs-repos-dialog.c:617
-#, fuzzy
-#| msgid "Third Party Repositories"
 msgid "Fedora Third Party Repositories"
-msgstr "Depozite terțe"
+msgstr "Depozite terțe Fedora"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
@@ -3032,10 +3045,8 @@ msgid "Software Repositories"
 msgstr "Depozite aplicații"
 
 #: src/gs-repos-dialog.ui:50
-#, fuzzy
-#| msgid "Software Repositories"
 msgid "No Repositories"
-msgstr "Depozite aplicații"
+msgstr "Niciun depozit"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
@@ -3209,9 +3220,9 @@ msgstr ""
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%u recenzie în total"
+msgstr[1] "%u recenzii în total"
+msgstr[2] "%u de recenzii în total"
 
 #: src/gs-review-histogram.ui:100
 msgid "out of 5 stars"
@@ -3278,205 +3289,158 @@ msgid "Remove…"
 msgstr "Elimină…"
 
 #: src/gs-safety-context-dialog.c:133
-#, fuzzy
-#| msgid "App has unknown permissions"
 msgid "Unknown Permissions"
-msgstr "Aplicația are permisiuni necunoscute"
+msgstr "Permisiuni necunoscute"
 
 #: src/gs-safety-context-dialog.c:134
 msgid "The permissions needed by this app aren’t known"
-msgstr ""
+msgstr "Permisiunile necesare acestei aplicații nu sunt cunoscute"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:143
-#, fuzzy
-#| msgid "No permissions"
 msgid "No Permissions"
-msgstr "Nu există permisiuni"
+msgstr "Nicio permisiune"
 
 #: src/gs-safety-context-dialog.c:144
-#, fuzzy
-#| msgid "This application is fully sandboxed."
 msgid "App is fully sandboxed"
-msgstr "Această aplicație este izolată complet."
+msgstr "Aplicația este izolată complet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:155
-#, fuzzy
-#| msgid "Has network access"
 msgid "Network Access"
-msgstr "Are acces la rețea"
+msgstr "Acces la rețea"
 
 #: src/gs-safety-context-dialog.c:156
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access the internet"
-msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
+msgstr "Pot accesa internetul"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:159
-#, fuzzy
-#| msgid "Has network access"
 msgid "No Network Access"
-msgstr "Are acces la rețea"
+msgstr "Nu are acces la rețea"
 
 #: src/gs-safety-context-dialog.c:160
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the internet"
-msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
+msgstr "Nu poate accesa internetul"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:166
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Uses System Services"
 msgstr "Utilizează serviciile sistemului"
 
 #: src/gs-safety-context-dialog.c:167
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Can request data from system services"
-msgstr "Utilizează serviciile sistemului"
+msgstr "Poate cere date de la serviciile sistemului"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:174
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Uses Session Services"
 msgstr "Utilizează serviciile sesiunii"
 
 #: src/gs-safety-context-dialog.c:175
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Can request data from session services"
-msgstr "Utilizează serviciile sesiunii"
+msgstr "Poate cere date de la serviciile sesiunii"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:182
-#, fuzzy
-#| msgid "Devices"
 msgid "Device Access"
-msgstr "Dispozitive"
+msgstr "Acces dispozitive"
 
 #: src/gs-safety-context-dialog.c:183
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr ""
+"Poate accesa dispozitive cum ar fi camere web sau controlere pentru jocuri"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:186
-#, fuzzy
-#| msgctxt "Menu subcategory of Internet"
-#| msgid "Remote Access"
 msgid "No Device Access"
-msgstr "Acces la distanță"
+msgstr "Fără acces dispozitive"
 
 #: src/gs-safety-context-dialog.c:187
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
+"Nu poate accesa dispozitive cum ar fi camere web sau controlere pentru jocuri"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:193
-#, fuzzy
-#| msgid "Uses a legacy windowing system"
 msgid "Legacy Windowing System"
-msgstr "Utilizează un sistem de fereastră moștenit"
+msgstr "Sistem de ferestre moștenit"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:201
-#, fuzzy
-#| msgid "Can acquire arbitrary permissions"
 msgid "Arbitrary Permissions"
-msgstr "Poate să dobândească permisiuni arbitrare"
+msgstr "Permisiuni arbitrare"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:209
-#, fuzzy
-#| msgid "Settings"
 msgid "User Settings"
-msgstr "Configurări"
+msgstr "Configurări utilizator"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:221
 msgid "Full File System Read/Write Access"
-msgstr ""
+msgstr "Acces total la citirea/scrierea sistemului de fișiere"
 
 #: src/gs-safety-context-dialog.c:222
 msgid "Can read and write all data on the file system"
-msgstr ""
+msgstr "Poate citi și scrie toate datele de pe sistemul de fișiere"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:230
 msgid "Home Folder Read/Write Access"
-msgstr ""
+msgstr "Acces la citirea/scrierea dosarului personal"
 
 #: src/gs-safety-context-dialog.c:231
-#, fuzzy
-#| msgid "Can read/write all your data"
 msgid "Can read and write all data in your home directory"
-msgstr "Poate să citească/scrie toate datele"
+msgstr "Poate să citească/scrie toate datele din dosarul personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:239
 msgid "Full File System Read Access"
-msgstr ""
+msgstr "Acces complet pentru citirea sistemului de fișiere"
 
 #: src/gs-safety-context-dialog.c:240
 msgid "Can read all data on the file system"
-msgstr ""
+msgstr "Poate citi toate datele de pe sistemul de fișiere"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:249
 msgid "Home Folder Read Access"
-msgstr ""
+msgstr "Acces de citire a dosarului personal"
 
 #: src/gs-safety-context-dialog.c:250
-#, fuzzy
-#| msgid "Can read all your data"
 msgid "Can read all data in your home directory"
-msgstr "Poate să citească toate datele"
+msgstr "Poate să citească toate datele din dosarul personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:259
 msgid "Download Folder Read/Write Access"
-msgstr ""
+msgstr "Acces de citire a dosarului „Descărcări”"
 
 #: src/gs-safety-context-dialog.c:260
-#, fuzzy
-#| msgid "Can read/write your downloads"
 msgid "Can read and write all data in your downloads directory"
-msgstr "Poate să citească/scrie toate descărcările"
+msgstr "Poate să citească/scrie toate datele din dosarul „Descărcări”"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:271
-#, fuzzy
-#| msgid "Downloads folder"
 msgid "Download Folder Read Access"
-msgstr "Dosar descărcări"
+msgstr "Acces de citire pentru dosarul Descărcări"
 
 #: src/gs-safety-context-dialog.c:272
-#, fuzzy
-#| msgid "Can read your downloads"
 msgid "Can read all data in your downloads directory"
-msgstr "Poate să citească toate descărcările"
+msgstr "Poate să citească toate datele din dosarul „Descărcări”"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:285
-#, fuzzy
-#| msgid "File system"
 msgid "No File System Access"
-msgstr "Sistem de fișiere"
+msgstr "Nu are acces la sistemul de fișiere"
 
 #: src/gs-safety-context-dialog.c:286
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the file system at all"
-msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
+msgstr "Nu poate accesa sistemul de fișiere deloc"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:300
-#, fuzzy
-#| msgid "Proprietary code"
 msgid "Proprietary Code"
 msgstr "Cod proprietar"
 
@@ -3485,19 +3449,21 @@ msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr ""
+"Codul sursă nu este public, așadar nu poate fi verificat independent deci "
+"poate fi nesigur"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:304
-#, fuzzy
-#| msgid "Auditable code"
 msgid "Auditable Code"
-msgstr "Cod audibil"
+msgstr "Cod verificabil"
 
 #: src/gs-safety-context-dialog.c:305
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
 msgstr ""
+"Codul sursă este public și poate fi verificat independent, ceea ce face ca, "
+"mult mai probabil, aplicația să fie sigură"
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
@@ -3508,6 +3474,8 @@ msgstr "Aplicația provine dintr-o sursă sigură"
 #: src/gs-safety-context-dialog.c:316
 msgid "Your distribution has verified that this app can be trusted"
 msgstr ""
+"Distribuția dumneavoastră a verificat dacă această aplicație este de "
+"încredere"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
@@ -3518,37 +3486,33 @@ msgstr "Dezvoltatorul aplicației este verificat"
 #: src/gs-safety-context-dialog.c:326
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr ""
+"Dezvoltatorul acestei aplicații a fost verificat să fie cine pretinde a fi"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:335
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is safe"
-msgstr "%s este acum instalată"
+msgstr "%s este sigură"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:342
-#, fuzzy, c-format
-#| msgid "Potentially Unsafe"
+#, c-format
 msgid "%s is potentially unsafe"
-msgstr "Potențial nesigur"
+msgstr "%s este potențial nesigură"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:349
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "%s is unsafe"
-msgstr "%s este acum instalată"
+msgstr "%s este nesigură"
 
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:9
-#, fuzzy
-#| msgid "Safe"
 msgid "Safety"
-msgstr "Sigur"
+msgstr "Siguranță"
 
 #: src/gs-safety-context-dialog.ui:146
 msgid "License"
@@ -3625,8 +3589,6 @@ msgid "Search page"
 msgstr "Caută în pagină"
 
 #: src/gs-search-page.ui:17
-#, fuzzy
-#| msgid "Search for applications"
 msgid "Search for Apps"
 msgstr "Căutați aplicații"
 
@@ -4172,26 +4134,20 @@ msgid "None"
 msgstr "Nespecificat"
 
 #: src/gs-storage-context-dialog.c:132
-#, fuzzy
-#| msgid "Application Updates"
 msgid "Application Data"
-msgstr "Actualizări pentru aplicații"
+msgstr "Datele aplicațiilor"
 
 #: src/gs-storage-context-dialog.c:133
 msgid "Data needed for the application to run"
 msgstr "Date necesare pentru rularea aplicației"
 
 #: src/gs-storage-context-dialog.c:137
-#, fuzzy
-#| msgid "Use Mobile Data?"
 msgid "User Data"
-msgstr "Utilizați datele mobile?"
+msgstr "Datele utilizatorului"
 
 #: src/gs-storage-context-dialog.c:138
-#, fuzzy
-#| msgid "Please restart the application."
 msgid "Data created by you in the application"
-msgstr "Reporniți aplicația."
+msgstr "Date creeate de dumneavoastră în aplicație"
 
 #: src/gs-storage-context-dialog.c:144
 msgid "Cache Data"
@@ -4202,11 +4158,8 @@ msgid "Temporary cached data"
 msgstr "Date stocate temporar"
 
 #: src/gs-storage-context-dialog.c:161
-#, fuzzy
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "The application itself"
-msgstr "%u aplicație instalată"
+msgstr "Aplicația însăși"
 
 #: src/gs-storage-context-dialog.c:165
 msgid "Required Dependencies"
@@ -4214,7 +4167,7 @@ msgstr "Dependințe necesare"
 
 #: src/gs-storage-context-dialog.c:166
 msgid "Shared system components required by this application"
-msgstr ""
+msgstr "Componentele partajate de sistem necesare pentru această aplicație"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:9
@@ -4227,6 +4180,8 @@ msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
 msgstr ""
+"Datele din cache pot fi curățate din <a href=\"dummy\">configurările "
+"_aplicației</a>."
 
 #: src/gs-summary-tile.c:74
 #, c-format
@@ -4554,10 +4509,8 @@ msgstr "Pagina cu actualizări"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:96
-#, fuzzy
-#| msgid "Pending update…"
 msgid "Loading Updates…"
-msgstr "Actualizare în așteptare…"
+msgstr "Se încarcă actualizările…"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:110
@@ -4566,8 +4519,6 @@ msgstr "Acest lucru ar putea dura ceva timp."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
-#, fuzzy
-#| msgid "Up To Date"
 msgid "Up to Date"
 msgstr "Actualizat"
 
@@ -4651,10 +4602,9 @@ msgstr "_Descarcă"
 #. * upgrade is available. The first %s is the distro name
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
 #: src/gs-upgrade-banner.c:86
-#, fuzzy, c-format
-#| msgid "%s %s Now Available"
+#, c-format
 msgid "%s %s Available"
-msgstr "%s %s este acum disponibilă"
+msgstr "%s %s disponibilă"
 
 #: src/gs-upgrade-banner.c:131
 msgid "Learn about the new version"
@@ -4683,15 +4633,10 @@ msgid "A major upgrade, with new features and added polish."
 msgstr "O înnoire majoră cu funcționalități noi și revizuiri."
 
 #: src/gs-upgrade-banner.ui:213
-#, fuzzy
-#| msgid "_Restart & Update"
 msgid "_Restart & Upgrade"
-msgstr "_Repornește și actualizează"
+msgstr "_Repornește și înnoiește"
 
 #: src/gs-upgrade-banner.ui:230
-#, fuzzy
-#| msgid ""
-#| "It is recommended that you back up your data and files before upgrading."
 msgid "Remember to back up data and files before upgrading."
 msgstr ""
 "Se recomandă să faceți o copie de siguranță a datelor și fișierelor înaintea "
