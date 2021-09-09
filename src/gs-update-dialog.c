@@ -313,7 +313,9 @@ gs_update_dialog_constructed (GObject *object)
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 
 		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
-		gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
+		/* It can be either the app details page or the OS update page */
+		if (GS_IS_APP_DETAILS_PAGE (child))
+			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
 	} else {
 		gs_update_dialog_show_installed_updates (dialog);
 	}
