@@ -39,7 +39,6 @@ typedef enum {
 } GsOsUpdatePageProperty;
 
 enum {
-	SIGNAL_BACK_CLICKED,
 	SIGNAL_APP_ACTIVATED,
 	SIGNAL_LAST
 };
@@ -431,12 +430,6 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 }
 
 static void
-back_clicked_cb (GtkWidget *widget, GsOsUpdatePage *page)
-{
-	g_signal_emit (page, signals[SIGNAL_BACK_CLICKED], 0);
-}
-
-static void
 gs_os_update_page_dispose (GObject *object)
 {
 	GsOsUpdatePage *page = GS_OS_UPDATE_PAGE (object);
@@ -507,21 +500,6 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	/**
-	 * GsOsUpdatePage:back-clicked:
-	 * @app: a #GsApp
-	 *
-	 * Emitted when the back button got activated and the #GsUpdateDialog
-	 * containing this page is expected to go back.
-	 *
-	 * Since: 41
-	 */
-	signals[SIGNAL_BACK_CLICKED] =
-		g_signal_new ("back-clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      0, NULL, NULL, g_cclosure_marshal_generic,
-			      G_TYPE_NONE, 0);
-
-	/**
 	 * GsOsUpdatePage:app-activated:
 	 * @app: a #GsApp
 	 *
@@ -542,7 +520,6 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, box);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, group);
 	gtk_widget_class_bind_template_child (widget_class, GsOsUpdatePage, header_bar);
-	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
 
 /**

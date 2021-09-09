@@ -8,29 +8,6 @@
       <object class="HdyHeaderBar" id="header_bar">
         <property name="show_close_button">True</property>
         <property name="visible">True</property>
-        <child>
-          <object class="GtkButton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <signal name="clicked" handler="back_clicked_cb"/>
-            <style>
-              <class name="image-button"/>
-            </style>
-            <child internal-child="accessible">
-              <object class="AtkObject">
-                <property name="accessible-name" translatable="yes">Go back</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="icon_name">go-previous-symbolic</property>
-                <property name="icon_size">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
       </object>
     </child>
     <child>
