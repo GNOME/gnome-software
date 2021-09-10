@@ -852,7 +852,11 @@ change_mode_idle (gpointer user_data)
 	gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_UPDATES]));
 	gs_page_reload (GS_PAGE (shell->pages[GS_SHELL_MODE_INSTALLED]));
 
-	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+	/* Switch only when still on the loading page, otherwise the page
+	   could be changed from the command line or such, which would mean
+	   hiding the chosen page. */
+	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING)
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 
 	return G_SOURCE_REMOVE;
 }
