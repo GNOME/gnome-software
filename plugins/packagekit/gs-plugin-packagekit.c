@@ -424,6 +424,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* actually install the package */
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
 							 cancellable,
@@ -501,6 +502,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_packages_sync (priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
@@ -542,6 +544,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		gs_packagekit_helper_add_app (helper, app);
 		g_mutex_lock (&priv->task_mutex);
+		pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 		results = pk_task_install_files_sync (priv->task,
 						      package_ids,
 						      cancellable,
@@ -627,6 +630,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_task_remove_packages_sync (priv->task,
 						package_ids,
 						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
@@ -862,6 +866,7 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 
 	/* resolve them all at once */
 	g_mutex_lock (&priv->client_mutex_refine);
+	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_resolve (priv->client_refine,
 				     filter,
 				     (gchar **) package_ids->pdata,
@@ -953,6 +958,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->client_mutex_refine);
+	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_search_files (priv->client_refine,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					  (gchar **) to_array,
@@ -1036,6 +1042,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 
 	/* get any update details */
 	g_mutex_lock (&priv->client_mutex_refine);
+	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_update_detail (priv->client_refine,
 					       (gchar **) package_ids,
 					       cancellable,
@@ -1102,6 +1109,7 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 
 	/* get any details */
 	g_mutex_lock (&priv->client_mutex_refine);
+	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_details (priv->client_refine,
 					 (gchar **) package_ids->pdata,
 					 cancellable,
@@ -1154,6 +1162,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
 	g_mutex_lock (&priv->client_mutex_refine);
+	pk_client_set_interactive (priv->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_updates (priv->client_refine,
 					 filter,
 					 cancellable,
@@ -1812,6 +1821,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	files = g_strsplit (filename, "\t", -1);
 	gs_packagekit_helper_add_app (helper, app);
 	g_mutex_lock (&priv->task_mutex_local);
+	pk_client_set_interactive (PK_CLIENT (priv->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_files_local (PK_CLIENT (priv->task_local),
 					     files,
 					     cancellable,

@@ -94,6 +94,7 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+	pk_client_set_interactive (PK_CLIENT (priv->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results2 = pk_task_update_packages_sync (priv->task,
 						 package_ids,
 						 cancellable,
