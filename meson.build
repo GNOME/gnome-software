@@ -202,6 +202,11 @@ if get_option('packagekit')
   if meson.get_compiler('c').has_function('pk_details_get_download_size', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
       conf.set('HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE', '1')
   endif
+  if meson.get_compiler('c').has_function('pk_offline_cancel_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit) and \
+     meson.get_compiler('c').has_function('pk_offline_trigger_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit) and \
+     meson.get_compiler('c').has_function('pk_offline_trigger_upgrade_with_flags', prefix: '#include <packagekit-glib2/packagekit.h>', dependencies: packagekit)
+      conf.set('HAVE_PK_OFFLINE_WITH_FLAGS', '1')
+  endif
 endif
 
 if get_option('eos_updater')

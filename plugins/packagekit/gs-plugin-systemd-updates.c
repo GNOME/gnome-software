@@ -226,6 +226,151 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return gs_plugin_systemd_update_cache (plugin, error);
 }
 
+#ifdef HAVE_PK_OFFLINE_WITH_FLAGS
+
+static PkOfflineFlags
+gs_systemd_get_offline_flags (GsPlugin *plugin)
+{
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return PK_OFFLINE_FLAGS_INTERACTIVE;
+	return PK_OFFLINE_FLAGS_NONE;
+}
+
+static gboolean
+gs_systemd_call_trigger (GsPlugin *plugin,
+			 PkOfflineAction action,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return pk_offline_trigger_with_flags (action,
+					      gs_systemd_get_offline_flags (plugin),
+					      cancellable, error);
+}
+
+static gboolean
+gs_systemd_call_cancel (GsPlugin *plugin,
+			GCancellable *cancellable,
+			GError **error)
+{
+	return pk_offline_cancel_with_flags (gs_systemd_get_offline_flags (plugin), cancellable, error);
+}
+
+static gboolean
+gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
+				 PkOfflineAction action,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return pk_offline_trigger_upgrade_with_flags (action,
+						      gs_systemd_get_offline_flags (plugin),
+						      cancellable, error);
+}
+
+#else /* HAVE_PK_OFFLINE_WITH_FLAGS */
+
+static GDBusCallFlags
+gs_systemd_get_gdbus_call_flags (GsPlugin *plugin)
+{
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
+	return G_DBUS_CALL_FLAGS_NONE;
+}
+
+static gboolean
+gs_systemd_call_trigger (GsPlugin *plugin,
+			 PkOfflineAction action,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	tmp = pk_offline_action_to_string (action);
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "Trigger",
+					   g_variant_new ("(s)", tmp),
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+static gboolean
+gs_systemd_call_cancel (GsPlugin *plugin,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "Cancel",
+					   NULL,
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+static gboolean
+gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
+				 PkOfflineAction action,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	tmp = pk_offline_action_to_string (action);
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "TriggerUpgrade",
+					   g_variant_new ("(s)", tmp),
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+#endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
+
 static gboolean
 _systemd_trigger_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -247,8 +392,7 @@ _systemd_trigger_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* trigger offline update */
-	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
-				 cancellable, error)) {
+	if (!gs_systemd_call_trigger (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
@@ -307,7 +451,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 		return TRUE;
 
 	/* cancel offline update */
-	if (!pk_offline_cancel (NULL, error))
+	if (!gs_systemd_call_cancel (plugin, cancellable, error))
 		return FALSE;
 
 	/* don't rely on the file monitor */
@@ -326,5 +470,5 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
-	return pk_offline_trigger_upgrade (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
+	return gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error);
 }
