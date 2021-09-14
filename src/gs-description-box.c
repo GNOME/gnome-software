@@ -63,6 +63,8 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	box->last_height = allocation.height;
 
 	text = box->is_collapsed ? _("_Show More") : _("_Show Less");
+	/* FIXME: Work around a flickering issue in GTK:
+	 * https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/3949 */
 	if (g_strcmp0 (text, gtk_button_get_label (box->button)) != 0)
 		gtk_button_set_label (box->button, text);
 
