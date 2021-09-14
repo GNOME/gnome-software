@@ -30,6 +30,7 @@ struct GsPluginData {
 	XbSilo			*silo;
 	GRWLock			 silo_lock;
 	GSettings		*settings;
+	gboolean		 needs_refresh;
 };
 
 void
@@ -516,9 +517,11 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 
 	reader_locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	/* everything is okay */
-	if (priv->silo != NULL && xb_silo_is_valid (priv->silo))
+	if (priv->silo != NULL && !priv->needs_refresh && xb_silo_is_valid (priv->silo))
 		return TRUE;
 	g_clear_pointer (&reader_locker, g_rw_lock_reader_locker_free);
+
+	priv->needs_refresh = FALSE;
 
 	/* drat! silo needs regenerating */
 	writer_locker = g_rw_lock_writer_locker_new (&priv->silo_lock);
@@ -1134,4 +1137,16 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	return gs_plugin_appstream_check_silo (plugin, cancellable, error);
+}
+
+void
+gs_plugin_action_finished (GsPlugin *plugin,
+			   GsPluginAction action)
+{
+	if (action == GS_PLUGIN_ACTION_INSTALL ||
+	    action == GS_PLUGIN_ACTION_REMOVE ||
+	    action == GS_PLUGIN_ACTION_UPDATE) {
+		GsPluginData *priv = gs_plugin_get_data (plugin);
+		priv->needs_refresh = TRUE;
+	}
 }
