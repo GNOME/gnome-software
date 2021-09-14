@@ -933,4 +933,18 @@ gboolean	 gs_plugin_disable_repo			(GsPlugin	*plugin,
 							 GsApp		*repo,
 							 GCancellable	*cancellable,
 							 GError		**error);
+
+/**
+ * gs_plugin_action_finished:
+ * @plugin: a #GsPlugin
+ * @action: a #GsPluginAction
+ *
+ * This is a notification function, calls after the @action is finished,
+ * which means every plugin had been called with this @action.
+ *
+ * Since: 41.1
+ **/
+void		 gs_plugin_action_finished		(GsPlugin	*plugin,
+							 GsPluginAction	 action);
+
 G_END_DECLS

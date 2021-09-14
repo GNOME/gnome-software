@@ -183,6 +183,8 @@ typedef gboolean	 (*GsPluginGetLangPacksFunc)	(GsPlugin	*plugin,
 							 const gchar    *locale,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef void		 (*GsPluginActionFinishedFunc)	(GsPlugin	*plugin,
+							 GsPluginAction	 action);
 
 
 /* async helper */
@@ -1228,6 +1230,16 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 					       gs_plugin_job_get_age (helper->plugin_job),
 					       cancellable, error))
 			return FALSE;
+	}
+
+	/* Notify plugins about the action being finished */
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
+		gpointer func = gs_plugin_get_symbol (plugin, "gs_plugin_action_finished");
+		if (func != NULL) {
+			GsPluginActionFinishedFunc action_finished_func = func;
+			action_finished_func (plugin, action);
+		}
 	}
 
 #ifdef HAVE_SYSPROF
