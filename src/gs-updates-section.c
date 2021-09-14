@@ -89,21 +89,29 @@ _app_row_button_clicked_cb (GsAppRow *app_row, GsUpdatesSection *self)
 static void
 _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 {
-	GtkWidget *list;
+	GtkWidget *widget;
 	GsUpdatesSection *self;
 
-	list = gtk_widget_get_parent (GTK_WIDGET (row));
-	if (list == NULL)
+	widget = gtk_widget_get_parent (GTK_WIDGET (row));
+	if (widget == NULL)
 		return;
 
-	self = GS_UPDATES_SECTION (list);
+	/* Traverse the widget structure up to the GsUpdatesSection */
+	while (widget != NULL) {
+		if (GS_IS_UPDATES_SECTION (widget))
+			break;
+		widget = gtk_widget_get_parent (widget);
+	}
+
+	g_return_if_fail (GS_IS_UPDATES_SECTION (widget));
+	self = GS_UPDATES_SECTION (widget);
 
 	gs_app_list_remove (self->list, gs_app_row_get_app (GS_APP_ROW (row)));
 
 	gtk_widget_destroy (GTK_WIDGET (row));
 
 	if (!gs_app_list_length (self->list))
-		gtk_widget_hide (list);
+		gtk_widget_hide (widget);
 }
 
 static void
