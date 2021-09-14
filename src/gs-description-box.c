@@ -45,6 +45,7 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	GtkAllocation allocation;
 	PangoLayout *layout;
 	gint n_lines;
+	const gchar *text;
 
 	if (!box->text || !*(box->text)) {
 		gtk_widget_hide (GTK_WIDGET (box));
@@ -61,7 +62,9 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	box->last_width = allocation.width;
 	box->last_height = allocation.height;
 
-	gtk_button_set_label (box->button, box->is_collapsed ? _("_Show More") : _("_Show Less"));
+	text = box->is_collapsed ? _("_Show More") : _("_Show Less");
+	if (g_strcmp0 (text, gtk_button_get_label (box->button)) != 0)
+		gtk_button_set_label (box->button, text);
 
 	gtk_label_set_text (box->label, box->text);
 	gtk_label_set_lines (box->label, -1);
