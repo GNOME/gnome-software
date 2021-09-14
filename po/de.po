@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-06 17:06+0000\n"
-"PO-Revision-Date: 2021-09-06 21:03+0200\n"
+"POT-Creation-Date: 2021-09-10 18:43+0000\n"
+"PO-Revision-Date: 2021-09-14 00:01+0200\n"
 "Last-Translator: Philipp Kiemle <philipp.kiemle@gmail.com>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
@@ -80,7 +80,7 @@ msgstr "Seite mit Aktualisierungen"
 msgid "The update details"
 msgstr "Details zur Aktualisierung"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1782
+#: data/appdata/org.gnome.Software.appdata.xml.in:1818
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
 
@@ -331,6 +331,9 @@ msgid ""
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last."
 msgstr ""
+"Prioritätsliste der Paketformate, bevorzugte Formate zuerst. Eine leere "
+"Auflistung resultiert in der vorgegebenen Reihenfolge. Ausgelassene "
+"Paketformate werden zuletzt gelistet."
 
 #: data/org.gnome.software.gschema.xml:145
 msgid "The URI that references the background for an upgrade banner."
@@ -986,73 +989,73 @@ msgstr "Darf auf Hardware-Geräte zugreifen"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:301
 msgid "Can read/write all your data"
 msgstr "Darf all Ihre Daten lesen/schreiben"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:305
+#: src/gs-app-context-bar.c:313
 msgid "Can read all your data"
 msgstr "Darf all Ihre Daten lesen"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:312
+#: src/gs-app-context-bar.c:320
 msgid "Can read/write your downloads"
 msgstr "Darf Ihre Downloads lesen/schreiben"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:319
+#: src/gs-app-context-bar.c:327
 msgid "Can read your downloads"
 msgstr "Darf Ihre Downloads lesen"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:326 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:210
 msgid "Can access and change user settings"
 msgstr "Darf Benutzereinstellungen lesen und ändern"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:333 src/gs-safety-context-dialog.c:194
+#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:194
 msgid "Uses a legacy windowing system"
 msgstr "Verwendet ein veraltetes Anzeigesystem"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:202
 msgid "Can acquire arbitrary permissions"
 msgstr "Darf beliebige Berechtigungen erhalten"
 
 #. Translators: This indicates that we don’t know what permissions an app requires to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
+#: src/gs-app-context-bar.c:360
 msgid "Software has unknown permissions"
 msgstr "Berechtigungen dieser Anwendung sind unbekannt"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:364
+#: src/gs-app-context-bar.c:372
 msgid "Proprietary code"
 msgstr "Proprietärer Quellcode"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370
+#: src/gs-app-context-bar.c:378
 msgid "Auditable code"
 msgstr "Überprüfbarer Quellcode"
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379
+#: src/gs-app-context-bar.c:387
 msgid "Software comes from a trusted source"
 msgstr "Software stammt aus einer vertrauenswürdigen Quelle"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:386
+#: src/gs-app-context-bar.c:394
 msgid "Software developer is verified"
 msgstr "Entwickler ist verifiziert"
 
@@ -1070,104 +1073,104 @@ msgstr "Entwickler ist verifiziert"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:398 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:406 src/gs-app-context-bar.c:667
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:406
+#: src/gs-app-context-bar.c:414
 msgid "Safe"
 msgstr "Sicher"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:413
+#: src/gs-app-context-bar.c:421
 msgid "Potentially Unsafe"
 msgstr "Potenziell unsicher"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:420
+#: src/gs-app-context-bar.c:428
 msgid "Unsafe"
 msgstr "Unsicher"
 
-#: src/gs-app-context-bar.c:499 src/gs-app-context-bar.c:531
+#: src/gs-app-context-bar.c:507 src/gs-app-context-bar.c:539
 #: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Nur Mobilgeräte"
 
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:508
 msgid "Only works on a small screen"
 msgstr "Funktioniert nur mit einem kleinen Bildschirm"
 
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:538
-#: src/gs-app-context-bar.c:545 src/gs-app-context-bar.c:585
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:513 src/gs-app-context-bar.c:546
+#: src/gs-app-context-bar.c:553 src/gs-app-context-bar.c:593
+#: src/gs-app-context-bar.c:598 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Nur Desktop"
 
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:514
 msgid "Only works on a large screen"
 msgstr "Funktioniert nur auf einem großen Bildschirm"
 
-#: src/gs-app-context-bar.c:510 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:518 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr ""
 
-#: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:519 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Ihre aktuelle Bildschirmgröße wird nicht unterstützt"
 
-#: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-app-context-bar.c:540 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Erfordert einen Touchscreen"
 
-#: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-app-context-bar.c:547 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "Erfordert eine Tastatur"
 
-#: src/gs-app-context-bar.c:546
+#: src/gs-app-context-bar.c:554
 msgid "Requires a mouse"
 msgstr "Erfordert eine Maus"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:565
 msgid "Gamepad Needed"
 msgstr "Gamepad erforderlich"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:566
 msgid "Requires a gamepad to play"
 msgstr "Erfordert ein Gamepad zum Spielen"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:572
+#: src/gs-app-context-bar.c:580
 msgid "Adaptive"
 msgstr "Adaptiv"
 
-#: src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:581
 msgid "Works on phones, tablets and desktops"
 msgstr "Funktioniert auf Mobiltelefonen, Tablets und Desktop-PCs"
 
-#: src/gs-app-context-bar.c:586
+#: src/gs-app-context-bar.c:594
 msgid "Probably requires a keyboard or mouse"
 msgstr "Erfordert vermutlich eine Tastatur oder Maus"
 
-#: src/gs-app-context-bar.c:591
+#: src/gs-app-context-bar.c:599
 msgid "Works on desktops and laptops"
 msgstr "Funktioniert auf Desktop-PCs und Laptops"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:634
+#: src/gs-app-context-bar.c:642
 msgid "Contains no age-inappropriate content"
 msgstr "Enthält keine altersbeschränkten Inhalte"
 
-#: src/gs-app-context-bar.c:683
+#: src/gs-app-context-bar.c:691
 msgid "No age rating information available"
 msgstr "Keine Informationen zur Altersfreigabe verfügbar"
 
@@ -2030,20 +2033,20 @@ msgid "_Install…"
 msgstr "_Installieren …"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1395
+#: src/gs-details-page.c:1404
 msgid "You need internet access to write a review"
 msgstr ""
 "Sie brauchen eine Verbindung mit dem Internet, um eine Bewertung abgeben zu "
 "können"
 
-#: src/gs-details-page.c:1540 src/gs-details-page.c:1556
+#: src/gs-details-page.c:1549 src/gs-details-page.c:1565
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "»%s« konnte nicht gefunden werden"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2112
+#: src/gs-details-page.c:2121
 msgid "Loading…"
 msgstr "Wird geladen …"
 
@@ -2857,12 +2860,12 @@ msgstr "Herunterstufungen"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:706
+#: src/gs-overview-page.c:697
 msgid "selected external sources"
 msgstr "ausgewählten externen Softwarequellen"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:708
+#: src/gs-overview-page.c:699
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2873,13 +2876,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:708 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Aktivieren"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:772 src/gs-shell.ui:306
+#: src/gs-overview-page.c:763 src/gs-shell.ui:306
 msgid "Explore"
 msgstr "Erkunden"
 
@@ -3476,8 +3479,8 @@ msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr ""
-"Der Quellcode ist nicht öffentlich und kann nicht von unabhängigen Stellen "
-"überprüft werden. Er ist potentiell unsicher."
+"Der Quellcode ist nicht öffentlich und kann deshalb nicht von unabhängigen "
+"Stellen überprüft werden. Er ist potentiell unsicher."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:304
@@ -3489,8 +3492,9 @@ msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
 msgstr ""
-"Der Quellcode ist öffentlich und kann von unabhängigen Stellen überprüft "
-"werden. Dadurch ist die Anwendung mit höherer Wahrscheinlichkeit sicher."
+"Der Quellcode ist öffentlich und kann deshalb von unabhängigen Stellen "
+"überprüft werden. Dadurch ist die Anwendung mit höherer Wahrscheinlichkeit "
+"sicher."
 
 #. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
 #. * It’s used in a context tile, so should be short.
