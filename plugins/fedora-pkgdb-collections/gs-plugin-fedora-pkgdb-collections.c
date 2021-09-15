@@ -296,7 +296,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	if (app != NULL)
 		return app;
 
-	app_id = g_strdup_printf ("org.fedoraproject.Fedora-%u", item->version);
+	app_id = g_strdup_printf ("org.fedoraproject.fedora-%u", item->version);
 	app_version = g_strdup_printf ("%u", item->version);
 
 	/* icon from disk */
