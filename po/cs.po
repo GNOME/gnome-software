@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-14 14:49+0000\n"
-"PO-Revision-Date: 2021-09-05 11:29+0200\n"
-"Last-Translator: Vojtěch Perník <translations@pervoj.cz>\n"
+"POT-Creation-Date: 2021-09-16 12:17+0000\n"
+"PO-Revision-Date: 2021-09-16 15:59+0200\n"
+"Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -595,7 +595,7 @@ msgstr "Místní soubor"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:396
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:391
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -979,49 +979,51 @@ msgstr "Může číst vaše stažené soubory"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:217
 msgid "Can access and change user settings"
 msgstr "Může zobrazovat a měnit uživatelská nastavení"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:194
+#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:201
 msgid "Uses a legacy windowing system"
 msgstr "Používá starý zobrazovací systém"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:209
 msgid "Can acquire arbitrary permissions"
 msgstr "Může získat libovolná oprávnění"
 
-#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. Translators: This indicates that an application has been packaged
+#. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:360
-msgid "Software has unknown permissions"
-msgstr "Software vyžaduje neznámá oprávnění"
+#: src/gs-app-context-bar.c:374 src/gs-safety-context-dialog.c:142
+msgid "Reviewed by your distribution"
+msgstr "Zkontrolováno vaší distribucí"
+
+#. Translators: This indicates that an application has been packaged
+#. * by someone other than the user’s distribution, so might not be safe.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:381 src/gs-safety-context-dialog.c:139
+msgid "Provided by a third party"
+msgstr "Poskytováno třetí stranou"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:372
+#: src/gs-app-context-bar.c:393
 msgid "Proprietary code"
 msgstr "uzavřený kód"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:378
+#: src/gs-app-context-bar.c:399
 msgid "Auditable code"
 msgstr "otevřený kód"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:387
-msgid "Software comes from a trusted source"
-msgstr "Software pochází z ověřeného zdroje"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:394
+#: src/gs-app-context-bar.c:406
 msgid "Software developer is verified"
 msgstr "Vývojář softwaru je ověřený"
 
@@ -1039,104 +1041,104 @@ msgstr "Vývojář softwaru je ověřený"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:406 src/gs-app-context-bar.c:667
+#: src/gs-app-context-bar.c:418 src/gs-app-context-bar.c:679
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:414
+#: src/gs-app-context-bar.c:426
 msgid "Safe"
 msgstr "Bezpečné"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:421
+#: src/gs-app-context-bar.c:433
 msgid "Potentially Unsafe"
 msgstr "Potenciálně nebezpečné"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:428
+#: src/gs-app-context-bar.c:440
 msgid "Unsafe"
 msgstr "Nebezpečné"
 
-#: src/gs-app-context-bar.c:507 src/gs-app-context-bar.c:539
+#: src/gs-app-context-bar.c:519 src/gs-app-context-bar.c:551
 #: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Jen pro mobilní zařízení"
 
-#: src/gs-app-context-bar.c:508
+#: src/gs-app-context-bar.c:520
 msgid "Only works on a small screen"
 msgstr "Funguje pouze na malé obrazovce"
 
-#: src/gs-app-context-bar.c:513 src/gs-app-context-bar.c:546
-#: src/gs-app-context-bar.c:553 src/gs-app-context-bar.c:593
-#: src/gs-app-context-bar.c:598 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:525 src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:565 src/gs-app-context-bar.c:605
+#: src/gs-app-context-bar.c:610 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Pouze pro PC"
 
-#: src/gs-app-context-bar.c:514
+#: src/gs-app-context-bar.c:526
 msgid "Only works on a large screen"
 msgstr "Funguje pouze na velké obrazovce"
 
-#: src/gs-app-context-bar.c:518 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:530 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "Nesoulad velikosti obrazovky"
 
-#: src/gs-app-context-bar.c:519 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:531 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Nepodporuje vaši současnou velikost obrazovky"
 
-#: src/gs-app-context-bar.c:540 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-app-context-bar.c:552 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Vyžaduje dotykovou obrazovku"
 
-#: src/gs-app-context-bar.c:547 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-app-context-bar.c:559 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "Vyžaduje klávesnici"
 
-#: src/gs-app-context-bar.c:554
+#: src/gs-app-context-bar.c:566
 msgid "Requires a mouse"
 msgstr "Vyžaduje myš"
 
-#: src/gs-app-context-bar.c:565
+#: src/gs-app-context-bar.c:577
 msgid "Gamepad Needed"
 msgstr "Vyžaduje herní ovladač"
 
-#: src/gs-app-context-bar.c:566
+#: src/gs-app-context-bar.c:578
 msgid "Requires a gamepad to play"
 msgstr "Ke hraní vyžaduje herní ovladač"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:580
+#: src/gs-app-context-bar.c:592
 msgid "Adaptive"
 msgstr "Adaptivní"
 
-#: src/gs-app-context-bar.c:581
+#: src/gs-app-context-bar.c:593
 msgid "Works on phones, tablets and desktops"
 msgstr "Funguje na telefonech, tabletech a PC"
 
-#: src/gs-app-context-bar.c:594
+#: src/gs-app-context-bar.c:606
 msgid "Probably requires a keyboard or mouse"
 msgstr "Pravděpodobně vyžaduje klávesnici nebo myš"
 
-#: src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:611
 msgid "Works on desktops and laptops"
 msgstr "Funguje na PC a laptopech"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:642
+#: src/gs-app-context-bar.c:654
 msgid "Contains no age-inappropriate content"
 msgstr "Neobsahuje žádný věkově nevhodný obsah"
 
-#: src/gs-app-context-bar.c:691
+#: src/gs-app-context-bar.c:703
 msgid "No age rating information available"
 msgstr "Informace o věkové kategorii nejsou k dispozici"
 
@@ -1934,12 +1936,12 @@ msgid "Find in Software"
 msgstr "Najít v aplikaci Software"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-description-box.c:64 src/gs-description-box.c:166
+#: src/gs-description-box.c:65 src/gs-description-box.c:171
 #: src/gs-details-page.ui:966
 msgid "_Show More"
 msgstr "Zobrazit _více"
 
-#: src/gs-description-box.c:64
+#: src/gs-description-box.c:65
 msgid "_Show Less"
 msgstr "Zobrazit _méně"
 
@@ -3279,161 +3281,167 @@ msgstr "Nahlásit…"
 msgid "Remove…"
 msgstr "Odebrat…"
 
-#: src/gs-safety-context-dialog.c:133
-msgid "Unknown Permissions"
-msgstr "Neznámá oprávnění"
+#: src/gs-safety-context-dialog.c:140
+msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+msgstr ""
+"Zkontrolujte si, že důvěřujete dodavateli, protože aplikace není v izolovaném "
+"prostředí."
 
-#: src/gs-safety-context-dialog.c:134
-msgid "The permissions needed by this app aren’t known"
-msgstr "Oprávnění, která tato aplikace vyžaduje, nejsou známa."
+#: src/gs-safety-context-dialog.c:143
+msgid ""
+"Application isn’t sandboxed but the distribution has checked that it is not "
+"malicious"
+msgstr ""
+"Aplikace není v izolovaném prostředí, ale je prověřená v distribuci, že "
+"neobsahuje škodlivý kód."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:143
+#: src/gs-safety-context-dialog.c:150
 msgid "No Permissions"
 msgstr "Žádná oprávnění"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:151
 msgid "App is fully sandboxed"
 msgstr "Aplikace je v plně izolovaném prostředí"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:155
+#: src/gs-safety-context-dialog.c:162
 msgid "Network Access"
 msgstr "Přístup k síti"
 
-#: src/gs-safety-context-dialog.c:156
+#: src/gs-safety-context-dialog.c:163
 msgid "Can access the internet"
 msgstr "Může přistupovat k internetu"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:159
+#: src/gs-safety-context-dialog.c:166
 msgid "No Network Access"
 msgstr "Žádný přístup k síti"
 
-#: src/gs-safety-context-dialog.c:160
+#: src/gs-safety-context-dialog.c:167
 msgid "Cannot access the internet"
 msgstr "Nemůže přistupovat k internetu"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:166
+#: src/gs-safety-context-dialog.c:173
 msgid "Uses System Services"
 msgstr "Využívá služby systému"
 
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:174
 msgid "Can request data from system services"
 msgstr "Může si vyžádat data ze služeb systému"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:181
 msgid "Uses Session Services"
 msgstr "Využívá služby sezení"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:182
 msgid "Can request data from session services"
 msgstr "Může si vyžádat data ze služeb sezení"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:189
 msgid "Device Access"
 msgstr "Přístup k zařízení"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:190
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Může přistupovat k zařízením jako jsou webkamery nebo herní ovladače"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:186
+#: src/gs-safety-context-dialog.c:193
 msgid "No Device Access"
 msgstr "Žádný přístup k zařízení"
 
-#: src/gs-safety-context-dialog.c:187
+#: src/gs-safety-context-dialog.c:194
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "Nemůže přistupovat k zařízením jako jsou webkamery nebo herní ovladače"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:200
 msgid "Legacy Windowing System"
 msgstr "Zastaralý zobrazovací systém"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:208
 msgid "Arbitrary Permissions"
 msgstr "Libovolná oprávnění"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:216
 msgid "User Settings"
 msgstr "Uživatelská nastavení"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:228
 msgid "Full File System Read/Write Access"
 msgstr "Plný přístup k souborovému systému pro čtení/zápis"
 
-#: src/gs-safety-context-dialog.c:222
+#: src/gs-safety-context-dialog.c:229
 msgid "Can read and write all data on the file system"
 msgstr "Může číst a zapisovat všechna data v souborovém systému"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:237
 msgid "Home Folder Read/Write Access"
 msgstr "Přístup k domovské složce pro čtení/zápis"
 
-#: src/gs-safety-context-dialog.c:231
+#: src/gs-safety-context-dialog.c:238
 msgid "Can read and write all data in your home directory"
 msgstr "Může číst a zapisovat všechna data ve vaší domovské složce"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:246
 msgid "Full File System Read Access"
 msgstr "Plný přístup k souborovému systému pro čtení"
 
-#: src/gs-safety-context-dialog.c:240
+#: src/gs-safety-context-dialog.c:247
 msgid "Can read all data on the file system"
 msgstr "Může číst všechna data v souborovém systému"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:249
+#: src/gs-safety-context-dialog.c:256
 msgid "Home Folder Read Access"
 msgstr "Přístup k domovské složce pro čtení"
 
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data in your home directory"
 msgstr "Může číst všechna data ve vaší domovské složce"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:266
 msgid "Download Folder Read/Write Access"
 msgstr "Přístup ke složce se staženými soubory pro čtení/zápis"
 
-#: src/gs-safety-context-dialog.c:260
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read and write all data in your downloads directory"
 msgstr "Může číst a zapisovat všechna data ve vaší složce se staženými soubory"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:271
+#: src/gs-safety-context-dialog.c:278
 msgid "Download Folder Read Access"
 msgstr "Přístup ke složce se staženými soubory pro čtení"
 
-#: src/gs-safety-context-dialog.c:272
+#: src/gs-safety-context-dialog.c:279
 msgid "Can read all data in your downloads directory"
 msgstr "Může číst všechna data ve vaší složce se staženými soubory"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:285
+#: src/gs-safety-context-dialog.c:292
 msgid "No File System Access"
 msgstr "Žádný přístup k souborovému systému"
 
-#: src/gs-safety-context-dialog.c:286
+#: src/gs-safety-context-dialog.c:293
 msgid "Cannot access the file system at all"
 msgstr "Vůbec nemůže přistupovat k souborovému systému"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:300
+#: src/gs-safety-context-dialog.c:307
 msgid "Proprietary Code"
 msgstr "uzavřená"
 
-#: src/gs-safety-context-dialog.c:301
+#: src/gs-safety-context-dialog.c:308
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3442,11 +3450,11 @@ msgstr ""
 "nebezpečný."
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:311
 msgid "Auditable Code"
 msgstr "otevřený kód"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:312
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3454,43 +3462,33 @@ msgstr ""
 "Zdrojový kód je veřejný a může být nezávisle kontrolován, což zvyšuje "
 "pravděpodobnost, že je aplikace bezpečná."
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:315
-msgid "App comes from a trusted source"
-msgstr "Aplikace pochází z ověřeného zdroje"
-
-#: src/gs-safety-context-dialog.c:316
-msgid "Your distribution has verified that this app can be trusted"
-msgstr "Vaše distribuce ověřila, že této aplikaci lze důvěřovat"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:320
 msgid "App developer is verified"
 msgstr "Vývojář aplikace je ověřený"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:321
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Bylo ověřeno, že vývojář této aplikace je tím, za koho se vydává"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:330
 #, c-format
 msgid "%s is safe"
 msgstr "Aplikace %s je bezpečná"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:342
+#: src/gs-safety-context-dialog.c:337
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "Aplikace %s je potenciálně nebezpečná"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:349
+#: src/gs-safety-context-dialog.c:344
 #, c-format
 msgid "%s is unsafe"
 msgstr "Aplikace %s je nebezpečná"
@@ -4870,285 +4868,3 @@ msgstr "Podpora pro Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap je univerzální linuxový balíček"
 
-#~ msgid "Show the prompt to install nonfree software repositories"
-#~ msgstr "Zobrazovat dotaz na instalaci repozitářů nesvobodného softwaru"
-
-#~ msgid "Featured %s"
-#~ msgstr "Významné v kategorii %s"
-
-#~ msgid "Show"
-#~ msgstr "Zobrazovat"
-
-#~ msgid "Subcategories filter menu"
-#~ msgstr "Nabídka filtrování podkategorií"
-
-#~ msgid "Sort"
-#~ msgstr "Řadit podle"
-
-#~ msgid "Subcategories sorting menu"
-#~ msgstr "Nabídka řazení podkategorií"
-
-#~ msgctxt "Menu of Games"
-#~ msgid "All"
-#~ msgstr "Vše"
-
-#~ msgctxt "Menu of Games"
-#~ msgid "Featured"
-#~ msgstr "Významné"
-
-#~ msgctxt "Menu of Utilities"
-#~ msgid "All"
-#~ msgstr "Vše"
-
-#~ msgctxt "Menu of Utilities"
-#~ msgid "Featured"
-#~ msgstr "Významné"
-
-#~ msgctxt "Menu of Reference"
-#~ msgid "All"
-#~ msgstr "Vše"
-
-#~ msgctxt "Menu of Reference"
-#~ msgid "Featured"
-#~ msgstr "Významné"
-
-#~ msgid "Audio & Video"
-#~ msgstr "Zvuk a video"
-
-#~ msgid "Developer Tools"
-#~ msgstr "Vývojářské nástroje"
-
-#~ msgid "Education & Science"
-#~ msgstr "Výuka a věda"
-
-#~ msgid "Games"
-#~ msgstr "Hry"
-
-#~ msgid "Graphics & Photography"
-#~ msgstr "Grafika a fotografie"
-
-#~ msgid "Productivity"
-#~ msgstr "Kancelář"
-
-#~ msgid "Communication & News"
-#~ msgstr "Komunikace a diskuzní skupiny"
-
-#~ msgid "Reference"
-#~ msgstr "Knihy"
-
-#~ msgid "Utilities"
-#~ msgstr "Nástroje"
-
-#~ msgid "_Read More"
-#~ msgstr "Zob_razit více"
-
-#~ msgid "_Read Less"
-#~ msgstr "Zob_razit méně"
-
-#~ msgid "_Launch"
-#~ msgstr "_Spustit"
-
-#~ msgid ""
-#~ "Unable to determine which parts of the system this application accesses. "
-#~ "This is typical for older applications."
-#~ msgstr ""
-#~ "Nelze určit, ke kterým částem systému tato aplikace přistupuje. To je "
-#~ "obvyklé u starších aplikací."
-
-#~ msgctxt "updated"
-#~ msgid "Never"
-#~ msgstr "nikdy"
-
-#~ msgctxt "App permissions"
-#~ msgid "Low"
-#~ msgstr "nízká"
-
-#~ msgctxt "App permissions"
-#~ msgid "Medium"
-#~ msgstr "střední"
-
-#~ msgctxt "App permissions"
-#~ msgid "High"
-#~ msgstr "vysoká"
-
-#~ msgctxt "App permissions"
-#~ msgid "Unknown"
-#~ msgstr "neznámá"
-
-#~ msgid "Public domain"
-#~ msgstr "Volné dílo"
-
-#~ msgid "https://en.wikipedia.org/wiki/Public_domain"
-#~ msgstr "https://cs.wikipedia.org/wiki/Voln%C3%A9_d%C3%ADlo"
-
-#~ msgid "https://www.gnu.org/philosophy/free-sw"
-#~ msgstr "https://www.gnu.org/philosophy/free-sw"
-
-#~ msgid "Users are bound by the following license:"
-#~ msgid_plural "Users are bound by the following licenses:"
-#~ msgstr[0] "Uživatelé jsou vázáni následující licencí:"
-#~ msgstr[1] "Uživatelé jsou vázáni následujícími licencemi:"
-#~ msgstr[2] "Uživatelé jsou vázáni následujícími licencemi:"
-
-#~ msgid "Localized in your Language"
-#~ msgstr "Přeloženo do vašeho jazyka"
-
-#~ msgid "Release Activity"
-#~ msgstr "Vydávány nové verze"
-
-#~ msgid "Sandboxed"
-#~ msgstr "V izolovaném prostředí"
-
-#~ msgid "Category"
-#~ msgstr "Kategorie"
-
-#~ msgid "Free"
-#~ msgstr "svobodná"
-
-#~ msgctxt "Application license"
-#~ msgid "Unknown"
-#~ msgstr "neznámá"
-
-#~ msgid ""
-#~ "This means that the software can be freely run, copied, distributed, "
-#~ "studied and modified."
-#~ msgstr ""
-#~ "To znamená, že software můžete svobodně používat, kopírovat, šířit, "
-#~ "studovat a upravovat."
-
-#~ msgid "Proprietary Software"
-#~ msgstr "Uzavřený software"
-
-#~ msgid ""
-#~ "This means that the software is owned by an individual or a company. "
-#~ "There are often restrictions on its use and its source code cannot "
-#~ "usually be accessed."
-#~ msgstr ""
-#~ "To znamená, že software je vlastněn jednotlivcem nebo firmou. Často jste "
-#~ "nějak omezeni v jeho používání a obvykle nemáte přístup k jeho zdrojovým "
-#~ "kódům."
-
-#~ msgid "Unknown Software License"
-#~ msgstr "Neznámá softwarová licence"
-
-#~ msgid "The license terms of this software are unknown."
-#~ msgstr "Licenční podmínky k tomuto softwaru nejsou známy."
-
-#~ msgid "The application was rated this way because it features:"
-#~ msgstr "Aplikace byla takto ohodnocena, protože součástí je:"
-
-#~ msgid "No details were available for this rating."
-#~ msgstr "K tomuto hodnocení nejsou k dispozici žádné podrobnosti."
-
-#~ msgctxt "app status"
-#~ msgid "Uninstalled"
-#~ msgstr "Odinstalováno"
-
-#~ msgctxt "app status"
-#~ msgid "Installed"
-#~ msgstr "Nainstalováno"
-
-#~ msgctxt "app status"
-#~ msgid "Updated"
-#~ msgstr "Aktualizováno"
-
-#~ msgctxt "app status"
-#~ msgid "Unknown"
-#~ msgstr "Neznámo"
-
-#~ msgid "History"
-#~ msgstr "Historie"
-
-#~ msgid "More…"
-#~ msgstr "Více…"
-
-#~ msgid "Recommended Audio & Video Applications"
-#~ msgstr "Z kategorie zvuk a video doporučujeme"
-
-#~ msgid "Recommended Games"
-#~ msgstr "Z her doporučujeme"
-
-#~ msgid "Recommended Graphics Applications"
-#~ msgstr "Z kategorie grafika doporučujeme"
-
-#~ msgid "Recommended Productivity Applications"
-#~ msgstr "Z kategorie kancelář doporučujeme"
-
-#~ msgid ""
-#~ "Some of this software is proprietary and therefore has restrictions on "
-#~ "use, sharing, and access to source code."
-#~ msgstr ""
-#~ "Některý z tohoto softwaru může být nesvobodný a mít tak různá omezení "
-#~ "ohledně používání, sdílení a přístupu ke zdrojovému kódu."
-
-#~ msgid "Find out more…"
-#~ msgstr "Dozvědět se více…"
-
-#~ msgid "Recent Releases"
-#~ msgstr "Nově vydáno"
-
-#~ msgid "Remove “%s”?"
-#~ msgstr "Odebrat repozitář „%s“?"
-
-#~ msgid "Disable “%s”?"
-#~ msgstr "Zakázat repozitář „%s“?"
-
-#~ msgid "No Additional Repositories"
-#~ msgstr "Nejsou žádné dodatečné repozitáře"
-
-#~ msgid "_Enable"
-#~ msgstr "_Povolit"
-
-#~ msgid "_Remove…"
-#~ msgstr "Odeb_rat…"
-
-#~ msgid "_Disable…"
-#~ msgstr "_Zakázat…"
-
-#~ msgid "Disabling"
-#~ msgstr "Zakazuje se"
-
-#~ msgid "Enabled"
-#~ msgstr "Povolený"
-
-#~ msgid "Disabled"
-#~ msgstr "Zakázaný"
-
-#~ msgid "ratings in total"
-#~ msgstr "celkové hodnocení"
-
-#~ msgid "Navigation sidebar"
-#~ msgstr "Navigační postranní panel"
-
-#~ msgid "%s (needs attention)"
-#~ msgstr "%s (vyžaduje pozornost)"
-
-#~ msgid "_Remove All"
-#~ msgstr "Odeb_rat vše"
-
-#~ msgid "Looking for new updates…"
-#~ msgstr "Vyhledávají se nové aktualizace…"
-
-#~ msgid "Setting up updates…"
-#~ msgstr "Nastavují se aktualizace…"
-
-#~ msgid "Software is up to date"
-#~ msgstr "Software je aktuální"
-
-#~ msgid "_Restart Now"
-#~ msgstr "_Restartovat hned"
-
-#~ msgid "Updates will be applied when the computer is restarted."
-#~ msgstr "Aktualizace budou použity při restartu počítače."
-
-#~ msgid "Waiting to Download %s %s"
-#~ msgstr "Čeká se na stažení %s %s"
-
-#~ msgid "Downloading %s %s"
-#~ msgstr "Stahuje se %s %s"
-
-#~ msgid "%s %s Ready to be Installed"
-#~ msgstr "%s %s se může nainstalovat"
-
-#~ msgid "ODRS is a service providing user reviews of applications"
-#~ msgstr "ODRS je služba poskytující uživatelům hodnocení aplikací"
