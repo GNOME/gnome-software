@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-03 07:01+0000\n"
-"PO-Revision-Date: 2021-09-10 20:41+0200\n"
+"POT-Creation-Date: 2021-09-16 12:17+0000\n"
+"PO-Revision-Date: 2021-09-16 20:02+0200\n"
 "Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
@@ -72,7 +72,7 @@ msgstr "Frissítések panel"
 msgid "The update details"
 msgstr "A frissítés részletei"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1782
+#: data/appdata/org.gnome.Software.appdata.xml.in:1818
 msgid "The GNOME Project"
 msgstr "A GNOME projekt"
 
@@ -326,8 +326,8 @@ msgid ""
 "The URI can contain up to three '%u', which will be replaced by the upgrade "
 "version."
 msgstr ""
-"Az URI legfeljebb három „%u” paramétert tartalmazhat, melyek a frissítési"
-" verzióra lesznek cserélve."
+"Az URI legfeljebb három „%u” paramétert tartalmazhat, melyek a frissítési "
+"verzióra lesznek cserélve."
 
 #: data/org.gnome.software.gschema.xml:152
 msgid "A string storing the gnome-online-account id used to login"
@@ -357,14 +357,12 @@ msgstr "Ezt a programot csak a root felhasználó használhatja"
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:165
 #, c-format
-#| msgid "Failed to validate content type"
 msgid "Failed to validate content type: %s"
 msgstr "A tartalomtípus ellenőrzése sikertelen: %s"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:176
 #, c-format
-#| msgid "Failed to copy"
 msgid "Failed to copy: %s"
 msgstr "A másolás sikertelen: %s"
 
@@ -438,7 +436,6 @@ msgstr "Nem helyénvaló humor"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:162
-#| msgid "Documentation"
 msgid "Discrimination"
 msgstr "Diszkrimináció"
 
@@ -449,7 +446,6 @@ msgstr "Reklám"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:176
-#| msgid "Enabling"
 msgid "Gambling"
 msgstr "Szerencsejáték"
 
@@ -470,13 +466,11 @@ msgstr "Hangalapú csevegés a felhasználók között"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:204
-#| msgid "Show Details"
 msgid "Contact Details"
 msgstr "Kapcsolati részletek"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:211
-#| msgid "More Information"
 msgid "Identifying Information"
 msgstr "Azonosításra alkalmas információk"
 
@@ -524,8 +518,6 @@ msgstr "Rabszolgaság"
 #. * has an unknown value. For example, the amount of violence in
 #. * an app is ‘Unknown’.
 #: src/gs-age-rating-context-dialog.c:338
-#| msgctxt "origin"
-#| msgid "Unknown"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
@@ -580,7 +572,6 @@ msgstr "A(z) %s a tizenévesek számára megfelelő"
 #. * for people aged up to and over 18. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:704
 #, c-format
-#| msgid "%s file format"
 msgid "%s is suitable for adults"
 msgstr "A(z) %s a felnőttek számára megfelelő"
 
@@ -601,7 +592,6 @@ msgstr "Korhatár-besorolás"
 #: src/gs-age-rating-context-dialog.ui:116
 #: src/gs-hardware-support-context-dialog.ui:115
 #: src/gs-safety-context-dialog.ui:264
-#| msgid "Show verbose debugging information"
 msgid "How to add missing information"
 msgstr "Hogyan adhatók hozzá a hiányzó információk"
 
@@ -614,7 +604,7 @@ msgstr "Helyi fájl"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:396
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:391
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -628,19 +618,17 @@ msgid "Pending"
 msgstr "Függőben"
 
 #: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:359
-#| msgid "Pending installation…"
 msgid "Pending install"
 msgstr "Függőben lévő telepítés"
 
 #: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:366
-#| msgid "Pending"
 msgid "Pending remove"
 msgstr "Függőben lévő eltávolítás"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:321
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:319
 msgid "Installed"
 msgstr "Telepítve"
 
@@ -755,7 +743,7 @@ msgid "No update description available."
 msgstr "Nem áll rendelkezésre frissítési leírás."
 
 #: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22
-#: src/gs-shell.ui:376 src/gs-shell.ui:464
+#: src/gs-shell.ui:374 src/gs-shell.ui:462
 msgid "Go back"
 msgstr "Vissza"
 
@@ -901,19 +889,16 @@ msgstr "Telepített méret"
 
 #: src/gs-app-context-bar.c:151
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data and %s of cache"
 msgstr "%s adatot és %s gyorsítótárat tartalmaz"
 
 #: src/gs-app-context-bar.c:154
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of data"
 msgstr "%s adatot tartalmaz"
 
 #: src/gs-app-context-bar.c:157
 #, c-format
-#| msgid "Includes %s, %s and %s."
 msgid "Includes %s of cache"
 msgstr "%s gyorsítótárat tartalmaz"
 
@@ -952,7 +937,6 @@ msgstr "A méret ismeretlen"
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:257
-#| msgid "Permissions"
 msgid "No permissions"
 msgstr "Nincsenek jogosultságok"
 
@@ -965,98 +949,92 @@ msgstr "Hálózati eléréssel rendelkezik"
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:275
-#| msgid "System Services"
 msgid "Uses system services"
 msgstr "Rendszerszolgáltatásokat használ"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:282
-#| msgid "Session Services"
 msgid "Uses session services"
 msgstr "Munkamenet-szolgáltatásokat használ"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:289
-#| msgid "Can access system device files"
 msgid "Can access hardware devices"
 msgstr "Hardverszereszközökhöz férhet hozzá"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:301
 msgid "Can read/write all your data"
 msgstr "Olvashatja/írhatja az összes adatát"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:305
+#: src/gs-app-context-bar.c:313
 msgid "Can read all your data"
 msgstr "Olvashatja az összes adatát"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:312
+#: src/gs-app-context-bar.c:320
 msgid "Can read/write your downloads"
 msgstr "Olvashatja/írhatja a letöltéseit"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:319
+#: src/gs-app-context-bar.c:327
 msgid "Can read your downloads"
 msgstr "Olvashatja a letöltéseit"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:326 src/gs-safety-context-dialog.c:210
-#| msgid "Can view and change any settings"
+#: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:217
 msgid "Can access and change user settings"
 msgstr "Megtekintheti és módosíthatja a felhasználói beállításokat"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:333 src/gs-safety-context-dialog.c:194
-#| msgid "Uses an old, insecure display system"
+#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:201
 msgid "Uses a legacy windowing system"
 msgstr "Örökölt ablakkezelő-rendszert használ"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:202
-#| msgid "Requires additional permissions"
+#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:209
 msgid "Can acquire arbitrary permissions"
 msgstr "Tetszőleges jogosultságokat szerezhet"
 
-#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. Translators: This indicates that an application has been packaged
+#. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
-msgid "Software has unknown permissions"
-msgstr "A szoftver ismeretlen jogosultságokkal rendelkezik"
+#: src/gs-app-context-bar.c:374 src/gs-safety-context-dialog.c:142
+msgid "Reviewed by your distribution"
+msgstr "Felülvizsgálva a disztribúció által"
+
+#. Translators: This indicates that an application has been packaged
+#. * by someone other than the user’s distribution, so might not be safe.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:381 src/gs-safety-context-dialog.c:139
+msgid "Provided by a third party"
+msgstr "Harmadik fél által biztosított"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:364
-#| msgid "Proprietary"
+#: src/gs-app-context-bar.c:393
 msgid "Proprietary code"
 msgstr "Tulajdonosi (zárt) kód"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370
+#: src/gs-app-context-bar.c:399
 msgid "Auditable code"
 msgstr "Auditálható kód"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379
-msgid "Software comes from a trusted source"
-msgstr "A szoftver megbízható forrásból származik"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:386
-#| msgid "Software Repository Identified"
+#: src/gs-app-context-bar.c:406
 msgid "Software developer is verified"
 msgstr "A szoftverfejlesztő megerősített"
 
@@ -1074,115 +1052,110 @@ msgstr "A szoftverfejlesztő megerősített"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:398 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:418 src/gs-app-context-bar.c:679
 msgid "; "
 msgstr ";"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:406
+#: src/gs-app-context-bar.c:426
 msgid "Safe"
 msgstr "Biztonságos"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:413
+#: src/gs-app-context-bar.c:433
 msgid "Potentially Unsafe"
 msgstr "Potenciálisan nem biztonságos"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:420
+#: src/gs-app-context-bar.c:440
 msgid "Unsafe"
 msgstr "Nem biztonságos"
 
-#: src/gs-app-context-bar.c:499 src/gs-app-context-bar.c:531
+#: src/gs-app-context-bar.c:519 src/gs-app-context-bar.c:551
 #: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "Csak mobilos"
 
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:520
 msgid "Only works on a small screen"
 msgstr "Csak kis képernyőn működik"
 
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:538
-#: src/gs-app-context-bar.c:545 src/gs-app-context-bar.c:585
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:525 src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:565 src/gs-app-context-bar.c:605
+#: src/gs-app-context-bar.c:610 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "Csak asztali"
 
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:526
 msgid "Only works on a large screen"
 msgstr "Csak nagy képernyőn működik"
 
-#: src/gs-app-context-bar.c:510 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:530 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "Képernyőméret-eltérés"
 
-#: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:531 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "Nem támogatja a jelenlegi kijelzőméretét"
 
-#: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-app-context-bar.c:552 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "Érintőképernyőt igényel"
 
-#: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-app-context-bar.c:559 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
-#| msgid "Requires Restart"
 msgid "Requires a keyboard"
 msgstr "Billentyűzetet igényel"
 
-#: src/gs-app-context-bar.c:546
-#| msgid "Requires Restart"
+#: src/gs-app-context-bar.c:566
 msgid "Requires a mouse"
 msgstr "Egeret igényel"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:577
 msgid "Gamepad Needed"
 msgstr "Játékvezérlő szükséges"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:578
 msgid "Requires a gamepad to play"
 msgstr "A játékhoz játékvezérlő szükséges"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:572
+#: src/gs-app-context-bar.c:592
 msgid "Adaptive"
 msgstr "Alkalmazkodó"
 
-#: src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:593
 msgid "Works on phones, tablets and desktops"
 msgstr "Telefonon, táblagépen és asztali gépen is működik"
 
-#: src/gs-app-context-bar.c:586
+#: src/gs-app-context-bar.c:606
 msgid "Probably requires a keyboard or mouse"
 msgstr "Valószínűleg billentyűzetet és egeret igényel"
 
-#: src/gs-app-context-bar.c:591
+#: src/gs-app-context-bar.c:611
 msgid "Works on desktops and laptops"
 msgstr "Asztali és hordozható számítógépen működik"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:634
-#| msgid "The application contains no age-inappropriate content."
+#: src/gs-app-context-bar.c:654
 msgid "Contains no age-inappropriate content"
 msgstr "Nem tartalmaz korhatáros tartalmat"
 
-#: src/gs-app-context-bar.c:683
-#| msgid "No update description available."
+#: src/gs-app-context-bar.c:703
 msgid "No age rating information available"
 msgstr "Nem áll rendelkezésre korhatár-besorolás"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
 #: src/gs-app-row.c:143
-#| msgid "Visit website"
 msgid "Visit Website"
 msgstr "Honlap felkeresése"
 
@@ -1195,7 +1168,7 @@ msgstr "Telepítés…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:157 src/gs-updates-section.ui:60
+#: src/gs-app-row.c:157 src/gs-updates-section.ui:61
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -1269,7 +1242,6 @@ msgstr ""
 "beszállhat, és besegíthet a fordításban."
 
 #: src/gs-app-translation-dialog.ui:9
-#| msgid "Installation"
 msgid "Translations"
 msgstr "Fordítások"
 
@@ -1318,20 +1290,17 @@ msgstr "Kiemelt"
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: src/gs-category-page.ui:46 src/gs-overview-page.ui:118
-#| msgid "Editor’s Picks"
 msgid "Editor’s Choice"
 msgstr "Szerkesztő választása"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
 #: src/gs-category-page.ui:74 src/gs-overview-page.ui:146
-#| msgid "Updated"
 msgid "New & Updated"
 msgstr "Új és frissített"
 
 #. Heading for the rest of the apps on a category page
 #: src/gs-category-page.ui:102
-#| msgid "Free Software"
 msgid "Other Software"
 msgstr "Egyéb szoftverek"
 
@@ -1678,55 +1647,41 @@ msgstr "Társalogjon"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:293
-#| msgid "_Learn More"
 msgid "Learn"
 msgstr "Tanuljon"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:295
-#| msgid "Developer"
 msgid "Develop"
 msgstr "Fejlesszen"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:298
-#| msgctxt "Menu of Add-ons"
-#| msgid "Codecs"
 msgid "Codecs"
 msgstr "Kodekek"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:300
-#| msgctxt "Menu of Add-ons"
-#| msgid "Hardware Drivers"
 msgid "Hardware Drivers"
 msgstr "Hardver-illesztőprogramok"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:302
-#| msgctxt "Menu of Add-ons"
-#| msgid "Fonts"
 msgid "Fonts"
 msgstr "Betűkészletek"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:304
-#| msgctxt "Menu of Add-ons"
-#| msgid "Input Sources"
 msgid "Input Sources"
 msgstr "Beviteli források"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:306
-#| msgctxt "Menu of Add-ons"
-#| msgid "Language Packs"
 msgid "Language Packs"
 msgstr "Nyelvi csomagok"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:308
-#| msgctxt "Menu of Add-ons"
-#| msgid "Localization"
 msgid "Localization"
 msgstr "Honosítás"
 
@@ -1853,7 +1808,6 @@ msgstr[1] "Frissítések lettek telepítve"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:705
-#| msgid "An application"
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
 msgstr[0] "Egy alkalmazás eltávolításra került"
@@ -1984,13 +1938,12 @@ msgid "Find in Software"
 msgstr "Keresés a Szoftverben"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-description-box.c:64 src/gs-description-box.c:166
+#: src/gs-description-box.c:65 src/gs-description-box.c:171
 #: src/gs-details-page.ui:966
 msgid "_Show More"
 msgstr "_Több"
 
-#: src/gs-description-box.c:64
-#| msgid "_Show More"
+#: src/gs-description-box.c:65
 msgid "_Show Less"
 msgstr "_Kevesebb"
 
@@ -1999,12 +1952,10 @@ msgid "Removing…"
 msgstr "Eltávolítás…"
 
 #: src/gs-details-page.c:357
-#| msgid "Requires Restart"
 msgid "Requires restart to finish install"
 msgstr "Újraindítás szükséges a telepítés befejezéséhez"
 
 #: src/gs-details-page.c:364
-#| msgid "Requires Restart"
 msgid "Requires restart to finish remove"
 msgstr "Újraindítás szükséges az eltávolítás befejezéséhez"
 
@@ -2027,7 +1978,6 @@ msgstr "Előkészítés…"
 
 #. Translators: This string is shown when uninstalling an app.
 #: src/gs-details-page.c:407
-#| msgid "Uninstalling"
 msgid "Uninstalling…"
 msgstr "Eltávolítás…"
 
@@ -2035,13 +1985,12 @@ msgstr "Eltávolítás…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:825 src/gs-details-page.c:851
+#: src/gs-details-page.c:824 src/gs-details-page.c:850
 #: src/gs-details-page.ui:240
 msgid "_Install"
 msgstr "_Telepítés"
 
-#: src/gs-details-page.c:841
-#| msgid "Restart"
+#: src/gs-details-page.c:840
 msgid "_Restart"
 msgstr "Új_raindítás"
 
@@ -2049,23 +1998,23 @@ msgstr "Új_raindítás"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:865
+#: src/gs-details-page.c:864
 msgid "_Install…"
 msgstr "_Telepítés…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1396
+#: src/gs-details-page.c:1404
 msgid "You need internet access to write a review"
 msgstr "Értékelés írásához internetelérés szükséges"
 
-#: src/gs-details-page.c:1541 src/gs-details-page.c:1557
+#: src/gs-details-page.c:1549 src/gs-details-page.c:1565
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nem található: „%s”"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2113
+#: src/gs-details-page.c:2121
 msgid "Loading…"
 msgstr "Betöltés…"
 
@@ -2188,7 +2137,6 @@ msgstr ""
 "hibakövetőhöz."
 
 #: src/gs-details-page.ui:769
-#| msgid "_Website"
 msgid "Project _Website"
 msgstr "Projekt _webhelye"
 
@@ -2428,7 +2376,6 @@ msgstr[1] ""
 
 #: src/gs-extras-page.c:562 src/gs-extras-page.c:618 src/gs-extras-page.c:657
 #, c-format
-#| msgid "Failed to find any search results"
 msgid "Failed to find any search results: %s"
 msgstr "Semmilyen keresési találatokat sem sikerült találni: %s"
 
@@ -2481,7 +2428,6 @@ msgstr "Szoftver _tallózása"
 
 #: src/gs-hardware-support-context-dialog.c:561
 #: src/gs-hardware-support-context-dialog.c:570
-#| msgid "Open Desktop Ratings Support"
 msgid "Desktop Support"
 msgstr "Asztali támogatás"
 
@@ -2499,12 +2445,10 @@ msgid "Not enough information to know if large screens are supported"
 msgstr "Nincs elég információ arról, hogy a nagy képernyők támogatottak-e"
 
 #: src/gs-hardware-support-context-dialog.c:568
-#| msgid "Requires Restart"
 msgid "Requires a large screen"
 msgstr "Nagy képernyő szükséges"
 
 #: src/gs-hardware-support-context-dialog.c:573
-#| msgid "Open Desktop Ratings Support"
 msgid "Desktop Not Supported"
 msgstr "Az asztali számítógépek nem támogatottak"
 
@@ -2514,7 +2458,6 @@ msgstr "Nem használható nagy képernyőn"
 
 #: src/gs-hardware-support-context-dialog.c:581
 #: src/gs-hardware-support-context-dialog.c:590
-#| msgid "Flatpak Support"
 msgid "Mobile Support"
 msgstr "Mobilos támogatás"
 
@@ -2532,7 +2475,6 @@ msgid "Not enough information to know if small screens are supported"
 msgstr "Nincs elég információ arról, hogy a kis képernyők támogatottak-e"
 
 #: src/gs-hardware-support-context-dialog.c:588
-#| msgid "Requires Restart"
 msgid "Requires a small screen"
 msgstr "Kis képernyő szükséges"
 
@@ -2546,7 +2488,6 @@ msgstr "Nem használható kis képernyőn"
 
 #: src/gs-hardware-support-context-dialog.c:617
 #: src/gs-hardware-support-context-dialog.c:626
-#| msgid "Snap Support"
 msgid "Keyboard Support"
 msgstr "Billentyűzettámogatás"
 
@@ -2559,7 +2500,6 @@ msgid "Not enough information to know if keyboards are supported"
 msgstr "Nincs elég információ arról, hogy a billentyűzetek támogatottak-e"
 
 #: src/gs-hardware-support-context-dialog.c:623
-#| msgid "Login Required"
 msgid "Keyboard Required"
 msgstr "Billentyűzet szükséges"
 
@@ -2577,7 +2517,6 @@ msgstr "Nem használható billentyűzettel"
 
 #: src/gs-hardware-support-context-dialog.c:637
 #: src/gs-hardware-support-context-dialog.c:646
-#| msgid "Snap Support"
 msgid "Mouse Support"
 msgstr "Egértámogatás"
 
@@ -2594,10 +2533,10 @@ msgstr "Egértámogatás ismeretlen"
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
-"Nincs elég információ arról, hogy az egerek vagy mutatóeszközök támogatottak-e"
+"Nincs elég információ arról, hogy az egerek vagy mutatóeszközök támogatottak-"
+"e"
 
 #: src/gs-hardware-support-context-dialog.c:643
-#| msgid "Login Required"
 msgid "Mouse Required"
 msgstr "Egér szükséges"
 
@@ -2627,7 +2566,6 @@ msgid "Not enough information to know if touchscreens are supported"
 msgstr "Nincs elég információ arról, hogy az érintőképernyők támogatottak-e"
 
 #: src/gs-hardware-support-context-dialog.c:663
-#| msgid "Login Required"
 msgid "Touchscreen Required"
 msgstr "Érintőképernyő szükséges"
 
@@ -2644,17 +2582,14 @@ msgid "Cannot be used with a touchscreen"
 msgstr "Nem használható érintőképernyővel"
 
 #: src/gs-hardware-support-context-dialog.c:683
-#| msgid "Login Required"
 msgid "Gamepad Required"
 msgstr "Játékvezérlő szükséges"
 
 #: src/gs-hardware-support-context-dialog.c:684
-#| msgid "Requires Restart"
 msgid "Requires a gamepad"
 msgstr "Játékvezérlő szükséges"
 
 #: src/gs-hardware-support-context-dialog.c:686
-#| msgid "Snap Support"
 msgid "Gamepad Support"
 msgstr "Játékvezérlő-támogatás"
 
@@ -2692,7 +2627,6 @@ msgstr "A(z) %s nem fog működni ezen az eszközön"
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:9
-#| msgid "Firmware Upgrade Support"
 msgid "Hardware Support"
 msgstr "Hardvertámogatás"
 
@@ -2707,7 +2641,6 @@ msgstr "Folyamatban"
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
 #: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:100
-#| msgid "An application"
 msgid "Applications"
 msgstr "Alkalmazások"
 
@@ -2770,7 +2703,7 @@ msgid "Starting up…"
 msgstr "Indítás…"
 
 #: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
-#: src/gs-shell.ui:267
+#: src/gs-shell.ui:264
 msgid "Automatic Updates Paused"
 msgstr "Automatikus frissítések szüneteltetve"
 
@@ -2869,7 +2802,7 @@ msgstr "Eltávolítandók"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:280 src/gs-shell.ui:341 src/gs-updates-page.c:1361
+#: src/gs-os-update-page.c:280 src/gs-shell.ui:339 src/gs-updates-page.c:1356
 msgid "Updates"
 msgstr "Frissítendők"
 
@@ -2882,14 +2815,13 @@ msgstr "Visszafejlesztendők"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:706
+#: src/gs-overview-page.c:697
 msgid "selected external sources"
 msgstr "kiválasztott külső források"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:708
+#: src/gs-overview-page.c:699
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
@@ -2899,14 +2831,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:708 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Engedélyezés"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:772 src/gs-shell.ui:308
-#| msgid "_Explore"
+#: src/gs-overview-page.c:763 src/gs-shell.ui:306
 msgid "Explore"
 msgstr "Felfedezés"
 
@@ -2920,7 +2851,6 @@ msgstr "Engedélyezi a harmadik féltől származó szoftvertárolókat?"
 
 #. Translators: This is a heading for a list of categories.
 #: src/gs-overview-page.ui:175
-#| msgid "Categories"
 msgid "Other Categories"
 msgstr "Egyéb kategóriák"
 
@@ -2934,7 +2864,6 @@ msgid "Unknown"
 msgstr "Ismeretlen"
 
 #: src/gs-page.c:276
-#| msgid "Pending installation…"
 msgid "User declined installation"
 msgstr "A felhasználó elutasította a telepítést"
 
@@ -2987,22 +2916,19 @@ msgid "Update Preferences"
 msgstr "Beállítások frissítése"
 
 #: src/gs-prefs-dialog.ui:18
-#| msgid ""
-#| "Automatic updates are disabled when on mobile or metered connections."
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
 msgstr ""
-"A lehetséges díjak és hálózati korlátozások miatt a szoftverfrissítések nem"
-" töltődnek le automatikusan, ha mobil vagy forgalomkorlátos kapcsolatokat"
-" használ."
+"A lehetséges díjak és hálózati korlátozások miatt a szoftverfrissítések nem "
+"töltődnek le automatikusan, ha mobil vagy forgalomkorlátos kapcsolatokat "
+"használ."
 
 #: src/gs-prefs-dialog.ui:22
 msgid "Automatic Updates"
 msgstr "Automatikus frissítések"
 
 #: src/gs-prefs-dialog.ui:23
-#| msgid "Installs any pending updates in the background"
 msgid ""
 "Downloads and installs software updates in the background, when possible."
 msgstr ""
@@ -3041,38 +2967,30 @@ msgstr "_Folytatás"
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:265
 #, c-format
-#| msgid ""
-#| "Software that has been installed from this repository will no longer "
-#| "receive updates, including security fixes."
 msgid "Software that has been installed from “%s” will cease receive updates."
 msgstr ""
 "A(z) „%s” helyről telepített szoftverek nem fognak további frissítéseket "
 "kapni."
 
 #: src/gs-repos-dialog.c:274
-#| msgid "Software Repositories"
 msgid "Disable Repository?"
 msgstr "Letiltja a tárolót?"
 
 #: src/gs-repos-dialog.c:274
-#| msgid "Software Repositories"
 msgid "Remove Repository?"
 msgstr "Eltávolítja a tárolót?"
 
 #. TRANSLATORS: this is button text to disable a repo
 #: src/gs-repos-dialog.c:280
-#| msgid "Disable"
 msgid "_Disable"
 msgstr "_Letiltás"
 
 #. TRANSLATORS: this is button text to remove a repo
 #: src/gs-repos-dialog.c:283
-#| msgid "Remove"
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
 #: src/gs-repos-dialog.c:597
-#| msgid "Software Repositories"
 msgid "Enable New Repositories"
 msgstr "Új tárolók engedélyezése"
 
@@ -3083,7 +3001,6 @@ msgstr "Új tárolók bekapcsolása a hozzáadásuk után."
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
 #: src/gs-repos-dialog.c:607
-#| msgid "More information"
 msgid "more information"
 msgstr "további információk"
 
@@ -3092,12 +3009,10 @@ msgstr "további információk"
 #. "Additional repositories from selected third parties - more information."
 #: src/gs-repos-dialog.c:612
 #, c-format
-#| msgid "Access additional software from selected third party sources."
 msgid "Additional repositories from selected third parties — %s."
 msgstr "További tárolók a kiválasztott harmadik felektől – %s."
 
 #: src/gs-repos-dialog.c:617
-#| msgid "Third Party Repositories"
 msgid "Fedora Third Party Repositories"
 msgstr "Harmadik féltől származó Fedora tárolók"
 
@@ -3122,7 +3037,6 @@ msgid "Software Repositories"
 msgstr "Szoftvertárolók"
 
 #: src/gs-repos-dialog.ui:50
-#| msgid "Software Repositories"
 msgid "No Repositories"
 msgstr "Nincsenek tárolók"
 
@@ -3295,7 +3209,6 @@ msgstr[0] "%u értékelés összesen"
 msgstr[1] "%u értékelés összesen"
 
 #: src/gs-review-histogram.ui:100
-#| msgid "About Software"
 msgid "out of 5 stars"
 msgstr "az 5 csillagból"
 
@@ -3360,180 +3273,168 @@ msgstr "Jelentés…"
 msgid "Remove…"
 msgstr "Eltávolítás…"
 
-#: src/gs-safety-context-dialog.c:133
-#| msgid "Permissions"
-msgid "Unknown Permissions"
-msgstr "Ismeretlen jogosultságok"
+#: src/gs-safety-context-dialog.c:140
+msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+msgstr ""
+"Ellenőrizze, hogy megbízik-e a gyártóban, mivel az alkalmazás nem biztonságos"
+" környezetben fut"
 
-#: src/gs-safety-context-dialog.c:134
-msgid "The permissions needed by this app aren’t known"
-msgstr "Az alkalmazás számára szükséges jogosultságok nem ismertek"
+#: src/gs-safety-context-dialog.c:143
+msgid ""
+"Application isn’t sandboxed but the distribution has checked that it is not "
+"malicious"
+msgstr ""
+"Az alkalmazás nem biztonságos környezetben fut, de a disztribúció"
+" ellenőrizte, hogy nem rosszindulatú"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:143
-#| msgid "Permissions"
+#: src/gs-safety-context-dialog.c:150
 msgid "No Permissions"
 msgstr "Nincsenek jogosultságok"
 
-#: src/gs-safety-context-dialog.c:144
-#| msgid "This application is fully sandboxed."
+#: src/gs-safety-context-dialog.c:151
 msgid "App is fully sandboxed"
 msgstr "Az alkalmazás kizárólag biztonságos környezetben fut"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:155
-#| msgid "Network Settings"
+#: src/gs-safety-context-dialog.c:162
 msgid "Network Access"
 msgstr "Hálózati hozzáférés"
 
-#: src/gs-safety-context-dialog.c:156
-#| msgid "Can access system device files"
+#: src/gs-safety-context-dialog.c:163
 msgid "Can access the internet"
 msgstr "Hozzáférhet az internethez"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:159
-#| msgid "No Network"
+#: src/gs-safety-context-dialog.c:166
 msgid "No Network Access"
 msgstr "Nincs hálózati hozzáférés"
 
-#: src/gs-safety-context-dialog.c:160
-#| msgid "Can access system device files"
+#: src/gs-safety-context-dialog.c:167
 msgid "Cannot access the internet"
 msgstr "Nem férhet hozzá az internethez"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:166
-#| msgid "System Services"
+#: src/gs-safety-context-dialog.c:173
 msgid "Uses System Services"
 msgstr "Rendszerszolgáltatásokat használ"
 
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:174
 msgid "Can request data from system services"
 msgstr "Adatokat kérhet rendszerszolgáltatásoktól"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
-#| msgid "Session Services"
+#: src/gs-safety-context-dialog.c:181
 msgid "Uses Session Services"
 msgstr "Munkamenet-szolgáltatásokat használ"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:182
 msgid "Can request data from session services"
 msgstr "Adatokat kérhet munkamenet-szolgáltatásoktól"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
-#| msgid "Devices"
+#: src/gs-safety-context-dialog.c:189
 msgid "Device Access"
 msgstr "Eszközhozzáférés"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:190
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Hozzáférhet olyan eszközökhöz, mint a webkamerák vagy a játékvezérlők"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:186
-#| msgid "Devices"
+#: src/gs-safety-context-dialog.c:193
 msgid "No Device Access"
 msgstr "Nincs eszközhozzáférés"
 
-#: src/gs-safety-context-dialog.c:187
+#: src/gs-safety-context-dialog.c:194
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
 "Nem férhet hozzá olyan eszközökhöz, mint a webkamerák vagy a játékvezérlők"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
-#| msgid "Legacy display system"
+#: src/gs-safety-context-dialog.c:200
 msgid "Legacy Windowing System"
 msgstr "Örökölt ablakkezelő-rendszer"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
-#| msgid "Permissions"
+#: src/gs-safety-context-dialog.c:208
 msgid "Arbitrary Permissions"
 msgstr "Tetszőleges jogosultságok"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
-#| msgid "Settings"
+#: src/gs-safety-context-dialog.c:216
 msgid "User Settings"
 msgstr "Felhasználói beállítások"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:228
 msgid "Full File System Read/Write Access"
 msgstr "Teljes fájlrendszer olvasási/írási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:222
+#: src/gs-safety-context-dialog.c:229
 msgid "Can read and write all data on the file system"
 msgstr "Olvashatja és írhatja az összes adatát a fájlrendszeren"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:237
 msgid "Home Folder Read/Write Access"
 msgstr "Saját mappa olvasási/írási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:231
+#: src/gs-safety-context-dialog.c:238
 msgid "Can read and write all data in your home directory"
 msgstr "Olvashatja és írhatja az összes adatát a saját könyvtárában"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:246
 msgid "Full File System Read Access"
 msgstr "Teljes fájlrendszer olvasási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:240
+#: src/gs-safety-context-dialog.c:247
 msgid "Can read all data on the file system"
 msgstr "Olvashatja az összes adatát a fájlrendszeren"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:249
+#: src/gs-safety-context-dialog.c:256
 msgid "Home Folder Read Access"
 msgstr "Saját mappa olvasási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data in your home directory"
 msgstr "Olvashatja az összes adatát a saját könyvtárában"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:266
 msgid "Download Folder Read/Write Access"
 msgstr "Letöltési mappa olvasási/írási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:260
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read and write all data in your downloads directory"
 msgstr "Olvashatja és írhatja az összes adatát a letöltési könyvtárában"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:271
-#| msgid "Downloads folder"
+#: src/gs-safety-context-dialog.c:278
 msgid "Download Folder Read Access"
 msgstr "Letöltési mappa olvasási hozzáférése"
 
-#: src/gs-safety-context-dialog.c:272
+#: src/gs-safety-context-dialog.c:279
 msgid "Can read all data in your downloads directory"
 msgstr "Olvashatja az összes adatát a letöltési könyvtárában"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:285
-#| msgid "File system"
+#: src/gs-safety-context-dialog.c:292
 msgid "No File System Access"
 msgstr "Nincs fájlrendszer-hozzáférés"
 
-#: src/gs-safety-context-dialog.c:286
-#| msgid "Can access system device files"
+#: src/gs-safety-context-dialog.c:293
 msgid "Cannot access the file system at all"
 msgstr "Egyáltalán nem érheti el a fájlrendszert"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:300
-#| msgid "Proprietary"
+#: src/gs-safety-context-dialog.c:307
 msgid "Proprietary Code"
 msgstr "Tulajdonosi (zárt) kód"
 
-#: src/gs-safety-context-dialog.c:301
+#: src/gs-safety-context-dialog.c:308
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3542,11 +3443,11 @@ msgstr ""
 "hogy nem biztonságos"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:311
 msgid "Auditable Code"
 msgstr "Auditálható kód"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:312
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3554,48 +3455,35 @@ msgstr ""
 "A forráskód nyilvános, és függetlenül auditálható, emiatt az alkalmazás "
 "valószínűbb, hogy biztonságos"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:315
-msgid "App comes from a trusted source"
-msgstr "Az alkalmazás megbízható forrásból származik"
-
-#: src/gs-safety-context-dialog.c:316
-msgid "Your distribution has verified that this app can be trusted"
-msgstr "A disztribúciója ellenőrizte, hogy ez az alkalmazás megbízható"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:320
 msgid "App developer is verified"
 msgstr "Az alkalmazásfejlesztő megerősített"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:321
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr ""
 "Az alkalmazás fejlesztője megerősítésre került: az, akinek mondja magát"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:330
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s is safe"
 msgstr "A(z) %s biztonságos"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:342
+#: src/gs-safety-context-dialog.c:337
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s is potentially unsafe"
 msgstr "A(z) %s potenciálisan nem biztonságos"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:349
+#: src/gs-safety-context-dialog.c:344
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s is unsafe"
 msgstr "A(z) %s nem biztonságos"
 
@@ -3614,13 +3502,11 @@ msgstr "SDK"
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:38
-#| msgid "Screenshot"
 msgid "Previous Screenshot"
 msgstr "Előző képernyőkép"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:75
-#| msgid "Screenshot"
 msgid "Next Screenshot"
 msgstr "Következő képernyőkép"
 
@@ -3680,7 +3566,6 @@ msgid "Search page"
 msgstr "Keresés az oldalon"
 
 #: src/gs-search-page.ui:17
-#| msgid "Search for applications"
 msgid "Search for Apps"
 msgstr "Alkalmazások keresése"
 
@@ -4184,7 +4069,7 @@ msgstr "Lemez vizsgálata"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:95 src/gs-updates-page.c:907
+#: src/gs-shell.ui:95 src/gs-updates-page.c:906
 msgid "Network Settings"
 msgstr "Hálózati beállítások"
 
@@ -4202,11 +4087,11 @@ msgstr "További információk"
 msgid "Search"
 msgstr "Keresés"
 
-#: src/gs-shell.ui:197
+#: src/gs-shell.ui:194
 msgid "Primary Menu"
 msgstr "Elsődleges menü"
 
-#: src/gs-shell.ui:286
+#: src/gs-shell.ui:284
 msgid "Find Out _More"
 msgstr "Tudjon meg _többet"
 
@@ -4215,13 +4100,10 @@ msgstr "Tudjon meg _többet"
 #. * bubble is small, so the string should be as short as
 #. * possible.
 #: src/gs-storage-context-dialog.c:93
-#| msgctxt "App permissions"
-#| msgid "None"
 msgid "None"
 msgstr "Egyik sem"
 
 #: src/gs-storage-context-dialog.c:132
-#| msgid "Application Updates"
 msgid "Application Data"
 msgstr "Alkalmazásadatok"
 
@@ -4234,7 +4116,6 @@ msgid "User Data"
 msgstr "Felhasználói adatok"
 
 #: src/gs-storage-context-dialog.c:138
-#| msgid "Please restart the application."
 msgid "Data created by you in the application"
 msgstr "Az Ön által létrehozott adatok az alkalmazásban"
 
@@ -4247,8 +4128,6 @@ msgid "Temporary cached data"
 msgstr "Átmenetileg gyorsítótárazott adatok"
 
 #: src/gs-storage-context-dialog.c:161
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "The application itself"
 msgstr "Az alkalmazás maga"
 
@@ -4521,41 +4400,41 @@ msgstr ""
 "kapcsolatba a szoftverszolgáltatójával."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:252
+#: src/gs-updates-page.c:251
 #, c-format
 msgid "Last checked: %s"
 msgstr "Utolsó ellenőrzés: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:577
+#: src/gs-updates-page.c:576
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "A(z) %s %s már nem támogatott."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:582
+#: src/gs-updates-page.c:581
 msgid "Your OS is no longer supported."
 msgstr "Az operációs rendszere már nem támogatott."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:587
+#: src/gs-updates-page.c:586
 msgid "This means that it does not receive security updates."
 msgstr "Ez azt jelenti, hogy nem fog biztonsági frissítéseket kapni."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:591
+#: src/gs-updates-page.c:590
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Ajánlott, hogy frissítsen egy frissebb verzióra."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:875
+#: src/gs-updates-page.c:874
 msgid "Charges May Apply"
 msgstr "Költségek merülhetnek fel"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:879
+#: src/gs-updates-page.c:878
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -4565,26 +4444,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:883
+#: src/gs-updates-page.c:882
 msgid "Check _Anyway"
 msgstr "Keresés _mindenképp"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:899
+#: src/gs-updates-page.c:898
 msgid "No Network"
 msgstr "Nincs hálózat"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:903
+#: src/gs-updates-page.c:902
 msgid "Internet access is required to check for updates."
 msgstr "A frissítések kereséséhez internetkapcsolat szükséges."
 
-#: src/gs-updates-page.c:1295
+#: src/gs-updates-page.c:1290
 msgid "Checking…"
 msgstr "Ellenőrzés…"
 
-#: src/gs-updates-page.c:1318
+#: src/gs-updates-page.c:1313
 msgid "Check for updates"
 msgstr "Frissítések keresése"
 
@@ -4594,13 +4473,11 @@ msgstr "Frissítések oldal"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:96
-#| msgid "Pending update…"
 msgid "Loading Updates…"
 msgstr "Frissítések betöltése…"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:110
-#| msgid "(This could take a while)"
 msgid "This could take a while."
 msgstr "Ez eltarthat egy ideig."
 
@@ -4614,9 +4491,6 @@ msgid "Use Mobile Data?"
 msgstr "Mobil adatkapcsolat használata?"
 
 #: src/gs-updates-page.ui:264
-#| msgid ""
-#| "Checking for updates when using mobile broadband could cause you to incur "
-#| "charges"
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
@@ -4633,7 +4507,6 @@ msgid "No Connection"
 msgstr "Nincs kapcsolat"
 
 #: src/gs-updates-page.ui:283
-#| msgid "Go online to check for updates"
 msgid "Go online to check for updates."
 msgstr "Csatlakozzon az internetre a frissítések kereséséhez."
 
@@ -4646,47 +4519,46 @@ msgid "Error"
 msgstr "Hiba"
 
 #: src/gs-updates-page.ui:313
-#| msgid "Updates are automatically managed"
 msgid "Updates are automatically managed."
 msgstr "A frissítések automatikusan kezeltek."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:326
+#: src/gs-updates-section.c:334
 msgid "Restart & Update"
 msgstr "Újraindítás és frissítés"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:332
+#: src/gs-updates-section.c:340
 msgid "Update All"
 msgstr "Összes frissítése"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:460
+#: src/gs-updates-section.c:468
 msgid "Integrated Firmware"
 msgstr "Beépített firmware"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:465
+#: src/gs-updates-section.c:473
 msgid "Requires Restart"
 msgstr "Újraindítás szükséges"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:470
+#: src/gs-updates-section.c:478
 msgid "Application Updates"
 msgstr "Alkalmazásfrissítések"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:475
+#: src/gs-updates-section.c:483
 msgid "Device Firmware"
 msgstr "Eszköz firmware"
 
-#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:78
+#: src/gs-updates-section.ui:36 src/gs-upgrade-banner.ui:78
 msgid "_Download"
 msgstr "_Letöltés"
 
@@ -4695,7 +4567,6 @@ msgstr "_Letöltés"
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
 #: src/gs-upgrade-banner.c:86
 #, c-format
-#| msgid "%s %s Now Available"
 msgid "%s %s Available"
 msgstr "%s %s most már elérhető"
 
@@ -4704,7 +4575,6 @@ msgid "Learn about the new version"
 msgstr "Tudjon meg többet az új verzióról"
 
 #: src/gs-upgrade-banner.c:151
-#| msgid "Downloading"
 msgid "Downloading…"
 msgstr "Letöltés…"
 
@@ -4727,13 +4597,10 @@ msgid "A major upgrade, with new features and added polish."
 msgstr "Jelentős frissítés, új funkciókkal és felületi újításokkal."
 
 #: src/gs-upgrade-banner.ui:213
-#| msgid "Restart & Update"
 msgid "_Restart & Upgrade"
 msgstr "Új_raindítás és frissítés"
 
 #: src/gs-upgrade-banner.ui:230
-#| msgid ""
-#| "It is recommended that you back up your data and files before upgrading."
 msgid "Remember to back up data and files before upgrading."
 msgstr ""
 "Ne felejtsen el biztonsági másolatot készíteni az adatairól és fájljairól a "
@@ -4817,12 +4684,10 @@ msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Nem sikerült a(z) „%s” bővítmény finomítása: %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:89
-#| msgid "Installation"
 msgid "User Installation"
 msgstr "Felhasználói telepítés"
 
 #: plugins/flatpak/gs-flatpak-utils.c:89
-#| msgid "System Integration"
 msgid "System Installation"
 msgstr "Rendszerszintű telepítés"
 
@@ -4911,7 +4776,6 @@ msgstr "%s konfigurációs frissítés"
 #. TRANSLATORS: battery refers to the system power source
 #: plugins/fwupd/gs-fwupd-app.c:186
 #, c-format
-#| msgid "%s System Update"
 msgid "%s Battery Update"
 msgstr "%s akkumulátorfrissítés"
 
@@ -4919,35 +4783,30 @@ msgstr "%s akkumulátorfrissítés"
 #. * camera in the bezel or external USB webcam
 #: plugins/fwupd/gs-fwupd-app.c:191
 #, c-format
-#| msgid "%s Consumer ME Update"
 msgid "%s Camera Update"
 msgstr "%s kamerafrissítés"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
 #: plugins/fwupd/gs-fwupd-app.c:195
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s TPM Update"
 msgstr "%s TPM-frissítés"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
 #: plugins/fwupd/gs-fwupd-app.c:199
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s Touchpad Update"
 msgstr "%s érintőtábla-frissítés"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
 #: plugins/fwupd/gs-fwupd-app.c:203
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s Mouse Update"
 msgstr "%s egérfrissítés"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:207
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s Keyboard Update"
 msgstr "%s billentyűzetfrissítés"
 
@@ -4962,7 +4821,6 @@ msgid "Downloading firmware update metadata…"
 msgstr "Firmware frissítési metaadatok letöltése…"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1180
-#| msgid "Device Firmware"
 msgid "Firmware"
 msgstr "Firmware"
 
@@ -4975,12 +4833,10 @@ msgid "Provides support for firmware upgrades"
 msgstr "Támogatást biztosít a firmware frissítésekhez"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:301
-#| msgid "Package"
 msgid "Packages"
 msgstr "Csomagok"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2151
-#| msgid "Operating System Updates Unavailable"
 msgid "Operating System (OSTree)"
 msgstr "Operációs rendszer (OSTree)"
 
