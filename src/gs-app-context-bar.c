@@ -352,12 +352,33 @@ update_safety_tile (GsAppContextBar *self)
 		}
 	}
 
-	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
+	/* Unknown permissions typically come from non-sandboxed packaging
+	 * systems like RPM or DEB. Telling the user the software has unknown
+	 * permissions is unhelpful; it’s more relevant to say it’s not
+	 * sandboxed but is (or is not) packaged by a trusted vendor. They will
+	 * have (at least) done some basic checks to make sure the software is
+	 * not overtly malware. That doesn’t protect the user from exploitable
+	 * bugs in the software, but it does mean they’re not accidentally
+	 * installing something which is actively malicious.
+	 *
+	 * FIXME: We could do better by potentially adding a ‘trusted’ state
+	 * to indicate that something is probably safe, but isn’t sandboxed.
+	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
+	if (permissions == GS_APP_PERMISSIONS_UNKNOWN &&
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_SAFE,
+				      /* Translators: This indicates that an application has been packaged
+				       * by the user’s distribution and is safe.
+				       * It’s used in a context tile, so should be short. */
+				      _("Reviewed by your distribution"));
+	else if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,
-				      /* Translators: This indicates that we don’t know what permissions an app requires to run.
+				      /* Translators: This indicates that an application has been packaged
+				       * by someone other than the user’s distribution, so might not be safe.
 				       * It’s used in a context tile, so should be short. */
-				      _("Software has unknown permissions"));
+				      _("Provided by a third party"));
 
 	/* Is the code FOSS and hence inspectable? This doesn’t distinguish
 	 * between closed source and open-source-but-not-FOSS software, even
@@ -376,15 +397,6 @@ update_safety_tile (GsAppContextBar *self)
 				      /* Translators: This indicates an app’s source code is freely available, so can be audited for security.
 				       * It’s used in a context tile, so should be short. */
 				      _("Auditable code"));
-
-	/* Does the app come from official sources, such as this distro’s main
-	 * repos? */
-	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
-		add_to_safety_rating (&chosen_rating, descriptions,
-				      SAFETY_SAFE,
-				      /* Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-				       * It’s used in a context tile, so should be short. */
-				      _("Software comes from a trusted source"));
 
 	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED))
 		add_to_safety_rating (&chosen_rating, descriptions,
