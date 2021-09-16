@@ -125,16 +125,23 @@ update_permissions_list (GsSafetyContextDialog *self)
 
 	permissions = gs_app_get_permissions (self->app);
 
-	/* Handle unknown permissions. */
-	add_permission_row (self->permissions_list, &chosen_rating,
-			    (permissions == GS_APP_PERMISSIONS_UNKNOWN),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-			    "dialog-question-symbolic",
-			    _("Unknown Permissions"),
-			    _("The permissions needed by this app aren’t known"),
-			    NULL, NULL, NULL);
-
-	if (permissions != GS_APP_PERMISSIONS_UNKNOWN) {
+	/* Handle unknown permissions. This means the application isn’t
+	 * sandboxed, so we can only really base decisions on whether it was
+	 * packaged by an organisation we trust or not.
+	 *
+	 * FIXME: See the comment for GS_APP_PERMISSIONS_UNKNOWN in
+	 * gs-app-context-bar.c. */
+	if (permissions == GS_APP_PERMISSIONS_UNKNOWN) {
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    "channel-insecure-symbolic",
+				    _("Provided by a third party"),
+				    _("Check that you trust the vendor, as the application isn’t sandboxed"),
+				    "channel-secure-symbolic",
+				    _("Reviewed by your distribution"),
+				    _("Application isn’t sandboxed but the distribution has checked that it is not malicious"));
+	} else {
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    (permissions & GS_APP_PERMISSIONS_NONE) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
@@ -303,18 +310,6 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 			    _("Auditable Code"),
 			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
-
-	/* Does the app come from official sources, such as this distro’s main
-	 * repos? */
-	add_permission_row (self->permissions_list, &chosen_rating,
-			    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
-			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-			    "test-pass-symbolic",
-			    /* Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-			     * It’s used in a context tile, so should be short. */
-			    _("App comes from a trusted source"),
-			    _("Your distribution has verified that this app can be trusted"),
-			    NULL, NULL, NULL);
 
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED),
