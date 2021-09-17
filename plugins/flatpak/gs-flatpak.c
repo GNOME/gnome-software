@@ -960,6 +960,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 	/* everything is okay */
@@ -1016,10 +1017,22 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		return FALSE;
 	file = g_file_new_for_path (blobfn);
 	g_debug ("ensuring %s", blobfn);
+
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+	old_thread_default = g_main_context_ref_thread_default ();
+	if (old_thread_default == g_main_context_default ())
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+	if (old_thread_default != NULL)
+		g_main_context_pop_thread_default (old_thread_default);
+
 	self->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 					NULL, error);
+
+	if (old_thread_default != NULL)
+		g_main_context_push_thread_default (old_thread_default);
+
 	if (self->silo == NULL)
 		return FALSE;
 
@@ -2688,6 +2701,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	g_autoptr(GInputStream) stream_data = NULL;
 	g_autoptr(GInputStream) stream_gz = NULL;
 	g_autoptr(GZlibDecompressor) decompressor = NULL;
+	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	/* add current locales */
 	for (guint i = 0; locales[i] != NULL; i++)
@@ -2746,10 +2760,22 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	}
 
 	xb_builder_import_source (builder, source);
+
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+	old_thread_default = g_main_context_ref_thread_default ();
+	if (old_thread_default == g_main_context_default ())
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+	if (old_thread_default != NULL)
+		g_main_context_pop_thread_default (old_thread_default);
+
 	silo = xb_builder_compile (builder,
 				   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 				   cancellable,
 				   error);
+
+	if (old_thread_default != NULL)
+		g_main_context_push_thread_default (old_thread_default);
+
 	if (silo == NULL)
 		return FALSE;
 	if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
@@ -3522,6 +3548,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		return NULL;
 
 	/* build silo */
+	/* No need to change the thread-default main context because the silo
+	 * doesn’t live beyond this function */
 	silo = xb_builder_compile (builder,
 				   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 				   cancellable,

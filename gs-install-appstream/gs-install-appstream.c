@@ -94,6 +94,8 @@ gs_install_appstream_check_content_type (GFile *file, GError **error)
 		return FALSE;
 	}
 	xb_builder_import_source (builder, source);
+	/* No need to change the thread-default main context because the silo
+	 * doesn’t live beyond this function. */
 	silo = xb_builder_compile (builder,
 				   XB_BUILDER_COMPILE_FLAG_NONE,
 				   NULL, &error_local);

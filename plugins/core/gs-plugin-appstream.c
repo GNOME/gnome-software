@@ -513,6 +513,7 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
 	const gchar *const *locales = g_get_language_names ();
+	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	reader_locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	/* everything is okay */
@@ -638,26 +639,46 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 		return FALSE;
 	file = g_file_new_for_path (blobfn);
 	g_debug ("ensuring %s", blobfn);
+
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+	old_thread_default = g_main_context_ref_thread_default ();
+	if (old_thread_default == g_main_context_default ())
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+	if (old_thread_default != NULL)
+		g_main_context_pop_thread_default (old_thread_default);
+
 	priv->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 					NULL, error);
-	if (priv->silo == NULL)
+	if (priv->silo == NULL) {
+		if (old_thread_default != NULL)
+			g_main_context_push_thread_default (old_thread_default);
 		return FALSE;
+	}
 
 	/* watch all directories too */
 	for (guint i = 0; i < parent_appstream->len; i++) {
 		const gchar *fn = g_ptr_array_index (parent_appstream, i);
 		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
-		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error))
+		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error)) {
+			if (old_thread_default != NULL)
+				g_main_context_push_thread_default (old_thread_default);
 			return FALSE;
+		}
 	}
 	for (guint i = 0; i < parent_appdata->len; i++) {
 		const gchar *fn = g_ptr_array_index (parent_appdata, i);
 		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
-		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error))
+		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error)) {
+			if (old_thread_default != NULL)
+				g_main_context_push_thread_default (old_thread_default);
 			return FALSE;
+		}
 	}
+
+	if (old_thread_default != NULL)
+		g_main_context_push_thread_default (old_thread_default);
 
 	/* test we found something */
 	n = xb_silo_query_first (priv->silo, "components/component", NULL);
