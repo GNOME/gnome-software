@@ -613,7 +613,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 					 "app", app,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
 	g_assert_true (!ret);
 	g_clear_error (&error);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);

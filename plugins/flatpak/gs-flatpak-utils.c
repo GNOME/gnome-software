@@ -41,12 +41,14 @@ gs_flatpak_error_convert (GError **perror)
 		switch (error->code) {
 		case FLATPAK_ERROR_ALREADY_INSTALLED:
 		case FLATPAK_ERROR_NOT_INSTALLED:
-		case FLATPAK_ERROR_REMOTE_NOT_FOUND:
-		case FLATPAK_ERROR_RUNTIME_NOT_FOUND:
 			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
 		case FLATPAK_ERROR_OUT_OF_SPACE:
 			error->code = GS_PLUGIN_ERROR_NO_SPACE;
+			break;
+		case FLATPAK_ERROR_INVALID_REF:
+		case FLATPAK_ERROR_INVALID_DATA:
+			error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 			break;
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
