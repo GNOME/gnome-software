@@ -434,7 +434,9 @@ gs_repo_row_emit_switch_clicked (GsRepoRow *self)
 
 	g_return_if_fail (GS_IS_REPO_ROW (self));
 
-	if (priv->repo == NULL || priv->busy_counter > 0 || !gtk_widget_get_visible (priv->disable_switch))
+	if (priv->repo == NULL || priv->busy_counter > 0 ||
+	    !gtk_widget_get_visible (priv->disable_switch) ||
+	    !gtk_widget_get_sensitive (priv->disable_switch))
 		return;
 
 	g_signal_emit (self, signals[SIGNAL_SWITCH_CLICKED], 0);
