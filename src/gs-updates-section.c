@@ -353,8 +353,20 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 
 	/* get the results */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to perform update: %s", error->message);
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			GsApp *app = NULL;
+
+			if (gs_app_list_length (self->list) == 1)
+				app = gs_app_list_index (self->list, 0);
+
+			gs_plugin_loader_claim_error (plugin_loader,
+						      NULL,
+						      GS_PLUGIN_ACTION_UPDATE,
+						      app,
+						      TRUE,
+						      error);
+		}
 		goto out;
 	}
 
@@ -449,6 +461,7 @@ _button_update_all_clicked_cb (GsUpdatesSection *self)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "list", self->list,
 					 "interactive", TRUE,
+					 "propagate-error", TRUE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
