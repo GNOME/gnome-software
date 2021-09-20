@@ -1063,8 +1063,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set id kind */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
+		AsComponentKind kind;
 		tmp = xb_node_get_attr (component, "type");
-		gs_app_set_kind (app, as_component_kind_from_string (tmp));
+		kind = as_component_kind_from_string (tmp);
+		if (kind != AS_COMPONENT_KIND_UNKNOWN)
+			gs_app_set_kind (app, kind);
 	}
 
 	/* set the release date */

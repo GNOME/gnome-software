@@ -1056,7 +1056,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, priv->silo, component, error);
 		if (app == NULL)
 			return FALSE;
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		/* Can get cached gsApp, which has the state already updated */
+		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
+		    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_list_add (list, app);
 	}
