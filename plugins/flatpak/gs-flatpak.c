@@ -959,7 +959,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
-	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
@@ -971,6 +971,17 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	/* drat! silo needs regenerating */
 	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
 	g_clear_object (&self->silo);
+
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+	old_thread_default = g_main_context_ref_thread_default ();
+	if (old_thread_default == g_main_context_default ())
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+	if (old_thread_default != NULL)
+		g_main_context_pop_thread_default (old_thread_default);
+	builder = xb_builder_new ();
+	if (old_thread_default != NULL)
+		g_main_context_push_thread_default (old_thread_default);
+	g_clear_pointer (&old_thread_default, g_main_context_unref);
 
 	/* verbose profiling */
 	if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
@@ -2691,7 +2702,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 {
 	const gchar *const *locales = g_get_language_names ();
 	g_autofree gchar *xpath = NULL;
-	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 	g_autoptr(XbNode) component_node = NULL;
 	g_autoptr(XbNode) n = NULL;
@@ -2702,6 +2713,17 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	g_autoptr(GInputStream) stream_gz = NULL;
 	g_autoptr(GZlibDecompressor) decompressor = NULL;
 	g_autoptr(GMainContext) old_thread_default = NULL;
+
+	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+	old_thread_default = g_main_context_ref_thread_default ();
+	if (old_thread_default == g_main_context_default ())
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
+	if (old_thread_default != NULL)
+		g_main_context_pop_thread_default (old_thread_default);
+	builder = xb_builder_new ();
+	if (old_thread_default != NULL)
+		g_main_context_push_thread_default (old_thread_default);
+	g_clear_pointer (&old_thread_default, g_main_context_unref);
 
 	/* add current locales */
 	for (guint i = 0; locales[i] != NULL; i++)
