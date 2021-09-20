@@ -79,7 +79,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 
 	/* make sure there is valid content */
-	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.Fedora-25");
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.fedora-25");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Fedora");
@@ -240,7 +240,7 @@ main (int argc, char **argv)
 		"    <pkgname>arachne</pkgname>\n"
 		"  </component>\n"
 		"  <component type=\"os-upgrade\">\n"
-		"    <id>org.fedoraproject.Fedora-25</id>\n"
+		"    <id>org.fedoraproject.fedora-25</id>\n"
 		"    <name>Fedora</name>\n"
 		"    <summary>Fedora Workstation</summary>\n"
 		"    <pkgname>fedora-release</pkgname>\n"

@@ -38,6 +38,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	const gchar *home_url;
 	const gchar *name;
 	const gchar *version;
+	const gchar *os_id;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
 	/* parse os-release, wherever it may be */
@@ -54,6 +55,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (version != NULL)
 		gs_app_set_version (priv->app_system, version);
 
+	os_id = gs_os_release_get_id (os_release);
+
 	/* use libsoup to convert a URL */
 	home_url = gs_os_release_get_home_url (os_release);
 	if (home_url != NULL) {
@@ -62,7 +65,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		/* homepage */
 		gs_app_set_url (priv->app_system, AS_URL_KIND_HOMEPAGE, home_url);
 
-		/* build ID from the reverse-DNS URL and the name version */
+		/* Build ID from the reverse-DNS URL and the ID and version. */
 		uri = soup_uri_new (home_url);
 		if (uri != NULL) {
 			g_auto(GStrv) split = NULL;
@@ -73,7 +76,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				id = g_strdup_printf ("%s.%s.%s-%s",
 						      split[1],
 						      split[0],
-						      (name != NULL) ? name : "unnamed",
+						      (os_id != NULL) ? os_id : "unnamed",
 						      (version != NULL) ? version : "unversioned");
 				gs_app_set_id (priv->app_system, id);
 			}
