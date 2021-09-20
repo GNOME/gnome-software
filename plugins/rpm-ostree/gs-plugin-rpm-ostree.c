@@ -552,6 +552,53 @@ out:
 	return success;
 }
 
+/* FIXME: Refactor this once rpmostree returns a specific error code
+ * for ‘transaction in progress’, to avoid the slight race here where
+ * gnome-software could return from this function just as another client
+ * starts a new transaction.
+ * https://github.com/coreos/rpm-ostree/issues/3070 */
+static gboolean
+gs_rpmostree_wait_for_ongoing_transaction_end (GsRPMOSTreeSysroot *sysroot_proxy,
+					       GCancellable *cancellable,
+				               GError **error)
+{
+	g_autofree gchar *current_path = NULL;
+	g_autoptr(GMainContext) main_context = NULL;
+	gulong notify_handler, cancelled_handler = 0;
+
+	current_path = gs_rpmostree_sysroot_dup_active_transaction_path (sysroot_proxy);
+	if (current_path == NULL || *current_path == '\0')
+		return TRUE;
+
+	main_context = g_main_context_ref_thread_default ();
+
+	notify_handler = g_signal_connect_swapped (sysroot_proxy, "notify::active-transaction-path",
+						   G_CALLBACK (g_main_context_wakeup), main_context);
+	if (cancellable) {
+		/* Not using g_cancellable_connect() here for simplicity and because checking the state below anyway. */
+		cancelled_handler = g_signal_connect_swapped (cancellable, "cancelled",
+							      G_CALLBACK (g_main_context_wakeup), main_context);
+	}
+
+	while (!g_cancellable_set_error_if_cancelled (cancellable, error)) {
+		g_clear_pointer (&current_path, g_free);
+		current_path = gs_rpmostree_sysroot_dup_active_transaction_path (sysroot_proxy);
+		if (current_path == NULL || *current_path == '\0') {
+			g_clear_signal_handler (&notify_handler, sysroot_proxy);
+			g_clear_signal_handler (&cancelled_handler, cancellable);
+			return TRUE;
+		}
+		g_main_context_iteration (main_context, TRUE);
+	}
+
+	g_clear_signal_handler (&notify_handler, sysroot_proxy);
+	g_clear_signal_handler (&cancelled_handler, cancellable);
+
+	gs_rpmostree_error_convert (error);
+
+	return FALSE;
+}
+
 static GsApp *
 app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 {
@@ -858,6 +905,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = NULL;
 
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
+
 		progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		tp = transaction_progress_new ();
 		tp->app = g_object_ref (progress_app);
@@ -891,6 +941,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -930,6 +983,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GVariant) options = NULL;
 		GVariantDict dict;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1106,6 +1162,9 @@ trigger_rpmostree_update (GsPlugin *plugin,
 	if (priv->update_triggered)
 		return TRUE;
 
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+		return FALSE;
+
 	/* trigger the update */
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
 	                                          FALSE,  /* allow-downgrade */
@@ -1194,6 +1253,9 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+		return FALSE;
+
 	/* construct new refspec based on the distro version we're upgrading to */
 	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
 	                               gs_app_get_version (app));
@@ -1253,6 +1315,9 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariantBuilder) options_builder = NULL;
 	g_autoptr(TransactionProgress) tp = NULL;
+
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+		return FALSE;
 
 	if (enable)
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
@@ -1355,6 +1420,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+		return FALSE;
+
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
@@ -1424,6 +1492,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* disable repo, handled by dedicated function */
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
+
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+		return FALSE;
 
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	tp->app = g_object_ref (app);
@@ -1821,6 +1892,9 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		return TRUE;
 
 	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+		return FALSE;
+
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	/* construct new refspec based on the distro version we're upgrading to */
