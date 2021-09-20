@@ -31,6 +31,9 @@
                 <child>
                   <object class="GtkButton" id="button_previous">
                     <property name="visible">True</property>
+                    <property name="width-request">64</property>
+                    <property name="height-request">64</property>
+                    <property name="margin">9</property>
                     <signal name="clicked" handler="gs_screenshot_carousel_button_previous_clicked_cb" swapped="yes"/>
                     <child internal-child="accessible">
                       <object class="AtkObject">
@@ -40,16 +43,17 @@
                     </child>
                     <style>
                       <class name="circular"/>
-                      <class name="image-button"/>
                       <class name="osd"/>
                     </style>
                     <child>
-                      <object class="GtkImage">
+                      <object class="GtkImage" id="button_previous_image">
                         <property name="halign">center</property>
-                        <property name="icon-name">go-previous-symbolic</property>
+                        <property name="icon-name">carousel-arrow-previous-symbolic</property>
                         <property name="icon-size">1</property>
                         <property name="valign">center</property>
                         <property name="visible">True</property>
+                        <property name="name">previous</property>
+                        <signal name="direction-changed" handler="gs_screenshot_carousel_navigate_button_direction_changed_cb"/>
                       </object>
                     </child>
                   </object>
@@ -68,6 +72,9 @@
                 <child>
                   <object class="GtkButton" id="button_next">
                     <property name="visible">True</property>
+                    <property name="width-request">64</property>
+                    <property name="height-request">64</property>
+                    <property name="margin">9</property>
                     <signal name="clicked" handler="gs_screenshot_carousel_button_next_clicked_cb" swapped="yes"/>
                     <child internal-child="accessible">
                       <object class="AtkObject">
@@ -77,16 +84,17 @@
                     </child>
                     <style>
                       <class name="circular"/>
-                      <class name="image-button"/>
                       <class name="osd"/>
                     </style>
                     <child>
-                      <object class="GtkImage">
+                      <object class="GtkImage" id="button_next_image">
                         <property name="halign">center</property>
-                        <property name="icon-name">go-next-symbolic</property>
+                        <property name="icon-name">carousel-arrow-next-symbolic</property>
                         <property name="icon-size">1</property>
                         <property name="valign">center</property>
                         <property name="visible">True</property>
+                        <property name="name">next</property>
+                        <signal name="direction-changed" handler="gs_screenshot_carousel_navigate_button_direction_changed_cb"/>
                       </object>
                     </child>
                   </object>
