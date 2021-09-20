@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-03 07:01+0000\n"
-"PO-Revision-Date: 2021-09-03 16:16+0430\n"
+"POT-Creation-Date: 2021-09-17 12:56+0000\n"
+"PO-Revision-Date: 2021-09-20 17:33+0430\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-DamnedLies-Scope: partial\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -70,7 +70,7 @@ msgstr "تابلوی به‌روز رسانی‌ها"
 msgid "The update details"
 msgstr "جزییات به‌روز رسانی"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1782
+#: data/appdata/org.gnome.Software.appdata.xml.in:1818
 msgid "The GNOME Project"
 msgstr "پروژهٔ گنوم"
 
@@ -569,7 +569,7 @@ msgstr "پروندهٔ محلَّی"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:396
+#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:391
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
@@ -593,7 +593,7 @@ msgstr "منتظر برداشتن"
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:321
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:319
 msgid "Installed"
 msgstr "نصب شده"
 
@@ -706,8 +706,8 @@ msgstr "%s %s"
 msgid "No update description available."
 msgstr "هیچ توضیحی برای به‌روز رسانی موجود نیست."
 
-#: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22 src/gs-shell.ui:376
-#: src/gs-shell.ui:464
+#: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22 src/gs-shell.ui:374
+#: src/gs-shell.ui:462
 msgid "Go back"
 msgstr "بازگشت"
 
@@ -924,73 +924,75 @@ msgstr "می‌تواند به افزاره‌های سخت‌افزاری دس�
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:301
 msgid "Can read/write all your data"
 msgstr "می‌تواند تمامی داده‌هایتان را خوانده یا رویشان بنویسد"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:305
+#: src/gs-app-context-bar.c:313
 msgid "Can read all your data"
 msgstr "می‌تواند تمامی داده‌هایتان را بخواند"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:312
+#: src/gs-app-context-bar.c:320
 msgid "Can read/write your downloads"
 msgstr "می‌تواند تمامی بارگیری‌هایتان را خوانده یا رویشان بنویسد"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:319
+#: src/gs-app-context-bar.c:327
 msgid "Can read your downloads"
 msgstr "می‌تواند تمامی بارگیری‌هایتان را بخواند"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:326 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:217
 msgid "Can access and change user settings"
 msgstr "می‌تواند به تنظیمات کاربری دسترسی داشته و تغییرشان دهد"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:333 src/gs-safety-context-dialog.c:194
+#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:201
 msgid "Uses a legacy windowing system"
 msgstr "از یک سامانهٔ پنجرهٔ قدیمی استفاده می‌کند"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:209
 msgid "Can acquire arbitrary permissions"
 msgstr "می‌تواند اجازه‌های دلخواه را به دست آورد"
 
-#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. Translators: This indicates that an application has been packaged
+#. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
-msgid "Software has unknown permissions"
-msgstr "نرم‌افزار، اجازه‌هایی ناشناخته دارد"
+#: src/gs-app-context-bar.c:374 src/gs-safety-context-dialog.c:142
+msgid "Reviewed by your distribution"
+msgstr "بررسی شده به دست توزیعتان"
+
+#. Translators: This indicates that an application has been packaged
+#. * by someone other than the user’s distribution, so might not be safe.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:381 src/gs-safety-context-dialog.c:139
+msgid "Provided by a third party"
+msgstr "فراهم شده به دست سوم‌شخص"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:364
+#: src/gs-app-context-bar.c:393
 msgid "Proprietary code"
 msgstr "کد مالکیتی"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370
+#: src/gs-app-context-bar.c:399
 msgid "Auditable code"
 msgstr "کد بازرسی‌پذیر"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379
-msgid "Software comes from a trusted source"
-msgstr "نرم‌افزار از منبعی مورد اعتماد می‌آید"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:386
+#: src/gs-app-context-bar.c:406
 msgid "Software developer is verified"
 msgstr "توسعه‌دهندهٔ نرم‌افزار تأیید شده است"
 
@@ -1008,104 +1010,104 @@ msgstr "توسعه‌دهندهٔ نرم‌افزار تأیید شده است"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:398 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:418 src/gs-app-context-bar.c:679
 msgid "; "
 msgstr "؛ "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:406
+#: src/gs-app-context-bar.c:426
 msgid "Safe"
 msgstr "امن"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:413
+#: src/gs-app-context-bar.c:433
 msgid "Potentially Unsafe"
 msgstr "بالقوه ناامن"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:420
+#: src/gs-app-context-bar.c:440
 msgid "Unsafe"
 msgstr "ناامن"
 
-#: src/gs-app-context-bar.c:499 src/gs-app-context-bar.c:531
+#: src/gs-app-context-bar.c:519 src/gs-app-context-bar.c:551
 #: src/gs-hardware-support-context-dialog.c:587
 msgid "Mobile Only"
 msgstr "فقط همراه"
 
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:520
 msgid "Only works on a small screen"
 msgstr "فقط روی صفحه‌های کوچک کار می‌کند"
 
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:538
-#: src/gs-app-context-bar.c:545 src/gs-app-context-bar.c:585
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:525 src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:565 src/gs-app-context-bar.c:605
+#: src/gs-app-context-bar.c:610 src/gs-hardware-support-context-dialog.c:567
 msgid "Desktop Only"
 msgstr "فقط میزکار"
 
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:526
 msgid "Only works on a large screen"
 msgstr "فقط روی صفحه‌های بزرگ کار می‌کند"
 
-#: src/gs-app-context-bar.c:510 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:530 src/gs-hardware-support-context-dialog.c:605
 msgid "Screen Size Mismatch"
 msgstr "ناهماهنگی در اندازهٔ صفحه"
 
-#: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:531 src/gs-hardware-support-context-dialog.c:606
 msgid "Doesn’t support your current screen size"
 msgstr "اندازهٔ صفحهٔ کنونیتان را پشتیبانی نمی‌کند"
 
-#: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
+#: src/gs-app-context-bar.c:552 src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Requires a touchscreen"
 msgstr "نیازمند صفحه‌لمسی"
 
-#: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
+#: src/gs-app-context-bar.c:559 src/gs-hardware-support-context-dialog.c:618
 #: src/gs-hardware-support-context-dialog.c:624
 msgid "Requires a keyboard"
 msgstr "نیازمند صفحه‌کلید"
 
-#: src/gs-app-context-bar.c:546
+#: src/gs-app-context-bar.c:566
 msgid "Requires a mouse"
 msgstr "نیازمند موشی"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:577
 msgid "Gamepad Needed"
 msgstr "نیاز به دستهٔ بازی"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:578
 msgid "Requires a gamepad to play"
 msgstr "نیازمند دسته برای بازی"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:572
+#: src/gs-app-context-bar.c:592
 msgid "Adaptive"
 msgstr "وفق‌پذیر"
 
-#: src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:593
 msgid "Works on phones, tablets and desktops"
 msgstr "کار روی تلفن‌ها، رایانک‌ها و میزکارها"
 
-#: src/gs-app-context-bar.c:586
+#: src/gs-app-context-bar.c:606
 msgid "Probably requires a keyboard or mouse"
 msgstr "احتمالاً نیازمند یک صفحه‌کلید یا موشی"
 
-#: src/gs-app-context-bar.c:591
+#: src/gs-app-context-bar.c:611
 msgid "Works on desktops and laptops"
 msgstr "کار روی میزکارها و لپ‌تاپ‌ها"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:634
+#: src/gs-app-context-bar.c:654
 msgid "Contains no age-inappropriate content"
 msgstr "هیچ محتوای نامرتبط به سنی ندارد"
 
-#: src/gs-app-context-bar.c:683
+#: src/gs-app-context-bar.c:703
 msgid "No age rating information available"
 msgstr "هیچ اطّلاعات رتبه‌بندی‌ای موجود نیست"
 
@@ -1124,7 +1126,7 @@ msgstr "نصب…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:157 src/gs-updates-section.ui:60
+#: src/gs-app-row.c:157 src/gs-updates-section.ui:61
 msgid "Cancel"
 msgstr "لغو"
 
@@ -1880,11 +1882,11 @@ msgid "Find in Software"
 msgstr "یافتن در نرم‌افزارها"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-description-box.c:64 src/gs-description-box.c:166 src/gs-details-page.ui:966
+#: src/gs-description-box.c:65 src/gs-description-box.c:171 src/gs-details-page.ui:966
 msgid "_Show More"
 msgstr "_نمایش بیش‌تر"
 
-#: src/gs-description-box.c:64
+#: src/gs-description-box.c:65
 msgid "_Show Less"
 msgstr "_نمایش کم‌تر"
 
@@ -1926,11 +1928,11 @@ msgstr "در حال حذف…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:825 src/gs-details-page.c:851 src/gs-details-page.ui:240
+#: src/gs-details-page.c:824 src/gs-details-page.c:850 src/gs-details-page.ui:240
 msgid "_Install"
 msgstr "_نصب"
 
-#: src/gs-details-page.c:841
+#: src/gs-details-page.c:840
 msgid "_Restart"
 msgstr "_آغاز دوباره"
 
@@ -1938,23 +1940,23 @@ msgstr "_آغاز دوباره"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:865
+#: src/gs-details-page.c:864
 msgid "_Install…"
 msgstr "_نصب…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1396
+#: src/gs-details-page.c:1404
 msgid "You need internet access to write a review"
 msgstr "برای نوشتن بازخورد، نیاز به دسترسی به اینترنت دارید"
 
-#: src/gs-details-page.c:1541 src/gs-details-page.c:1557
+#: src/gs-details-page.c:1549 src/gs-details-page.c:1565
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "امکان یافتن «%s» نبود"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2113
+#: src/gs-details-page.c:2121
 msgid "Loading…"
 msgstr "بار کردن…"
 
@@ -2610,7 +2612,7 @@ msgstr "صفحهٔ بار"
 msgid "Starting up…"
 msgstr "در حال برپاسازی…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17 src/gs-shell.ui:267
+#: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17 src/gs-shell.ui:264
 msgid "Automatic Updates Paused"
 msgstr "به‌روز رسانی‌های خودکار مکث شدند"
 
@@ -2689,42 +2691,42 @@ msgstr "نصب"
 #. Translators: The available version of an app
 #: src/gs-origin-popover-row.ui:122
 msgid "Version"
-msgstr "نسخه"
+msgstr "نگارش"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
 #: src/gs-os-update-page.c:272
 msgid "Additions"
-msgstr "افزودنی‌ها"
+msgstr "افزودنی"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
 #: src/gs-os-update-page.c:276
 msgid "Removals"
-msgstr "برداشتنی‌ها"
+msgstr "برداشتنی"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:280 src/gs-shell.ui:341 src/gs-updates-page.c:1361
+#: src/gs-os-update-page.c:280 src/gs-shell.ui:339 src/gs-updates-page.c:1356
 msgid "Updates"
-msgstr "به‌روز رسانی‌ها"
+msgstr "به‌روز رسانی"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
 #: src/gs-os-update-page.c:284
 msgid "Downgrades"
-msgstr "پایین‌بردن‌ها"
+msgstr "پایین‌بری"
 
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:706
+#: src/gs-overview-page.c:697
 msgid "selected external sources"
 msgstr "منبع‌های خارجی گزیده"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:708
+#: src/gs-overview-page.c:699
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is included."
@@ -2733,13 +2735,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:708 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "به کار انداختن"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:772 src/gs-shell.ui:308
+#: src/gs-overview-page.c:763 src/gs-shell.ui:306
 msgid "Explore"
 msgstr "کشف"
 
@@ -3149,172 +3151,173 @@ msgstr "گزارش…"
 msgid "Remove…"
 msgstr "برداشتن…"
 
-#: src/gs-safety-context-dialog.c:133
-msgid "Unknown Permissions"
-msgstr "اجازه‌های ناشناخته"
+#: src/gs-safety-context-dialog.c:140
+msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+msgstr "بررسی کنید که به سازنده اطمینان دارید، چرا که برنامه قرنطینه نشده"
 
-#: src/gs-safety-context-dialog.c:134
-msgid "The permissions needed by this app aren’t known"
-msgstr "اجازه‌های لازم برای این کاره شناخته شده نیستند"
+#: src/gs-safety-context-dialog.c:143
+msgid ""
+"Application isn’t sandboxed but the distribution has checked that it is not malicious"
+msgstr "برنامه قرنطینه نشده، ولی توزیع بررسی کرده که مخرّب نباشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:143
+#: src/gs-safety-context-dialog.c:150
 msgid "No Permissions"
 msgstr "بدون اجازه"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:151
 msgid "App is fully sandboxed"
 msgstr "کاره کاملاً قرنطینه است"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:155
+#: src/gs-safety-context-dialog.c:162
 msgid "Network Access"
 msgstr "دسترسی شبکه"
 
-#: src/gs-safety-context-dialog.c:156
+#: src/gs-safety-context-dialog.c:163
 msgid "Can access the internet"
 msgstr "می‌تواند به اینترنت دسترسی داشته باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:159
+#: src/gs-safety-context-dialog.c:166
 msgid "No Network Access"
 msgstr "بدون دسترسی شبکه"
 
-#: src/gs-safety-context-dialog.c:160
+#: src/gs-safety-context-dialog.c:167
 msgid "Cannot access the internet"
 msgstr "نمی‌تواند به اینترنت دسترسی داشته باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:166
+#: src/gs-safety-context-dialog.c:173
 msgid "Uses System Services"
 msgstr "از خدمت‌های سامانه استفاده می‌کند"
 
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:174
 msgid "Can request data from system services"
 msgstr "می‌تواند از خدمت‌های سامانه، داده درخواست کند"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:181
 msgid "Uses Session Services"
 msgstr "از خدمت‌های نشست استفاده می‌کند"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:182
 msgid "Can request data from session services"
 msgstr "می‌تواند از خدمت‌های نشست، داده درخواست کند"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:189
 msgid "Device Access"
 msgstr "دسترسی ‌افزاره"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:190
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "می‌تواند به افزاره‌هایی چون وب‌کم و دسته‌ٔ بازی دسترسی داشته باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:186
+#: src/gs-safety-context-dialog.c:193
 msgid "No Device Access"
 msgstr "بدون دسترسی افزاره"
 
-#: src/gs-safety-context-dialog.c:187
+#: src/gs-safety-context-dialog.c:194
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "نمی‌تواند به افزاره‌هایی چون وب‌کم و دسته‌ٔ بازی دسترسی داشته باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:200
 msgid "Legacy Windowing System"
 msgstr "سامانهٔ پنجرهٔ قدیمی"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:208
 msgid "Arbitrary Permissions"
 msgstr "اجازه‌های دلخواه"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:216
 msgid "User Settings"
 msgstr "تنظیمات کاربری"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:228
 msgid "Full File System Read/Write Access"
 msgstr "دسترسی خواندن و نوشتن کامل روی سامانهٔ پرونده"
 
-#: src/gs-safety-context-dialog.c:222
+#: src/gs-safety-context-dialog.c:229
 msgid "Can read and write all data on the file system"
 msgstr "می‌تواند تمامی داده‌ها در سامانهٔ پرونده را خوانده و رویشان بنویسد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:237
 msgid "Home Folder Read/Write Access"
 msgstr "دسترسی خواندن و نوشتن روی شاخهٔ خانه"
 
-#: src/gs-safety-context-dialog.c:231
+#: src/gs-safety-context-dialog.c:238
 msgid "Can read and write all data in your home directory"
 msgstr "می‌تواند تمامی داده‌ها در شاخهٔ خانگیتان را خوانده و رویشان بنویسد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:246
 msgid "Full File System Read Access"
 msgstr "دسترسی خواندن کامل روی سامانهٔ پرونده"
 
-#: src/gs-safety-context-dialog.c:240
+#: src/gs-safety-context-dialog.c:247
 msgid "Can read all data on the file system"
 msgstr "می‌تواند تمامی داده‌ها در سامانه‌تان را بخواند"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:249
+#: src/gs-safety-context-dialog.c:256
 msgid "Home Folder Read Access"
 msgstr "دسترسی خواندن شاخهٔ خانه"
 
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data in your home directory"
 msgstr "می‌تواند تمامی داده‌ها در شاخهٔ خانگیتان را بخواند"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:266
 msgid "Download Folder Read/Write Access"
 msgstr "دسترسی خواندن و نوشتن روی شاخهٔ بارگیری‌ها"
 
-#: src/gs-safety-context-dialog.c:260
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read and write all data in your downloads directory"
 msgstr "می‌تواند تمامی داده‌ها در شاخهٔ بارگیری‌هایتان را خوانده و رویشان بنویسد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:271
+#: src/gs-safety-context-dialog.c:278
 msgid "Download Folder Read Access"
 msgstr "دسترسی خواندن شاخهٔ بارگیری‌ها"
 
-#: src/gs-safety-context-dialog.c:272
+#: src/gs-safety-context-dialog.c:279
 msgid "Can read all data in your downloads directory"
 msgstr "می‌تواند تمامی داده‌ها در شاخهٔ بارگیری‌هایتان را بخواند"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:285
+#: src/gs-safety-context-dialog.c:292
 msgid "No File System Access"
 msgstr "بدون دسترسی به سامانهٔ پرونده"
 
-#: src/gs-safety-context-dialog.c:286
+#: src/gs-safety-context-dialog.c:293
 msgid "Cannot access the file system at all"
 msgstr "به کل نمی‌تواند به سامانهٔ پرونده دسترسی داشته باشد"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:300
+#: src/gs-safety-context-dialog.c:307
 msgid "Proprietary Code"
 msgstr "کد مالکیتی"
 
-#: src/gs-safety-context-dialog.c:301
+#: src/gs-safety-context-dialog.c:308
 msgid ""
 "The source code is not public, so it cannot be independently audited and might be "
 "unsafe"
 msgstr "کد مبدأ عمومی نیست، پس نمی‌تواند مستقلانه برررسی شود و به صورت بالقوه ناامن است"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:311
 msgid "Auditable Code"
 msgstr "کد بازرسی‌پذیر"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:312
 msgid ""
 "The source code is public and can be independently audited, which makes the app more "
 "likely to be safe"
@@ -3322,43 +3325,33 @@ msgstr ""
 "کد مبدأ عمومی است و می‌تواند مستقلانه بررسی شود که کاره را بیش‌تر به امن بودن نزدیک "
 "می‌کند"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:315
-msgid "App comes from a trusted source"
-msgstr "کاره از منبعی مورد اعتماد می‌آید"
-
-#: src/gs-safety-context-dialog.c:316
-msgid "Your distribution has verified that this app can be trusted"
-msgstr "توزیعتان تأیید کرده که این کاره مطمئن است"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:320
 msgid "App developer is verified"
 msgstr "توسعه‌دهندهٔ کاره تأیید شده است"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:321
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "تأیید شده توسعه‌دهندهٔ این کاره، همانیست که می‌گوید"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:330
 #, c-format
 msgid "%s is safe"
 msgstr "%s امن است"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:342
+#: src/gs-safety-context-dialog.c:337
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s بالقوه ناامن است"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:349
+#: src/gs-safety-context-dialog.c:344
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s ناامن است"
@@ -3929,7 +3922,7 @@ msgstr "بررسی دیسک"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:95 src/gs-updates-page.c:907
+#: src/gs-shell.ui:95 src/gs-updates-page.c:906
 msgid "Network Settings"
 msgstr "تنظیمات شبکه"
 
@@ -3947,11 +3940,11 @@ msgstr "اطّلاعات بیش‌تر"
 msgid "Search"
 msgstr "جست‌وجو"
 
-#: src/gs-shell.ui:197
+#: src/gs-shell.ui:194
 msgid "Primary Menu"
 msgstr "فهرست اصلی"
 
-#: src/gs-shell.ui:286
+#: src/gs-shell.ui:284
 msgid "Find Out _More"
 msgstr "بیش‌تر دریابید"
 
@@ -4248,41 +4241,41 @@ msgstr ""
 "دوباره تلاش کنید. اگر باز هم مشکل داشتید، با فراهم کننده نرم‌افزار تماس بگیرید."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:252
+#: src/gs-updates-page.c:251
 #, c-format
 msgid "Last checked: %s"
 msgstr "آخرین بررسی: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:577
+#: src/gs-updates-page.c:576
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s دیگر پشتیبانی نمی‌شود."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:582
+#: src/gs-updates-page.c:581
 msgid "Your OS is no longer supported."
 msgstr "سیستم‌عاملتان دیگر پشتیبانی نمی‌شود."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:587
+#: src/gs-updates-page.c:586
 msgid "This means that it does not receive security updates."
 msgstr "این یعنی به‌روز رسانی‌ّا امنیتی را نخواهد گرفت."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:591
+#: src/gs-updates-page.c:590
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "توصیه می‌شود که به نگارشی جدیدتر ارتقا دهید."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:875
+#: src/gs-updates-page.c:874
 msgid "Charges May Apply"
 msgstr "ممکن است هزینه‌بر باشد"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:879
+#: src/gs-updates-page.c:878
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur charges."
 msgstr ""
@@ -4291,26 +4284,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:883
+#: src/gs-updates-page.c:882
 msgid "Check _Anyway"
 msgstr "_به هر حال بررسی شود"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:899
+#: src/gs-updates-page.c:898
 msgid "No Network"
 msgstr "شبکه قطع است"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:903
+#: src/gs-updates-page.c:902
 msgid "Internet access is required to check for updates."
 msgstr "دسترسی به اینترنت برای بررسی به‌روز رسانی‌ها لازم است."
 
-#: src/gs-updates-page.c:1295
+#: src/gs-updates-page.c:1290
 msgid "Checking…"
 msgstr "در حال بررسی…"
 
-#: src/gs-updates-page.c:1318
+#: src/gs-updates-page.c:1313
 msgid "Check for updates"
 msgstr "بررسی برای به‌روز رسانی‌ها"
 
@@ -4370,41 +4363,41 @@ msgstr "به‌روز رسانی‌ها به صورت خودکار مدیریت 
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:326
+#: src/gs-updates-section.c:334
 msgid "Restart & Update"
 msgstr "راه‌اندازی دوباره و به‌روز رسانی"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:332
+#: src/gs-updates-section.c:340
 msgid "Update All"
 msgstr "به‌روز رسانی همه"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:460
+#: src/gs-updates-section.c:468
 msgid "Integrated Firmware"
 msgstr "ثابت‌افزار یکپارچه"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:465
+#: src/gs-updates-section.c:473
 msgid "Requires Restart"
 msgstr "نیاز به راه‌اندازی دوباره دارد"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:470
+#: src/gs-updates-section.c:478
 msgid "Application Updates"
 msgstr "به‌روز رسانی برنامه‌ها"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:475
+#: src/gs-updates-section.c:483
 msgid "Device Firmware"
 msgstr "ثابت‌افزار افزاره"
 
-#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:78
+#: src/gs-updates-section.ui:36 src/gs-upgrade-banner.ui:78
 msgid "_Download"
 msgstr "_بارگیری"
 
@@ -4693,6 +4686,24 @@ msgstr "پشتیبانی اسنپ"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "اسنپ یک بستهٔ جهانی گنو/لینوکسی است"
+
+#~ msgid "Software has unknown permissions"
+#~ msgstr "نرم‌افزار، اجازه‌هایی ناشناخته دارد"
+
+#~ msgid "Software comes from a trusted source"
+#~ msgstr "نرم‌افزار از منبعی مورد اعتماد می‌آید"
+
+#~ msgid "Unknown Permissions"
+#~ msgstr "اجازه‌های ناشناخته"
+
+#~ msgid "The permissions needed by this app aren’t known"
+#~ msgstr "اجازه‌های لازم برای این کاره شناخته شده نیستند"
+
+#~ msgid "App comes from a trusted source"
+#~ msgstr "کاره از منبعی مورد اعتماد می‌آید"
+
+#~ msgid "Your distribution has verified that this app can be trusted"
+#~ msgstr "توزیعتان تأیید کرده که این کاره مطمئن است"
 
 #~ msgid "Show the prompt to install nonfree software repositories"
 #~ msgstr "نمایش اعلان برای نصب مخزن‌ها نرم‌افزاری ناآزاد"
