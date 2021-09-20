@@ -204,11 +204,11 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	} else {
 		page = gs_app_details_page_new ();
 		gs_app_details_page_set_app (GS_APP_DETAILS_PAGE (page), app);
+		g_signal_connect (page, "back-clicked",
+				  G_CALLBACK (back_clicked_cb), dialog);
 	}
 
 	gtk_widget_show (page);
-	g_signal_connect (page, "back-clicked",
-			  G_CALLBACK (back_clicked_cb), dialog);
 
 	gtk_container_add (GTK_CONTAINER (dialog->deck), page);
 	hdy_deck_set_visible_child (HDY_DECK (dialog->deck), page);
@@ -313,7 +313,9 @@ gs_update_dialog_constructed (GObject *object)
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 
 		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
-		gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
+		/* It can be either the app details page or the OS update page */
+		if (GS_IS_APP_DETAILS_PAGE (child))
+			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
 	} else {
 		gs_update_dialog_show_installed_updates (dialog);
 	}
