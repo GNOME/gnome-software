@@ -1608,9 +1608,16 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 							   gs_app_get_id (app),
 							   cancellable, NULL);
 	if (xremote != NULL) {
-		/* if the remote already exists, just enable it */
-		g_debug ("enabling existing remote %s", flatpak_remote_get_name (xremote));
+		/* if the remote already exists, just enable it and update it */
+		g_debug ("modifying existing remote %s", flatpak_remote_get_name (xremote));
 		flatpak_remote_set_disabled (xremote, FALSE);
+		if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REPO) {
+			flatpak_remote_set_title (xremote, gs_app_get_origin_ui (app));
+			#if FLATPAK_CHECK_VERSION(1, 4, 0)
+			flatpak_remote_set_filter (xremote, gs_flatpak_app_get_repo_filter (app));
+			flatpak_remote_set_description (xremote, gs_app_get_description (app));
+			#endif
+		}
 	} else if (!is_install) {
 		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED, "Cannot enable flatpak remote '%s', remote not found", gs_app_get_id (app));
 	} else {
