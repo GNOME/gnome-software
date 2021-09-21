@@ -27,6 +27,7 @@ typedef struct
 	guint		 busy_counter;
 	gboolean	 supports_remove;
 	gboolean	 supports_enable_disable;
+	gboolean	 always_allow_enable_disable;
 } GsRepoRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsRepoRow, gs_repo_row, GTK_TYPE_LIST_BOX_ROW)
@@ -86,7 +87,7 @@ refresh_ui (GsRepoRow *row)
 	is_system_repo = gs_app_has_quirk (priv->repo, GS_APP_QUIRK_PROVENANCE);
 
 	/* Disable for the system repos, if installed */
-	gtk_widget_set_sensitive (priv->disable_switch, priv->supports_enable_disable && (state_sensitive || !is_system_repo));
+	gtk_widget_set_sensitive (priv->disable_switch, priv->supports_enable_disable && (state_sensitive || !is_system_repo || priv->always_allow_enable_disable));
 	gtk_widget_set_visible (priv->remove_button, priv->supports_remove && !is_system_repo);
 
 	/* Set only the 'state' to visually indicate the state is not saved yet */
@@ -337,13 +338,30 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, disable_switch);
 }
 
+/*
+ * gs_repo_row_new:
+ * @plugin_loader: a #GsPluginLoader
+ * @repo: a #GsApp to represent the repo in the new row
+ * @always_allow_enable_disable: always allow enabled/disable of the @repo
+ *
+ * The @plugin_loader is used to check which operations the associated plugin
+ * for the @repo can do and which not, to show only relevant buttons on the row.
+ *
+ * The @always_allow_enable_disable, when %TRUE, means that the @repo in this row
+ * can be always enabled/disabled by the user, if supported by the related plugin,
+ * regardless of the other heuristics, which can avoid the repo enable/disable.
+ *
+ * Returns: (transfer full): a newly created #GsRepoRow
+ */
 GtkWidget *
 gs_repo_row_new (GsPluginLoader	*plugin_loader,
-		 GsApp *repo)
+		 GsApp *repo,
+		 gboolean always_allow_enable_disable)
 {
 	GsRepoRow *row = g_object_new (GS_TYPE_REPO_ROW, NULL);
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
 	priv->plugin_loader = g_object_ref (plugin_loader);
+	priv->always_allow_enable_disable = always_allow_enable_disable;
 	gs_repo_row_set_repo (row, repo);
 	return GTK_WIDGET (row);
 }

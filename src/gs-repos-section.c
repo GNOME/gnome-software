@@ -20,6 +20,7 @@ struct _GsReposSection
 	GtkListBox		*list;
 	GsPluginLoader		*plugin_loader;
 	gchar			*sort_key;
+	gboolean		 always_allow_enable_disable;
 };
 
 G_DEFINE_TYPE (GsReposSection, gs_repos_section, HDY_TYPE_PREFERENCES_GROUP)
@@ -130,8 +131,23 @@ gs_repos_section_init (GsReposSection *self)
 			  G_CALLBACK (gs_repos_section_row_activated_cb), self);
 }
 
+/*
+ * gs_repos_section_new:
+ * @plugin_loader: a #GsPluginLoader
+ * @always_allow_enable_disable: always allow enable/disable of the repos in this section
+ *
+ * Creates a new #GsReposSection. The %plugin_loader is passed
+ * to each #GsRepoRow, the same as the @always_allow_enable_disable.
+ *
+ * The @always_allow_enable_disable, when %TRUE, means that every repo in this section
+ * can be enabled/disabled by the user, if supported by the related plugin, regardless
+ * of the other heuristics, which can avoid the repo enable/disable.
+ *
+ * Returns: (transfer full): a newly created #GsReposSection
+ */
 GtkWidget *
-gs_repos_section_new (GsPluginLoader *plugin_loader)
+gs_repos_section_new (GsPluginLoader *plugin_loader,
+		      gboolean always_allow_enable_disable)
 {
 	GsReposSection *self;
 
@@ -140,6 +156,7 @@ gs_repos_section_new (GsPluginLoader *plugin_loader)
 	self = g_object_new (GS_TYPE_REPOS_SECTION, NULL);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
+	self->always_allow_enable_disable = always_allow_enable_disable;
 
 	return GTK_WIDGET (self);
 }
@@ -159,7 +176,7 @@ gs_repos_section_add_repo (GsReposSection *self,
 	if (!self->sort_key)
 		self->sort_key = g_strdup (gs_app_get_metadata_item (repo, "GnomeSoftware::SortKey"));
 
-	row = gs_repo_row_new (self->plugin_loader, repo);
+	row = gs_repo_row_new (self->plugin_loader, repo, self->always_allow_enable_disable);
 
 	g_signal_connect (row, "remove-clicked",
 	                  G_CALLBACK (repo_remove_clicked_cb), self);
