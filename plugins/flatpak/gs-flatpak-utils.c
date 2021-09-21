@@ -72,6 +72,10 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 {
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *url = NULL;
+	#if FLATPAK_CHECK_VERSION(1, 4, 0)
+	g_autofree gchar *filter = NULL;
+	g_autofree gchar *description = NULL;
+	#endif
 	g_autoptr(GsApp) app = NULL;
 
 	app = gs_flatpak_app_new (flatpak_remote_get_name (xremote));
@@ -101,10 +105,22 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 	 * not the remote title */
 	gs_app_set_origin_ui (app, _("Applications"));
 
+	#if FLATPAK_CHECK_VERSION(1, 4, 0)
+	description = flatpak_remote_get_description (xremote);
+	if (description != NULL)
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
+	#endif
+
 	/* url */
 	url = flatpak_remote_get_url (xremote);
 	if (url != NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
+
+	#if FLATPAK_CHECK_VERSION(1, 4, 0)
+	filter = flatpak_remote_get_filter (xremote);
+	if (filter != NULL)
+		gs_flatpak_app_set_repo_filter (app, filter);
+	#endif
 
 	/* success */
 	return g_steal_pointer (&app);
@@ -127,6 +143,7 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	g_autofree gchar *repo_id = NULL;
 	g_autofree gchar *repo_title = NULL;
 	g_autofree gchar *repo_url = NULL;
+	g_autofree gchar *repo_filter = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -229,6 +246,9 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 		g_autoptr(GIcon) icon = gs_remote_icon_new (repo_icon);
 		gs_app_add_icon (app, icon);
 	}
+	repo_filter = g_key_file_get_string (kf, "Flatpak Repo", "Filter", NULL);
+	if (repo_filter != NULL && *repo_filter != '\0')
+		gs_flatpak_app_set_repo_filter (app, repo_filter);
 
 	/* success */
 	return g_steal_pointer (&app);

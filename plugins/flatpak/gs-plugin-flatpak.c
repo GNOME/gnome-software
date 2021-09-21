@@ -1287,6 +1287,8 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 			g_debug ("%s", error_local->message);
 			continue;
 		}
+		if (g_strcmp0 (gs_flatpak_app_get_repo_filter (app), gs_flatpak_app_get_repo_filter (app_tmp)) != 0)
+			continue;
 		return g_steal_pointer (&app_tmp);
 	}
 

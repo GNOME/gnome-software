@@ -176,3 +176,15 @@ gs_flatpak_app_get_main_app_ref_name (GsApp *app)
 {
 	return gs_app_get_metadata_item (app, "flatpak::mainApp");
 }
+
+void
+gs_flatpak_app_set_repo_filter (GsApp *app, const gchar *filter)
+{
+	gs_app_set_metadata (app, "flatpak::RepoFilter", filter);
+}
+
+const gchar *
+gs_flatpak_app_get_repo_filter (GsApp *app)
+{
+	return gs_app_get_metadata_item (app, "flatpak::RepoFilter");
+}
