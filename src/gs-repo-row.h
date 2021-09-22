@@ -25,7 +25,8 @@ struct _GsRepoRowClass
 };
 
 GtkWidget	*gs_repo_row_new			(GsPluginLoader	*plugin_loader,
-							 GsApp		*repo);
+							 GsApp		*repo,
+							 gboolean	 always_allow_enable_disable);
 GsApp		*gs_repo_row_get_repo			(GsRepoRow	*row);
 void		 gs_repo_row_mark_busy			(GsRepoRow	*row);
 void		 gs_repo_row_unmark_busy		(GsRepoRow	*row);

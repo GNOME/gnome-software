@@ -484,7 +484,7 @@ add_repo (GsReposDialog *dialog,
 		origin_ui = g_strdup (gs_app_get_management_plugin (repo));
 	section = g_hash_table_lookup (dialog->sections, origin_ui);
 	if (section == NULL) {
-		section = gs_repos_section_new (dialog->plugin_loader);
+		section = gs_repos_section_new (dialog->plugin_loader, FALSE);
 		hdy_preferences_group_set_title (HDY_PREFERENCES_GROUP (section),
 						 origin_ui);
 		g_signal_connect_object (section, "remove-clicked",
@@ -627,7 +627,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_container_add (GTK_CONTAINER (widget), row);
 		gtk_container_add (GTK_CONTAINER (dialog->content_page), widget);
 
-		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader));
+		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, TRUE));
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
