@@ -17,6 +17,7 @@
 #include <gs-app-list-private.h>
 #include <gs-app-private.h>
 #include <gs-category-private.h>
+#include <gs-fedora-third-party.h>
 #include <gs-os-release.h>
 #include <gs-plugin-loader.h>
 #include <gs-plugin-loader-sync.h>
