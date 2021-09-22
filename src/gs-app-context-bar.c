@@ -364,8 +364,9 @@ update_safety_tile (GsAppContextBar *self)
 	 * FIXME: We could do better by potentially adding a ‘trusted’ state
 	 * to indicate that something is probably safe, but isn’t sandboxed.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
-	if (permissions == GS_APP_PERMISSIONS_UNKNOWN &&
-	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
+	if (permissions == GS_APP_PERMISSIONS_UNKNOWN && (
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE) ||
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_DISTRO_SAFE)))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
 				      /* Translators: This indicates that an application has been packaged

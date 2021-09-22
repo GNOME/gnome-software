@@ -133,7 +133,8 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * gs-app-context-bar.c. */
 	if (permissions == GS_APP_PERMISSIONS_UNKNOWN) {
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
+				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE) &&
+				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_DISTRO_SAFE),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "channel-insecure-symbolic",
 				    _("Provided by a third party"),
