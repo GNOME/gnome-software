@@ -646,7 +646,7 @@ expand_channel_name (const gchar *name)
 }
 
 static void
-add_channels (SnapdSnap *snap, GsAppList *list)
+add_channels (GsPlugin *plugin, SnapdSnap *snap, GsAppList *list)
 {
 	GStrv tracks;
 	GPtrArray *channels;
@@ -663,17 +663,14 @@ add_channels (SnapdSnap *snap, GsAppList *list)
 
 	for (guint i = 0; i < sorted_channels->len; i++) {
 		SnapdChannel *channel = g_ptr_array_index (sorted_channels, i);
-		g_autofree gchar *appstream_id = NULL;
-		g_autoptr(GsApp) a;
+		g_autoptr(GsApp) app = NULL;
 		g_autofree gchar *expanded_name = NULL;
 
-		appstream_id = get_appstream_id (snap);
-		a = gs_app_new (appstream_id);
-		gs_app_set_bundle_kind (a, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_metadata (a, "snap::name", snapd_snap_get_name (snap));
+		app = snap_to_app (plugin, snap);
 		expanded_name = expand_channel_name (snapd_channel_get_name (channel));
-		gs_app_set_branch (a, expanded_name);
-		gs_app_list_add (list, a);
+		gs_app_set_branch (app, expanded_name);
+
+		gs_app_list_add (list, app);
 	}
 }
 
@@ -697,7 +694,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			return TRUE;
 		}
 
-		add_channels (snap, list);
+		add_channels (plugin, snap, list);
 	} else {
 		g_autoptr(GPtrArray) snaps = NULL;
 		guint i;
@@ -708,7 +705,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			SnapdSnap *store_snap;
 
 			store_snap = get_store_snap (plugin, snapd_snap_get_name (snap), TRUE, cancellable, NULL);
-			add_channels (store_snap, list);
+			add_channels (plugin, store_snap, list);
 		}
 		return TRUE;
 	}
