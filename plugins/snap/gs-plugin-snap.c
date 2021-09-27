@@ -1001,6 +1001,8 @@ refine_app_with_client (GsPlugin             *plugin,
 	if (name == NULL || g_strcmp0 (name, "") == 0)
 		name = snapd_snap_get_name (snap);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, snapd_snap_get_website (snap));
+	gs_app_set_url (app, AS_URL_KIND_CONTACT, snapd_snap_get_contact (snap));
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (snap));
 	description = gs_plugin_snap_get_description_safe (snap);
 	if (description != NULL)
