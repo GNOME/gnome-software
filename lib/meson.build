@@ -82,6 +82,7 @@ libgnomesoftware = library(
     'gs-debug.c',
     'gs-desktop-data.c',
     'gs-external-appstream-utils.c',
+    'gs-fedora-third-party.c',
     'gs-icon.c',
     'gs-ioprio.c',
     'gs-ioprio.h',
