@@ -1341,6 +1341,24 @@ gs_appstream_search (GsPlugin *plugin,
 			g_debug ("add %s", gs_app_get_unique_id (app));
 			gs_app_set_match_value (app, match_value);
 			gs_app_list_add (list, app);
+
+			if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
+				g_autoptr(GPtrArray) extends = NULL;
+
+				/* add the parent app as a wildcard, to be refined later */
+				extends = xb_node_query (component, "extends", 0, NULL);
+				for (guint jj = 0; extends && jj < extends->len; jj++) {
+					XbNode *extend = g_ptr_array_index (extends, jj);
+					g_autoptr(GsApp) app2 = NULL;
+					const gchar *tmp;
+					app2 = gs_app_new (xb_node_get_text (extend));
+					gs_app_add_quirk (app2, GS_APP_QUIRK_IS_WILDCARD);
+					tmp = xb_node_query_attr (extend, "../..", "origin", NULL);
+					if (gs_appstream_origin_valid (tmp))
+						gs_app_set_origin_appstream (app2, tmp);
+					gs_app_list_add (list, app2);
+				}
+			}
 		}
 	}
 	g_debug ("search took %fms", g_timer_elapsed (timer, NULL) * 1000);
