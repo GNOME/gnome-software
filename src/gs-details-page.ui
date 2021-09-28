@@ -763,19 +763,12 @@
                                                   <object class="AdwActionRow" id="project_website_row">
                                                     <property name="activatable">True</property>
                                                     <property name="visible">True</property>
+                                                    <property name="icon-name">web-browser-symbolic</property>
                                                     <property name="title" translatable="yes">Project _Website</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
                                                     <property name="subtitle">gnome.org</property>
                                                     <property name="use-underline">True</property>
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
-                                                    <child type="prefix">
-                                                      <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
-                                                      <object class="GtkImage">
-                                                        <property name="visible">True</property>
-                                                        <property name="icon-name">web-browser-symbolic</property>
-                                                        <property name="icon-size">normal</property>
-                                                      </object>
-                                                    </child>
                                                     <child>
                                                       <object class="GtkImage">
                                                         <property name="visible">True</property>
@@ -789,19 +782,12 @@
                                                   <object class="AdwActionRow" id="donate_row">
                                                     <property name="activatable">True</property>
                                                     <property name="visible">True</property>
+                                                    <property name="icon-name">money-symbolic</property>
                                                     <property name="title" translatable="yes">_Donate</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
                                                     <property name="subtitle">gnome.org</property>
                                                     <property name="use-underline">True</property>
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
-                                                    <child type="prefix">
-                                                      <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
-                                                      <object class="GtkImage">
-                                                        <property name="visible">True</property>
-                                                        <property name="icon-name">money-symbolic</property>
-                                                        <property name="icon-size">normal</property>
-                                                      </object>
-                                                    </child>
                                                     <child>
                                                       <object class="GtkImage">
                                                         <property name="visible">True</property>
@@ -815,19 +801,12 @@
                                                   <object class="AdwActionRow" id="translate_row">
                                                     <property name="activatable">True</property>
                                                     <property name="visible">True</property>
+                                                    <property name="icon-name">flag-outline-thin-symbolic</property>
                                                     <property name="title" translatable="yes">Contribute _Translations</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
                                                     <property name="subtitle">gnome.org</property>
                                                     <property name="use-underline">True</property>
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
-                                                    <child type="prefix">
-                                                      <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
-                                                      <object class="GtkImage">
-                                                        <property name="visible">True</property>
-                                                        <property name="icon-name">flag-outline-thin-symbolic</property>
-                                                        <property name="icon-size">normal</property>
-                                                      </object>
-                                                    </child>
                                                     <child>
                                                       <object class="GtkImage">
                                                         <property name="visible">True</property>
@@ -841,19 +820,12 @@
                                                   <object class="AdwActionRow" id="report_an_issue_row">
                                                     <property name="activatable">True</property>
                                                     <property name="visible">True</property>
+                                                    <property name="icon-name">computer-fail-symbolic</property>
                                                     <property name="title" translatable="yes">_Report an Issue</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
                                                     <property name="subtitle">gnome.org</property>
                                                     <property name="use-underline">True</property>
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
-                                                    <child type="prefix">
-                                                      <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
-                                                      <object class="GtkImage">
-                                                        <property name="visible">True</property>
-                                                        <property name="icon-name">computer-fail-symbolic</property>
-                                                        <property name="icon-size">normal</property>
-                                                      </object>
-                                                    </child>
                                                     <child>
                                                       <object class="GtkImage">
                                                         <property name="visible">True</property>
@@ -867,19 +839,12 @@
                                                   <object class="AdwActionRow" id="help_row">
                                                     <property name="activatable">True</property>
                                                     <property name="visible">True</property>
+                                                    <property name="icon-name">help-browser-symbolic</property>
                                                     <property name="title" translatable="yes">_Help</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
                                                     <property name="subtitle">gnome.org</property>
                                                     <property name="use-underline">True</property>
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
-                                                    <child type="prefix">
-                                                      <!-- Provide the prefix icon as a widget rather than using the icon-name property so we can set the size -->
-                                                      <object class="GtkImage">
-                                                        <property name="visible">True</property>
-                                                        <property name="icon-name">help-browser-symbolic</property>
-                                                        <property name="icon-size">normal</property>
-                                                      </object>
-                                                    </child>
                                                     <child>
                                                       <object class="GtkImage">
                                                         <property name="visible">True</property>
