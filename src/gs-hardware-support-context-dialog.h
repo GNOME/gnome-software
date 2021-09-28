@@ -15,12 +15,13 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-info-window.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_HARDWARE_SUPPORT_CONTEXT_DIALOG (gs_hardware_support_context_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsHardwareSupportContextDialog, gs_hardware_support_context_dialog, GS, HARDWARE_SUPPORT_CONTEXT_DIALOG, HdyWindow)
+G_DECLARE_FINAL_TYPE (GsHardwareSupportContextDialog, gs_hardware_support_context_dialog, GS, HARDWARE_SUPPORT_CONTEXT_DIALOG, GsInfoWindow)
 
 GsHardwareSupportContextDialog	*gs_hardware_support_context_dialog_new		(GsApp				*app);
 

@@ -42,7 +42,7 @@
 
 struct _GsSafetyContextDialog
 {
-	HdyWindow		 parent_instance;
+	GsInfoWindow		 parent_instance;
 
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_permissions;
@@ -64,7 +64,7 @@ struct _GsSafetyContextDialog
 	GtkWidget		*sdk_row;
 };
 
-G_DEFINE_TYPE (GsSafetyContextDialog, gs_safety_context_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsSafetyContextDialog, gs_safety_context_dialog, GS_TYPE_INFO_WINDOW)
 
 typedef enum {
 	PROP_APP = 1,
@@ -412,35 +412,6 @@ app_notify_related_cb (GObject    *obj,
 	update_sdk (self);
 }
 
-static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    HdyPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
 static void
 gs_safety_context_dialog_init (GsSafetyContextDialog *self)
 {
@@ -530,8 +501,6 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, source_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_row);
-
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
 }
 
 /**

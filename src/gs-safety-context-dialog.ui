@@ -1,103 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsSafetyContextDialog" parent="HdyWindow">
-    <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="icon_name">dialog-information</property>
+  <template class="GsSafetyContextDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the permissions of an app">Safety</property>
-    <property name="type_hint">dialog</property>
-    <property name="default-width">640</property>
-    <property name="default-height">576</property>
-    <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
-    <style>
-      <class name="toolbox"/>
-    </style>
-
     <child>
-      <object class="GtkOverlay">
+      <object class="HdyPreferencesPage">
         <property name="visible">True</property>
-        <child type="overlay">
-          <object class="HdyHeaderBar">
-            <property name="show_close_button">True</property>
-            <property name="visible">True</property>
-            <property name="valign">start</property>
-          </object>
-        </child>
         <child>
-          <object class="HdyPreferencesPage">
+          <object class="HdyPreferencesGroup">
             <property name="visible">True</property>
+
             <child>
-              <object class="HdyPreferencesGroup">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
                 <property name="visible">True</property>
 
                 <child>
                   <object class="GtkBox">
+                    <property name="margin">20</property>
                     <property name="orientation">vertical</property>
-                    <property name="spacing">8</property>
+                    <property name="spacing">12</property>
                     <property name="visible">True</property>
 
                     <child>
-                      <object class="GtkBox">
-                        <property name="margin">20</property>
-                        <property name="orientation">vertical</property>
-                        <property name="spacing">12</property>
+                      <object class="GtkBox" id="lozenge">
+                        <property name="halign">center</property>
                         <property name="visible">True</property>
-
+                        <style>
+                          <class name="context-tile-lozenge"/>
+                          <class name="large"/>
+                          <class name="grey"/>
+                        </style>
                         <child>
-                          <object class="GtkBox" id="lozenge">
+                          <object class="GtkImage" id="icon">
                             <property name="halign">center</property>
+                            <!-- this is a placeholder: the icon is actually set in code -->
+                            <property name="icon-name">safety-symbolic</property>
                             <property name="visible">True</property>
-                            <style>
-                              <class name="context-tile-lozenge"/>
-                              <class name="large"/>
-                              <class name="grey"/>
-                            </style>
-                            <child>
-                              <object class="GtkImage" id="icon">
-                                <property name="halign">center</property>
-                                <!-- this is a placeholder: the icon is actually set in code -->
-                                <property name="icon-name">safety-symbolic</property>
-                                <property name="visible">True</property>
-                                <accessibility>
-                                  <relation target="title" type="labelled-by"/>
-                                </accessibility>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                              </packing>
-                            </child>
+                            <accessibility>
+                              <relation target="title" type="labelled-by"/>
+                            </accessibility>
                           </object>
                           <packing>
-                            <property name="fill">False</property>
+                            <property name="expand">True</property>
                           </packing>
                         </child>
-
-                        <child>
-                          <object class="GtkLabel" id="title">
-                            <!-- this is a placeholder: the text is actually set in code -->
-                            <property name="justify">center</property>
-                            <property name="label">Shortwave is safe</property>
-                            <property name="visible">True</property>
-                            <property name="wrap">True</property>
-                            <property name="xalign">0.5</property>
-                            <style>
-                              <class name="title-1"/>
-                            </style>
-                            <accessibility>
-                              <relation target="lozenge" type="label-for"/>
-                            </accessibility>
-                            <style>
-                              <class name="context-tile-title"/>
-                            </style>
-                          </object>
-                        </child>
                       </object>
+                      <packing>
+                        <property name="fill">False</property>
+                      </packing>
                     </child>
 
                     <child>
-                      <object class="GtkListBox" id="permissions_list">
+                      <object class="GtkLabel" id="title">
+                        <!-- this is a placeholder: the text is actually set in code -->
+                        <property name="justify">center</property>
+                        <property name="label">Shortwave is safe</property>
+                        <property name="visible">True</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0.5</property>
+                        <style>
+                          <class name="title-1"/>
+                        </style>
+                        <accessibility>
+                          <relation target="lozenge" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="context-tile-title"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkListBox" id="permissions_list">
+                    <property name="visible">True</property>
+                    <property name="selection_mode">none</property>
+                    <property name="halign">fill</property>
+                    <property name="valign">start</property>
+                    <style>
+                      <class name="content"/>
+                    </style>
+                    <!-- Rows are added in code -->
+                    <placeholder/>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="HdyPreferencesGroup">
+                    <property name="margin-top">20</property>
+                    <property name="title" translatable="yes">Details</property>
+                    <property name="visible">True</property>
+
+                    <child>
+                      <object class="GtkListBox" id="details_list">
                         <property name="visible">True</property>
                         <property name="selection_mode">none</property>
                         <property name="halign">fill</property>
@@ -105,151 +103,129 @@
                         <style>
                           <class name="content"/>
                         </style>
-                        <!-- Rows are added in code -->
-                        <placeholder/>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="HdyPreferencesGroup">
-                        <property name="margin-top">20</property>
-                        <property name="title" translatable="yes">Details</property>
-                        <property name="visible">True</property>
 
                         <child>
-                          <object class="GtkListBox" id="details_list">
+                          <object class="GtkListBoxRow">
                             <property name="visible">True</property>
-                            <property name="selection_mode">none</property>
-                            <property name="halign">fill</property>
-                            <property name="valign">start</property>
-                            <style>
-                              <class name="content"/>
-                            </style>
-
+                            <property name="activatable">False</property>
                             <child>
-                              <object class="GtkListBoxRow">
+                              <object class="GtkBox">
                                 <property name="visible">True</property>
-                                <property name="activatable">False</property>
+                                <property name="margin">12</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">12</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkLabel" id="license_title">
+                                    <property name="ellipsize">end</property>
+                                    <property name="hexpand">True</property>
                                     <property name="visible">True</property>
-                                    <property name="margin">12</property>
-                                    <property name="orientation">horizontal</property>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkLabel" id="license_title">
-                                        <property name="ellipsize">end</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="label" translatable="yes">License</property>
-                                        <accessibility>
-                                          <relation target="license_label" type="label-for"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="license_label">
-                                        <property name="ellipsize">end</property>
-                                        <property name="valign">center</property>
-                                        <property name="visible">True</property>
-                                        <!-- This is a placeholder. The label is set in code. -->
-                                        <property name="label">GNU GPL v3+</property>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                        <accessibility>
-                                          <relation target="license_title" type="labelled-by"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
+                                    <property name="xalign">0</property>
+                                    <property name="yalign">0.5</property>
+                                    <property name="label" translatable="yes">License</property>
+                                    <accessibility>
+                                      <relation target="license_label" type="label-for"/>
+                                    </accessibility>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="license_label">
+                                    <property name="ellipsize">end</property>
+                                    <property name="valign">center</property>
+                                    <property name="visible">True</property>
+                                    <!-- This is a placeholder. The label is set in code. -->
+                                    <property name="label">GNU GPL v3+</property>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                    <accessibility>
+                                      <relation target="license_title" type="labelled-by"/>
+                                    </accessibility>
                                   </object>
                                 </child>
                               </object>
                             </child>
+                          </object>
+                        </child>
 
+                        <child>
+                          <object class="GtkListBoxRow">
+                            <property name="visible">True</property>
+                            <property name="activatable">False</property>
                             <child>
-                              <object class="GtkListBoxRow">
+                              <object class="GtkBox">
+                                <property name="margin">12</property>
                                 <property name="visible">True</property>
-                                <property name="activatable">False</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">12</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="margin">12</property>
+                                  <object class="GtkLabel" id="source_title">
+                                    <property name="ellipsize">end</property>
+                                    <property name="hexpand">True</property>
                                     <property name="visible">True</property>
-                                    <property name="orientation">horizontal</property>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkLabel" id="source_title">
-                                        <property name="ellipsize">end</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="label" translatable="yes" comments="Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).">Source</property>
-                                        <accessibility>
-                                          <relation target="source_label" type="label-for"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="source_label">
-                                        <property name="ellipsize">end</property>
-                                        <property name="valign">center</property>
-                                        <property name="visible">True</property>
-                                        <!-- This is a placeholder. The label is set in code. -->
-                                        <property name="label">flathub.org</property>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                        <accessibility>
-                                          <relation target="source_title" type="labelled-by"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
+                                    <property name="xalign">0</property>
+                                    <property name="yalign">0.5</property>
+                                    <property name="label" translatable="yes" comments="Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).">Source</property>
+                                    <accessibility>
+                                      <relation target="source_label" type="label-for"/>
+                                    </accessibility>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="source_label">
+                                    <property name="ellipsize">end</property>
+                                    <property name="valign">center</property>
+                                    <property name="visible">True</property>
+                                    <!-- This is a placeholder. The label is set in code. -->
+                                    <property name="label">flathub.org</property>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                    <accessibility>
+                                      <relation target="source_title" type="labelled-by"/>
+                                    </accessibility>
                                   </object>
                                 </child>
                               </object>
                             </child>
+                          </object>
+                        </child>
 
+                        <child>
+                          <object class="GtkListBoxRow" id="sdk_row">
+                            <property name="visible">True</property>
+                            <property name="activatable">False</property>
                             <child>
-                              <object class="GtkListBoxRow" id="sdk_row">
+                              <object class="GtkBox">
+                                <property name="margin">12</property>
                                 <property name="visible">True</property>
-                                <property name="activatable">False</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">12</property>
                                 <child>
-                                  <object class="GtkBox">
-                                    <property name="margin">12</property>
+                                  <object class="GtkLabel" id="sdk_title">
+                                    <property name="ellipsize">end</property>
+                                    <property name="hexpand">True</property>
                                     <property name="visible">True</property>
-                                    <property name="orientation">horizontal</property>
-                                    <property name="spacing">12</property>
-                                    <child>
-                                      <object class="GtkLabel" id="sdk_title">
-                                        <property name="ellipsize">end</property>
-                                        <property name="hexpand">True</property>
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0.5</property>
-                                        <property name="label" translatable="yes">SDK</property>
-                                        <accessibility>
-                                          <relation target="sdk_label" type="label-for"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel" id="sdk_label">
-                                        <property name="ellipsize">end</property>
-                                        <property name="valign">center</property>
-                                        <property name="visible">True</property>
-                                        <!-- This is a placeholder. The label is set in code. -->
-                                        <property name="label">GNOME 3.36.12</property>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                        <accessibility>
-                                          <relation target="sdk_title" type="labelled-by"/>
-                                        </accessibility>
-                                      </object>
-                                    </child>
+                                    <property name="xalign">0</property>
+                                    <property name="yalign">0.5</property>
+                                    <property name="label" translatable="yes">SDK</property>
+                                    <accessibility>
+                                      <relation target="sdk_label" type="label-for"/>
+                                    </accessibility>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="sdk_label">
+                                    <property name="ellipsize">end</property>
+                                    <property name="valign">center</property>
+                                    <property name="visible">True</property>
+                                    <!-- This is a placeholder. The label is set in code. -->
+                                    <property name="label">GNOME 3.36.12</property>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                    <accessibility>
+                                      <relation target="sdk_title" type="labelled-by"/>
+                                    </accessibility>
                                   </object>
                                 </child>
                               </object>
@@ -258,15 +234,15 @@
                         </child>
                       </object>
                     </child>
+                  </object>
+                </child>
 
-                    <child>
-                      <object class="GtkLinkButton">
-                        <property name="label" translatable="yes">How to add missing information</property>
-                        <property name="margin-top">16</property>
-                        <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety</property>
-                        <property name="visible">True</property>
-                      </object>
-                    </child>
+                <child>
+                  <object class="GtkLinkButton">
+                    <property name="label" translatable="yes">How to add missing information</property>
+                    <property name="margin-top">16</property>
+                    <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#safety</property>
+                    <property name="visible">True</property>
                   </object>
                 </child>
               </object>

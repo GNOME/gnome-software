@@ -48,6 +48,7 @@ gnome_software_sources = [
   'gs-folders.c',
   'gs-hardware-support-context-dialog.c',
   'gs-info-bar.c',
+  'gs-info-window.c',
   'gs-installed-page.c',
   'gs-language.c',
   'gs-license-tile.c',

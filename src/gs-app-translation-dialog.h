@@ -15,12 +15,13 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-info-window.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_APP_TRANSLATION_DIALOG (gs_app_translation_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAppTranslationDialog, gs_app_translation_dialog, GS, APP_TRANSLATION_DIALOG, HdyWindow)
+G_DECLARE_FINAL_TYPE (GsAppTranslationDialog, gs_app_translation_dialog, GS, APP_TRANSLATION_DIALOG, GsInfoWindow)
 
 GsAppTranslationDialog	*gs_app_translation_dialog_new		(GsApp			*app);
 

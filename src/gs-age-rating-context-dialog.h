@@ -15,12 +15,13 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-info-window.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_AGE_RATING_CONTEXT_DIALOG (gs_age_rating_context_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, GS, AGE_RATING_CONTEXT_DIALOG, HdyWindow)
+G_DECLARE_FINAL_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, GS, AGE_RATING_CONTEXT_DIALOG, GsInfoWindow)
 
 GsAgeRatingContextDialog	*gs_age_rating_context_dialog_new		(GsApp				*app);
 
