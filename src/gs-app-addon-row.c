@@ -129,14 +129,14 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	switch (gs_app_get_state (row->app)) {
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
+		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), TRUE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (row->checkbox, TRUE);
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
+		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), FALSE);
 		gtk_widget_set_visible (row->button_remove, FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
@@ -150,7 +150,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
+		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), TRUE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	case GS_APP_STATE_REMOVING:
@@ -161,7 +161,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	default:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
+		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	}
@@ -293,13 +293,13 @@ gs_app_addon_row_init (GsAppAddonRow *row)
 void
 gs_app_addon_row_set_selected (GsAppAddonRow *row, gboolean selected)
 {
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), selected);
+	gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), selected);
 }
 
 gboolean
 gs_app_addon_row_get_selected (GsAppAddonRow *row)
 {
-	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (row->checkbox));
+	return gtk_check_button_get_active (GTK_CHECK_BUTTON (row->checkbox));
 }
 
 GtkWidget *
