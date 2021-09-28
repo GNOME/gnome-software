@@ -97,7 +97,7 @@ add_size_row (GtkListBox   *list_box,
 	row = gs_context_dialog_row_new_text (size_bytes_str, GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 					      title, description);
 	gs_context_dialog_row_set_size_groups (GS_CONTEXT_DIALOG_ROW (row), lozenge_size_group, NULL, NULL);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 static void

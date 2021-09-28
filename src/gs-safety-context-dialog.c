@@ -100,7 +100,7 @@ add_permission_row (GtkListBox                   *list_box,
 					 has_permission ? item_rating : GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 					 has_permission ? title_with_permission : title_without_permission,
 					 has_permission ? description_with_permission : description_without_permission);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 static void

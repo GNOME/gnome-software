@@ -315,7 +315,7 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	                  G_CALLBACK (app_row_button_clicked_cb),
 	                  self);
 
-	gtk_list_box_insert (GTK_LIST_BOX (self->list_box_results), app_row, -1);
+	gtk_list_box_append (GTK_LIST_BOX (self->list_box_results), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name,

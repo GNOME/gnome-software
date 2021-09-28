@@ -151,7 +151,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_search_page_app_row_clicked_cb),
 				  self);
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_search), app_row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_search), app_row);
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 					    self->sizegroup_image,
 					    self->sizegroup_name,
@@ -180,7 +180,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gtk_widget_set_margin_end (w, 20);
 		context = gtk_widget_get_style_context (w);
 		gtk_style_context_add_class (context, "dim-label");
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_search), w, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_search), w);
 		gtk_widget_show (w);
 	} else {
 		/* reset to default */

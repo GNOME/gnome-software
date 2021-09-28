@@ -142,7 +142,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (_app_row_button_clicked_cb),
 			  self);
-	gtk_list_box_insert (GTK_LIST_BOX (self->listbox), app_row, -1);
+	gtk_list_box_append (GTK_LIST_BOX (self->listbox), app_row);
 	gs_app_list_add (self->list, app);
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),

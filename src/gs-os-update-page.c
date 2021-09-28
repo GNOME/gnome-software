@@ -421,7 +421,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 				create_section (page, section);
 
 			row = create_app_row (app_related);
-			gtk_list_box_insert (GTK_LIST_BOX (page->list_boxes[section]), row, -1);
+			gtk_list_box_append (GTK_LIST_BOX (page->list_boxes[section]), row);
 		}
 	} else {
 		adw_window_title_set_title (page->window_title, NULL);

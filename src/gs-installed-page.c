@@ -253,16 +253,16 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 
 	switch (gs_installed_page_get_app_section (app)) {
 	case GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING:
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install_in_progress), app_row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_in_progress), app_row);
 		break;
 	case GS_UPDATE_LIST_SECTION_REMOVABLE_APPS:
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install_apps), app_row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_apps), app_row);
 		break;
 	case GS_UPDATE_LIST_SECTION_SYSTEM_APPS:
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install_system_apps), app_row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_system_apps), app_row);
 		break;
 	case GS_UPDATE_LIST_SECTION_ADDONS:
-		gtk_list_box_insert (GTK_LIST_BOX (self->list_box_install_addons), app_row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_addons), app_row);
 		break;
 	default:
 		g_assert_not_reached ();

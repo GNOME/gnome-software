@@ -143,7 +143,7 @@ add_relation_row (GtkListBox                   *list_box,
 		*chosen_rating = rating;
 
 	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 /**
