@@ -161,6 +161,10 @@ gs_flatpak_claim_app_list (GsFlatpak *self,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 
+		/* Do not claim ownership of a wildcard app */
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+
 		if (gs_app_get_origin (app))
 			gs_flatpak_set_app_origin (self, app, gs_app_get_origin (app), NULL, NULL);
 
