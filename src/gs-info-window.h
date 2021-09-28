@@ -28,4 +28,6 @@ struct _GsInfoWindowClass
 
 GsInfoWindow	*gs_info_window_new	(void);
 
+void		gs_info_window_set_child (GsInfoWindow *self,
+					  GtkWidget    *widget);
 G_END_DECLS
