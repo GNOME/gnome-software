@@ -228,6 +228,23 @@
                                     </accessibility>
                                   </object>
                                 </child>
+                                <child>
+                                  <object class="GtkImage" id="sdk_eol_image">
+                                    <property name="icon-name">dialog-warning-symbolic</property>
+                                    <property name="visible">True</property>
+                                    <style>
+                                      <class name="eol-red"/>
+                                    </style>
+                                    <accessibility>
+                                      <relation target="sdk_title" type="labelled-by"/>
+                                    </accessibility>
+                                    <child internal-child="accessible">
+                                      <object class="AtkObject">
+                                        <property name="accessible-name" translatable="yes">Outdated SDK version</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>

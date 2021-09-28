@@ -61,6 +61,7 @@ struct _GsSafetyContextDialog
 	GtkLabel		*source_label;
 	GBinding		*source_label_binding;  /* (owned) (nullable) */
 	GtkLabel		*sdk_label;
+	GtkImage		*sdk_eol_image;
 	GtkWidget		*sdk_row;
 };
 
@@ -321,6 +322,18 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    _("The developer of this app has been verified to be who they say they are"),
 			    NULL, NULL, NULL);
 
+	add_permission_row (self->permissions_list, &chosen_rating,
+			    gs_app_get_metadata_item (self->app, "GnomeSoftware::EolReason") != NULL || (
+			    gs_app_get_runtime (self->app) != NULL &&
+			    gs_app_get_metadata_item (gs_app_get_runtime (self->app), "GnomeSoftware::EolReason") != NULL),
+			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
+			    "dialog-warning-symbolic",
+			    /* Translators: This indicates an app uses an outdated SDK.
+			     * It’s used in a context tile, so should be short. */
+			    _("Insecure Dependencies"),
+			    _("Software or its dependencies are no longer supported and may be insecure"),
+			    NULL, NULL, NULL);
+
 	/* Update the UI. */
 	switch (chosen_rating) {
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
@@ -382,8 +395,10 @@ update_sdk (GsSafetyContextDialog *self)
 	runtime = gs_app_get_runtime (self->app);
 
 	if (runtime != NULL) {
+		GtkStyleContext *context;
 		g_autofree gchar *label = NULL;
 		const gchar *version = gs_app_get_version_ui (runtime);
+		gboolean is_eol = gs_app_get_metadata_item (runtime, "GnomeSoftware::EolReason") != NULL;
 
 		if (version != NULL) {
 			/* Translators: The first placeholder is an app runtime
@@ -396,6 +411,18 @@ update_sdk (GsSafetyContextDialog *self)
 		}
 
 		gtk_label_set_label (self->sdk_label, label);
+
+		context = gtk_widget_get_style_context (GTK_WIDGET (self->sdk_label));
+
+		if (is_eol) {
+			gtk_style_context_add_class (context, "eol-red");
+			gtk_style_context_remove_class (context, "dim-label");
+		} else {
+			gtk_style_context_add_class (context, "dim-label");
+			gtk_style_context_remove_class (context, "eol-red");
+		}
+
+		gtk_widget_set_visible (GTK_WIDGET (self->sdk_eol_image), is_eol);
 	}
 
 	/* Only show the row if a runtime was found. */
@@ -500,6 +527,7 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, license_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, source_label);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_label);
+	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_eol_image);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, sdk_row);
 }
 
