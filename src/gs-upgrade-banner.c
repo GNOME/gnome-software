@@ -223,44 +223,6 @@ cancel_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 	g_signal_emit (self, signals[SIGNAL_CANCEL_CLICKED], 0);
 }
 
-static gboolean
-cancel_button_size_allocate_cb (GtkWidget *widget,
-				GdkRectangle *allocation,
-				gpointer user_data)
-{
-	GsUpgradeBanner *self = user_data;
-	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	gint size = allocation->width;
-
-	/* Make sure it's a square button, thus looks like a circle */
-	if (allocation->width != allocation->height) {
-		size = MAX (allocation->width, allocation->height);
-		gtk_widget_set_size_request (widget, size, size);
-	}
-
-	/* Also let the spacer be of the same size, to have the progress bar centered */
-	size += gtk_widget_get_margin_start (widget) + gtk_widget_get_margin_end (widget);
-	gtk_widget_set_size_request (priv->label_upgrades_downloading_spacer, size, -1);
-
-	return FALSE;
-}
-
-static gboolean
-box_upgrades_download_size_allocate_cb (GtkWidget *widget,
-					GdkRectangle *allocation,
-					gpointer user_data)
-{
-	GsUpgradeBanner *self = user_data;
-	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	gint size = allocation->height;
-
-	/* Make them all the same height, ruled by the first box shown */
-	gtk_widget_set_size_request (priv->box_upgrades_downloading, -1, size);
-	gtk_widget_set_size_request (priv->box_upgrades_install, -1, size);
-
-	return FALSE;
-}
-
 void
 gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 {
@@ -338,10 +300,6 @@ gs_upgrade_banner_init (GsUpgradeBanner *self)
 	g_signal_connect (priv->button_upgrades_cancel, "clicked",
 	                  G_CALLBACK (cancel_button_cb),
 	                  self);
-	g_signal_connect (priv->button_upgrades_cancel, "size-allocate",
-			  G_CALLBACK (cancel_button_size_allocate_cb), self);
-	g_signal_connect (priv->box_upgrades_download, "size-allocate",
-			  G_CALLBACK (box_upgrades_download_size_allocate_cb), self);
 }
 
 static void
