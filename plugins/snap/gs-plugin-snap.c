@@ -933,7 +933,7 @@ refine_app_with_client (GsPlugin             *plugin,
 			GError              **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *snap_name, *name, *version;
+	const gchar *snap_name, *name, *website, *contact, *version;
 	g_autofree gchar *channel = NULL;
 	g_autofree gchar *store_channel = NULL;
 	g_autofree gchar *tracking_channel = NULL;
@@ -1001,8 +1001,14 @@ refine_app_with_client (GsPlugin             *plugin,
 	if (name == NULL || g_strcmp0 (name, "") == 0)
 		name = snapd_snap_get_name (snap);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
-	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, snapd_snap_get_website (snap));
-	gs_app_set_url (app, AS_URL_KIND_CONTACT, snapd_snap_get_contact (snap));
+	website = snapd_snap_get_website (snap);
+	if (g_strcmp0 (website, "") == 0)
+		website = NULL;
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, website);
+	contact = snapd_snap_get_contact (snap);
+	if (g_strcmp0 (contact, "") == 0)
+		contact = NULL;
+	gs_app_set_url (app, AS_URL_KIND_CONTACT, contact);
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (snap));
 	description = gs_plugin_snap_get_description_safe (snap);
 	if (description != NULL)
