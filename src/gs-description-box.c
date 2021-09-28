@@ -200,7 +200,6 @@ gs_description_box_init (GsDescriptionBox *box)
 		"vexpand", FALSE,
 		"valign", GTK_ALIGN_START,
 		"visible", TRUE,
-		"can-focus", FALSE,
 		"max-width-chars", 40,
 		"selectable", TRUE,
 		"wrap", TRUE,
