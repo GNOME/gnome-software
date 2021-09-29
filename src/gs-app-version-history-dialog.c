@@ -17,12 +17,12 @@
 
 struct _GsAppVersionHistoryDialog
 {
-	GtkDialog	 parent_instance;
+	GsInfoWindow	 parent_instance;
 	GsApp		*app;
 	GtkWidget	*listbox;
 };
 
-G_DEFINE_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, GS_TYPE_INFO_WINDOW)
 
 static void
 populate_version_history (GsAppVersionHistoryDialog *dialog,
@@ -83,7 +83,6 @@ gs_app_version_history_dialog_new (GtkWindow *parent, GsApp *app)
 	GsAppVersionHistoryDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_APP_VERSION_HISTORY_DIALOG,
-			       "use-header-bar", TRUE,
 			       "transient-for", parent,
 			       "modal", TRUE,
 			       NULL);

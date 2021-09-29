@@ -11,12 +11,13 @@
 #include <gtk/gtk.h>
 
 #include "gnome-software-private.h"
+#include "gs-info-window.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_APP_VERSION_HISTORY_DIALOG (gs_app_version_history_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, GS, APP_VERSION_HISTORY_DIALOG, GtkDialog)
+G_DECLARE_FINAL_TYPE (GsAppVersionHistoryDialog, gs_app_version_history_dialog, GS, APP_VERSION_HISTORY_DIALOG, GsInfoWindow)
 
 GtkWidget	*gs_app_version_history_dialog_new	(GtkWindow	*parent,
 							 GsApp		*app);
