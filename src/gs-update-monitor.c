@@ -613,7 +613,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 			notify_list = apps;
 
 		notify_about_pending_updates (monitor, notify_list);
-		reset_update_notification_timestamp (monitor);
 	}
 }
 
