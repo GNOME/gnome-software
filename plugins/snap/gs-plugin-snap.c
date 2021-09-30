@@ -855,13 +855,83 @@ load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *id, S
 	return FALSE;
 }
 
-static gchar *
-gs_plugin_snap_get_description_safe (SnapdSnap *snap)
+static void serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation);
+
+static gboolean
+is_block_node (SnapdMarkdownNode *node)
 {
-	GString *str = g_string_new (snapd_snap_get_description (snap));
-	as_gstring_replace (str, "\r", "");
-	as_gstring_replace (str, "  ", " ");
-	return g_string_free (str, FALSE);
+	switch (snapd_markdown_node_get_node_type (node)) {
+	case SNAPD_MARKDOWN_NODE_TYPE_PARAGRAPH:
+	case SNAPD_MARKDOWN_NODE_TYPE_UNORDERED_LIST:
+	case SNAPD_MARKDOWN_NODE_TYPE_CODE_BLOCK:
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
+static void
+serialize_nodes (GPtrArray *nodes, GString *text, guint indentation)
+{
+	for (guint i = 0; i < nodes->len; i++) {
+		SnapdMarkdownNode *node = g_ptr_array_index (nodes, i);
+
+		if (i != 0) {
+			SnapdMarkdownNode *last_node = g_ptr_array_index (nodes, i - 1);
+			if (is_block_node (node) && is_block_node (last_node))
+				g_string_append (text, "\n");
+		}
+
+		serialize_node (node, text, indentation);
+	}
+}
+
+static void
+serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation)
+{
+	GPtrArray *children = snapd_markdown_node_get_children (node);
+
+	switch (snapd_markdown_node_get_node_type (node)) {
+	case SNAPD_MARKDOWN_NODE_TYPE_TEXT:
+		g_string_append (text, snapd_markdown_node_get_text (node));
+		return;
+
+	case SNAPD_MARKDOWN_NODE_TYPE_PARAGRAPH:
+	case SNAPD_MARKDOWN_NODE_TYPE_UNORDERED_LIST:
+	case SNAPD_MARKDOWN_NODE_TYPE_CODE_BLOCK:
+		serialize_nodes (children, text, indentation);
+		g_string_append (text, "\n");
+		return;
+
+	case SNAPD_MARKDOWN_NODE_TYPE_LIST_ITEM:
+		for (guint i = 0; i < indentation; i++) {
+			g_string_append (text, "    ");
+		}
+		g_string_append_printf (text, " • ");
+		serialize_nodes (children, text, indentation + 1);
+		return;
+
+	case SNAPD_MARKDOWN_NODE_TYPE_CODE_SPAN:
+	case SNAPD_MARKDOWN_NODE_TYPE_EMPHASIS:
+	case SNAPD_MARKDOWN_NODE_TYPE_STRONG_EMPHASIS:
+	case SNAPD_MARKDOWN_NODE_TYPE_URL:
+		return serialize_nodes (children, text, indentation);
+
+	default:
+		g_assert_not_reached();
+	}
+}
+
+static gchar *
+gs_plugin_snap_get_description (SnapdSnap *snap)
+{
+	g_autoptr(SnapdMarkdownParser) parser = snapd_markdown_parser_new (SNAPD_MARKDOWN_VERSION_0);
+	g_autoptr(GPtrArray) nodes = NULL;
+	g_autoptr(GString) text = g_string_new ("");
+
+	nodes = snapd_markdown_parser_parse (parser, snapd_snap_get_description (snap));
+	serialize_nodes (nodes, text, 0);
+	return g_string_free (g_steal_pointer (&text), FALSE);
 }
 
 static void
@@ -1010,9 +1080,8 @@ refine_app_with_client (GsPlugin             *plugin,
 		contact = NULL;
 	gs_app_set_url (app, AS_URL_KIND_CONTACT, contact);
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (snap));
-	description = gs_plugin_snap_get_description_safe (snap);
-	if (description != NULL)
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
+	description = gs_plugin_snap_get_description (snap);
+	gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (snap));
 	developer_name = snapd_snap_get_publisher_display_name (snap);
 	if (developer_name == NULL)
