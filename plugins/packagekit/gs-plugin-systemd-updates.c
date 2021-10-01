@@ -83,6 +83,7 @@ gs_plugin_systemd_update_cache (GsPlugin *plugin, GError **error)
 				     PK_OFFLINE_ERROR_NO_DATA)) {
 			return TRUE;
 		}
+		gs_plugin_packagekit_error_convert (&error_local);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -451,8 +452,10 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 		return TRUE;
 
 	/* cancel offline update */
-	if (!gs_systemd_call_cancel (plugin, cancellable, error))
+	if (!gs_systemd_call_cancel (plugin, cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
+	}
 
 	/* don't rely on the file monitor */
 	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
@@ -470,5 +473,9 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
-	return gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error);
+	if (!gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
 }
