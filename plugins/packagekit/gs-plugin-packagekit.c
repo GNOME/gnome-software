@@ -1680,8 +1680,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	priv->connection_history = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
 						   error);
-	if (priv->connection_history == NULL)
+	if (priv->connection_history == NULL) {
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
+	}
 
 	reload_proxy_settings (plugin, cancellable);
 
@@ -1726,6 +1728,7 @@ gs_plugin_packagekit_refine_history (GsPlugin      *plugin,
 					      cancellable,
 					      &error_local);
 	if (result == NULL) {
+		g_dbus_error_strip_remote_error (error_local);
 		if (g_error_matches (error_local,
 				     G_DBUS_ERROR,
 				     G_DBUS_ERROR_UNKNOWN_METHOD)) {
@@ -1901,8 +1904,10 @@ gs_plugin_packagekit_local_check_installed (GsPlugin *plugin,
 					 -1);
 	results = pk_client_resolve (PK_CLIENT (priv->task_local), filter, (gchar **) names,
 				     cancellable, NULL, NULL, error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
+	}
 	packages = pk_results_get_package_array (results);
 	if (packages->len > 0) {
 		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
@@ -2114,6 +2119,8 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 			return TRUE;
 		}
 
+		gs_plugin_packagekit_error_convert (&error_local);
+
 		g_set_error (error,
 		             GS_PLUGIN_ERROR,
 		             GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -2124,8 +2131,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 	/* get the mtime of the results */
 	mtime = pk_offline_get_results_mtime (error);
-	if (mtime == 0)
+	if (mtime == 0) {
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
+	}
 
 	/* only return results if successful */
 	exit_code = pk_results_get_exit_code (results);
