@@ -77,7 +77,10 @@ gs_plugin_packagekit_error_convert (GError **error)
 	if (error == NULL)
 		return FALSE;
 
-	/* this are allowed for low-level errors */
+	if (*error != NULL)
+		g_dbus_error_strip_remote_error (*error);
+
+	/* these are allowed for low-level errors */
 	if (gs_utils_error_convert_gio (error))
 		return TRUE;
 
