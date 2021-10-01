@@ -44,7 +44,8 @@ struct _GsUpdateMonitor {
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
 	guint		 check_daily_id;		/* every 3rd day */
-	guint		 notification_blocked_id;	/* rate limit notifications */
+
+	gint64		 last_notification_time_usec;	/* to notify once per day only */
 };
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
@@ -87,14 +88,6 @@ with_app_data_free (WithAppData *data)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(WithAppData, with_app_data_free);
-
-static gboolean
-reenable_offline_update_notification (gpointer data)
-{
-	GsUpdateMonitor *monitor = data;
-	monitor->notification_blocked_id = 0;
-	return G_SOURCE_REMOVE;
-}
 
 static void
 check_updates_kind (GsAppList *apps,
@@ -265,16 +258,22 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 			      GsAppList *apps)
 {
 	const gchar *title = NULL, *body = NULL;
+	gint64 time_diff_sec;
 	g_autoptr(GNotification) nn = NULL;
 
-	if (monitor->notification_blocked_id > 0)
+	time_diff_sec = (g_get_real_time () - monitor->last_notification_time_usec) / G_USEC_PER_SEC;
+	if (time_diff_sec < SECONDS_IN_A_DAY) {
+		g_debug ("Skipping update notification daily check, because made one only %" G_GINT64_FORMAT "s ago",
+			 time_diff_sec);
 		return;
+	}
 
-	/* rate limit update notifications to once per day */
-	monitor->notification_blocked_id = g_timeout_add_seconds (24 * SECONDS_IN_AN_HOUR, reenable_offline_update_notification, monitor);
-
-	if (!should_notify_about_pending_updates (monitor, apps, &title, &body))
+	if (!should_notify_about_pending_updates (monitor, apps, &title, &body)) {
+		g_debug ("No update notification needed");
 		return;
+	}
+
+	monitor->last_notification_time_usec = g_get_real_time ();
 
 	g_debug ("Notify about update: '%s'", title);
 
@@ -614,7 +613,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 			notify_list = apps;
 
 		notify_about_pending_updates (monitor, notify_list);
-		reset_update_notification_timestamp (monitor);
 	}
 }
 
@@ -1393,10 +1391,6 @@ gs_update_monitor_dispose (GObject *object)
 	if (monitor->check_startup_id != 0) {
 		g_source_remove (monitor->check_startup_id);
 		monitor->check_startup_id = 0;
-	}
-	if (monitor->notification_blocked_id != 0) {
-		g_source_remove (monitor->notification_blocked_id);
-		monitor->notification_blocked_id = 0;
 	}
 	if (monitor->cleanup_notifications_id != 0) {
 		g_source_remove (monitor->cleanup_notifications_id);
