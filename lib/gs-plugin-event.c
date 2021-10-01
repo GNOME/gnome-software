@@ -251,6 +251,10 @@ gs_plugin_event_set_error (GsPluginEvent *event, const GError *error)
 {
 	g_clear_error (&event->error);
 	event->error = g_error_copy (error);
+	if (event->error) {
+		/* Just in case the caller left there any D-Bus remote error notes */
+		g_dbus_error_strip_remote_error (event->error);
+	}
 }
 
 /**
