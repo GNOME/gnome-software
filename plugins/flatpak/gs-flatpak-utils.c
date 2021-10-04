@@ -98,8 +98,10 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
-	if (title != NULL)
+	if (title != NULL) {
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, title);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, title);
+	}
 
 	/* origin_ui on a remote is the repo dialogue section name,
 	 * not the remote title */
