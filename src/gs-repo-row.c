@@ -48,7 +48,8 @@ refresh_ui (GsRepoRow *row)
 	gboolean active = FALSE;
 	gboolean state_sensitive = FALSE;
 	gboolean busy = priv->busy_counter> 0;
-	gboolean is_system_repo;
+	gboolean is_provenance;
+	gboolean is_compulsory;
 
 	if (priv->repo == NULL) {
 		gtk_widget_set_sensitive (priv->disable_switch, FALSE);
@@ -87,11 +88,12 @@ refresh_ui (GsRepoRow *row)
 		break;
 	}
 
-	is_system_repo = gs_app_has_quirk (priv->repo, GS_APP_QUIRK_PROVENANCE);
+	is_provenance = gs_app_has_quirk (priv->repo, GS_APP_QUIRK_PROVENANCE);
+	is_compulsory = gs_app_has_quirk (priv->repo, GS_APP_QUIRK_COMPULSORY);
 
 	/* Disable for the system repos, if installed */
-	gtk_widget_set_sensitive (priv->disable_switch, priv->supports_enable_disable && (state_sensitive || !is_system_repo || priv->always_allow_enable_disable));
-	gtk_widget_set_visible (priv->remove_button, priv->supports_remove && !is_system_repo);
+	gtk_widget_set_sensitive (priv->disable_switch, priv->supports_enable_disable && (state_sensitive || !is_compulsory || priv->always_allow_enable_disable));
+	gtk_widget_set_visible (priv->remove_button, priv->supports_remove && !is_provenance && !is_compulsory);
 
 	/* Set only the 'state' to visually indicate the state is not saved yet */
 	if (busy)
