@@ -1,9 +1,9 @@
-FROM debian:buster
+FROM debian:bookworm
 
 RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     appstream \
     clang \
-    clang-tools-7 \
+    clang-tools \
     dbus \
     desktop-file-utils \
     docbook-xsl \
@@ -20,7 +20,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     lcov \
     libaccountsservice-dev \
     libappstream-dev \
-    libcurl4-openssl-dev \
+    libcurl4-gnutls-dev \
     libflatpak-dev \
     libfwupd-dev \
     libgirepository1.0-dev \
