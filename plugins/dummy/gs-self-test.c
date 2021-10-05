@@ -742,6 +742,9 @@ main (int argc, char **argv)
 	g_content_type_set_mime_dirs (NULL);
 #endif
 
+	/* Force the GTK resources to be registered, needed for fallback icons. */
+	gtk_init_check ();
+
 	/* Similarly, add the system-wide icon theme path before it’s
 	 * overwritten by %G_TEST_OPTION_ISOLATE_DIRS. */
 	gs_test_expose_icon_theme_paths ();
