@@ -56,7 +56,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     xz-utils \
  && rm -rf /usr/share/doc/* /usr/share/man/*
 
-RUN pip3 install meson==0.50.0
+RUN pip3 install meson==0.55.0
 
 # Enable passwordless sudo for sudo users
 RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
