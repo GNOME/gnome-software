@@ -262,7 +262,7 @@ remove_confirm_repo (GsReposDialog *dialog,
 	g_weak_ref_init (&remove_data->row_weakref, row);
 
 	/* TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64" */
-	message = g_strdup_printf (_("Software that has been installed from “%s” will cease receive updates."),
+	message = g_strdup_printf (_("Software that has been installed from “%s” will cease to receive updates."),
 			gs_app_get_name (repo));
 
 	/* ask for confirmation */
