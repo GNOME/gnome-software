@@ -937,14 +937,24 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 				      GCancellable *cancellable,
 				      GError **error)
 {
+	g_autoptr(GsAppList) previous_list = NULL;
+
+	if (list != gs_plugin_job_get_list (helper->plugin_job)) {
+		previous_list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
+		gs_plugin_job_set_list (helper->plugin_job, list);
+	}
+
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (helper->plugin_loader, list);
 
 	/* run each plugin */
 	if (!gs_plugin_loader_run_refine_filter (helper, list,
 						 GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						 cancellable, error))
+						 cancellable, error)) {
+		if (previous_list != NULL)
+			gs_plugin_job_set_list (helper->plugin_job, previous_list);
 		return FALSE;
+	}
 
 	/* ensure these are sorted by score */
 	if (gs_plugin_job_has_refine_flags (helper->plugin_job,
@@ -983,6 +993,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 								   addons_list,
 								   cancellable,
 								   error)) {
+				if (previous_list != NULL)
+					gs_plugin_job_set_list (helper->plugin_job, previous_list);
 				return FALSE;
 			}
 		}
@@ -1004,6 +1016,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 								   list2,
 								   cancellable,
 								   error)) {
+				if (previous_list != NULL)
+					gs_plugin_job_set_list (helper->plugin_job, previous_list);
 				return FALSE;
 			}
 		}
@@ -1032,10 +1046,15 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 								   related_list,
 								   cancellable,
 								   error)) {
+				if (previous_list != NULL)
+					gs_plugin_job_set_list (helper->plugin_job, previous_list);
 				return FALSE;
 			}
 		}
 	}
+
+	if (previous_list != NULL)
+		gs_plugin_job_set_list (helper->plugin_job, previous_list);
 
 	/* success */
 	return TRUE;
