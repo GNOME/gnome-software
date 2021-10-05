@@ -4,10 +4,10 @@
   <template class="GsHardwareSupportContextDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app">Hardware Support</property>
     <child>
-      <object class="HdyPreferencesPage">
+      <object class="AdwPreferencesPage">
         <property name="visible">True</property>
         <child>
-          <object class="HdyPreferencesGroup">
+          <object class="AdwPreferencesGroup">
             <property name="visible">True</property>
 
             <child>
@@ -18,7 +18,10 @@
 
                 <child>
                   <object class="GtkBox">
-                    <property name="margin">20</property>
+                    <property name="margin-top">20</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
                     <property name="visible">True</property>
@@ -35,21 +38,17 @@
                         <child>
                           <object class="GtkImage" id="icon">
                             <property name="halign">center</property>
+                            <property name="hexpand">True</property>
                             <!-- this is a placeholder: the icon is actually set in code -->
                             <property name="icon-name">safety-symbolic</property>
+                            <property name="pixel-size">24</property>
                             <property name="visible">True</property>
                             <accessibility>
-                              <relation target="title" type="labelled-by"/>
+                              <relation name="labelled-by">title</relation>
                             </accessibility>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                       </object>
-                      <packing>
-                        <property name="fill">False</property>
-                      </packing>
                     </child>
 
                     <child>
@@ -63,9 +62,6 @@
                         <style>
                           <class name="title-1"/>
                         </style>
-                        <accessibility>
-                          <relation target="lozenge" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="context-tile-title"/>
                         </style>

@@ -20,18 +20,19 @@
 
 struct _GsUpdateDialog
 {
-	HdyWindow	 parent_instance;
+	AdwWindow	 parent_instance;
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GsApp		*app;
-	GtkWidget	*deck;
+	GtkWidget	*leaflet;
 	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	AdwWindowTitle	*window_title;
 };
 
-G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_WINDOW)
 
 typedef enum {
 	PROP_PLUGIN_LOADER = 1,
@@ -44,26 +45,22 @@ static void gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog);
 static void gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app);
 
 static void
-deck_child_transition_cb (HdyDeck *deck, GParamSpec *pspec, GsUpdateDialog *dialog)
+leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDialog *dialog)
 {
 	GtkWidget *child;
 
-	if (hdy_deck_get_transition_running (deck))
+	if (adw_leaflet_get_child_transition_running (leaflet))
 		return;
 
-	while ((child = hdy_deck_get_adjacent_child (deck, HDY_NAVIGATION_DIRECTION_FORWARD)))
-		gtk_widget_destroy (child);
+	while ((child = adw_leaflet_get_adjacent_child (leaflet, ADW_NAVIGATION_DIRECTION_FORWARD)))
+		adw_leaflet_remove (leaflet, child);
 }
 
 static void
-installed_updates_row_activated_cb (GtkListBox *list_box,
-				    GtkListBoxRow *row,
+installed_updates_row_activated_cb (GsUpdateList *update_list,
+				    GsApp *app,
 				    GsUpdateDialog *dialog)
 {
-	GsApp *app;
-
-	app = gs_app_row_get_app (GS_APP_ROW (row));
-
 	gs_update_dialog_show_update_details (dialog, app);
 }
 
@@ -107,7 +104,6 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	/* set the header title using any one of the applications */
 	install_date = gs_app_get_install_date (gs_app_list_index (list, 0));
 	if (install_date > 0) {
-		GtkWidget *header;
 		g_autoptr(GDateTime) date = NULL;
 		g_autofree gchar *date_str = NULL;
 		g_autofree gchar *subtitle = NULL;
@@ -120,13 +116,12 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		   The date format is defined by the locale's preferred date representation
 		   ("%x" in strftime.) */
 		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
-		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
-		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
+		adw_window_title_set_subtitle (dialog->window_title, subtitle);
 	}
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
-	gs_container_remove_all (GTK_CONTAINER (dialog->list_box_installed_updates));
+	gs_update_list_remove_all (GS_UPDATE_LIST (dialog->list_box_installed_updates));
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
 					gs_app_list_index (list, i));
@@ -169,7 +164,7 @@ unset_focus (GtkWidget *widget)
 static void
 back_clicked_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
-	hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
+	adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
 }
 
 static void
@@ -210,49 +205,38 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	gtk_widget_show (page);
 
-	gtk_container_add (GTK_CONTAINER (dialog->deck), page);
-	hdy_deck_set_visible_child (HDY_DECK (dialog->deck), page);
+	adw_leaflet_append (ADW_LEAFLET (dialog->leaflet), page);
+	adw_leaflet_set_visible_child (ADW_LEAFLET (dialog->leaflet), page);
 }
 
 static gboolean
-key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+key_pressed_cb (GtkEventControllerKey *key_controller,
+                guint                  keyval,
+                guint                  keycode,
+                GdkModifierType        state,
+                GsUpdateDialog        *dialog)
 {
-	GsUpdateDialog *dialog = (GsUpdateDialog *) widget;
-	GdkKeymap *keymap;
-	GdkModifierType state;
-	gboolean is_rtl;
+	gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
 
-	state = event->state;
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (widget));
-	gdk_keymap_add_virtual_modifiers (keymap, &state);
-	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
-
-	if (event->keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (dialog));
-
-		return GDK_EVENT_STOP;
-	}
-
-	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
-	    event->keyval == GDK_KEY_Back) {
-		hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
+	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
+	    keyval == GDK_KEY_Back) {
+		adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
 		return GDK_EVENT_STOP;
 	}
 
 	return GDK_EVENT_PROPAGATE;
 }
 
-static gboolean
-button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
+static void
+button_pressed_cb (GtkGestureClick *click_gesture,
+                   gint             n_press,
+                   gdouble          x,
+                   gdouble          y,
+                   GsUpdateDialog  *dialog)
 {
-	/* Mouse hardware back button is 8 */
-	if (event->button != 8)
-		return GDK_EVENT_PROPAGATE;
-
-	hdy_deck_navigate (HDY_DECK (dialog->deck), HDY_NAVIGATION_DIRECTION_BACK);
-	return GDK_EVENT_STOP;
+	adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
+	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static void
@@ -307,12 +291,12 @@ gs_update_dialog_constructed (GObject *object)
 	if (dialog->app) {
 		GtkWidget *child;
 
-		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
-		gtk_container_remove (GTK_CONTAINER (dialog->deck), child);
+		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
+		adw_leaflet_remove (ADW_LEAFLET (dialog->leaflet), child);
 
 		gs_update_dialog_show_update_details (dialog, dialog->app);
 
-		child = hdy_deck_get_visible_child (HDY_DECK (dialog->deck));
+		child = adw_leaflet_get_visible_child (ADW_LEAFLET (dialog->leaflet));
 		/* It can be either the app details page or the OS update page */
 		if (GS_IS_APP_DETAILS_PAGE (child))
 			gs_app_details_page_set_show_back_button (GS_APP_DETAILS_PAGE (child), FALSE);
@@ -344,16 +328,10 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 
 	dialog->cancellable = g_cancellable_new ();
 
-	g_signal_connect (GTK_LIST_BOX (dialog->list_box_installed_updates), "row-activated",
+	g_signal_connect (dialog->list_box_installed_updates, "show-update",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
-
-	/* global keynav and mouse back button */
-	g_signal_connect (dialog, "key-press-event",
-			  G_CALLBACK (key_press_event), NULL);
-	g_signal_connect (dialog, "button-press-event",
-			  G_CALLBACK (button_press_event), NULL);
 }
 
 static void
@@ -397,11 +375,16 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, deck);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
-	gtk_widget_class_bind_template_callback (widget_class, deck_child_transition_cb);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, window_title);
+	gtk_widget_class_bind_template_callback (widget_class, button_pressed_cb);
+	gtk_widget_class_bind_template_callback (widget_class, leaflet_child_transition_cb);
+	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 GtkWidget *

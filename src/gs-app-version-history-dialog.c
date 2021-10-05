@@ -31,7 +31,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 	g_autoptr(GPtrArray) version_history = NULL;
 
 	/* remove previous */
-	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
+	gs_widget_remove_all (dialog->listbox, (GsRemoveFunc) gtk_list_box_remove);
 
 	version_history = gs_app_get_version_history (app);
 	if (version_history == NULL || version_history->len == 0) {
@@ -40,7 +40,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 		gs_app_version_history_row_set_info (GS_APP_VERSION_HISTORY_ROW (row),
 						     gs_app_get_version (app),
 						     gs_app_get_release_date (app), NULL);
-		gtk_list_box_insert (GTK_LIST_BOX (dialog->listbox), row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (dialog->listbox), row);
 		gtk_widget_show (row);
 		return;
 	}
@@ -56,7 +56,7 @@ populate_version_history (GsAppVersionHistoryDialog *dialog,
 						     as_release_get_timestamp (version),
 						     as_release_get_description (version));
 
-		gtk_list_box_insert (GTK_LIST_BOX (dialog->listbox), row, -1);
+		gtk_list_box_append (GTK_LIST_BOX (dialog->listbox), row);
 		gtk_widget_show (row);
 	}
 }

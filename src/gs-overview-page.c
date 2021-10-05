@@ -9,8 +9,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 #include <math.h>
 
 #include "gs-shell.h"
@@ -150,14 +150,14 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	gs_app_list_randomize (list);
 
-	gs_container_remove_all (GTK_CONTAINER (self->box_popular));
+	gs_widget_remove_all (self->box_popular, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
 	}
 	gtk_widget_set_visible (self->box_popular, TRUE);
 	gtk_widget_set_visible (self->popular_heading, TRUE);
@@ -199,7 +199,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 
 	gs_app_list_randomize (list);
 
-	gs_container_remove_all (GTK_CONTAINER (self->box_recent));
+	gs_widget_remove_all (self->box_recent, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
@@ -213,8 +213,8 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		 */
 		gtk_widget_set_can_focus (child, FALSE);
 		gtk_widget_show (child);
-		gtk_container_add (GTK_CONTAINER (child), tile);
-		gtk_container_add (GTK_CONTAINER (self->box_recent), child);
+		gtk_flow_box_child_set_child (GTK_FLOW_BOX_CHILD (child), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), child, -1);
 	}
 	gtk_widget_set_visible (self->box_recent, TRUE);
 	gtk_widget_set_visible (self->recent_heading, TRUE);
@@ -316,8 +316,8 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		goto out;
 	}
 
-	gs_container_remove_all (GTK_CONTAINER (self->flowbox_categories));
-	gs_container_remove_all (GTK_CONTAINER (self->flowbox_iconless_categories));
+	gs_widget_remove_all (self->flowbox_categories, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->flowbox_iconless_categories, (GsRemoveFunc) gtk_flow_box_remove);
 
 	/* Add categories to the flowboxes. Categories with icons are deemed to
 	 * be visually important, and are listed near the top of the page.
@@ -585,7 +585,6 @@ gs_overview_page_setup (GsPage *page,
                         GError **error)
 {
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
-	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
 	g_autofree gchar *text = NULL;
@@ -622,17 +621,14 @@ gs_overview_page_setup (GsPage *page,
 	/* avoid a ref cycle */
 	self->shell = shell;
 
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_overview));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_overview), adj);
-
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->box_popular), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
 	}
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (self->box_recent), tile);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), tile, -1);
 	}
 
 	return TRUE;

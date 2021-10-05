@@ -26,7 +26,7 @@ typedef struct
 	gboolean		 is_active;
 } GsPagePrivate;
 
-G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_TITLE = 1,
@@ -73,7 +73,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
 static void
 gs_page_update_app_response_close_cb (GtkDialog *dialog, gint response, gpointer user_data)
 {
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void
@@ -112,8 +112,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 		gtk_widget_set_margin_start (ssimg, 24);
 		gtk_widget_set_margin_end (ssimg, 24);
 		content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-		gtk_container_add (GTK_CONTAINER (content_area), ssimg);
-		gtk_container_child_set (GTK_CONTAINER (content_area), ssimg, "pack-type", GTK_PACK_END, NULL);
+		gtk_box_append (GTK_BOX (content_area), ssimg);
 	}
 
 	/* handle this async */
@@ -312,7 +311,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK)
@@ -384,8 +383,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	gtk_widget_set_margin_start (ssimg, 24);
 	gtk_widget_set_margin_end (ssimg, 24);
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-	gtk_container_add (GTK_CONTAINER (content_area), ssimg);
-	gtk_container_child_set (GTK_CONTAINER (content_area), ssimg, "pack-type", GTK_PACK_END, NULL);
+	gtk_box_append (GTK_BOX (content_area), ssimg);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
@@ -438,7 +436,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK)
@@ -817,6 +815,8 @@ gs_page_dispose (GObject *object)
 	GsPage *page = GS_PAGE (object);
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 
+	gs_widget_remove_all (GTK_WIDGET (page), NULL);
+
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
@@ -827,12 +827,15 @@ gs_page_dispose (GObject *object)
 static void
 gs_page_init (GsPage *page)
 {
+	gtk_widget_set_hexpand (GTK_WIDGET (page), TRUE);
+	gtk_widget_set_vexpand (GTK_WIDGET (page), TRUE);
 }
 
 static void
 gs_page_class_init (GsPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->get_property = gs_page_get_property;
 	object_class->dispose = gs_page_dispose;
@@ -877,6 +880,8 @@ gs_page_class_init (GsPageClass *klass)
 				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
+
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 GsPage *

@@ -26,8 +26,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 #include <locale.h>
 #include <math.h>
 #include <string.h>
@@ -40,7 +40,7 @@
 
 struct _GsScreenshotCarousel
 {
-	GtkStack		 parent_instance;
+	GtkWidget		 parent_instance;
 
 	SoupSession		*session;  /* (owned) (not nullable) */
 	gboolean		 has_screenshots;
@@ -53,6 +53,7 @@ struct _GsScreenshotCarousel
 	GtkWidget		*button_previous_revealer;
 	GtkWidget		*carousel;
 	GtkWidget		*carousel_indicator;
+	GtkStack                *stack;
 };
 
 typedef enum {
@@ -61,7 +62,7 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_HAS_SCREENSHOTS + 1] = { NULL, };
 
-G_DEFINE_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GTK_TYPE_STACK)
+G_DEFINE_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GTK_TYPE_WIDGET)
 
 static void
 _set_state (GsScreenshotCarousel *self, guint length, gboolean allow_fallback, gboolean is_online)
@@ -69,7 +70,7 @@ _set_state (GsScreenshotCarousel *self, guint length, gboolean allow_fallback, g
 	gboolean has_screenshots;
 
 	gtk_widget_set_visible (self->carousel_indicator, length > 1);
-	gtk_stack_set_visible_child_name (GTK_STACK (self), length > 0 ? "carousel" : "fallback");
+	gtk_stack_set_visible_child_name (self->stack, length > 0 ? "carousel" : "fallback");
 
 	has_screenshots = length > 0 || (allow_fallback && is_online);
 	if (self->has_screenshots != has_screenshots) {
@@ -125,12 +126,12 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 	}
 
 	/* reset screenshots */
-	gs_container_remove_all (GTK_CONTAINER (self->carousel));
+	gs_widget_remove_all (self->carousel, (GsRemoveFunc) adw_carousel_remove);
 
 	for (guint i = 0; i < screenshots->len && !g_cancellable_is_cancelled (cancellable); i++) {
 		AsScreenshot *ss = g_ptr_array_index (screenshots, i);
 		GtkWidget *ssimg = gs_screenshot_image_new (self->session);
-		gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
+		gtk_widget_set_can_focus (gtk_widget_get_first_child (ssimg), FALSE);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      AS_IMAGE_NORMAL_WIDTH,
@@ -148,8 +149,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 			continue;
 		}
 
-		gtk_container_add (GTK_CONTAINER (self->carousel),
-				   ssimg);
+		adw_carousel_append (ADW_CAROUSEL (self->carousel), ssimg);
 		gtk_widget_show (ssimg);
 		gs_screenshot_image_set_description (GS_SCREENSHOT_IMAGE (ssimg),
 						     as_screenshot_get_caption (ss));
@@ -178,18 +178,24 @@ gs_screenshot_carousel_get_has_screenshots (GsScreenshotCarousel *self)
 }
 
 static void
-_carousel_navigate (HdyCarousel *carousel, HdyNavigationDirection direction)
+_carousel_navigate (AdwCarousel *carousel, AdwNavigationDirection direction)
 {
 	g_autoptr (GList) children = NULL;
 	GtkWidget *child;
 	gdouble position;
 	guint n_children;
 
-	children = gtk_container_get_children (GTK_CONTAINER (carousel));
-	n_children = g_list_length (children);
+	n_children = 0;
+	for (child = gtk_widget_get_first_child (GTK_WIDGET (carousel));
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		children = g_list_prepend (children, child);
+		n_children++;
+	}
+	children = g_list_reverse (children);
 
-	position = hdy_carousel_get_position (carousel);
-	position += (direction == HDY_NAVIGATION_DIRECTION_BACK) ? -1 : 1;
+	position = adw_carousel_get_position (carousel);
+	position += (direction == ADW_NAVIGATION_DIRECTION_BACK) ? -1 : 1;
 	/* Round the position to the closest integer in the valid range. */
 	position = round (position);
 	position = MIN (position, n_children - 1);
@@ -197,14 +203,14 @@ _carousel_navigate (HdyCarousel *carousel, HdyNavigationDirection direction)
 
 	child = g_list_nth_data (children, position);
 	if (child)
-		hdy_carousel_scroll_to (carousel, child);
+		adw_carousel_scroll_to (carousel, child);
 }
 
 static void
 gs_screenshot_carousel_update_buttons (GsScreenshotCarousel *self)
 {
-	gdouble position = hdy_carousel_get_position (HDY_CAROUSEL (self->carousel));
-	guint n_pages = hdy_carousel_get_n_pages (HDY_CAROUSEL (self->carousel));
+	gdouble position = adw_carousel_get_position (ADW_CAROUSEL (self->carousel));
+	guint n_pages = adw_carousel_get_n_pages (ADW_CAROUSEL (self->carousel));
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->button_previous_revealer), position >= 0.5);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->button_next_revealer), position < n_pages - 1.5);
 }
@@ -224,15 +230,15 @@ gs_screenshot_carousel_notify_position_cb (GsScreenshotCarousel *self)
 static void
 gs_screenshot_carousel_button_previous_clicked_cb (GsScreenshotCarousel *self)
 {
-	_carousel_navigate (HDY_CAROUSEL (self->carousel),
-			    HDY_NAVIGATION_DIRECTION_BACK);
+	_carousel_navigate (ADW_CAROUSEL (self->carousel),
+			    ADW_NAVIGATION_DIRECTION_BACK);
 }
 
 static void
 gs_screenshot_carousel_button_next_clicked_cb (GsScreenshotCarousel *self)
 {
-	_carousel_navigate (HDY_CAROUSEL (self->carousel),
-			    HDY_NAVIGATION_DIRECTION_FORWARD);
+	_carousel_navigate (ADW_CAROUSEL (self->carousel),
+			    ADW_NAVIGATION_DIRECTION_FORWARD);
 }
 
 static void
@@ -254,7 +260,7 @@ gs_screenshot_carousel_navigate_button_direction_changed_cb (GtkWidget        *w
 	}
 
 	icon_name = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL) ? rtl_icon_name : ltr_icon_name;
-	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name, GTK_ICON_SIZE_MENU);
+	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name);
 }
 
 static void
@@ -290,6 +296,8 @@ static void
 gs_screenshot_carousel_dispose (GObject *object)
 {
 	GsScreenshotCarousel *self = GS_SCREENSHOT_CAROUSEL (object);
+
+	gs_widget_remove_all (GTK_WIDGET (self), NULL);
 
 	g_clear_object (&self->session);
 
@@ -330,6 +338,7 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_previous_revealer);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel_indicator);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, stack);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_notify_n_pages_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_notify_position_cb);
@@ -337,6 +346,7 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_button_next_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_navigate_button_direction_changed_cb);
 
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 	gtk_widget_class_set_css_name (widget_class, "screenshot-carousel");
 }
 
@@ -349,10 +359,10 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_next_image), GTK_TEXT_DIR_NONE, self);
 	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_previous_image), GTK_TEXT_DIR_NONE, self);
 
-#if HDY_CHECK_VERSION(1, 3, 0)
+#if ADW_CHECK_VERSION(1, 3, 0)
 	/* Disable scrolling through the carousel, as it’s typically used
 	 * in application pages which are themselves scrollable. */
-	hdy_carousel_set_allow_scroll_wheel (HDY_CAROUSEL (self->carousel), FALSE);
+	adw_carousel_set_allow_scroll_wheel (ADW_CAROUSEL (self->carousel), FALSE);
 #endif
 
 	/* setup networking */

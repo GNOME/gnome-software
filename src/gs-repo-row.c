@@ -44,6 +44,7 @@ static void
 refresh_ui (GsRepoRow *row)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
+	GtkListBox *listbox;
 	gboolean active = FALSE;
 	gboolean state_sensitive = FALSE;
 	gboolean busy = priv->busy_counter> 0;
@@ -77,7 +78,9 @@ refresh_ui (GsRepoRow *row)
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
 		g_signal_handler_unblock (priv->disable_switch, priv->switch_handler_id);
-		gtk_widget_destroy (GTK_WIDGET (row));
+		listbox = GTK_LIST_BOX (gtk_widget_get_parent (GTK_WIDGET (row)));
+		g_assert (listbox != NULL);
+		gtk_list_box_remove (listbox, GTK_WIDGET (row));
 		return;
 	default:
 		state_sensitive = TRUE;
@@ -272,7 +275,7 @@ gs_repo_row_remove_button_clicked_cb (GtkWidget *button,
 }
 
 static void
-gs_repo_row_destroy (GtkWidget *object)
+gs_repo_row_dispose (GObject *object)
 {
 	GsRepoRow *self = GS_REPO_ROW (object);
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
@@ -289,7 +292,7 @@ gs_repo_row_destroy (GtkWidget *object)
 
 	g_clear_object (&priv->plugin_loader);
 
-	GTK_WIDGET_CLASS (gs_repo_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_repo_row_parent_class)->dispose (object);
 }
 
 static void
@@ -301,8 +304,8 @@ gs_repo_row_init (GsRepoRow *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 	priv->switch_handler_id = g_signal_connect (priv->disable_switch, "notify::active",
 						    G_CALLBACK (disable_switch_clicked_cb), self);
-	image = gtk_image_new_from_icon_name ("user-trash-symbolic", GTK_ICON_SIZE_BUTTON);
-	gtk_button_set_image (GTK_BUTTON (priv->remove_button), image);
+	image = gtk_image_new_from_icon_name ("user-trash-symbolic");
+	gtk_button_set_child (GTK_BUTTON (priv->remove_button), image);
 	g_signal_connect (priv->remove_button, "clicked",
 		G_CALLBACK (gs_repo_row_remove_button_clicked_cb), self);
 }
@@ -313,7 +316,7 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	widget_class->destroy = gs_repo_row_destroy;
+	object_class->dispose = gs_repo_row_dispose;
 
 	signals [SIGNAL_REMOVE_CLICKED] =
 		g_signal_new ("remove-clicked",

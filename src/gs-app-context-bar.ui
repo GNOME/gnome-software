@@ -5,7 +5,6 @@
     <property name="homogeneous">True</property>
     <property name="spacing">0</property>
     <property name="visible">True</property>
-    <property name="can-focus">True</property>
     <style>
       <class name="linked"/>
     </style>
@@ -39,23 +38,18 @@
                     <child>
                       <object class="GtkLabel" id="storage_tile_lozenge_content">
                         <property name="halign">center</property>
+                        <property name="hexpand">True</property>
                         <!-- this is a placeholder: the text is actually set in code -->
                         <property name="label">20 MB</property>
                         <property name="visible">True</property>
                         <property name="xalign">0.5</property>
                         <accessibility>
-                          <relation target="storage_tile_title" type="labelled-by"/>
-                          <relation target="storage_tile_description" type="details"/>
+                          <relation name="labelled-by">storage_tile_title</relation>
+                          <relation name="details">storage_tile_description</relation>
                         </accessibility>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="storage_tile_title">
@@ -63,9 +57,6 @@
                     <property name="label">Download Size</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="storage_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -79,9 +70,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="storage_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -116,22 +104,17 @@
                     <child>
                       <object class="GtkImage" id="safety_tile_lozenge_content">
                         <property name="halign">center</property>
+                        <property name="hexpand">True</property>
                         <!-- this is a placeholder: the icon is actually set in code -->
                         <property name="icon-name">safety-symbolic</property>
                         <property name="visible">True</property>
                         <accessibility>
-                          <relation target="safety_tile_title" type="labelled-by"/>
-                          <relation target="safety_tile_description" type="details"/>
+                          <relation name="labelled-by">safety_tile_title</relation>
+                          <relation name="details">safety_tile_description</relation>
                         </accessibility>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="safety_tile_title">
@@ -139,9 +122,6 @@
                     <property name="label">Safe</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="safety_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -155,9 +135,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="safety_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -201,23 +178,18 @@
                     <child>
                       <object class="GtkImage" id="hardware_support_tile_lozenge_content">
                         <property name="halign">center</property>
+                        <property name="hexpand">True</property>
                         <!-- this is a placeholder: the icon is actually set in code -->
                         <property name="icon-name">adaptive-symbolic</property>
                         <property name="pixel-size">56</property>
                         <property name="visible">True</property>
                         <accessibility>
-                          <relation target="hardware_support_tile_title" type="labelled-by"/>
-                          <relation target="hardware_support_tile_description" type="details"/>
+                          <relation name="labelled-by">hardware_support_tile_title</relation>
+                          <relation name="details">hardware_support_tile_description</relation>
                         </accessibility>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="hardware_support_tile_title">
@@ -225,9 +197,6 @@
                     <property name="label">Adaptive</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="hardware_support_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -241,9 +210,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="hardware_support_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>
@@ -278,23 +244,18 @@
                     <child>
                       <object class="GtkLabel" id="age_rating_tile_lozenge_content">
                         <property name="halign">center</property>
+                        <property name="hexpand">True</property>
                         <!-- this is a placeholder: the text is actually set in code -->
                         <property name="label">18+</property>
                         <property name="visible">True</property>
                         <property name="xalign">0.5</property>
                         <accessibility>
-                          <relation target="age_rating_tile_title" type="labelled-by"/>
-                          <relation target="age_rating_tile_description" type="details"/>
+                          <relation name="labelled-by">age_rating_tile_title</relation>
+                          <relation name="details">age_rating_tile_description</relation>
                         </accessibility>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="age_rating_tile_title">
@@ -302,9 +263,6 @@
                     <property name="label" translatable="yes">Age Rating</property>
                     <property name="visible">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="age_rating_tile_lozenge_content" type="label-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-title"/>
                     </style>
@@ -318,9 +276,6 @@
                     <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
-                    <accessibility>
-                      <relation target="age_rating_tile_lozenge_content" type="details-for"/>
-                    </accessibility>
                     <style>
                       <class name="context-tile-description"/>
                     </style>

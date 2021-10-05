@@ -5,16 +5,20 @@
     <property name="orientation">vertical</property>
 
     <child>
-      <object class="HdyHeaderBar" id="header_bar">
-        <property name="show_close_button">True</property>
+      <object class="AdwHeaderBar" id="header_bar">
         <property name="visible">True</property>
+        <property name="show_start_title_buttons">True</property>
+        <property name="show_end_title_buttons">True</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle" id="window_title" />
+        </property>
       </object>
     </child>
     <child>
-      <object class="HdyPreferencesPage">
+      <object class="AdwPreferencesPage">
         <property name="visible">True</property>
         <child>
-          <object class="HdyPreferencesGroup" id="group">
+          <object class="AdwPreferencesGroup" id="group">
             <property name="visible">True</property>
             <child>
               <object class="GtkBox" id="box">

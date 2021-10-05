@@ -51,25 +51,25 @@ static GParamSpec *obj_props[PROP_ODRS_PROVIDER + 1]  = { NULL, };
 static void
 gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
 {
+	GtkWidget *child;
 	GsAppRow *app_row = NULL;
 	gboolean is_visible = FALSE;
-	g_autoptr(GList) children = NULL;
 
-	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (GList *l = children; l != NULL; l = l->next) {
-		GtkWidget *w = GTK_WIDGET (l->data);
-		if (!gtk_widget_get_visible (w))
+	for (child = gtk_widget_get_first_child (self->list_box_install);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		if (!gtk_widget_get_visible (child))
 			continue;
-		if (GS_IS_APP_ROW (w)) {
-			GsApp *app_tmp = gs_app_row_get_app (GS_APP_ROW (w));
+		if (GS_IS_APP_ROW (child)) {
+			GsApp *app_tmp = gs_app_row_get_app (GS_APP_ROW (child));
 			if (g_strcmp0 (gs_app_get_id (app),
 				       gs_app_get_id (app_tmp)) == 0) {
-				app_row = GS_APP_ROW (w);
+				app_row = GS_APP_ROW (child);
 				continue;
 			}
 		}
-		if (GS_IS_REVIEW_ROW (w)) {
-			GsApp *app_tmp = g_object_get_data (G_OBJECT (w), "GsApp");
+		if (GS_IS_REVIEW_ROW (child)) {
+			GsApp *app_tmp = g_object_get_data (G_OBJECT (child), "GsApp");
 			if (g_strcmp0 (gs_app_get_id (app),
 				       gs_app_get_id (app_tmp)) == 0) {
 				is_visible = TRUE;
@@ -158,7 +158,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 	/* add top level app */
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
-	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
+	gtk_list_box_append (GTK_LIST_BOX (self->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name,
@@ -183,7 +183,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 		g_object_set_data_full (G_OBJECT (row), "GsApp",
 					g_object_ref (app),
 					(GDestroyNotify) g_object_unref);
-		gtk_container_add (GTK_CONTAINER (self->list_box_install), row);
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install), row);
 	}
 	gtk_widget_show (app_row);
 }
@@ -233,7 +233,7 @@ gs_moderate_page_load (GsModeratePage *self)
 	g_autoptr(GError) local_error = NULL;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
+	gs_widget_remove_all (self->list_box_install, (GsRemoveFunc) gtk_list_box_remove);
 
 	/* get unvoted reviews as apps */
 	if (!gs_odrs_provider_add_unvoted_reviews (self->odrs_provider, list,

@@ -29,11 +29,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 #include <locale.h>
 
 #include "gs-app.h"
@@ -143,7 +143,7 @@ add_relation_row (GtkListBox                   *list_box,
 		*chosen_rating = rating;
 
 	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 /**
@@ -161,17 +161,20 @@ add_relation_row (GtkListBox                   *list_box,
 GdkMonitor *
 gs_hardware_support_context_dialog_get_largest_monitor (GdkDisplay *display)
 {
+	GListModel *monitors;  /* (unowned) */
 	GdkMonitor *monitor;  /* (unowned) */
-	int n_monitors, monitor_max_dimension;
+	int monitor_max_dimension;
+	guint n_monitors;
 
 	g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
 
-	n_monitors = gdk_display_get_n_monitors (display);
+	monitors = gdk_display_get_monitors (display);
+	n_monitors = g_list_model_get_n_items (monitors);
 	monitor_max_dimension = 0;
 	monitor = NULL;
 
-	for (int i = 0; i < n_monitors; i++) {
-		GdkMonitor *monitor2 = gdk_display_get_monitor (display, i);
+	for (guint i = 0; i < n_monitors; i++) {
+		g_autoptr(GdkMonitor) monitor2 = g_list_model_get_item (monitors, i);
 		GdkRectangle monitor_geometry;
 		int monitor2_max_dimension;
 
@@ -181,9 +184,7 @@ gs_hardware_support_context_dialog_get_largest_monitor (GdkDisplay *display)
 		gdk_monitor_get_geometry (monitor2, &monitor_geometry);
 		monitor2_max_dimension = MAX (monitor_geometry.width, monitor_geometry.height);
 
-		if (monitor2_max_dimension > monitor_max_dimension ||
-		    (gdk_monitor_is_primary (monitor2) &&
-		     monitor2_max_dimension == monitor_max_dimension)) {
+		if (monitor2_max_dimension > monitor_max_dimension) {
 			monitor = monitor2;
 			monitor_max_dimension = monitor2_max_dimension;
 			continue;
@@ -515,7 +516,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 	 * support based on app properties. */
 	chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
 
-	gs_container_remove_all (GTK_CONTAINER (self->relations_list));
+	gs_widget_remove_all (GTK_WIDGET (self->relations_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)
@@ -721,7 +722,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name);
 	gtk_label_set_text (self->title, title);
 
 	context = gtk_widget_get_style_context (self->lozenge);

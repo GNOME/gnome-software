@@ -4,23 +4,26 @@
   <template class="GsAppTranslationDialog" parent="GsInfoWindow">
     <property name="title" translatable="yes">Translations</property>
     <child>
-      <object class="HdyPreferencesPage">
+      <object class="AdwPreferencesPage">
         <property name="visible">True</property>
         <child>
-          <object class="HdyPreferencesGroup">
+          <object class="AdwPreferencesGroup">
             <property name="visible">True</property>
 
             <child>
               <object class="GtkBox">
-                <property name="margin-left">3</property>
-                <property name="margin-right">3</property>
+                <property name="margin-start">3</property>
+                <property name="margin-end">3</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <property name="visible">True</property>
 
                 <child>
                   <object class="GtkBox">
-                    <property name="margin">20</property>
+                    <property name="margin-top">20</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="margin-start">20</property>
+                    <property name="margin-end">20</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
                     <property name="visible">True</property>
@@ -37,21 +40,16 @@
                         <child>
                           <object class="GtkImage" id="icon">
                             <property name="halign">center</property>
+                            <property name="hexpand">True</property>
                             <property name="icon-name">flag-outline-thin-symbolic</property>
-                            <property name="icon-size">3</property><!-- GTK_ICON_SIZE_LARGE_TOOLBAR -->
+                            <property name="icon-size">large</property>
                             <property name="visible">True</property>
                             <accessibility>
-                              <relation target="title" type="labelled-by"/>
+                              <relation name="labelled-by">title</relation>
                             </accessibility>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                       </object>
-                      <packing>
-                        <property name="fill">False</property>
-                      </packing>
                     </child>
 
                     <child>
@@ -65,9 +63,6 @@
                         <style>
                           <class name="title-1"/>
                         </style>
-                        <accessibility>
-                          <relation target="lozenge" type="label-for"/>
-                        </accessibility>
                         <style>
                           <class name="context-tile-title"/>
                         </style>
@@ -90,7 +85,10 @@
                 <child>
                   <object class="GtkButton">
                     <property name="halign">center</property>
-                    <property name="margin">14</property>
+                    <property name="margin-top">14</property>
+                    <property name="margin-bottom">14</property>
+                    <property name="margin-start">14</property>
+                    <property name="margin-end">14</property>
                     <property name="visible">True</property>
                     <signal name="clicked" handler="button_clicked_cb"/>
                     <style>
@@ -102,8 +100,8 @@
                         <property name="orientation">horizontal</property>
                         <property name="spacing">6</property>
                         <property name="halign">center</property>
-                        <property name="margin-left">12</property>
-                        <property name="margin-right">12</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>

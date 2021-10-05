@@ -88,11 +88,11 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
                                    GtkFlowBox     *flow_box,
                                    guint           n_placeholders)
 {
-	gs_container_remove_all (GTK_CONTAINER (flow_box));
+	gs_widget_remove_all (GTK_WIDGET (flow_box), (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (guint i = 0; i < n_placeholders; ++i) {
 		GtkWidget *tile = gs_summary_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (flow_box), tile);
+		gtk_flow_box_insert (flow_box, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
@@ -264,9 +264,9 @@ load_category_finish (LoadCategoryData *data)
 		return;
 
 	/* Remove the loading tiles. */
-	gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
-	gs_container_remove_all (GTK_CONTAINER (self->recently_updated_flow_box));
-	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+	gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->recently_updated_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->category_detail_box, (GsRemoveFunc) gtk_flow_box_remove);
 
 	/* Last 30 days */
 	recently_updated_cutoff_secs = g_get_real_time () / G_USEC_PER_SEC - 30 * 24 * 60 * 60;
@@ -293,11 +293,11 @@ load_category_finish (LoadCategoryData *data)
 				  G_CALLBACK (app_tile_clicked), self);
 
 		if (is_featured)
-			gtk_container_add (GTK_CONTAINER (self->featured_flow_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->featured_flow_box), tile, -1);
 		else if (is_recently_updated)
-			gtk_container_add (GTK_CONTAINER (self->recently_updated_flow_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->recently_updated_flow_box), tile, -1);
 		else
-			gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->category_detail_box), tile, -1);
 
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
@@ -344,7 +344,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 		 * indicator that there will be featured apps */
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
 	} else {
-		gs_container_remove_all (GTK_CONTAINER (self->featured_flow_box));
+		gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
 		gtk_widget_hide (self->featured_flow_box);
 	}
 
@@ -455,8 +455,8 @@ recently_updated_sort_cb (GtkFlowBoxChild *child1,
                           GtkFlowBoxChild *child2,
                           gpointer         user_data)
 {
-	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child1)));
-	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_bin_get_child (GTK_BIN (child2)));
+	GsSummaryTile *tile1 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child1));
+	GsSummaryTile *tile2 = GS_SUMMARY_TILE (gtk_flow_box_child_get_child (child2));
 	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (tile1));
 	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (tile2));
 	guint64 release_date1 = 0, release_date2 = 0;

@@ -29,11 +29,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 #include <locale.h>
 
 #include "gs-app.h"
@@ -364,7 +364,7 @@ add_attribute_row (GtkListBox           *list_box,
 	title = content_rating_attribute_get_title (attribute);
 
 	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 /**
@@ -653,7 +653,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	gboolean is_unknown;
 	g_autofree gchar *title = NULL;
 
-	gs_container_remove_all (GTK_CONTAINER (self->attributes_list));
+	gs_widget_remove_all (GTK_WIDGET (self->attributes_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)

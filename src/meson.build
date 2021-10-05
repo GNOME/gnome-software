@@ -60,7 +60,6 @@ gnome_software_sources = [
   'gs-origin-popover-row.c',
   'gs-os-update-page.c',
   'gs-page.c',
-  'gs-picture.c',
   'gs-prefs-dialog.c',
   'gs-progress-button.c',
   'gs-removal-dialog.c',
@@ -71,7 +70,6 @@ gnome_software_sources = [
   'gs-review-dialog.c',
   'gs-review-histogram.c',
   'gs-review-row.c',
-  'gs-rounded-bin.c',
   'gs-safety-context-dialog.c',
   'gs-screenshot-carousel.c',
   'gs-screenshot-image.c',
@@ -82,6 +80,7 @@ gnome_software_sources = [
   'gs-star-widget.c',
   'gs-storage-context-dialog.c',
   'gs-summary-tile.c',
+  'gs-summary-tile-layout.c',
   'gs-update-dialog.c',
   'gs-update-list.c',
   'gs-update-monitor.c',
@@ -99,7 +98,7 @@ gnome_software_dependencies = [
   gtk,
   json_glib,
   libgnomesoftware_dep,
-  libhandy,
+  libadwaita,
   libm,
   libsoup,
   libxmlb,
@@ -126,10 +125,6 @@ endif
 
 if gsettings_desktop_schemas.found()
   gnome_software_dependencies += [gsettings_desktop_schemas]
-endif
-
-if get_option('gspell')
-  gnome_software_dependencies += [gspell]
 endif
 
 if get_option('mogwai')

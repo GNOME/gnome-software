@@ -100,9 +100,7 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 	gtk_label_set_label (GTK_LABEL (tile->label),
 			     gs_category_get_name (tile->category));
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
-				      icon_name,
-				      GTK_ICON_SIZE_DND);
+	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image), icon_name);
 	gtk_widget_set_visible (tile->image, icon_name != NULL);
 
 	/* Update the icon class. */
@@ -167,7 +165,6 @@ gs_category_tile_dispose (GObject *object)
 static void
 gs_category_tile_init (GsCategoryTile *tile)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 

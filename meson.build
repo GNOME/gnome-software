@@ -2,7 +2,7 @@ project('gnome-software', 'c',
   version : '41.1',
   license : 'GPL-2.0+',
   default_options : ['warning_level=1', 'c_std=c11'],
-  meson_version : '>=0.47.0'
+  meson_version : '>=0.55.0'
 )
 
 conf = configuration_data()
@@ -125,19 +125,17 @@ gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
-gtk = dependency('gtk+-3.0', version : '>= 3.22.4')
+gtk = dependency('gtk4', version : '>= 4.2')
 glib = dependency('glib-2.0', version : '>= 2.55.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
-libhandy = dependency('libhandy-1',
-  version: '>=1.2.0',
-  fallback: ['libhandy', 'libhandy_dep'],
+libadwaita = dependency('libadwaita-1',
+  version: '>=1.0.0-alpha.2',
+  fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
       'examples=false',
-      'glade_catalog=disabled',
       'introspection=disabled',
-      'static=true',
       'tests=false',
       'vapi=false',
     ]
@@ -174,11 +172,6 @@ endif
 gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0', required: get_option('gsettings_desktop_schemas'))
 if gsettings_desktop_schemas.found()
   conf.set('HAVE_GSETTINGS_DESKTOP_SCHEMAS', 1)
-endif
-
-if get_option('gspell')
-  gspell = dependency('gspell-1')
-  conf.set('HAVE_GSPELL', 1)
 endif
 
 if get_option('polkit')

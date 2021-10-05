@@ -140,7 +140,6 @@ gs_review_row_init (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	priv->network_available = TRUE;
-	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 }
 
@@ -206,14 +205,14 @@ gs_review_row_confirm_cb (GtkDialog *dialog, gint response_id, GsReviewRow *row)
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
 			       GS_REVIEW_ACTION_REPORT);
 	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void
 gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 {
 	GtkWidget *dialog;
-	GtkWidget *toplevel;
+	GtkRoot *root;
 	GtkWidget *widget;
 	g_autoptr(GString) str = NULL;
 
@@ -228,8 +227,8 @@ gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
 	g_string_append (str, _("Once reported, a review will be hidden until "
 				"it has been checked by an administrator."));
 
-	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
-	dialog = gtk_message_dialog_new (GTK_WINDOW (toplevel),
+	root = gtk_widget_get_root (GTK_WIDGET (button));
+	dialog = gtk_message_dialog_new (GTK_WINDOW (root),
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_USE_HEADER_BAR,

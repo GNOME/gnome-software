@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
-  <template class="GsUpgradeBanner" parent="GtkBin">
+  <template class="GsUpgradeBanner" parent="GtkWidget">
     <child>
       <object class="GtkBox" id="vbox">
         <property name="visible">True</property>
@@ -68,7 +68,10 @@
                 <property name="halign">center</property>
                 <property name="valign">end</property>
                 <property name="spacing">12</property>
-                <property name="margin">18</property>
+                <property name="margin-top">18</property>
+                <property name="margin-bottom">18</property>
+                <property name="margin-start">18</property>
+                <property name="margin-end">18</property>
                 <style>
                   <class name="upgrade-buttons"/>
                 </style>
@@ -80,7 +83,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="use_underline">True</property>
-                    <property name="relief">normal</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <style>
@@ -110,7 +112,10 @@
                 <property name="hexpand">True</property>
                 <property name="valign">end</property>
                 <property name="spacing">12</property>
-                <property name="margin">18</property>
+                <property name="margin-top">18</property>
+                <property name="margin-bottom">18</property>
+                <property name="margin-start">18</property>
+                <property name="margin-end">18</property>
                 <style>
                   <class name="upgrade-buttons"/>
                 </style>
@@ -120,10 +125,6 @@
                     <property name="label"></property> <!-- space-taker -->
                     <property name="halign">start</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox" id="hbox_upgrades_downloading">
@@ -161,10 +162,6 @@
                       </object>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                  </packing>
                 </child>
 
                 <child>
@@ -172,8 +169,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="use_underline">True</property>
-                    <property name="relief">normal</property>
-                    <property name="always-show-image">True</property>
                     <property name="halign">end</property>
                     <property name="hexpand">False</property>
                     <property name="valign">center</property>
@@ -185,15 +180,11 @@
                     <child>
                       <object class="GtkImage" id="button_upgrades_cancel_image">
                         <property name="icon-name">window-close-symbolic</property>
-                        <property name="icon-size">4</property>
+                        <property name="icon-size">large</property>
                         <property name="visible">True</property>
                       </object>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
               </object>
             </child>
@@ -204,7 +195,10 @@
                 <property name="halign">center</property>
                 <property name="valign">end</property>
                 <property name="spacing">12</property>
-                <property name="margin">18</property>
+                <property name="margin-top">18</property>
+                <property name="margin-bottom">18</property>
+                <property name="margin-start">18</property>
+                <property name="margin-end">18</property>
                 <style>
                   <class name="upgrade-buttons"/>
                 </style>
@@ -215,7 +209,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="use_underline">True</property>
-                    <property name="relief">normal</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                     <style>

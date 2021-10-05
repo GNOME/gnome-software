@@ -37,10 +37,10 @@ struct _GsFeatureTile
  * See https://en.wikipedia.org/wiki/HSL_and_HSV */
 typedef struct
 {
-	gdouble hue;  /* [0.0, 1.0] */
-	gdouble saturation;  /* [0.0, 1.0] */
-	gdouble brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
-	gdouble contrast;  /* [-1.0, ∞], may actually be `INF` */
+	gfloat hue;  /* [0.0, 1.0] */
+	gfloat saturation;  /* [0.0, 1.0] */
+	gfloat brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
+	gfloat contrast;  /* [-1.0, ∞], may actually be `INF` */
 } GsHSBC;
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -58,8 +58,8 @@ gs_feature_tile_dispose (GObject *object)
 }
 
 /* These are subjectively chosen. See below. */
-static const gdouble min_valid_saturation = 0.5;
-static const gdouble max_valid_saturation = 0.85;
+static const gfloat min_valid_saturation = 0.5;
+static const gfloat max_valid_saturation = 0.85;
 
 /* Subjectively chosen as the minimum absolute contrast ratio between the
  * foreground and background colours.
@@ -67,7 +67,7 @@ static const gdouble max_valid_saturation = 0.85;
  * Note that contrast is in the range [-1.0, ∞], so @min_abs_contrast always has
  * to be handled with positive and negative branches.
  */
-static const gdouble min_abs_contrast = 0.78;
+static const gfloat min_abs_contrast = 0.78;
 
 /* Sort two candidate background colours for the feature tile, ranking them by
  * suitability for being chosen as the background colour, with the most suitable
@@ -88,7 +88,7 @@ static const gdouble min_abs_contrast = 0.78;
  */
 static gboolean
 saturation_is_valid (const GsHSBC *hsbc,
-                     gdouble      *distance_from_valid_range)
+                     gfloat       *distance_from_valid_range)
 {
 	*distance_from_valid_range = (hsbc->saturation > max_valid_saturation) ? hsbc->saturation - max_valid_saturation : min_valid_saturation - hsbc->saturation;
 	return (hsbc->saturation >= min_valid_saturation && hsbc->saturation <= max_valid_saturation);
@@ -100,7 +100,7 @@ colors_sort_cb (gconstpointer a,
 {
 	const GsHSBC *hsbc_a = a;
 	const GsHSBC *hsbc_b = b;
-	gdouble hsbc_a_distance_from_range, hsbc_b_distance_from_range;
+	gfloat hsbc_a_distance_from_range, hsbc_b_distance_from_range;
 	gboolean hsbc_a_saturation_in_range = saturation_is_valid (hsbc_a, &hsbc_a_distance_from_range);
 	gboolean hsbc_b_saturation_in_range = saturation_is_valid (hsbc_b, &hsbc_b_distance_from_range);
 
@@ -122,7 +122,7 @@ colors_sort_cb (gconstpointer a,
  *
  * The return value is in the range [-1.0, ∞], and may actually be `INF`.
  */
-static gdouble
+static gfloat
 weber_contrast (const GsHSBC *foreground,
                 const GsHSBC *background)
 {
@@ -141,9 +141,9 @@ weber_contrast (const GsHSBC *foreground,
  *
  * The return value is in the range [0.0, 1.0].
  */
-static gdouble
+static gfloat
 weber_contrast_find_brightness (const GsHSBC *foreground,
-                                gdouble       desired_abs_contrast)
+                                gfloat        desired_abs_contrast)
 {
 	g_assert (desired_abs_contrast >= 0.0);
 
@@ -177,7 +177,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
-	AtkObject *accessible;
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
 	GtkStyleContext *context;
@@ -214,7 +213,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	}
 
 	if (icon != NULL) {
-		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_INVALID);
+		gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 		gtk_image_set_pixel_size (GTK_IMAGE (tile->image), icon_size);
 		gtk_widget_show (tile->image);
 	} else {
@@ -225,7 +224,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
-	gtk_label_set_line_wrap (GTK_LABEL (tile->subtitle), tile->narrow_mode);
+	gtk_label_set_wrap (GTK_LABEL (tile->subtitle), tile->narrow_mode);
 	gtk_label_set_lines (GTK_LABEL (tile->subtitle), tile->narrow_mode ? 2 : 1);
 
 	/* perhaps set custom css; cache it so that images don’t get reloaded
@@ -333,7 +332,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 			if (colors != NULL && colors->len > 0) {
 				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
 				GdkRGBA chosen_rgba;
-				gdouble modified_saturation, modified_brightness;
+				gfloat modified_saturation, modified_brightness;
 
 				modified_saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
 
@@ -369,8 +368,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 		}
 	}
 
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
-
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_REMOVING:
@@ -387,9 +384,11 @@ gs_feature_tile_refresh (GsAppTile *self)
 		break;
 	}
 
-	if (GTK_IS_ACCESSIBLE (accessible) && name != NULL) {
-		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (app));
+	if (name != NULL) {
+		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
+						GTK_ACCESSIBLE_PROPERTY_LABEL, name,
+						GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, gs_app_get_summary (app),
+						-1);
 	}
 }
 
@@ -402,7 +401,8 @@ gs_feature_tile_direction_changed (GtkWidget *widget, GtkTextDirection previous_
 }
 
 static void
-gs_feature_tile_style_updated (GtkWidget *widget)
+gs_feature_tile_css_changed (GtkWidget         *widget,
+                             GtkCssStyleChange *css_change)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 
@@ -412,21 +412,28 @@ gs_feature_tile_style_updated (GtkWidget *widget)
 	tile->key_colors_cache = NULL;
 
 	gs_feature_tile_refresh (GS_APP_TILE (tile));
+
+	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->css_changed (widget, css_change);
 }
 
 static void
-gs_feature_tile_size_allocate (GtkWidget     *widget,
-                               GtkAllocation *allocation)
+gs_feature_tile_size_allocate (GtkWidget *widget,
+                               gint       width,
+                               gint       height,
+                               gint       baseline)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 	gboolean narrow_mode;
 
 	/* Chain up. */
-	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget,
+									width,
+									height,
+									baseline);
 
 	/* Engage ‘narrow mode’ if the allocation becomes too narrow. The exact
 	 * choice of width is arbitrary here. */
-	narrow_mode = (allocation->width < 600);
+	narrow_mode = (width < 600);
 	if (tile->narrow_mode != narrow_mode) {
 		tile->narrow_mode = narrow_mode;
 		gs_feature_tile_refresh (GS_APP_TILE (tile));
@@ -436,7 +443,6 @@ gs_feature_tile_size_allocate (GtkWidget     *widget,
 static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
 
@@ -449,8 +455,8 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	object_class->dispose = gs_feature_tile_dispose;
 
+	widget_class->css_changed = gs_feature_tile_css_changed;
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
-	widget_class->style_updated = gs_feature_tile_style_updated;
 	widget_class->size_allocate = gs_feature_tile_size_allocate;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;

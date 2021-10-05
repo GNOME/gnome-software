@@ -10,6 +10,7 @@
         "nightly"
     ],
     "finish-args": [
+        "--device=dri",
         "--share=ipc",
         "--socket=x11",
         "--socket=wayland",
@@ -81,7 +82,8 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/hughsie/libxmlb.git"
+                    "url": "https://github.com/hughsie/libxmlb.git",
+                    "branch": "main"
                 }
             ]
         },

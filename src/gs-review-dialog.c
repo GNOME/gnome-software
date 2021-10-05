@@ -11,10 +11,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_GSPELL
-#include <gspell/gspell.h>
-#endif
-
 #include "gs-review-dialog.h"
 #include "gs-star-widget.h"
 
@@ -53,7 +49,7 @@ gs_review_dialog_set_rating (GsReviewDialog *dialog, gint rating)
 const gchar *
 gs_review_dialog_get_summary (GsReviewDialog *dialog)
 {
-	return gtk_entry_get_text (GTK_ENTRY (dialog->summary_entry));
+	return gtk_editable_get_text (GTK_EDITABLE (dialog->summary_entry));
 }
 
 gchar *
@@ -109,12 +105,14 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 	GtkTextBuffer *buffer;
 	gboolean all_okay = TRUE;
 	const gchar *msg = NULL;
+	glong summary_length;
 
 	/* update review text */
 	gs_review_dialog_update_review_comment (dialog);
 
 	/* require rating, summary and long review */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
+	summary_length = g_utf8_strlen (gtk_editable_get_text (GTK_EDITABLE (dialog->summary_entry)), -1);
 	if (dialog->timer_id != 0) {
 		/* TRANSLATORS: the review can't just be copied and pasted */
 		msg = _("Please take more time writing the review");
@@ -123,11 +121,11 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("Please choose a star rating");
 		all_okay = FALSE;
-	} else if (gtk_entry_get_text_length (GTK_ENTRY (dialog->summary_entry)) < SUMMARY_LENGTH_MIN) {
+	} else if (summary_length < SUMMARY_LENGTH_MIN) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too short");
 		all_okay = FALSE;
-	} else if (gtk_entry_get_text_length (GTK_ENTRY (dialog->summary_entry)) > SUMMARY_LENGTH_MAX) {
+	} else if (summary_length > SUMMARY_LENGTH_MAX) {
 		/* TRANSLATORS: the review is not acceptable */
 		msg = _("The summary is too long");
 		all_okay = FALSE;
@@ -162,20 +160,6 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
 	gtk_widget_init_template (GTK_WIDGET (dialog));
-
-#ifdef HAVE_GSPELL
-	/* allow checking spelling */
-	{
-		GspellEntry *gspell_entry;
-		GspellTextView *gspell_view;
-
-		gspell_entry = gspell_entry_get_from_gtk_entry (GTK_ENTRY (dialog->summary_entry));
-		gspell_entry_basic_setup (gspell_entry);
-
-		gspell_view = gspell_text_view_get_from_gtk_text_view (GTK_TEXT_VIEW (dialog->text_view));
-		gspell_text_view_basic_setup (gspell_view);
-	}
-#endif
 
 	/* require the user to spend at least 30 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,

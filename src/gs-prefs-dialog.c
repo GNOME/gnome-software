@@ -18,7 +18,7 @@
 
 struct _GsPrefsDialog
 {
-	HdyPreferencesWindow	 parent_instance;
+	AdwPreferencesWindow	 parent_instance;
 	GSettings		*settings;
 
 	GCancellable		*cancellable;
@@ -27,7 +27,7 @@ struct _GsPrefsDialog
 	GtkWidget		*switch_updates_notify;
 };
 
-G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, HDY_TYPE_PREFERENCES_WINDOW)
+G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, ADW_TYPE_PREFERENCES_WINDOW)
 
 static void
 gs_prefs_dialog_dispose (GObject *object)

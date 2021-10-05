@@ -20,8 +20,8 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
-#include <handy.h>
 
 #include "gs-app-details-page.h"
 #include "gs-app-row.h"
@@ -56,6 +56,7 @@ struct _GsAppDetailsPage
 	GtkWidget	*permissions_section_box;
 	GtkWidget	*permissions_section_content;
 	GtkWidget	*scrolledwindow_details;
+	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
 };
@@ -83,15 +84,9 @@ static const struct {
 };
 
 static void
-destroy_cb (GtkWidget *widget, gpointer data)
-{
-	gtk_widget_destroy (widget);
-}
-
-static void
 populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissions)
 {
-	gtk_container_foreach (GTK_CONTAINER (page->permissions_section_content), destroy_cb, NULL);
+	gs_widget_remove_all (page->permissions_section_content, (GsRemoveFunc) gtk_box_remove);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
 		GtkWidget *row, *image, *box, *label;
@@ -105,29 +100,29 @@ populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissio
 			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
 		}
 
-		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
+		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
 		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
 			gtk_widget_set_opacity (image, 0);
 
 		gtk_widget_show (image);
-		gtk_container_add (GTK_CONTAINER (row), image);
+		gtk_box_append (GTK_BOX (row), image);
 
 		box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 		gtk_widget_show (box);
-		gtk_container_add (GTK_CONTAINER (row), box);
+		gtk_box_append (GTK_BOX (row), box);
 
 		label = gtk_label_new (_(permission_display_data[i].title));
 		gtk_label_set_xalign (GTK_LABEL (label), 0);
 		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (box), label);
+		gtk_box_append (GTK_BOX (row), label);
 
 		label = gtk_label_new (_(permission_display_data[i].subtitle));
 		gtk_label_set_xalign (GTK_LABEL (label), 0);
 		gtk_style_context_add_class (gtk_widget_get_style_context (label), "dim-label");
 		gtk_widget_show (label);
-		gtk_container_add (GTK_CONTAINER (box), label);
+		gtk_box_append (GTK_BOX (row), label);
 
-		gtk_container_add (GTK_CONTAINER (page->permissions_section_content), row);
+		gtk_box_append (GTK_BOX (page->permissions_section_content), row);
 	}
 }
 
@@ -145,8 +140,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	kind = gs_app_get_kind (app);
 	if (kind == AS_COMPONENT_KIND_GENERIC &&
 	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
-					  gs_app_get_name (app));
+		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL &&
 		   gs_app_get_update_version (app) != NULL) {
 		g_autofree gchar *tmp = NULL;
@@ -159,13 +153,13 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		tmp = g_strdup_printf (_("%s %s"),
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar), tmp);
+		adw_window_title_set_title (page->window_title, tmp);
 	} else if (gs_app_get_source_default (app) != NULL) {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
-					  gs_app_get_source_default (app));
+		adw_window_title_set_title (page->window_title,
+					    gs_app_get_source_default (app));
 	} else {
-		hdy_header_bar_set_title (HDY_HEADER_BAR (page->header_bar),
-					  gs_app_get_update_version (app));
+		adw_window_title_set_title (page->window_title,
+					    gs_app_get_update_version (app));
 	}
 
 	/* set update header */
@@ -203,8 +197,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	}
 
 	gtk_image_set_pixel_size (GTK_IMAGE (page->image_icon), icon_size);
-	gtk_image_set_from_gicon (GTK_IMAGE (page->image_icon), icon,
-				  GTK_ICON_SIZE_INVALID);
+	gtk_image_set_from_gicon (GTK_IMAGE (page->image_icon), icon);
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		gtk_widget_show (page->permissions_section_box);
@@ -304,24 +297,6 @@ back_clicked_cb (GtkWidget *widget, GsAppDetailsPage *page)
 }
 
 static void
-scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
-{
-	GtkWidget *frame;
-
-	frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
-
-	if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-	} else {
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
-	}
-}
-
-static void
 gs_app_details_page_dispose (GObject *object)
 {
 	GsAppDetailsPage *page = GS_APP_DETAILS_PAGE (object);
@@ -370,14 +345,7 @@ gs_app_details_page_set_property (GObject *object, guint prop_id, const GValue *
 static void
 gs_app_details_page_init (GsAppDetailsPage *page)
 {
-	GtkWidget *scrollbar;
-
 	gtk_widget_init_template (GTK_WIDGET (page));
-
-	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (page->scrolledwindow_details));
-	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), page->scrolledwindow_details);
-	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), page->scrolledwindow_details);
-
 }
 
 static void
@@ -443,6 +411,7 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_box);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_content);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }
 

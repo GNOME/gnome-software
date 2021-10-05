@@ -26,11 +26,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 #include <locale.h>
 
 #include "gs-age-rating-context-dialog.h"
@@ -85,8 +85,8 @@ static gboolean
 show_tile_for_non_applications (GsAppContextBar      *self,
                                 GsAppContextTileType  tile_type)
 {
+	GtkWidget *sibling;
 	GtkBox *parent_box;
-	g_autoptr(GList) siblings = NULL;
 	gboolean any_siblings_visible;
 	AsComponentKind app_kind = gs_app_get_kind (self->app);
 	gboolean is_application = (app_kind == AS_COMPONENT_KIND_DESKTOP_APP ||
@@ -98,10 +98,11 @@ show_tile_for_non_applications (GsAppContextBar      *self,
 	parent_box = GTK_BOX (gtk_widget_get_parent (self->tiles[tile_type].tile));
 	g_assert (GTK_IS_BOX (parent_box));
 
-	siblings = gtk_container_get_children (GTK_CONTAINER (parent_box));
 	any_siblings_visible = FALSE;
-	for (GList *l = siblings; l != NULL; l = l->next) {
-		GtkWidget *sibling = GTK_WIDGET (l->data);
+
+	for (sibling = gtk_widget_get_first_child (GTK_WIDGET (parent_box));
+	     sibling != NULL;
+	     sibling = gtk_widget_get_next_sibling (sibling)) {
 		g_assert (GTK_IS_BUTTON (sibling));
 		any_siblings_visible |= gtk_widget_get_visible (sibling);
 	}
@@ -453,7 +454,7 @@ update_safety_tile (GsAppContextBar *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[SAFETY_TILE].lozenge_content), icon_name, GTK_ICON_SIZE_BUTTON);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[SAFETY_TILE].lozenge_content), icon_name);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].title, title);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].description, description);
 
@@ -625,7 +626,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 	/* Update the UI. The `adaptive-symbolic` icon needs a special size to
 	 * be set, as it is wider than it is tall. Setting the size ensures it’s
 	 * rendered at the right height. */
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name, GTK_ICON_SIZE_BUTTON);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name);
 	gtk_image_set_pixel_size (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
 
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);
@@ -749,9 +750,9 @@ tile_clicked_cb (GtkWidget *widget,
 {
 	GsAppContextBar *self = GS_APP_CONTEXT_BAR (user_data);
 	GtkWindow *dialog;
-	GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+	GtkRoot *root = gtk_widget_get_root (widget);
 
-	if (GTK_IS_WINDOW (toplevel)) {
+	if (GTK_IS_WINDOW (root)) {
 		if (widget == self->tiles[STORAGE_TILE].tile)
 			dialog = GTK_WINDOW (gs_storage_context_dialog_new (self->app));
 		else if (widget == self->tiles[SAFETY_TILE].tile)
@@ -763,7 +764,7 @@ tile_clicked_cb (GtkWidget *widget,
 		else
 			g_assert_not_reached ();
 
-		gtk_window_set_transient_for (dialog, GTK_WINDOW (toplevel));
+		gtk_window_set_transient_for (dialog, GTK_WINDOW (root));
 		gtk_widget_show (GTK_WIDGET (dialog));
 	}
 }
@@ -771,7 +772,6 @@ tile_clicked_cb (GtkWidget *widget,
 static void
 gs_app_context_bar_init (GsAppContextBar *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 

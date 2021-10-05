@@ -77,7 +77,6 @@ css_class_for_importance (GsContextDialogRowImportance importance)
 static void
 gs_context_dialog_row_init (GsContextDialogRow *self)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 
@@ -121,7 +120,7 @@ gs_context_dialog_row_set_property (GObject      *object,
 
 	switch ((GsContextDialogRowProperty) prop_id) {
 	case PROP_ICON_NAME:
-		gtk_image_set_from_icon_name (self->lozenge_content_image, g_value_get_string (value), GTK_ICON_SIZE_BUTTON);
+		gtk_image_set_from_icon_name (self->lozenge_content_image, g_value_get_string (value));
 		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_image), TRUE);
 		gtk_widget_set_visible (GTK_WIDGET (self->lozenge_content_text), FALSE);
 		break;
@@ -326,13 +325,9 @@ gs_context_dialog_row_new_text (const gchar                  *content,
 const gchar *
 gs_context_dialog_row_get_icon_name (GsContextDialogRow *self)
 {
-	const gchar *icon_name = NULL;
-
 	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), NULL);
 
-	gtk_image_get_icon_name (self->lozenge_content_image, &icon_name, NULL);
-
-	return icon_name;
+	return gtk_image_get_icon_name (self->lozenge_content_image);
 }
 
 /**

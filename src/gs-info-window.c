@@ -25,7 +25,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
+#include <adwaita.h>
 #include <locale.h>
 
 #include "gs-common.h"
@@ -34,41 +34,15 @@
 typedef struct
 {
 	GtkWidget	*overlay;
-
-	GtkWidget	*user_widget;
 } GsInfoWindowPrivate;
 
+static void gs_info_window_buildable_init (GtkBuildableIface *iface);
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsInfoWindow, gs_info_window, HDY_TYPE_WINDOW)
+G_DEFINE_TYPE_WITH_CODE (GsInfoWindow, gs_info_window, ADW_TYPE_WINDOW,
+			 G_ADD_PRIVATE (GsInfoWindow)
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, gs_info_window_buildable_init))
 
-static gboolean
-key_press_event_cb (GtkWidget            *sender,
-                    GdkEvent             *event,
-                    HdyPreferencesWindow *self)
-{
-	guint keyval;
-	GdkModifierType state;
-	GdkKeymap *keymap;
-	GdkEventKey *key_event = (GdkEventKey *) event;
-
-	gdk_event_get_state (event, &state);
-
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (sender));
-
-	gdk_keymap_translate_keyboard_state (keymap,
-					     key_event->hardware_keycode,
-					     state,
-					     key_event->group,
-					     &keyval, NULL, NULL, NULL);
-
-	if (keyval == GDK_KEY_Escape) {
-		gtk_window_close (GTK_WINDOW (self));
-
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
+static GtkBuildableIface *parent_buildable_iface;
 
 static void
 gs_info_window_init (GsInfoWindow *self)
@@ -77,83 +51,41 @@ gs_info_window_init (GsInfoWindow *self)
 }
 
 static void
-gs_info_window_destroy (GtkWidget *widget)
+gs_info_window_buildable_add_child (GtkBuildable *buildable,
+                                    GtkBuilder   *builder,
+                                    GObject      *child,
+                                    const char   *type)
 {
-	GsInfoWindow *self = GS_INFO_WINDOW (widget);
+	GsInfoWindow *self = GS_INFO_WINDOW (buildable);
 	GsInfoWindowPrivate *priv = gs_info_window_get_instance_private (self);
 
-	if (priv->overlay) {
-		gtk_container_remove (GTK_CONTAINER (self), priv->overlay);
-		priv->user_widget = NULL;
-	}
-
-	GTK_WIDGET_CLASS (gs_info_window_parent_class)->destroy (widget);
+	if (!priv->overlay)
+		parent_buildable_iface->add_child (buildable, builder, child, type);
+	else if (GTK_IS_WIDGET (child))
+		gs_info_window_set_child (self, GTK_WIDGET (child));
+	else
+		GTK_BUILDER_WARN_INVALID_CHILD_TYPE (buildable, type);
 }
 
 static void
-gs_info_window_add (GtkContainer *container, GtkWidget *child)
+gs_info_window_buildable_init (GtkBuildableIface *iface)
 {
-	GsInfoWindow *self = GS_INFO_WINDOW (container);
-	GsInfoWindowPrivate *priv = gs_info_window_get_instance_private (self);
+	parent_buildable_iface = g_type_interface_peek_parent (iface);
 
-	if (!priv->overlay) {
-		GTK_CONTAINER_CLASS (gs_info_window_parent_class)->add (container, child);
-	} else if (!priv->user_widget) {
-		gtk_container_add (GTK_CONTAINER (priv->overlay), child);
-		priv->user_widget = child;
-	} else {
-		g_warning ("Attempting to add a second child to a GsInfoWindow, but a GsInfoWindow can only have one child");
-	}
-}
+	iface->add_child = gs_info_window_buildable_add_child;
 
-static void
-gs_info_window_remove (GtkContainer *container, GtkWidget *child)
-{
-	GsInfoWindow *self = GS_INFO_WINDOW (container);
-	GsInfoWindowPrivate *priv = gs_info_window_get_instance_private (self);
-
-	if (child == priv->overlay) {
-		GTK_CONTAINER_CLASS (gs_info_window_parent_class)->remove (container, child);
-	} else if (child == priv->user_widget) {
-		gtk_container_remove (GTK_CONTAINER (priv->overlay), child);
-		priv->user_widget = NULL;
-	} else {
-		g_return_if_reached ();
-	}
-}
-
-static void
-gs_info_window_forall (GtkContainer *container, gboolean include_internals, GtkCallback callback, gpointer callback_data)
-{
-	GsInfoWindow *self = GS_INFO_WINDOW (container);
-	GsInfoWindowPrivate *priv = gs_info_window_get_instance_private (self);
-
-	if (include_internals) {
-		GTK_CONTAINER_CLASS (gs_info_window_parent_class)->forall (container,
-									   include_internals,
-									   callback,
-									   callback_data);
-	} else if (priv->user_widget) {
-		callback (priv->user_widget, callback_data);
-	}
 }
 
 static void
 gs_info_window_class_init (GsInfoWindowClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	GtkContainerClass *container_class = GTK_CONTAINER_CLASS (klass);
-
-	widget_class->destroy = gs_info_window_destroy;
-	container_class->add = gs_info_window_add;
-	container_class->remove = gs_info_window_remove;
-	container_class->forall = gs_info_window_forall;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-window.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsInfoWindow, overlay);
 
-	gtk_widget_class_bind_template_callback (widget_class, key_press_event_cb);
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
 
 /**
@@ -168,4 +100,25 @@ GsInfoWindow *
 gs_info_window_new (void)
 {
 	return g_object_new (GS_TYPE_INFO_WINDOW, NULL);
+}
+
+/**
+ * gs_info_window_set_child:
+ * @self: a #GsInfoWindow
+ * @widget: (nullable): the new child of @self
+ *
+ * Create a new #GsInfoWindow.
+ *
+ * Since: 42
+ */
+void
+gs_info_window_set_child (GsInfoWindow *self,
+                          GtkWidget    *widget)
+{
+	GsInfoWindowPrivate *priv;
+	g_return_if_fail (GS_IS_INFO_WINDOW (self));
+	g_return_if_fail (widget == NULL || GTK_IS_WIDGET (widget));
+
+	priv = gs_info_window_get_instance_private (self);
+	gtk_overlay_set_child (GTK_OVERLAY (priv->overlay), widget);
 }

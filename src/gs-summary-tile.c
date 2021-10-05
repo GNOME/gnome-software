@@ -12,6 +12,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-summary-tile.h"
+#include "gs-summary-tile-layout.h"
 #include "gs-common.h"
 
 struct _GsSummaryTile
@@ -21,7 +22,7 @@ struct _GsSummaryTile
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
-	GtkWidget	*eventbox;
+	GtkWidget	*bin;
 	GtkWidget	*stack;
 	gint		 preferred_width;
 };
@@ -39,7 +40,6 @@ gs_summary_tile_refresh (GsAppTile *self)
 {
 	GsSummaryTile *tile = GS_SUMMARY_TILE (self);
 	GsApp *app = gs_app_tile_get_app (self);
-	AtkObject *accessible;
 	g_autoptr(GIcon) icon = NULL;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
@@ -62,9 +62,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 					 gtk_image_get_pixel_size (GTK_IMAGE (tile->image)),
 					 gtk_widget_get_scale_factor (tile->image),
 					 "system-component-application");
-	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon, GTK_ICON_SIZE_DIALOG);
-
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
+	gtk_image_set_from_gicon (GTK_IMAGE (tile->image), icon);
 
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
@@ -92,18 +90,19 @@ gs_summary_tile_refresh (GsAppTile *self)
 		break;
 	}
 
-	gtk_widget_set_visible (tile->eventbox, installed);
+	gtk_widget_set_visible (tile->bin, installed);
 
-	if (GTK_IS_ACCESSIBLE (accessible) && name != NULL) {
-		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (app));
+	if (name != NULL) {
+		gtk_accessible_update_property (GTK_ACCESSIBLE (tile),
+						GTK_ACCESSIBLE_PROPERTY_LABEL, name,
+						GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, gs_app_get_summary (app),
+						-1);
 	}
 }
 
 static void
 gs_summary_tile_init (GsSummaryTile *tile)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	tile->preferred_width = -1;
 	gtk_widget_init_template (GTK_WIDGET (tile));
 }
@@ -133,38 +132,20 @@ gs_summary_tile_set_property (GObject *object,
 				 GParamSpec *pspec)
 {
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (object);
+	GtkLayoutManager *layout_manager;
 
 	switch ((GsSummaryTileProperty) prop_id) {
 	case PROP_PREFERRED_WIDTH:
 		app_tile->preferred_width = g_value_get_int (value);
-		gtk_widget_queue_resize (GTK_WIDGET (app_tile));
+		layout_manager = gtk_widget_get_layout_manager (GTK_WIDGET (app_tile));
+		gs_summary_tile_layout_set_preferred_width (GS_SUMMARY_TILE_LAYOUT (layout_manager),
+							    g_value_get_int (value));
 		g_object_notify_by_pspec (object, obj_props[PROP_PREFERRED_WIDTH]);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static void
-gs_app_get_preferred_width (GtkWidget *widget,
-			    gint *min, gint *nat)
-{
-	gint m;
-	GsSummaryTile *app_tile = GS_SUMMARY_TILE (widget);
-
-	if (app_tile->preferred_width < 0) {
-		/* Just retrieve the default values */
-		GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, min, nat);
-		return;
-	}
-
-	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, &m, NULL);
-
-	if (min != NULL)
-		*min = m;
-	if (nat != NULL)
-		*nat = MAX (m, app_tile->preferred_width);
 }
 
 static void
@@ -176,8 +157,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
-
-	widget_class->get_preferred_width = gs_app_get_preferred_width;
 
 	tile_class->refresh = gs_summary_tile_refresh;
 
@@ -204,6 +183,7 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	gtk_widget_class_set_css_name (widget_class, "summary-tile");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-summary-tile.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GS_TYPE_SUMMARY_TILE_LAYOUT);
 
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      image);
@@ -212,7 +192,7 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      summary);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
-					      eventbox);
+					      bin);
 	gtk_widget_class_bind_template_child (widget_class, GsSummaryTile,
 					      stack);
 }

@@ -12,40 +12,27 @@
     <property name="default_width">600</property>
     <property name="default_height">300</property>
     <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
     <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
-        <property name="show_close_button">False</property>
-        <child>
-          <object class="GtkButton" id="cancel_button">
-            <property name="label" translatable="yes">_Cancel</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_underline">True</property>
-          </object>
-          <packing>
-            <property name="pack-type">start</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="post_button">
-            <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Post</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="can_default">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_underline">True</property>
-            <property name="sensitive">False</property>
-          </object>
-          <packing>
-            <property name="pack-type">end</property>
-          </packing>
-        </child>
+    <child type="action">
+      <object class="GtkButton" id="cancel_button">
+        <property name="label" translatable="yes">_Cancel</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_underline">True</property>
       </object>
     </child>
-    <child internal-child="vbox">
+    <child type="action">
+      <object class="GtkButton" id="post_button">
+        <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Post</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="use_underline">True</property>
+        <property name="sensitive">False</property>
+      </object>
+    </child>
+    <child internal-child="content_area">
       <object class="GtkBox" id="dialog-vbox">
         <property name="margin_start">40</property>
         <property name="margin_end">40</property>
@@ -54,7 +41,7 @@
         <property name="orientation">vertical</property>
         <property name="spacing">9</property>
         <child internal-child="action_area">
-          <object class="GtkButtonBox" id="dialog-action_area1">
+          <object class="GtkBox" id="dialog-action_area1">
           </object>
         </child>
         <child>
@@ -166,7 +153,6 @@
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
-                    <property name="shadow_type">in</property>
                     <property name="vexpand">True</property>
                     <child>
                       <object class="GtkTextView" id="text_view">
@@ -201,7 +187,6 @@
     </child>
   </template>
   <object class="GtkSizeGroup" id="sizegroup_folder_buttons">
-    <property name="ignore-hidden">False</property>
     <property name="mode">horizontal</property>
     <widgets>
       <widget name="cancel_button"/>

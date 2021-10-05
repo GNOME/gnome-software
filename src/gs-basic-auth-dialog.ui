@@ -2,7 +2,10 @@
 <interface>
   <template class="GsBasicAuthDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
+    <property name="margin-top">5</property>
+    <property name="margin-bottom">5</property>
+    <property name="margin-start">5</property>
+    <property name="margin-end">5</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
@@ -20,7 +23,6 @@
             <property name="visible">True</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="can_default">True</property>
             <property name="receives_default">True</property>
             <property name="use_action_appearance">False</property>
             <property name="use_underline">True</property>
@@ -30,16 +32,12 @@
               <class name="text-button"/>
             </style>
           </object>
-          <packing>
-            <property name="pack_type">start</property>
-          </packing>
         </child>
         <child>
           <object class="GtkButton" id="login_button">
             <property name="label" translatable="yes">_Login</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="can_default">True</property>
             <property name="has_default">True</property>
             <property name="receives_default">True</property>
             <property name="use_action_appearance">False</property>
@@ -51,9 +49,6 @@
               <class name="suggested-action"/>
             </style>
           </object>
-          <packing>
-            <property name="pack_type">end</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -69,8 +64,10 @@
             <property name="hexpand">True</property>
             <property name="row_spacing">8</property>
             <property name="column_spacing">6</property>
-            <property name="border_width">20</property>
-            <property name="margin_end">20</property>
+            <property name="margin-top">20</property>
+            <property name="margin-bottom">20</property>
+            <property name="margin-start">20</property>
+            <property name="margin-end">40</property>
             <child>
               <object class="GtkLabel" id="description_label">
                 <property name="visible">True</property>
@@ -83,13 +80,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                  <property name="column-span">2</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-                <property name="width">2</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="user_label">
@@ -103,13 +100,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">3</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">3</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="password_label">
@@ -123,13 +120,13 @@
                 <style>
                   <class name="dim-label"/>
                 </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">4</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkEntry" id="user_entry">
@@ -143,13 +140,13 @@
                 <property name="input_purpose">password</property>
                 <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
                 <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">3</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">3</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
             <child>
               <object class="GtkEntry" id="password_entry">
@@ -163,20 +160,15 @@
                 <property name="input_purpose">password</property>
                 <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
                 <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">4</property>
+                  <property name="column-span">1</property>
+                  <property name="row-span">1</property>
+                </layout>
               </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">4</property>
-                <property name="width">1</property>
-                <property name="height">1</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
         </child>
       </object>
     </child>

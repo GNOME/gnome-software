@@ -15,7 +15,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_SCREENSHOT_CAROUSEL (gs_screenshot_carousel_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GS, SCREENSHOT_CAROUSEL, GtkStack)
+G_DECLARE_FINAL_TYPE (GsScreenshotCarousel, gs_screenshot_carousel, GS, SCREENSHOT_CAROUSEL, GtkWidget)
 
 GsScreenshotCarousel	*gs_screenshot_carousel_new	(void);
 void			 gs_screenshot_carousel_load_screenshots	(GsScreenshotCarousel *self,

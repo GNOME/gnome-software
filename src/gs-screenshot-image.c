@@ -14,13 +14,12 @@
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
-#include "gs-picture.h"
 
 #define SPINNER_TIMEOUT_SECS 2
 
 struct _GsScreenshotImage
 {
-	GtkBin		 parent_instance;
+	GtkWidget	 parent_instance;
 
 	AsScreenshot	*screenshot;
 	GtkWidget	*spinner;
@@ -41,7 +40,7 @@ struct _GsScreenshotImage
 	gboolean	 showing_image;
 };
 
-G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_WIDGET)
 
 AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
@@ -99,13 +98,13 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	/* show icon */
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		if (pixbuf != NULL) {
-			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pixbuf);
+			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
 		ssimg->current_image = "image2";
 	} else {
 		if (pixbuf != NULL) {
-			gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pixbuf);
+			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pixbuf);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
 		ssimg->current_image = "image1";
@@ -223,9 +222,9 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 		return;
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image1), pb);
+		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pb);
 	} else {
-		gs_picture_set_pixbuf (GS_PICTURE (ssimg->image2), pb);
+		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pb);
 	}
 }
 
@@ -643,17 +642,18 @@ void
 gs_screenshot_image_set_description (GsScreenshotImage *ssimg,
 				     const gchar *description)
 {
-	AtkImage *atk_image;
-	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image1));
-	atk_image_set_image_description (atk_image, description);
-	atk_image = ATK_IMAGE (gtk_widget_get_accessible (ssimg->image2));
-	atk_image_set_image_description (atk_image, description);
+	gtk_accessible_update_property (GTK_ACCESSIBLE (ssimg->image1),
+					GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, description,
+					-1);
+	gtk_accessible_update_property (GTK_ACCESSIBLE (ssimg->image2),
+					GTK_ACCESSIBLE_PROPERTY_DESCRIPTION, description,
+					-1);
 }
 
 static void
-gs_screenshot_image_destroy (GtkWidget *widget)
+gs_screenshot_image_dispose (GObject *object)
 {
-	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (widget);
+	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (object);
 
 	if (ssimg->load_timeout_id) {
 		g_source_remove (ssimg->load_timeout_id);
@@ -666,63 +666,55 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 		                             SOUP_STATUS_CANCELLED);
 		g_clear_object (&ssimg->message);
 	}
+	gs_widget_remove_all (GTK_WIDGET (ssimg), NULL);
 	g_clear_object (&ssimg->screenshot);
 	g_clear_object (&ssimg->session);
 	g_clear_object (&ssimg->settings);
 
 	g_clear_pointer (&ssimg->filename, g_free);
 
-	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);
+	G_OBJECT_CLASS (gs_screenshot_image_parent_class)->dispose (object);
 }
 
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
-	AtkObject *accessible;
-
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 
-	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
-
-	g_type_ensure (GS_TYPE_PICTURE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
-
-	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
-	if (accessible != 0) {
-		atk_object_set_role (accessible, ATK_ROLE_IMAGE);
-		atk_object_set_name (accessible, _("Screenshot"));
-	}
 }
 
-static gboolean
-gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
+static void
+gs_screenshot_image_snapshot (GtkWidget   *widget,
+                              GtkSnapshot *snapshot)
 {
 	GtkStyleContext *context;
 
 	context = gtk_widget_get_style_context (widget);
-	gtk_render_background (context, cr,
-			       0, 0,
-			       gtk_widget_get_allocated_width (widget),
-			       gtk_widget_get_allocated_height (widget));
-	gtk_render_frame (context, cr,
-			  0, 0,
-			  gtk_widget_get_allocated_width (widget),
-			  gtk_widget_get_allocated_height (widget));
+	gtk_snapshot_render_frame (snapshot,
+				   context,
+				   0.0, 0.0,
+				   gtk_widget_get_width (widget),
+				   gtk_widget_get_height (widget));
 
-	return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
+	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->snapshot (widget, snapshot);
 }
 
 static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_screenshot_image_destroy;
-	widget_class->draw = gs_screenshot_image_draw;
+	object_class->dispose = gs_screenshot_image_dispose;
+
+	widget_class->snapshot = gs_screenshot_image_snapshot;
 
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
+	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_IMG);
 
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);

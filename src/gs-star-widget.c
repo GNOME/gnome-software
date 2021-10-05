@@ -24,7 +24,7 @@ typedef struct
 	GtkWidget	*images[5];
 } GsStarWidgetPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_ICON_SIZE = 1,
@@ -119,7 +119,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		return;
 
 	/* remove all existing widgets */
-	gs_container_remove_all (GTK_CONTAINER (priv->box1));
+	gs_widget_remove_all (priv->box1, (GsRemoveFunc) gtk_box_remove);
 
 	for (guint i = 0; i < G_N_ELEMENTS (priv->images); i++) {
 		GtkWidget *w;
@@ -139,7 +139,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 			g_object_set_data (G_OBJECT (w),
 					   "GsStarWidget::value",
 					   GINT_TO_POINTER (rate_to_star[i]));
-			gtk_container_add (GTK_CONTAINER (w), im);
+			gtk_button_set_child (GTK_BUTTON (w), im);
 			gtk_widget_set_visible (im, TRUE);
 		} else {
 			w = im;
@@ -147,7 +147,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		gtk_widget_set_sensitive (w, priv->interactive);
 		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
 		gtk_widget_set_visible (w, TRUE);
-		gtk_container_add (GTK_CONTAINER (priv->box1), w);
+		gtk_box_append (GTK_BOX (priv->box1), w);
 	}
 
 	gs_star_widget_refresh_rating (star);
@@ -234,12 +234,6 @@ gs_star_widget_set_property (GObject *object,
 }
 
 static void
-gs_star_widget_destroy (GtkWidget *widget)
-{
-	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->destroy (widget);
-}
-
-static void
 gs_star_widget_realize (GtkWidget *widget)
 {
 	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->realize (widget);
@@ -249,9 +243,16 @@ gs_star_widget_realize (GtkWidget *widget)
 }
 
 static void
+gs_star_widget_dispose (GObject *object)
+{
+	gs_widget_remove_all (GTK_WIDGET (object), NULL);
+
+	G_OBJECT_CLASS (gs_star_widget_parent_class)->dispose (object);
+}
+
+static void
 gs_star_widget_init (GsStarWidget *star)
 {
-	gtk_widget_set_has_window (GTK_WIDGET (star), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (star));
 }
 
@@ -261,7 +262,8 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	widget_class->destroy = gs_star_widget_destroy;
+	object_class->dispose = gs_star_widget_dispose;
+
 	widget_class->realize = gs_star_widget_realize;
 	object_class->get_property = gs_star_widget_get_property;
 	object_class->set_property = gs_star_widget_set_property;
@@ -319,6 +321,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (properties), properties);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-star-widget.ui");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, box1);
 }
 

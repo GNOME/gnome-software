@@ -420,7 +420,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 					 gtk_image_get_pixel_size (GTK_IMAGE (priv->image)),
 					 gtk_widget_get_scale_factor (priv->image),
 					 "system-component-application");
-	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon, GTK_ICON_SIZE_DIALOG);
+	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon);
 
 	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)
@@ -557,7 +557,7 @@ gs_app_row_unreveal (GsAppRow *app_row)
 
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 
-	child = gtk_bin_get_child (GTK_BIN (app_row));
+	child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (app_row));
 	gtk_widget_set_sensitive (child, FALSE);
 
 	revealer = gtk_revealer_new ();
@@ -565,11 +565,10 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	gtk_widget_show (revealer);
 
 	g_object_ref (child);
-	gtk_container_remove (GTK_CONTAINER (app_row), child);
-	gtk_container_add (GTK_CONTAINER (revealer), child);
+	gtk_list_box_row_set_child (GTK_LIST_BOX_ROW (app_row), revealer);
+	gtk_revealer_set_child (GTK_REVEALER (revealer), child);
 	g_object_unref (child);
 
-	gtk_container_add (GTK_CONTAINER (app_row), revealer);
 	g_signal_connect (revealer, "notify::child-revealed",
 			  G_CALLBACK (child_unrevealed), app_row);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
@@ -699,7 +698,7 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 }
 
 static void
-gs_app_row_destroy (GtkWidget *object)
+gs_app_row_dispose (GObject *object)
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
@@ -713,7 +712,7 @@ gs_app_row_destroy (GtkWidget *object)
 		priv->pending_refresh_id = 0;
 	}
 
-	GTK_WIDGET_CLASS (gs_app_row_parent_class)->destroy (object);
+	G_OBJECT_CLASS (gs_app_row_parent_class)->dispose (object);
 }
 
 static void
@@ -724,7 +723,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 
 	object_class->get_property = gs_app_row_get_property;
 	object_class->set_property = gs_app_row_set_property;
-	widget_class->destroy = gs_app_row_destroy;
+	object_class->dispose = gs_app_row_dispose;
 
 	/**
 	 * GsAppRow:app:
@@ -855,7 +854,6 @@ gs_app_row_init (GsAppRow *app_row)
 
 	priv->show_description = TRUE;
 
-	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	g_signal_connect (priv->button, "clicked",

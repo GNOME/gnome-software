@@ -2,100 +2,105 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsModeratePage" parent="GsPage">
-    <child internal-child="accessible">
-      <object class="AtkObject" id="moderate-accessible">
-        <property name="accessible-name" translatable="yes">Moderate page</property>
-      </object>
-    </child>
+    <accessibility>
+      <property name="label" translatable="yes">Moderate page</property>
+    </accessibility>
     <child>
       <object class="GtkStack" id="stack_install">
         <property name="visible">True</property>
+
         <child>
-          <object class="GtkSpinner" id="spinner_install">
-            <property name="visible">True</property>
-            <property name="width_request">32</property>
-            <property name="height_request">32</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-          </object>
-          <packing>
+          <object class="GtkStackPage">
             <property name="name">spinner</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box_install">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_install">
+            <property name="child">
+              <object class="GtkSpinner" id="spinner_install">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
+                <property name="width_request">32</property>
+                <property name="height_request">32</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
-                <property name="shadow_type">none</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">view</property>
+            <property name="child">
+              <object class="GtkBox" id="box_install">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="HdyClamp">
+                  <object class="GtkScrolledWindow" id="scrolledwindow_install">
                     <property name="visible">True</property>
-                    <property name="maximum-size">860</property>
-                    <!-- ~⅔ of the maximum size. -->
-                    <property name="tightening-threshold">576</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="vexpand">True</property>
                     <child>
-                      <object class="GtkListBox" id="list_box_install">
+                      <object class="AdwClamp">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="selection_mode">none</property>
+                        <property name="maximum-size">860</property>
+                        <!-- ~⅔ of the maximum size. -->
+                        <property name="tightening-threshold">576</property>
+                        <child>
+                          <object class="GtkListBox" id="list_box_install">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="selection_mode">none</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="name">view</property>
-          </packing>
         </child>
 
         <child>
-          <object class="GtkBox" id="updates_uptodate_box">
-            <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">48</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
-            <child type="center">
-              <object class="GtkBox" id="updates_uptodate_centerbox">
+          <object class="GtkStackPage">
+            <property name="name">uptodate</property>
+            <property name="child">
+              <object class="GtkBox" id="updates_uptodate_box">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkImage" id="image_updates">
+                <property name="spacing">48</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+                <child type="center">
+                  <object class="GtkBox" id="updates_uptodate_centerbox">
                     <property name="visible">True</property>
-                    <property name="pixel_size">128</property>
-                    <property name="icon_name">object-select-symbolic</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label10">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">There are no reviews to moderate</property>
-                    <attributes>
-                      <attribute name="scale" value="1.4"/>
-                    </attributes>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkImage" id="image_updates">
+                        <property name="visible">True</property>
+                        <property name="pixel_size">128</property>
+                        <property name="icon_name">object-select-symbolic</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label10">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">There are no reviews to moderate</property>
+                        <attributes>
+                          <attribute name="scale" value="1.4"/>
+                        </attributes>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
-          <packing>
-            <property name="name">uptodate</property>
-          </packing>
         </child>
 
       </object>

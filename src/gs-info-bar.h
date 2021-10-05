@@ -14,7 +14,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_INFO_BAR (gs_info_bar_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsInfoBar, gs_info_bar, GS, INFO_BAR, GtkInfoBar)
+G_DECLARE_FINAL_TYPE (GsInfoBar, gs_info_bar, GS, INFO_BAR, GtkWidget)
 
 GtkWidget	*gs_info_bar_new		(void);
 const gchar	*gs_info_bar_get_title		(GsInfoBar	*bar);

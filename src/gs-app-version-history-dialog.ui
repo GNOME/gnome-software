@@ -10,18 +10,17 @@
     <property name="height_request">400</property>
     <property name="use_header_bar">1</property>
     <child internal-child="headerbar">
-      <object class="HdyHeaderBar"/>
+      <object class="AdwHeaderBar"/>
     </child>
-    <child internal-child="vbox">
+    <child internal-child="content_area">
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
-        <property name="border_width">0</property>
         <child>
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
             <child>
-              <object class="HdyClamp">
+              <object class="AdwClamp">
                 <property name="visible">True</property>
                 <property name="vexpand">True</property>
                 <property name="hexpand">False</property>

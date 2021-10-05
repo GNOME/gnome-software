@@ -14,11 +14,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_REVIEW_HISTOGRAM (gs_review_histogram_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsReviewHistogram, gs_review_histogram, GS, REVIEW_HISTOGRAM, GtkBin)
+G_DECLARE_DERIVABLE_TYPE (GsReviewHistogram, gs_review_histogram, GS, REVIEW_HISTOGRAM, GtkWidget)
 
 struct _GsReviewHistogramClass
 {
-	GtkBinClass	 parent_class;
+	GtkWidgetClass	 parent_class;
 };
 
 GtkWidget	*gs_review_histogram_new			(void);

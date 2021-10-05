@@ -20,7 +20,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_LICENSE_TILE (gs_license_tile_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsLicenseTile, gs_license_tile, GS, LICENSE_TILE, GtkListBox)
+G_DECLARE_FINAL_TYPE (GsLicenseTile, gs_license_tile, GS, LICENSE_TILE, GtkWidget)
 
 GtkWidget	*gs_license_tile_new		(GsApp *app);
 

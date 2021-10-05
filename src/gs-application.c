@@ -13,18 +13,11 @@
 #include "gs-application.h"
 
 #include <stdlib.h>
+#include <adwaita.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
-#include <handy.h>
 #include <libsoup/soup.h>
-
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-#include <gdk/gdkwayland.h>
-#endif
 
 #ifdef HAVE_PACKAGEKIT
 #include "gs-dbus-helper.h"
@@ -255,7 +248,7 @@ theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 	} else {
 		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
 	}
-	gtk_css_provider_load_from_file (app->provider, file, NULL);
+	gtk_css_provider_load_from_file (app->provider, file);
 }
 
 static void
@@ -277,9 +270,9 @@ gs_application_initialize_ui (GsApplication *app)
 
 	/* get CSS */
 	app->provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (app->provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+						    GTK_STYLE_PROVIDER (app->provider),
+						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	g_signal_connect (gtk_settings_get_default (), "notify::gtk-theme-name",
 			  G_CALLBACK (theme_changed), app);
@@ -381,7 +374,7 @@ about_activated (GSimpleAction *action,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
@@ -877,7 +870,6 @@ install_resources_activated (GSimpleAction *action,
                              gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	GdkDisplay *display;
 	const gchar *mode;
 	const gchar *startup_id;
 	const gchar *desktop_id;
@@ -885,22 +877,6 @@ install_resources_activated (GSimpleAction *action,
 	g_autofree gchar **resources = NULL;
 
 	g_variant_get (parameter, "(&s^a&s&s&s&s)", &mode, &resources, &startup_id, &desktop_id, &ident);
-
-	display = gdk_display_get_default ();
-#ifdef GDK_WINDOWING_X11
-	if (GDK_IS_X11_DISPLAY (display)) {
-		if (startup_id != NULL && startup_id[0] != '\0')
-			gdk_x11_display_set_startup_notification_id (display,
-			                                             startup_id);
-	}
-#endif
-#ifdef GDK_WINDOWING_WAYLAND
-	if (GDK_IS_WAYLAND_DISPLAY (display)) {
-		if (startup_id != NULL && startup_id[0] != '\0')
-			gdk_wayland_display_set_startup_notification_id (display,
-			                                                 startup_id);
-	}
-#endif
 
 	gs_application_present_window (app, startup_id);
 
@@ -1030,7 +1006,7 @@ gs_application_startup (GApplication *application)
 	GsApplication *app = GS_APPLICATION (application);
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
-	hdy_init ();
+	adw_init ();
 
 	gs_application_add_wrapper_actions (application);
 

@@ -14,11 +14,11 @@
 
 struct _GsReviewBar
 {
-	GtkBin		 parent_instance;
+	GtkWidget	 parent_instance;
 	gdouble		 fraction;
 };
 
-G_DEFINE_TYPE (GsReviewBar, gs_review_bar, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsReviewBar, gs_review_bar, GTK_TYPE_WIDGET)
 
 void
 gs_review_bar_set_fraction (GsReviewBar *bar, gdouble fraction)
@@ -32,40 +32,35 @@ gs_review_bar_init (GsReviewBar *bar)
 {
 }
 
-static gboolean
-gs_review_bar_draw (GtkWidget *widget, cairo_t *cr)
+static void
+gs_review_bar_snapshot (GtkWidget   *widget,
+                        GtkSnapshot *snapshot)
 {
-	GtkStyleContext *context;
-	gdouble y_offset, bar_height;
+	gdouble y_offset, bar_width, bar_height;
 	GdkRGBA color;
 
-	context = gtk_widget_get_style_context (widget);
+	gtk_style_context_get_color (gtk_widget_get_style_context (widget), &color);
 
 	/* don't fill the complete height (too heavy beside GtkLabel of that height) */
-	y_offset = floor (0.15 * gtk_widget_get_allocated_height (widget));
-	bar_height = gtk_widget_get_allocated_height (widget) - (y_offset * 2);
+	y_offset = floor (0.15 * gtk_widget_get_height (widget));
+	bar_height = gtk_widget_get_height (widget) - (y_offset * 2);
+	bar_width = round (GS_REVIEW_BAR (widget)->fraction * gtk_widget_get_width (widget));
 
-	gtk_render_background (context, cr,
-			       0, y_offset,
-			       gtk_widget_get_allocated_width (widget),
-			       bar_height);
+	gtk_snapshot_append_color (snapshot,
+				   &color,
+				   &GRAPHENE_RECT_INIT (0,
+							y_offset,
+							bar_width,
+							bar_height));
 
-	cairo_rectangle (cr,
-			 0, y_offset,
-			 round (GS_REVIEW_BAR (widget)->fraction * gtk_widget_get_allocated_width (widget)),
-			 bar_height);
-	gtk_style_context_get_color (context, gtk_widget_get_state_flags (widget), &color);
-	cairo_set_source_rgba (cr, color.red, color.green, color.blue, color.alpha);
-	cairo_fill (cr);
-
-	return GTK_WIDGET_CLASS (gs_review_bar_parent_class)->draw (widget, cr);
+	GTK_WIDGET_CLASS (gs_review_bar_parent_class)->snapshot (widget, snapshot);
 }
 
 static void
 gs_review_bar_class_init (GsReviewBarClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	widget_class->draw = gs_review_bar_draw;
+	widget_class->snapshot = gs_review_bar_snapshot;
 
 	gtk_widget_class_set_css_name (widget_class, "review-bar");
 }

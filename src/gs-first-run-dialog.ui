@@ -2,26 +2,22 @@
 <!-- Generated with glade 3.18.1 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
-  <template class="GsFirstRunDialog" parent="HdyWindow">
+  <template class="GsFirstRunDialog" parent="AdwWindow">
     <property name="modal">True</property>
-    <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon_name">dialog-information</property>
     <property name="title" translatable="yes">Welcome</property>
-    <property name="type_hint">dialog</property>
     <property name="default-width">640</property>
     <property name="default-height">576</property>
-    <property name="skip_taskbar_hint">True</property>
-    <signal name="key-press-event" handler="key_press_event_cb" after="yes" swapped="no"/>
     <style>
       <class name="toolbox"/>
     </style>
 
     <child>
-      <object class="HdyWindowHandle">
+      <object class="GtkWindowHandle">
         <property name="visible">True</property>
         <child>
-          <object class="HdyStatusPage">
+          <object class="AdwStatusPage">
             <property name="visible">True</property>
             <property name="icon_name">org.gnome.Software</property>
             <property name="title" translatable="yes">Welcome to Software</property>

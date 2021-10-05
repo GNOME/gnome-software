@@ -8,8 +8,8 @@
 
 #pragma once
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 
 #include "gnome-software-private.h"
 
@@ -17,7 +17,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_PREFS_DIALOG (gs_prefs_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsPrefsDialog, gs_prefs_dialog, GS, PREFS_DIALOG, HdyPreferencesWindow)
+G_DECLARE_FINAL_TYPE (GsPrefsDialog, gs_prefs_dialog, GS, PREFS_DIALOG, AdwPreferencesWindow)
 
 GtkWidget	*gs_prefs_dialog_new		(GtkWindow	*parent,
 						 GsPluginLoader	*plugin_loader);

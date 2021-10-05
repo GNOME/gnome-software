@@ -33,7 +33,7 @@
 
 struct _GsLicenseTile
 {
-	GtkListBox	 parent_instance;
+	GtkWidget	 parent_instance;
 
 	GsApp		*app;  /* (nullable) (owned) */
 	gulong		 notify_license_handler;
@@ -46,7 +46,7 @@ struct _GsLicenseTile
 	GtkListBoxRow	*get_involved_row;
 };
 
-G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_LIST_BOX)
+G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_WIDGET)
 
 typedef enum {
 	PROP_APP = 1,
@@ -123,7 +123,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenge_images); i++)
-		gtk_image_set_from_icon_name (self->lozenge_images[i], lozenge_icon_names[i], GTK_ICON_SIZE_BUTTON);
+		gtk_image_set_from_icon_name (self->lozenge_images[i], lozenge_icon_names[i]);
 
 	gtk_label_set_label (self->title_label, title);
 	gtk_label_set_label (self->description_label, description);
@@ -180,6 +180,7 @@ gs_license_tile_dispose (GObject *object)
 	GsLicenseTile *self = GS_LICENSE_TILE (object);
 
 	gs_license_tile_set_app (self, NULL);
+	gs_widget_remove_all (GTK_WIDGET (self), NULL);
 
 	G_OBJECT_CLASS (gs_license_tile_parent_class)->dispose (object);
 }
@@ -240,6 +241,8 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_row);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_license_tile_row_activated_cb);
+
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 /**

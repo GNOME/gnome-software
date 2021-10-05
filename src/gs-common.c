@@ -72,12 +72,12 @@ gs_stop_spinner (GtkSpinner *spinner)
 void
 gs_start_spinner (GtkSpinner *spinner)
 {
-	gboolean active;
+	gboolean spinning;
 	guint id;
 
 	/* Don't do anything if it's already spinning */
-	g_object_get (spinner, "active", &active, NULL);
-	if (active || g_object_get_data (G_OBJECT (spinner), "start-timeout") != NULL)
+	g_object_get (spinner, "spinning", &spinning, NULL);
+	if (spinning || g_object_get_data (G_OBJECT (spinner), "start-timeout") != NULL)
 		return;
 
 	gtk_widget_set_opacity (GTK_WIDGET (spinner), 0);
@@ -86,17 +86,17 @@ gs_start_spinner (GtkSpinner *spinner)
 				GUINT_TO_POINTER (id), remove_source);
 }
 
-static void
-remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
 void
-gs_container_remove_all (GtkContainer *container)
+gs_widget_remove_all (GtkWidget    *container,
+                      GsRemoveFunc  remove_func)
 {
-	gtk_container_foreach (container, remove_all_cb, container);
+	GtkWidget *child;
+	while ((child = gtk_widget_get_first_child (container)) != NULL) {
+		if (remove_func)
+			remove_func (container, child);
+		else
+			gtk_widget_unparent (child);
+	}
 }
 
 static void
@@ -185,11 +185,48 @@ typedef enum {
 	GS_APP_LICENSE_PATENT_CONCERN	= 2
 } GsAppLicenseHint;
 
+typedef struct
+{
+	GtkDialog *dialog;
+	gint response_id;
+	GMainLoop *loop;
+} RunInfo;
+
+static void
+shutdown_loop (RunInfo *run_info)
+{
+	if (g_main_loop_is_running (run_info->loop))
+		g_main_loop_quit (run_info->loop);
+}
+
+static void
+unmap_cb (GtkDialog *dialog,
+          RunInfo   *run_info)
+{
+	shutdown_loop (run_info);
+}
+
+static void
+response_cb (GtkDialog *dialog,
+             gint       response_id,
+             RunInfo   *run_info)
+{
+	run_info->response_id = response_id;
+	shutdown_loop (run_info);
+}
+
+static gboolean
+close_requested_cb (GtkDialog *dialog,
+                    RunInfo   *run_info)
+{
+	shutdown_loop (run_info);
+	return GDK_EVENT_PROPAGATE;
+}
+
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
 	GsAppLicenseHint hint = GS_APP_LICENSE_FREE;
-	GtkResponseType response;
 	GtkWidget *dialog;
 	const gchar *license;
 	gboolean already_enabled = FALSE;	/* FIXME */
@@ -206,6 +243,12 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(GString) body = NULL;
 	g_autoptr(GString) title = NULL;
+
+	RunInfo run_info = {
+		NULL,
+		GTK_RESPONSE_NONE,
+		NULL,
+	};
 
 	/* this is very crude */
 	license = gs_app_get_license (app);
@@ -302,13 +345,25 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 				       _("Enable and Install"),
 				       GTK_RESPONSE_OK);
 	}
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_YES) {
-		response = GTK_RESPONSE_OK;
+
+
+	/* Run */
+	if (!gtk_widget_get_visible (dialog))
+		gtk_window_present (GTK_WINDOW (dialog));
+
+	g_signal_connect (dialog, "close-request", G_CALLBACK (close_requested_cb), &run_info);
+	g_signal_connect (dialog, "response", G_CALLBACK (response_cb), &run_info);
+	g_signal_connect (dialog, "unmap", G_CALLBACK (unmap_cb), &run_info);
+
+	run_info.loop = g_main_loop_new (NULL, FALSE);
+	g_main_loop_run (run_info.loop);
+	g_clear_pointer (&run_info.loop, g_main_loop_unref);
+
+	if (run_info.response_id == GTK_RESPONSE_YES) {
+		run_info.response_id = GTK_RESPONSE_OK;
 		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
 	}
-	gtk_widget_destroy (dialog);
-	return response;
+	return run_info.response_id;
 }
 
 gboolean
@@ -329,9 +384,12 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 				      GError *error,
 				      gpointer user_data)
 {
-	g_warning ("CSS parse error %u:%u: %s",
-		   gtk_css_section_get_start_line (section),
-		   gtk_css_section_get_start_position (section),
+	const GtkCssLocation *start_location;
+
+	start_location = gtk_css_section_get_start_location (section);
+	g_warning ("CSS parse error %lu:%lu: %s",
+		   start_location->lines + 1,
+		   start_location->line_chars,
 		   error->message);
 }
 
@@ -445,24 +503,16 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 	gtk_style_context_add_class (context, class_name);
 
 	/* set up custom provider and store on the widget */
-	gtk_css_provider_load_from_data (*provider, str->str, -1, NULL);
+	gtk_css_provider_load_from_data (*provider, str->str, -1);
 	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (*provider),
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void
-do_not_expand (GtkWidget *child, gpointer data)
-{
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
-				 child, "expand", FALSE, "fill", FALSE, NULL);
-}
-
-static gboolean
-unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
+unset_focus (GtkWidget *widget, gpointer data)
 {
 	if (GTK_IS_WINDOW (widget))
 		gtk_window_set_focus (GTK_WINDOW (widget), NULL);
-	return FALSE;
 }
 
 /**
@@ -476,9 +526,9 @@ static void
 insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 {
 	GtkWidget *message_area, *sw, *label;
-	GtkWidget *box, *tv;
+	GtkWidget *tv;
+	GtkWidget *child;
 	GtkTextBuffer *buffer;
-	GList *children;
 	g_autoptr(GString) msg = NULL;
 
 	g_assert (GTK_IS_MESSAGE_DIALOG (dialog));
@@ -496,28 +546,22 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 
 	message_area = gtk_message_dialog_get_message_area (dialog);
 	g_assert (GTK_IS_BOX (message_area));
-	/* make the hbox expand */
-	box = gtk_widget_get_parent (message_area);
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
-	                         "expand", TRUE, "fill", TRUE, NULL);
-	/* make the labels not expand */
-	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
 
 	/* Find the secondary label and set its width_chars.   */
 	/* Otherwise the label will tend to expand vertically. */
-	children = gtk_container_get_children (GTK_CONTAINER (message_area));
-	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
-		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
+	child = gtk_widget_get_first_child (message_area);
+	if (child) {
+		GtkWidget *next = gtk_widget_get_next_sibling (child);
+		if (next && GTK_IS_LABEL (next))
+			gtk_label_set_width_chars (GTK_LABEL (next), 40);
 	}
 
 	label = gtk_label_new (_("Details"));
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_visible (label, TRUE);
-	gtk_container_add (GTK_CONTAINER (message_area), label);
+	gtk_box_append (GTK_BOX (message_area), label);
 
-	sw = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
-	                                     GTK_SHADOW_IN);
+	sw = gtk_scrolled_window_new ();
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
 	                                GTK_POLICY_NEVER,
 	                                GTK_POLICY_AUTOMATIC);
@@ -533,12 +577,11 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_text_buffer_set_text (buffer, msg->str, -1);
 	gtk_widget_set_visible (tv, TRUE);
 
-	gtk_container_add (GTK_CONTAINER (sw), tv);
+	gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (sw), tv);
 	gtk_widget_set_vexpand (sw, TRUE);
-	gtk_container_add (GTK_CONTAINER (message_area), sw);
-	gtk_container_child_set (GTK_CONTAINER (message_area), sw, "pack-type", GTK_PACK_END, NULL);
+	gtk_box_append (GTK_BOX (message_area), sw);
 
-	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
+	g_signal_connect (dialog, "map", G_CALLBACK (unset_focus), NULL);
 }
 
 /**
@@ -569,7 +612,7 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details);
 
 	g_signal_connect_swapped (dialog, "response",
-	                          G_CALLBACK (gtk_widget_destroy),
+	                          G_CALLBACK (gtk_window_destroy),
 	                          dialog);
 	gtk_widget_show (dialog);
 }

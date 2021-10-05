@@ -28,11 +28,11 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <handy.h>
 #include <locale.h>
 
 #include "gs-app.h"
@@ -100,7 +100,7 @@ add_permission_row (GtkListBox                   *list_box,
 					 has_permission ? item_rating : GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 					 has_permission ? title_with_permission : title_without_permission,
 					 has_permission ? description_with_permission : description_without_permission);
-	gtk_list_box_insert (list_box, GTK_WIDGET (row), -1);
+	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
 
 static void
@@ -118,7 +118,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 * based on app properties. */
 	chosen_rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
 
-	gs_container_remove_all (GTK_CONTAINER (self->permissions_list));
+	gs_widget_remove_all (GTK_WIDGET (self->permissions_list), (GsRemoveFunc) gtk_list_box_remove);
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)
@@ -361,7 +361,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name);
 	gtk_label_set_text (self->title, title);
 
 	context = gtk_widget_get_style_context (self->lozenge);

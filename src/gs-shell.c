@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-#include <handy.h>
+#include <adwaita.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -61,7 +61,7 @@ typedef struct {
 
 struct _GsShell
 {
-	HdyApplicationWindow	 parent_object;
+	AdwApplicationWindow	 parent_object;
 
 	GSettings		*settings;
 	GCancellable		*cancellable;
@@ -72,11 +72,11 @@ struct _GsShell
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gchar			*events_info_uri;
-	HdyDeck			*main_deck;
-	HdyDeck			*details_deck;
-	GtkStack		*stack_loading;
-	GtkStack		*stack_main;
-	GtkStack		*stack_sub;
+	AdwLeaflet		*main_leaflet;
+	AdwLeaflet		*details_leaflet;
+	AdwViewStack		*stack_loading;
+	AdwViewStack		*stack_main;
+	AdwViewStack		*stack_sub;
 	GsPage			*page;
 
 	GBinding		*sub_page_header_title_binding;
@@ -112,7 +112,7 @@ struct _GsShell
 	GsPage			*pages[GS_SHELL_MODE_LAST];
 };
 
-G_DEFINE_TYPE (GsShell, gs_shell, HDY_TYPE_APPLICATION_WINDOW)
+G_DEFINE_TYPE (GsShell, gs_shell, ADW_TYPE_APPLICATION_WINDOW)
 
 typedef enum {
 	PROP_IS_NARROW = 1,
@@ -179,13 +179,13 @@ gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_start (HDY_HEADER_BAR (shell->main_header), widget);
+		adw_header_bar_pack_start (ADW_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_start_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -202,13 +202,13 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->main_header), widget);
+		adw_header_bar_pack_end (ADW_HEADER_BAR (shell->main_header), widget);
 	}
 
 	shell->header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->main_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->main_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -225,13 +225,13 @@ gs_shell_set_details_header_end_widget (GsShell *shell, GtkWidget *widget)
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		hdy_header_bar_pack_end (HDY_HEADER_BAR (shell->details_header), widget);
+		adw_header_bar_pack_end (ADW_HEADER_BAR (shell->details_header), widget);
 	}
 
 	shell->details_header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (shell->details_header), old_widget);
+		adw_header_bar_remove (ADW_HEADER_BAR (shell->details_header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -270,7 +270,7 @@ gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
@@ -412,7 +412,7 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy), dialog);
+				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
@@ -456,7 +456,9 @@ gs_shell_get_mode_is_main (GsShellMode mode)
 	}
 }
 
-static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell);
+static void search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
+                                                       GParamSpec   *pspec,
+                                                       GsShell      *shell);
 static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
 
 static void
@@ -465,13 +467,13 @@ update_header_widgets (GsShell *shell)
 	GsShellMode mode = gs_shell_get_mode (shell);
 
 	/* only show the search button in overview and search pages */
-	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
+	g_signal_handlers_block_by_func (shell->search_bar, search_bar_search_mode_enabled_changed_cb, shell);
 
 	/* hide unless we're going to search */
-	hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar),
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
 
-	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_bar, search_bar_search_mode_enabled_changed_cb, shell);
 }
 
 static void
@@ -546,7 +548,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 
 	g_clear_object (&shell->sub_page_header_title_binding);
-	shell->sub_page_header_title_binding = g_object_bind_property (gtk_stack_get_visible_child (shell->stack_sub), "title",
+	shell->sub_page_header_title_binding = g_object_bind_property (adw_view_stack_get_visible_child (shell->stack_sub), "title",
 								       shell->sub_page_header_title, "label",
 								       G_BINDING_SYNC_CREATE);
 
@@ -591,21 +593,21 @@ gs_shell_change_mode (GsShell *shell,
 
 	/* switch page */
 	if (mode == GS_SHELL_MODE_LOADING) {
-		gtk_stack_set_visible_child_name (shell->stack_loading, "loading");
+		adw_view_stack_set_visible_child_name (shell->stack_loading, "loading");
 		return;
 	}
 
-	gtk_stack_set_visible_child_name (shell->stack_loading, "main");
+	adw_view_stack_set_visible_child_name (shell->stack_loading, "main");
 	if (mode == GS_SHELL_MODE_DETAILS) {
-		hdy_deck_set_visible_child_name (shell->details_deck, "details");
+		adw_leaflet_set_visible_child_name (shell->details_leaflet, "details");
 	} else {
-		hdy_deck_set_visible_child_name (shell->details_deck, "main");
-		/* We only change the main deck when not reaching the details
+		adw_leaflet_set_visible_child_name (shell->details_leaflet, "main");
+		/* We only change the main leaflet when not reaching the details
 		 * page to preserve the navigation history in the UI's state.
-		 * First change the page, then the deck, to avoid load of
+		 * First change the page, then the leaflet, to avoid load of
 		 * the previously shown page, which will be changed shortly after. */
-		gtk_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
-		hdy_deck_set_visible_child_name (shell->main_deck, mode_is_main ? "main" : "sub");
+		adw_view_stack_set_visible_child_name (mode_is_main ? shell->stack_main : shell->stack_sub, page_name[mode]);
+		adw_leaflet_set_visible_child_name (shell->main_leaflet, mode_is_main ? "main" : "sub");
 	}
 
 	/* do any mode-specific actions */
@@ -613,7 +615,7 @@ gs_shell_change_mode (GsShell *shell,
 
 	if (mode == GS_SHELL_MODE_SEARCH) {
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
-		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), data);
+		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), data);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 	} else if (mode == GS_SHELL_MODE_DETAILS) {
 		app = GS_APP (data);
@@ -648,7 +650,7 @@ overlay_get_child_position_cb (GtkOverlay   *overlay,
 	 * to position it below the header bar. The overlay can’t easily be
 	 * moved in the widget hierarchy so it doesn’t have the header bar as
 	 * a child, since there are several header bars in different pages of
-	 * a HdyDeck. */
+	 * a AdwLeaflet. */
 	g_assert (gtk_widget_is_ancestor (self->main_header, GTK_WIDGET (overlay)));
 
 	gtk_widget_get_preferred_size (widget, NULL, &overlay_natural_size);
@@ -802,7 +804,7 @@ gs_shell_go_back (GsShell *shell)
 
 		/* set the text in the entry and move cursor to the end */
 		block_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
-		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), entry->search);
+		gtk_editable_set_text (GTK_EDITABLE (shell->entry_search), entry->search);
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 		unblock_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
 
@@ -905,49 +907,48 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 }
 
 static gboolean
-window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
+window_keypress_handler (GtkEventControllerKey *key_controller,
+                         guint                  keyval,
+                         guint                  keycode,
+                         GdkModifierType        state,
+                         GsShell               *shell)
 {
 	/* handle ctrl+f shortcut */
-	if (event->type == GDK_KEY_PRESS) {
-		GdkEventKey *e = (GdkEventKey *) event;
-		if ((e->state & GDK_CONTROL_MASK) > 0 &&
-		    e->keyval == GDK_KEY_f) {
-			if (!hdy_search_bar_get_search_mode (HDY_SEARCH_BAR (shell->search_bar))) {
-				GsShellMode mode = gs_shell_get_mode (shell);
+	if ((state & GDK_CONTROL_MASK) > 0 && keyval == GDK_KEY_f) {
+		if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
+			GsShellMode mode = gs_shell_get_mode (shell);
 
-				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), TRUE);
-				gtk_widget_grab_focus (shell->entry_search);
+			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
+			gtk_widget_grab_focus (shell->entry_search);
 
-				/* If the mode doesn't have a search button,
-				 * switch to the search page right away,
-				 * otherwise we would show the search bar
-				 * without a button to toggle it. */
-				switch (mode) {
-				case GS_SHELL_MODE_OVERVIEW:
-				case GS_SHELL_MODE_INSTALLED:
-				case GS_SHELL_MODE_SEARCH:
-					break;
-				default:
-					gs_shell_show_search (shell, "");
-					break;
-				}
-			} else {
-				hdy_search_bar_set_search_mode (HDY_SEARCH_BAR (shell->search_bar), FALSE);
+			/* If the mode doesn't have a search button,
+			 * switch to the search page right away,
+			 * otherwise we would show the search bar
+			 * without a button to toggle it. */
+			switch (mode) {
+			case GS_SHELL_MODE_OVERVIEW:
+			case GS_SHELL_MODE_INSTALLED:
+			case GS_SHELL_MODE_SEARCH:
+				break;
+			default:
+				gs_shell_show_search (shell, "");
+				break;
 			}
-			return GDK_EVENT_STOP;
+		} else {
+			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), FALSE);
 		}
+		return GDK_EVENT_STOP;
 	}
 
-	/* pass to search bar */
-	return hdy_search_bar_handle_event (HDY_SEARCH_BAR (shell->search_bar), event);
+	return GDK_EVENT_PROPAGATE;
 }
 
 static void
 search_changed_handler (GObject *entry, GsShell *shell)
 {
-	const gchar *text;
+	g_autofree gchar *text = NULL;
 
-	text = gtk_entry_get_text (GTK_ENTRY (entry));
+	text = g_strdup (gtk_editable_get_text (GTK_EDITABLE (entry)));
 	if (strlen (text) >= 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			save_back_entry (shell);
@@ -962,30 +963,28 @@ search_changed_handler (GObject *entry, GsShell *shell)
 }
 
 static void
-search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
+search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
+					   GParamSpec *pspec,
+					   GsShell *shell)
 {
 	/* go back when exiting the search view */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH &&
-	    !gtk_toggle_button_get_active (toggle_button))
+	    !gtk_search_bar_get_search_mode (search_bar))
 		gs_shell_go_back (shell);
 }
 
 static gboolean
-window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
+window_key_pressed_cb (GtkEventControllerKey *key_controller,
+                       guint                  keyval,
+                       guint                  keycode,
+                       GdkModifierType        state,
+                       GsShell               *shell)
 {
-	GdkKeymap *keymap;
-	GdkModifierType state;
-	gboolean is_rtl;
+	gboolean is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
 
-	state = event->state;
-	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (win));
-	gdk_keymap_add_virtual_modifiers (keymap, &state);
-	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
-
-	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
-	    event->keyval == GDK_KEY_Back) {
+	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
+	    keyval == GDK_KEY_Back) {
 		/* GTK will only actually activate the one which is visible */
 		gtk_widget_activate (shell->button_back);
 		gtk_widget_activate (shell->button_back2);
@@ -995,21 +994,22 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	return GDK_EVENT_PROPAGATE;
 }
 
-static gboolean
-window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell)
+static void
+window_button_pressed_cb (GtkGestureClick *click_gesture,
+                          gint             n_press,
+                          gdouble          x,
+                          gdouble          y,
+                          GsShell         *shell)
 {
-	/* Mouse hardware back button is 8 */
-	if (event->button != 8)
-		return GDK_EVENT_PROPAGATE;
-
 	/* GTK will only actually activate the one which is visible */
 	gtk_widget_activate (shell->button_back);
 	gtk_widget_activate (shell->button_back2);
-	return GDK_EVENT_STOP;
+
+	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static gboolean
-main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
+main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 {
 	GsShell *shell = user_data;
 
@@ -1068,18 +1068,21 @@ static void
 gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 {
 	GdkRectangle geometry;
+	GdkSurface *surface;
 	GdkDisplay *display;
 	GdkMonitor *monitor;
 
 	display = gtk_widget_get_display (GTK_WIDGET (shell));
-	monitor = gdk_display_get_monitor_at_window (display,
-						     gtk_widget_get_window (GTK_WIDGET (shell)));
+	surface = gtk_native_get_surface (GTK_NATIVE (shell));
+	monitor = gdk_display_get_monitor_at_surface (display, surface);
 
 	/* adapt the window for low and medium resolution screens */
-	gdk_monitor_get_geometry (monitor, &geometry);
-	if (geometry.width < 800 || geometry.height < 600) {
-	} else if (geometry.width < 1366 || geometry.height < 768) {
-		gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
+	if (monitor != NULL) {
+		gdk_monitor_get_geometry (monitor, &geometry);
+		if (geometry.width < 800 || geometry.height < 600) {
+		} else if (geometry.width < 1366 || geometry.height < 768) {
+			gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
+		}
 	}
 }
 
@@ -2142,17 +2145,6 @@ gs_shell_add_about_menu_item (GsShell *shell)
 	g_menu_append_item (G_MENU (shell->primary_menu), menu_item);
 }
 
-static gboolean
-gs_shell_close_window_accel_cb (GtkAccelGroup *accel_group,
-				GObject *acceleratable,
-				guint keyval,
-				GdkModifierType modifier)
-{
-	gtk_window_close (GTK_WINDOW (acceleratable));
-
-	return TRUE;
-}
-
 static void
 updates_page_notify_counter_cb (GObject    *obj,
                                 GParamSpec *pspec,
@@ -2160,18 +2152,18 @@ updates_page_notify_counter_cb (GObject    *obj,
 {
 	GsPage *page = GS_PAGE (obj);
 	GsShell *shell = GS_SHELL (user_data);
+	AdwViewStackPage *stack_page;
 	gboolean needs_attention;
 
 	/* Update the needs-attention child property of the page in the
-	 * GtkStack. There’s no need to account for whether it’s the currently
+	 * AdwViewStack. There’s no need to account for whether it’s the currently
 	 * visible page, as the CSS rules do that for us. This can’t be a simple
 	 * property binding, though, as it’s a binding between an object
 	 * property and a child property. */
 	needs_attention = (gs_page_get_counter (page) > 0);
 
-	gtk_container_child_set (GTK_CONTAINER (shell->stack_main), GTK_WIDGET (page),
-				 "needs-attention", needs_attention,
-				 NULL);
+	stack_page = adw_view_stack_get_page (shell->stack_main, GTK_WIDGET (page));
+	adw_view_stack_page_set_needs_attention (stack_page, needs_attention);
 }
 
 static void
@@ -2187,8 +2179,6 @@ category_page_app_clicked_cb (GsCategoryPage *page,
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
-	g_autoptr(GtkAccelGroup) accel_group = NULL;
-	GClosure *closure;
 	GsOdrsProvider *odrs_provider;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
@@ -2211,12 +2201,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	shell->cancellable = g_object_ref (cancellable);
 
 	shell->settings = g_settings_new ("org.gnome.software");
-
-	/* get UI */
-	accel_group = gtk_accel_group_new ();
-	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
-	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
-	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
 	/* set up pages */
 	gs_shell_setup_pages (shell);
@@ -2266,16 +2250,16 @@ gs_shell_get_mode (GsShell *shell)
 {
 	const gchar *name;
 
-	if (g_strcmp0 (gtk_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
+	if (g_strcmp0 (adw_view_stack_get_visible_child_name (shell->stack_loading), "loading") == 0)
 		return GS_SHELL_MODE_LOADING;
 
-	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->details_deck), "details") == 0)
+	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->details_leaflet), "details") == 0)
 		return GS_SHELL_MODE_DETAILS;
 
-	if (g_strcmp0 (hdy_deck_get_visible_child_name (shell->main_deck), "main") == 0)
-		name = gtk_stack_get_visible_child_name (shell->stack_main);
+	if (g_strcmp0 (adw_leaflet_get_visible_child_name (shell->main_leaflet), "main") == 0)
+		name = adw_view_stack_get_visible_child_name (shell->stack_main);
 	else
-		name = gtk_stack_get_visible_child_name (shell->stack_sub);
+		name = adw_view_stack_get_visible_child_name (shell->stack_sub);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++)
 		if (g_strcmp0 (page_name[i], name) == 0)
@@ -2386,15 +2370,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 void
 gs_shell_show_uri (GsShell *shell, const gchar *url)
 {
-	g_autoptr(GError) error = NULL;
-
-	if (!gtk_show_uri_on_window (GTK_WINDOW (shell),
-	                             url,
-	                             GDK_CURRENT_TIME,
-	                             &error)) {
-		g_warning ("failed to show URI %s: %s",
-		           url, error->message);
-	}
+	gtk_show_uri (GTK_WINDOW (shell), url, GDK_CURRENT_TIME);
 }
 
 /**
@@ -2513,11 +2489,17 @@ allocation_changed_cb (gpointer user_data)
 }
 
 static void
-gs_shell_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+gs_shell_size_allocate (GtkWidget *widget,
+                        gint       width,
+                        gint       height,
+                        gint       baseline)
 {
 	GsShell *shell = GS_SHELL (widget);
 
-	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_shell_parent_class)->size_allocate (widget,
+								 width,
+								 height,
+								 baseline);
 
 	/* Delay updating is-narrow so children can adapt to it, which isn't
 	 * possible during the widget's allocation phase as it would break their
@@ -2564,9 +2546,9 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsShell, main_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, main_deck);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, main_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, details_header);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, details_deck);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_leaflet);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
@@ -2600,15 +2582,15 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_mapped_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_realized_cb);
 	gtk_widget_class_bind_template_callback (widget_class, main_window_closed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, window_key_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, window_key_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
-	gtk_widget_class_bind_template_callback (widget_class, window_button_press_event);
+	gtk_widget_class_bind_template_callback (widget_class, window_button_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_back_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_overview_page_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, updates_page_notify_counter_cb);
 	gtk_widget_class_bind_template_callback (widget_class, category_page_app_clicked_cb);
-	gtk_widget_class_bind_template_callback (widget_class, search_button_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, search_bar_search_mode_enabled_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, search_changed_handler);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_sources_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_no_space_cb);
@@ -2620,6 +2602,8 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
+
+	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_q, GDK_CONTROL_MASK, "window.close", NULL);
 }
 
 static void
@@ -2627,10 +2611,10 @@ gs_shell_init (GsShell *shell)
 {
 	gtk_widget_init_template (GTK_WIDGET (shell));
 
-	hdy_search_bar_connect_entry (HDY_SEARCH_BAR (shell->search_bar), GTK_ENTRY (shell->entry_search));
+	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
-	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
+	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_window_destroy);
 }
 
 GsShell *

@@ -54,7 +54,7 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 		css = tmp;
 	}
 
-	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
+	gtk_css_provider_load_from_data (button->css_provider, css, -1);
 }
 
 void

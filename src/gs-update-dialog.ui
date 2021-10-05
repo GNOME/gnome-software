@@ -1,100 +1,125 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsUpdateDialog" parent="HdyWindow">
+  <template class="GsUpdateDialog" parent="AdwWindow">
     <property name="modal">True</property>
-    <property name="window_position">center</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon_name">dialog-information</property>
-    <property name="skip_taskbar_hint">True</property>
     <property name="title" translatable="yes">Software Repositories</property>
-    <property name="type_hint">dialog</property>
     <property name="default-width">640</property>
     <property name="default-height">576</property>
 
     <child>
-      <object class="HdyDeck" id="deck">
+      <object class="GtkEventControllerKey">
+        <signal name="key-pressed" handler="key_pressed_cb"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGestureClick">
+        <!-- Mouse hardware back button -->
+        <property name="button">8</property>
+        <signal name="pressed" handler="button_pressed_cb"/>
+      </object>
+    </child>
+
+    <child>
+      <object class="AdwLeaflet" id="leaflet">
         <property name="visible">True</property>
         <property name="can_swipe_back">True</property>
+        <property name="can-unfold">False</property>
         <!-- We need both signals to support the animations being disabled, as
              notify::transition-running isn't emitted in that case. -->
-        <signal name="notify::visible-child" handler="deck_child_transition_cb" swapped="no"/>
-        <signal name="notify::transition-running" handler="deck_child_transition_cb" swapped="no"/>
+        <signal name="notify::visible-child" handler="leaflet_child_transition_cb" swapped="no"/>
+        <signal name="notify::transition-running" handler="leaflet_child_transition_cb" swapped="no"/>
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="HdyHeaderBar">
-                <property name="show_close_button">True</property>
-                <property name="visible">True</property>
-                <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
+              <object class="AdwHeaderBar">
+                <property name="valign">start</property>
+                <property name="show_start_title_buttons">True</property>
+                <property name="show_end_title_buttons">True</property>
+                <property name="title-widget">
+                  <object class="AdwWindowTitle" id="window_title">
+                    <property name="title" bind-source="GsUpdateDialog" bind-property="title" bind-flags="sync-create"/>
+                  </object>
+                </property>
               </object>
             </child>
             <child>
               <object class="GtkStack" id="stack">
                 <property name="visible">True</property>
                 <property name="transition_duration">300</property>
+
                 <child>
-                  <object class="GtkBox" id="box_spinner">
-                    <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">12</property>
-                    <property name="halign">center</property>
-                    <property name="valign">center</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">True</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                    <child>
-                      <object class="GtkSpinner" id="spinner">
+                  <object class="GtkStackPage">
+                    <property name="name">spinner</property>
+                    <property name="child">
+                      <object class="GtkBox" id="box_spinner">
                         <property name="visible">True</property>
-                        <property name="width_request">32</property>
-                        <property name="height_request">32</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">12</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="name">spinner</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="HdyStatusPage">
-                    <property name="visible">True</property>
-                    <property name="icon_name">org.gnome.Software-symbolic</property>
-                    <property name="title" translatable="yes">No updates have been installed on this system.</property>
-                  </object>
-                  <packing>
-                    <property name="name">empty</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="HdyPreferencesPage">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="HdyPreferencesGroup">
-                        <property name="visible">True</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
                         <child>
-                          <object class="GsUpdateList" id="list_box_installed_updates">
+                          <object class="GtkSpinner" id="spinner">
                             <property name="visible">True</property>
-                            <property name="selection_mode">none</property>
-                            <style>
-                              <class name="content" />
-                            </style>
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
+                            <property name="halign">center</property>
+                            <property name="valign">center</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">True</property>
                           </object>
                         </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                  <packing>
-                    <property name="name">installed-updates-list</property>
-                  </packing>
                 </child>
+
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">empty</property>
+                    <property name="child">
+                      <object class="AdwStatusPage">
+                        <property name="visible">True</property>
+                        <property name="icon_name">org.gnome.Software-symbolic</property>
+                        <property name="title" translatable="yes">No updates have been installed on this system.</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">installed-updates-list</property>
+                    <property name="child">
+                      <object class="AdwPreferencesPage">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="visible">True</property>
+                            <child>
+                              <object class="GsUpdateList" id="list_box_installed_updates">
+                                <property name="visible">True</property>
+                                <style>
+                                  <class name="content" />
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+
               </object>
             </child>
           </object>

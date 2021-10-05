@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsPrefsDialog" parent="HdyPreferencesWindow">
+  <template class="GsPrefsDialog" parent="AdwPreferencesWindow">
     <property name="title" translatable="yes">Update Preferences</property>
     <property name="default_width">610</property>
     <property name="default_height">300</property>
@@ -10,14 +10,14 @@
       <class name="update-preferences"/>
     </style>
     <child>
-      <object class="HdyPreferencesPage">
+      <object class="AdwPreferencesPage">
         <property name="visible">True</property>
         <child>
-          <object class="HdyPreferencesGroup">
+          <object class="AdwPreferencesGroup">
             <property name="visible">True</property>
             <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
             <child>
-              <object class="HdyActionRow">
+              <object class="AdwActionRow">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes">Automatic Updates</property>
                 <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
@@ -32,7 +32,7 @@
               </object>
             </child>
             <child>
-              <object class="HdyActionRow">
+              <object class="AdwActionRow">
                 <property name="visible">True</property>
                 <property name="title" translatable="yes">Automatic Update Notifications</property>
                 <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed.</property>

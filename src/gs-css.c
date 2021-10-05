@@ -163,9 +163,12 @@ _css_parsing_error_cb (GtkCssProvider *provider,
 {
 	GError **error_parse = (GError **) user_data;
 	if (*error_parse != NULL) {
-		g_warning ("ignoring parse error %u:%u: %s",
-			   gtk_css_section_get_start_line (section),
-			   gtk_css_section_get_start_position (section),
+		const GtkCssLocation *start_location;
+
+		start_location = gtk_css_section_get_start_location (section);
+		g_warning ("ignoring parse error %lu:%lu: %s",
+			   start_location->lines + 1,
+			   start_location->line_chars,
 			   error->message);
 		return;
 	}
@@ -203,10 +206,10 @@ gs_css_validate_part (GsCss *self, const gchar *markup, GError **error)
 	provider = gtk_css_provider_new ();
 	g_signal_connect (provider, "parsing-error",
 			  G_CALLBACK (_css_parsing_error_cb), &error_parse);
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data (provider, str->str, -1, NULL);
+	gtk_style_context_add_provider_for_display (gdk_display_get_default (),
+						    GTK_STYLE_PROVIDER (provider),
+						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data (provider, str->str, -1);
 	if (error_parse != NULL) {
 		if (error != NULL)
 			*error = g_error_copy (error_parse);

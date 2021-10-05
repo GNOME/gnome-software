@@ -13,19 +13,21 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <handy.h>
+#include <adwaita.h>
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_INFO_WINDOW (gs_info_window_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsInfoWindow, gs_info_window, GS, INFO_WINDOW, HdyWindow)
+G_DECLARE_DERIVABLE_TYPE (GsInfoWindow, gs_info_window, GS, INFO_WINDOW, AdwWindow)
 
 struct _GsInfoWindowClass
 {
-	HdyWindowClass	 parent_class;
+	AdwWindowClass	 parent_class;
 };
 
 GsInfoWindow	*gs_info_window_new	(void);
 
+void		gs_info_window_set_child (GsInfoWindow *self,
+					  GtkWidget    *widget);
 G_END_DECLS

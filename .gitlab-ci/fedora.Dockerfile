@@ -1,4 +1,4 @@
-FROM fedora:31
+FROM fedora:34
 
 RUN dnf -y install \
     appstream \
@@ -19,13 +19,11 @@ RUN dnf -y install \
     gobject-introspection-devel \
     gperf \
     gsettings-desktop-schemas-devel \
-    gspell-devel \
     gtk-doc \
-    gtk3-devel \
+    gtk4-devel \
     json-glib-devel \
     itstool \
     lcov \
-    libappstream-glib-devel \
     lmdb-devel \
     appstream-devel \
     libcurl-devel \
@@ -38,6 +36,7 @@ RUN dnf -y install \
     libxmlb-devel \
     libxslt \
     libyaml-devel \
+    malcontent-devel \
     NetworkManager-libnm-devel \
     ninja-build \
     ostree-devel \
@@ -51,8 +50,10 @@ RUN dnf -y install \
     python3-wheel \
     rpm-devel \
     rpm-ostree-devel \
+    sassc \
     shared-mime-info \
     snapd-glib-devel \
+    sysprof-capture-devel \
     unzip \
     valgrind \
     valgrind-devel \
@@ -61,7 +62,7 @@ RUN dnf -y install \
     zlib-devel \
  && dnf clean all
 
-RUN pip3 install meson==0.50.0
+RUN pip3 install meson==0.59.1
 
 # Enable sudo for wheel users
 RUN sed -i -e 's/# %wheel/%wheel/' -e '0,/%wheel/{s/%wheel/# %wheel/}' /etc/sudoers
