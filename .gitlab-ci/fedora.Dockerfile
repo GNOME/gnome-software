@@ -25,7 +25,6 @@ RUN dnf -y install \
     json-glib-devel \
     itstool \
     lcov \
-    libappstream-glib-devel \
     lmdb-devel \
     appstream-devel \
     libcurl-devel \
