@@ -26,8 +26,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     libgirepository1.0-dev \
     libglib2.0-dev \
     libgoa-1.0-dev \
-    libgspell-1-dev \
-    libgtk-3-dev \
+    libgtk-4-dev \
     libgudev-1.0-dev \
     libjson-glib-dev \
     liblmdb-dev \
@@ -47,6 +46,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     python3-pip \
     python3-setuptools \
     python3-wheel \
+    sassc \
     shared-mime-info \
     sudo \
     unzip \

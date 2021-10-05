@@ -19,9 +19,8 @@ RUN dnf -y install \
     gobject-introspection-devel \
     gperf \
     gsettings-desktop-schemas-devel \
-    gspell-devel \
     gtk-doc \
-    gtk3-devel \
+    gtk4-devel \
     json-glib-devel \
     itstool \
     lcov \
@@ -50,6 +49,7 @@ RUN dnf -y install \
     python3-wheel \
     rpm-devel \
     rpm-ostree-devel \
+    sassc \
     shared-mime-info \
     snapd-glib-devel \
     unzip \
