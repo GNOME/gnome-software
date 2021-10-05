@@ -1,4 +1,4 @@
-FROM fedora:31
+FROM fedora:34
 
 RUN dnf -y install \
     appstream \
