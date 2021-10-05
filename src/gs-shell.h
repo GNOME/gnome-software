@@ -43,8 +43,6 @@ typedef enum {
 
 GsShell		*gs_shell_new			(void);
 void		 gs_shell_activate		(GsShell	*shell);
-void		 gs_shell_refresh		(GsShell	*shell,
-						 GCancellable	*cancellable);
 void		 gs_shell_change_mode		(GsShell	*shell,
 						 GsShellMode	 mode,
 						 gpointer	 data,
