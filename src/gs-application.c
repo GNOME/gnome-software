@@ -371,10 +371,6 @@ about_activated (GSimpleAction *action,
 						 "software on your system."));
 
 	gs_shell_modal_dialog_present (app->shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
