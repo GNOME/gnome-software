@@ -241,12 +241,14 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 	/* process packages */
 	for (i = 0; i < array_filtered->len; i++) {
 		g_autoptr(GsApp) app = NULL;
+		GsAppState state = GS_APP_STATE_UNKNOWN;
 		package = g_ptr_array_index (array_filtered, i);
 
 		app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
 		if (app == NULL) {
 			app = gs_app_new (NULL);
 			gs_plugin_packagekit_set_packaging_format (plugin, app);
+			gs_app_set_management_plugin (app, "packagekit");
 			gs_app_add_source (app, pk_package_get_name (package));
 			gs_app_add_source_id (app, pk_package_get_id (package));
 			gs_plugin_cache_add (plugin, pk_package_get_id (package), app);
@@ -259,14 +261,13 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 				    pk_package_get_summary (package));
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
-		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_set_version (app, pk_package_get_version (package));
 		switch (pk_package_get_info (package)) {
 		case PK_INFO_ENUM_INSTALLED:
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			state = GS_APP_STATE_INSTALLED;
 			break;
 		case PK_INFO_ENUM_AVAILABLE:
-			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+			state = GS_APP_STATE_AVAILABLE;
 			break;
 		case PK_INFO_ENUM_INSTALLING:
 		case PK_INFO_ENUM_UPDATING:
@@ -276,14 +277,16 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 			break;
 		case PK_INFO_ENUM_UNAVAILABLE:
 		case PK_INFO_ENUM_REMOVING:
-			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+			state =  GS_APP_STATE_UNAVAILABLE;
 			break;
 		default:
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			g_warning ("unknown info state of %s",
 				   pk_info_enum_to_string (pk_package_get_info (package)));
 		}
-		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+		if (state != GS_APP_STATE_UNKNOWN && gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, state);
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN)
+			gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_list_add (list, app);
 	}
