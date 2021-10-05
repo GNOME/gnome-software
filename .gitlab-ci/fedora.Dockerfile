@@ -36,6 +36,7 @@ RUN dnf -y install \
     libxmlb-devel \
     libxslt \
     libyaml-devel \
+    malcontent-devel \
     NetworkManager-libnm-devel \
     ninja-build \
     ostree-devel \
@@ -52,6 +53,7 @@ RUN dnf -y install \
     sassc \
     shared-mime-info \
     snapd-glib-devel \
+    sysprof-capture-devel \
     unzip \
     valgrind \
     valgrind-devel \
