@@ -44,15 +44,29 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	return g_steal_pointer (&app_new);
 }
 
+/* Helper function to do the equivalent of
+ *  *node = xb_node_get_next (*node)
+ * but with correct reference counting, since xb_node_get_next() returns a new
+ * ref. */
+static void
+node_set_to_next (XbNode **node)
+{
+	g_autoptr(XbNode) next_node = NULL;
+
+	g_assert (node != NULL);
+	g_assert (*node != NULL);
+
+	next_node = xb_node_get_next (*node);
+	g_object_unref (*node);
+	*node = g_steal_pointer (&next_node);
+}
+
 static gchar *
 gs_appstream_format_description (XbNode *root, GError **error)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
-	g_autoptr(XbNode) n = xb_node_get_child (root);
 
-	while (n != NULL) {
-		g_autoptr(XbNode) n2 = NULL;
-
+	for (g_autoptr(XbNode) n = xb_node_get_child (root); n != NULL; node_set_to_next (&n)) {
 		/* support <p>, <ul>, <ol> and <li>, ignore all else */
 		if (g_strcmp0 (xb_node_get_element (n), "p") == 0) {
 			const gchar *node_text = xb_node_get_text (n);
@@ -92,9 +106,6 @@ gs_appstream_format_description (XbNode *root, GError **error)
 			}
 			g_string_append (str, "\n");
 		}
-
-		n2 = xb_node_get_next (n);
-		g_set_object (&n, n2);
 	}
 
 	/* remove extra newlines */
@@ -760,7 +771,7 @@ gs_appstream_refine_app_relation (GsPlugin        *plugin,
 	 * more <id/>, <modalias/>, <kernel/>, <memory/>, <firmware/>,
 	 * <control/> or <display_length/> elements. For the moment, we only
 	 * support some of these. */
-	for (g_autoptr(XbNode) child = xb_node_get_child (relation_node); child != NULL; child = xb_node_get_next (child)) {
+	for (g_autoptr(XbNode) child = xb_node_get_child (relation_node); child != NULL; node_set_to_next (&child)) {
 		const gchar *item_kind = xb_node_get_element (child);
 		g_autoptr(AsRelation) relation = as_relation_new ();
 
