@@ -46,10 +46,8 @@ struct _GsScreenshotCarousel
 	gboolean		 has_screenshots;
 
 	GtkWidget		*button_next;
-	GtkWidget		*button_next_image;
 	GtkWidget		*button_next_revealer;
 	GtkWidget		*button_previous;
-	GtkWidget		*button_previous_image;
 	GtkWidget		*button_previous_revealer;
 	GtkWidget		*carousel;
 	GtkWidget		*carousel_indicator;
@@ -242,28 +240,6 @@ gs_screenshot_carousel_button_next_clicked_cb (GsScreenshotCarousel *self)
 }
 
 static void
-gs_screenshot_carousel_navigate_button_direction_changed_cb (GtkWidget        *widget,
-							     GtkTextDirection  previous_direction,
-							     gpointer          user_data)
-{
-	const gchar *ltr_icon_name, *rtl_icon_name, *icon_name;
-
-	g_assert (g_strcmp0 (gtk_widget_get_name (widget), "previous") == 0 ||
-		  g_strcmp0 (gtk_widget_get_name (widget), "next") == 0);
-
-	if (g_strcmp0 (gtk_widget_get_name (widget), "previous") == 0) {
-		ltr_icon_name = "carousel-arrow-previous-symbolic";
-		rtl_icon_name = "carousel-arrow-next-symbolic";
-	} else {
-		ltr_icon_name = "carousel-arrow-next-symbolic";
-		rtl_icon_name = "carousel-arrow-previous-symbolic";
-	}
-
-	icon_name = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL) ? rtl_icon_name : ltr_icon_name;
-	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name);
-}
-
-static void
 gs_screenshot_carousel_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	GsScreenshotCarousel *self = GS_SCREENSHOT_CAROUSEL (object);
@@ -331,10 +307,8 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-screenshot-carousel.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_next);
-	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_next_image);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_next_revealer);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_previous);
-	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_previous_image);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, button_previous_revealer);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotCarousel, carousel_indicator);
@@ -344,7 +318,6 @@ gs_screenshot_carousel_class_init (GsScreenshotCarouselClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_notify_position_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_button_previous_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_button_next_clicked_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_screenshot_carousel_navigate_button_direction_changed_cb);
 
 	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 	gtk_widget_class_set_css_name (widget_class, "screenshot-carousel");
@@ -354,10 +327,6 @@ static void
 gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
-
-	/* Ensure the arrow direction matches the text direction */
-	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_next_image), GTK_TEXT_DIR_NONE, self);
-	gs_screenshot_carousel_navigate_button_direction_changed_cb (GTK_WIDGET (self->button_previous_image), GTK_TEXT_DIR_NONE, self);
 
 #if ADW_CHECK_VERSION(1, 3, 0)
 	/* Disable scrolling through the carousel, as it’s typically used
