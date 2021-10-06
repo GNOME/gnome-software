@@ -65,11 +65,8 @@ static gchar *
 gs_appstream_format_description (XbNode *root, GError **error)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
-	g_autoptr(XbNode) n = xb_node_get_child (root);
 
-	while (n != NULL) {
-		g_autoptr(XbNode) n2 = NULL;
-
+	for (g_autoptr(XbNode) n = xb_node_get_child (root); n != NULL; node_set_to_next (&n)) {
 		/* support <p>, <ul>, <ol> and <li>, ignore all else */
 		if (g_strcmp0 (xb_node_get_element (n), "p") == 0) {
 			const gchar *node_text = xb_node_get_text (n);
@@ -109,9 +106,6 @@ gs_appstream_format_description (XbNode *root, GError **error)
 			}
 			g_string_append (str, "\n");
 		}
-
-		n2 = xb_node_get_next (n);
-		g_set_object (&n, n2);
 	}
 
 	/* remove extra newlines */
