@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-09-22 16:02+0000\n"
-"PO-Revision-Date: 2021-09-23 14:59+0200\n"
+"POT-Creation-Date: 2021-09-28 14:50+0000\n"
+"PO-Revision-Date: 2021-10-06 16:12+0200\n"
 "Last-Translator: gogo <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "Language: hr\n"
@@ -2807,12 +2807,12 @@ msgstr "Vraćanje starije inačice"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:697
+#: src/gs-overview-page.c:607
 msgid "selected external sources"
 msgstr "odabranog vanjskog izvora"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:699
+#: src/gs-overview-page.c:609
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2823,13 +2823,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:708 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:618 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Omogući"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:763 src/gs-shell.ui:306
+#: src/gs-overview-page.c:673 src/gs-shell.ui:306
 msgid "Explore"
 msgstr "Istraži"
 
@@ -2977,41 +2977,41 @@ msgstr "_Onemogući"
 msgid "_Remove"
 msgstr "_Ukloni"
 
-#: src/gs-repos-dialog.c:597
+#: src/gs-repos-dialog.c:519
 msgid "Enable New Repositories"
 msgstr "Omogući nove repozitorije"
 
-#: src/gs-repos-dialog.c:598
+#: src/gs-repos-dialog.c:520
 msgid "Turn on new repositories when they are added."
 msgstr "Uključi nove repozitorije kada su dodani."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:607
+#: src/gs-repos-dialog.c:529
 msgid "more information"
 msgstr "više informacija"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:612
+#: src/gs-repos-dialog.c:534
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Dodatni repozitoriji iz odabranih trećih strana — %s."
 
-#: src/gs-repos-dialog.c:617
+#: src/gs-repos-dialog.c:539
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora repozitoriji treće strane"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:823
+#: src/gs-repos-dialog.c:676
 msgid "the operating system"
 msgstr "operativan sustav"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:880
+#: src/gs-repos-dialog.c:734
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Ovi repozitoriji nadopunjuju zadani softver koji pruža %s."
@@ -4474,7 +4474,7 @@ msgstr "Učitavanje nadopuna…"
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:110
 msgid "This could take a while."
-msgstr "Ovo može potrajati neko vrijeme."
+msgstr "Ovo može potrajati određeno vrijeme."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
@@ -4668,12 +4668,12 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak je radni okvir za aplikacije radne površine na Linuxu"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1156
+#: plugins/flatpak/gs-flatpak.c:1160
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Dobivanje flatpak metapodataka za %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3160
+#: plugins/flatpak/gs-flatpak.c:3164
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Neuspjelo čišćenje dodatka ‘%s’: %s"
