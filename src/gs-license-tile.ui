@@ -16,10 +16,8 @@
           <object class="GtkListBoxRow">
             <property name="activatable">False</property>
             <property name="focusable">False</property>
-            <property name="visible">True</property>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <property name="margin-top">14</property>
@@ -30,14 +28,12 @@
                 <child>
                   <object class="GtkBox">
                     <property name="halign">center</property>
-                    <property name="visible">True</property>
                     <property name="orientation">horizontal</property>
                     <property name="spacing">8</property>
 
                     <child>
                       <object class="GtkBox" id="lozenge0">
                         <property name="halign">center</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="context-tile-lozenge"/>
                           <class name="green"/>
@@ -47,7 +43,6 @@
                             <property name="halign">center</property>
                             <property name="hexpand">True</property>
                             <property name="icon-name">heart-filled-symbolic</property>
-                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
@@ -55,7 +50,6 @@
                     <child>
                       <object class="GtkBox" id="lozenge1">
                         <property name="halign">center</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="context-tile-lozenge"/>
                           <class name="green"/>
@@ -65,7 +59,6 @@
                             <property name="halign">center</property>
                             <property name="hexpand">True</property>
                             <property name="icon-name">system-users-symbolic</property>
-                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
@@ -73,7 +66,6 @@
                     <child>
                       <object class="GtkBox" id="lozenge2">
                         <property name="halign">center</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="context-tile-lozenge"/>
                           <class name="green"/>
@@ -83,7 +75,6 @@
                             <property name="halign">center</property>
                             <property name="hexpand">True</property>
                             <property name="icon-name">sign-language-symbolic</property>
-                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
@@ -92,7 +83,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="title_label">
-                    <property name="visible">True</property>
                     <!-- This text is a placeholder and will be set dynamically -->
                     <property name="label">Community Built</property>
                     <attributes>
@@ -102,7 +92,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="description_label">
-                    <property name="visible">True</property>
                     <!-- This text is a placeholder and will be set dynamically -->
                     <property name="label">This software is developed in the open by a community of volunteers, and released under the GNU GPL v3 license.\n\nYou can contribute and help make it even better.</property>
                     <property name="wrap">True</property>
@@ -116,17 +105,14 @@
         <child>
           <object class="GtkListBoxRow" id="get_involved_row">
             <property name="activatable">True</property>
-            <property name="visible">True</property>
             <child>
               <object class="GtkBox">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="halign">center</property>
                 <property name="margin-top">12</property>
                 <property name="margin-bottom">12</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="yalign">0.5</property>
                     <property name="label" translatable="yes">_Get Involved</property>
@@ -135,7 +121,6 @@
                 </child>
                 <child>
                   <object class="GtkImage">
-                    <property name="visible">True</property>
                     <property name="icon-name">external-link-symbolic</property>
                     <property name="margin-start">6</property>
                   </object>

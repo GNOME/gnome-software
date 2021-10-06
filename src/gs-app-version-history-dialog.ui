@@ -14,14 +14,11 @@
     </child>
     <child internal-child="content_area">
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkScrolledWindow">
-            <property name="visible">True</property>
             <child>
               <object class="AdwClamp">
-                <property name="visible">True</property>
                 <property name="vexpand">True</property>
                 <property name="hexpand">False</property>
                 <property name="margin-start">12</property>
@@ -30,7 +27,6 @@
                 <property name="margin-top">18</property>
                 <child>
                   <object class="GtkListBox" id="listbox">
-                    <property name="visible">True</property>
                     <property name="selection-mode">none</property>
                     <property name="valign">start</property>
                     <style>

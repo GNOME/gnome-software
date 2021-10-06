@@ -2,10 +2,8 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsReviewHistogram" parent="GtkWidget">
-    <property name="visible">True</property>
     <child>
       <object class="GtkGrid" id="grid1">
-        <property name="visible">True</property>
         <property name="row-spacing">6</property>
         <property name="column-spacing">6</property>
         <property name="margin-top">6</property>
@@ -16,7 +14,6 @@
           <object class="GtkLabel" id="label_value">
 	    <property name="halign">start</property>
 	    <property name="valign">center</property>
-            <property name="visible">True</property>
             <property name="label">0</property>
             <attributes>
               <attribute name="scale" value="5.0"/>
@@ -32,7 +29,6 @@
         </child>
 	<child>
           <object class="GtkBox" id="value_vbox">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="spacing">8</property>
             <property name="halign">start</property>
@@ -43,7 +39,6 @@
             <property name="margin-top">8</property>
 	    <child>
               <object class="GtkBox" id="star_value_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">6</property>
                 <property name="halign">start</property>
@@ -55,7 +50,6 @@
                 </style>
                 <child>
                   <object class="GsStarImage" id="star_value_1">
-                    <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="height-request">24</property>
                     <property name="width-request">24</property>
@@ -63,7 +57,6 @@
                 </child>
                 <child>
                   <object class="GsStarImage" id="star_value_2">
-                    <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="height-request">24</property>
                     <property name="width-request">24</property>
@@ -71,7 +64,6 @@
                 </child>
                 <child>
                   <object class="GsStarImage" id="star_value_3">
-                    <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="height-request">24</property>
                     <property name="width-request">24</property>
@@ -79,7 +71,6 @@
                 </child>
                 <child>
                   <object class="GsStarImage" id="star_value_4">
-                    <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="height-request">24</property>
                     <property name="width-request">24</property>
@@ -87,7 +78,6 @@
                 </child>
                 <child>
                   <object class="GsStarImage" id="star_value_5">
-                    <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="height-request">24</property>
                     <property name="width-request">24</property>
@@ -99,7 +89,6 @@
               <object class="GtkLabel" id="label_n_stars">
 	        <property name="halign">start</property>
 	        <property name="valign">center</property>
-                <property name="visible">True</property>
                 <property name="label" translatable="yes">out of 5 stars</property>
                 <attributes>
                   <attribute name="scale" value="0.8"/>
@@ -116,7 +105,6 @@
         </child>
 	<child>
           <object class="GtkGrid" id="grid2">
-            <property name="visible">True</property>
             <property name="row-spacing">2</property>
             <property name="column-spacing">2</property>
             <style>
@@ -124,7 +112,6 @@
             </style>
 	    <child>
               <object class="GsReviewBar" id="bar5">
-                <property name="visible">True</property>
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
                 <property name="hexpand">true</property>
@@ -140,7 +127,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star5_1">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -154,7 +140,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star5_2">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -168,7 +153,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star5_3">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -182,7 +166,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star5_4">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -196,7 +179,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star5_5">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -210,7 +192,6 @@
             </child>
             <child>
               <object class="GsReviewBar" id="bar4">
-                <property name="visible">True</property>
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
                 <property name="hexpand">true</property>
@@ -226,7 +207,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star4_1">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -240,7 +220,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star4_2">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -254,7 +233,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star4_3">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -268,7 +246,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star4_4">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -282,7 +259,6 @@
             </child>
             <child>
               <object class="GsReviewBar" id="bar3">
-                <property name="visible">True</property>
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
                 <property name="hexpand">true</property>
@@ -298,7 +274,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star3_1">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -312,7 +287,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star3_2">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -326,7 +300,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star3_3">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -340,7 +313,6 @@
             </child>
             <child>
               <object class="GsReviewBar" id="bar2">
-                <property name="visible">True</property>
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
                 <property name="hexpand">true</property>
@@ -356,7 +328,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star2_1">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -370,7 +341,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star2_2">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -384,7 +354,6 @@
             </child>
             <child>
               <object class="GsReviewBar" id="bar1">
-                <property name="visible">True</property>
                 <property name="margin-end">5</property>
                 <property name="halign">fill</property>
                 <property name="hexpand">true</property>
@@ -400,7 +369,6 @@
             </child>
             <child>
               <object class="GsStarImage" id="star1_1">
-                <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="height-request">10</property>
                 <property name="width-request">10</property>
@@ -422,7 +390,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="label_total">
-            <property name="visible">True</property>
             <property name="halign">start</property>
             <property name="valign">center</property>
             <property name="hexpand">True</property>

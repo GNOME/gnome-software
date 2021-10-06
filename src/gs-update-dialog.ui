@@ -24,7 +24,6 @@
 
     <child>
       <object class="AdwLeaflet" id="leaflet">
-        <property name="visible">True</property>
         <property name="can_swipe_back">True</property>
         <property name="can-unfold">False</property>
         <!-- We need both signals to support the animations being disabled, as
@@ -33,7 +32,6 @@
         <signal name="notify::transition-running" handler="leaflet_child_transition_cb" swapped="no"/>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="AdwHeaderBar">
@@ -49,7 +47,6 @@
             </child>
             <child>
               <object class="GtkStack" id="stack">
-                <property name="visible">True</property>
                 <property name="transition_duration">300</property>
 
                 <child>
@@ -57,7 +54,6 @@
                     <property name="name">spinner</property>
                     <property name="child">
                       <object class="GtkBox" id="box_spinner">
-                        <property name="visible">True</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">12</property>
                         <property name="halign">center</property>
@@ -69,7 +65,6 @@
                         </style>
                         <child>
                           <object class="GtkSpinner" id="spinner">
-                            <property name="visible">True</property>
                             <property name="width_request">32</property>
                             <property name="height_request">32</property>
                             <property name="halign">center</property>
@@ -88,7 +83,6 @@
                     <property name="name">empty</property>
                     <property name="child">
                       <object class="AdwStatusPage">
-                        <property name="visible">True</property>
                         <property name="icon_name">org.gnome.Software-symbolic</property>
                         <property name="title" translatable="yes">No updates have been installed on this system.</property>
                       </object>
@@ -101,13 +95,10 @@
                     <property name="name">installed-updates-list</property>
                     <property name="child">
                       <object class="AdwPreferencesPage">
-                        <property name="visible">True</property>
                         <child>
                           <object class="AdwPreferencesGroup">
-                            <property name="visible">True</property>
                             <child>
                               <object class="GsUpdateList" id="list_box_installed_updates">
-                                <property name="visible">True</property>
                                 <style>
                                   <class name="content" />
                                 </style>

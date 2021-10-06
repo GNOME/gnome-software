@@ -6,7 +6,6 @@
 
     <child>
       <object class="AdwHeaderBar" id="header_bar">
-        <property name="visible">True</property>
         <property name="valign">start</property>
         <property name="show_start_title_buttons">True</property>
         <property name="show_end_title_buttons">True</property>
@@ -15,7 +14,6 @@
         </property>
         <child type="start">
           <object class="GtkButton" id="back_button">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
             <property name="icon_name">go-previous-symbolic</property>
@@ -32,7 +30,6 @@
     </child>
     <child>
       <object class="GtkBox" id="box7">
-        <property name="visible">True</property>
         <property name="margin_start">12</property>
         <property name="margin_end">12</property>
         <property name="margin_top">12</property>
@@ -41,11 +38,9 @@
         <property name="spacing">9</property>
         <child>
           <object class="GtkBox" id="box_header">
-            <property name="visible">True</property>
             <property name="spacing">9</property>
             <child>
               <object class="GtkImage" id="image_icon">
-                <property name="visible">True</property>
                 <property name="pixel_size">96</property>
                 <property name="icon_name">system-component-application</property>
                 <property name="icon-size">normal</property>
@@ -56,12 +51,10 @@
             </child>
             <child>
               <object class="GtkBox" id="box9">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">3</property>
                 <child>
                   <object class="GtkLabel" id="label_name">
-                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="label">Inkscape</property>
                     <property name="selectable">True</property>
@@ -76,7 +69,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_summary">
-                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="label">Vector based drawing program</property>
                     <property name="selectable">True</property>
@@ -91,14 +83,12 @@
         </child>
         <child>
           <object class="GtkBox" id="permissions_section_box">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <property name="margin_top">12</property>
             <property name="margin_bottom">18</property>
             <child>
               <object class="GtkLabel" id="permissions_section_title">
-                <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="halign">start</property>
                 <property name="margin_bottom">6</property>
@@ -110,7 +100,6 @@
             </child>
             <child>
               <object class="GtkBox" id="permissions_section_content">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">12</property>
                 <property name="margin-start">18</property>
@@ -121,14 +110,12 @@
         </child>
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow_details">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="vexpand">True</property>
             <property name="hscrollbar_policy">never</property>
             <property name="vscrollbar_policy">automatic</property>
             <child>
               <object class="GtkLabel" id="label_details">
-                <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
                 <property name="margin-top">6</property>

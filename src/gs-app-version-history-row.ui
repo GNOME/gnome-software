@@ -2,13 +2,11 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsAppVersionHistoryRow" parent="GtkListBoxRow">
-    <property name="visible">True</property>
     <property name="selectable">False</property>
     <property name="activatable">False</property>
     <property name="focusable">False</property>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="margin_start">15</property>
         <property name="margin_top">15</property>
         <property name="margin_bottom">15</property>
@@ -18,13 +16,11 @@
         <property name="hexpand">True</property>
         <child>
           <object class="GtkBox">
-            <property name="visible">True</property>
             <property name="margin_top">3</property>
             <property name="margin_bottom">3</property>
             <property name="orientation">horizontal</property>
             <child>
               <object class="GtkLabel" id="version_number_label">
-                <property name="visible">True</property>
                 <property name="hexpand">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0.5</property>
@@ -35,7 +31,6 @@
             </child>
             <child>
               <object class="GtkLabel" id="version_date_label">
-                <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0.5</property>
                 <style>
@@ -47,7 +42,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="version_description_label">
-            <property name="visible">True</property>
             <property name="margin_top">6</property>
             <property name="wrap">True</property>
             <property name="max_width_chars">20</property>

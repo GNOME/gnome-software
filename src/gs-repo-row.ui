@@ -2,10 +2,8 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsRepoRow" parent="GtkListBoxRow">
-    <property name="visible">True</property>
     <child>
       <object class="GtkGrid">
-        <property name="visible">True</property>
         <property name="margin-top">12</property>
         <property name="margin-bottom">12</property>
         <property name="margin-start">12</property>
@@ -14,7 +12,6 @@
         <property name="column-spacing">12</property>
         <child>
           <object class="GtkLabel" id="name_label">
-            <property name="visible">True</property>
             <property name="halign">start</property>
             <property name="hexpand">True</property>
             <property name="ellipsize">end</property>
@@ -29,7 +26,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="hostname_label">
-            <property name="visible">True</property>
             <property name="halign">start</property>
             <property name="hexpand">True</property>
             <property name="ellipsize">end</property>
@@ -47,7 +43,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="comment_label">
-            <property name="visible">True</property>
             <property name="halign">start</property>
             <property name="hexpand">True</property>
             <property name="ellipsize">end</property>
@@ -85,7 +80,6 @@
         </child>
         <child>
           <object class="GtkSwitch" id="disable_switch">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="halign">end</property>
             <property name="valign">center</property>

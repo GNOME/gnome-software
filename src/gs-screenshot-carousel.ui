@@ -12,7 +12,6 @@
             <property name="name">carousel</property>
             <property name="child">
               <object class="GtkBox">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <style>
                   <class name="frame"/>
@@ -20,10 +19,8 @@
                 </style>
                 <child>
                   <object class="GtkOverlay">
-                    <property name="visible">True</property>
                     <child>
                       <object class="AdwCarousel" id="carousel">
-                        <property name="visible">True</property>
                         <signal name="notify::n-pages" handler="gs_screenshot_carousel_notify_n_pages_cb" swapped="yes"/>
                         <signal name="notify::position" handler="gs_screenshot_carousel_notify_position_cb" swapped="yes"/>
                       </object>
@@ -33,10 +30,8 @@
                         <property name="halign">start</property>
                         <property name="transition-type">crossfade</property>
                         <property name="valign">center</property>
-                        <property name="visible">True</property>
                         <child>
                           <object class="GtkButton" id="button_previous">
-                            <property name="visible">True</property>
                             <property name="width-request">64</property>
                             <property name="height-request">64</property>
                             <property name="margin-top">9</property>
@@ -58,7 +53,6 @@
                                 <property name="icon-name">carousel-arrow-previous-symbolic</property>
                                 <property name="icon-size">normal</property>
                                 <property name="valign">center</property>
-                                <property name="visible">True</property>
                                 <property name="name">previous</property>
                                 <signal name="direction-changed" handler="gs_screenshot_carousel_navigate_button_direction_changed_cb"/>
                               </object>
@@ -72,10 +66,8 @@
                         <property name="halign">end</property>
                         <property name="transition-type">crossfade</property>
                         <property name="valign">center</property>
-                        <property name="visible">True</property>
                         <child>
                           <object class="GtkButton" id="button_next">
-                            <property name="visible">True</property>
                             <property name="width-request">64</property>
                             <property name="height-request">64</property>
                             <property name="margin-top">9</property>
@@ -97,7 +89,6 @@
                                 <property name="icon-name">carousel-arrow-next-symbolic</property>
                                 <property name="icon-size">normal</property>
                                 <property name="valign">center</property>
-                                <property name="visible">True</property>
                                 <property name="name">next</property>
                                 <signal name="direction-changed" handler="gs_screenshot_carousel_navigate_button_direction_changed_cb"/>
                               </object>
@@ -111,7 +102,6 @@
                 <child>
                   <object class="AdwCarouselIndicatorDots" id="carousel_indicator">
                     <property name="carousel">carousel</property>
-                    <property name="visible">True</property>
                   </object>
                 </child>
               </object>
@@ -124,7 +114,6 @@
             <property name="name">fallback</property>
             <property name="child">
               <object class="GtkBox">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <!-- Arbitrary size chosen to tile together at 16:9;
@@ -139,7 +128,6 @@
                 </style>
                 <child>
                   <object class="GtkImage">
-                    <property name="visible">True</property>
                     <property name="pixel_size">64</property>
                     <property name="icon_name">camera-photo-symbolic</property>
                     <property name="valign">end</property>
@@ -148,7 +136,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
                     <property name="halign">center</property>
                     <property name="valign">start</property>
                     <property name="vexpand">True</property>

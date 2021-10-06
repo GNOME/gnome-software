@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsContextDialogRow" parent="GtkListBoxRow">
-    <property name="visible">True</property>
     <property name="activatable">False</property>
     <property name="focusable">False</property>
 
@@ -14,13 +13,11 @@
         <property name="margin-end">18</property>
         <property name="orientation">horizontal</property>
         <property name="spacing">18</property>
-        <property name="visible">True</property>
         <child>
           <object class="GtkBox" id="lozenge">
             <property name="halign">center</property>
             <property name="valign">start</property>
             <property name="hexpand">False</property>
-            <property name="visible">True</property>
             <style>
               <class name="context-tile-lozenge"/>
               <class name="grey"/>
@@ -32,7 +29,6 @@
                 <!-- this is a placeholder: the icon is actually set in code -->
                 <property name="icon-name">safety-symbolic</property>
                 <property name="pixel-size">16</property>
-                <property name="visible">True</property>
                 <accessibility>
                   <relation name="labelled-by">title</relation>
                   <relation name="details">description</relation>
@@ -59,12 +55,10 @@
           <object class="GtkBox">
             <property name="orientation">vertical</property>
             <property name="spacing">8</property>
-            <property name="visible">True</property>
             <child>
               <object class="GtkLabel" id="title">
                 <!-- this is a placeholder: the text is actually set in code -->
                 <property name="label">Download Size</property>
-                <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <style>
                   <class name="context-tile-title"/>
@@ -75,7 +69,6 @@
               <object class="GtkLabel" id="description">
                 <!-- this is a placeholder: the text is actually set in code -->
                 <property name="label">Needs 150 MB of additional system downloads</property>
-                <property name="visible">True</property>
                 <property name="wrap">True</property>
                 <property name="xalign">0</property>
                 <style>

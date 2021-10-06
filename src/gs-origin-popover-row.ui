@@ -3,7 +3,6 @@
   <template class="GsOriginPopoverRow" parent="GtkListBoxRow">
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="margin-top">18</property>
         <property name="margin-bottom">18</property>
         <property name="margin-start">18</property>
@@ -12,24 +11,20 @@
         <property name="spacing">16</property>
         <child>
           <object class="GtkBox" id="vbox">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkLabel" id="name_label">
-                <property name="visible">True</property>
                 <property name="halign">start</property>
                 <property name="ellipsize">end</property>
               </object>
             </child>
             <child>
               <object class="GtkBox" id="url_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="url_title">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">URL</property>
@@ -41,7 +36,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="url_label">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -53,12 +47,10 @@
             </child>
             <child>
               <object class="GtkBox" id="installation_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="installation_title">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes" comments="Translators: The installation location for flatpaks, e.g. 'user' or 'system'">Installation</property>
@@ -70,7 +62,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="installation_label">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -82,12 +73,10 @@
             </child>
             <child>
               <object class="GtkBox" id="branch_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="branch_title">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes" comments="Translators: The branch, e.g. 'stable' or '3.32'">Branch</property>
@@ -99,7 +88,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="branch_label">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -111,12 +99,10 @@
             </child>
             <child>
               <object class="GtkBox" id="version_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel" id="version_title">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes" comments="Translators: The available version of an app">Version</property>
@@ -128,7 +114,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="version_label">
-                    <property name="visible">True</property>
                     <property name="halign">start</property>
                     <property name="ellipsize">end</property>
                     <style>

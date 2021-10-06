@@ -15,10 +15,8 @@
 
     <child>
       <object class="GtkWindowHandle">
-        <property name="visible">True</property>
         <child>
           <object class="AdwStatusPage">
-            <property name="visible">True</property>
             <property name="icon_name">org.gnome.Software</property>
             <property name="title" translatable="yes">Welcome to Software</property>
             <property name="description" translatable="yes">Software lets you install all the software you need, all from one place. See our recommendations, browse the categories, or search for the applications you want.</property>
@@ -28,7 +26,6 @@
             <child>
               <object class="GtkButton" id="button">
                 <property name="label" translatable="yes">_Browse Software</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="halign">center</property>

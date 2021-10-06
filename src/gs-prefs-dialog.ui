@@ -11,21 +11,17 @@
     </style>
     <child>
       <object class="AdwPreferencesPage">
-        <property name="visible">True</property>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="visible">True</property>
             <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
             <child>
               <object class="AdwActionRow">
-                <property name="visible">True</property>
                 <property name="title" translatable="yes">Automatic Updates</property>
                 <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates</property>
                 <child>
                   <object class="GtkSwitch" id="switch_updates">
-                    <property name="visible">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>
@@ -33,14 +29,12 @@
             </child>
             <child>
               <object class="AdwActionRow">
-                <property name="visible">True</property>
                 <property name="title" translatable="yes">Automatic Update Notifications</property>
                 <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed.</property>
                 <property name="subtitle_lines">0</property>
                 <property name="activatable_widget">switch_updates_notify</property>
                 <child>
                   <object class="GtkSwitch" id="switch_updates_notify">
-                    <property name="visible">True</property>
                     <property name="valign">center</property>
                   </object>
                 </child>

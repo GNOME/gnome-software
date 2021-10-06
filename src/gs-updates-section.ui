@@ -8,11 +8,9 @@
     </style>
     <child>
       <object class="GtkBox" id="section_header">
-        <property name="visible">True</property>
         <property name="spacing">12</property>
         <child>
           <object class="GtkLabel" id="title">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="ellipsize">end</property>
             <property name="halign">start</property>
@@ -25,14 +23,12 @@
         </child>
         <child>
           <object class="GtkStack" id="button_stack">
-            <property name="visible">True</property>
 
             <child>
               <object class="GtkStackPage">
                 <property name="name">download</property>
                 <property name="child">
                   <object class="GsProgressButton" id="button_download">
-                    <property name="visible">True</property>
                     <property name="use_underline">True</property>
                     <property name="label" translatable="yes">_Download</property>
                     <signal name="clicked" handler="_button_download_clicked_cb" swapped="yes"/>
@@ -49,7 +45,6 @@
                 <property name="name">update</property>
                 <property name="child">
                   <object class="GsProgressButton" id="button_update">
-                    <property name="visible">True</property>
                     <signal name="clicked" handler="_button_update_all_clicked_cb" swapped="yes"/>
                     <style>
                       <class name="suggested-action"/>
@@ -64,7 +59,6 @@
                 <property name="name">cancel</property>
                 <property name="child">
                   <object class="GsProgressButton" id="button_cancel">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">Cancel</property>
                     <signal name="clicked" handler="_button_cancel_clicked_cb" swapped="yes"/>
                     <style>
@@ -95,14 +89,12 @@
     <child>
       <object class="GtkBox" id="listbox_box">
         <property name="orientation">vertical</property>
-        <property name="visible">True</property>
         <accessibility>
           <relation name="labelled-by">title</relation>
         </accessibility>
         <child>
           <object class="GtkListBox" id="listbox">
             <property name="selection_mode">none</property>
-            <property name="visible">True</property>
             <property name="valign">start</property>
             <signal name="row-activated" handler="_app_row_activated_cb" swapped="yes"/>
             <signal name="keynav-failed" handler="_listbox_keynav_failed_cb" swapped="yes"/>
