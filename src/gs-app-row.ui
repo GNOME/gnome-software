@@ -2,13 +2,11 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsAppRow" parent="GtkListBoxRow">
-    <property name="visible">True</property>
     <style>
       <class name="list-box-app-row"/>
     </style>
     <child>
       <object class="GtkBox" id="box">
-        <property name="visible">True</property>
         <property name="margin_top">12</property>
         <property name="margin_bottom">12</property>
         <property name="margin_start">12</property>
@@ -16,7 +14,6 @@
         <property name="orientation">horizontal</property>
         <child>
           <object class="GtkImage" id="image">
-            <property name="visible">True</property>
             <property name="pixel_size">64</property>
             <property name="valign">center</property>
             <style>
@@ -26,14 +23,12 @@
         </child>
         <child>
           <object class="GtkBox" id="name_box">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="margin-start">12</property>
             <property name="spacing">6</property>
             <property name="valign">center</property>
             <child>
               <object class="GtkLabel" id="name_label">
-                <property name="visible">True</property>
                 <property name="wrap">True</property>
                 <property name="xalign">0.0</property>
                 <property name="yalign">0.5</property>
@@ -47,12 +42,10 @@
             </child>
             <child>
               <object class="GtkBox" id="version_box">
-                <property name="visible">True</property>
                 <property name="orientation">horizontal</property>
                 <property name="spacing">4</property>
                 <child>
                   <object class="GtkLabel" id="version_current_label">
-                    <property name="visible">True</property>
                     <property name="xalign">0.0</property>
                     <property name="yalign">0.5</property>
                     <property name="ellipsize">end</property>
@@ -60,7 +53,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="version_arrow_label">
-                    <property name="visible">True</property>
                     <property name="xalign">0.0</property>
                     <property name="yalign">0.5</property>
                     <property name="ellipsize">end</property>
@@ -72,7 +64,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="version_update_label">
-                    <property name="visible">True</property>
                     <property name="xalign">0.0</property>
                     <property name="yalign">0.5</property>
                     <property name="ellipsize">end</property>
@@ -91,7 +82,6 @@
         </child>
         <child>
           <object class="GtkBox" id="description_box">
-            <property name="visible">True</property>
             <property name="margin_top">3</property>
             <property name="orientation">vertical</property>
             <property name="spacing">3</property>
@@ -100,7 +90,6 @@
             <child>
               <object class="GtkLabel" id="description_label">
                 <property name="visible" bind-source="GsAppRow" bind-property="show-description" bind-flags="sync-create"/>
-                <property name="visible">True</property>
                 <property name="valign">start</property>
                 <property name="vexpand">True</property>
                 <property name="margin_start">24</property>
@@ -114,18 +103,15 @@
             </child>
             <child>
               <object class="GtkBox" id="box_tag">
-                <property name="visible">True</property>
                 <property name="spacing">4</property>
                 <property name="margin_start">24</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkBox" id="box_desc">
-                    <property name="visible">True</property>
                     <property name="orientation">horizontal</property>
                     <property name="vexpand">True</property>
                     <child>
                       <object class="GtkLabel" id="label_origin">
-                        <property name="visible">True</property>
                         <property name="xalign">0.0</property>
                         <property name="yalign">1.0</property>
                         <property name="halign">start</property>
@@ -148,7 +134,6 @@
 			<property name="margin-end">24</property>
 			<child>
 			  <object class="GtkImage" id="installed-icon">
-			    <property name="visible">True</property>
 			    <property name="halign">center</property>
 			    <property name="valign">center</property>
 			    <property name="pixel-size">16</property>
@@ -161,7 +146,6 @@
 			</child>
 			<child>
 			  <object class="GtkLabel" id="installed-label">
-			    <property name="visible">True</property>
 			    <property name="valign">center</property>
 			    <property name="label" translatable="yes">Installed</property>
 			    <style>
@@ -192,19 +176,16 @@
         </child>
         <child>
           <object class="GtkBox" id="vertical_box">
-            <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
             <child>
               <object class="GtkBox" id="button_box">
-		<property name="visible">True</property>
 		<property name="orientation">horizontal</property>
 		<property name="halign">end</property>
 		<property name="valign">center</property>
 		<child>
                   <object class="GtkRevealer" id="button_revealer">
-                    <property name="visible">True</property>
                     <property name="reveal-child">True</property>
                     <child>
                       <object class="GsProgressButton" id="button">
@@ -238,7 +219,6 @@
             </child>
 	    <child>
 	      <object class="GtkLabel" id="label_app_size">
-                <property name="visible">True</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
 		<property name="vexpand">True</property>

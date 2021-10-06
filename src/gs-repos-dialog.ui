@@ -11,14 +11,12 @@
 
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="width-request">360</property>
         <child>
           <object class="AdwHeaderBar">
             <property name="show_start_title_buttons">True</property>
             <property name="show_end_title_buttons">True</property>
-            <property name="visible">True</property>
             <property name="title-widget">
               <object class="AdwWindowTitle">
                 <property name="title" bind-source="GsReposDialog" bind-property="title" bind-flags="sync-create"/>
@@ -28,7 +26,6 @@
         </child>
         <child>
           <object class="GtkStack" id="stack">
-            <property name="visible">True</property>
             <property name="vexpand">True</property>
 
             <child>
@@ -36,7 +33,6 @@
                 <property name="name">waiting</property>
                 <property name="child">
                   <object class="GtkSpinner" id="spinner">
-                    <property name="visible">True</property>
                     <property name="width_request">32</property>
                     <property name="height_request">32</property>
                     <property name="halign">center</property>
@@ -53,7 +49,6 @@
                 <property name="name">empty</property>
                 <property name="child">
                   <object class="AdwStatusPage" id="status_empty">
-                    <property name="visible">True</property>
                     <property name="icon_name">org.gnome.Software-symbolic</property>
                     <property name="title" translatable="yes">No Repositories</property>
                   </object>
@@ -67,7 +62,6 @@
                 <property name="name">sources</property>
                 <property name="child">
                   <object class="AdwPreferencesPage" id="content_page">
-                    <property name="visible">True</property>
                   </object>
                 </property>
               </object>

@@ -43,7 +43,6 @@
     </child>
     <child>
       <object class="AdwViewStack" id="stack_loading">
-        <property name="visible">True</property>
         <property name="width-request">360</property>
         <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
         <child>
@@ -51,27 +50,23 @@
             <property name="name">main</property>
             <property name="child">
               <object class="GtkOverlay" id="overlay">
-                <property name="visible">True</property>
                 <property name="halign">fill</property>
                 <property name="valign">fill</property>
                 <property name="vexpand">True</property>
                 <signal name="get-child-position" handler="overlay_get_child_position_cb"/>
                 <child type="overlay">
                   <object class="GtkRevealer" id="notification_event">
-                    <property name="visible">True</property>
                     <property name="halign">GTK_ALIGN_CENTER</property>
                     <property name="valign">GTK_ALIGN_START</property>
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">horizontal</property>
                         <property name="spacing">6</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="app-notification"/>
                         </style>
                         <child>
                           <object class="GtkLabel" id="label_events">
-                            <property name="visible">True</property>
                             <property name="halign">start</property>
                             <property name="label">Some Title</property>
                             <property name="wrap">True</property>
@@ -86,7 +81,6 @@
                         </child>
                         <child>
                           <object class="GtkBox">
-                            <property name="visible">True</property>
                             <child>
                               <object class="GtkButton" id="button_events_sources">
                                 <property name="visible">False</property>
@@ -136,7 +130,6 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_dismiss">
-                            <property name="visible">True</property>
                             <property name="valign">start</property>
                             <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
                             <style>
@@ -144,7 +137,6 @@
                             </style>
                             <child>
                               <object class="GtkImage">
-                                <property name="visible">True</property>
                                 <property name="icon_name">window-close-symbolic</property>
                               </object>
                             </child>
@@ -156,7 +148,6 @@
                 </child>
                 <child>
                   <object class="AdwLeaflet" id="details_leaflet">
-                    <property name="visible">True</property>
                     <property name="can-unfold">False</property>
                     <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
 
@@ -166,7 +157,6 @@
                         <property name="name">main</property>
                         <property name="child">
                           <object class="AdwLeaflet" id="main_leaflet">
-                            <property name="visible">True</property>
                             <property name="can-unfold">False</property>
                             <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
 
@@ -175,17 +165,14 @@
                                 <property name="name">main</property>
                                 <property name="child">
                                   <object class="GtkBox" id="main_box">
-                                    <property name="visible">True</property>
                                     <property name="orientation">vertical</property>
                                     <child>
                                       <object class="AdwHeaderBar" id="main_header">
-                                        <property name="visible">True</property>
                                         <property name="hexpand">True</property>
                                         <property name="show-end-title-buttons">True</property>
                                         <property name="centering-policy">strict</property>
                                         <child type="start">
                                           <object class="GtkToggleButton" id="search_button">
-                                            <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="icon_name">edit-find-symbolic</property>
                                             <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional"/>
@@ -199,7 +186,6 @@
                                         </child>
                                         <child type="end">
                                           <object class="GtkMenuButton" id="menu_button">
-                                            <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="sensitive">True</property>
                                             <property name="primary">True</property>
@@ -215,7 +201,6 @@
                                         </child>
                                         <child type="title">
                                           <object class="AdwViewSwitcherTitle" id="title_switcher">
-                                            <property name="visible">True</property>
                                             <property name="stack">stack_main</property>
                                             <property name="title" bind-source="GsShell" bind-property="title" bind-flags="sync-create"/>
                                           </object>
@@ -225,18 +210,15 @@
 
                                     <child>
                                       <object class="GtkSearchBar" id="search_bar">
-                                        <property name="visible">True</property>
                                         <property name="key-capture-widget">GsShell</property>
                                         <signal name="notify::search-mode-enabled" handler="search_bar_search_mode_enabled_changed_cb"/>
                                         <child>
                                           <object class="AdwClamp">
-                                            <property name="visible">True</property>
                                             <property name="hexpand">True</property>
                                             <property name="maximum_size">500</property>
                                             <property name="tightening_threshold">500</property>
                                             <child>
                                               <object class="GtkSearchEntry" id="entry_search">
-                                                <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="activates_default">True</property>
                                                 <signal name="search-changed" handler="search_changed_handler"/>
@@ -248,14 +230,12 @@
                                     </child>
                                     <child>
                                       <object class="GtkInfoBar" id="metered_updates_bar">
-                                        <property name="visible">True</property>
                                         <property name="message-type">GTK_MESSAGE_INFO</property>
                                         <property name="show-close-button">False</property>
                                         <property name="revealed">False</property>
                                         <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
                                         <child>
                                           <object class="GtkBox">
-                                            <property name="visible">True</property>
                                             <property name="orientation">vertical</property>
                                             <property name="spacing">6</property>
                                             <property name="margin_top">6</property>
@@ -263,7 +243,6 @@
                                             <property name="margin_bottom">6</property>
                                             <child>
                                               <object class="GtkLabel">
-                                                <property name="visible">True</property>
                                                 <property name="can_focus">False</property>
                                                 <property name="label" translatable="yes">Automatic Updates Paused</property>
                                                 <property name="xalign">0.0</property>
@@ -277,11 +256,9 @@
                                         </child>
                                         <child type="action">
                                           <object class="GtkBox">
-                                            <property name="visible">True</property>
                                             <property name="margin_end">6</property>
                                             <child>
                                               <object class="GtkButton" id="metered_updates_button">
-                                                <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <property name="use_underline">True</property>
                                                 <property name="label" translatable="yes">Find Out _More</property>
@@ -296,7 +273,6 @@
                                     </child>
                                     <child>
                                       <object class="AdwViewStack" id="stack_main">
-                                        <property name="visible">True</property>
                                         <property name="hexpand">True</property>
                                         <property name="vexpand">True</property>
                                         <property name="hhomogeneous">False</property>
@@ -309,7 +285,6 @@
                                             <property name="icon-name">explore2-symbolic</property>
                                             <property name="child">
                                               <object class="GsOverviewPage" id="overview_page">
-                                                <property name="visible">True</property>
                                               </object>
                                             </property>
                                           </object>
@@ -323,7 +298,6 @@
                                             <property name="icon-name">app-installed-symbolic</property>
                                             <property name="child">
                                               <object class="GsInstalledPage" id="installed_page">
-                                                <property name="visible">True</property>
                                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                               </object>
                                             </property>
@@ -334,7 +308,6 @@
                                             <property name="name">search</property>
                                             <property name="child">
                                               <object class="GsSearchPage" id="search_page">
-                                                <property name="visible">True</property>
                                               </object>
                                             </property>
                                           </object>
@@ -346,7 +319,6 @@
                                             <property name="icon-name">emblem-synchronizing-symbolic</property>
                                             <property name="child">
                                               <object class="GsUpdatesPage" id="updates_page">
-                                                <property name="visible">True</property>
                                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                                 <signal name="notify::counter" handler="updates_page_notify_counter_cb"/>
                                               </object>
@@ -357,7 +329,6 @@
                                     </child>
                                     <child>
                                       <object class="AdwViewSwitcherBar" id="sidebar_switcher">
-                                        <property name="visible">True</property>
                                         <property name="reveal" bind-source="title_switcher" bind-property="title-visible" bind-flags="sync-create"/>
                                         <property name="stack">stack_main</property>
                                       </object>
@@ -372,16 +343,13 @@
                                 <property name="name">sub</property>
                                 <property name="child">
                                   <object class="GtkBox" id="sub_box">
-                                    <property name="visible">True</property>
                                     <property name="orientation">vertical</property>
                                     <child>
                                       <object class="AdwHeaderBar" id="sub_header">
-                                        <property name="visible">True</property>
                                         <property name="show-end-title-buttons">True</property>
                                         <property name="hexpand">True</property>
                                         <child>
                                           <object class="GtkButton" id="button_back">
-                                            <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <signal name="clicked" handler="gs_shell_back_button_cb"/>
                                             <accessibility>
@@ -392,7 +360,6 @@
                                             </style>
                                             <child>
                                               <object class="GtkImage" id="back_image">
-                                                <property name="visible">True</property>
                                                 <property name="icon_name">go-previous-symbolic</property>
                                                 <property name="icon-size">normal</property>
                                               </object>
@@ -401,7 +368,6 @@
                                         </child>
                                         <child type="title">
                                           <object class="GtkLabel" id="sub_page_header_title">
-                                            <property name="visible">True</property>
                                             <property name="selectable">False</property>
                                             <property name="ellipsize">end</property>
                                             <style>
@@ -413,7 +379,6 @@
                                     </child>
                                     <child>
                                       <object class="AdwViewStack" id="stack_sub">
-                                        <property name="visible">True</property>
                                         <property name="hexpand">True</property>
                                         <property name="vexpand">True</property>
                                         <property name="hhomogeneous">False</property>
@@ -424,7 +389,6 @@
                                             <property name="name">moderate</property>
                                             <property name="child">
                                               <object class="GsModeratePage" id="moderate_page">
-                                                <property name="visible">True</property>
                                               </object>
                                             </property>
                                           </object>
@@ -434,7 +398,6 @@
                                             <property name="name">category</property>
                                             <property name="child">
                                               <object class="GsCategoryPage" id="category_page">
-                                                <property name="visible">True</property>
                                                 <signal name="app-clicked" handler="category_page_app_clicked_cb"/>
                                               </object>
                                             </property>
@@ -445,7 +408,6 @@
                                             <property name="name">extras</property>
                                             <property name="child">
                                               <object class="GsExtrasPage" id="extras_page">
-                                                <property name="visible">True</property>
                                               </object>
                                             </property>
                                           </object>
@@ -467,11 +429,9 @@
                         <property name="name">details</property>
                         <property name="child">
                           <object class="GtkBox" id="details_box">
-                            <property name="visible">True</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="AdwHeaderBar" id="details_header">
-                                <property name="visible">True</property>
                                 <property name="hexpand">True</property>
                                 <property name="show-end-title-buttons">True</property>
                                 <property name="title-widget">
@@ -481,7 +441,6 @@
                                 </property>
                                 <child>
                                   <object class="GtkButton" id="button_back2">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <signal name="clicked" handler="gs_shell_details_back_button_cb"/>
                                     <accessibility>
@@ -492,7 +451,6 @@
                                     </style>
                                     <child>
                                       <object class="GtkImage">
-                                        <property name="visible">True</property>
                                         <property name="icon_name">go-previous-symbolic</property>
                                         <property name="icon-size">normal</property>
                                       </object>
@@ -503,7 +461,6 @@
                             </child>
                             <child>
                               <object class="GsDetailsPage" id="details_page">
-                                <property name="visible">True</property>
                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                               </object>
                             </child>
@@ -523,10 +480,8 @@
             <property name="name">loading</property>
             <property name="child">
               <object class="GtkOverlay">
-                <property name="visible">True</property>
                 <child type="overlay">
                   <object class="GtkHeaderBar">
-                    <property name="visible">True</property>
                     <property name="show_title_buttons">True</property>
                     <property name="valign">start</property>
                     <style>
@@ -536,10 +491,8 @@
                 </child>
                 <child>
                   <object class="GtkWindowHandle">
-                    <property name="visible">True</property>
                     <child>
                       <object class="GsLoadingPage" id="loading_page">
-                        <property name="visible">True</property>
                         <signal name="refreshed" handler="initial_refresh_done"/>
                       </object>
                     </child>

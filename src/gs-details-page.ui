@@ -8,14 +8,12 @@
     </accessibility>
     <child>
       <object class="GtkStack" id="stack_details">
-        <property name="visible">True</property>
 
         <child>
           <object class="GtkStackPage">
             <property name="name">spinner</property>
             <property name="child">
               <object class="GtkBox" id="details_spinner_box">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">12</property>
                 <property name="halign">center</property>
@@ -27,7 +25,6 @@
                 </style>
                 <child>
                   <object class="GtkSpinner" id="spinner_details">
-                    <property name="visible">True</property>
                     <property name="width_request">32</property>
                     <property name="height_request">32</property>
                     <property name="halign">center</property>
@@ -38,7 +35,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="loading_label">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">Loading application details…</property>
                     <attributes>
                       <attribute name="scale" value="1.4"/>
@@ -55,34 +51,28 @@
             <property name="name">ready</property>
             <property name="child">
               <object class="GtkScrolledWindow" id="scrolledwindow_details">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">automatic</property>
                 <property name="vscrollbar_policy">automatic</property>
                 <child>
                   <object class="GtkViewport" id="viewport1">
                     <property name="scroll-to-focus">True</property>
-                    <property name="visible">True</property>
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
-                        <property name="visible">True</property>
                         <child>
                           <object class="GtkInfoBar" id="translation_infobar">
                             <property name="revealed">False</property>
                             <property name="show-close-button">False</property>
-                            <property name="visible">True</property>
                             <signal name="response" handler="gs_details_page_translation_infobar_response_cb"/>
                             <child>
                               <object class="GtkCenterBox">
                                 <property name="orientation">horizontal</property>
-                                <property name="visible">True</property>
                                 <property name="hexpand">True</property>
                                 <child type="center">
                                   <object class="GtkLabel" id="translation_infobar_label">
                                     <property name="hexpand">True</property>
                                     <property name="label" translatable="yes">This software is not available in your language and will appear in US English.</property>
-                                    <property name="visible">True</property>
                                     <property name="wrap">True</property>
                                   </object>
                                 </child>
@@ -90,7 +80,6 @@
                                   <object class="GtkButton" id="translation_infobar_button">
                                     <property name="label" translatable="yes">Help _Translate</property>
                                     <property name="use-underline">True</property>
-                                    <property name="visible">True</property>
                                   </object>
                                 </child>
                               </object>
@@ -104,7 +93,6 @@
                         <child>
                           <object class="GtkBox" id="box_details">
                             <property name="orientation">vertical</property>
-                            <property name="visible">True</property>
                             <property name="halign">fill</property>
                             <property name="valign">start</property>
                             <property name="spacing">18</property>
@@ -114,7 +102,6 @@
                             </style>
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -123,10 +110,8 @@
                                 <child>
                                   <object class="GtkBox" id="box_details_header">
                                     <property name="orientation">horizontal</property>
-                                    <property name="visible">True</property>
                                     <child>
                                       <object class="GtkImage" id="application_details_icon">
-                                        <property name="visible">True</property>
                                         <property name="halign">start</property>
                                         <property name="pixel_size">128</property>
                                         <style>
@@ -137,19 +122,16 @@
                                     <child>
                                       <object class="GtkBox" id="box_details_header_not_icon">
                                         <property name="orientation">horizontal</property>
-                                        <property name="visible">True</property>
                                         <property name="margin-top">6</property>
                                         <property name="spacing">6</property>
                                         <child>
                                           <object class="GtkBox" id="box_details_header2">
                                             <property name="orientation">vertical</property>
-                                            <property name="visible">True</property>
                                             <property name="halign">fill</property>
                                             <property name="valign">center</property>
                                             <property name="spacing">6</property>
                                             <child>
                                               <object class="GtkLabel" id="application_details_title">
-                                                <property name="visible">True</property>
                                                 <property name="halign">fill</property>
                                                 <property name="valign">start</property>
                                                 <property name="hexpand">True</property>
@@ -171,7 +153,6 @@
                                                 <property name="orientation">horizontal</property>
                                                 <child>
                                                   <object class="GtkLabel" id="developer_name_label">
-                                                    <property name="visible">True</property>
                                                     <property name="ellipsize">end</property>
                                                     <!-- This is a placeholder; the real value is set in code -->
                                                     <property name="label">Yorba</property>
@@ -189,7 +170,6 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkImage" id="developer_verified_image">
-                                                    <property name="visible">True</property>
                                                     <property name="pixel-size">16</property>
                                                     <property name="icon-name">emblem-ok-symbolic</property>
                                                   </object>
@@ -198,11 +178,9 @@
                                             </child>
                                             <child>
                                               <object class="GtkBox" id="star_box">
-                                                <property name="visible">True</property>
                                                 <property name="valign">start</property>
                                                 <child>
                                                   <object class="GsStarWidget" id="star">
-                                                    <property name="visible">True</property>
                                                     <property name="halign">start</property>
                                                     <property name="valign">center</property>
                                                     <property name="icon-size">16</property>
@@ -217,7 +195,6 @@
                                                 </child>
                                                 <child>
                                                   <object class="GtkLabel" id="label_review_count">
-                                                    <property name="visible">True</property>
                                                     <property name="margin_start">5</property>
                                                     <property name="halign">start</property>
                                                     <property name="valign">center</property>
@@ -233,7 +210,6 @@
 
                                         <child>
                                           <object class="GtkBox" id="box_install_remove">
-                                            <property name="visible">True</property>
                                             <property name="spacing">9</property>
                                             <child>
                                               <object class="GtkButton" id="button_install">
@@ -253,7 +229,6 @@
                                             </child>
                                             <child>
                                               <object class="GtkButton" id="button_details_launch">
-                                                <property name="visible">True</property>
                                                 <property name="can_focus">True</property>
                                                 <!-- TRANSLATORS: A label for a button to execute the selected application. -->
                                                 <property name="label" translatable="yes">_Open</property>
@@ -289,7 +264,6 @@
                                                 <child>
                                                   <object class="GtkImage">
                                                     <property name="icon-name">user-trash-symbolic</property>
-                                                    <property name="visible">True</property>
                                                   </object>
                                                 </child>
                                                 <accessibility>
@@ -331,14 +305,12 @@
                                                     </style>
                                                     <child>
                                                       <object class="GtkLabel" id="label_progress_status">
-                                                        <property name="visible">True</property>
                                                         <property name="valign">start</property>
                                                         <property name="label" translatable="yes">Downloading</property>
                                                       </object>
                                                     </child>
                                                     <child>
                                                       <object class="GtkLabel" id="label_progress_percentage">
-                                                        <property name="visible">True</property>
                                                         <property name="valign">start</property>
                                                         <property name="label">50%</property>
                                                       </object>
@@ -381,13 +353,11 @@
 
                             <child>
                               <object class="GsScreenshotCarousel" id="screenshot_carousel">
-                                <property name="visible">True</property>
                               </object>
                             </child>
 
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -395,12 +365,10 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GtkBox" id="application_details">
-                                    <property name="visible">True</property>
                                     <property name="orientation">vertical</property>
                                     <property name="spacing">12</property>
                                     <child>
                                       <object class="GtkLabel" id="application_details_summary">
-                                        <property name="visible">True</property>
                                         <property name="halign">fill</property>
                                         <property name="valign">start</property>
                                         <property name="hexpand">True</property>
@@ -429,7 +397,6 @@
 
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -437,17 +404,14 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GtkBox" id="box_addons">
-                                    <property name="visible">True</property>
                                     <property name="orientation">vertical</property>
 
                                     <child>
                                       <object class="GtkBox" id="box_addons_title">
-                                        <property name="visible">True</property>
                                         <property name="orientation">vertical</property>
                                         <property name="margin_bottom">12</property>
                                         <child>
                                           <object class="GtkLabel" id="label_addons_title">
-                                            <property name="visible">True</property>
                                             <property name="halign">start</property>
                                             <property name="valign">start</property>
                                             <property name="hexpand">True</property>
@@ -460,7 +424,6 @@
                                         </child>
                                         <child>
                                           <object class="GtkLabel" id="label_addons_uninstalled_app">
-                                            <property name="visible">True</property>
                                             <property name="xalign">0</property>
                                             <property name="wrap">True</property>
                                             <property name="max-width-chars">40</property>
@@ -471,7 +434,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkListBox" id="list_box_addons">
-                                        <property name="visible">True</property>
                                         <property name="selection_mode">none</property>
                                         <property name="halign">fill</property>
                                         <property name="valign">start</property>
@@ -487,7 +449,6 @@
 
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -495,7 +456,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GsAppContextBar" id="context_bar">
-                                    <property name="visible">True</property>
                                   </object>
                                 </child>
                               </object>
@@ -503,7 +463,6 @@
 
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -511,7 +470,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GtkListBox" id="list_box_version_history">
-                                    <property name="visible">True</property>
                                     <property name="selection_mode">none</property>
                                     <property name="halign">fill</property>
                                     <property name="valign">start</property>
@@ -524,18 +482,15 @@
                                     </child>
                                     <child>
                                       <object class="GtkListBoxRow" id="version_history_button">
-                                        <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <child>
                                           <object class="GtkBox">
-                                            <property name="visible">True</property>
                                             <property name="orientation">horizontal</property>
                                             <property name="halign">center</property>
                                             <property name="margin_top">12</property>
                                             <property name="margin_bottom">12</property>
                                             <child>
                                               <object class="GtkLabel">
-                                                <property name="visible">True</property>
                                                 <property name="xalign">0</property>
                                                 <property name="yalign">0.5</property>
                                                 <property name="label" translatable="yes">Version History</property>
@@ -543,7 +498,6 @@
                                             </child>
                                             <child>
                                               <object class="GtkImage">
-                                                <property name="visible">True</property>
                                                 <property name="icon-name">go-next-symbolic</property>
                                                 <property name="margin_start">6</property>
                                               </object>
@@ -591,7 +545,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GsInfoBar" id="infobar_details_app_repo">
-                                    <property name="visible">True</property>
                                     <property name="margin_top">20</property>
                                     <property name="title" translatable="yes">Software Repository Included</property>
                                     <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
@@ -610,7 +563,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GsInfoBar" id="infobar_details_app_norepo">
-                                    <property name="visible">True</property>
                                     <property name="margin_top">20</property>
                                     <property name="title" translatable="yes">No Software Repository Included</property>
                                     <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
@@ -629,7 +581,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GsInfoBar" id="infobar_details_package_baseos">
-                                    <property name="visible">True</property>
                                     <property name="message_type">warning</property>
                                     <property name="margin_top">20</property>
                                     <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
@@ -648,7 +599,6 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GsInfoBar" id="infobar_details_repo">
-                                    <property name="visible">True</property>
                                     <property name="margin_top">20</property>
                                     <property name="title" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Repository Identified</property>
                                     <property name="body" translatable="yes">Adding this software repository will give you access to additional software and upgrades.</property>
@@ -660,7 +610,6 @@
 
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <property name="maximum-size">860</property>
                                 <!-- ~⅔ of the maximum size. -->
                                 <property name="tightening-threshold">576</property>
@@ -668,14 +617,12 @@
                                 <property name="margin-end">12</property>
                                 <child>
                                   <object class="GtkBox" id="box_license">
-                                    <property name="visible">True</property>
                                     <property name="orientation">horizontal</property>
                                     <property name="spacing">12</property>
                                     <property name="homogeneous" bind-source="GsDetailsPage" bind-property="is-narrow" bind-flags="sync-create|invert-boolean"/>
 
                                     <child>
                                       <object class="GsLicenseTile" id="license_tile">
-                                        <property name="visible">True</property>
                                         <property name="halign">fill</property>
                                         <property name="valign">start</property>
                                         <signal name="get-involved-activated" handler="gs_details_page_license_tile_get_involved_activated_cb"/>
@@ -686,14 +633,12 @@
                                       <object class="GtkStack" id="links_stack">
                                         <property name="hhomogeneous">False</property>
                                         <property name="vhomogeneous">False</property>
-                                        <property name="visible">True</property>
 
                                         <child>
                                           <object class="GtkStackPage">
                                             <property name="name">empty</property>
                                             <property name="child">
                                               <object class="GtkBox">
-                                                <property name="visible">True</property>
                                                 <property name="hexpand-set">True</property>
                                                 <style>
                                                   <class name="content-box"/>
@@ -701,7 +646,6 @@
 
                                                 <child>
                                                   <object class="GtkBox">
-                                                    <property name="visible">True</property>
                                                     <property name="orientation">vertical</property>
                                                     <property name="spacing">8</property>
                                                     <property name="margin-top">14</property>
@@ -718,14 +662,12 @@
                                                       <object class="GtkImage">
                                                         <property name="icon-name">dialog-question-symbolic</property>
                                                         <property name="pixel-size">96</property>
-                                                        <property name="visible">True</property>
                                                         <property name="margin-bottom">8</property>
                                                       </object>
                                                     </child>
                                                     <child>
                                                       <object class="GtkLabel">
                                                         <property name="label" translatable="yes">No Metadata</property>
-                                                        <property name="visible">True</property>
                                                         <attributes>
                                                           <attribute name="weight" value="bold"/>
                                                         </attributes>
@@ -735,7 +677,6 @@
                                                       <object class="GtkLabel">
                                                         <property name="justify">center</property>
                                                         <property name="label" translatable="yes">This software doesn’t provide any links to a website, code repository or issue tracker.</property>
-                                                        <property name="visible">True</property>
                                                         <property name="wrap">True</property>
                                                         <property name="xalign">0.5</property>
                                                       </object>
@@ -752,7 +693,6 @@
                                             <property name="name">links</property>
                                             <property name="child">
                                               <object class="GtkListBox">
-                                                <property name="visible">True</property>
                                                 <property name="selection_mode">none</property>
                                                 <property name="halign">fill</property>
                                                 <property name="valign">start</property>
@@ -763,7 +703,6 @@
                                                 <child>
                                                   <object class="AdwActionRow" id="project_website_row">
                                                     <property name="activatable">True</property>
-                                                    <property name="visible">True</property>
                                                     <property name="icon-name">web-browser-symbolic</property>
                                                     <property name="title" translatable="yes">Project _Website</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
@@ -772,7 +711,6 @@
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
                                                     <child>
                                                       <object class="GtkImage">
-                                                        <property name="visible">True</property>
                                                         <property name="icon-name">external-link-symbolic</property>
                                                       </object>
                                                     </child>
@@ -782,7 +720,6 @@
                                                 <child>
                                                   <object class="AdwActionRow" id="donate_row">
                                                     <property name="activatable">True</property>
-                                                    <property name="visible">True</property>
                                                     <property name="icon-name">money-symbolic</property>
                                                     <property name="title" translatable="yes">_Donate</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
@@ -791,7 +728,6 @@
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
                                                     <child>
                                                       <object class="GtkImage">
-                                                        <property name="visible">True</property>
                                                         <property name="icon-name">external-link-symbolic</property>
                                                       </object>
                                                     </child>
@@ -801,7 +737,6 @@
                                                 <child>
                                                   <object class="AdwActionRow" id="translate_row">
                                                     <property name="activatable">True</property>
-                                                    <property name="visible">True</property>
                                                     <property name="icon-name">flag-outline-thin-symbolic</property>
                                                     <property name="title" translatable="yes">Contribute _Translations</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
@@ -810,7 +745,6 @@
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
                                                     <child>
                                                       <object class="GtkImage">
-                                                        <property name="visible">True</property>
                                                         <property name="icon-name">external-link-symbolic</property>
                                                       </object>
                                                     </child>
@@ -820,7 +754,6 @@
                                                 <child>
                                                   <object class="AdwActionRow" id="report_an_issue_row">
                                                     <property name="activatable">True</property>
-                                                    <property name="visible">True</property>
                                                     <property name="icon-name">computer-fail-symbolic</property>
                                                     <property name="title" translatable="yes">_Report an Issue</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
@@ -829,7 +762,6 @@
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
                                                     <child>
                                                       <object class="GtkImage">
-                                                        <property name="visible">True</property>
                                                         <property name="icon-name">external-link-symbolic</property>
                                                       </object>
                                                     </child>
@@ -839,7 +771,6 @@
                                                 <child>
                                                   <object class="AdwActionRow" id="help_row">
                                                     <property name="activatable">True</property>
-                                                    <property name="visible">True</property>
                                                     <property name="icon-name">help-browser-symbolic</property>
                                                     <property name="title" translatable="yes">_Help</property>
                                                     <!-- This is a placeholder; the actual URI is set in code -->
@@ -848,7 +779,6 @@
                                                     <signal name="activated" handler="gs_details_page_link_row_activated_cb"/>
                                                     <child>
                                                       <object class="GtkImage">
-                                                        <property name="visible">True</property>
                                                         <property name="icon-name">external-link-symbolic</property>
                                                       </object>
                                                     </child>
@@ -879,7 +809,6 @@
                                     <property name="orientation">vertical</property>
                                     <child>
                                       <object class="GtkLabel">
-                                        <property name="visible">True</property>
                                         <property name="margin_bottom">18</property>
                                         <property name="halign">start</property>
                                         <property name="valign">start</property>
@@ -913,7 +842,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkListBox" id="list_box_reviews">
-                                        <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="selection_mode">none</property>
                                         <property name="valign">start</property>
@@ -954,7 +882,6 @@
             <property name="name">failed</property>
             <property name="child">
               <object class="GtkBox" id="box_failed">
-                <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">24</property>
                 <property name="halign">center</property>
@@ -966,14 +893,12 @@
                 </style>
                 <child>
                   <object class="GtkImage" id="image_failed">
-                    <property name="visible">True</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">org.gnome.Software-symbolic</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_failed">
-                    <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="max-width-chars">60</property>
                     <property name="justify">center</property>
@@ -1000,7 +925,6 @@
   </object>
 
   <object class="GtkBox" id="origin_box">
-    <property name="visible">True</property>
     <property name="orientation">horizontal</property>
     <property name="halign">fill</property>
     <property name="spacing">9</property>
@@ -1016,7 +940,6 @@
     </child>
     <child>
       <object class="GtkMenuButton" id="origin_button">
-        <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="sensitive">True</property>
         <property name="always-show-arrow">True</property>
@@ -1029,7 +952,6 @@
     <property name="visible">False</property>
     <child>
       <object class="GtkBox" id="origin_popover_box">
-        <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <property name="spacing">12</property>
         <child>

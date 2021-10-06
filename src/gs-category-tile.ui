@@ -2,7 +2,6 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsCategoryTile" parent="GtkButton">
-    <property name="visible">True</property>
     <style>
       <class name="view"/>
       <class name="tile"/>
@@ -11,12 +10,10 @@
     <child>
       <object class="GtkBox" id="box">
         <property name="halign">center</property>
-        <property name="visible">True</property>
         <property name="orientation">horizontal</property>
         <property name="spacing">10</property>
         <child>
           <object class="GtkImage" id="image">
-            <property name="visible">True</property>
             <!-- Placeholder; the actual icon is set in code -->
             <property name="icon_name">folder-music-symbolic</property>
             <property name="icon_size">large</property><!-- GTK_ICON_SIZE_LARGE -->
@@ -27,7 +24,6 @@
         </child>
         <child>
           <object class="GtkLabel" id="label">
-            <property name="visible">True</property>
             <property name="xalign">0</property>
             <property name="ellipsize">end</property>
           </object>

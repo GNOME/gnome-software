@@ -6,7 +6,6 @@
     <property name="halign">fill</property>
     <property name="orientation">vertical</property>
     <property name="spacing">12</property>
-    <property name="visible">True</property>
     <child>
       <object class="GtkEventControllerKey">
         <signal name="key-pressed" handler="key_pressed_cb"/>
@@ -19,15 +18,12 @@
       <object class="GtkOverlay" id="overlay">
         <property name="halign">fill</property>
         <property name="valign">fill</property>
-        <property name="visible">True</property>
         <child>
           <object class="AdwCarousel" id="carousel">
-            <property name="visible">True</property>
           </object>
         </child>
         <child type="overlay">
           <object class="GtkButton" id="previous_button">
-            <property name="visible">True</property>
             <property name="use-underline">True</property>
             <property name="halign">start</property>
             <property name="valign">center</property>
@@ -47,7 +43,6 @@
             </style>
             <child>
               <object class="GtkImage" id="previous_button_image">
-                <property name="visible">True</property>
                 <property name="icon-name">carousel-arrow-previous-symbolic</property>
                 <property name="icon-size">large</property>
                 <signal name="direction-changed" handler="previous_button_direction_changed_cb"/>
@@ -57,7 +52,6 @@
         </child>
         <child type="overlay">
           <object class="GtkButton" id="next_button">
-            <property name="visible">True</property>
             <property name="use-underline">True</property>
             <property name="halign">end</property>
             <property name="valign">center</property>
@@ -77,7 +71,6 @@
             </style>
             <child>
               <object class="GtkImage" id="next_button_image">
-                <property name="visible">True</property>
                 <property name="icon_name">carousel-arrow-next-symbolic</property>
                 <property name="icon_size">large</property>
                 <signal name="direction-changed" handler="next_button_direction_changed_cb"/>
@@ -90,7 +83,6 @@
     <child>
       <object class="AdwCarouselIndicatorDots" id="dots">
         <property name="carousel">carousel</property>
-        <property name="visible">True</property>
       </object>
     </child>
     <accessibility>

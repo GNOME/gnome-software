@@ -5,10 +5,8 @@
     <property name="title" translatable="yes">Translations</property>
     <child>
       <object class="AdwPreferencesPage">
-        <property name="visible">True</property>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="visible">True</property>
 
             <child>
               <object class="GtkBox">
@@ -16,7 +14,6 @@
                 <property name="margin-end">3</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
-                <property name="visible">True</property>
 
                 <child>
                   <object class="GtkBox">
@@ -26,12 +23,10 @@
                     <property name="margin-end">20</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
-                    <property name="visible">True</property>
 
                     <child>
                       <object class="GtkBox" id="lozenge">
                         <property name="halign">center</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="context-tile-lozenge"/>
                           <class name="large"/>
@@ -43,7 +38,6 @@
                             <property name="hexpand">True</property>
                             <property name="icon-name">flag-outline-thin-symbolic</property>
                             <property name="icon-size">large</property>
-                            <property name="visible">True</property>
                             <accessibility>
                               <relation name="labelled-by">title</relation>
                             </accessibility>
@@ -57,7 +51,6 @@
                         <property name="justify">center</property>
                         <!-- this is a placeholder: the text is actually set in code -->
                         <property name="label">Help Translate Shortwave</property>
-                        <property name="visible">True</property>
                         <property name="wrap">True</property>
                         <property name="xalign">0.5</property>
                         <style>
@@ -76,7 +69,6 @@
                     <property name="justify">center</property>
                     <!-- This is a placeholder: the actual label is set in code -->
                     <property name="label">Shortwave is designed, developed, and translated by an international community of volunteers.\n\nThis means that while it’s not yet available in your language, you can get involved and help translate it yourself.</property>
-                    <property name="visible">True</property>
                     <property name="wrap">True</property>
                     <property name="xalign">0.5</property>
                   </object>
@@ -89,14 +81,12 @@
                     <property name="margin-bottom">14</property>
                     <property name="margin-start">14</property>
                     <property name="margin-end">14</property>
-                    <property name="visible">True</property>
                     <signal name="clicked" handler="button_clicked_cb"/>
                     <style>
                       <class name="suggested-action"/>
                     </style>
                     <child>
                       <object class="GtkBox">
-                        <property name="visible">True</property>
                         <property name="orientation">horizontal</property>
                         <property name="spacing">6</property>
                         <property name="halign">center</property>
@@ -104,7 +94,6 @@
                         <property name="margin-end">12</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="yalign">0.5</property>
                             <property name="label" translatable="yes">_Translation Website</property>
@@ -113,7 +102,6 @@
                         </child>
                         <child>
                           <object class="GtkImage">
-                            <property name="visible">True</property>
                             <property name="icon-name">external-link-symbolic</property>
                           </object>
                         </child>

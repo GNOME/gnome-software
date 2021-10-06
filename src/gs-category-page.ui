@@ -5,22 +5,18 @@
   <template class="GsCategoryPage" parent="GsPage">
     <child>
       <object class="GtkScrolledWindow" id="scrolledwindow_category">
-        <property name="visible">True</property>
         <property name="hscrollbar_policy">never</property>
         <property name="vscrollbar_policy">automatic</property>
         <child>
           <object class="GtkViewport" id="viewport3">
             <property name="scroll-to-focus">True</property>
-            <property name="visible">True</property>
             <child>
               <object class="AdwClamp">
-                <property name="visible">True</property>
                 <!-- We use the same sizes as the overview page. -->
                 <property name="maximum-size">1000</property>
                 <property name="tightening-threshold">600</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">9</property>
                     <property name="valign">start</property>
@@ -108,7 +104,6 @@
                     <child>
                       <object class="GtkFlowBox" id="category_detail_box">
                         <property name="halign">fill</property>
-                        <property name="visible">True</property>
                         <property name="row_spacing">14</property>
                         <property name="column_spacing">14</property>
                         <property name="homogeneous">True</property>

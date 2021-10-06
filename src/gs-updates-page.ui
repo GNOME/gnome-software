@@ -7,7 +7,6 @@
     </accessibility>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox" id="box_end_of_life">
@@ -19,7 +18,6 @@
             </style>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
                 <property name="pixel_size">16</property>
                 <property name="icon_name">dialog-warning-symbolic</property>
                 <property name="margin_top">18</property>
@@ -31,10 +29,8 @@
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
-                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="visible">True</property>
                     <property name="margin_end">18</property>
                     <property name="margin_top">18</property>
                     <property name="label" translatable="yes">Operating System Updates Unavailable</property>
@@ -46,7 +42,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_end_of_life">
-                    <property name="visible">True</property>
                     <property name="margin_end">18</property>
                     <property name="margin_bottom">18</property>
                     <property name="label">Your OS is no longer supported. This means that it does not receive security updates. It is recommended that you upgrade to a more recent version.</property>
@@ -61,14 +56,12 @@
         </child>
         <child>
           <object class="GtkStack" id="stack_updates">
-            <property name="visible">True</property>
 
             <child>
               <object class="GtkStackPage">
                 <property name="name">spinner</property>
                 <property name="child">
                   <object class="AdwClamp">
-                    <property name="visible">True</property>
                     <property name="valign">center</property>
                     <!-- We explicitly want to use the default AdwClamp sizes here,
                          as does AdwStatusPage. -->
@@ -77,12 +70,10 @@
                     </style>
                     <child>
                       <object class="GtkBox">
-                        <property name="visible">True</property>
                         <property name="orientation">vertical</property>
                         <property name="valign">center</property>
                         <child>
                           <object class="GtkSpinner" id="spinner_updates">
-                            <property name="visible">True</property>
                             <style>
                               <class name="icon"/>
                             </style>
@@ -90,7 +81,6 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="label_updates_spinner">
-                            <property name="visible">True</property>
                             <property name="wrap">True</property>
                             <property name="wrap-mode">word-char</property>
                             <property name="justify">center</property>
@@ -103,7 +93,6 @@
                         </child>
                         <child>
                           <object class="GtkLabel">
-                            <property name="visible">True</property>
                             <property name="wrap">True</property>
                             <property name="wrap-mode">word-char</property>
                             <property name="justify">center</property>
@@ -127,7 +116,6 @@
                 <property name="name">view</property>
                 <property name="child">
                   <object class="GtkScrolledWindow" id="scrolledwindow_updates">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">automatic</property>
@@ -136,12 +124,10 @@
                     </style>
                     <child>
                       <object class="AdwClamp">
-                        <property name="visible">True</property>
                         <property name="maximum-size">600</property>
                         <property name="tightening-threshold">400</property>
                         <child>
                           <object class="GtkBox" id="list_box_updates_box">
-                            <property name="visible">True</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GsUpgradeBanner" id="upgrade_banner">
@@ -153,7 +139,6 @@
                             </child>
                             <child>
                               <object class="GtkBox" id="updates_box">
-                                <property name="visible">True</property>
                                 <property name="orientation">vertical</property>
                                 <property name="spacing">24</property>
                               </object>
@@ -172,7 +157,6 @@
                 <property name="name">uptodate</property>
                 <property name="child">
                   <object class="GtkBox">
-                    <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">48</property>
                     <property name="hexpand">True</property>
@@ -190,7 +174,6 @@
                            currently support non-icon images
                            See https://gitlab.gnome.org/GNOME/libhandy/-/issues/448 -->
                       <object class="GtkScrolledWindow">
-                        <property name="visible">True</property>
                         <property name="hscrollbar-policy">never</property>
                         <property name="propagate-natural-height">True</property>
                         <style>
@@ -198,20 +181,16 @@
                         </style>
                         <child>
                           <object class="GtkBox">
-                            <property name="visible">True</property>
                             <property name="orientation">vertical</property>
                             <property name="valign">center</property>
                             <child>
                               <object class="AdwClamp">
-                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkBox">
-                                    <property name="visible">True</property>
                                     <property name="orientation">vertical</property>
                                     <property name="valign">center</property>
                                     <child>
                                       <object class="GtkImage">
-                                        <property name="visible">True</property>
                                         <!--><property name="pixel-size">400</property>-->
                                         <property name="resource">/org/gnome/Software/up-to-date.svg</property>
                                         <style>
@@ -221,7 +200,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkLabel">
-                                        <property name="visible">True</property>
                                         <property name="wrap">True</property>
                                         <property name="wrap-mode">word-char</property>
                                         <property name="justify">center</property>
@@ -234,7 +212,6 @@
                                     </child>
                                     <child>
                                       <object class="GtkLabel" id="uptodate_description">
-                                        <property name="visible">True</property>
                                         <property name="wrap">True</property>
                                         <property name="wrap-mode">word-char</property>
                                         <property name="justify">center</property>
@@ -264,14 +241,12 @@
                 <property name="name">mobile</property>
                 <property name="child">
                   <object class="AdwStatusPage">
-                    <property name="visible">True</property>
                     <property name="icon_name">dialog-warning-symbolic</property>
                     <property name="title" translatable="yes">Use Mobile Data?</property>
                     <property name="description" translatable="yes">Checking for updates when using mobile broadband could cause you to incur charges.</property>
                     <child>
                       <object class="GtkButton" id="button_updates_mobile">
                         <property name="label" translatable="yes">_Check Anyway</property>
-                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="halign">center</property>
                       </object>
@@ -286,14 +261,12 @@
                 <property name="name">offline</property>
                 <property name="child">
                   <object class="AdwStatusPage">
-                    <property name="visible">True</property>
                     <property name="icon_name">network-offline-symbolic</property>
                     <property name="title" translatable="yes">No Connection</property>
                     <property name="description" translatable="yes">Go online to check for updates.</property>
                     <child>
                       <object class="GtkButton" id="button_updates_offline">
                         <property name="label" translatable="yes">_Network Settings</property>
-                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="halign">center</property>
                       </object>
@@ -308,7 +281,6 @@
                 <property name="name">failed</property>
                 <property name="child">
                   <object class="AdwStatusPage" id="updates_failed_page">
-                    <property name="visible">True</property>
                     <property name="icon_name">action-unavailable-symbolic</property>
                     <property name="title" translatable="No">Error</property>
                     <property name="description" translatable="No">Failed to get updates.</property>
@@ -322,7 +294,6 @@
                 <property name="name">managed</property>
                 <property name="child">
                   <object class="AdwStatusPage">
-                    <property name="visible">True</property>
                     <property name="icon_name">action-unavailable-symbolic</property>
                     <property name="title" translatable="yes">Error</property>
                     <property name="description" translatable="yes">Updates are automatically managed.</property>

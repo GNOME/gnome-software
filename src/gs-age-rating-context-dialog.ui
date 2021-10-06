@@ -5,16 +5,13 @@
     <property name="title" translatable="yes" comments="Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.">Age Rating</property>
     <child>
       <object class="AdwPreferencesPage">
-        <property name="visible">True</property>
         <child>
           <object class="AdwPreferencesGroup">
-            <property name="visible">True</property>
 
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
-                <property name="visible">True</property>
 
                 <child>
                   <object class="GtkBox">
@@ -24,12 +21,10 @@
                     <property name="margin-end">20</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
-                    <property name="visible">True</property>
 
                     <child>
                       <object class="GtkBox" id="lozenge">
                         <property name="halign">center</property>
-                        <property name="visible">True</property>
                         <style>
                           <class name="context-tile-lozenge"/>
                           <class name="large"/>
@@ -41,7 +36,6 @@
                             <property name="hexpand">True</property>
                             <!-- this is a placeholder: the text is actually set in code -->
                             <property name="label">All</property>
-                            <property name="visible">True</property>
                             <property name="xalign">0.5</property>
                             <accessibility>
                               <relation name="labelled-by">title</relation>
@@ -56,7 +50,6 @@
                         <!-- this is a placeholder: the text is actually set in code -->
                         <property name="justify">center</property>
                         <property name="label">Shortwave is appropriate for children</property>
-                        <property name="visible">True</property>
                         <property name="wrap">True</property>
                         <property name="xalign">0.5</property>
                         <style>
@@ -72,7 +65,6 @@
 
                 <child>
                   <object class="GtkListBox" id="attributes_list">
-                    <property name="visible">True</property>
                     <property name="selection_mode">none</property>
                     <property name="halign">fill</property>
                     <property name="valign">start</property>
@@ -89,7 +81,6 @@
                     <property name="label" translatable="yes">How to add missing information</property>
                     <property name="margin-top">16</property>
                     <property name="uri">https://gitlab.gnome.org/GNOME/gnome-software/-/wikis/software-metadata#age-rating</property>
-                    <property name="visible">True</property>
                   </object>
                 </child>
               </object>
