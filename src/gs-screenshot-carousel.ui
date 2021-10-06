@@ -38,6 +38,7 @@
                             <property name="margin-bottom">9</property>
                             <property name="margin-start">9</property>
                             <property name="margin-end">9</property>
+                            <property name="icon-name">go-previous-symbolic</property>
                             <signal name="clicked" handler="gs_screenshot_carousel_button_previous_clicked_cb" swapped="yes"/>
                             <accessibility>
                               <!-- Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel. -->
@@ -45,17 +46,9 @@
                             </accessibility>
                             <style>
                               <class name="circular"/>
+                              <class name="image-button"/>
                               <class name="osd"/>
                             </style>
-                            <child>
-                              <object class="GtkImage" id="button_previous_image">
-                                <property name="halign">center</property>
-                                <property name="icon-name">go-previous-symbolic</property>
-                                <property name="icon-size">normal</property>
-                                <property name="valign">center</property>
-                                <property name="name">previous</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -73,6 +66,7 @@
                             <property name="margin-bottom">9</property>
                             <property name="margin-start">9</property>
                             <property name="margin-end">9</property>
+                            <property name="icon-name">go-next-symbolic</property>
                             <signal name="clicked" handler="gs_screenshot_carousel_button_next_clicked_cb" swapped="yes"/>
                             <accessibility>
                               <!-- Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel. -->
@@ -80,17 +74,9 @@
                             </accessibility>
                             <style>
                               <class name="circular"/>
+                              <class name="image-button"/>
                               <class name="osd"/>
                             </style>
-                            <child>
-                              <object class="GtkImage" id="button_next_image">
-                                <property name="halign">center</property>
-                                <property name="icon-name">go-next-symbolic</property>
-                                <property name="icon-size">normal</property>
-                                <property name="valign">center</property>
-                                <property name="name">next</property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>

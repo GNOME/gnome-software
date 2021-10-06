@@ -27,26 +27,22 @@
             <property name="use-underline">True</property>
             <property name="halign">start</property>
             <property name="valign">center</property>
-            <property name="width-request">56</property>
-            <property name="height-request">56</property>
+            <property name="width-request">64</property>
+            <property name="height-request">64</property>
             <property name="margin-top">9</property>
             <property name="margin-bottom">9</property>
             <property name="margin-start">9</property>
             <property name="margin-end">9</property>
+            <property name="icon-name">go-previous-symbolic</property>
             <signal name="clicked" handler="previous_button_clicked_cb"/>
             <accessibility>
               <property name="label" translatable="yes">Previous</property>
             </accessibility>
             <style>
-              <class name="osd"/>
-              <class name="featured-button-left"/>
+              <class name="circular"/>
+              <class name="flat"/>
+              <class name="image-button"/>
             </style>
-            <child>
-              <object class="GtkImage" id="previous_button_image">
-                <property name="icon-name">go-previous-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child type="overlay">
@@ -54,26 +50,22 @@
             <property name="use-underline">True</property>
             <property name="halign">end</property>
             <property name="valign">center</property>
-            <property name="width-request">56</property>
-            <property name="height-request">56</property>
+            <property name="width-request">64</property>
+            <property name="height-request">64</property>
             <property name="margin-top">9</property>
             <property name="margin-bottom">9</property>
             <property name="margin-start">9</property>
             <property name="margin-end">9</property>
+            <property name="icon_name">go-next-symbolic</property>
             <signal name="clicked" handler="next_button_clicked_cb"/>
             <accessibility>
               <property name="label" translatable="yes">Next</property>
             </accessibility>
             <style>
-              <class name="osd"/>
-              <class name="featured-button-right"/>
+              <class name="circular"/>
+              <class name="flat"/>
+              <class name="image-button"/>
             </style>
-            <child>
-              <object class="GtkImage" id="next_button_image">
-                <property name="icon_name">go-next-symbolic</property>
-                <property name="icon_size">large</property>
-              </object>
-            </child>
           </object>
         </child>
       </object>
