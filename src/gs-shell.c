@@ -573,6 +573,7 @@ stack_notify_visible_child_cb (GObject    *object,
 			g_signal_handlers_disconnect_by_func (dialog,
 							      modal_dialog_unmapped_cb,
 							      shell);
+			gtk_window_destroy (GTK_WINDOW (dialog));
 		}
 		g_ptr_array_set_size (shell->modal_dialogs, 0);
 	}
@@ -2614,7 +2615,7 @@ gs_shell_init (GsShell *shell)
 	gtk_search_bar_connect_entry (GTK_SEARCH_BAR (shell->search_bar), GTK_EDITABLE (shell->entry_search));
 
 	shell->back_entry_stack = g_queue_new ();
-	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_window_destroy);
+	shell->modal_dialogs = g_ptr_array_new ();
 }
 
 GsShell *
