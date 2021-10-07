@@ -270,6 +270,7 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 
 .category-tile.category-work {
+	padding: 1px; /* FIXME: work around https://gitlab.gnome.org/GNOME/gtk/-/issues/4324 */
 	box-shadow: inset 0 0 0 1px #efd185;
 	color: #1c71d8;
 	background-color:#fdf8d7;
