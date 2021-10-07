@@ -187,7 +187,6 @@ typedef enum {
 
 typedef struct
 {
-	GtkDialog *dialog;
 	gint response_id;
 	GMainLoop *loop;
 } RunInfo;
@@ -245,7 +244,6 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	g_autoptr(GString) title = NULL;
 
 	RunInfo run_info = {
-		NULL,
 		GTK_RESPONSE_NONE,
 		NULL,
 	};
