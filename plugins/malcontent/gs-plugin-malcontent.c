@@ -14,6 +14,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "gs-plugin-malcontent.h"
+
 /*
  * SECTION:
  * Adds the %GS_APP_QUIRK_PARENTAL_FILTER and
@@ -37,12 +39,16 @@
  * rather than substitutes for, filtering in user visible UIs.
  */
 
-struct GsPluginData {
+struct _GsPluginMalcontent {
+	GsPlugin	 parent;
+
 	GMutex		 mutex;  /* protects @app_filter **/
 	MctManager	*manager;  /* (owned) */
 	gulong		 manager_app_filter_changed_id;
 	MctAppFilter	*app_filter;  /* (mutex) (owned) (nullable) */
 };
+
+G_DEFINE_TYPE (GsPluginMalcontent, gs_plugin_malcontent, GS_TYPE_PLUGIN)
 
 /* Convert an #MctAppFilterOarsValue to an #AsContentRatingValue. This is
  * actually a trivial cast, since the types are defined the same; but throw in
@@ -153,7 +159,9 @@ app_is_parentally_blocklisted (GsApp *app, MctAppFilter *app_filter)
 }
 
 static gboolean
-app_set_parental_quirks (GsPlugin *plugin, GsApp *app, MctAppFilter *app_filter)
+app_set_parental_quirks (GsPluginMalcontent *self,
+                         GsApp              *app,
+                         MctAppFilter       *app_filter)
 {
 	/* note that both quirks can be set on an app at the same time, and they
 	 * have slightly different meanings */
@@ -183,28 +191,25 @@ app_set_parental_quirks (GsPlugin *plugin, GsApp *app, MctAppFilter *app_filter)
 }
 
 static MctAppFilter *
-query_app_filter (GsPlugin      *plugin,
-                  GCancellable  *cancellable,
-                  GError       **error)
+query_app_filter (GsPluginMalcontent  *self,
+                  GCancellable        *cancellable,
+                  GError             **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	return mct_manager_get_app_filter (priv->manager, getuid (),
+	return mct_manager_get_app_filter (self->manager, getuid (),
 					   MCT_GET_APP_FILTER_FLAGS_INTERACTIVE, cancellable,
 					   error);
 }
 
 static gboolean
-reload_app_filter (GsPlugin      *plugin,
-                   GCancellable  *cancellable,
-                   GError       **error)
+reload_app_filter (GsPluginMalcontent  *self,
+                   GCancellable        *cancellable,
+                   GError             **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(MctAppFilter) new_app_filter = NULL;
 	g_autoptr(MctAppFilter) old_app_filter = NULL;
 
 	/* Refresh the app filter. This blocks on a D-Bus request. */
-	new_app_filter = query_app_filter (plugin, cancellable, error);
+	new_app_filter = query_app_filter (self, cancellable, error);
 
 	/* on failure, keep the old app filter around since it might be more
 	 * useful than nothing */
@@ -212,9 +217,9 @@ reload_app_filter (GsPlugin      *plugin,
 		return FALSE;
 
 	{
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
-		old_app_filter = g_steal_pointer (&priv->app_filter);
-		priv->app_filter = g_steal_pointer (&new_app_filter);
+		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+		old_app_filter = g_steal_pointer (&self->app_filter);
+		self->app_filter = g_steal_pointer (&new_app_filter);
 	}
 
 	return TRUE;
@@ -225,7 +230,7 @@ app_filter_changed_cb (MctManager *manager,
                        guint64     user_id,
                        gpointer    user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (user_data);
 	g_autoptr(GError) error_local = NULL;
 
 	if (user_id != getuid ())
@@ -235,16 +240,16 @@ app_filter_changed_cb (MctManager *manager,
 	 * apps could be filtered from before. Reload everything to be
 	 * sure of re-filtering correctly. */
 	g_debug ("Reloading due to app filter changing for user %" G_GUINT64_FORMAT, user_id);
-	if (reload_app_filter (plugin, NULL, &error_local))
-		gs_plugin_reload (plugin);
+	if (reload_app_filter (self, NULL, &error_local))
+		gs_plugin_reload (GS_PLUGIN (self));
 	else
 		g_warning ("Failed to reload changed app filter: %s", error_local->message);
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_malcontent_init (GsPluginMalcontent *self)
 {
-	gs_plugin_alloc_data (plugin, sizeof (GsPluginData));
+	GsPlugin *plugin = GS_PLUGIN (self);
 
 	/* need application IDs and content ratings */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -257,33 +262,31 @@ gs_plugin_initialize (GsPlugin *plugin)
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GDBusConnection) system_bus = NULL;
 
 	system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
 	if (system_bus == NULL)
 		return FALSE;
 
-	priv->manager = mct_manager_new (system_bus);
-	priv->manager_app_filter_changed_id = g_signal_connect (priv->manager,
+	self->manager = mct_manager_new (system_bus);
+	self->manager_app_filter_changed_id = g_signal_connect (self->manager,
 								"app-filter-changed",
 								(GCallback) app_filter_changed_cb,
-								plugin);
-	priv->app_filter = query_app_filter (plugin, cancellable, error);
+								self);
+	self->app_filter = query_app_filter (self, cancellable, error);
 
-	return (priv->app_filter != NULL);
+	return (self->app_filter != NULL);
 }
 
 static gboolean
-refine_app_locked (GsPlugin             *plugin,
+refine_app_locked (GsPluginMalcontent   *self,
 		   GsApp                *app,
 		   GsPluginRefineFlags   flags,
 		   GCancellable         *cancellable,
 		   GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
 	/* not valid */
 	if (gs_app_get_id (app) == NULL)
 		return TRUE;
@@ -291,9 +294,9 @@ refine_app_locked (GsPlugin             *plugin,
 	/* Filter by various parental filters. The filter can’t be %NULL,
 	 * otherwise setup() would have failed and the plugin would have been
 	 * disabled. */
-	g_assert (priv->app_filter != NULL);
+	g_assert (self->app_filter != NULL);
 
-	app_set_parental_quirks (plugin, app, priv->app_filter);
+	app_set_parental_quirks (self, app, self->app_filter);
 
 	return TRUE;
 }
@@ -305,12 +308,12 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GCancellable         *cancellable,
 		  GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (plugin, app, flags, cancellable, error))
+		if (!refine_app_locked (self, app, flags, cancellable, error))
 			return FALSE;
 	}
 
@@ -323,19 +326,37 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	return reload_app_filter (plugin, cancellable, error);
+	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
+
+	return reload_app_filter (self, cancellable, error);
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_malcontent_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (object);
 
-	g_clear_pointer (&priv->app_filter, mct_app_filter_unref);
-	if (priv->manager != NULL && priv->manager_app_filter_changed_id != 0) {
-		g_signal_handler_disconnect (priv->manager,
-					     priv->manager_app_filter_changed_id);
-		priv->manager_app_filter_changed_id = 0;
+	g_clear_pointer (&self->app_filter, mct_app_filter_unref);
+	if (self->manager != NULL && self->manager_app_filter_changed_id != 0) {
+		g_signal_handler_disconnect (self->manager,
+					     self->manager_app_filter_changed_id);
+		self->manager_app_filter_changed_id = 0;
 	}
-	g_clear_object (&priv->manager);
+	g_clear_object (&self->manager);
+
+	G_OBJECT_CLASS (gs_plugin_malcontent_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_malcontent_class_init (GsPluginMalcontentClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_malcontent_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_MALCONTENT;
 }
