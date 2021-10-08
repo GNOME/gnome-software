@@ -10,11 +10,20 @@
 
 #include <gnome-software.h>
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+#include "gs-plugin-hardcoded-popular.h"
+
+struct _GsPluginHardcodedPopular
+{
+	GsPlugin	parent;
+};
+
+G_DEFINE_TYPE (GsPluginHardcodedPopular, gs_plugin_hardcoded_popular, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_hardcoded_popular_init (GsPluginHardcodedPopular *self)
 {
 	/* let appstream add applications first */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 gboolean
@@ -63,4 +72,15 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		gs_plugin_cache_add (plugin, apps[i], app);
 	}
 	return TRUE;
+}
+
+static void
+gs_plugin_hardcoded_popular_class_init (GsPluginHardcodedPopularClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_HARDCODED_POPULAR;
 }
