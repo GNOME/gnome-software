@@ -11,7 +11,11 @@
 
 #include <gnome-software.h>
 
-struct GsPluginData {
+#include "gs-plugin-repos.h"
+
+struct _GsPluginRepos {
+	GsPlugin	 parent;
+
 	GHashTable	*fns;		/* origin : filename */
 	GHashTable	*urls;		/* origin : url */
 	GFileMonitor	*monitor;
@@ -20,65 +24,77 @@ struct GsPluginData {
 	gboolean	 valid;
 };
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+G_DEFINE_TYPE (GsPluginRepos, gs_plugin_repos, GS_TYPE_PLUGIN)
 
-	g_mutex_init (&priv->mutex);
+static void
+gs_plugin_repos_init (GsPluginRepos *self)
+{
+	GsPlugin *plugin = GS_PLUGIN (self);
+
+	g_mutex_init (&self->mutex);
 
 	/* for debugging and the self tests */
-	priv->reposdir = g_strdup (g_getenv ("GS_SELF_TEST_REPOS_DIR"));
-	if (priv->reposdir == NULL)
-		priv->reposdir = g_strdup ("/etc/yum.repos.d");
+	self->reposdir = g_strdup (g_getenv ("GS_SELF_TEST_REPOS_DIR"));
+	if (self->reposdir == NULL)
+		self->reposdir = g_strdup ("/etc/yum.repos.d");
 
 	/* plugin only makes sense if this exists at startup */
-	if (!g_file_test (priv->reposdir, G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (self->reposdir, G_FILE_TEST_EXISTS)) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
 
 	/* we also watch this for changes */
-	priv->fns = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-	priv->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	self->fns = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	self->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	/* need application IDs */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_repos_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_free (priv->reposdir);
-	if (priv->fns != NULL)
-		g_hash_table_unref (priv->fns);
-	if (priv->urls != NULL)
-		g_hash_table_unref (priv->urls);
-	if (priv->monitor != NULL)
-		g_object_unref (priv->monitor);
-	g_mutex_clear (&priv->mutex);
+	GsPluginRepos *self = GS_PLUGIN_REPOS (object);
+
+	g_clear_pointer (&self->reposdir, g_free);
+	g_clear_pointer (&self->fns, g_hash_table_unref);
+	g_clear_pointer (&self->urls, g_hash_table_unref);
+	g_clear_object (&self->monitor);
+
+	G_OBJECT_CLASS (gs_plugin_repos_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_repos_finalize (GObject *object)
+{
+	GsPluginRepos *self = GS_PLUGIN_REPOS (object);
+
+	g_mutex_clear (&self->mutex);
+
+	G_OBJECT_CLASS (gs_plugin_repos_parent_class)->finalize (object);
 }
 
 /* mutex must be held */
 static gboolean
-gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gs_plugin_repos_setup (GsPluginRepos  *self,
+                       GCancellable   *cancellable,
+                       GError        **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GDir) dir = NULL;
 	const gchar *fn;
 
 	/* already valid */
-	if (priv->valid)
+	if (self->valid)
 		return TRUE;
 
 	/* clear existing */
-	g_hash_table_remove_all (priv->fns);
-	g_hash_table_remove_all (priv->urls);
+	g_hash_table_remove_all (self->fns);
+	g_hash_table_remove_all (self->urls);
 
 	/* search all files */
-	dir = g_dir_open (priv->reposdir, 0, error);
+	dir = g_dir_open (self->reposdir, 0, error);
 	if (dir == NULL) {
 		gs_utils_error_convert_gio (error);
 		return FALSE;
@@ -94,7 +110,7 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 			continue;
 
 		/* load file */
-		filename = g_build_filename (priv->reposdir, fn, NULL);
+		filename = g_build_filename (self->reposdir, fn, NULL);
 		if (!g_key_file_load_from_file (kf, filename,
 						G_KEY_FILE_NONE,
 						error)) {
@@ -107,13 +123,13 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 		for (i = 0; groups[i] != NULL; i++) {
 			g_autofree gchar *tmp = NULL;
 
-			g_hash_table_insert (priv->fns,
+			g_hash_table_insert (self->fns,
 			                     g_strdup (groups[i]),
 			                     g_strdup (filename));
 
 			tmp = g_key_file_get_string (kf, groups[i], "baseurl", NULL);
 			if (tmp != NULL) {
-				g_hash_table_insert (priv->urls,
+				g_hash_table_insert (self->urls,
 						     g_strdup (groups[i]),
 						     g_strdup (tmp));
 				continue;
@@ -121,7 +137,7 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 
 			tmp = g_key_file_get_string (kf, groups[i], "metalink", NULL);
 			if (tmp != NULL) {
-				g_hash_table_insert (priv->urls,
+				g_hash_table_insert (self->urls,
 						     g_strdup (groups[i]),
 						     g_strdup (tmp));
 				continue;
@@ -130,49 +146,49 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 	}
 
 	/* success */
-	priv->valid = TRUE;
+	self->valid = TRUE;
 	return TRUE;
 }
 
 static void
-gs_plugin_repos_changed_cb (GFileMonitor *monitor,
-			    GFile *file,
-			    GFile *other_file,
-			    GFileMonitorEvent event_type,
-			    GsPlugin *plugin)
+gs_plugin_repos_changed_cb (GFileMonitor      *monitor,
+                            GFile             *file,
+                            GFile             *other_file,
+                            GFileMonitorEvent  event_type,
+                            gpointer           user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	priv->valid = FALSE;
+	GsPluginRepos *self = GS_PLUGIN_REPOS (user_data);
+
+	self->valid = FALSE;
 }
 
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GFile) file = g_file_new_for_path (priv->reposdir);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
+	g_autoptr(GFile) file = g_file_new_for_path (self->reposdir);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	/* watch for changes */
-	priv->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, error);
-	if (priv->monitor == NULL) {
+	self->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, error);
+	if (self->monitor == NULL) {
 		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
-	g_signal_connect (priv->monitor, "changed",
-			  G_CALLBACK (gs_plugin_repos_changed_cb), plugin);
+	g_signal_connect (self->monitor, "changed",
+			  G_CALLBACK (gs_plugin_repos_changed_cb), self);
 
 	/* unconditionally at startup */
-	return gs_plugin_repos_setup (plugin, cancellable, error);
+	return gs_plugin_repos_setup (self, cancellable, error);
 }
 
 static gboolean
-refine_app_locked (GsPlugin             *plugin,
+refine_app_locked (GsPluginRepos        *self,
 		   GsApp                *app,
 		   GsPluginRefineFlags   flags,
 		   GCancellable         *cancellable,
 		   GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 
 	/* not required */
@@ -186,7 +202,7 @@ refine_app_locked (GsPlugin             *plugin,
 		return TRUE;
 
 	/* ensure valid */
-	if (!gs_plugin_repos_setup (plugin, cancellable, error))
+	if (!gs_plugin_repos_setup (self, cancellable, error))
 		return FALSE;
 
 	/* find hostname */
@@ -194,14 +210,14 @@ refine_app_locked (GsPlugin             *plugin,
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (priv->urls, gs_app_get_id (app));
+		tmp = g_hash_table_lookup (self->urls, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tmp);
 		break;
 	default:
 		if (gs_app_get_origin (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (priv->urls, gs_app_get_origin (app));
+		tmp = g_hash_table_lookup (self->urls, gs_app_get_origin (app));
 		if (tmp != NULL)
 			gs_app_set_origin_hostname (app, tmp);
 		else {
@@ -213,7 +229,7 @@ refine_app_locked (GsPlugin             *plugin,
 
 			/* Some repos, such as rpmfusion, can have set the name with a distribution
 			   number in the appstream file, thus check those specifically */
-			g_hash_table_iter_init (&iter, priv->urls);
+			g_hash_table_iter_init (&iter, self->urls);
 			while (g_hash_table_iter_next (&iter, &key, &value)) {
 				if (g_str_has_prefix (origin, key)) {
 					const gchar *rest = origin + strlen (key);
@@ -234,7 +250,7 @@ refine_app_locked (GsPlugin             *plugin,
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (priv->fns, gs_app_get_id (app));
+		tmp = g_hash_table_lookup (self->fns, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_metadata (app, "repos::repo-filename", tmp);
 		break;
@@ -252,8 +268,8 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GCancellable         *cancellable,
 		  GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
@@ -261,9 +277,24 @@ gs_plugin_refine (GsPlugin             *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (plugin, app, flags, cancellable, error))
+		if (!refine_app_locked (self, app, flags, cancellable, error))
 			return FALSE;
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_repos_class_init (GsPluginReposClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_repos_dispose;
+	object_class->finalize = gs_plugin_repos_finalize;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_REPOS;
 }
