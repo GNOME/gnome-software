@@ -11,12 +11,16 @@
 
 #include <gnome-software.h>
 
+#include "gs-plugin-dummy.h"
+
 /*
  * SECTION:
  * Provides some dummy data that is useful in self test programs.
  */
 
-struct GsPluginData {
+struct _GsPluginDummy {
+	GsPlugin		 parent;
+
 	guint			 quirk_id;
 	guint			 allow_updates_id;
 	gboolean		 allow_updates_inhibit;
@@ -25,21 +29,24 @@ struct GsPluginData {
 	GHashTable		*available_apps;	/* id:1 */
 };
 
+G_DEFINE_TYPE (GsPluginDummy, gs_plugin_dummy, GS_TYPE_PLUGIN)
+
 /* just flip-flop this every few seconds */
 static gboolean
 gs_plugin_dummy_allow_updates_cb (gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	gs_plugin_set_allow_updates (plugin, priv->allow_updates_inhibit);
-	priv->allow_updates_inhibit = !priv->allow_updates_inhibit;
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (user_data);
+
+	gs_plugin_set_allow_updates (GS_PLUGIN (self), self->allow_updates_inhibit);
+	self->allow_updates_inhibit = !self->allow_updates_inhibit;
 	return G_SOURCE_CONTINUE;
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_dummy_init (GsPluginDummy *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPlugin *plugin = GS_PLUGIN (self);
+
 	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
 		g_debug ("disabling '%s' as not in self test",
 			 gs_plugin_get_name (plugin));
@@ -49,33 +56,33 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* toggle this */
 	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
-		priv->allow_updates_id = g_timeout_add_seconds (10,
+		self->allow_updates_id = g_timeout_add_seconds (10,
 			gs_plugin_dummy_allow_updates_cb, plugin);
 	}
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_origin_hostname (priv->cached_origin, "http://www.bbc.co.uk/");
-	gs_app_set_management_plugin (priv->cached_origin, gs_plugin_get_name (plugin));
+	self->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	gs_app_set_kind (self->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
+	gs_app_set_origin_hostname (self->cached_origin, "http://www.bbc.co.uk/");
+	gs_app_set_management_plugin (self->cached_origin, gs_plugin_get_name (plugin));
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
-	gs_plugin_cache_add (plugin, NULL, priv->cached_origin);
+	gs_plugin_cache_add (plugin, NULL, self->cached_origin);
 
 	/* keep track of what apps are installed */
-	priv->installed_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	priv->available_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	g_hash_table_insert (priv->available_apps,
+	self->installed_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	self->available_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	g_hash_table_insert (self->available_apps,
 			     g_strdup ("chiron.desktop"),
 			     GUINT_TO_POINTER (1));
-	g_hash_table_insert (priv->available_apps,
+	g_hash_table_insert (self->available_apps,
 			     g_strdup ("zeus.desktop"),
 			     GUINT_TO_POINTER (1));
-	g_hash_table_insert (priv->available_apps,
+	g_hash_table_insert (self->available_apps,
 			     g_strdup ("zeus-spell.addon"),
 			     GUINT_TO_POINTER (1));
-	g_hash_table_insert (priv->available_apps,
+	g_hash_table_insert (self->available_apps,
 			     g_strdup ("com.hughski.ColorHug2.driver"),
 			     GUINT_TO_POINTER (1));
 
@@ -84,18 +91,17 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_dummy_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->installed_apps != NULL)
-		g_hash_table_unref (priv->installed_apps);
-	if (priv->available_apps != NULL)
-		g_hash_table_unref (priv->available_apps);
-	if (priv->quirk_id > 0)
-		g_source_remove (priv->quirk_id);
-	if (priv->cached_origin != NULL)
-		g_object_unref (priv->cached_origin);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (object);
+
+	g_clear_pointer (&self->installed_apps, g_hash_table_unref);
+	g_clear_pointer (&self->available_apps, g_hash_table_unref);
+	g_clear_handle_id (&self->quirk_id, g_source_remove);
+	g_clear_object (&self->cached_origin);
+
+	G_OBJECT_CLASS (gs_plugin_dummy_parent_class)->dispose (object);
 }
 
 void
@@ -274,7 +280,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GIcon) ic = NULL;
 
@@ -301,7 +307,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	}
 
 	/* set up a timeout to emulate getting a GFileMonitor callback */
-	priv->quirk_id =
+	self->quirk_id =
 		g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
 
 	/* use a generic stock icon */
@@ -494,7 +500,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -512,8 +518,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* keep track */
-	g_hash_table_remove (priv->installed_apps, gs_app_get_id (app));
-	g_hash_table_insert (priv->available_apps,
+	g_hash_table_remove (self->installed_apps, gs_app_get_id (app));
+	g_hash_table_insert (self->available_apps,
 			     g_strdup (gs_app_get_id (app)),
 			     GUINT_TO_POINTER (1));
 	return TRUE;
@@ -525,7 +531,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -544,10 +550,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* keep track */
-	g_hash_table_insert (priv->installed_apps,
+	g_hash_table_insert (self->installed_apps,
 			     g_strdup (gs_app_get_id (app)),
 			     GUINT_TO_POINTER (1));
-	g_hash_table_remove (priv->available_apps, gs_app_get_id (app));
+	g_hash_table_remove (self->available_apps, gs_app_get_id (app));
 
 	return TRUE;
 }
@@ -558,7 +564,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -571,7 +577,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "no network connection is available");
-		gs_utils_error_add_origin_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;
 	}
 
@@ -587,24 +593,22 @@ gs_plugin_update_app (GsPlugin *plugin,
 }
 
 static gboolean
-refine_app (GsPlugin *plugin,
-	    GsApp *app,
-	    GsPluginRefineFlags flags,
-	    GCancellable *cancellable,
-	    GError **error)
+refine_app (GsPluginDummy        *self,
+            GsApp                *app,
+            GsPluginRefineFlags   flags,
+            GCancellable         *cancellable,
+            GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
 	/* make the local system EOL */
 	if (gs_app_get_metadata_item (app, "GnomeSoftware::CpeName") != NULL)
 		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 
 	/* state */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
-		if (g_hash_table_lookup (priv->installed_apps,
+		if (g_hash_table_lookup (self->installed_apps,
 					 gs_app_get_id (app)) != NULL)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		if (g_hash_table_lookup (priv->available_apps,
+		if (g_hash_table_lookup (self->available_apps,
 					 gs_app_get_id (app)) != NULL)
 			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	}
@@ -713,10 +717,12 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 
-		if (!refine_app (plugin, app, flags, cancellable, error))
+		if (!refine_app (self, app, flags, cancellable, error))
 			return FALSE;
 	}
 
@@ -870,4 +876,18 @@ gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 			 GCancellable *cancellable, GError **error)
 {
 	return TRUE;
+}
+
+static void
+gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_dummy_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_DUMMY;
 }
