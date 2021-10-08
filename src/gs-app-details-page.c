@@ -47,15 +47,11 @@ struct _GsAppDetailsPage
 	GtkBox		 parent_instance;
 
 	GtkWidget	*back_button;
-	GtkWidget	*box_header;
 	GtkWidget	*header_bar;
-	GtkWidget	*image_icon;
 	GtkWidget	*label_details;
-	GtkWidget	*label_name;
-	GtkWidget	*label_summary;
-	GtkWidget	*permissions_section_box;
-	GtkWidget	*permissions_section_content;
-	GtkWidget	*scrolledwindow_details;
+	GtkWidget	*permissions_section;
+	GtkWidget	*permissions_section_list;
+	GtkWidget	*status_page;
 	AdwWindowTitle	*window_title;
 
 	GsApp		*app;  /* (owned) (nullable) */
@@ -86,16 +82,15 @@ static const struct {
 static void
 populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissions)
 {
-	gs_widget_remove_all (page->permissions_section_content, (GsRemoveFunc) gtk_box_remove);
+	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-		GtkWidget *row, *image, *box, *label;
+		GtkWidget *row, *image;
 
 		if ((permissions & permission_display_data[i].permission) == 0)
 			continue;
 
-		row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-		gtk_widget_show (row);
+		row = adw_action_row_new ();
 		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
 			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
 		}
@@ -104,25 +99,11 @@ populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissio
 		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
 			gtk_widget_set_opacity (image, 0);
 
-		gtk_widget_show (image);
-		gtk_box_append (GTK_BOX (row), image);
+		adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
+		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _(permission_display_data[i].title));
+		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _(permission_display_data[i].subtitle));
 
-		box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-		gtk_widget_show (box);
-		gtk_box_append (GTK_BOX (row), box);
-
-		label = gtk_label_new (_(permission_display_data[i].title));
-		gtk_label_set_xalign (GTK_LABEL (label), 0);
-		gtk_widget_show (label);
-		gtk_box_append (GTK_BOX (row), label);
-
-		label = gtk_label_new (_(permission_display_data[i].subtitle));
-		gtk_label_set_xalign (GTK_LABEL (label), 0);
-		gtk_style_context_add_class (gtk_widget_get_style_context (label), "dim-label");
-		gtk_widget_show (label);
-		gtk_box_append (GTK_BOX (row), label);
-
-		gtk_box_append (GTK_BOX (page->permissions_section_content), row);
+		gtk_list_box_append (GTK_LIST_BOX (page->permissions_section_list), row);
 	}
 }
 
@@ -133,6 +114,10 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	g_autoptr(GIcon) icon = NULL;
 	guint icon_size;
 	const gchar *update_details;
+#if ADW_CHECK_VERSION(1, 0, 1)
+	GdkDisplay *display;
+	g_autoptr (GtkIconPaintable) paintable = NULL;
+#endif
 
 	/* FIXME support app == NULL */
 
@@ -163,7 +148,6 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	}
 
 	/* set update header */
-	gtk_widget_set_visible (page->box_header, kind == AS_COMPONENT_KIND_DESKTOP_APP);
 	update_details = gs_app_get_update_details (app);
 	if (update_details == NULL) {
 		/* TRANSLATORS: this is where the packager did not write
@@ -171,39 +155,56 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		update_details = _("No update description available.");
 	}
 	gtk_label_set_label (GTK_LABEL (page->label_details), update_details);
-	gtk_label_set_label (GTK_LABEL (page->label_name), gs_app_get_name (app));
-	gtk_label_set_label (GTK_LABEL (page->label_summary), gs_app_get_summary (app));
+	adw_status_page_set_title (ADW_STATUS_PAGE (page->status_page), gs_app_get_name (app));
+	adw_status_page_set_description (ADW_STATUS_PAGE (page->status_page), gs_app_get_summary (app));
 
 	/* set the icon; fall back to 64px if 96px isn’t available, which sometimes
 	 * happens at 2× scale factor (hi-DPI) */
 	icon_size = 96;
 	icon = gs_app_get_icon_for_size (app,
 					 icon_size,
-					 gtk_widget_get_scale_factor (page->image_icon),
+					 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
 					 NULL);
 	if (icon == NULL) {
 		icon_size = 64;
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
-						 gtk_widget_get_scale_factor (page->image_icon),
+						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
 						 NULL);
 	}
 	if (icon == NULL) {
 		icon_size = 96;
 		icon = gs_app_get_icon_for_size (app,
 						 icon_size,
-						 gtk_widget_get_scale_factor (page->image_icon),
+						 gtk_widget_get_scale_factor (GTK_WIDGET (page)),
 						 "system-component-application");
 	}
 
-	gtk_image_set_pixel_size (GTK_IMAGE (page->image_icon), icon_size);
-	gtk_image_set_from_gicon (GTK_IMAGE (page->image_icon), icon);
+#if ADW_CHECK_VERSION(1, 0, 1)
+	display = gdk_display_get_default ();
+	paintable = gtk_icon_theme_lookup_by_gicon (gtk_icon_theme_get_for_display (display),
+						    icon,
+						    icon_size,
+						    gtk_widget_get_scale_factor (GTK_WIDGET (page)),
+						    gtk_widget_get_direction (GTK_WIDGET (page)),
+						    GTK_ICON_LOOKUP_FORCE_REGULAR);
+	adw_status_page_set_paintable (ADW_STATUS_PAGE (page->status_page), GDK_PAINTABLE (paintable));
+#else
+	if (G_IS_THEMED_ICON (icon)) {
+		const gchar *const *names = g_themed_icon_get_names (G_THEMED_ICON (icon));
+
+		adw_status_page_set_icon_name (ADW_STATUS_PAGE (page->status_page),
+					       names ? names[0] : NULL);
+	} else {
+		adw_status_page_set_icon_name (ADW_STATUS_PAGE (page->status_page), NULL);
+	}
+#endif
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
-		gtk_widget_show (page->permissions_section_box);
+		gtk_widget_show (page->permissions_section);
 		populate_permissions_section (page, gs_app_get_update_permissions (app));
 	} else {
-		gtk_widget_hide (page->permissions_section_box);
+		gtk_widget_hide (page->permissions_section);
 	}
 }
 
@@ -402,15 +403,11 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-details-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, back_button);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, box_header);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, header_bar);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, image_icon);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_details);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_name);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, label_summary);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_box);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_content);
-	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, permissions_section_list);
+	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, status_page);
 	gtk_widget_class_bind_template_child (widget_class, GsAppDetailsPage, window_title);
 	gtk_widget_class_bind_template_callback (widget_class, back_clicked_cb);
 }

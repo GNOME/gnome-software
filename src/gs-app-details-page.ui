@@ -29,104 +29,63 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="box7">
-        <property name="margin_start">12</property>
-        <property name="margin_end">12</property>
-        <property name="margin_top">12</property>
-        <property name="margin_bottom">18</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">9</property>
+      <object class="AdwStatusPage" id="status_page">
+        <property name="icon_name">system-component-application</property>
+        <property name="title">Inkscape</property>
+        <property name="description">Vector based drawing program</property>
+        <property name="vexpand">True</property>
+        <style>
+          <class name="compact"/>
+        </style>
         <child>
-          <object class="GtkBox" id="box_header">
-            <property name="spacing">9</property>
+          <object class="AdwClamp">
             <child>
-              <object class="GtkImage" id="image_icon">
-                <property name="pixel_size">96</property>
-                <property name="icon_name">system-component-application</property>
-                <property name="icon-size">normal</property>
-                <style>
-                  <class name="icon-dropshadow"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="box9">
+              <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="spacing">3</property>
                 <child>
-                  <object class="GtkLabel" id="label_name">
-                    <property name="xalign">0</property>
-                    <property name="label">Inkscape</property>
-                    <property name="selectable">True</property>
-                    <property name="wrap">True</property>
-                    <property name="max_width_chars">50</property>
-                    <property name="width_chars">50</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="scale" value="1.3999999999999999"/>
-                    </attributes>
+                  <object class="AdwPreferencesGroup" id="permissions_section">
+                    <property name="title" translatable="yes">Requires additional permissions</property>
+                    <!-- We can't remove children from a AdwPreferencesGroup
+                         without knowing them beforehand, so let's simply
+                         include a GtkListBox and remove its children. -->
+                    <child>
+                      <object class="GtkListBox" id="permissions_section_list">
+                        <property name="selection-mode">none</property>
+                        <style>
+                          <class name="content"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label_summary">
-                    <property name="xalign">0</property>
-                    <property name="label">Vector based drawing program</property>
-                    <property name="selectable">True</property>
-                    <property name="wrap">True</property>
-                    <property name="max_width_chars">50</property>
-                    <property name="width_chars">50</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox" id="permissions_section_box">
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
-            <property name="margin_top">12</property>
-            <property name="margin_bottom">18</property>
-            <child>
-              <object class="GtkLabel" id="permissions_section_title">
-                <property name="xalign">0</property>
-                <property name="halign">start</property>
-                <property name="margin_bottom">6</property>
-                <property name="label" translatable="yes">Requires additional permissions</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                </attributes>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="permissions_section_content">
-                <property name="orientation">vertical</property>
-                <property name="spacing">12</property>
-                <property name="margin-start">18</property>
-                <property name="margin-end">18</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkScrolledWindow" id="scrolledwindow_details">
-            <property name="can_focus">True</property>
-            <property name="vexpand">True</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="vscrollbar_policy">automatic</property>
-            <child>
-              <object class="GtkLabel" id="label_details">
-                <property name="xalign">0</property>
-                <property name="yalign">0</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
-                <property name="margin-start">6</property>
-                <property name="margin-end">6</property>
-                <property name="label">New in kmod 14-1
+                  <object class="GtkListBox">
+                    <property name="selection-mode">none</property>
+                    <style>
+                      <class name="content"/>
+                    </style>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="activatable">False</property>
+                        <child>
+                          <object class="GtkLabel" id="label_details">
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                            <property name="margin-top">18</property>
+                            <property name="margin-bottom">18</property>
+                            <property name="margin-start">18</property>
+                            <property name="margin-end">18</property>
+                            <property name="label">New in kmod 14-1
 * Moo
 * bar</property>
-                <property name="wrap">True</property>
-                <property name="selectable">True</property>
+                            <property name="wrap">True</property>
+                            <property name="selectable">True</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
