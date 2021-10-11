@@ -56,7 +56,7 @@ gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const g
 	g_string_append (str, "Name=org.test.Chiron\n");
 	g_string_append (str, "Branch=master\n");
 	g_string_append_printf (str, "Url=%s\n", url);
-	g_string_append (str, "IsRuntime=False\n");
+	g_string_append (str, "IsRuntime=false\n");
 	g_string_append (str, "Comment=Single line synopsis\n");
 	g_string_append (str, "Description=A Testing Application\n");
 	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
