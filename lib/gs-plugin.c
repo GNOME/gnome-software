@@ -52,7 +52,6 @@ typedef struct
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
-	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
@@ -220,7 +219,6 @@ gs_plugin_finalize (GObject *object)
 		g_source_remove (priv->timer_id);
 	g_free (priv->name);
 	g_free (priv->appstream_id);
-	g_free (priv->data);
 	g_free (priv->language);
 	if (priv->soup_session != NULL)
 		g_object_unref (priv->soup_session);
@@ -238,63 +236,6 @@ gs_plugin_finalize (GObject *object)
 #endif
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
-}
-
-/**
- * gs_plugin_get_data:
- * @plugin: a #GsPlugin
- *
- * Gets the private data for the plugin if gs_plugin_alloc_data() has
- * been called.
- *
- * Returns: the #GsPluginData, or %NULL
- *
- * Since: 3.22
- **/
-GsPluginData *
-gs_plugin_get_data (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_assert (priv->data != NULL);
-	return priv->data;
-}
-
-/**
- * gs_plugin_alloc_data:
- * @plugin: a #GsPlugin
- * @sz: the size of data to allocate, e.g. `sizeof(FooPluginPrivate)`
- *
- * Allocates a private data area for the plugin which can be retrieved
- * using gs_plugin_get_data().
- * This is normally called in gs_plugin_initialize() and the data should
- * not be manually freed.
- *
- * Returns: the #GsPluginData, cleared to NUL bytes
- *
- * Since: 3.22
- **/
-GsPluginData *
-gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_assert (priv->data == NULL);
-	priv->data = g_malloc0 (sz);
-	return priv->data;
-}
-
-/**
- * gs_plugin_clear_data:
- * @plugin: a #GsPlugin
- *
- * Clears and resets the private data. Only run this from the self tests.
- **/
-void
-gs_plugin_clear_data (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	if (priv->data == NULL)
-		return;
-	g_clear_pointer (&priv->data, g_free);
 }
 
 /**
