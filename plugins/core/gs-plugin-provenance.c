@@ -45,14 +45,11 @@ static void
 gs_plugin_provenance_add_quirks (GsApp *app,
 				 guint quirks)
 {
-	GsAppQuirk array[] = {
-		GS_APP_QUIRK_PROVENANCE,
-		GS_APP_QUIRK_COMPULSORY
-	};
-	for (guint ii = 0; ii < G_N_ELEMENTS (array); ii++) {
-		if ((quirks & array[ii]) != 0)
-			gs_app_add_quirk (app, array[ii]);
-	}
+	if ((quirks & GS_APP_QUIRK_PROVENANCE) != 0)
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
+	if ((quirks & GS_APP_QUIRK_COMPULSORY) != 0 &&
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
+		gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 }
 
 static gchar **
