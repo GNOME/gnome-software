@@ -3377,6 +3377,33 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	return g_steal_pointer (&app);
 }
 
+static gboolean
+_txn_abort_on_ready (FlatpakTransaction *transaction)
+{
+	return FALSE;
+}
+
+static gboolean
+_txn_add_new_remote (FlatpakTransaction *transaction,
+		     FlatpakTransactionRemoteReason reason,
+		     const char *from_id,
+		     const char *remote_name,
+		     const char *url)
+{
+	return TRUE;
+}
+
+static int
+_txn_choose_remote_for_ref (FlatpakTransaction *transaction,
+			    const char *for_ref,
+			    const char *runtime_ref,
+			    const char * const *remotes)
+{
+	/* This transaction is just for displaying the app not installing it so
+	 * this choice shouldn't matter */
+	return 0;
+}
+
 GsApp *
 gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GFile *file,
@@ -3386,9 +3413,16 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	GsApp *runtime;
 	const gchar *const *locales = g_get_language_names ();
 	const gchar *remote_name;
+	gboolean is_runtime, success;
 	gsize len = 0;
+	GList *txn_ops;
+#if !FLATPAK_CHECK_VERSION(1,13,1)
+	guint64 app_installed_size = 0, app_download_size = 0;
+#endif
 	g_autofree gchar *contents = NULL;
-	g_autoptr(FlatpakRemoteRef) xref = NULL;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(FlatpakRef) parsed_ref = NULL;
+	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autoptr(GBytes) ref_file_data = NULL;
 	g_autoptr(GError) error_local = NULL;
@@ -3403,6 +3437,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autofree gchar *ref_icon = NULL;
 	g_autofree gchar *ref_title = NULL;
 	g_autofree gchar *ref_name = NULL;
+	g_autofree gchar *ref_branch = NULL;
 
 	/* add current locales */
 	for (guint i = 0; locales[i] != NULL; i++)
@@ -3438,35 +3473,121 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		}
 	}
 
-	/* get name */
+	/* get name, branch, kind */
 	ref_name = g_key_file_get_string (kf, "Flatpak Ref", "Name", error);
 	if (ref_name == NULL) {
 		gs_utils_error_convert_gio (error);
 		return NULL;
 	}
+	ref_branch = g_key_file_get_string (kf, "Flatpak Ref", "Branch", error);
+	if (ref_branch == NULL) {
+		gs_utils_error_convert_gio (error);
+		return NULL;
+	}
+	is_runtime = g_key_file_get_boolean (kf, "Flatpak Ref", "IsRuntime", error);
+	if (error != NULL && *error != NULL) {
+		gs_utils_error_convert_gio (error);
+		return NULL;
+	}
 
-	/* install the remote, but not the app */
+	/* Add the remote (to the temporary installation) but abort the
+	 * transaction before it installs the app
+	 */
+	transaction = flatpak_transaction_new_for_installation (self->installation, cancellable, error);
+	if (transaction == NULL) {
+		gs_flatpak_error_convert (error);
+		return NULL;
+	}
+	flatpak_transaction_set_no_interaction (transaction, TRUE);
+	g_signal_connect (transaction, "ready-pre-auth", G_CALLBACK (_txn_abort_on_ready), NULL);
+	g_signal_connect (transaction, "add-new-remote", G_CALLBACK (_txn_add_new_remote), NULL);
+	g_signal_connect (transaction, "choose-remote-for-ref", G_CALLBACK (_txn_choose_remote_for_ref), NULL);
 	ref_file_data = g_bytes_new (contents, len);
-	xref = flatpak_installation_install_ref_file (self->installation,
-						      ref_file_data,
-						      cancellable,
-						      error);
-	if (xref == NULL) {
+	if (!flatpak_transaction_add_install_flatpakref (transaction, ref_file_data, error)) {
+		gs_flatpak_error_convert (error);
+		return NULL;
+	}
+	success = flatpak_transaction_run (transaction, cancellable, &error_local);
+	g_assert (!success); /* aborted in _txn_abort_on_ready */
+
+	if (!g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ALREADY_INSTALLED) &&
+	    !g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ABORTED)) {
+		g_propagate_error (error, g_steal_pointer (&error_local));
 		gs_flatpak_error_convert (error);
 		return NULL;
 	}
 
-	/* load metadata */
-	app = gs_flatpak_create_app (self, NULL /* origin */, FLATPAK_REF (xref), NULL, cancellable);
-	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
-		if (gs_flatpak_app_get_ref_name (app) == NULL)
-			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
+	/* handle the already installed case */
+	if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ALREADY_INSTALLED)) {
+		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+		installed_ref = flatpak_installation_get_installed_ref (self->installation,
+									is_runtime ? FLATPAK_REF_KIND_RUNTIME : FLATPAK_REF_KIND_APP,
+									ref_name,
+									NULL, /* arch */
+									ref_branch,
+									cancellable,
+									error);
+		if (installed_ref == NULL) {
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
+		app = gs_flatpak_create_installed (self, installed_ref, NULL, cancellable);
 		return g_steal_pointer (&app);
 	}
+
+	g_clear_error (&error_local);
+
+	/* find the operation for the flatpakref */
+	txn_ops = flatpak_transaction_get_operations (transaction);
+	for (GList *l = txn_ops; l != NULL; l = l->next) {
+		FlatpakTransactionOperation *op = l->data;
+		const char *op_ref = flatpak_transaction_operation_get_ref (op);
+		parsed_ref = flatpak_ref_parse (op_ref, error);
+		if (parsed_ref == NULL) {
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
+		if (g_strcmp0 (flatpak_ref_get_name (parsed_ref), ref_name) != 0) {
+			g_clear_object (&parsed_ref);
+		} else {
+			remote_name = flatpak_transaction_operation_get_remote (op);
+			g_debug ("auto-created remote name: %s", remote_name);
+#if !FLATPAK_CHECK_VERSION(1,13,1)
+			app_download_size = flatpak_transaction_operation_get_download_size (op);
+			app_installed_size = flatpak_transaction_operation_get_installed_size (op);
+#endif
+			break;
+		}
+	}
+	g_assert (parsed_ref != NULL);
+	g_list_free_full (g_steal_pointer (&txn_ops), g_object_unref);
+
+#if FLATPAK_CHECK_VERSION(1,13,1)
+	/* fetch remote ref */
+	remote_ref = flatpak_installation_fetch_remote_ref_sync (self->installation,
+							   remote_name,
+							   flatpak_ref_get_kind (parsed_ref),
+							   flatpak_ref_get_name (parsed_ref),
+							   flatpak_ref_get_arch (parsed_ref),
+							   flatpak_ref_get_branch (parsed_ref),
+							   cancellable,
+							   error);
+	if (remote_ref == NULL) {
+		gs_flatpak_error_convert (error);
+		return NULL;
+	}
+	app = gs_flatpak_create_app (self, remote_name, FLATPAK_REF (remote_ref), NULL, cancellable);
+#else
+	app = gs_flatpak_create_app (self, remote_name, parsed_ref, NULL, cancellable);
+	if (app_download_size != 0)
+		gs_app_set_size_download (app, app_download_size);
+	if (app_installed_size != 0)
+		gs_app_set_size_installed (app, app_installed_size);
+#endif
+
 	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
-	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 
 	/* use the data from the flatpakref file as a fallback */
 	ref_title = g_key_file_get_string (kf, "Flatpak Ref", "Title", NULL);
@@ -3490,8 +3611,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	}
 
 	/* set the origin data */
-	remote_name = flatpak_remote_ref_get_remote_name (xref);
-	g_debug ("auto-created remote name: %s", remote_name);
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   remote_name,
 							   cancellable,
@@ -3509,7 +3628,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			     flatpak_remote_get_name (xremote));
 		return NULL;
 	}
-	gs_flatpak_set_app_origin (self, app, remote_name, xremote, cancellable);
 	gs_app_set_origin_hostname (app, origin_url);
 
 	/* get the new appstream data (nonfatal for failure) */
