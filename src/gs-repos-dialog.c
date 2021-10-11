@@ -539,7 +539,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		}
 
 		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
-					  ADW_PREFERENCES_GROUP (widget));
+					  ADW_PREFERENCES_GROUP (section));
 	}
 }
 
