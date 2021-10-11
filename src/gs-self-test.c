@@ -43,15 +43,7 @@ gs_css_func (void)
 int
 main (int argc, char **argv)
 {
-	g_test_init (&argc, &argv,
-#if GLIB_CHECK_VERSION(2, 60, 0)
-		     G_TEST_OPTION_ISOLATE_DIRS,
-#endif
-		     NULL);
-	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
-
-	/* only critical and error are fatal */
-	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
+	gs_test_init (&argc, &argv);
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/src/css", gs_css_func);

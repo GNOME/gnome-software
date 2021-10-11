@@ -10,6 +10,37 @@
 
 #include "gs-test.h"
 
+/**
+ * gs_test_init:
+ *
+ * Initializes the environment with the common settings for the test,
+ * as a replacement for the g_test_init(), which is called as well.
+ *
+ * Since: 42
+ **/
+void
+gs_test_init (gint *pargc,
+	      gchar ***pargv)
+{
+	g_autoptr(GSettings) settings = NULL;
+
+	g_setenv ("GSETTINGS_BACKEND", "memory", FALSE);
+	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+
+	/* To not download ODRS data during the test */
+	settings = g_settings_new ("org.gnome.software");
+	g_settings_set_string (settings, "review-server", "");
+
+	g_test_init (pargc, pargv,
+#if GLIB_CHECK_VERSION(2, 60, 0)
+		     G_TEST_OPTION_ISOLATE_DIRS,
+#endif
+		     NULL);
+
+	/* only critical and error are fatal */
+	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
+}
+
 gchar *
 gs_test_get_filename (const gchar *testdatadir, const gchar *filename)
 {
@@ -42,8 +73,7 @@ gs_test_flush_main_context (void)
  *
  * Calculate and set the `GS_SELF_TEST_ICON_THEME_PATH` environment variable
  * to include the current system icon theme paths. This is designed to be called
- * before calling `g_test_init()` with `G_TEST_OPTION_ISOLATE_DIRS`, which will
- * clear the system icon theme paths.
+ * before calling `gs_test_init()`, which will clear the system icon theme paths.
  *
  * As this function calls `g_setenv()`, it must not be called after threads have
  * been spawned.
