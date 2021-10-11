@@ -132,7 +132,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_label_set_markup (GTK_LABEL (priv->label_download_info), link);
 	} else if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
 		   gs_app_get_size_download (priv->app) != 0) {
-		g_autofree gchar *tmp;
+		g_autofree gchar *tmp = NULL;
 		g_clear_pointer (&str, g_free);
 		tmp = g_format_size (gs_app_get_size_download (priv->app));
 		/* Translators: the '%s' is replaced with the download size, forming text like "2 GB download" */
