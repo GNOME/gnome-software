@@ -25,7 +25,7 @@
           <object class="GtkBox" id="name_box">
             <property name="orientation">vertical</property>
             <property name="margin-start">12</property>
-            <property name="spacing">6</property>
+            <property name="spacing">4</property>
             <property name="valign">center</property>
             <child>
               <object class="GtkLabel" id="name_label">
@@ -71,6 +71,14 @@
                 </child>
               </object>
             </child>
+	    <child>
+	      <object class="GtkLabel" id="label_app_size">
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="vexpand">True</property>
+                <property name="label">150 MB</property>
+              </object>
+	    </child>
             <child>
               <object class="GsStarWidget" id="star">
                 <property name="visible">False</property>
@@ -217,19 +225,6 @@
 		</child>
               </object>
             </child>
-	    <child>
-	      <object class="GtkLabel" id="label_app_size">
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-		<property name="vexpand">True</property>
-		<property name="label">150 MB</property>
-		<property name="margin-top">6</property>
-                <style>
-		  <class name="app-row-app-size"/>
-                  <class name="dim-label"/>
-                </style>
-              </object>
-	    </child>
 	  </object>
         </child>
       </object>

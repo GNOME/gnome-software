@@ -475,16 +475,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* show the right size */
 	if (priv->show_installed_size) {
 		size = gs_app_get_size_installed (priv->app);
-	} else if (priv->show_update) {
-		switch (gs_app_get_state (priv->app)) {
-		case GS_APP_STATE_UPDATABLE:
-		case GS_APP_STATE_UPDATABLE_LIVE:
-		case GS_APP_STATE_INSTALLING:
-			size = gs_app_get_size_download (priv->app);
-			break;
-		default:
-			break;
-		}
 	}
 	if (size != GS_APP_SIZE_UNKNOWABLE && size != 0) {
 		g_autofree gchar *sizestr = NULL;
