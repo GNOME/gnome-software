@@ -15,12 +15,16 @@
 
 #include <gnome-software.h>
 
+#include "gs-plugin-systemd-updates.h"
+
 /*
  * Mark previously downloaded packages as zero size, and also allow
  * scheduling the offline update.
  */
 
-struct GsPluginData {
+struct _GsPluginSystemdUpdates {
+	GsPlugin		 parent;
+
 	GFileMonitor		*monitor;
 	GFileMonitor		*monitor_trigger;
 	GPermission		*permission;
@@ -29,28 +33,42 @@ struct GsPluginData {
 	GMutex			 hash_prepared_mutex;
 };
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+G_DEFINE_TYPE (GsPluginSystemdUpdates, gs_plugin_systemd_updates, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_systemd_updates_init (GsPluginSystemdUpdates *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPlugin *plugin = GS_PLUGIN (self);
+
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refresh");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
-	g_mutex_init (&priv->hash_prepared_mutex);
-	priv->hash_prepared = g_hash_table_new_full (g_str_hash, g_str_equal,
+
+	g_mutex_init (&self->hash_prepared_mutex);
+	self->hash_prepared = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, NULL);
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_systemd_updates_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_hash_table_unref (priv->hash_prepared);
-	g_mutex_clear (&priv->hash_prepared_mutex);
-	if (priv->monitor != NULL)
-		g_object_unref (priv->monitor);
-	if (priv->monitor_trigger != NULL)
-		g_object_unref (priv->monitor_trigger);
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (object);
+
+	g_clear_pointer (&self->hash_prepared, g_hash_table_unref);
+	g_clear_object (&self->monitor);
+	g_clear_object (&self->monitor_trigger);
+
+	G_OBJECT_CLASS (gs_plugin_systemd_updates_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_systemd_updates_finalize (GObject *object)
+{
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (object);
+
+	g_mutex_clear (&self->hash_prepared_mutex);
+
+	G_OBJECT_CLASS (gs_plugin_systemd_updates_parent_class)->finalize (object);
 }
 
 static void
@@ -65,15 +83,15 @@ gs_plugin_systemd_updates_permission_cb (GPermission *permission,
 }
 
 static gboolean
-gs_plugin_systemd_update_cache (GsPlugin *plugin, GError **error)
+gs_plugin_systemd_update_cache (GsPluginSystemdUpdates  *self,
+                                GError                 **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->hash_prepared_mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->hash_prepared_mutex);
 
 	/* invalidate */
-	g_hash_table_remove_all (priv->hash_prepared);
+	g_hash_table_remove_all (self->hash_prepared);
 
 	/* get new list of package-ids */
 	package_ids = pk_offline_get_prepared_ids (&error_local);
@@ -92,7 +110,7 @@ gs_plugin_systemd_update_cache (GsPlugin *plugin, GError **error)
 		return FALSE;
 	}
 	for (guint i = 0; package_ids[i] != NULL; i++) {
-		g_hash_table_insert (priv->hash_prepared,
+		g_hash_table_insert (self->hash_prepared,
 				     g_strdup (package_ids[i]),
 				     GUINT_TO_POINTER (1));
 	}
@@ -105,22 +123,22 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 				      GFileMonitorEvent event_type,
 				      gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (user_data);
 
 	/* update UI */
-	gs_plugin_systemd_update_cache (plugin, NULL);
-	gs_plugin_updates_changed (plugin);
+	gs_plugin_systemd_update_cache (self, NULL);
+	gs_plugin_updates_changed (GS_PLUGIN (self));
 }
 
 static void
-gs_plugin_systemd_updates_refresh_is_triggered (GsPlugin *plugin, GCancellable *cancellable)
+gs_plugin_systemd_updates_refresh_is_triggered (GsPluginSystemdUpdates *self,
+                                                GCancellable           *cancellable)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GFile) file_trigger = NULL;
 	file_trigger = g_file_new_for_path ("/system-update");
-	priv->is_triggered = g_file_query_exists (file_trigger, NULL);
+	self->is_triggered = g_file_query_exists (file_trigger, NULL);
 	g_debug ("offline trigger is now %s",
-		 priv->is_triggered ? "enabled" : "disabled");
+		 self->is_triggered ? "enabled" : "disabled");
 }
 
 static void
@@ -129,14 +147,15 @@ gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 				      GFileMonitorEvent event_type,
 				      gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
-	gs_plugin_systemd_updates_refresh_is_triggered (plugin, NULL);
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (user_data);
+
+	gs_plugin_systemd_updates_refresh_is_triggered (self, NULL);
 }
 
 static void
-gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
+gs_plugin_systemd_refine_app (GsPluginSystemdUpdates *self,
+                              GsApp                  *app)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	g_autoptr(GMutexLocker) locker = NULL;
 
@@ -148,8 +167,8 @@ gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
 	package_id = gs_app_get_source_id_default (app);
 	if (package_id == NULL)
 		return;
-	locker = g_mutex_locker_new (&priv->hash_prepared_mutex);
-	if (g_hash_table_lookup (priv->hash_prepared, package_id) != NULL)
+	locker = g_mutex_locker_new (&self->hash_prepared_mutex);
+	if (g_hash_table_lookup (self->hash_prepared, package_id) != NULL)
 		gs_app_set_size_download (app, 0);
 }
 
@@ -160,23 +179,25 @@ gs_plugin_refine (GsPlugin *plugin,
                   GCancellable *cancellable,
                   GError **error)
 {
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
+
 	/* not now */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0)
 		return TRUE;
 
 	/* re-read /var/lib/PackageKit/prepared-update */
-	if (!gs_plugin_systemd_update_cache (plugin, error))
+	if (!gs_plugin_systemd_update_cache (self, error))
 		return FALSE;
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GsAppList *related = gs_app_get_related (app);
 		/* refine the app itself */
-		gs_plugin_systemd_refine_app (plugin, app);
+		gs_plugin_systemd_refine_app (self, app);
 		/* and anything related for proxy apps */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_related = gs_app_list_index (related, j);
-			gs_plugin_systemd_refine_app (plugin, app_related);
+			gs_plugin_systemd_refine_app (self, app_related);
 		}
 	}
 
@@ -186,45 +207,45 @@ gs_plugin_refine (GsPlugin *plugin,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
 	g_autoptr(GFile) file_trigger = NULL;
 
 	/* watch the prepared file */
-	priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
-	if (priv->monitor == NULL) {
+	self->monitor = pk_offline_get_prepared_monitor (cancellable, error);
+	if (self->monitor == NULL) {
 		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
-	g_signal_connect (priv->monitor, "changed",
+	g_signal_connect (self->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
 
 	/* watch the trigger file */
 	file_trigger = g_file_new_for_path ("/system-update");
-	priv->monitor_trigger = g_file_monitor_file (file_trigger,
+	self->monitor_trigger = g_file_monitor_file (file_trigger,
 						     G_FILE_MONITOR_NONE,
 						     NULL,
 						     error);
-	if (priv->monitor_trigger == NULL) {
+	if (self->monitor_trigger == NULL) {
 		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
-	g_signal_connect (priv->monitor_trigger, "changed",
+	g_signal_connect (self->monitor_trigger, "changed",
 			  G_CALLBACK (gs_plugin_systemd_trigger_changed_cb),
 			  plugin);
 
 	/* check if we have permission to trigger the update */
-	priv->permission = gs_utils_get_permission (
+	self->permission = gs_utils_get_permission (
 		"org.freedesktop.packagekit.trigger-offline-update",
 		NULL, NULL);
-	if (priv->permission != NULL) {
-		g_signal_connect (priv->permission, "notify",
+	if (self->permission != NULL) {
+		g_signal_connect (self->permission, "notify",
 				  G_CALLBACK (gs_plugin_systemd_updates_permission_cb),
 				  plugin);
 	}
 
 	/* get the list of currently downloaded packages */
-	return gs_plugin_systemd_update_cache (plugin, error);
+	return gs_plugin_systemd_update_cache (self, error);
 }
 
 #ifdef HAVE_PK_OFFLINE_WITH_FLAGS
@@ -373,13 +394,11 @@ gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
 #endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
 
 static gboolean
-_systemd_trigger_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+_systemd_trigger_app (GsPluginSystemdUpdates  *self,
+                      GsApp                   *app,
+                      GCancellable            *cancellable,
+                      GError                 **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
 	/* if we can process this online do not require a trigger */
 	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 		return TRUE;
@@ -389,17 +408,17 @@ _systemd_trigger_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* already in correct state */
-	if (priv->is_triggered)
+	if (self->is_triggered)
 		return TRUE;
 
 	/* trigger offline update */
-	if (!gs_systemd_call_trigger (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+	if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
 
 	/* don't rely on the file monitor */
-	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
+	gs_plugin_systemd_updates_refresh_is_triggered (self, cancellable);
 
 	/* success */
 	return TRUE;
@@ -411,6 +430,8 @@ gs_plugin_update (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
+
 	/* any are us? */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -418,7 +439,7 @@ gs_plugin_update (GsPlugin *plugin,
 
 		/* try to trigger this app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
-			if (!_systemd_trigger_app (plugin, app, cancellable, error))
+			if (!_systemd_trigger_app (self, app, cancellable, error))
 				return FALSE;
 			continue;
 		}
@@ -426,7 +447,7 @@ gs_plugin_update (GsPlugin *plugin,
 		/* try to trigger each related app */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
-			if (!_systemd_trigger_app (plugin, app_tmp, cancellable, error))
+			if (!_systemd_trigger_app (self, app_tmp, cancellable, error))
 				return FALSE;
 		}
 	}
@@ -441,14 +462,14 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
 
 	/* already in correct state */
-	if (!priv->is_triggered)
+	if (!self->is_triggered)
 		return TRUE;
 
 	/* cancel offline update */
@@ -458,7 +479,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 	}
 
 	/* don't rely on the file monitor */
-	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
+	gs_plugin_systemd_updates_refresh_is_triggered (self, cancellable);
 
 	/* success! */
 	return TRUE;
@@ -478,4 +499,20 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 		return FALSE;
 	}
 	return TRUE;
+}
+
+static void
+gs_plugin_systemd_updates_class_init (GsPluginSystemdUpdatesClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_systemd_updates_dispose;
+	object_class->finalize = gs_plugin_systemd_updates_finalize;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+
+	return GS_TYPE_PLUGIN_SYSTEMD_UPDATES;
 }
