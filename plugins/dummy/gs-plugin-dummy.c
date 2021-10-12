@@ -54,6 +54,31 @@ gs_plugin_dummy_init (GsPluginDummy *self)
 		return;
 	}
 
+	/* need help from appstream */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
+}
+
+static void
+gs_plugin_dummy_dispose (GObject *object)
+{
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (object);
+
+	g_clear_pointer (&self->installed_apps, g_hash_table_unref);
+	g_clear_pointer (&self->available_apps, g_hash_table_unref);
+	g_clear_handle_id (&self->quirk_id, g_source_remove);
+	g_clear_object (&self->cached_origin);
+
+	G_OBJECT_CLASS (gs_plugin_dummy_parent_class)->dispose (object);
+}
+
+gboolean
+gs_plugin_setup (GsPlugin      *plugin,
+                 GCancellable  *cancellable,
+                 GError       **error)
+{
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+
 	/* toggle this */
 	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
 		self->allow_updates_id = g_timeout_add_seconds (10,
@@ -86,22 +111,7 @@ gs_plugin_dummy_init (GsPluginDummy *self)
 			     g_strdup ("com.hughski.ColorHug2.driver"),
 			     GUINT_TO_POINTER (1));
 
-	/* need help from appstream */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
-}
-
-static void
-gs_plugin_dummy_dispose (GObject *object)
-{
-	GsPluginDummy *self = GS_PLUGIN_DUMMY (object);
-
-	g_clear_pointer (&self->installed_apps, g_hash_table_unref);
-	g_clear_pointer (&self->available_apps, g_hash_table_unref);
-	g_clear_handle_id (&self->quirk_id, g_source_remove);
-	g_clear_object (&self->cached_origin);
-
-	G_OBJECT_CLASS (gs_plugin_dummy_parent_class)->dispose (object);
+	return TRUE;
 }
 
 void
