@@ -12,6 +12,8 @@
 
 G_BEGIN_DECLS
 
+void	 gs_test_init				(gint		*pargc,
+						 gchar        ***pargv);
 void	 gs_test_flush_main_context		(void);
 gchar	*gs_test_get_filename			(const gchar	*testdatadir,
 						 const gchar	*filename);

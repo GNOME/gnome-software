@@ -749,12 +749,7 @@ main (int argc, char **argv)
 	 * overwritten by %G_TEST_OPTION_ISOLATE_DIRS. */
 	gs_test_expose_icon_theme_paths ();
 
-	g_test_init (&argc, &argv,
-#if GLIB_CHECK_VERSION(2, 60, 0)
-		     G_TEST_OPTION_ISOLATE_DIRS,
-#endif
-		     NULL);
-	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+	gs_test_init (&argc, &argv);
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);
 
 	/* set all the things required as a dummy test harness */
@@ -824,9 +819,6 @@ main (int argc, char **argv)
 		"  </info>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
-
-	/* only critical and error are fatal */
-	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new ();

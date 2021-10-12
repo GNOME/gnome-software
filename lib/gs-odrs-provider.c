@@ -1236,7 +1236,7 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 	g_autofree gchar *cache_filename = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new ("odrs");
+	g_autoptr(GsApp) app_dl = NULL;
 
 	/* check cache age */
 	cache_filename = gs_utils_get_cache_filename ("odrs",
@@ -1257,6 +1257,8 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 			return gs_odrs_provider_load_ratings (self, cache_filename, error);
 		}
 	}
+
+	app_dl = gs_app_new ("odrs");
 
 	/* download the complete file */
 	uri = g_strdup_printf ("%s/ratings", self->review_server);
