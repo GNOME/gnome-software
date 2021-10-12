@@ -64,6 +64,9 @@ static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
 static void gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                                        GsInstalledPage *self);
+static void gs_installed_page_notify_state_changed_cb (GsApp *app,
+						       GParamSpec *pspec,
+						       GsInstalledPage *self);
 
 typedef enum {
 	GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING,
@@ -109,6 +112,30 @@ update_groups (GsInstalledPage *self)
 				gtk_widget_get_first_child (self->list_box_install_addons) != NULL);
 }
 
+static GsInstalledPageSection
+gs_installed_page_get_row_section (GsInstalledPage *self,
+				   GsAppRow *app_row)
+{
+	GtkWidget *parent;
+
+	g_return_val_if_fail (GS_IS_INSTALLED_PAGE (self), GS_UPDATE_LIST_SECTION_LAST);
+	g_return_val_if_fail (GS_IS_APP_ROW (app_row), GS_UPDATE_LIST_SECTION_LAST);
+
+	parent = gtk_widget_get_parent (GTK_WIDGET (app_row));
+	if (parent == self->list_box_install_in_progress)
+		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
+	if (parent == self->list_box_install_apps)
+		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
+	if (parent == self->list_box_install_system_apps)
+		return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
+	if (parent == self->list_box_install_addons)
+		return GS_UPDATE_LIST_SECTION_ADDONS;
+
+	g_warn_if_reached ();
+
+	return GS_UPDATE_LIST_SECTION_LAST;
+}
+
 static void
 gs_installed_page_invalidate (GsInstalledPage *self)
 {
@@ -142,15 +169,29 @@ row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 static void
 gs_installed_page_unreveal_row (GsAppRow *app_row)
 {
-	g_signal_connect (app_row, "unrevealed",
-			  G_CALLBACK (row_unrevealed), NULL);
-	gs_app_row_unreveal (app_row);
+	GsApp *app = gs_app_row_get_app (app_row);
+	if (app != NULL) {
+		g_signal_handlers_disconnect_matched (app, G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+						      G_CALLBACK (gs_installed_page_notify_state_changed_cb), NULL);
+	}
+
+	/* This check is required, because GsAppRow does not emit
+	 * the signal when the row is not realized. This can happen
+	 * when installing/uninstalling an app without visiting
+	 * the Installed page. */
+	if (!gtk_widget_get_mapped (GTK_WIDGET (app_row))) {
+		row_unrevealed (G_OBJECT (app_row), NULL, NULL);
+	} else {
+		g_signal_connect (app_row, "unrevealed",
+				  G_CALLBACK (row_unrevealed), NULL);
+		gs_app_row_unreveal (app_row);
+	}
 }
 
-static void
-gs_installed_page_app_removed (GsPage *page, GsApp *app)
+static GsAppRow *  /* (transfer none) */
+gs_installed_page_find_app_row (GsInstalledPage *self,
+				GsApp *app)
 {
-	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
 	GtkWidget *lists[] = {
 		self->list_box_install_in_progress,
 		self->list_box_install_apps,
@@ -165,10 +206,22 @@ gs_installed_page_app_removed (GsPage *page, GsApp *app)
 		     child = gtk_widget_get_next_sibling (child)) {
 			GsAppRow *app_row = GS_APP_ROW (child);
 			if (gs_app_row_get_app (app_row) == app) {
-				gs_installed_page_unreveal_row (app_row);
+				return app_row;
 			}
 		}
 	}
+
+	return NULL;
+}
+
+
+static void
+gs_installed_page_app_removed (GsPage *page, GsApp *app)
+{
+	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
+	GsAppRow *app_row = gs_installed_page_find_app_row (self, app);
+	if (app_row != NULL)
+		gs_installed_page_unreveal_row (app_row);
 }
 
 static void
@@ -181,12 +234,57 @@ gs_installed_page_app_remove_cb (GsAppRow *app_row,
 	gs_page_remove_app (GS_PAGE (self), app, self->cancellable);
 }
 
-static gboolean
-gs_installed_page_invalidate_sort_idle (gpointer user_data)
+static void
+gs_installed_page_maybe_move_app_row (GsInstalledPage *self,
+				      GsAppRow *app_row)
 {
-	GsAppRow *app_row = user_data;
-	GsApp *app = gs_app_row_get_app (app_row);
+	GsInstalledPageSection current_section, expected_section;
+
+	current_section = gs_installed_page_get_row_section (self, app_row);
+	g_return_if_fail (current_section != GS_UPDATE_LIST_SECTION_LAST);
+
+	expected_section = gs_installed_page_get_app_section (gs_app_row_get_app (app_row));
+	if (expected_section != current_section) {
+		GtkWidget *widget = GTK_WIDGET (app_row);
+
+		g_object_ref (app_row);
+		gtk_list_box_remove (GTK_LIST_BOX (gtk_widget_get_parent (widget)), widget);
+		switch (expected_section) {
+		case GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING:
+			widget = self->list_box_install_in_progress;
+			break;
+		case GS_UPDATE_LIST_SECTION_REMOVABLE_APPS:
+			widget = self->list_box_install_apps;
+			break;
+		case GS_UPDATE_LIST_SECTION_SYSTEM_APPS:
+			widget = self->list_box_install_system_apps;
+			break;
+		case GS_UPDATE_LIST_SECTION_ADDONS:
+			widget = self->list_box_install_addons;
+			break;
+		default:
+			g_warn_if_reached ();
+			widget = NULL;
+			break;
+		}
+
+		if (widget != NULL)
+			gtk_list_box_append (GTK_LIST_BOX (widget), GTK_WIDGET (app_row));
+
+		g_object_unref (app_row);
+		update_groups (self);
+	}
+}
+
+static void
+gs_installed_page_notify_state_changed_cb (GsApp *app,
+                                           GParamSpec *pspec,
+                                           GsInstalledPage *self)
+{
 	GsAppState state = gs_app_get_state (app);
+	GsAppRow *app_row = gs_installed_page_find_app_row (self, app);
+
+	g_assert (app_row != NULL);
 
 	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
 
@@ -197,17 +295,8 @@ gs_installed_page_invalidate_sort_idle (gpointer user_data)
 	    state != GS_APP_STATE_UPDATABLE &&
 	    state != GS_APP_STATE_UPDATABLE_LIVE)
 		gs_installed_page_unreveal_row (app_row);
-
-	g_object_unref (app_row);
-	return G_SOURCE_REMOVE;
-}
-
-static void
-gs_installed_page_notify_state_changed_cb (GsApp *app,
-                                           GParamSpec *pspec,
-                                           GsAppRow *app_row)
-{
-	g_idle_add (gs_installed_page_invalidate_sort_idle, g_object_ref (app_row));
+	else
+		gs_installed_page_maybe_move_app_row (self, app_row);
 }
 
 static gboolean
@@ -249,7 +338,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 			  G_CALLBACK (gs_installed_page_app_remove_cb), self);
 	g_signal_connect_object (app, "notify::state",
 				 G_CALLBACK (gs_installed_page_notify_state_changed_cb),
-				 app_row, 0);
+				 self, 0);
 
 	switch (gs_installed_page_get_app_section (app)) {
 	case GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING:
@@ -317,6 +406,23 @@ out:
 }
 
 static void
+gs_installed_page_remove_all_cb (GtkWidget *container,
+				 GtkWidget *child)
+{
+	if (GS_IS_APP_ROW (child)) {
+		GsApp *app = gs_app_row_get_app (GS_APP_ROW (child));
+		if (app != NULL) {
+			g_signal_handlers_disconnect_matched (app, G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+							      G_CALLBACK (gs_installed_page_notify_state_changed_cb), NULL);
+		}
+	} else {
+		g_warn_if_reached ();
+	}
+
+	gtk_list_box_remove (GTK_LIST_BOX (container), child);
+}
+
+static void
 gs_installed_page_load (GsInstalledPage *self)
 {
 	GsPluginRefineFlags flags;
@@ -327,10 +433,10 @@ gs_installed_page_load (GsInstalledPage *self)
 	self->waiting = TRUE;
 
 	/* remove old entries */
-	gs_widget_remove_all (self->list_box_install_in_progress, (GsRemoveFunc) gtk_list_box_remove);
-	gs_widget_remove_all (self->list_box_install_apps, (GsRemoveFunc) gtk_list_box_remove);
-	gs_widget_remove_all (self->list_box_install_system_apps, (GsRemoveFunc) gtk_list_box_remove);
-	gs_widget_remove_all (self->list_box_install_addons, (GsRemoveFunc) gtk_list_box_remove);
+	gs_widget_remove_all (self->list_box_install_in_progress, gs_installed_page_remove_all_cb);
+	gs_widget_remove_all (self->list_box_install_apps, gs_installed_page_remove_all_cb);
+	gs_widget_remove_all (self->list_box_install_system_apps, gs_installed_page_remove_all_cb);
+	gs_widget_remove_all (self->list_box_install_addons, gs_installed_page_remove_all_cb);
 	update_groups (self);
 
 	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
