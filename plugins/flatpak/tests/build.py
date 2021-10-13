@@ -87,7 +87,7 @@ build_flatpak_bundle('org.test.Chiron',
                      'app-with-runtime/repo',
                      'chiron.flatpak')
 
-# app referencing remote that cannot be found
+# app referencing runtime that cannot be found
 build_flatpak('org.test.Chiron',
               'app-with-runtime',
               'app-missing-runtime/repo')
