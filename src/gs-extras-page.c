@@ -300,6 +300,10 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	     child = gtk_widget_get_next_sibling (child)) {
 		GsApp *existing_app;
 
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (app == existing_app)
 			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
@@ -461,6 +465,10 @@ build_no_results_label (GsExtrasPage *self)
 	for (child = gtk_widget_get_first_child (self->list_box_results);
 	     child != NULL;
 	     child = gtk_widget_get_next_sibling (child)) {
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		app = gs_app_row_get_app (GS_APP_ROW (child));
 		g_ptr_array_add (array,
 		                 g_object_get_data (G_OBJECT (child), "missing-title"));
@@ -507,6 +515,10 @@ show_search_results (GsExtrasPage *self)
 	for (child = first_child;
 	     child != NULL;
 	     child = gtk_widget_get_next_sibling (child)) {
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (g_strcmp0 (gs_app_get_id (app), "missing-codec") == 0) {
 			n_missing++;
