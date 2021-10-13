@@ -18,6 +18,7 @@ struct _GsPackagekitHelper {
 	GObject			 parent_instance;
 	GHashTable		*apps;
 	GsApp			*progress_app;
+	GsAppList		*progress_list;
 	GsPlugin		*plugin;
 };
 
@@ -46,6 +47,8 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 		gint percentage = pk_progress_get_percentage (progress);
 		if (app != NULL && percentage >= 0 && percentage <= 100)
 			gs_app_set_progress (app, (guint) percentage);
+		if (self->progress_list != NULL && percentage >= 0 && percentage <= 100)
+			gs_app_list_override_progress (self->progress_list, (guint) percentage);
 	}
 
 	/* Only go from TRUE to FALSE - it doesn't make sense for a package
@@ -76,6 +79,12 @@ gs_packagekit_helper_set_progress_app (GsPackagekitHelper *self, GsApp *progress
 	g_set_object (&self->progress_app, progress_app);
 }
 
+void
+gs_packagekit_helper_set_progress_list (GsPackagekitHelper *self, GsAppList *progress_list)
+{
+	g_set_object (&self->progress_list, progress_list);
+}
+
 GsPlugin *
 gs_packagekit_helper_get_plugin (GsPackagekitHelper *self)
 {
@@ -102,6 +111,7 @@ gs_packagekit_helper_finalize (GObject *object)
 
 	g_object_unref (self->plugin);
 	g_clear_object (&self->progress_app);
+	g_clear_object (&self->progress_list);
 	g_hash_table_unref (self->apps);
 
 	G_OBJECT_CLASS (gs_packagekit_helper_parent_class)->finalize (object);
