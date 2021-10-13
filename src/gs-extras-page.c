@@ -305,8 +305,10 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 			continue;
 
 		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
-		if (app == existing_app)
+		if (app == existing_app) {
 			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
+			break;
+		}
 	}
 
 	app_row = gs_app_row_new (app);
