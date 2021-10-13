@@ -536,18 +536,20 @@ show_search_results (GsExtrasPage *self)
 		str = build_no_results_label (self);
 		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_NO_RESULTS);
-	} else if (n_children == 1) {
-		/* switch directly to details view */
-		g_debug ("extras: found one result, showing in details view");
-		g_assert (first_child != NULL);
-		app = gs_app_row_get_app (GS_APP_ROW (first_child));
-		gs_shell_show_app (self->shell, app);
-		if (gs_app_is_installed (app))
-			gs_extras_page_maybe_emit_installed_resources_done (self);
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %u search results, showing", n_children);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_READY);
+
+		if (n_children == 1) {
+			/* switch directly to details view */
+			g_debug ("extras: found one result, showing in details view");
+			g_assert (first_child != NULL);
+			app = gs_app_row_get_app (GS_APP_ROW (first_child));
+			gs_shell_show_app (self->shell, app);
+			if (gs_app_is_installed (app))
+				gs_extras_page_maybe_emit_installed_resources_done (self);
+		}
 	}
 }
 
