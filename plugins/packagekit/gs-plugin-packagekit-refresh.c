@@ -128,6 +128,8 @@ _download_only (GsPluginPackagekitRefresh  *self,
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		return FALSE;
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		/* To indicate the app is already downloaded */
