@@ -14,6 +14,8 @@
 #include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
+#include "gs-plugin-packagekit-refine-repos.h"
+
 /*
  * SECTION:
  * Uses the system PackageKit instance to return convert repo filenames to
@@ -23,42 +25,58 @@
  * Refines:     | [source-id]
  */
 
-struct GsPluginData {
+struct _GsPluginPackagekitRefineRepos {
+	GsPlugin	 parent;
+
 	PkClient	*client;
 	GMutex		 client_mutex;
 };
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+G_DEFINE_TYPE (GsPluginPackagekitRefineRepos, gs_plugin_packagekit_refine_repos, GS_TYPE_PLUGIN)
 
-	g_mutex_init (&priv->client_mutex);
-	priv->client = pk_client_new ();
-	pk_client_set_background (priv->client, FALSE);
-	pk_client_set_cache_age (priv->client, G_MAXUINT);
-	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+static void
+gs_plugin_packagekit_refine_repos_init (GsPluginPackagekitRefineRepos *self)
+{
+	GsPlugin *plugin = GS_PLUGIN (self);
+
+	g_mutex_init (&self->client_mutex);
+	self->client = pk_client_new ();
+	pk_client_set_background (self->client, FALSE);
+	pk_client_set_cache_age (self->client, G_MAXUINT);
+	pk_client_set_interactive (self->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* need repos::repo-filename */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "repos");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_packagekit_refine_repos_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_mutex_clear (&priv->client_mutex);
-	g_object_unref (priv->client);
+	GsPluginPackagekitRefineRepos *self = GS_PLUGIN_PACKAGEKIT_REFINE_REPOS (object);
+
+	g_clear_object (&self->client);
+
+	G_OBJECT_CLASS (gs_plugin_packagekit_refine_repos_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_packagekit_refine_repos_finalize (GObject *object)
+{
+	GsPluginPackagekitRefineRepos *self = GS_PLUGIN_PACKAGEKIT_REFINE_REPOS (object);
+
+	g_mutex_clear (&self->client_mutex);
+
+	G_OBJECT_CLASS (gs_plugin_packagekit_refine_repos_parent_class)->finalize (object);
 }
 
 static gboolean
-gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
-                                                GsApp *app,
-                                                const gchar *filename,
-                                                GCancellable *cancellable,
-                                                GError **error)
+gs_plugin_packagekit_refine_repo_from_filename (GsPluginPackagekitRefineRepos  *self,
+                                                GsApp                          *app,
+                                                const gchar                    *filename,
+                                                GCancellable                   *cancellable,
+                                                GError                        **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPlugin *plugin = GS_PLUGIN (self);
 	const gchar *to_array[] = { NULL, NULL };
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
@@ -66,15 +84,15 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&priv->client_mutex);
-	pk_client_set_interactive (priv->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_search_files (priv->client,
+	g_mutex_lock (&self->client_mutex);
+	pk_client_set_interactive (self->client, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results = pk_client_search_files (self->client,
 	                                  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 	                                  (gchar **) to_array,
 	                                  cancellable,
 	                                  gs_packagekit_helper_cb, helper,
 	                                  error);
-	g_mutex_unlock (&priv->client_mutex);
+	g_mutex_unlock (&self->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to search file %s: ", filename);
 		return FALSE;
@@ -99,6 +117,8 @@ gs_plugin_refine (GsPlugin *plugin,
                   GCancellable *cancellable,
                   GError **error)
 {
+	GsPluginPackagekitRefineRepos *self = GS_PLUGIN_PACKAGEKIT_REFINE_REPOS (plugin);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *fn;
@@ -112,7 +132,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (fn == NULL)
 			continue;
 		/* set the source package name for an installed .repo file */
-		if (!gs_plugin_packagekit_refine_repo_from_filename (plugin,
+		if (!gs_plugin_packagekit_refine_repo_from_filename (self,
 		                                                     app,
 		                                                     fn,
 		                                                     cancellable,
@@ -122,4 +142,19 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* success */
 	return TRUE;
+}
+
+static void
+gs_plugin_packagekit_refine_repos_class_init (GsPluginPackagekitRefineReposClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_packagekit_refine_repos_dispose;
+	object_class->finalize = gs_plugin_packagekit_refine_repos_finalize;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_PACKAGEKIT_REFINE_REPOS;
 }

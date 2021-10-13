@@ -11,18 +11,24 @@
 
 #include <gnome-software.h>
 
+#include "gs-plugin-provenance.h"
+
 /*
  * SECTION:
  * Sets the package provenance to TRUE if installed by an official
  * software source. Also sets compulsory quirk when a required repository.
  */
 
-struct GsPluginData {
+struct _GsPluginProvenance {
+	GsPlugin		 parent;
+
 	GSettings		*settings;
 	GHashTable		*repos; /* gchar *name ~> guint flags */
 	GPtrArray		*provenance_wildcards; /* non-NULL, when have names with wildcards */
 	GPtrArray		*compulsory_wildcards; /* non-NULL, when have names with wildcards */
 };
+
+G_DEFINE_TYPE (GsPluginProvenance, gs_plugin_provenance, GS_TYPE_PLUGIN)
 
 static GHashTable *
 gs_plugin_provenance_remove_by_flag (GHashTable *old_repos,
@@ -53,10 +59,9 @@ gs_plugin_provenance_add_quirks (GsApp *app,
 }
 
 static gchar **
-gs_plugin_provenance_get_sources (GsPlugin *plugin,
+gs_plugin_provenance_get_sources (GsPluginProvenance *self,
 				  const gchar *key)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_SOURCES");
 	if (tmp != NULL) {
@@ -65,34 +70,34 @@ gs_plugin_provenance_get_sources (GsPlugin *plugin,
 		g_debug ("using custom provenance sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
 	}
-	return g_settings_get_strv (priv->settings, key);
+	return g_settings_get_strv (self->settings, key);
 }
 
 static void
 gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 					  const gchar *key,
-					  GsPlugin *plugin)
+					  gpointer user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginProvenance *self = GS_PLUGIN_PROVENANCE (user_data);
 	GsAppQuirk quirk = GS_APP_QUIRK_NONE;
 	GPtrArray **pwildcards = NULL;
 
 	if (g_strcmp0 (key, "official-repos") == 0) {
 		quirk = GS_APP_QUIRK_PROVENANCE;
-		pwildcards = &priv->provenance_wildcards;
+		pwildcards = &self->provenance_wildcards;
 	} else if (g_strcmp0 (key, "required-repos") == 0) {
 		quirk = GS_APP_QUIRK_COMPULSORY;
-		pwildcards = &priv->compulsory_wildcards;
+		pwildcards = &self->compulsory_wildcards;
 	}
 
 	if (quirk != GS_APP_QUIRK_NONE) {
 		/* The keys are stolen by the hash table, thus free only the array */
 		g_autofree gchar **repos = NULL;
-		g_autoptr(GHashTable) old_repos = priv->repos;
+		g_autoptr(GHashTable) old_repos = self->repos;
 		g_autoptr(GPtrArray) old_wildcards = *pwildcards;
 		GHashTable *new_repos = gs_plugin_provenance_remove_by_flag (old_repos, quirk);
 		GPtrArray *new_wildcards = NULL;
-		repos = gs_plugin_provenance_get_sources (plugin, key);
+		repos = gs_plugin_provenance_get_sources (self, key);
 		for (guint ii = 0; repos && repos[ii]; ii++) {
 			gchar *repo = g_steal_pointer (&(repos[ii]));
 			if (strchr (repo, '*') ||
@@ -109,36 +114,38 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 		}
 		if (new_wildcards != NULL)
 			g_ptr_array_add (new_wildcards, NULL);
-		priv->repos = new_repos;
+		self->repos = new_repos;
 		*pwildcards = new_wildcards;
 	}
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_provenance_init (GsPluginProvenance *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	priv->settings = g_settings_new ("org.gnome.software");
-	priv->repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-	g_signal_connect (priv->settings, "changed",
-			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), plugin);
-	gs_plugin_provenance_settings_changed_cb (priv->settings, "official-repos", plugin);
-	gs_plugin_provenance_settings_changed_cb (priv->settings, "required-repos", plugin);
+	self->settings = g_settings_new ("org.gnome.software");
+	self->repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	g_signal_connect (self->settings, "changed",
+			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), self);
+	gs_plugin_provenance_settings_changed_cb (self->settings, "official-repos", self);
+	gs_plugin_provenance_settings_changed_cb (self->settings, "required-repos", self);
 
 	/* after the package source is set */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dummy");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "dummy");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_provenance_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_hash_table_unref (priv->repos);
-	g_clear_pointer (&priv->provenance_wildcards, g_ptr_array_unref);
-	g_clear_pointer (&priv->compulsory_wildcards, g_ptr_array_unref);
-	g_object_unref (priv->settings);
+	GsPluginProvenance *self = GS_PLUGIN_PROVENANCE (object);
+
+	g_clear_pointer (&self->repos, g_hash_table_unref);
+	g_clear_pointer (&self->provenance_wildcards, g_ptr_array_unref);
+	g_clear_pointer (&self->compulsory_wildcards, g_ptr_array_unref);
+	g_clear_object (&self->settings);
+
+	G_OBJECT_CLASS (gs_plugin_provenance_parent_class)->dispose (object);
 }
 
 static gboolean
@@ -218,7 +225,7 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GCancellable         *cancellable,
 		  GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginProvenance *self = GS_PLUGIN_PROVENANCE (plugin);
 	g_autoptr(GHashTable) repos = NULL;
 	g_autoptr(GPtrArray) provenance_wildcards = NULL;
 	g_autoptr(GPtrArray) compulsory_wildcards = NULL;
@@ -226,9 +233,9 @@ gs_plugin_refine (GsPlugin             *plugin,
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
 		return TRUE;
-	repos = g_hash_table_ref (priv->repos);
-	provenance_wildcards = priv->provenance_wildcards != NULL ? g_ptr_array_ref (priv->provenance_wildcards) : NULL;
-	compulsory_wildcards = priv->compulsory_wildcards != NULL ? g_ptr_array_ref (priv->compulsory_wildcards) : NULL;
+	repos = g_hash_table_ref (self->repos);
+	provenance_wildcards = self->provenance_wildcards != NULL ? g_ptr_array_ref (self->provenance_wildcards) : NULL;
+	compulsory_wildcards = self->compulsory_wildcards != NULL ? g_ptr_array_ref (self->compulsory_wildcards) : NULL;
 	/* nothing to search */
 	if (g_hash_table_size (repos) == 0 && provenance_wildcards == NULL && compulsory_wildcards == NULL)
 		return TRUE;
@@ -240,4 +247,18 @@ gs_plugin_refine (GsPlugin             *plugin,
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_provenance_class_init (GsPluginProvenanceClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_provenance_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_PROVENANCE;
 }

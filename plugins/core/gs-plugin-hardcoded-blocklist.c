@@ -11,16 +11,25 @@
 #include <fnmatch.h>
 #include <gnome-software.h>
 
+#include "gs-plugin-hardcoded-blocklist.h"
+
 /*
  * SECTION:
  * Blocklists some applications based on a hardcoded list.
  */
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+struct _GsPluginHardcodedBlocklist
+{
+	GsPlugin		 parent;
+};
+
+G_DEFINE_TYPE (GsPluginHardcodedBlocklist, gs_plugin_hardcoded_blocklist, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_hardcoded_blocklist_init (GsPluginHardcodedBlocklist *self)
 {
 	/* need ID */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 static gboolean
@@ -75,4 +84,15 @@ gs_plugin_refine (GsPlugin             *plugin,
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_hardcoded_blocklist_class_init (GsPluginHardcodedBlocklistClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_HARDCODED_BLOCKLIST;
 }

@@ -617,13 +617,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_INITIALIZE:
-	case GS_PLUGIN_ACTION_DESTROY:
-		{
-			GsPluginFunc plugin_func = func;
-			plugin_func (plugin);
-		}
-		break;
 	case GS_PLUGIN_ACTION_SETUP:
 		{
 			GsPluginSetupFunc plugin_func = func;
@@ -843,8 +836,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		GLogLevelFlags log_level;
 
 		switch (action) {
-		case GS_PLUGIN_ACTION_INITIALIZE:
-		case GS_PLUGIN_ACTION_DESTROY:
 		case GS_PLUGIN_ACTION_SETUP:
 			if (g_getenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD") == NULL)
 				log_level = G_LOG_LEVEL_WARNING;
@@ -2406,11 +2397,6 @@ gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
 void
 gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 {
-	GsPluginAction actions[] = {
-		GS_PLUGIN_ACTION_DESTROY,
-		GS_PLUGIN_ACTION_INITIALIZE,
-		GS_PLUGIN_ACTION_SETUP,
-		GS_PLUGIN_ACTION_UNKNOWN };
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -2421,28 +2407,23 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	/* remove any events */
 	gs_plugin_loader_remove_events (plugin_loader);
 
-	/* call in order */
-	for (guint j = 0; actions[j] != GS_PLUGIN_ACTION_UNKNOWN; j++) {
-		for (guint i = 0; i < plugin_loader->plugins->len; i++) {
-			g_autoptr(GError) error_local = NULL;
-			g_autoptr(GsPluginLoaderHelper) helper = NULL;
-			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
-			if (!gs_plugin_get_enabled (plugin))
-				continue;
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		g_autoptr(GError) error_local = NULL;
+		g_autoptr(GsPluginLoaderHelper) helper = NULL;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
 
-			plugin_job = gs_plugin_job_newv (actions[j], NULL);
-			helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
-			if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-							  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-							  NULL, &error_local)) {
-				g_warning ("resetup of %s failed: %s",
-					   gs_plugin_get_name (plugin),
-					   error_local->message);
-				break;
-			}
-			if (actions[j] == GS_PLUGIN_ACTION_DESTROY)
-				gs_plugin_clear_data (plugin);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SETUP, NULL);
+		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
+						  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						  NULL, &error_local)) {
+			g_warning ("resetup of %s failed: %s",
+				   gs_plugin_get_name (plugin),
+				   error_local->message);
+			break;
 		}
 	}
 
@@ -2588,12 +2569,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* run the plugins */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INITIALIZE, NULL);
-	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
-	if (!gs_plugin_loader_run_results (helper, cancellable, error))
-		return FALSE;
-
 	/* order by deps */
 	do {
 		changes = FALSE;
@@ -2714,8 +2689,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	} while (changes);
 
 	/* run setup */
-	gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_SETUP);
-	helper->function_name = "gs_plugin_setup";
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SETUP, NULL);
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	for (i = 0; i < plugin_loader->plugins->len; i++) {
 		g_autoptr(GError) error_local = NULL;
 		plugin = g_ptr_array_index (plugin_loader->plugins, i);
@@ -2815,11 +2790,7 @@ gs_plugin_loader_dispose (GObject *object)
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	if (plugin_loader->plugins != NULL) {
-		g_autoptr(GsPluginLoaderHelper) helper = NULL;
-		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DESTROY, NULL);
-		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
-		gs_plugin_loader_run_results (helper, NULL, NULL);
+		/* FIXME: call a ->stop() (or similar) method on every plugin */
 		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
 	if (plugin_loader->updates_changed_id != 0) {
@@ -3396,10 +3367,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* some functions are really required for proper operation */
 	switch (action) {
-	case GS_PLUGIN_ACTION_DESTROY:
 	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_UPDATES:
-	case GS_PLUGIN_ACTION_INITIALIZE:
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:

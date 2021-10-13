@@ -22,6 +22,7 @@
 #include <rpm/rpmts.h>
 #include <rpmostree.h>
 
+#include "gs-plugin-rpm-ostree.h"
 #include "gs-rpmostree-generated.h"
 
 /* This shows up in the `rpm-ostree status` as the software that
@@ -38,7 +39,9 @@ G_DEFINE_AUTO_CLEANUP_FREE_FUNC(Header, headerFree, NULL)
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 
-struct GsPluginData {
+struct _GsPluginRpmOstree {
+	GsPlugin		 parent;
+
 	GMutex			 mutex;
 	GsRPMOSTreeOS		*os_proxy;
 	GsRPMOSTreeSysroot	*sysroot_proxy;
@@ -49,18 +52,46 @@ struct GsPluginData {
 	guint			 inactive_timeout_id;
 };
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+G_DEFINE_TYPE (GsPluginRpmOstree, gs_plugin_rpm_ostree, GS_TYPE_PLUGIN)
 
+static void
+gs_plugin_rpm_ostree_dispose (GObject *object)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (object);
+
+	if (self->inactive_timeout_id) {
+		g_source_remove (self->inactive_timeout_id);
+		self->inactive_timeout_id = 0;
+	}
+	g_clear_object (&self->os_proxy);
+	g_clear_object (&self->sysroot_proxy);
+	g_clear_object (&self->ot_sysroot);
+	g_clear_object (&self->ot_repo);
+	g_clear_object (&self->dnf_context);
+
+	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_rpm_ostree_finalize (GObject *object)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (object);
+
+	g_mutex_clear (&self->mutex);
+
+	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->finalize (object);
+}
+
+static void
+gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
+{
 	/* only works on OSTree */
 	if (!g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
-		gs_plugin_set_enabled (plugin, FALSE);
+		gs_plugin_set_enabled (GS_PLUGIN (self), FALSE);
 		return;
 	}
 
-	g_mutex_init (&priv->mutex);
+	g_mutex_init (&self->mutex);
 
 	/* open transaction */
 	rpmReadConfigFiles (NULL, NULL);
@@ -68,29 +99,13 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* rpm-ostree is already a daemon with a DBus API; hence it makes
 	 * more sense to use a custom plugin instead of using PackageKit.
 	 */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-refine-repos");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-refresh");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "systemd-updates");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "packagekit");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "packagekit-refine-repos");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "packagekit-refresh");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "systemd-updates");
 
 	/* need pkgname */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-}
-
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->inactive_timeout_id) {
-		g_source_remove (priv->inactive_timeout_id);
-		priv->inactive_timeout_id = 0;
-	}
-	g_clear_object (&priv->os_proxy);
-	g_clear_object (&priv->sysroot_proxy);
-	g_clear_object (&priv->ot_sysroot);
-	g_clear_object (&priv->ot_repo);
-	g_clear_object (&priv->dnf_context);
-	g_mutex_clear (&priv->mutex);
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 static void
@@ -145,30 +160,28 @@ gs_rpmostree_unregister_client_done_cb (GObject *source_object,
 static gboolean
 gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 {
-	GsPlugin *plugin = user_data;
-	GsPluginData *priv;
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (user_data);
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	if (g_source_is_destroyed (g_main_current_source ()))
 		return G_SOURCE_REMOVE;
 
-	priv = gs_plugin_get_data (plugin);
-	locker = g_mutex_locker_new (&priv->mutex);
+	locker = g_mutex_locker_new (&self->mutex);
 
 	/* In case it gets destroyed before the lock is acquired */
 	if (!g_source_is_destroyed (g_main_current_source ()) &&
-	    priv->inactive_timeout_id == g_source_get_id (g_main_current_source ())) {
+	    self->inactive_timeout_id == g_source_get_id (g_main_current_source ())) {
 		g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-		if (priv->sysroot_proxy)
-			sysroot_proxy = g_steal_pointer (&priv->sysroot_proxy);
+		if (self->sysroot_proxy)
+			sysroot_proxy = g_steal_pointer (&self->sysroot_proxy);
 
-		g_clear_object (&priv->os_proxy);
-		g_clear_object (&priv->sysroot_proxy);
-		g_clear_object (&priv->ot_sysroot);
-		g_clear_object (&priv->ot_repo);
-		g_clear_object (&priv->dnf_context);
-		priv->inactive_timeout_id = 0;
+		g_clear_object (&self->os_proxy);
+		g_clear_object (&self->sysroot_proxy);
+		g_clear_object (&self->ot_sysroot);
+		g_clear_object (&self->ot_repo);
+		g_clear_object (&self->dnf_context);
+		self->inactive_timeout_id = 0;
 
 		g_clear_pointer (&locker, g_mutex_locker_free);
 
@@ -190,30 +203,28 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 
 /* Hold the plugin mutex when called */
 static gboolean
-gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
+gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 				 GsRPMOSTreeOS **out_os_proxy,
 				 GsRPMOSTreeSysroot **out_sysroot_proxy,
 				 GCancellable *cancellable,
 				 GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	if (priv->inactive_timeout_id) {
-		g_source_remove (priv->inactive_timeout_id);
-		priv->inactive_timeout_id = 0;
+	if (self->inactive_timeout_id) {
+		g_source_remove (self->inactive_timeout_id);
+		self->inactive_timeout_id = 0;
 	}
 
 	/* Create a proxy for sysroot */
-	if (priv->sysroot_proxy == NULL) {
+	if (self->sysroot_proxy == NULL) {
 		g_autoptr(GVariantBuilder) options_builder = NULL;
 
-		priv->sysroot_proxy = gs_rpmostree_sysroot_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+		self->sysroot_proxy = gs_rpmostree_sysroot_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
 		                                                                   G_DBUS_PROXY_FLAGS_NONE,
 		                                                                   "org.projectatomic.rpmostree1",
 		                                                                   "/org/projectatomic/rpmostree1/Sysroot",
 		                                                                   cancellable,
 		                                                                   error);
-		if (priv->sysroot_proxy == NULL) {
+		if (self->sysroot_proxy == NULL) {
 			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
@@ -222,11 +233,11 @@ gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
 		g_variant_builder_add (options_builder, "{sv}", "id",
 				       g_variant_new_string (GS_RPMOSTREE_CLIENT_ID));
 		/* Register as a client so that the rpm-ostree daemon doesn't exit */
-		if (!gs_rpmostree_sysroot_call_register_client_sync (priv->sysroot_proxy,
+		if (!gs_rpmostree_sysroot_call_register_client_sync (self->sysroot_proxy,
 								     g_variant_builder_end (options_builder),
 								     cancellable,
 								     error)) {
-			g_clear_object (&priv->sysroot_proxy);
+			g_clear_object (&self->sysroot_proxy);
 			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
@@ -235,91 +246,91 @@ gs_rpmostree_ref_proxies_locked (GsPlugin *plugin,
 	}
 
 	/* Create a proxy for currently booted OS */
-	if (priv->os_proxy == NULL) {
+	if (self->os_proxy == NULL) {
 		g_autofree gchar *os_object_path = NULL;
 
-		os_object_path = gs_rpmostree_sysroot_dup_booted (priv->sysroot_proxy);
+		os_object_path = gs_rpmostree_sysroot_dup_booted (self->sysroot_proxy);
 		if (os_object_path == NULL &&
-		    !gs_rpmostree_sysroot_call_get_os_sync (priv->sysroot_proxy,
+		    !gs_rpmostree_sysroot_call_get_os_sync (self->sysroot_proxy,
 		                                            "",
 		                                            &os_object_path,
 		                                            cancellable,
 		                                            error)) {
 			gs_rpmostree_error_convert (error);
-			g_clear_object (&priv->sysroot_proxy);
+			g_clear_object (&self->sysroot_proxy);
 			return FALSE;
 		}
 
-		priv->os_proxy = gs_rpmostree_os_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+		self->os_proxy = gs_rpmostree_os_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
 		                                                         G_DBUS_PROXY_FLAGS_NONE,
 		                                                         "org.projectatomic.rpmostree1",
 		                                                         os_object_path,
 		                                                         cancellable,
 		                                                         error);
-		if (priv->os_proxy == NULL) {
+		if (self->os_proxy == NULL) {
 			gs_rpmostree_error_convert (error);
-			g_clear_object (&priv->sysroot_proxy);
+			g_clear_object (&self->sysroot_proxy);
 			return FALSE;
 		}
 	}
 
 	/* Load ostree sysroot and repo */
-	if (priv->ot_sysroot == NULL) {
+	if (self->ot_sysroot == NULL) {
 		g_autofree gchar *sysroot_path = NULL;
 		g_autoptr(GFile) sysroot_file = NULL;
 
-		sysroot_path = gs_rpmostree_sysroot_dup_path (priv->sysroot_proxy);
+		sysroot_path = gs_rpmostree_sysroot_dup_path (self->sysroot_proxy);
 		sysroot_file = g_file_new_for_path (sysroot_path);
 
-		priv->ot_sysroot = ostree_sysroot_new (sysroot_file);
-		if (!ostree_sysroot_load (priv->ot_sysroot, cancellable, error)) {
+		self->ot_sysroot = ostree_sysroot_new (sysroot_file);
+		if (!ostree_sysroot_load (self->ot_sysroot, cancellable, error)) {
 			gs_rpmostree_error_convert (error);
-			g_clear_object (&priv->sysroot_proxy);
-			g_clear_object (&priv->os_proxy);
-			g_clear_object (&priv->ot_sysroot);
+			g_clear_object (&self->sysroot_proxy);
+			g_clear_object (&self->os_proxy);
+			g_clear_object (&self->ot_sysroot);
 			return FALSE;
 		}
 
-		if (!ostree_sysroot_get_repo (priv->ot_sysroot, &priv->ot_repo, cancellable, error)) {
+		if (!ostree_sysroot_get_repo (self->ot_sysroot, &self->ot_repo, cancellable, error)) {
 			gs_rpmostree_error_convert (error);
-			g_clear_object (&priv->sysroot_proxy);
-			g_clear_object (&priv->os_proxy);
-			g_clear_object (&priv->ot_sysroot);
+			g_clear_object (&self->sysroot_proxy);
+			g_clear_object (&self->os_proxy);
+			g_clear_object (&self->ot_sysroot);
 			return FALSE;
 		}
 	}
 
-	priv->inactive_timeout_id = g_timeout_add_seconds (INACTIVE_TIMEOUT_SECONDS,
-		gs_rpmostree_inactive_timeout_cb, plugin);
+	self->inactive_timeout_id = g_timeout_add_seconds (INACTIVE_TIMEOUT_SECONDS,
+		gs_rpmostree_inactive_timeout_cb, self);
 
 	if (out_os_proxy)
-		*out_os_proxy = g_object_ref (priv->os_proxy);
+		*out_os_proxy = g_object_ref (self->os_proxy);
 
 	if (out_sysroot_proxy)
-		*out_sysroot_proxy = g_object_ref (priv->sysroot_proxy);
+		*out_sysroot_proxy = g_object_ref (self->sysroot_proxy);
 
 	return TRUE;
 }
 
 static gboolean
-gs_rpmostree_ref_proxies (GsPlugin *plugin,
+gs_rpmostree_ref_proxies (GsPluginRpmOstree *self,
 			  GsRPMOSTreeOS **out_os_proxy,
 			  GsRPMOSTreeSysroot **out_sysroot_proxy,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMutexLocker) locker = NULL;
 
-	locker = g_mutex_locker_new (&priv->mutex);
+	locker = g_mutex_locker_new (&self->mutex);
 
-	return gs_rpmostree_ref_proxies_locked (plugin, out_os_proxy, out_sysroot_proxy, cancellable, error);
+	return gs_rpmostree_ref_proxies_locked (self, out_os_proxy, out_sysroot_proxy, cancellable, error);
 }
 
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	return gs_rpmostree_ref_proxies (plugin, NULL, NULL, cancellable, error);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	return gs_rpmostree_ref_proxies (self, NULL, NULL, cancellable, error);
 }
 
 static void
@@ -838,29 +849,28 @@ gs_rpmostree_create_bare_dnf_context (GCancellable *cancellable,
 }
 
 static gboolean
-gs_rpmostree_ref_dnf_context_locked (GsPlugin *plugin,
+gs_rpmostree_ref_dnf_context_locked (GsPluginRpmOstree *self,
 				     GsRPMOSTreeOS **out_os_proxy,
 				     GsRPMOSTreeSysroot **out_sysroot_proxy,
 				     DnfContext **out_dnf_context,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(DnfContext) context = NULL;
 	g_autoptr(DnfState) state = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-	if (!gs_rpmostree_ref_proxies_locked (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
-	if (priv->dnf_context != NULL) {
+	if (self->dnf_context != NULL) {
 		if (out_os_proxy)
 			*out_os_proxy = g_steal_pointer (&os_proxy);
 		if (out_sysroot_proxy)
 			*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
 		if (out_dnf_context)
-			*out_dnf_context = g_object_ref (priv->dnf_context);
+			*out_dnf_context = g_object_ref (self->dnf_context);
 		return TRUE;
 	}
 
@@ -875,14 +885,14 @@ gs_rpmostree_ref_dnf_context_locked (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	g_set_object (&priv->dnf_context, context);
+	g_set_object (&self->dnf_context, context);
 
 	if (out_os_proxy)
 		*out_os_proxy = g_steal_pointer (&os_proxy);
 	if (out_sysroot_proxy)
 		*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
 	if (out_dnf_context)
-		*out_dnf_context = g_object_ref (priv->dnf_context);
+		*out_dnf_context = g_object_ref (self->dnf_context);
 
 	return TRUE;
 }
@@ -893,10 +903,11 @@ gs_plugin_refresh (GsPlugin *plugin,
                    GCancellable *cancellable,
                    GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	{
@@ -1026,6 +1037,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GVariant) cached_update = NULL;
 	g_autoptr(GVariant) rpm_diff = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
@@ -1034,7 +1046,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	const gchar *version = NULL;
 	g_auto(GVariantDict) cached_update_dict;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	/* ensure D-Bus properties are updated before reading them */
@@ -1138,14 +1150,13 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 static gboolean
-trigger_rpmostree_update (GsPlugin *plugin,
+trigger_rpmostree_update (GsPluginRpmOstree *self,
                           GsApp *app,
 			  GsRPMOSTreeOS *os_proxy,
 			  GsRPMOSTreeSysroot *sysroot_proxy,
 			  GCancellable *cancellable,
                           GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
@@ -1155,11 +1166,11 @@ trigger_rpmostree_update (GsPlugin *plugin,
 		return TRUE;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (GS_PLUGIN (self))) != 0)
 		return TRUE;
 
 	/* already in correct state */
-	if (priv->update_triggered)
+	if (self->update_triggered)
 		return TRUE;
 
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
@@ -1194,7 +1205,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	priv->update_triggered = TRUE;
+	self->update_triggered = TRUE;
 
 	/* success */
 	return TRUE;
@@ -1206,21 +1217,22 @@ gs_plugin_update_app (GsPlugin *plugin,
                       GCancellable *cancellable,
                       GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	GsAppList *related = gs_app_get_related (app);
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	/* we don't currently don't put all updates in the OsUpdate proxy app */
 	if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
-		return trigger_rpmostree_update (plugin, app, os_proxy, sysroot_proxy, cancellable, error);
+		return trigger_rpmostree_update (self, app, os_proxy, sysroot_proxy, cancellable, error);
 
 	/* try to trigger each related app */
 	for (guint i = 0; i < gs_app_list_length (related); i++) {
 		GsApp *app_tmp = gs_app_list_index (related, i);
-		if (!trigger_rpmostree_update (plugin, app_tmp, os_proxy, sysroot_proxy, cancellable, error))
+		if (!trigger_rpmostree_update (self, app_tmp, os_proxy, sysroot_proxy, cancellable, error))
 			return FALSE;
 	}
 
@@ -1234,6 +1246,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
                                GCancellable *cancellable,
                                GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	const char *packages[] = { NULL };
 	g_autofree gchar *new_refspec = NULL;
 	g_autofree gchar *transaction_address = NULL;
@@ -1250,7 +1263,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
@@ -1369,6 +1382,7 @@ gs_plugin_app_install (GsPlugin *plugin,
                        GCancellable *cancellable,
                        GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	const gchar *install_package = NULL;
 	g_autofree gchar *local_filename = NULL;
 	g_autofree gchar *transaction_address = NULL;
@@ -1385,7 +1399,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* enable repo, handled by dedicated function */
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	switch (gs_app_get_state (app)) {
@@ -1477,6 +1491,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
                       GCancellable *cancellable,
                       GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
@@ -1487,7 +1502,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	/* disable repo, handled by dedicated function */
@@ -1747,7 +1762,7 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GHashTable) packages = NULL;
 	g_autoptr(GHashTable) layered_packages = NULL;
 	g_autoptr(GHashTable) layered_local_packages = NULL;
@@ -1762,12 +1777,12 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_auto(GStrv) layered_local_packages_strv = NULL;
 	g_autofree gchar *checksum = NULL;
 
-	locker = g_mutex_locker_new (&priv->mutex);
+	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_dnf_context_locked (plugin, &os_proxy, &sysroot_proxy, &dnf_context, cancellable, error))
+	if (!gs_rpmostree_ref_dnf_context_locked (self, &os_proxy, &sysroot_proxy, &dnf_context, cancellable, error))
 		return FALSE;
 
-	ot_repo = g_object_ref (priv->ot_repo);
+	ot_repo = g_object_ref (self->ot_repo);
 
 	if (!dnf_context)
 		return FALSE;
@@ -1875,6 +1890,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
                                 GCancellable *cancellable,
                                 GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	const char *packages[] = { NULL };
 	g_autofree gchar *new_refspec = NULL;
 	g_autofree gchar *transaction_address = NULL;
@@ -1891,7 +1907,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 		return TRUE;
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
@@ -2138,15 +2154,15 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     GCancellable *cancellable,
                                     GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(DnfContext) dnf_context = NULL;
 	g_auto(GStrv) provides = NULL;
 
-	locker = g_mutex_locker_new (&priv->mutex);
+	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_dnf_context_locked (plugin, NULL, NULL, &dnf_context, cancellable, error))
+	if (!gs_rpmostree_ref_dnf_context_locked (self, NULL, NULL, &dnf_context, cancellable, error))
 		return FALSE;
 
 	g_clear_pointer (&locker, g_mutex_locker_free);
@@ -2236,6 +2252,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
@@ -2246,7 +2263,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	/* enable repo */
 	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	return gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error);
@@ -2258,6 +2275,7 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
@@ -2268,8 +2286,23 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	/* disable repo */
 	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	return gs_rpmostree_repo_enable (plugin, repo, FALSE, os_proxy, sysroot_proxy, cancellable, error);
+}
+
+static void
+gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_rpm_ostree_dispose;
+	object_class->finalize = gs_plugin_rpm_ostree_finalize;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_RPM_OSTREE;
 }

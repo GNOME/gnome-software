@@ -52,7 +52,6 @@ typedef struct
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
-	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
@@ -165,6 +164,9 @@ gs_plugin_create (const gchar *filename, GError **error)
 	GsPlugin *plugin = NULL;
 	GsPluginPrivate *priv;
 	g_autofree gchar *basename = NULL;
+	GModule *module = NULL;
+	GType (*query_type_function) (void) = NULL;
+	GType plugin_type;
 
 	/* get the plugin name from the basename */
 	basename = g_path_get_basename (filename);
@@ -179,17 +181,26 @@ gs_plugin_create (const gchar *filename, GError **error)
 	g_strdelimit (basename, ".", '\0');
 
 	/* create new plugin */
-	plugin = gs_plugin_new ();
-	priv = gs_plugin_get_instance_private (plugin);
-	priv->module = g_module_open (filename, 0);
-	if (priv->module == NULL) {
+	module = g_module_open (filename, 0);
+	if (module == NULL ||
+	    !g_module_symbol (module, "gs_plugin_query_type", (gpointer *) &query_type_function)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to open plugin %s: %s",
 			     filename, g_module_error ());
+		if (module != NULL)
+			g_module_close (module);
 		return NULL;
 	}
+
+	plugin_type = query_type_function ();
+	g_assert (g_type_is_a (plugin_type, GS_TYPE_PLUGIN));
+
+	plugin = g_object_new (plugin_type, NULL);
+	priv = gs_plugin_get_instance_private (plugin);
+	priv->module = g_steal_pointer (&module);
+
 	gs_plugin_set_name (plugin, basename + 13);
 	return plugin;
 }
@@ -208,7 +219,6 @@ gs_plugin_finalize (GObject *object)
 		g_source_remove (priv->timer_id);
 	g_free (priv->name);
 	g_free (priv->appstream_id);
-	g_free (priv->data);
 	g_free (priv->language);
 	if (priv->soup_session != NULL)
 		g_object_unref (priv->soup_session);
@@ -226,63 +236,6 @@ gs_plugin_finalize (GObject *object)
 #endif
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
-}
-
-/**
- * gs_plugin_get_data:
- * @plugin: a #GsPlugin
- *
- * Gets the private data for the plugin if gs_plugin_alloc_data() has
- * been called.
- *
- * Returns: the #GsPluginData, or %NULL
- *
- * Since: 3.22
- **/
-GsPluginData *
-gs_plugin_get_data (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_assert (priv->data != NULL);
-	return priv->data;
-}
-
-/**
- * gs_plugin_alloc_data:
- * @plugin: a #GsPlugin
- * @sz: the size of data to allocate, e.g. `sizeof(FooPluginPrivate)`
- *
- * Allocates a private data area for the plugin which can be retrieved
- * using gs_plugin_get_data().
- * This is normally called in gs_plugin_initialize() and the data should
- * not be manually freed.
- *
- * Returns: the #GsPluginData, cleared to NUL bytes
- *
- * Since: 3.22
- **/
-GsPluginData *
-gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_assert (priv->data == NULL);
-	priv->data = g_malloc0 (sz);
-	return priv->data;
-}
-
-/**
- * gs_plugin_clear_data:
- * @plugin: a #GsPlugin
- *
- * Clears and resets the private data. Only run this from the self tests.
- **/
-void
-gs_plugin_clear_data (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	if (priv->data == NULL)
-		return;
-	g_clear_pointer (&priv->data, g_free);
 }
 
 /**
@@ -344,7 +297,7 @@ gs_plugin_get_enabled (GsPlugin *plugin)
  * @enabled: the enabled state
  *
  * Enables or disables a plugin.
- * This is normally only called from gs_plugin_initialize().
+ * This is normally only called from the init function for a #GsPlugin instance.
  *
  * Since: 3.22
  **/
@@ -1638,10 +1591,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_categories";
 	if (action == GS_PLUGIN_ACTION_SETUP)
 		return "gs_plugin_setup";
-	if (action == GS_PLUGIN_ACTION_INITIALIZE)
-		return "gs_plugin_initialize";
-	if (action == GS_PLUGIN_ACTION_DESTROY)
-		return "gs_plugin_destroy";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
@@ -1728,10 +1677,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-recent";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
 		return "get-updates-historical";
-	if (action == GS_PLUGIN_ACTION_INITIALIZE)
-		return "initialize";
-	if (action == GS_PLUGIN_ACTION_DESTROY)
-		return "destroy";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "get-alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
@@ -1818,10 +1763,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_RECENT;
 	if (g_strcmp0 (action, "get-updates-historical") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
-	if (g_strcmp0 (action, "initialize") == 0)
-		return GS_PLUGIN_ACTION_INITIALIZE;
-	if (g_strcmp0 (action, "destroy") == 0)
-		return GS_PLUGIN_ACTION_DESTROY;
 	if (g_strcmp0 (action, "get-alternates") == 0)
 		return GS_PLUGIN_ACTION_GET_ALTERNATES;
 	if (g_strcmp0 (action, "get-langpacks") == 0)

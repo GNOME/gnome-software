@@ -48,17 +48,12 @@ struct _GsPluginClass
 	gpointer		 padding[24];
 };
 
-typedef struct	GsPluginData	GsPluginData;
-
 /* helpers */
 #define	GS_PLUGIN_ERROR					gs_plugin_error_quark ()
 
 GQuark		 gs_plugin_error_quark			(void);
 
 /* public getters and setters */
-GsPluginData	*gs_plugin_alloc_data			(GsPlugin	*plugin,
-							 gsize		 sz);
-GsPluginData	*gs_plugin_get_data			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_name			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_appstream_id		(GsPlugin	*plugin);
 void		 gs_plugin_set_appstream_id		(GsPlugin	*plugin,

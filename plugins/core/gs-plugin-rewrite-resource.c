@@ -11,11 +11,20 @@
 #include <glib/gi18n.h>
 #include <gnome-software.h>
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+#include "gs-plugin-rewrite-resource.h"
+
+struct _GsPluginRewriteResource
+{
+	GsPlugin	parent;
+};
+
+G_DEFINE_TYPE (GsPluginRewriteResource, gs_plugin_rewrite_resource, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_rewrite_resource_init (GsPluginRewriteResource *self)
 {
 	/* let appstream add metadata first */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 static gboolean
@@ -69,4 +78,15 @@ gs_plugin_refine (GsPlugin             *plugin,
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_rewrite_resource_class_init (GsPluginRewriteResourceClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_REWRITE_RESOURCE;
 }

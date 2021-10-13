@@ -14,14 +14,20 @@
 
 #include <gnome-software.h>
 
-struct GsPluginData {
+#include "gs-plugin-fedora-langpacks.h"
+
+struct _GsPluginFedoraLangpacks {
+	GsPlugin	 parent;
+
 	GHashTable	*locale_langpack_map;
 };
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+G_DEFINE_TYPE (GsPluginFedoraLangpacks, gs_plugin_fedora_langpacks, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_fedora_langpacks_init (GsPluginFedoraLangpacks *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPlugin *plugin = GS_PLUGIN (self);
 
 	/* this plugin should be fedora specific */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
@@ -35,22 +41,24 @@ gs_plugin_initialize (GsPlugin *plugin)
 	* A few language code may have more than one language packs.
 	* Example: en {en_GB}, pt {pt_BR}, zh {zh_CN, zh_TW}
 	*/
-	priv->locale_langpack_map = g_hash_table_new (g_str_hash, g_str_equal);
+	self->locale_langpack_map = g_hash_table_new (g_str_hash, g_str_equal);
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-	g_hash_table_insert (priv->locale_langpack_map, "en_GB", "langpacks-en_GB");
-	g_hash_table_insert (priv->locale_langpack_map, "pt_BR", "langpacks-pt_BR");
-	g_hash_table_insert (priv->locale_langpack_map, "zh_CN", "langpacks-zh_CN");
-	g_hash_table_insert (priv->locale_langpack_map, "zh_TW", "langpacks-zh_TW");
+	g_hash_table_insert (self->locale_langpack_map, "en_GB", "langpacks-en_GB");
+	g_hash_table_insert (self->locale_langpack_map, "pt_BR", "langpacks-pt_BR");
+	g_hash_table_insert (self->locale_langpack_map, "zh_CN", "langpacks-zh_CN");
+	g_hash_table_insert (self->locale_langpack_map, "zh_TW", "langpacks-zh_TW");
 #pragma GCC diagnostic pop
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_fedora_langpacks_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->locale_langpack_map != NULL)
-		g_hash_table_unref (priv->locale_langpack_map);
+	GsPluginFedoraLangpacks *self = GS_PLUGIN_FEDORA_LANGPACKS (object);
+
+	g_clear_pointer (&self->locale_langpack_map, g_hash_table_unref);
+
+	G_OBJECT_CLASS (gs_plugin_fedora_langpacks_parent_class)->dispose (object);
 }
 
 gboolean
@@ -60,14 +68,14 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFedoraLangpacks *self = GS_PLUGIN_FEDORA_LANGPACKS (plugin);
 	const gchar *language_code;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *langpack_pkgname = NULL;
 	g_auto(GStrv) language_region = NULL;
 
 	if (g_strrstr (locale, "_") != NULL &&
-	    !g_hash_table_lookup (priv->locale_langpack_map, locale)) {
+	    !g_hash_table_lookup (self->locale_langpack_map, locale)) {
 		/*
 		 * language_code should be the langpack_source_id
 		 * if input language_code is a locale and it doesn't
@@ -102,4 +110,18 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_fedora_langpacks_class_init (GsPluginFedoraLangpacksClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_fedora_langpacks_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_FEDORA_LANGPACKS;
 }

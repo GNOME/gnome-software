@@ -21,6 +21,8 @@
 #include "gs-fwupd-app.h"
 #include "gs-metered.h"
 
+#include "gs-plugin-fwupd.h"
+
 /*
  * SECTION:
  * Queries for new firmware and schedules it to be installed as required.
@@ -29,11 +31,15 @@
  * added or removed or if a device has been updated live.
  */
 
-struct GsPluginData {
+struct _GsPluginFwupd {
+	GsPlugin		 parent;
+
 	FwupdClient		*client;
 	GsApp			*app_current;
 	GsApp			*cached_origin;
 };
+
+G_DEFINE_TYPE (GsPluginFwupd, gs_plugin_fwupd, GS_TYPE_PLUGIN)
 
 static void
 gs_plugin_fwupd_error_convert (GError **perror)
@@ -90,23 +96,24 @@ gs_plugin_fwupd_error_convert (GError **perror)
 	error->domain = GS_PLUGIN_ERROR;
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_fwupd_init (GsPluginFwupd *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	priv->client = fwupd_client_new ();
+	self->client = fwupd_client_new ();
 
 	/* set name of MetaInfo file */
-	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
+	gs_plugin_set_appstream_id (GS_PLUGIN (self), "org.gnome.Software.Plugin.Fwupd");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_fwupd_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->cached_origin != NULL)
-		g_object_unref (priv->cached_origin);
-	g_object_unref (priv->client);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (object);
+
+	g_clear_object (&self->cached_origin);
+	g_clear_object (&self->client);
+
+	G_OBJECT_CLASS (gs_plugin_fwupd_parent_class)->dispose (object);
 }
 
 void
@@ -141,51 +148,51 @@ gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 }
 
 static void
-gs_plugin_fwupd_notify_percentage_cb (GObject *object,
-				      GParamSpec *pspec,
-				      GsPlugin *plugin)
+gs_plugin_fwupd_notify_percentage_cb (GObject    *object,
+                                      GParamSpec *pspec,
+                                      gpointer    user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (user_data);
 
 	/* nothing in progress */
-	if (priv->app_current == NULL) {
+	if (self->app_current == NULL) {
 		g_debug ("fwupd percentage: %u%%",
-			 fwupd_client_get_percentage (priv->client));
+			 fwupd_client_get_percentage (self->client));
 		return;
 	}
 	g_debug ("fwupd percentage for %s: %u%%",
-		 gs_app_get_unique_id (priv->app_current),
-		 fwupd_client_get_percentage (priv->client));
-	gs_app_set_progress (priv->app_current,
-			     fwupd_client_get_percentage (priv->client));
+		 gs_app_get_unique_id (self->app_current),
+		 fwupd_client_get_percentage (self->client));
+	gs_app_set_progress (self->app_current,
+			     fwupd_client_get_percentage (self->client));
 }
 
 static void
-gs_plugin_fwupd_notify_status_cb (GObject *object,
-				  GParamSpec *pspec,
-				  GsPlugin *plugin)
+gs_plugin_fwupd_notify_status_cb (GObject    *object,
+                                  GParamSpec *pspec,
+                                  gpointer    user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (user_data);
 
 	/* nothing in progress */
-	if (priv->app_current == NULL) {
+	if (self->app_current == NULL) {
 		g_debug ("fwupd status: %s",
-			 fwupd_status_to_string (fwupd_client_get_status (priv->client)));
+			 fwupd_status_to_string (fwupd_client_get_status (self->client)));
 		return;
 	}
 
 	g_debug ("fwupd status for %s: %s",
-		 gs_app_get_unique_id (priv->app_current),
-		 fwupd_status_to_string (fwupd_client_get_status (priv->client)));
-	switch (fwupd_client_get_status (priv->client)) {
+		 gs_app_get_unique_id (self->app_current),
+		 fwupd_status_to_string (fwupd_client_get_status (self->client)));
+	switch (fwupd_client_get_status (self->client)) {
 	case FWUPD_STATUS_DECOMPRESSING:
 	case FWUPD_STATUS_DEVICE_RESTART:
 	case FWUPD_STATUS_DEVICE_WRITE:
 	case FWUPD_STATUS_DEVICE_VERIFY:
-		gs_app_set_state (priv->app_current, GS_APP_STATE_INSTALLING);
+		gs_app_set_state (self->app_current, GS_APP_STATE_INSTALLING);
 		break;
 	case FWUPD_STATUS_IDLE:
-		g_clear_object (&priv->app_current);
+		g_clear_object (&self->app_current);
 		break;
 	default:
 		break;
@@ -210,26 +217,26 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(SoupSession) soup_session = NULL;
 
 #if FWUPD_CHECK_VERSION(1,4,5)
 	g_autoptr(GError) error_local = NULL;
 	/* send our implemented feature set */
-	if (!fwupd_client_set_feature_flags (priv->client,
+	if (!fwupd_client_set_feature_flags (self->client,
 					     FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
 					     cancellable, &error_local))
 		g_debug ("Failed to set front-end features: %s", error_local->message);
 
 	/* we know the runtime daemon version now */
-	fwupd_client_set_user_agent_for_package (priv->client, PACKAGE_NAME, PACKAGE_VERSION);
-	if (!fwupd_client_ensure_networking (priv->client, error)) {
+	fwupd_client_set_user_agent_for_package (self->client, PACKAGE_NAME, PACKAGE_VERSION);
+	if (!fwupd_client_ensure_networking (self->client, error)) {
 		gs_plugin_fwupd_error_convert (error);
 		g_prefix_error (error, "Failed to setup networking: ");
 		return FALSE;
 	}
-	g_object_get (priv->client, "soup-session", &soup_session, NULL);
+	g_object_get (self->client, "soup-session", &soup_session, NULL);
 #else
 	g_autofree gchar *user_agent = NULL;
 	/* use a custom user agent to provide the fwupd version */
@@ -245,31 +252,31 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
-	gs_app_set_management_plugin (priv->cached_origin, gs_plugin_get_name (plugin));
+	self->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	gs_app_set_kind (self->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
+	gs_app_set_bundle_kind (self->cached_origin, AS_BUNDLE_KIND_CABINET);
+	gs_app_set_management_plugin (self->cached_origin, gs_plugin_get_name (plugin));
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
 	gs_plugin_cache_add (plugin,
-			     gs_app_get_unique_id (priv->cached_origin),
-			     priv->cached_origin);
+			     gs_app_get_unique_id (self->cached_origin),
+			     self->cached_origin);
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
-	g_signal_connect (priv->client, "changed",
+	g_signal_connect (self->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
-	g_signal_connect (priv->client, "device-added",
+	g_signal_connect (self->client, "device-added",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
-	g_signal_connect (priv->client, "device-removed",
+	g_signal_connect (self->client, "device-removed",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
-	g_signal_connect (priv->client, "device-changed",
+	g_signal_connect (self->client, "device-changed",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
-	g_signal_connect (priv->client, "notify::percentage",
-			  G_CALLBACK (gs_plugin_fwupd_notify_percentage_cb), plugin);
-	g_signal_connect (priv->client, "notify::status",
-			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), plugin);
+	g_signal_connect (self->client, "notify::percentage",
+			  G_CALLBACK (gs_plugin_fwupd_notify_percentage_cb), self);
+	g_signal_connect (self->client, "notify::status",
+			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), self);
 	return TRUE;
 }
 
@@ -503,13 +510,13 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GCancellable *cancellable,
 				  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FwupdDevice) dev = NULL;
 
 	/* get historical updates */
-	dev = fwupd_client_get_results (priv->client,
+	dev = fwupd_client_get_results (self->client,
 					FWUPD_DEVICE_ID_ANY,
 					cancellable,
 					&error_local);
@@ -547,12 +554,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) devices = NULL;
 
 	/* get current list of updates */
-	devices = fwupd_client_get_devices (priv->client, cancellable, &error_local);
+	devices = fwupd_client_get_devices (self->client, cancellable, &error_local);
 	if (devices == NULL) {
 		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
 		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
@@ -584,7 +591,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			continue;
 
 		/* get the releases for this device and filter for validity */
-		rels = fwupd_client_get_upgrades (priv->client,
+		rels = fwupd_client_get_upgrades (self->client,
 						  fwupd_device_get_id (dev),
 						  cancellable, &error_local2);
 		if (rels == NULL) {
@@ -642,13 +649,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
-				FwupdRemote *remote,
-				guint cache_age,
-				GCancellable *cancellable,
-				GError **error)
+gs_plugin_fwupd_refresh_remote (GsPluginFwupd  *self,
+                                FwupdRemote    *remote,
+                                guint           cache_age,
+                                GCancellable   *cancellable,
+                                GError        **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 #if FWUPD_CHECK_VERSION(1,5,2)
 
 	/* check cache age */
@@ -662,7 +668,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	}
 
 	/* download new content */
-	if (!fwupd_client_refresh_remote (priv->client, remote, cancellable, error)) {
+	if (!fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
@@ -716,7 +722,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 				    _("Downloading firmware update signature…"));
 	data = gs_plugin_download_data (plugin, app_dl, url_sig, cancellable, error);
 	if (data == NULL) {
-		gs_utils_error_add_origin_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;
 	}
 
@@ -759,12 +765,12 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	url = fwupd_remote_get_metadata_uri (remote);
 	if (!gs_plugin_download_file (plugin, app_dl, url, filename,
 				      cancellable, error)) {
-		gs_utils_error_add_origin_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;
 	}
 
 	/* phew, lets send all this to fwupd */
-	if (!fwupd_client_update_metadata (priv->client,
+	if (!fwupd_client_update_metadata (self->client,
 					   fwupd_remote_get_id (remote),
 					   filename,
 					   filename_sig,
@@ -783,12 +789,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) remotes = NULL;
 
 	/* get the list of enabled remotes */
-	remotes = fwupd_client_get_remotes (priv->client, cancellable, &error_local);
+	remotes = fwupd_client_get_remotes (self->client, cancellable, &error_local);
 	if (remotes == NULL) {
 		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
 		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
@@ -805,7 +811,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 			continue;
 		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
 			continue;
-		if (!gs_plugin_fwupd_refresh_remote (plugin, remote, cache_age,
+		if (!gs_plugin_fwupd_refresh_remote (self, remote, cache_age,
 						     cancellable, error))
 			return FALSE;
 	}
@@ -813,12 +819,11 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_install (GsPlugin *plugin,
-			 GsApp *app,
-			 GCancellable *cancellable,
-			 GError **error)
+gs_plugin_fwupd_install (GsPluginFwupd  *self,
+                         GsApp          *app,
+                         GCancellable   *cancellable,
+                         GError        **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *device_id;
 	FwupdInstallFlags install_flags = 0;
 	GFile *local_file;
@@ -845,7 +850,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 #if FWUPD_CHECK_VERSION(1,5,2)
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		if (!fwupd_client_download_file (priv->client,
+		if (!fwupd_client_download_file (self->client,
 						 uri, file,
 						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
 						 cancellable,
@@ -868,14 +873,14 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		device_id = FWUPD_DEVICE_ID_ANY;
 
 	/* set the last object */
-	g_set_object (&priv->app_current, app);
+	g_set_object (&self->app_current, app);
 
 	/* only offline supported */
 	if (gs_app_get_metadata_item (app, "fwupd::OnlyOffline") != NULL)
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	if (!fwupd_client_install (priv->client, device_id,
+	if (!fwupd_client_install (self->client, device_id,
 				   filename, install_flags,
 				   cancellable, error)) {
 		gs_plugin_fwupd_error_convert (error);
@@ -891,7 +896,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	}
 
 	/* does the device have an update message */
-	dev = fwupd_client_get_device_by_id (priv->client, device_id,
+	dev = fwupd_client_get_device_by_id (self->client, device_id,
 					     cancellable, &error_local);
 	if (dev == NULL) {
 		/* NOTE: this is probably entirely fine; some devices do not
@@ -928,10 +933,12 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
-			       GCancellable *cancellable, GError **error)
+gs_plugin_fwupd_modify_source (GsPluginFwupd  *self,
+                               GsApp          *app,
+                               gboolean        enabled,
+                               GCancellable   *cancellable,
+                               GError        **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *remote_id = gs_app_get_metadata_item (app, "fwupd::remote-id");
 	if (remote_id == NULL) {
 		g_set_error (error,
@@ -943,7 +950,7 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 	}
 	gs_app_set_state (app, enabled ?
 	                  GS_APP_STATE_INSTALLING : GS_APP_STATE_REMOVING);
-	if (!fwupd_client_modify_remote (priv->client,
+	if (!fwupd_client_modify_remote (self->client,
 	                                 remote_id,
 	                                 "Enabled",
 	                                 enabled ? "true" : "false",
@@ -955,7 +962,7 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 	gs_app_set_state (app, enabled ?
 	                  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 
-	gs_plugin_repository_changed (plugin, app);
+	gs_plugin_repository_changed (GS_PLUGIN (self), app);
 
 	return TRUE;
 }
@@ -966,6 +973,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -975,7 +983,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
 	/* firmware */
-	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
+	return gs_plugin_fwupd_install (self, app, cancellable, error);
 }
 
 gboolean
@@ -985,7 +993,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 			GError **error)
 {
 #if FWUPD_CHECK_VERSION(1,5,2)
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 #endif
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
@@ -1026,7 +1034,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 		}
 
 #if FWUPD_CHECK_VERSION(1,5,2)
-		download_success = fwupd_client_download_file (priv->client,
+		download_success = fwupd_client_download_file (self->client,
 							       uri, file,
 							       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
 							       cancellable,
@@ -1054,7 +1062,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -1071,7 +1079,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 					     "not enough data for fwupd unlock");
 			return FALSE;
 		}
-		if (!fwupd_client_unlock (priv->client, device_id,
+		if (!fwupd_client_unlock (self->client, device_id,
 					  cancellable, error)) {
 			gs_plugin_fwupd_error_convert (error);
 			return FALSE;
@@ -1080,7 +1088,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 	}
 
 	/* update means install */
-	if (!gs_plugin_fwupd_install (plugin, app, cancellable, error)) {
+	if (!gs_plugin_fwupd_install (self, app, cancellable, error)) {
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
@@ -1094,7 +1102,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
 	g_autoptr(GPtrArray) devices = NULL;
@@ -1111,7 +1119,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* get results */
 	filename = g_file_get_path (file);
-	devices = fwupd_client_get_details (priv->client,
+	devices = fwupd_client_get_details (self->client,
 					    filename,
 					    cancellable,
 					    error);
@@ -1141,11 +1149,11 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(GPtrArray) remotes = NULL;
 
 	/* find all remotes */
-	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
+	remotes = fwupd_client_get_remotes (self->client, cancellable, error);
 	if (remotes == NULL)
 		return FALSE;
 	for (guint i = 0; i < remotes->len; i++) {
@@ -1189,6 +1197,8 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+
 	/* only process this app if it was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (repo),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -1197,7 +1207,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	/* source -> remote */
 	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	return gs_plugin_fwupd_modify_source (plugin, repo, TRUE, cancellable, error);
+	return gs_plugin_fwupd_modify_source (self, repo, TRUE, cancellable, error);
 }
 
 gboolean
@@ -1206,6 +1216,8 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+
 	/* only process this app if it was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (repo),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -1214,5 +1226,19 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	/* source -> remote */
 	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	return gs_plugin_fwupd_modify_source (plugin, repo, FALSE, cancellable, error);
+	return gs_plugin_fwupd_modify_source (self, repo, FALSE, cancellable, error);
+}
+
+static void
+gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_fwupd_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_FWUPD;
 }

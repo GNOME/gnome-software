@@ -13,6 +13,8 @@
 
 #include <gnome-software.h>
 
+#include "gs-plugin-icons.h"
+
 /*
  * SECTION:
  * Loads remote icons and converts them into local cached ones.
@@ -25,17 +27,18 @@
  * icons happens in a worker thread.
  */
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+struct _GsPluginIcons
+{
+	GsPlugin	parent;
+};
+
+G_DEFINE_TYPE (GsPluginIcons, gs_plugin_icons, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_icons_init (GsPluginIcons *self)
 {
 	/* needs remote icons downloaded */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-}
-
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	/* Nothing to do here */
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 static gboolean
@@ -80,4 +83,15 @@ gs_plugin_refine (GsPlugin             *plugin,
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_icons_class_init (GsPluginIconsClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_ICONS;
 }

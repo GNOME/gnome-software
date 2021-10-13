@@ -13,78 +13,88 @@
 
 #include <gnome-software.h>
 
-struct GsPluginData {
+#include "gs-plugin-modalias.h"
+
+struct _GsPluginModalias {
+	GsPlugin		 parent;
+
 	GUdevClient		*client;
 	GPtrArray		*devices;
 };
 
+G_DEFINE_TYPE (GsPluginModalias, gs_plugin_modalias, GS_TYPE_PLUGIN)
+
 static void
 gs_plugin_modalias_uevent_cb (GUdevClient *client,
-			      const gchar *action,
-			      GUdevDevice *device,
-			      GsPlugin *plugin)
+                              const gchar *action,
+                              GUdevDevice *device,
+                              gpointer     user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginModalias *self = GS_PLUGIN_MODALIAS (user_data);
+
 	if (g_strcmp0 (action, "add") == 0 ||
 	    g_strcmp0 (action, "remove") == 0) {
 		g_debug ("invalidating devices as '%s' sent action '%s'",
 			 g_udev_device_get_sysfs_path (device),
 			 action);
-		g_ptr_array_set_size (priv->devices, 0);
+		g_ptr_array_set_size (self->devices, 0);
 	}
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_modalias_init (GsPluginModalias *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPlugin *plugin = GS_PLUGIN (self);
+
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "icons");
-	priv->devices = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->client = g_udev_client_new (NULL);
-	g_signal_connect (priv->client, "uevent",
-			  G_CALLBACK (gs_plugin_modalias_uevent_cb), plugin);
-}
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_object_unref (priv->client);
-	g_ptr_array_unref (priv->devices);
+	self->devices = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	self->client = g_udev_client_new (NULL);
+	g_signal_connect (self->client, "uevent",
+			  G_CALLBACK (gs_plugin_modalias_uevent_cb), self);
 }
 
 static void
-gs_plugin_modalias_ensure_devices (GsPlugin *plugin)
+gs_plugin_modalias_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginModalias *self = GS_PLUGIN_MODALIAS (object);
+
+	g_clear_object (&self->client);
+	g_clear_pointer (&self->devices, g_ptr_array_unref);
+
+	G_OBJECT_CLASS (gs_plugin_modalias_parent_class)->dispose (object);
+}
+
+static void
+gs_plugin_modalias_ensure_devices (GsPluginModalias *self)
+{
 	g_autoptr(GList) list = NULL;
 
 	/* already set */
-	if (priv->devices->len > 0)
+	if (self->devices->len > 0)
 		return;
 
 	/* get the devices, and assume ownership of each */
-	list = g_udev_client_query_by_subsystem (priv->client, NULL);
+	list = g_udev_client_query_by_subsystem (self->client, NULL);
 	for (GList *l = list; l != NULL; l = l->next) {
 		GUdevDevice *device = G_UDEV_DEVICE (l->data);
 		if (g_udev_device_get_sysfs_attr (device, "modalias") == NULL) {
 			g_object_unref (device);
 			continue;
 		}
-		g_ptr_array_add (priv->devices, device);
+		g_ptr_array_add (self->devices, device);
 	}
-	g_debug ("%u devices with modalias", priv->devices->len);
+	g_debug ("%u devices with modalias", self->devices->len);
 }
 
 static gboolean
-gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
+gs_plugin_modalias_matches (GsPluginModalias *self,
+                            const gchar      *modalias)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	gs_plugin_modalias_ensure_devices (plugin);
-	for (guint i = 0; i < priv->devices->len; i++) {
-		GUdevDevice *device = g_ptr_array_index (priv->devices, i);
+	gs_plugin_modalias_ensure_devices (self);
+	for (guint i = 0; i < self->devices->len; i++) {
+		GUdevDevice *device = g_ptr_array_index (self->devices, i);
 		const gchar *modalias_tmp;
 
 		/* get the (optional) device modalias */
@@ -100,7 +110,7 @@ gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
 }
 
 static gboolean
-refine_app (GsPlugin             *plugin,
+refine_app (GsPluginModalias     *self,
 	    GsApp                *app,
 	    GsPluginRefineFlags   flags,
 	    GCancellable         *cancellable,
@@ -124,7 +134,7 @@ refine_app (GsPlugin             *plugin,
 			continue;
 		items = as_provided_get_items (prov);
 		for (guint j = 0; j < items->len; j++) {
-			if (gs_plugin_modalias_matches (plugin, (const gchar*) g_ptr_array_index (items, j))) {
+			if (gs_plugin_modalias_matches (self, (const gchar*) g_ptr_array_index (items, j))) {
 				g_autoptr(GIcon) ic = NULL;
 				ic = g_themed_icon_new ("emblem-system-symbolic");
 				gs_app_add_icon (app, ic);
@@ -143,11 +153,27 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GCancellable         *cancellable,
 		  GError              **error)
 {
+	GsPluginModalias *self = GS_PLUGIN_MODALIAS (plugin);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (plugin, app, flags, cancellable, error))
+		if (!refine_app (self, app, flags, cancellable, error))
 			return FALSE;
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_modalias_class_init (GsPluginModaliasClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_modalias_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_MODALIAS;
 }

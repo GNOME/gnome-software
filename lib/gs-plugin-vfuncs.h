@@ -29,26 +29,21 @@
 G_BEGIN_DECLS
 
 /**
- * gs_plugin_initialize:
- * @plugin: a #GsPlugin
+ * gs_plugin_query_type:
  *
- * Checks if the plugin should run, and if initializes it. If the plugin should
- * not be run then gs_plugin_set_enabled() should be called.
- * This is also the place to call gs_plugin_alloc_data() if private data is
- * required for the plugin.
+ * Returns the #GType for a subclass of #GsPlugin provided by this plugin
+ * module. It should not do any other computation.
  *
- * NOTE: Do not do any failable actions in this function; use gs_plugin_setup()
- * instead.
- **/
-void		 gs_plugin_initialize			(GsPlugin	*plugin);
-
-/**
- * gs_plugin_destroy:
- * @plugin: a #GsPlugin
+ * The init function for that type should initialize the plugin. If the plugin
+ * should not be run then gs_plugin_set_enabled() should be called from the
+ * init function.
  *
- * Called when the plugin should destroy any private data.
- **/
-void		 gs_plugin_destroy			(GsPlugin	*plugin);
+ * NOTE: Do not do any failable actions in the plugin class’ init function; use
+ * gs_plugin_setup() instead.
+ *
+ * Since: 42
+ */
+GType		 gs_plugin_query_type			(void);
 
 /**
  * gs_plugin_adopt_app:
@@ -164,7 +159,7 @@ gboolean	 gs_plugin_add_alternates		(GsPlugin	*plugin,
  * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
- * This function will also not be called if gs_plugin_initialize() self-disabled.
+ * This function will also not be called if the plugin is disabled.
  *
  * Returns: %TRUE for success
  **/

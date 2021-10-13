@@ -11,11 +11,22 @@
 #include <stdlib.h>
 #include <gnome-software.h>
 
+#include "gs-plugin-dpkg.h"
+
+struct _GsPluginDpkg
+{
+	GsPlugin	parent;
+};
+
+G_DEFINE_TYPE (GsPluginDpkg, gs_plugin_dpkg, GS_TYPE_PLUGIN)
+
 #define DPKG_DEB_BINARY		"/usr/bin/dpkg-deb"
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_dpkg_init (GsPluginDpkg *self)
 {
+	GsPlugin *plugin = GS_PLUGIN (self);
+
 	if (!g_file_test (DPKG_DEB_BINARY, G_FILE_TEST_EXISTS)) {
 		g_debug ("disabling '%s' as no %s available",
 			 gs_plugin_get_name (plugin), DPKG_DEB_BINARY);
@@ -108,4 +119,15 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* success */
 	gs_app_list_add (list, app);
 	return TRUE;
+}
+
+static void
+gs_plugin_dpkg_class_init (GsPluginDpkgClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_DPKG;
 }

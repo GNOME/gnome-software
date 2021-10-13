@@ -24,7 +24,6 @@ const gchar	*gs_plugin_action_to_string		(GsPluginAction	 action);
 GsPluginAction	 gs_plugin_action_from_string		(const gchar	*action);
 const gchar	*gs_plugin_action_to_function_name	(GsPluginAction	 action);
 
-void		 gs_plugin_clear_data			(GsPlugin	*plugin);
 void		 gs_plugin_set_scale			(GsPlugin	*plugin,
 							 guint		 scale);
 guint		 gs_plugin_get_order			(GsPlugin	*plugin);

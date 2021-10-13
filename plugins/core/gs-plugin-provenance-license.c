@@ -12,22 +12,27 @@
 
 #include <gnome-software.h>
 
+#include "gs-plugin-provenance-license.h"
+
 /*
  * SECTION:
  * Marks the application as Free Software if it comes from an origin
  * that is recognized as being DFSGish-free.
  */
 
-struct GsPluginData {
+struct _GsPluginProvenanceLicense {
+	GsPlugin		 parent;
+
 	GSettings		*settings;
 	gchar			**sources;
 	gchar			*license_id;
 };
 
+G_DEFINE_TYPE (GsPluginProvenanceLicense, gs_plugin_provenance_license, GS_TYPE_PLUGIN)
+
 static gchar **
-gs_plugin_provenance_license_get_sources (GsPlugin *plugin)
+gs_plugin_provenance_license_get_sources (GsPluginProvenanceLicense *self)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 
 	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES");
@@ -35,13 +40,12 @@ gs_plugin_provenance_license_get_sources (GsPlugin *plugin)
 		g_debug ("using custom provenance_license sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
 	}
-	return g_settings_get_strv (priv->settings, "free-repos");
+	return g_settings_get_strv (self->settings, "free-repos");
 }
 
 static gchar *
-gs_plugin_provenance_license_get_id (GsPlugin *plugin)
+gs_plugin_provenance_license_get_id (GsPluginProvenanceLicense *self)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	g_autofree gchar *url = NULL;
 
@@ -50,7 +54,7 @@ gs_plugin_provenance_license_get_id (GsPlugin *plugin)
 		g_debug ("using custom license generic sources of %s", tmp);
 		url = g_strdup (tmp);
 	} else {
-		url = g_settings_get_string (priv->settings, "free-repos-url");
+		url = g_settings_get_string (self->settings, "free-repos-url");
 		if (url == NULL)
 			return g_strdup ("LicenseRef-free");
 	}
@@ -58,52 +62,54 @@ gs_plugin_provenance_license_get_id (GsPlugin *plugin)
 }
 
 static void
-gs_plugin_provenance_license_changed_cb (GSettings *settings,
-					 const gchar *key,
-					 GsPlugin *plugin)
+gs_plugin_provenance_license_changed_cb (GSettings   *settings,
+                                         const gchar *key,
+                                         gpointer     user_data)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginProvenanceLicense *self = GS_PLUGIN_PROVENANCE_LICENSE (user_data);
+
 	if (g_strcmp0 (key, "free-repos") == 0) {
-		g_strfreev (priv->sources);
-		priv->sources = gs_plugin_provenance_license_get_sources (plugin);
+		g_strfreev (self->sources);
+		self->sources = gs_plugin_provenance_license_get_sources (self);
 	}
 	if (g_strcmp0 (key, "free-repos-url") == 0) {
-		g_free (priv->license_id);
-		priv->license_id = gs_plugin_provenance_license_get_id (plugin);
+		g_free (self->license_id);
+		self->license_id = gs_plugin_provenance_license_get_id (self);
 	}
 }
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_provenance_license_init (GsPluginProvenanceLicense *self)
 {
-	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	priv->settings = g_settings_new ("org.gnome.software");
-	g_signal_connect (priv->settings, "changed",
-			  G_CALLBACK (gs_plugin_provenance_license_changed_cb), plugin);
-	priv->sources = gs_plugin_provenance_license_get_sources (plugin);
-	priv->license_id = gs_plugin_provenance_license_get_id (plugin);
+	self->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (self->settings, "changed",
+			  G_CALLBACK (gs_plugin_provenance_license_changed_cb), self);
+	self->sources = gs_plugin_provenance_license_get_sources (self);
+	self->license_id = gs_plugin_provenance_license_get_id (self);
 
 	/* need this set */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "provenance");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "provenance");
 }
 
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static void
+gs_plugin_provenance_license_dispose (GObject *object)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_strfreev (priv->sources);
-	g_free (priv->license_id);
-	g_object_unref (priv->settings);
+	GsPluginProvenanceLicense *self = GS_PLUGIN_PROVENANCE_LICENSE (object);
+
+	g_clear_pointer (&self->sources, g_strfreev);
+	g_clear_pointer (&self->license_id, g_free);
+	g_clear_object (&self->settings);
+
+	G_OBJECT_CLASS (gs_plugin_provenance_license_parent_class)->dispose (object);
 }
 
 static gboolean
-refine_app (GsPlugin             *plugin,
-	    GsApp                *app,
-	    GsPluginRefineFlags   flags,
-	    GCancellable         *cancellable,
-	    GError              **error)
+refine_app (GsPluginProvenanceLicense  *self,
+            GsApp                      *app,
+            GsPluginRefineFlags         flags,
+            GCancellable               *cancellable,
+            GError                    **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *origin;
 
 	/* not required */
@@ -115,13 +121,13 @@ refine_app (GsPlugin             *plugin,
 		return TRUE;
 
 	/* nothing to search */
-	if (priv->sources == NULL || priv->sources[0] == NULL)
+	if (self->sources == NULL || self->sources[0] == NULL)
 		return TRUE;
 
 	/* simple case */
 	origin = gs_app_get_origin (app);
-	if (origin != NULL && gs_utils_strv_fnmatch (priv->sources, origin))
-		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, priv->license_id);
+	if (origin != NULL && gs_utils_strv_fnmatch (self->sources, origin))
+		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, self->license_id);
 
 	return TRUE;
 }
@@ -133,20 +139,34 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GCancellable         *cancellable,
 		  GError              **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsPluginProvenanceLicense *self = GS_PLUGIN_PROVENANCE_LICENSE (plugin);
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
 		return TRUE;
 	/* nothing to search */
-	if (priv->sources == NULL || priv->sources[0] == NULL)
+	if (self->sources == NULL || self->sources[0] == NULL)
 		return TRUE;
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (plugin, app, flags, cancellable, error))
+		if (!refine_app (self, app, flags, cancellable, error))
 			return FALSE;
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_provenance_license_class_init (GsPluginProvenanceLicenseClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_provenance_license_dispose;
+}
+
+GType
+gs_plugin_query_type (void)
+{
+	return GS_TYPE_PLUGIN_PROVENANCE_LICENSE;
 }
