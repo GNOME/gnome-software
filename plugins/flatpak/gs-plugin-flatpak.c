@@ -143,8 +143,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GPtrArray) installations = NULL;
 
-	/* clear in case we're called from resetup in the self tests */
-	g_ptr_array_set_size (self->installations, 0);
+	/* Shouldn’t end up setting up twice */
+	g_assert (self->installations == NULL || self->installations->len == 0);
 
 	/* if we're not just running the tests */
 	if (self->destdir_for_tests == NULL) {
@@ -221,6 +221,31 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	return TRUE;
+}
+
+static void
+gs_plugin_flatpak_shutdown_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_shutdown_async);
+
+	/* Clear the flatpak installations */
+	g_ptr_array_set_size (self->installations, 0);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_shutdown_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -1708,8 +1733,12 @@ static void
 gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_flatpak_dispose;
+
+	plugin_class->shutdown_async = gs_plugin_flatpak_shutdown_async;
+	plugin_class->shutdown_finish = gs_plugin_flatpak_shutdown_finish;
 }
 
 GType
