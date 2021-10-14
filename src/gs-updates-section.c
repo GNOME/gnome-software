@@ -64,9 +64,9 @@ gs_updates_section_get_list (GsUpdatesSection *self)
 }
 
 static gboolean
-_listbox_keynav_failed_cb (GsAppRow *app_row, GtkDirectionType direction)
+_listbox_keynav_failed_cb (GsUpdatesSection *self, GtkDirectionType direction, GtkListBox *listbox)
 {
-	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (app_row));
+	GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (listbox));
 
 	if (!toplevel)
 		return FALSE;
@@ -396,7 +396,7 @@ out:
 }
 
 static void
-_button_cancel_clicked_cb (GtkButton *button, GsUpdatesSection *self)
+_button_cancel_clicked_cb (GsUpdatesSection *self)
 {
 	g_cancellable_cancel (self->cancellable);
 	_update_buttons (self);
