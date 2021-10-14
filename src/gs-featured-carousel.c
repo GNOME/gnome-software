@@ -46,9 +46,7 @@ struct _GsFeaturedCarousel
 
 	AdwCarousel	*carousel;
 	GtkButton	*next_button;
-	GtkImage	*next_button_image;
 	GtkButton	*previous_button;
-	GtkImage	*previous_button_image;
 };
 
 G_DEFINE_TYPE (GsFeaturedCarousel, gs_featured_carousel, GTK_TYPE_BOX)
@@ -135,15 +133,6 @@ stop_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
-image_set_icon_for_direction (GtkImage    *image,
-                              const gchar *ltr_icon_name,
-                              const gchar *rtl_icon_name)
-{
-	const gchar *icon_name = (gtk_widget_get_direction (GTK_WIDGET (image)) == GTK_TEXT_DIR_RTL) ? rtl_icon_name : ltr_icon_name;
-	gtk_image_set_from_icon_name (image, icon_name);
-}
-
-static void
 next_button_clicked_cb (GtkButton *button,
                         gpointer   user_data)
 {
@@ -157,14 +146,6 @@ next_button_clicked_cb (GtkButton *button,
 }
 
 static void
-next_button_direction_changed_cb (GtkWidget        *widget,
-                                  GtkTextDirection  previous_direction,
-                                  gpointer          user_data)
-{
-	image_set_icon_for_direction (GTK_IMAGE (widget), "carousel-arrow-next-symbolic", "carousel-arrow-previous-symbolic");
-}
-
-static void
 previous_button_clicked_cb (GtkButton *button,
                             gpointer   user_data)
 {
@@ -175,14 +156,6 @@ previous_button_clicked_cb (GtkButton *button,
 	/* Reset the rotation timer in case it’s about to fire. */
 	stop_rotation_timer (self);
 	start_rotation_timer (self);
-}
-
-static void
-previous_button_direction_changed_cb (GtkWidget        *widget,
-                                      GtkTextDirection  previous_direction,
-                                      gpointer          user_data)
-{
-	image_set_icon_for_direction (GTK_IMAGE (widget), "carousel-arrow-previous-symbolic", "carousel-arrow-next-symbolic");
 }
 
 static void
@@ -200,10 +173,6 @@ static void
 gs_featured_carousel_init (GsFeaturedCarousel *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
-
-	/* Ensure the text directions are up to date */
-	next_button_direction_changed_cb (GTK_WIDGET (self->next_button_image), GTK_TEXT_DIR_NONE, self);
-	previous_button_direction_changed_cb (GTK_WIDGET (self->previous_button_image), GTK_TEXT_DIR_NONE, self);
 }
 
 static void
@@ -329,13 +298,9 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, next_button);
-	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, next_button_image);
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, previous_button);
-	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, previous_button_image);
 	gtk_widget_class_bind_template_callback (widget_class, next_button_clicked_cb);
-	gtk_widget_class_bind_template_callback (widget_class, next_button_direction_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_clicked_cb);
-	gtk_widget_class_bind_template_callback (widget_class, previous_button_direction_changed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
 }
 
