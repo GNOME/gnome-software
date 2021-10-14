@@ -484,6 +484,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		GtkWidget *row;
 		g_autofree gchar *anchor = NULL;
 		g_autofree gchar *hint = NULL;
+		g_autofree gchar *section_id = NULL;
 
 		widget = gtk_switch_new ();
 		gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
@@ -527,6 +528,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
 					  ADW_PREFERENCES_GROUP (widget));
 
+		/* use something unique, not clashing with the other section names */
+		section_id = g_strdup_printf ("fedora-third-party::1::%p", widget);
+		g_hash_table_insert (dialog->sections, g_steal_pointer (&section_id), widget);
+
 		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, TRUE));
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
@@ -537,6 +542,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			GsApp *repo = link->data;
 			gs_repos_section_add_repo (section, repo);
 		}
+
+		/* use something unique, not clashing with the other section names */
+		section_id = g_strdup_printf ("fedora-third-party::2::%p", section);
+		g_hash_table_insert (dialog->sections, g_steal_pointer (&section_id), section);
 
 		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
 					  ADW_PREFERENCES_GROUP (section));
