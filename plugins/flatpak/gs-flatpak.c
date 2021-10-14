@@ -1623,9 +1623,6 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 			       GError **error)
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
-	#if FLATPAK_CHECK_VERSION(1, 4, 0)
-	gboolean filter_changed = FALSE;
-	#endif
 
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   gs_app_get_id (app),
@@ -1636,8 +1633,6 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 		flatpak_remote_set_disabled (xremote, FALSE);
 		if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REPO) {
 			#if FLATPAK_CHECK_VERSION(1, 4, 0)
-			g_autofree gchar *current_filter = flatpak_remote_get_filter (xremote);
-			filter_changed = g_strcmp0 (current_filter, gs_flatpak_app_get_repo_filter (app)) != 0;
 			flatpak_remote_set_filter (xremote, gs_flatpak_app_get_repo_filter (app));
 			flatpak_remote_set_description (xremote, gs_app_get_description (app));
 			#endif
@@ -1671,17 +1666,10 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 	/* success */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
-	#if FLATPAK_CHECK_VERSION(1, 4, 0)
-	if (filter_changed) {
-		g_autoptr(GError) local_error = NULL;
-		const gchar *remote_name = flatpak_remote_get_name (xremote);
-		if (!flatpak_installation_update_appstream_sync (self->installation, remote_name, NULL, NULL, cancellable, &local_error) &&
-		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_warning ("Failed to update appstream data for flatpak remote '%s': %s",
-				remote_name, local_error->message);
-		}
-	}
-	#endif
+	/* This can fail silently, it's only to update necessary caches, to provide
+	 * up-to-date information after the successful remote enable/install. */
+	gs_flatpak_refresh (self, 1, cancellable, NULL);
+
 	gs_plugin_repository_changed (self->plugin, app);
 
 	return TRUE;
