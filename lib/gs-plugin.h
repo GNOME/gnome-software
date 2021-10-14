@@ -26,6 +26,20 @@ G_BEGIN_DECLS
 
 G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
 
+/**
+ * GsPluginClass:
+ * @shutdown_async: (nullable): Shutdown method for the plugin. This is called
+ *   by the #GsPluginLoader when the process is terminating or the
+ *   #GsPluginLoader is being destroyed. It should be used to cancel or stop any
+ *   ongoing operations or threads in the plugin. It may be %NULL if the plugin
+ *   doesn’t need to be explicitly shut down.
+ * @shutdown_finish: (nullable): Finish method for @shutdown_async. Must be
+ *   implemented if @shutdown_async is implemented.
+ *
+ * The class structure for a #GsPlugin. Virtual methods here should be
+ * implemented by plugin implementations derived from #GsPlugin to provide their
+ * plugin-specific behaviour.
+ */
 struct _GsPluginClass
 {
 	GObjectClass		 parent_class;
@@ -50,6 +64,15 @@ struct _GsPluginClass
 							 const gchar	*msg,
 							 const gchar	*details,
 							 const gchar	*accept_label);
+
+	void			(*shutdown_async)	(GsPlugin		*plugin,
+							 GCancellable		*cancellable,
+							 GAsyncReadyCallback	 callback,
+							 gpointer		 user_data);
+	gboolean		(*shutdown_finish)	(GsPlugin		*plugin,
+							 GAsyncResult		*result,
+							 GError			**error);
+
 	gpointer		 padding[23];
 };
 

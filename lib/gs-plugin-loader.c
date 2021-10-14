@@ -2797,7 +2797,13 @@ gs_plugin_loader_dispose (GObject *object)
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	if (plugin_loader->plugins != NULL) {
-		/* FIXME: call a ->stop() (or similar) method on every plugin */
+		/* Shut down all the plugins first. */
+		for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+			GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
+			if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL)
+				GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, NULL, NULL, NULL);
+		}
+
 		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
 	if (plugin_loader->updates_changed_id != 0) {
