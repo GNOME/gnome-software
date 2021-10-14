@@ -1712,22 +1712,53 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gs_app_set_install_date (app, timestamp);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
-{
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+static void setup_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data);
 
-	self->connection_history = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
-						   cancellable,
-						   error);
+static void
+gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_setup_async);
+
+	g_bus_get (G_BUS_TYPE_SYSTEM, cancellable, setup_cb, g_steal_pointer (&task));
+}
+
+static void
+setup_cb (GObject      *source_object,
+          GAsyncResult *result,
+          gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	self->connection_history = g_bus_get_finish (result, &local_error);
 	if (self->connection_history == NULL) {
-		gs_plugin_packagekit_error_convert (error);
-		return FALSE;
+		gs_plugin_packagekit_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
+	/* TODO Make this fully async */
 	reload_proxy_settings (self, cancellable);
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_setup_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -2750,9 +2781,13 @@ static void
 gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_packagekit_dispose;
 	object_class->finalize = gs_plugin_packagekit_finalize;
+
+	plugin_class->setup_async = gs_plugin_packagekit_setup_async;
+	plugin_class->setup_finish = gs_plugin_packagekit_setup_finish;
 }
 
 GType
