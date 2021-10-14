@@ -65,6 +65,8 @@ struct _GsPluginPackagekit {
 
 	PkTask			*task_upgrade;
 	GMutex			 task_mutex_upgrade;
+
+	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 };
 
 G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
@@ -78,8 +80,13 @@ static gboolean gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
-static void reload_proxy_settings (GsPluginPackagekit *self,
-                                   GCancellable       *cancellable);
+static void reload_proxy_settings_async (GsPluginPackagekit  *self,
+                                         GCancellable        *cancellable,
+                                         GAsyncReadyCallback  callback,
+                                         gpointer             user_data);
+static gboolean reload_proxy_settings_finish (GsPluginPackagekit  *self,
+                                              GAsyncResult        *result,
+                                              GError             **error);
 
 static void
 gs_plugin_packagekit_init (GsPluginPackagekit *self)
@@ -154,6 +161,9 @@ static void
 gs_plugin_packagekit_dispose (GObject *object)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
+
+	g_cancellable_cancel (self->proxy_settings_cancellable);
+	g_clear_object (&self->proxy_settings_cancellable);
 
 	/* core */
 	g_clear_object (&self->task);
@@ -1715,6 +1725,9 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 static void setup_cb (GObject      *source_object,
                       GAsyncResult *result,
                       gpointer      user_data);
+static void setup_proxy_settings_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
 
 static void
 gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
@@ -1747,8 +1760,21 @@ setup_cb (GObject      *source_object,
 		return;
 	}
 
-	/* TODO Make this fully async */
-	reload_proxy_settings (self, cancellable);
+	reload_proxy_settings_async (self, cancellable, setup_proxy_settings_cb, g_steal_pointer (&task));
+}
+
+static void
+setup_proxy_settings_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!reload_proxy_settings_finish (self, result, &local_error))
+		g_warning ("Failed to load proxy settings: %s", local_error->message);
+	g_clear_error (&local_error);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -1757,6 +1783,32 @@ static gboolean
 gs_plugin_packagekit_setup_finish (GsPlugin      *plugin,
                                    GAsyncResult  *result,
                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_packagekit_shutdown_async (GsPlugin            *plugin,
+                                     GCancellable        *cancellable,
+                                     GAsyncReadyCallback  callback,
+                                     gpointer             user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_shutdown_async);
+
+	/* Cancel any ongoing proxy settings loading operation. */
+	g_cancellable_cancel (self->proxy_settings_cancellable);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_shutdown_finish (GsPlugin      *plugin,
+                                      GAsyncResult  *result,
+                                      GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
@@ -2525,21 +2577,39 @@ get_pac (GsPluginPackagekit *self)
 	return url;
 }
 
+static void get_permission_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void set_proxy_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data);
+
 static void
-set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
+reload_proxy_settings_async (GsPluginPackagekit  *self,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
-	g_autoptr(GError) error = NULL;
-	if (!pk_control_set_proxy_finish (PK_CONTROL (object), res, &error)) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to set proxies: %s", error->message);
-	}
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, reload_proxy_settings_async);
+
+	/* only if we can achieve the action *without* an auth dialog */
+	gs_utils_get_permission_async ("org.freedesktop.packagekit."
+				       "system-network-proxy-configure",
+				       cancellable, get_permission_cb,
+				       g_steal_pointer (&task));
 }
 
 static void
-reload_proxy_settings (GsPluginPackagekit *self,
-                       GCancellable       *cancellable)
+get_permission_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autofree gchar *proxy_http = NULL;
 	g_autofree gchar *proxy_https = NULL;
 	g_autofree gchar *proxy_ftp = NULL;
@@ -2548,17 +2618,17 @@ reload_proxy_settings (GsPluginPackagekit *self,
 	g_autofree gchar *pac = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPermission) permission = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* only if we can achieve the action *without* an auth dialog */
-	permission = gs_utils_get_permission ("org.freedesktop.packagekit."
-					      "system-network-proxy-configure",
-					      cancellable, &error);
+	permission = gs_utils_get_permission_finish (result, &local_error);
 	if (permission == NULL) {
-		g_debug ("not setting proxy as no permission: %s", error->message);
+		g_debug ("not setting proxy as no permission: %s", local_error->message);
+		g_task_return_boolean (task, TRUE);
 		return;
 	}
 	if (!g_permission_get_allowed (permission)) {
 		g_debug ("not setting proxy as no auth requested");
+		g_task_return_boolean (task, TRUE);
 		return;
 	}
 
@@ -2583,8 +2653,37 @@ reload_proxy_settings (GsPluginPackagekit *self,
 				     pac,
 				     cancellable,
 				     set_proxy_cb,
-				     plugin);
+				     g_steal_pointer (&task));
 }
+
+static void
+set_proxy_cb (GObject      *source_object,
+              GAsyncResult *result,
+              gpointer      user_data)
+{
+	PkControl *control = PK_CONTROL (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!pk_control_set_proxy_finish (control, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+reload_proxy_settings_finish (GsPluginPackagekit  *self,
+                              GAsyncResult        *result,
+                              GError             **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void proxy_changed_reload_proxy_settings_cb (GObject      *source_object,
+                                                    GAsyncResult *result,
+                                                    gpointer      user_data);
 
 static void
 gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
@@ -2596,7 +2695,25 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
 	if (!gs_plugin_get_enabled (GS_PLUGIN (self)))
 		return;
 
-	reload_proxy_settings (self, NULL);
+	g_cancellable_cancel (self->proxy_settings_cancellable);
+	g_clear_object (&self->proxy_settings_cancellable);
+	self->proxy_settings_cancellable = g_cancellable_new ();
+
+	reload_proxy_settings_async (self, self->proxy_settings_cancellable,
+				     proxy_changed_reload_proxy_settings_cb, self);
+}
+
+static void
+proxy_changed_reload_proxy_settings_cb (GObject      *source_object,
+                                        GAsyncResult *result,
+                                        gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!reload_proxy_settings_finish (self, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		g_warning ("Failed to set proxies: %s", local_error->message);
 }
 
 gboolean
@@ -2788,6 +2905,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 
 	plugin_class->setup_async = gs_plugin_packagekit_setup_async;
 	plugin_class->setup_finish = gs_plugin_packagekit_setup_finish;
+	plugin_class->shutdown_async = gs_plugin_packagekit_shutdown_async;
+	plugin_class->shutdown_finish = gs_plugin_packagekit_shutdown_finish;
 }
 
 GType
