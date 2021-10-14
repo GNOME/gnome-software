@@ -522,7 +522,9 @@ unset_focus (GtkWidget *widget, gpointer data)
  * Inserts a widget displaying the detailed message into the message dialog.
  */
 static void
-insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
+insert_details_widget (GtkMessageDialog *dialog,
+		       const gchar *details,
+		       gboolean add_prefix)
 {
 	GtkWidget *message_area, *sw, *label;
 	GtkWidget *tv;
@@ -535,13 +537,15 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 
 	gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
 
-	msg = g_string_new ("");
-	g_string_append_printf (msg, "%s\n\n%s",
-	                        /* TRANSLATORS: these are show_detailed_error messages from the
-	                         * package manager no mortal is supposed to understand,
-	                         * but google might know what they mean */
-	                        _("Detailed errors from the package manager follow:"),
-	                        details);
+	if (add_prefix) {
+		msg = g_string_new ("");
+		g_string_append_printf (msg, "%s\n\n%s",
+					/* TRANSLATORS: these are show_detailed_error messages from the
+					 * package manager no mortal is supposed to understand,
+					 * but google might know what they mean */
+					_("Detailed errors from the package manager follow:"),
+					details);
+	}
 
 	message_area = gtk_message_dialog_get_message_area (dialog);
 	g_assert (GTK_IS_BOX (message_area));
@@ -573,7 +577,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
 	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
 	                             "update-failed-details");
-	gtk_text_buffer_set_text (buffer, msg->str, -1);
+	gtk_text_buffer_set_text (buffer, msg ? msg->str : details, -1);
 	gtk_widget_set_visible (tv, TRUE);
 
 	gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (sw), tv);
@@ -608,12 +612,74 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 	                                          "%s", msg);
 	if (details != NULL)
-		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details);
+		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details, TRUE);
 
 	g_signal_connect_swapped (dialog, "response",
 	                          G_CALLBACK (gtk_window_destroy),
 	                          dialog);
 	gtk_widget_show (dialog);
+}
+
+/**
+ * gs_utils_ask_user_accepts:
+ * @parent: (nullable): modal parent, or %NULL for none
+ * @title: the title for the dialog
+ * @msg: the message for the dialog
+ * @details: (nullable): the detailed error message, or %NULL for none
+ * @accept_label: (nullable): a label of the 'accept' button, or %NULL to use 'Accept'
+ *
+ * Shows a modal question dialog for displaying an accept/cancel question to the user.
+ *
+ * Returns: whether the user accepted the question
+ *
+ * Since: 42
+ **/
+gboolean
+gs_utils_ask_user_accepts (GtkWindow *parent,
+			   const gchar *title,
+			   const gchar *msg,
+			   const gchar *details,
+			   const gchar *accept_label)
+{
+	GtkWidget *dialog;
+	RunInfo run_info;
+
+	g_return_val_if_fail (parent == NULL || GTK_IS_WINDOW (parent), FALSE);
+	g_return_val_if_fail (title != NULL, FALSE);
+	g_return_val_if_fail (msg != NULL, FALSE);
+
+	if (accept_label == NULL || *accept_label == '\0') {
+		/* Translators: an accept button label, in a Cancel/Accept dialog */
+		accept_label = _("_Accept");
+	}
+
+	dialog = gtk_message_dialog_new_with_markup (parent,
+	                                             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+	                                             GTK_MESSAGE_QUESTION,
+	                                             GTK_BUTTONS_NONE,
+	                                             "<big><b>%s</b></big>", title);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+	                                          "%s", msg);
+	if (details != NULL)
+		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details, FALSE);
+	gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Cancel"), GTK_RESPONSE_CANCEL);
+	gtk_dialog_add_button (GTK_DIALOG (dialog), accept_label, GTK_RESPONSE_OK);
+
+	run_info.response_id = GTK_RESPONSE_NONE;
+	run_info.loop = g_main_loop_new (NULL, FALSE);
+
+	/* Run */
+	if (!gtk_widget_get_visible (dialog))
+		gtk_window_present (GTK_WINDOW (dialog));
+
+	g_signal_connect (dialog, "close-request", G_CALLBACK (close_requested_cb), &run_info);
+	g_signal_connect (dialog, "response", G_CALLBACK (response_cb), &run_info);
+	g_signal_connect (dialog, "unmap", G_CALLBACK (unmap_cb), &run_info);
+
+	g_main_loop_run (run_info.loop);
+	g_clear_pointer (&run_info.loop, g_main_loop_unref);
+
+	return run_info.response_id == GTK_RESPONSE_OK;
 }
 
 /**
