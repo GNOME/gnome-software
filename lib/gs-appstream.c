@@ -29,7 +29,7 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 		return NULL;
 
 	/* never add wildcard apps to the plugin cache */
-	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD))
+	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD) || plugin == NULL)
 		return g_steal_pointer (&app_new);
 
 	/* look for existing object */
@@ -813,8 +813,7 @@ gs_appstream_refine_app_content_ratings (GsApp *app,
 }
 
 static gboolean
-gs_appstream_refine_app_relation (GsPlugin        *plugin,
-                                  GsApp           *app,
+gs_appstream_refine_app_relation (GsApp           *app,
                                   XbNode          *relation_node,
                                   AsRelationKind   kind,
                                   GError         **error)
@@ -865,8 +864,7 @@ gs_appstream_refine_app_relation (GsPlugin        *plugin,
 }
 
 static gboolean
-gs_appstream_refine_app_relations (GsPlugin  *plugin,
-                                   GsApp     *app,
+gs_appstream_refine_app_relations (GsApp     *app,
                                    XbNode    *component,
                                    GError   **error)
 {
@@ -887,7 +885,7 @@ gs_appstream_refine_app_relations (GsPlugin  *plugin,
 
 	for (guint i = 0; i < recommends->len; i++) {
 		XbNode *recommend = g_ptr_array_index (recommends, i);
-		if (!gs_appstream_refine_app_relation (plugin, app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
+		if (!gs_appstream_refine_app_relation (app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
 			return FALSE;
 	}
 
@@ -904,7 +902,7 @@ gs_appstream_refine_app_relations (GsPlugin  *plugin,
 
 	for (guint i = 0; i < requires->len; i++) {
 		XbNode *require = g_ptr_array_index (requires, i);
-		if (!gs_appstream_refine_app_relation (plugin, app, require, AS_RELATION_KIND_REQUIRES, error))
+		if (!gs_appstream_refine_app_relation (app, require, AS_RELATION_KIND_REQUIRES, error))
 			return FALSE;
 	}
 
@@ -1012,7 +1010,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	 * are the permissions. It would be good to eliminate refine flags at
 	 * some point in the future. */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
-		if (!gs_appstream_refine_app_relations (plugin, app, component, error))
+		if (!gs_appstream_refine_app_relations (app, component, error))
 			return FALSE;
 	}
 
@@ -1206,7 +1204,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set addons */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) != 0 &&
+	    plugin != NULL && silo != NULL) {
 		if (!gs_appstream_refine_add_addons (plugin, app, silo, error))
 			return FALSE;
 	}
@@ -1277,7 +1276,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* is there any update information */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) != 0 &&
+	    silo != NULL) {
 		if (!gs_appstream_refine_app_updates (app,
 						      silo,
 						      component,
