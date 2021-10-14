@@ -89,6 +89,7 @@ enum {
 	SIGNAL_ALLOW_UPDATES,
 	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_REPOSITORY_CHANGED,
+	SIGNAL_ASK_UNTRUSTED,
 	SIGNAL_LAST
 };
 
@@ -2081,6 +2082,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, repository_changed),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
+	signals [SIGNAL_ASK_UNTRUSTED] =
+		g_signal_new ("ask-untrusted",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, ask_untrusted),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_BOOLEAN, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 static void
@@ -2238,4 +2246,39 @@ gs_plugin_get_action_supported (GsPlugin *plugin,
 	g_return_val_if_fail (function_name != NULL, FALSE);
 
 	return gs_plugin_get_symbol (plugin, function_name) != NULL;
+}
+
+/**
+ * gs_plugin_ask_untrusted:
+ * @plugin: a #GsPlugin
+ * @title: the title for the question
+ * @msg: the message for the question
+ * @details: (nullable): the detailed error message, or %NULL for none
+ * @accept_label: (nullable): a label of the 'accept' button, or %NULL to use 'Accept'
+ *
+ * Asks the user whether he/she accepts an untrusted package install/download/update,
+ * as described by @title and @msg, eventually with the @details.
+ *
+ * Note: This is a blocking call and can be called only from the main/GUI thread.
+ *
+ * Returns: whether the user accepted the question
+ *
+ * Since: 42
+ **/
+gboolean
+gs_plugin_ask_untrusted (GsPlugin *plugin,
+			 const gchar *title,
+			 const gchar *msg,
+			 const gchar *details,
+			 const gchar *accept_label)
+{
+	gboolean accepts = FALSE;
+	g_signal_emit (plugin,
+		       signals[SIGNAL_ASK_UNTRUSTED], 0,
+		       title,
+		       msg,
+		       details,
+		       accept_label,
+		       &accepts);
+	return accepts;
 }
