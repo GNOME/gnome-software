@@ -300,9 +300,15 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	     child = gtk_widget_get_next_sibling (child)) {
 		GsApp *existing_app;
 
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		existing_app = gs_app_row_get_app (GS_APP_ROW (child));
-		if (app == existing_app)
+		if (app == existing_app) {
 			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_results), child);
+			break;
+		}
 	}
 
 	app_row = gs_app_row_new (app);
@@ -461,6 +467,10 @@ build_no_results_label (GsExtrasPage *self)
 	for (child = gtk_widget_get_first_child (self->list_box_results);
 	     child != NULL;
 	     child = gtk_widget_get_next_sibling (child)) {
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		app = gs_app_row_get_app (GS_APP_ROW (child));
 		g_ptr_array_add (array,
 		                 g_object_get_data (G_OBJECT (child), "missing-title"));
@@ -507,6 +517,10 @@ show_search_results (GsExtrasPage *self)
 	for (child = first_child;
 	     child != NULL;
 	     child = gtk_widget_get_next_sibling (child)) {
+		/* Might be a separator from list_header_func(). */
+		if (!GS_IS_APP_ROW (child))
+			continue;
+
 		app = gs_app_row_get_app (GS_APP_ROW (child));
 		if (g_strcmp0 (gs_app_get_id (app), "missing-codec") == 0) {
 			n_missing++;
@@ -522,18 +536,20 @@ show_search_results (GsExtrasPage *self)
 		str = build_no_results_label (self);
 		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_NO_RESULTS);
-	} else if (n_children == 1) {
-		/* switch directly to details view */
-		g_debug ("extras: found one result, showing in details view");
-		g_assert (first_child != NULL);
-		app = gs_app_row_get_app (GS_APP_ROW (first_child));
-		gs_shell_show_app (self->shell, app);
-		if (gs_app_is_installed (app))
-			gs_extras_page_maybe_emit_installed_resources_done (self);
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %u search results, showing", n_children);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_READY);
+
+		if (n_children == 1) {
+			/* switch directly to details view */
+			g_debug ("extras: found one result, showing in details view");
+			g_assert (first_child != NULL);
+			app = gs_app_row_get_app (GS_APP_ROW (first_child));
+			gs_shell_show_app (self->shell, app);
+			if (gs_app_is_installed (app))
+				gs_extras_page_maybe_emit_installed_resources_done (self);
+		}
 	}
 }
 
