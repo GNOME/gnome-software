@@ -631,7 +631,10 @@ gs_shell_change_mode (GsShell *shell,
 		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 	} else if (mode == GS_SHELL_MODE_DETAILS) {
 		app = GS_APP (data);
-		if (gs_app_get_local_file (app) != NULL) {
+		if (gs_app_get_metadata_item (app, "GnomeSoftware::show-metainfo") != NULL) {
+			gs_details_page_set_metainfo (GS_DETAILS_PAGE (page),
+						      gs_app_get_local_file (app));
+		} else if (gs_app_get_local_file (app) != NULL) {
 			gs_details_page_set_local_file (GS_DETAILS_PAGE (page),
 			                                gs_app_get_local_file (app));
 		} else if (gs_app_get_metadata_item (app, "GnomeSoftware::from-url") != NULL) {
@@ -2374,6 +2377,34 @@ gs_shell_show_local_file (GsShell *shell, GFile *file)
 {
 	g_autoptr(GsApp) app = gs_app_new (NULL);
 	save_back_entry (shell);
+	gs_app_set_local_file (app, file);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
+			      (gpointer) app, TRUE);
+	gs_shell_activate (shell);
+}
+
+/**
+ * gs_shell_show_metainfo:
+ * @shell: a #GsShell
+ * @file: path to a metainfo file to display
+ *
+ * Open a metainfo file and display it on the details page as if it were
+ * published in a repository configured on the system.
+ *
+ * This is intended for app developers to be able to test their metainfo files
+ * locally.
+ *
+ * Since: 42
+ */
+void
+gs_shell_show_metainfo (GsShell *shell, GFile *file)
+{
+	g_autoptr(GsApp) app = gs_app_new (NULL);
+
+	g_return_if_fail (GS_IS_SHELL (shell));
+	g_return_if_fail (G_IS_FILE (file));
+	save_back_entry (shell);
+	gs_app_set_metadata (app, "GnomeSoftware::show-metainfo", "1");
 	gs_app_set_local_file (app, file);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
 			      (gpointer) app, TRUE);

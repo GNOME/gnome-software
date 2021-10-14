@@ -33,5 +33,7 @@ void		 gs_details_page_set_odrs_provider	(GsDetailsPage	*self,
 gboolean	 gs_details_page_get_is_narrow	(GsDetailsPage	*self);
 void		 gs_details_page_set_is_narrow	(GsDetailsPage	*self,
 						 gboolean	 is_narrow);
+void		 gs_details_page_set_metainfo	(GsDetailsPage *self,
+						 GFile *file);
 
 G_END_DECLS
