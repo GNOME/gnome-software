@@ -59,10 +59,7 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (object);
 
-	if (self->inactive_timeout_id) {
-		g_source_remove (self->inactive_timeout_id);
-		self->inactive_timeout_id = 0;
-	}
+	g_clear_handle_id (&self->inactive_timeout_id, g_source_remove);
 	g_clear_object (&self->os_proxy);
 	g_clear_object (&self->sysroot_proxy);
 	g_clear_object (&self->ot_sysroot);
