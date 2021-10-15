@@ -16,6 +16,17 @@
 
 #include "gs-plugin-snap.h"
 
+/*
+ * SECTION:
+ * Lists and allows installation/uninstallation of snaps from the snap store.
+ *
+ * Since snapd is a daemon accessible over D-Bus, this plugin basically
+ * translates every job into one or more D-Bus calls, and all the real work is
+ * done in the snapd daemon. FIXME: This means the plugin can therefore execute
+ * entirely in the main thread, making asynchronous D-Bus calls, once all the
+ * vfuncs have been ported.
+ */
+
 struct _GsPluginSnap {
 	GsPlugin		 parent;
 
@@ -225,20 +236,51 @@ snapd_error_convert (GError **perror)
 	error->domain = GS_PLUGIN_ERROR;
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void get_system_information_cb (GObject      *source_object,
+                                       GAsyncResult *result,
+                                       gpointer      user_data);
+
+static void
+gs_plugin_snap_setup_async (GsPlugin            *plugin,
+                            GCancellable        *cancellable,
+                            GAsyncReadyCallback  callback,
+                            gpointer             user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_setup_async);
+
+	client = get_client (self, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	snapd_client_get_system_information_async (client, cancellable,
+						   get_system_information_cb, g_steal_pointer (&task));
+}
+
+static void
+get_system_information_cb (GObject      *source_object,
+                           GAsyncResult *result,
+                           gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginSnap *self = g_task_get_source_object (task);
 	g_autoptr(SnapdSystemInformation) system_information = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	client = get_client (self, error);
-	if (client == NULL)
-		return FALSE;
+	system_information = snapd_client_get_system_information_finish (client, result, &local_error);
+	if (system_information == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
-	system_information = snapd_client_get_system_information_sync (client, cancellable, error);
-	if (system_information == NULL)
-		return FALSE;
 	self->store_name = g_strdup (snapd_system_information_get_store (system_information));
 	if (self->store_name == NULL) {
 		self->store_name = g_strdup (/* TRANSLATORS: default snap store name */
@@ -248,7 +290,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	self->system_confinement = snapd_system_information_get_confinement (system_information);
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_snap_setup_finish (GsPlugin      *plugin,
+                             GAsyncResult  *result,
+                             GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static SnapdSnap *
@@ -1526,9 +1576,13 @@ static void
 gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_snap_dispose;
 	object_class->finalize = gs_plugin_snap_finalize;
+
+	plugin_class->setup_async = gs_plugin_snap_setup_async;
+	plugin_class->setup_finish = gs_plugin_snap_setup_finish;
 }
 
 GType
