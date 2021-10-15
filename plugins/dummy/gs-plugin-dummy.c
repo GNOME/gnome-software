@@ -72,12 +72,17 @@ gs_plugin_dummy_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_dummy_parent_class)->dispose (object);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin      *plugin,
-                 GCancellable  *cancellable,
-                 GError       **error)
+static void
+gs_plugin_dummy_setup_async (GsPlugin            *plugin,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_setup_async);
 
 	/* toggle this */
 	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
@@ -111,7 +116,15 @@ gs_plugin_setup (GsPlugin      *plugin,
 			     g_strdup ("com.hughski.ColorHug2.driver"),
 			     GUINT_TO_POINTER (1));
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_setup_finish (GsPlugin      *plugin,
+                              GAsyncResult  *result,
+                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 void
@@ -887,8 +900,12 @@ static void
 gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_dummy_dispose;
+
+	plugin_class->setup_async = gs_plugin_dummy_setup_async;
+	plugin_class->setup_finish = gs_plugin_dummy_setup_finish;
 }
 
 GType
