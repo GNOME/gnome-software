@@ -15,6 +15,16 @@
 
 #include "gs-plugin-fedora-pkgdb-collections.h"
 
+/*
+ * SECTION:
+ * Queries the list of Fedora package collections.
+ *
+ * FIXME: Once all its vfuncs are ported to be asynchronous, this plugin could
+ * run entirely in the main thread. It downloads a file and then performs some
+ * basic parsing on it. If moved to the main thread, its locking could be
+ * dropped.
+ */
+
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
 
 struct _GsPluginFedoraPkgdbCollections {
@@ -101,6 +111,7 @@ gs_plugin_fedora_pkgdb_collections_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_fedora_pkgdb_collections_parent_class)->finalize (object);
 }
 
+/* Runs in the main thread. */
 static void
 _file_changed_cb (GFileMonitor *monitor,
 		  GFile *file, GFile *other_file,
@@ -114,55 +125,76 @@ _file_changed_cb (GFileMonitor *monitor,
 	self->is_valid = FALSE;
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void
+gs_plugin_fedora_pkgdb_collections_setup_async (GsPlugin            *plugin,
+                                                GCancellable        *cancellable,
+                                                GAsyncReadyCallback  callback,
+                                                gpointer             user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	const gchar *verstr = NULL;
 	gchar *endptr = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_setup_async);
 
 	/* get the file to cache */
 	self->cachefn = gs_utils_get_cache_filename ("fedora-pkgdb-collections",
 						     "fedora.json",
 						     GS_UTILS_CACHE_FLAG_WRITEABLE |
 						     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-						     error);
-	if (self->cachefn == NULL)
-		return FALSE;
+						     &local_error);
+	if (self->cachefn == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* watch this in case it is changed by the user */
 	file = g_file_new_for_path (self->cachefn);
 	self->cachefn_monitor = g_file_monitor (file,
 						G_FILE_MONITOR_NONE,
 						cancellable,
-						error);
-	if (self->cachefn_monitor == NULL)
-		return FALSE;
+						&local_error);
+	if (self->cachefn_monitor == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	g_signal_connect (self->cachefn_monitor, "changed",
 			  G_CALLBACK (_file_changed_cb), plugin);
 
 	/* read os-release for the current versions */
-	os_release = gs_os_release_new (error);
-	if (os_release == NULL)
-		return FALSE;
+	os_release = gs_os_release_new (&local_error);
+	if (os_release == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	self->os_name = g_strdup (gs_os_release_get_name (os_release));
-	if (self->os_name == NULL)
-		return FALSE;
+	if (self->os_name == NULL) {
+		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "OS release had no name");
+		return;
+	}
+
 	verstr = gs_os_release_get_version_id (os_release);
-	if (verstr == NULL)
-		return FALSE;
+	if (verstr == NULL) {
+		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "OS release had no version ID");
+		return;
+	}
 
 	/* parse the version */
 	self->os_version = g_ascii_strtoull (verstr, &endptr, 10);
 	if (endptr == verstr || self->os_version > G_MAXUINT) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "Failed parse VERSION_ID: %s", verstr);
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT,
+					 "Failed parse VERSION_ID: %s", verstr);
+		return;
 	}
 
 	/* add source */
@@ -179,7 +211,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     self->cached_origin);
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_fedora_pkgdb_collections_setup_finish (GsPlugin      *plugin,
+                                                 GAsyncResult  *result,
+                                                 GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -621,9 +661,13 @@ static void
 gs_plugin_fedora_pkgdb_collections_class_init (GsPluginFedoraPkgdbCollectionsClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_fedora_pkgdb_collections_dispose;
 	object_class->finalize = gs_plugin_fedora_pkgdb_collections_finalize;
+
+	plugin_class->setup_async = gs_plugin_fedora_pkgdb_collections_setup_async;
+	plugin_class->setup_finish = gs_plugin_fedora_pkgdb_collections_setup_finish;
 }
 
 GType
