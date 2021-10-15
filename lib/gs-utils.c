@@ -276,6 +276,61 @@ gs_utils_get_permission (const gchar *id, GCancellable *cancellable, GError **er
 }
 
 /**
+ * gs_utils_get_permission_async:
+ * @id: a polkit action ID, for example `org.freedesktop.packagekit.trigger-offline-update`
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: callback for when the asynchronous operation is complete
+ * @user_data: data to pass to @callback
+ *
+ * Asynchronously gets a #GPermission object representing the given polkit
+ * action @id.
+ *
+ * Since: 42
+ */
+void
+gs_utils_get_permission_async (const gchar         *id,
+                               GCancellable        *cancellable,
+                               GAsyncReadyCallback  callback,
+                               gpointer             user_data)
+{
+	g_return_if_fail (id != NULL);
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+#ifdef HAVE_POLKIT
+	polkit_permission_new (id, NULL, cancellable, callback, user_data);
+#else
+	g_task_report_new_error (NULL, callback, user_data, gs_utils_get_permission_async,
+				 GS_PLUGIN_ERROR,
+				 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				 "no PolicyKit, so can't return GPermission for %s", id);
+#endif
+}
+
+/**
+ * gs_utils_get_permission_finish:
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous operation started with gs_utils_get_permission_async().
+ *
+ * Returns: (transfer full): a #GPermission representing the given action ID
+ * Since: 42
+ */
+GPermission *
+gs_utils_get_permission_finish (GAsyncResult  *result,
+                                GError       **error)
+{
+	g_return_val_if_fail (G_IS_ASYNC_RESULT (result), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+#ifdef HAVE_POLKIT
+	return polkit_permission_new_finish (result, error);
+#else
+	return g_task_propagate_pointer (G_TASK (result), error);
+#endif
+}
+
+/**
  * gs_utils_get_content_type:
  * @file: A GFile
  * @cancellable: A #GCancellable, or %NULL
