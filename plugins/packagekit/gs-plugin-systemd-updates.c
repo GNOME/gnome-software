@@ -513,6 +513,5 @@ gs_plugin_systemd_updates_class_init (GsPluginSystemdUpdatesClass *klass)
 GType
 gs_plugin_query_type (void)
 {
-
 	return GS_TYPE_PLUGIN_SYSTEMD_UPDATES;
 }
