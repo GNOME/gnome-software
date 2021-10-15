@@ -13,6 +13,20 @@
 
 #include "gs-plugin-repos.h"
 
+/*
+ * SECTION:
+ * Plugin to set URLs and origin hostnames on repos and apps using data from
+ * `/etc/yum.repos.d`
+ *
+ * This plugin is only useful on distributions which use `/etc/yum.repos.d`.
+ *
+ * It enumerates `/etc/yum.repos.d` in a worker thread and updates its internal
+ * hash tables and state from that worker thread (while holding a lock).
+ *
+ * Other tasks on the plugin access the data synchronously, not using a worker
+ * thread. Data accesses should be fast.
+ */
+
 struct _GsPluginRepos {
 	GsPlugin	 parent;
 
@@ -151,6 +165,7 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 	return TRUE;
 }
 
+/* Run in the main thread. */
 static void
 gs_plugin_repos_changed_cb (GFileMonitor      *monitor,
                             GFile             *file,
@@ -163,24 +178,58 @@ gs_plugin_repos_changed_cb (GFileMonitor      *monitor,
 	g_atomic_int_set (&self->valid, FALSE);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+/* Run in a worker thread. */
+static void
+setup_thread_cb (GTask        *task,
+                 gpointer      source_object,
+                 gpointer      task_data,
+                 GCancellable *cancellable)
+{
+	GsPluginRepos *self = GS_PLUGIN_REPOS (source_object);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_repos_ensure_valid_locked (self, cancellable, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_repos_setup_async (GsPlugin            *plugin,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
 	g_autoptr(GFile) file = g_file_new_for_path (self->reposdir);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* watch for changes */
-	self->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, error);
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_repos_setup_async);
+
+	/* watch for changes in the main thread */
+	self->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, &local_error);
 	if (self->monitor == NULL) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
+
 	g_signal_connect (self->monitor, "changed",
 			  G_CALLBACK (gs_plugin_repos_changed_cb), self);
 
-	/* unconditionally at startup */
-	return gs_plugin_repos_ensure_valid_locked (self, cancellable, error);
+	/* Set up the repos at startup. */
+	g_task_run_in_thread (task, setup_thread_cb);
+}
+
+static gboolean
+gs_plugin_repos_setup_finish (GsPlugin      *plugin,
+                              GAsyncResult  *result,
+                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -289,9 +338,13 @@ static void
 gs_plugin_repos_class_init (GsPluginReposClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_repos_dispose;
 	object_class->finalize = gs_plugin_repos_finalize;
+
+	plugin_class->setup_async = gs_plugin_repos_setup_async;
+	plugin_class->setup_finish = gs_plugin_repos_setup_finish;
 }
 
 GType
