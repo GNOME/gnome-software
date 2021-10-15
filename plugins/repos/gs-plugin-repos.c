@@ -21,7 +21,7 @@ struct _GsPluginRepos {
 	GFileMonitor	*monitor;
 	GMutex		 mutex;
 	gchar		*reposdir;
-	gboolean	 valid;
+	gboolean	 valid;		/* (atomic) */
 };
 
 G_DEFINE_TYPE (GsPluginRepos, gs_plugin_repos, GS_TYPE_PLUGIN)
@@ -76,17 +76,17 @@ gs_plugin_repos_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_repos_parent_class)->finalize (object);
 }
 
-/* mutex must be held */
+/* Run in a worker thread; mutex must be held */
 static gboolean
-gs_plugin_repos_setup (GsPluginRepos  *self,
-                       GCancellable   *cancellable,
-                       GError        **error)
+gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
+                                     GCancellable   *cancellable,
+                                     GError        **error)
 {
 	g_autoptr(GDir) dir = NULL;
 	const gchar *fn;
 
 	/* already valid */
-	if (self->valid)
+	if (g_atomic_int_get (&self->valid))
 		return TRUE;
 
 	/* clear existing */
@@ -146,7 +146,8 @@ gs_plugin_repos_setup (GsPluginRepos  *self,
 	}
 
 	/* success */
-	self->valid = TRUE;
+	g_atomic_int_set (&self->valid, TRUE);
+
 	return TRUE;
 }
 
@@ -159,7 +160,7 @@ gs_plugin_repos_changed_cb (GFileMonitor      *monitor,
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (user_data);
 
-	self->valid = FALSE;
+	g_atomic_int_set (&self->valid, FALSE);
 }
 
 gboolean
@@ -179,7 +180,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_repos_changed_cb), self);
 
 	/* unconditionally at startup */
-	return gs_plugin_repos_setup (self, cancellable, error);
+	return gs_plugin_repos_ensure_valid_locked (self, cancellable, error);
 }
 
 static gboolean
@@ -202,7 +203,7 @@ refine_app_locked (GsPluginRepos        *self,
 		return TRUE;
 
 	/* ensure valid */
-	if (!gs_plugin_repos_setup (self, cancellable, error))
+	if (!gs_plugin_repos_ensure_valid_locked (self, cancellable, error))
 		return FALSE;
 
 	/* find hostname */
