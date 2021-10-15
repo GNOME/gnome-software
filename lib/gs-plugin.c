@@ -1719,8 +1719,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_category_apps";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
 		return "gs_plugin_add_categories";
-	if (action == GS_PLUGIN_ACTION_SETUP)
-		return "gs_plugin_setup";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
@@ -1749,8 +1747,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 {
 	if (action == GS_PLUGIN_ACTION_UNKNOWN)
 		return "unknown";
-	if (action == GS_PLUGIN_ACTION_SETUP)
-		return "setup";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "install";
 	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
@@ -1835,8 +1831,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 GsPluginAction
 gs_plugin_action_from_string (const gchar *action)
 {
-	if (g_strcmp0 (action, "setup") == 0)
-		return GS_PLUGIN_ACTION_SETUP;
 	if (g_strcmp0 (action, "install") == 0)
 		return GS_PLUGIN_ACTION_INSTALL;
 	if (g_strcmp0 (action, "download") == 0)

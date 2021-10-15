@@ -514,8 +514,7 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	}
 
 	/* fatal error */
-	if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_SETUP ||
-	    gs_plugin_loader_is_error_fatal (error_local_copy) ||
+	if (gs_plugin_loader_is_error_fatal (error_local_copy) ||
 	    g_getenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD") != NULL) {
 		if (error != NULL)
 			*error = g_steal_pointer (&error_local_copy);
@@ -623,12 +622,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_SETUP:
-		{
-			GsPluginSetupFunc plugin_func = func;
-			ret = plugin_func (plugin, cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_REFINE:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_refine_wildcard") == 0) {
 			GsPluginRefineWildcardFunc plugin_func = func;
@@ -839,21 +832,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* check the plugin didn't take too long */
 	if (g_timer_elapsed (timer, NULL) > 1.0f) {
-		GLogLevelFlags log_level;
-
-		switch (action) {
-		case GS_PLUGIN_ACTION_SETUP:
-			if (g_getenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD") == NULL)
-				log_level = G_LOG_LEVEL_WARNING;
-			else
-				log_level = G_LOG_LEVEL_DEBUG;
-			break;
-		default:
-			log_level = G_LOG_LEVEL_DEBUG;
-			break;
-		}
-
-		g_log_structured_standard (G_LOG_DOMAIN, log_level,
+		g_log_structured_standard (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
 					   __FILE__, G_STRINGIFY (__LINE__),
 					   G_STRFUNC,
 					   "plugin %s took %.1f seconds to do %s",
@@ -2355,7 +2334,7 @@ gs_plugin_loader_software_app_created_cb (GObject *source_object,
 	app = gs_plugin_loader_app_create_finish (plugin_loader, result, NULL);
 
 	/* add app */
-	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_SETUP);
+	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UNKNOWN);
 	if (app != NULL)
 		gs_plugin_event_set_app (event, app);
 
@@ -3525,7 +3504,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_REFRESH:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SETUP:
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_REMOVE_REPO:
