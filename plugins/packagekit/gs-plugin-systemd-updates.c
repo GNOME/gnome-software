@@ -71,6 +71,7 @@ gs_plugin_systemd_updates_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_systemd_updates_parent_class)->finalize (object);
 }
 
+/* Run in the main thread. */
 static void
 gs_plugin_systemd_updates_permission_cb (GPermission *permission,
 					 GParamSpec *pspec,
@@ -117,6 +118,7 @@ gs_plugin_systemd_update_cache (GsPluginSystemdUpdates  *self,
 	return TRUE;
 }
 
+/* Run in the main thread. */
 static void
 gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 				      GFile *file, GFile *other_file,
@@ -141,6 +143,7 @@ gs_plugin_systemd_updates_refresh_is_triggered (GsPluginSystemdUpdates *self,
 		 self->is_triggered ? "enabled" : "disabled");
 }
 
+/* Run in the main thread. */
 static void
 gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 				      GFile *file, GFile *other_file,
@@ -204,18 +207,32 @@ gs_plugin_refine (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void get_permission_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+static void
+gs_plugin_systemd_updates_setup_async (GsPlugin            *plugin,
+                                       GCancellable        *cancellable,
+                                       GAsyncReadyCallback  callback,
+                                       gpointer             user_data)
 {
 	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
 	g_autoptr(GFile) file_trigger = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_systemd_updates_setup_async);
 
 	/* watch the prepared file */
-	self->monitor = pk_offline_get_prepared_monitor (cancellable, error);
+	self->monitor = pk_offline_get_prepared_monitor (cancellable, &local_error);
 	if (self->monitor == NULL) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
+
 	g_signal_connect (self->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
@@ -225,27 +242,51 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	self->monitor_trigger = g_file_monitor_file (file_trigger,
 						     G_FILE_MONITOR_NONE,
 						     NULL,
-						     error);
+						     &local_error);
 	if (self->monitor_trigger == NULL) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
+
 	g_signal_connect (self->monitor_trigger, "changed",
 			  G_CALLBACK (gs_plugin_systemd_trigger_changed_cb),
 			  plugin);
 
 	/* check if we have permission to trigger the update */
-	self->permission = gs_utils_get_permission (
-		"org.freedesktop.packagekit.trigger-offline-update",
-		NULL, NULL);
+	gs_utils_get_permission_async ("org.freedesktop.packagekit.trigger-offline-update",
+				       cancellable, get_permission_cb, g_steal_pointer (&task));
+}
+
+static void
+get_permission_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginSystemdUpdates *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	self->permission = gs_utils_get_permission_finish (result, &local_error);
 	if (self->permission != NULL) {
 		g_signal_connect (self->permission, "notify",
 				  G_CALLBACK (gs_plugin_systemd_updates_permission_cb),
-				  plugin);
+				  self);
 	}
 
 	/* get the list of currently downloaded packages */
-	return gs_plugin_systemd_update_cache (self, error);
+	if (!gs_plugin_systemd_update_cache (self, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_systemd_updates_setup_finish (GsPlugin      *plugin,
+                                        GAsyncResult  *result,
+                                        GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 #ifdef HAVE_PK_OFFLINE_WITH_FLAGS
@@ -506,9 +547,13 @@ static void
 gs_plugin_systemd_updates_class_init (GsPluginSystemdUpdatesClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_systemd_updates_dispose;
 	object_class->finalize = gs_plugin_systemd_updates_finalize;
+
+	plugin_class->setup_async = gs_plugin_systemd_updates_setup_async;
+	plugin_class->setup_finish = gs_plugin_systemd_updates_setup_finish;
 }
 
 GType
