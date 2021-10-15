@@ -737,7 +737,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 		guint i;
 
 		snaps = find_snaps (self, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID, NULL, gs_app_get_id (app), cancellable, NULL);
-		for (i = 0; i < snaps->len; i++) {
+		for (i = 0; snaps != NULL && i < snaps->len; i++) {
 			SnapdSnap *snap = g_ptr_array_index (snaps, i);
 			SnapdSnap *store_snap;
 
