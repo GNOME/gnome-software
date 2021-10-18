@@ -1083,6 +1083,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	GsPluginDownloadHelper helper;
+	const gchar *new_etag;
 	guint status_code;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
@@ -1134,7 +1135,14 @@ gs_plugin_download_file (GsPlugin *plugin,
 				  G_CALLBACK (gs_plugin_download_chunk_cb),
 				  &helper);
 	}
+	if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
+		g_autofree gchar *last_etag = gs_utils_get_file_etag (filename, cancellable);
+		if (last_etag != NULL && *last_etag != '\0')
+			soup_message_headers_append (msg->request_headers, "If-None-Match", last_etag);
+	}
 	status_code = soup_session_send_message (priv->soup_session, msg);
+	if (status_code == SOUP_STATUS_NOT_MODIFIED)
+		return TRUE;
 	if (status_code != SOUP_STATUS_OK) {
 		g_autoptr(GString) str = g_string_new (NULL);
 		g_string_append (str, soup_status_get_phrase (status_code));
@@ -1162,6 +1170,10 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     error_local->message);
 		return FALSE;
 	}
+	new_etag = soup_message_headers_get_one (msg->response_headers, "ETag");
+	if (new_etag != NULL && *new_etag == '\0')
+		new_etag = NULL;
+	gs_utils_set_file_etag (filename, new_etag, cancellable);
 	return TRUE;
 }
 
