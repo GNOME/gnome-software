@@ -104,6 +104,9 @@ main (void)
 		g_ptr_array_add (pixbufs, g_steal_pointer (&pixbuf));
 	}
 
+	if (!pixbufs->len)
+		return 2;
+
 	/* Set up an output page */
 	g_string_append (html_output,
 			 "<!DOCTYPE html>\n"

@@ -2003,7 +2003,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 {
 	gboolean ret = FALSE;
 	FD_t rpmfd = NULL;
-	int r;
 	guint64 epoch;
 	guint64 size;
 	const gchar *name;
@@ -2043,7 +2042,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		goto out;
 	}
 
-	if ((r = rpmReadPackageFile (ts, rpmfd, filename, &h)) != RPMRC_OK) {
+	if (rpmReadPackageFile (ts, rpmfd, filename, &h) != RPMRC_OK) {
 		g_set_error (error,
 		             GS_PLUGIN_ERROR,
 		             GS_PLUGIN_ERROR_FAILED,
