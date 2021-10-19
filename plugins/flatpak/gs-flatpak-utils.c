@@ -160,15 +160,20 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 
 	/* get the ID from the basename */
 	basename = g_file_get_basename (file);
-
-	/* ensure this is valid for flatpak */
-	repo_id = g_str_to_ascii (basename, NULL);
-	tmp = g_strrstr (repo_id, ".");
+	tmp = g_strrstr (basename, ".");
 	if (tmp != NULL)
 		*tmp = '\0';
-	for (guint i = 0; repo_id[i] != '\0'; i++) {
-		if (!g_ascii_isalnum (repo_id[i]))
-			repo_id[i] = '_';
+
+	/* ensure this is valid for flatpak */
+	if (ostree_validate_remote_name (basename, NULL)) {
+		repo_id = g_steal_pointer (&basename);
+	} else {
+		repo_id = g_str_to_ascii (basename, NULL);
+
+		for (guint i = 0; repo_id[i] != '\0'; i++) {
+			if (!g_ascii_isalnum (repo_id[i]))
+				repo_id[i] = '_';
+		}
 	}
 
 	/* create source */
