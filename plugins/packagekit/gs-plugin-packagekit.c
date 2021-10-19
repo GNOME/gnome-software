@@ -2588,6 +2588,38 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_packagekit_refresh (GsPlugin *plugin,
+			      GsApp *progress_app,
+			      guint cache_age,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
+
+	gs_packagekit_helper_set_progress_app (helper, progress_app);
+
+	g_mutex_lock (&self->task_mutex);
+	/* cache age of 1 is user-initiated */
+	pk_client_set_background (PK_CLIENT (self->task), cache_age > 1);
+	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	pk_client_set_cache_age (PK_CLIENT (self->task), cache_age);
+	/* refresh the metadata */
+	results = pk_client_refresh_cache (PK_CLIENT (self->task),
+	                                   FALSE /* force */,
+	                                   cancellable,
+	                                   gs_packagekit_helper_cb, helper,
+	                                   error);
+	g_mutex_unlock (&self->task_mutex);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 gboolean
 gs_plugin_enable_repo (GsPlugin *plugin,
 		       GsApp *repo,
@@ -2634,6 +2666,10 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 
 	/* state is known */
 	gs_app_set_state (repo, GS_APP_STATE_INSTALLED);
+
+	/* This can fail silently, it's only to update necessary caches, to provide
+	 * up-to-date information after the successful repository enable/install. */
+	gs_plugin_packagekit_refresh (plugin, repo, 1, cancellable, NULL);
 
 	gs_plugin_repository_changed (plugin, repo);
 
