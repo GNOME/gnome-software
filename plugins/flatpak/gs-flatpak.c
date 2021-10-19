@@ -1549,6 +1549,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 	return NULL;
 }
 
+/* This is essentially the inverse of gs_flatpak_app_new_from_repo_file() */
 static FlatpakRemote *
 gs_flatpak_create_new_remote (GsFlatpak *self,
                               GsApp *app,
@@ -1557,7 +1558,9 @@ gs_flatpak_create_new_remote (GsFlatpak *self,
 {
 	const gchar *gpg_key;
 	const gchar *branch;
-	const gchar *title;
+	const gchar *title, *homepage, *comment, *description;
+	const gchar *filter;
+	GPtrArray *icons;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
 	/* create a new remote */
@@ -1587,6 +1590,34 @@ gs_flatpak_create_new_remote (GsFlatpak *self,
 	branch = gs_app_get_branch (app);
 	if (branch != NULL)
 		flatpak_remote_set_default_branch (xremote, branch);
+
+	/* optional data */
+	homepage = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
+	if (homepage != NULL)
+		flatpak_remote_set_homepage (xremote, homepage);
+
+	comment = gs_app_get_summary (app);
+	if (comment != NULL)
+		flatpak_remote_set_comment (xremote, comment);
+
+	description = gs_app_get_description (app);
+	if (description != NULL)
+		flatpak_remote_set_description (xremote, description);
+
+	icons = gs_app_get_icons (app);
+	for (guint i = 0; icons != NULL && i < icons->len; i++) {
+		GIcon *icon = g_ptr_array_index (icons, i);
+
+		if (GS_IS_REMOTE_ICON (icon)) {
+			flatpak_remote_set_icon (xremote,
+						 gs_remote_icon_get_uri (GS_REMOTE_ICON (icon)));
+			break;
+		}
+	}
+
+	filter = gs_flatpak_app_get_repo_filter (app);
+	if (filter != NULL)
+		flatpak_remote_set_filter (xremote, filter);
 
 	return g_steal_pointer (&xremote);
 }
