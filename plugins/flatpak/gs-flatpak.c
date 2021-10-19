@@ -1557,14 +1557,17 @@ gs_flatpak_create_new_remote (GsFlatpak *self,
 {
 	const gchar *gpg_key;
 	const gchar *branch;
+	const gchar *title;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
 	/* create a new remote */
 	xremote = flatpak_remote_new (gs_app_get_id (app));
 	flatpak_remote_set_url (xremote, gs_flatpak_app_get_repo_url (app));
 	flatpak_remote_set_noenumerate (xremote, FALSE);
-	if (gs_app_get_summary (app) != NULL)
-		flatpak_remote_set_title (xremote, gs_app_get_summary (app));
+
+	title = gs_app_get_name (app);
+	if (title != NULL)
+		flatpak_remote_set_title (xremote, title);
 
 	/* decode GPG key if set */
 	gpg_key = gs_flatpak_app_get_repo_gpgkey (app);
