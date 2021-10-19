@@ -1550,21 +1550,19 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 }
 
 /* This is essentially the inverse of gs_flatpak_app_new_from_repo_file() */
-static FlatpakRemote *
-gs_flatpak_create_new_remote (GsFlatpak *self,
-                              GsApp *app,
-                              GCancellable *cancellable,
-                              GError **error)
+static void
+gs_flatpak_update_remote_from_app (GsFlatpak     *self,
+                                   FlatpakRemote *xremote,
+                                   GsApp         *app)
 {
 	const gchar *gpg_key;
 	const gchar *branch;
 	const gchar *title, *homepage, *comment, *description;
 	const gchar *filter;
 	GPtrArray *icons;
-	g_autoptr(FlatpakRemote) xremote = NULL;
 
-	/* create a new remote */
-	xremote = flatpak_remote_new (gs_app_get_id (app));
+	flatpak_remote_set_disabled (xremote, FALSE);
+
 	flatpak_remote_set_url (xremote, gs_flatpak_app_get_repo_url (app));
 	flatpak_remote_set_noenumerate (xremote, FALSE);
 
@@ -1615,13 +1613,34 @@ gs_flatpak_create_new_remote (GsFlatpak *self,
 		}
 	}
 
+	/* With the other fields, we always want to add as much information as
+	 * we can to the @xremote. With the filter, though, we want to drop it
+	 * if no filter is set on the @app. Importing an updated flatpakrepo
+	 * file is one of the methods for switching from (for example) filtered
+	 * flathub to unfiltered flathub. So if @app doesn’t have a filter set,
+	 * clear it on the @xremote (i.e. don’t check for NULL). */
 	filter = gs_flatpak_app_get_repo_filter (app);
-	if (filter != NULL)
-		flatpak_remote_set_filter (xremote, filter);
+	flatpak_remote_set_filter (xremote, filter);
+}
+
+static FlatpakRemote *
+gs_flatpak_create_new_remote (GsFlatpak *self,
+                              GsApp *app,
+                              GCancellable *cancellable,
+                              GError **error)
+{
+	g_autoptr(FlatpakRemote) xremote = NULL;
+
+	/* create a new remote */
+	xremote = flatpak_remote_new (gs_app_get_id (app));
+	gs_flatpak_update_remote_from_app (self, xremote, app);
 
 	return g_steal_pointer (&xremote);
 }
 
+/* @is_install is %TRUE if the repo is being installed, or %FALSE if it’s being
+ * enabled. If it’s being enabled, no properties apart from enabled/disabled
+ * should be modified. */
 gboolean
 gs_flatpak_app_install_source (GsFlatpak *self,
 			       GsApp *app,
@@ -1638,10 +1657,10 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 		/* if the remote already exists, just enable it and update it */
 		g_debug ("modifying existing remote %s", flatpak_remote_get_name (xremote));
 		flatpak_remote_set_disabled (xremote, FALSE);
-		if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REPO) {
-			flatpak_remote_set_filter (xremote, gs_flatpak_app_get_repo_filter (app));
-			flatpak_remote_set_description (xremote, gs_app_get_description (app));
-			flatpak_remote_set_title (xremote, gs_app_get_origin_ui (app));
+
+		if (is_install &&
+		    gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REPO) {
+			gs_flatpak_update_remote_from_app (self, xremote, app);
 		}
 	} else if (!is_install) {
 		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED, "Cannot enable flatpak remote '%s', remote not found", gs_app_get_id (app));
