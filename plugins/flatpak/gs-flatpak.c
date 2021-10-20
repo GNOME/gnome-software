@@ -864,7 +864,7 @@ gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
 	if (xml == NULL)
 		return NULL;
 
-	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
 }
 
 static gboolean
@@ -1223,10 +1223,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		if (flatpak_remote_get_disabled (xremote))
 			continue;
 
+		remote_name = flatpak_remote_get_name (xremote);
 		locker = g_mutex_locker_new (&self->broken_remotes_mutex);
 
 		/* skip known-broken repos */
-		remote_name = flatpak_remote_get_name (xremote);
 		if (g_hash_table_lookup (self->broken_remotes, remote_name) != NULL) {
 			g_debug ("skipping known broken remote: %s", remote_name);
 			continue;

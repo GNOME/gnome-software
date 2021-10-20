@@ -180,6 +180,8 @@ k_means (GArray    *colors,
 	pixels = (ClusterPixel8 *) raw_pixels;
 	pixels_end = &pixels[height * width];
 
+	memset (cluster_centres, 0, sizeof (cluster_centres));
+
 	/* Initialise the clusters using the Random Partition method: randomly
 	 * assign a starting cluster to each pixel.
 	 *

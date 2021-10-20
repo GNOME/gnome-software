@@ -247,7 +247,7 @@ gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
 	xml = as_component_to_xml_data (cpt, actx, error);
 	if (xml == NULL)
 		return NULL;
-	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
 }
 
 static gboolean
@@ -365,7 +365,7 @@ gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
 		xml = g_strdup("");
 	}
 
-	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
 }
 
 #if LIBXMLB_CHECK_VERSION(0,3,1)

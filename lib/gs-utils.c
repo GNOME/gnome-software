@@ -1301,7 +1301,7 @@ gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *d
 	gint width, height, src_rowstride, dest_rowstride, n_channels;
 	guchar *p_src, *p_dest, *c1, *c2;
 	gint x, y, i, i1, i2, width_minus_1, height_minus_1, radius_plus_1;
-	gint r, g, b, a;
+	gint r, g, b;
 	guchar *p_dest_row, *p_dest_col;
 
 	width = gdk_pixbuf_get_width (src);
@@ -1318,7 +1318,7 @@ gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *d
 	for (y = 0; y < height; y++) {
 
 		/* calc the initial sums of the kernel */
-		r = g = b = a = 0;
+		r = g = b = 0;
 		for (i = -radius; i <= (gint) radius; i++) {
 			c1 = p_src + (CLAMP (i, 0, width_minus_1) * n_channels);
 			r += c1[0];
@@ -1365,7 +1365,7 @@ gs_pixbuf_blur_private (GdkPixbuf *src, GdkPixbuf *dest, guint radius, guint8 *d
 	for (x = 0; x < width; x++) {
 
 		/* calc the initial sums of the kernel */
-		r = g = b = a = 0;
+		r = g = b = 0;
 		for (i = -radius; i <= (gint) radius; i++) {
 			c1 = p_src + (CLAMP (i, 0, height_minus_1) * src_rowstride);
 			r += c1[0];

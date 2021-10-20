@@ -489,10 +489,11 @@ gs_app_kudos_to_string (guint64 kudos)
 gchar *
 gs_app_to_string (GsApp *app)
 {
-	GString *str = g_string_new ("GsApp:");
+	GString *str;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
+	str = g_string_new ("GsApp:");
 	gs_app_to_string_append (app, str);
 	if (str->len > 0)
 		g_string_truncate (str, str->len - 1);
