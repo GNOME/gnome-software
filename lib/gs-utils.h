@@ -128,6 +128,11 @@ guint64		 gs_utils_get_file_size		(const gchar		*filename,
 						 GsFileSizeIncludeFunc	 include_func,
 						 gpointer		 user_data,
 						 GCancellable		*cancellable);
+gchar *		 gs_utils_get_file_etag		(const gchar		*filename,
+						 GCancellable		*cancellable);
+gboolean	 gs_utils_set_file_etag		(const gchar		*filename,
+						 const gchar		*etag,
+						 GCancellable		*cancellable);
 
 #if !GLIB_CHECK_VERSION(2, 64, 0)
 typedef void GsMainContextPusher;

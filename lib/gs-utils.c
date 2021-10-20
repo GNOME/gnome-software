@@ -1514,4 +1514,76 @@ gs_utils_get_file_size (const gchar *filename,
 	return size;
 }
 
+#define METADATA_ETAG_ATTRIBUTE "metadata::etag"
+
+/**
+ * gs_utils_get_file_etag:
+ * @filename: a file name to get the ETag for
+ * @cancellable: (nullable): an optional #GCancellable or %NULL
+ *
+ * Gets the ETag for the @filename, previously stored by
+ * gs_utils_set_file_etag().
+ *
+ * Returns: (nullable) (transfer full): The ETag stored for the @filename,
+ *    or %NULL, when the file does not exist, no ETag is stored for it
+ *    or other error occurs.
+ *
+ * Since: 42
+ **/
+gchar *
+gs_utils_get_file_etag (const gchar *filename,
+			GCancellable *cancellable)
+{
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+
+	g_return_val_if_fail (filename != NULL, NULL);
+
+	if (!g_file_test (filename, G_FILE_TEST_EXISTS))
+		return NULL;
+
+	file = g_file_new_for_path (filename);
+	info = g_file_query_info (file, METADATA_ETAG_ATTRIBUTE, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+
+	if (info == NULL)
+		return NULL;
+
+	return g_strdup (g_file_info_get_attribute_string (info, METADATA_ETAG_ATTRIBUTE));
+}
+
+/**
+ * gs_utils_set_file_etag:
+ * @filename: a file name to get the ETag for
+ * @etag: (nullable): an ETag to set
+ * @cancellable: (nullable): an optional #GCancellable or %NULL
+ *
+ * Sets the ETag for the @filename. When the @etag is %NULL or an empty
+ * string, then unsets the ETag for the @filename. The ETag can be read
+ * back with gs_utils_get_file_etag().
+ *
+ * The @filename should exist, otherwise the function fails.
+ *
+ * Returns: whether succeeded.
+ *
+ * Since: 42
+ **/
+gboolean
+gs_utils_set_file_etag (const gchar *filename,
+			const gchar *etag,
+			GCancellable *cancellable)
+{
+	g_autoptr(GFile) file = NULL;
+
+	g_return_val_if_fail (filename != NULL, FALSE);
+
+	file = g_file_new_for_path (filename);
+
+	if (etag == NULL || *etag == '\0') {
+		return g_file_set_attribute (file, METADATA_ETAG_ATTRIBUTE, G_FILE_ATTRIBUTE_TYPE_INVALID,
+					     NULL, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+	}
+
+	return g_file_set_attribute_string (file, METADATA_ETAG_ATTRIBUTE, etag, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+}
+
 /* vim: set noexpandtab: */
