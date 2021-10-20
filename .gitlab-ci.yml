@@ -9,7 +9,7 @@ cache:
     - _ccache/
 
 variables:
-  MESON_TEST_TIMEOUT_MULTIPLIER: 2
+  MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
   MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr"
   BUNDLE: "gnome-software-dev.flatpak"
