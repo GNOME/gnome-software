@@ -27,9 +27,9 @@
         <property name="can_swipe_back">True</property>
         <property name="can-unfold">False</property>
         <!-- We need both signals to support the animations being disabled, as
-             notify::transition-running isn't emitted in that case. -->
+             notify::child-transition-running isn't emitted in that case. -->
         <signal name="notify::visible-child" handler="leaflet_child_transition_cb" swapped="no"/>
-        <signal name="notify::transition-running" handler="leaflet_child_transition_cb" swapped="no"/>
+        <signal name="notify::child-transition-running" handler="leaflet_child_transition_cb" swapped="no"/>
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
