@@ -2249,7 +2249,14 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	if (!gs_rpmostree_ref_proxies (plugin, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
-	return gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error);
+	if (!gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error))
+		return FALSE;
+
+	/* This can fail silently, it's only to update necessary caches, to provide
+	 * up-to-date information after the successful repository enable/install. */
+	gs_plugin_refresh (plugin, 1, cancellable, NULL);
+
+	return TRUE;
 }
 
 gboolean
