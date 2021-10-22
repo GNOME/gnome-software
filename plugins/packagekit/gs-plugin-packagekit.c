@@ -1184,100 +1184,6 @@ gs_plugin_packagekit_refine_details2 (GsPluginPackagekit  *self,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_update_urgency (GsPluginPackagekit   *self,
-                                            GsAppList            *list,
-                                            GsPluginRefineFlags   flags,
-                                            GCancellable         *cancellable,
-                                            GError              **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	guint i;
-	GsApp *app;
-	const gchar *package_id;
-	PkBitfield filter;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* not required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
-		return TRUE;
-
-	/* get the list of updates */
-	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_updates (self->client_refine,
-					 filter,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get updates for urgency: ");
-		return FALSE;
-	}
-
-	/* set the update severity for the app */
-	sack = pk_results_get_package_sack (results);
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		g_autoptr (PkPackage) pkg = NULL;
-		app = gs_app_list_index (list, i);
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		package_id = gs_app_get_source_id_default (app);
-		if (package_id == NULL)
-			continue;
-		pkg = pk_package_sack_find_by_id (sack, package_id);
-		if (pkg == NULL)
-			continue;
-		#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
-		switch (pk_package_get_update_severity (pkg)) {
-		case PK_INFO_ENUM_LOW:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-			break;
-		case PK_INFO_ENUM_NORMAL:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
-			break;
-		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-			break;
-		case PK_INFO_ENUM_CRITICAL:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
-			break;
-		default:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-			break;
-		}
-		#else
-		switch (pk_package_get_info (pkg)) {
-		case PK_INFO_ENUM_AVAILABLE:
-		case PK_INFO_ENUM_NORMAL:
-		case PK_INFO_ENUM_LOW:
-		case PK_INFO_ENUM_ENHANCEMENT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-			break;
-		case PK_INFO_ENUM_BUGFIX:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
-			break;
-		case PK_INFO_ENUM_SECURITY:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
-			break;
-		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-			break;
-		default:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-			g_warning ("unhandled info state %s",
-				   pk_info_enum_to_string (pk_package_get_info (pkg)));
-			break;
-		}
-		#endif
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
                                     GsApp               *app)
 {
@@ -1551,8 +1457,86 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* get the update severity */
-	if (!gs_plugin_packagekit_refine_update_urgency (self, list, flags, cancellable, error))
-		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) != 0) {
+		GsApp *app;
+		const gchar *package_id;
+		PkBitfield filter;
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		g_autoptr(PkPackageSack) sack = NULL;
+		g_autoptr(PkResults) results = NULL;
+
+		/* get the list of updates */
+		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+		g_mutex_lock (&self->client_mutex_refine);
+		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		results = pk_client_get_updates (self->client_refine,
+						 filter,
+						 cancellable,
+						 gs_packagekit_helper_cb, helper,
+						 error);
+		g_mutex_unlock (&self->client_mutex_refine);
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
+			g_prefix_error (error, "failed to get updates for urgency: ");
+			return FALSE;
+		}
+
+		/* set the update severity for the app */
+		sack = pk_results_get_package_sack (results);
+		for (guint i = 0; i < gs_app_list_length (list); i++) {
+			g_autoptr (PkPackage) pkg = NULL;
+			app = gs_app_list_index (list, i);
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+				continue;
+			package_id = gs_app_get_source_id_default (app);
+			if (package_id == NULL)
+				continue;
+			pkg = pk_package_sack_find_by_id (sack, package_id);
+			if (pkg == NULL)
+				continue;
+			#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
+			switch (pk_package_get_update_severity (pkg)) {
+			case PK_INFO_ENUM_LOW:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+				break;
+			case PK_INFO_ENUM_NORMAL:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
+				break;
+			case PK_INFO_ENUM_IMPORTANT:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+				break;
+			case PK_INFO_ENUM_CRITICAL:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
+				break;
+			default:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+				break;
+			}
+			#else
+			switch (pk_package_get_info (pkg)) {
+			case PK_INFO_ENUM_AVAILABLE:
+			case PK_INFO_ENUM_NORMAL:
+			case PK_INFO_ENUM_LOW:
+			case PK_INFO_ENUM_ENHANCEMENT:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+				break;
+			case PK_INFO_ENUM_BUGFIX:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
+				break;
+			case PK_INFO_ENUM_SECURITY:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
+				break;
+			case PK_INFO_ENUM_IMPORTANT:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+				break;
+			default:
+				gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+				g_warning ("unhandled info state %s",
+					   pk_info_enum_to_string (pk_package_get_info (pkg)));
+				break;
+			}
+			#endif
+		}
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
