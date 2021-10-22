@@ -97,18 +97,19 @@ gs_plugin_repos_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_repos_parent_class)->finalize (object);
 }
 
-/* Run in a worker thread; mutex must be held */
+/* Run in multiple threads; will take the mutex */
 static gboolean
-gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
-                                     GHashTable    **filenames_out,
-                                     GHashTable    **urls_out,
-                                     GCancellable   *cancellable,
-                                     GError        **error)
+gs_plugin_repos_ensure_valid (GsPluginRepos  *self,
+                              GHashTable    **filenames_out,
+                              GHashTable    **urls_out,
+                              GCancellable   *cancellable,
+                              GError        **error)
 {
 	g_autoptr(GDir) dir = NULL;
 	const gchar *fn;
 	g_autoptr(GHashTable) new_filenames = NULL;
 	g_autoptr(GHashTable) new_urls = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* Clear out args */
 	if (filenames_out != NULL)
@@ -177,6 +178,8 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 
 	/* success; replace the hash table pointers in the object while the lock
 	 * is held */
+	locker = g_mutex_locker_new (&self->mutex);
+
 	g_clear_pointer (&self->fns, g_hash_table_unref);
 	self->fns = g_steal_pointer (&new_filenames);
 	g_clear_pointer (&self->urls, g_hash_table_unref);
@@ -185,6 +188,9 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 	g_atomic_int_set (&self->valid, TRUE);
 
 out:
+	if (locker == NULL)
+		locker = g_mutex_locker_new (&self->mutex);
+
 	g_assert (self->fns != NULL && self->urls != NULL);
 
 	if (filenames_out != NULL)
@@ -216,10 +222,9 @@ setup_thread_cb (GTask        *task,
                  GCancellable *cancellable)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (source_object);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_plugin_repos_ensure_valid_locked (self, NULL, NULL, cancellable, &local_error))
+	if (!gs_plugin_repos_ensure_valid (self, NULL, NULL, cancellable, &local_error))
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -347,7 +352,6 @@ gs_plugin_refine (GsPlugin             *plugin,
 		  GError              **error)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GHashTable) filenames = NULL;  /* (element-type utf8 filename) mapping origin to filename */
 	g_autoptr(GHashTable) urls = NULL;  /* (element-type utf8 utf8) mapping origin to URL */
 
@@ -358,10 +362,8 @@ gs_plugin_refine (GsPlugin             *plugin,
 	/* Ensure the object state is valid, and grab a reference to it so it
 	 * can be accessed without holding the lock, to keep the critical
 	 * section small. */
-	if (!gs_plugin_repos_ensure_valid_locked (self, &filenames, &urls, cancellable, error))
+	if (!gs_plugin_repos_ensure_valid (self, &filenames, &urls, cancellable, error))
 		return FALSE;
-
-	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
