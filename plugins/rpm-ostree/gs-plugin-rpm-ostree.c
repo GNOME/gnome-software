@@ -1983,14 +1983,56 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-                  GsAppList *list,
-                  GsPluginRefineFlags flags,
-                  GCancellable *cancellable,
-                  GError **error)
+static void refine_thread_cb (GTask        *task,
+                              gpointer      source_object,
+                              gpointer      task_data,
+                              GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_refine_async (GsPlugin            *plugin,
+                                   GsAppList           *list,
+                                   GsPluginRefineFlags  flags,
+                                   GCancellable        *cancellable,
+                                   GAsyncReadyCallback  callback,
+                                   gpointer             user_data)
 {
-	return gs_rpm_ostree_refine_apps (plugin, list, flags, cancellable, error);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refine_async);
+
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refine_thread_cb, g_steal_pointer (&task));
+}
+
+static void
+refine_thread_cb (GTask        *task,
+                  gpointer      source_object,
+                  gpointer      task_data,
+                  GCancellable *cancellable)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	GsPluginRefineData *data = task_data;
+	GsAppList *list = data->list;
+	GsPluginRefineFlags flags = data->flags;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	if (!gs_rpm_ostree_refine_apps (plugin, list, flags, cancellable, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_rpm_ostree_refine_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2420,6 +2462,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->setup_finish = gs_plugin_rpm_ostree_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_rpm_ostree_shutdown_async;
 	plugin_class->shutdown_finish = gs_plugin_rpm_ostree_shutdown_finish;
+	plugin_class->refine_async = gs_plugin_rpm_ostree_refine_async;
+	plugin_class->refine_finish = gs_plugin_rpm_ostree_refine_finish;
 }
 
 GType
