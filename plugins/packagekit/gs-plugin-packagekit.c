@@ -1402,61 +1402,6 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_filename_to_id (GsPluginPackagekit   *self,
-                                            GsAppList            *list,
-                                            GsPluginRefineFlags   flags,
-                                            GCancellable         *cancellable,
-                                            GError              **error)
-{
-	/* not now */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
-		return TRUE;
-
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		g_autofree gchar *fn = NULL;
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (gs_app_get_source_id_default (app) != NULL)
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		tmp = gs_app_get_id (app);
-		if (tmp == NULL)
-			continue;
-		switch (gs_app_get_kind (app)) {
-		case AS_COMPONENT_KIND_DESKTOP_APP:
-			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
-			break;
-		case AS_COMPONENT_KIND_ADDON:
-			fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
-			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
-				g_free (fn);
-				fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
-			}
-			break;
-		default:
-			break;
-		}
-		if (fn == NULL)
-			continue;
-		if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
-			g_debug ("ignoring %s as does not exist", fn);
-			continue;
-		}
-		if (!gs_plugin_packagekit_refine_from_desktop (self,
-								app,
-								fn,
-								cancellable,
-								error))
-			return FALSE;
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_packagekit_refine_update_details (GsPluginPackagekit   *self,
                                             GsAppList            *list,
                                             GsPluginRefineFlags   flags,
@@ -1581,8 +1526,49 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* set the package-id for an installed desktop file */
-	if (!gs_plugin_packagekit_refine_filename_to_id (self, list, flags, cancellable, error))
-		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) != 0) {
+		for (guint i = 0; i < gs_app_list_length (list); i++) {
+			g_autofree gchar *fn = NULL;
+			GsApp *app = gs_app_list_index (list, i);
+			const gchar *tmp;
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+				continue;
+			if (gs_app_get_source_id_default (app) != NULL)
+				continue;
+			if (!gs_app_has_management_plugin (app, NULL) &&
+			    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+				continue;
+			tmp = gs_app_get_id (app);
+			if (tmp == NULL)
+				continue;
+			switch (gs_app_get_kind (app)) {
+			case AS_COMPONENT_KIND_DESKTOP_APP:
+				fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
+				break;
+			case AS_COMPONENT_KIND_ADDON:
+				fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
+				if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+					g_free (fn);
+					fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
+				}
+				break;
+			default:
+				break;
+			}
+			if (fn == NULL)
+				continue;
+			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+				g_debug ("ignoring %s as does not exist", fn);
+				continue;
+			}
+			if (!gs_plugin_packagekit_refine_from_desktop (self,
+									app,
+									fn,
+									cancellable,
+									error))
+				return FALSE;
+		}
+	}
 
 	/* any update details missing? */
 	if (!gs_plugin_packagekit_refine_update_details (self, list, flags, cancellable, error))
