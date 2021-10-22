@@ -1297,43 +1297,6 @@ gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_details (GsPluginPackagekit   *self,
-                                     GsAppList            *list,
-                                     GsPluginRefineFlags   flags,
-                                     GCancellable         *cancellable,
-                                     GError              **error)
-{
-	gboolean ret = TRUE;
-	g_autoptr(GsAppList) list_tmp = NULL;
-
-	list_tmp = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		if (!gs_plugin_refine_app_needs_details (flags, app))
-			continue;
-		gs_app_list_add (list_tmp, app);
-	}
-	if (gs_app_list_length (list_tmp) == 0)
-		return TRUE;
-	ret = gs_plugin_packagekit_refine_details2 (self,
-						    list_tmp,
-						    cancellable,
-						    error);
-	if (!ret)
-		return FALSE;
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
 {
 	const gchar *tmp;
@@ -1411,6 +1374,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
 	g_autoptr(GsAppList) updatedetails_all = gs_app_list_new ();
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
@@ -1563,8 +1527,28 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* any package details missing? */
-	if (!gs_plugin_packagekit_refine_details (self, list, flags, cancellable, error))
-		return FALSE;
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+		if (gs_app_get_source_id_default (app) == NULL)
+			continue;
+		if (!gs_plugin_refine_app_needs_details (flags, app))
+			continue;
+		gs_app_list_add (list_tmp, app);
+	}
+	if (gs_app_list_length (list_tmp) > 0) {
+		if (!gs_plugin_packagekit_refine_details2 (self,
+							   list_tmp,
+							   cancellable,
+							   error))
+			return FALSE;
+	}
 
 	/* get the update severity */
 	if (!gs_plugin_packagekit_refine_update_urgency (self, list, flags, cancellable, error))
