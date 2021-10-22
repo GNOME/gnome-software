@@ -1394,55 +1394,6 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_distro_upgrade (GsPluginPackagekit  *self,
-                                            GsApp               *app,
-                                            GCancellable        *cancellable,
-                                            GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	guint i;
-	GsApp *app2;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	guint cache_age_save;
-
-	gs_packagekit_helper_add_app (helper, app);
-
-	/* ask PK to simulate upgrading the system */
-	g_mutex_lock (&self->client_mutex_refine);
-	cache_age_save = pk_client_get_cache_age (self->client_refine);
-	pk_client_set_cache_age (self->client_refine, 60 * 60 * 24 * 7); /* once per week */
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_upgrade_system (self->client_refine,
-					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
-					    gs_app_get_version (app),
-					    PK_UPGRADE_KIND_ENUM_COMPLETE,
-					    cancellable,
-					    gs_packagekit_helper_cb, helper,
-					    error);
-	pk_client_set_cache_age (self->client_refine, cache_age_save);
-	g_mutex_unlock (&self->client_mutex_refine);
-
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to refine distro upgrade: ");
-		return FALSE;
-	}
-	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_results (plugin, list, results, error))
-		return FALSE;
-
-	/* add each of these as related applications */
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app2 = gs_app_list_index (list, i);
-		if (gs_app_get_state (app2) != GS_APP_STATE_UNAVAILABLE)
-			continue;
-		gs_app_add_related (app, app2);
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 {
 	if (g_strstr_len (source, -1, "/") != NULL)
@@ -1593,13 +1544,47 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
+			GsApp *app2;
+			g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+			g_autoptr(PkResults) results = NULL;
+			g_autoptr(GsAppList) results_list = NULL;
+			guint cache_age_save;
+
 			if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 				continue;
-			if (!gs_plugin_packagekit_refine_distro_upgrade (self,
-									 app,
-									 cancellable,
-									 error))
+
+			gs_packagekit_helper_add_app (helper, app);
+
+			/* ask PK to simulate upgrading the system */
+			g_mutex_lock (&self->client_mutex_refine);
+			cache_age_save = pk_client_get_cache_age (self->client_refine);
+			pk_client_set_cache_age (self->client_refine, 60 * 60 * 24 * 7); /* once per week */
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			results = pk_client_upgrade_system (self->client_refine,
+							    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
+							    gs_app_get_version (app),
+							    PK_UPGRADE_KIND_ENUM_COMPLETE,
+							    cancellable,
+							    gs_packagekit_helper_cb, helper,
+							    error);
+			pk_client_set_cache_age (self->client_refine, cache_age_save);
+			g_mutex_unlock (&self->client_mutex_refine);
+
+			if (!gs_plugin_packagekit_results_valid (results, error)) {
+				g_prefix_error (error, "failed to refine distro upgrade: ");
 				return FALSE;
+			}
+			results_list = gs_app_list_new ();
+			if (!gs_plugin_packagekit_add_results (plugin, results_list, results, error))
+				return FALSE;
+
+			/* add each of these as related applications */
+			for (guint j = 0; j < gs_app_list_length (results_list); j++) {
+				app2 = gs_app_list_index (results_list, j);
+				if (gs_app_get_state (app2) != GS_APP_STATE_UNAVAILABLE)
+					continue;
+				gs_app_add_related (app, app2);
+			}
 		}
 	}
 
