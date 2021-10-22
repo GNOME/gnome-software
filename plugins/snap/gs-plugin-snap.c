@@ -1111,6 +1111,19 @@ gs_snap_get_app_directory_size (const gchar *snap_name,
 	return gs_utils_get_file_size (filename, is_cache_size ? NULL : gs_snap_file_size_include_cb, NULL, cancellable);
 }
 
+static SnapdSnap *
+find_snap_in_array (GPtrArray   *snaps,
+                    const gchar *snap_name)
+{
+	for (guint i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = SNAPD_SNAP (snaps->pdata[i]);
+		if (g_strcmp0 (snapd_snap_get_name (snap), snap_name) == 0)
+			return snap;
+	}
+
+	return NULL;
+}
+
 gboolean
 gs_plugin_refine (GsPlugin             *plugin,
 		  GsAppList            *list,
@@ -1120,10 +1133,26 @@ gs_plugin_refine (GsPlugin             *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GPtrArray) snap_names = g_ptr_array_new_with_free_func (NULL);
+	g_autoptr(GPtrArray) local_snaps = NULL;
 
 	client = get_client (self, error);
 	if (client == NULL)
 		return FALSE;
+
+	/* Get information from locally installed snaps */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (!gs_app_has_management_plugin (app, plugin))
+			continue;
+
+		g_ptr_array_add (snap_names, (gpointer) gs_app_get_metadata_item (app, "snap::name"));
+	}
+
+	g_ptr_array_add (snap_names, NULL);  /* NULL terminator */
+
+	local_snaps = snapd_client_get_snaps_sync (client, SNAPD_GET_SNAPS_FLAGS_NONE, (gchar **) snap_names->pdata, cancellable, NULL);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1148,7 +1177,7 @@ gs_plugin_refine (GsPlugin             *plugin,
 		channel = g_strdup (gs_app_get_branch (app));
 
 		/* get information from locally installed snaps and information we already have */
-		local_snap = snapd_client_get_snap_sync (client, snap_name, cancellable, NULL);
+		local_snap = find_snap_in_array (local_snaps, snap_name);
 		store_snap = store_snap_cache_lookup (self, snap_name, FALSE);
 		if (store_snap != NULL)
 			store_channel = expand_channel_name (snapd_snap_get_channel (store_snap));
