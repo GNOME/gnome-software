@@ -354,21 +354,28 @@ refine_app (GsApp               *app,
 	}
 }
 
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
+static void
+gs_plugin_repos_refine_async (GsPlugin            *plugin,
+                              GsAppList           *list,
+                              GsPluginRefineFlags  flags,
+                              GCancellable        *cancellable,
+                              GAsyncReadyCallback  callback,
+                              gpointer             user_data)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
 	g_autoptr(GHashTable) filenames = NULL;  /* (element-type utf8 filename) mapping origin to filename */
 	g_autoptr(GHashTable) urls = NULL;  /* (element-type utf8 utf8) mapping origin to URL */
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_repos_refine_async);
 
 	/* nothing to do here */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
-		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* Grab a reference to the object’s state so it can be accessed without
 	 * holding the lock throughout, to keep the critical section small. */
@@ -384,7 +391,15 @@ gs_plugin_refine (GsPlugin             *plugin,
 		refine_app (app, flags, filenames, urls);
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_repos_refine_finish (GsPlugin      *plugin,
+                               GAsyncResult  *result,
+                               GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -400,6 +415,8 @@ gs_plugin_repos_class_init (GsPluginReposClass *klass)
 	plugin_class->setup_finish = gs_plugin_repos_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_repos_shutdown_async;
 	plugin_class->shutdown_finish = gs_plugin_repos_shutdown_finish;
+	plugin_class->refine_async = gs_plugin_repos_refine_async;
+	plugin_class->refine_finish = gs_plugin_repos_refine_finish;
 }
 
 GType
