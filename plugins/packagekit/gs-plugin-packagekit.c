@@ -1402,46 +1402,6 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_name_to_id (GsPluginPackagekit   *self,
-                                        GsAppList            *list,
-                                        GsPluginRefineFlags   flags,
-                                        GCancellable         *cancellable,
-                                        GError              **error)
-{
-	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GPtrArray *sources;
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		sources = gs_app_get_sources (app);
-		if (sources->len == 0)
-			continue;
-		tmp = g_ptr_array_index (sources, 0);
-		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
-			continue;
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
-		    gs_plugin_refine_requires_package_id (app, flags) ||
-		    gs_plugin_refine_requires_origin (app, flags) ||
-		    gs_plugin_refine_requires_version (app, flags)) {
-			gs_app_list_add (resolve_all, app);
-		}
-	}
-	if (gs_app_list_length (resolve_all) > 0) {
-		if (!gs_plugin_packagekit_resolve_packages (self,
-							    resolve_all,
-							    cancellable,
-							    error))
-			return FALSE;
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_packagekit_refine_filename_to_id (GsPluginPackagekit   *self,
                                             GsAppList            *list,
                                             GsPluginRefineFlags   flags,
@@ -1537,6 +1497,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
 
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
@@ -1589,8 +1550,35 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* can we resolve in one go? */
-	if (!gs_plugin_packagekit_refine_name_to_id (self, list, flags, cancellable, error))
-		return FALSE;
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GPtrArray *sources;
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *tmp;
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+		sources = gs_app_get_sources (app);
+		if (sources->len == 0)
+			continue;
+		tmp = g_ptr_array_index (sources, 0);
+		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
+			continue;
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		    gs_plugin_refine_requires_package_id (app, flags) ||
+		    gs_plugin_refine_requires_origin (app, flags) ||
+		    gs_plugin_refine_requires_version (app, flags)) {
+			gs_app_list_add (resolve_all, app);
+		}
+	}
+	if (gs_app_list_length (resolve_all) > 0) {
+		if (!gs_plugin_packagekit_resolve_packages (self,
+							    resolve_all,
+							    cancellable,
+							    error))
+			return FALSE;
+	}
 
 	/* set the package-id for an installed desktop file */
 	if (!gs_plugin_packagekit_refine_filename_to_id (self, list, flags, cancellable, error))
