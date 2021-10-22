@@ -267,39 +267,36 @@ gs_plugin_repos_setup_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-refine_app (GsPluginRepos        *self,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            GHashTable           *filenames,
-            GHashTable           *urls,
-            GCancellable         *cancellable,
-            GError              **error)
+static void
+refine_app (GsApp               *app,
+            GsPluginRefineFlags  flags,
+            GHashTable          *filenames,
+            GHashTable          *urls)
 {
 	const gchar *tmp;
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
-		return TRUE;
+		return;
 	if (gs_app_get_origin_hostname (app) != NULL)
-		return TRUE;
+		return;
 
 	/* make sure we don't end up refining flatpak repos */
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE)
-		return TRUE;
+		return;
 
 	/* find hostname */
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
-			return TRUE;
+			return;
 		tmp = g_hash_table_lookup (urls, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tmp);
 		break;
 	default:
 		if (gs_app_get_origin (app) == NULL)
-			return TRUE;
+			return;
 		tmp = g_hash_table_lookup (urls, gs_app_get_origin (app));
 		if (tmp != NULL)
 			gs_app_set_origin_hostname (app, tmp);
@@ -332,7 +329,7 @@ refine_app (GsPluginRepos        *self,
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
-			return TRUE;
+			return;
 		tmp = g_hash_table_lookup (filenames, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_metadata (app, "repos::repo-filename", tmp);
@@ -340,8 +337,6 @@ refine_app (GsPluginRepos        *self,
 	default:
 		break;
 	}
-
-	return TRUE;
 }
 
 gboolean
@@ -367,8 +362,8 @@ gs_plugin_refine (GsPlugin             *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, filenames, urls, cancellable, error))
-			return FALSE;
+
+		refine_app (app, flags, filenames, urls);
 	}
 
 	return TRUE;
