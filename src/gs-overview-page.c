@@ -564,10 +564,29 @@ gs_overview_page_switch_to (GsPage *page)
 }
 
 static void
+gs_overview_page_refresh_cb (GsPluginLoader *plugin_loader,
+			     GAsyncResult *result,
+			     GsOverviewPage *self)
+{
+	gboolean success;
+	g_autoptr(GError) error = NULL;
+
+	success = gs_plugin_loader_job_action_finish (plugin_loader, result, &error);
+	if (!success &&
+	    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		g_warning ("failed to refresh: %s", error->message);
+
+	if (success)
+		g_signal_emit_by_name (self->plugin_loader, "reload", 0, NULL);
+}
+
+static void
 third_party_response_cb (GtkInfoBar *info_bar,
                          gint response_id,
                          GsOverviewPage *self)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	if (response_id == GTK_RESPONSE_YES)
 		fedora_third_party_enable (self);
 	else
@@ -575,6 +594,15 @@ third_party_response_cb (GtkInfoBar *info_bar,
 
 	self->third_party_needs_question = FALSE;
 	refresh_third_party_repo (self);
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+					 "interactive", FALSE,
+					 "age", (guint64) 1,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    (GAsyncReadyCallback) gs_overview_page_refresh_cb,
+					    self);
 }
 
 static gboolean

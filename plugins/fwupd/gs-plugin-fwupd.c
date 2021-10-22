@@ -1183,6 +1183,46 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_fwupd_refresh_single_remote (GsPlugin *plugin,
+				       GsApp *repo,
+				       guint cache_age,
+				       GCancellable *cancellable,
+				       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GPtrArray) remotes = NULL;
+	g_autoptr(GError) error_local = NULL;
+	const gchar *remote_id;
+
+	remote_id = gs_app_get_metadata_item (repo, "fwupd::remote-id");
+	g_return_val_if_fail (remote_id != NULL, FALSE);
+
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, &error_local);
+	if (remotes == NULL) {
+		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
+		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		gs_plugin_fwupd_error_convert (error);
+		return FALSE;
+	}
+	for (guint i = 0; i < remotes->len; i++) {
+		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		if (g_strcmp0 (remote_id, fwupd_remote_get_id (remote)) == 0) {
+			if (fwupd_remote_get_enabled (remote) &&
+			    fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_LOCAL &&
+			    !gs_plugin_fwupd_refresh_remote (plugin, remote, cache_age, cancellable, error))
+				return FALSE;
+			break;
+		}
+	}
+
+	return TRUE;
+}
+
 gboolean
 gs_plugin_enable_repo (GsPlugin *plugin,
 		       GsApp *repo,
@@ -1197,7 +1237,14 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	/* source -> remote */
 	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	return gs_plugin_fwupd_modify_source (plugin, repo, TRUE, cancellable, error);
+	if (!gs_plugin_fwupd_modify_source (plugin, repo, TRUE, cancellable, error))
+		return FALSE;
+
+	/* This can fail silently, it's only to update necessary caches, to provide
+	 * up-to-date information after the successful repository enable/install. */
+	gs_plugin_fwupd_refresh_single_remote (plugin, repo, 1, cancellable, NULL);
+
+	return TRUE;
 }
 
 gboolean
