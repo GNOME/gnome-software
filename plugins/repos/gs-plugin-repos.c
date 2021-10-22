@@ -36,9 +36,7 @@ struct _GsPluginRepos {
 	 * main thread with a strong reference and no lock.
 	 *
 	 * @mutex must be held when getting a strong reference to them, or
-	 * replacing them.
-	 *
-	 * Their state is undefined if @valid is false. */
+	 * replacing them. */
 	GHashTable	*fns;		/* origin : filename */
 	GHashTable	*urls;		/* origin : url */
 
@@ -46,7 +44,10 @@ struct _GsPluginRepos {
 	gchar		*reposdir;
 
 	GMutex		 mutex;
-	gboolean	 valid;		/* (atomic) */
+
+	/* Used to cancel a pending update operation which is loading the repos
+	 * data in a worker thread. */
+	GCancellable	*update_cancellable; /* (nullable) (owned) */
 };
 
 G_DEFINE_TYPE (GsPluginRepos, gs_plugin_repos, GS_TYPE_PLUGIN)
@@ -79,6 +80,8 @@ gs_plugin_repos_dispose (GObject *object)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (object);
 
+	g_cancellable_cancel (self->update_cancellable);
+	g_clear_object (&self->update_cancellable);
 	g_clear_pointer (&self->reposdir, g_free);
 	g_clear_pointer (&self->fns, g_hash_table_unref);
 	g_clear_pointer (&self->urls, g_hash_table_unref);
@@ -97,29 +100,17 @@ gs_plugin_repos_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_repos_parent_class)->finalize (object);
 }
 
-/* Run in multiple threads; will take the mutex */
+/* Run in a worker thread; will take the mutex */
 static gboolean
-gs_plugin_repos_ensure_valid (GsPluginRepos  *self,
-                              GHashTable    **filenames_out,
-                              GHashTable    **urls_out,
-                              GCancellable   *cancellable,
-                              GError        **error)
+gs_plugin_repos_load (GsPluginRepos  *self,
+                      GCancellable   *cancellable,
+                      GError        **error)
 {
 	g_autoptr(GDir) dir = NULL;
 	const gchar *fn;
 	g_autoptr(GHashTable) new_filenames = NULL;
 	g_autoptr(GHashTable) new_urls = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
-
-	/* Clear out args */
-	if (filenames_out != NULL)
-		*filenames_out = NULL;
-	if (urls_out != NULL)
-		*urls_out = NULL;
-
-	/* already valid */
-	if (g_atomic_int_get (&self->valid))
-		goto out;
 
 	new_filenames = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	new_urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -185,20 +176,25 @@ gs_plugin_repos_ensure_valid (GsPluginRepos  *self,
 	g_clear_pointer (&self->urls, g_hash_table_unref);
 	self->urls = g_steal_pointer (&new_urls);
 
-	g_atomic_int_set (&self->valid, TRUE);
-
-out:
-	if (locker == NULL)
-		locker = g_mutex_locker_new (&self->mutex);
-
 	g_assert (self->fns != NULL && self->urls != NULL);
 
-	if (filenames_out != NULL)
-		*filenames_out = g_hash_table_ref (self->fns);
-	if (urls_out != NULL)
-		*urls_out = g_hash_table_ref (self->urls);
-
 	return TRUE;
+}
+
+/* Run in a worker thread. */
+static void
+update_repos_thread_cb (GTask        *task,
+                        gpointer      source_object,
+                        gpointer      task_data,
+                        GCancellable *cancellable)
+{
+	GsPluginRepos *self = GS_PLUGIN_REPOS (source_object);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_repos_load (self, cancellable, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
 /* Run in the main thread. */
@@ -210,24 +206,17 @@ gs_plugin_repos_changed_cb (GFileMonitor      *monitor,
                             gpointer           user_data)
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (user_data);
+	g_autoptr(GTask) task = NULL;
 
-	g_atomic_int_set (&self->valid, FALSE);
-}
+	/* Cancel any pending updates and schedule a new update of the repo data
+	 * in a worker thread. */
+	g_cancellable_cancel (self->update_cancellable);
+	g_clear_object (&self->update_cancellable);
+	self->update_cancellable = g_cancellable_new ();
 
-/* Run in a worker thread. */
-static void
-setup_thread_cb (GTask        *task,
-                 gpointer      source_object,
-                 gpointer      task_data,
-                 GCancellable *cancellable)
-{
-	GsPluginRepos *self = GS_PLUGIN_REPOS (source_object);
-	g_autoptr(GError) local_error = NULL;
-
-	if (!gs_plugin_repos_ensure_valid (self, NULL, NULL, cancellable, &local_error))
-		g_task_return_error (task, g_steal_pointer (&local_error));
-	else
-		g_task_return_boolean (task, TRUE);
+	task = g_task_new (self, self->update_cancellable, NULL, NULL);
+	g_task_set_source_tag (task, gs_plugin_repos_changed_cb);
+	g_task_run_in_thread (task, update_repos_thread_cb);
 }
 
 static void
@@ -256,13 +245,39 @@ gs_plugin_repos_setup_async (GsPlugin            *plugin,
 			  G_CALLBACK (gs_plugin_repos_changed_cb), self);
 
 	/* Set up the repos at startup. */
-	g_task_run_in_thread (task, setup_thread_cb);
+	g_task_run_in_thread (task, update_repos_thread_cb);
 }
 
 static gboolean
 gs_plugin_repos_setup_finish (GsPlugin      *plugin,
                               GAsyncResult  *result,
                               GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_repos_shutdown_async (GsPlugin            *plugin,
+                                GCancellable        *cancellable,
+                                GAsyncReadyCallback  callback,
+                                gpointer             user_data)
+{
+	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_repos_shutdown_async);
+
+	/* Cancel any ongoing update operations. */
+	g_cancellable_cancel (self->update_cancellable);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_repos_shutdown_finish (GsPlugin      *plugin,
+                                 GAsyncResult  *result,
+                                 GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
@@ -349,17 +364,20 @@ gs_plugin_refine (GsPlugin             *plugin,
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
 	g_autoptr(GHashTable) filenames = NULL;  /* (element-type utf8 filename) mapping origin to filename */
 	g_autoptr(GHashTable) urls = NULL;  /* (element-type utf8 utf8) mapping origin to URL */
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
 		return TRUE;
 
-	/* Ensure the object state is valid, and grab a reference to it so it
-	 * can be accessed without holding the lock, to keep the critical
-	 * section small. */
-	if (!gs_plugin_repos_ensure_valid (self, &filenames, &urls, cancellable, error))
-		return FALSE;
+	/* Grab a reference to the object’s state so it can be accessed without
+	 * holding the lock throughout, to keep the critical section small. */
+	locker = g_mutex_locker_new (&self->mutex);
+	filenames = g_hash_table_ref (self->fns);
+	urls = g_hash_table_ref (self->urls);
+	g_clear_pointer (&locker, g_mutex_locker_free);
 
+	/* Update each of the apps */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 
@@ -380,6 +398,8 @@ gs_plugin_repos_class_init (GsPluginReposClass *klass)
 
 	plugin_class->setup_async = gs_plugin_repos_setup_async;
 	plugin_class->setup_finish = gs_plugin_repos_setup_finish;
+	plugin_class->shutdown_async = gs_plugin_repos_shutdown_async;
+	plugin_class->shutdown_finish = gs_plugin_repos_shutdown_finish;
 }
 
 GType
