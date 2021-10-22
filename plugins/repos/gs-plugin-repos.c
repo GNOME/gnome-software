@@ -30,11 +30,22 @@
 struct _GsPluginRepos {
 	GsPlugin	 parent;
 
+	/* These hash tables are replaced by a worker thread. They are immutable
+	 * once set, and will only be replaced with a new hash table instance.
+	 * This means they are safe to access from the refine function in the
+	 * main thread with a strong reference and no lock.
+	 *
+	 * @mutex must be held when getting a strong reference to them, or
+	 * replacing them.
+	 *
+	 * Their state is undefined if @valid is false. */
 	GHashTable	*fns;		/* origin : filename */
 	GHashTable	*urls;		/* origin : url */
+
 	GFileMonitor	*monitor;
-	GMutex		 mutex;
 	gchar		*reposdir;
+
+	GMutex		 mutex;
 	gboolean	 valid;		/* (atomic) */
 };
 
@@ -57,10 +68,6 @@ gs_plugin_repos_init (GsPluginRepos *self)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
-
-	/* we also watch this for changes */
-	self->fns = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-	self->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	/* need application IDs */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
@@ -93,19 +100,28 @@ gs_plugin_repos_finalize (GObject *object)
 /* Run in a worker thread; mutex must be held */
 static gboolean
 gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
+                                     GHashTable    **filenames_out,
+                                     GHashTable    **urls_out,
                                      GCancellable   *cancellable,
                                      GError        **error)
 {
 	g_autoptr(GDir) dir = NULL;
 	const gchar *fn;
+	g_autoptr(GHashTable) new_filenames = NULL;
+	g_autoptr(GHashTable) new_urls = NULL;
+
+	/* Clear out args */
+	if (filenames_out != NULL)
+		*filenames_out = NULL;
+	if (urls_out != NULL)
+		*urls_out = NULL;
 
 	/* already valid */
 	if (g_atomic_int_get (&self->valid))
-		return TRUE;
+		goto out;
 
-	/* clear existing */
-	g_hash_table_remove_all (self->fns);
-	g_hash_table_remove_all (self->urls);
+	new_filenames = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	new_urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	/* search all files */
 	dir = g_dir_open (self->reposdir, 0, error);
@@ -137,13 +153,13 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 		for (i = 0; groups[i] != NULL; i++) {
 			g_autofree gchar *tmp = NULL;
 
-			g_hash_table_insert (self->fns,
+			g_hash_table_insert (new_filenames,
 			                     g_strdup (groups[i]),
 			                     g_strdup (filename));
 
 			tmp = g_key_file_get_string (kf, groups[i], "baseurl", NULL);
 			if (tmp != NULL) {
-				g_hash_table_insert (self->urls,
+				g_hash_table_insert (new_urls,
 						     g_strdup (groups[i]),
 						     g_strdup (tmp));
 				continue;
@@ -151,7 +167,7 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 
 			tmp = g_key_file_get_string (kf, groups[i], "metalink", NULL);
 			if (tmp != NULL) {
-				g_hash_table_insert (self->urls,
+				g_hash_table_insert (new_urls,
 						     g_strdup (groups[i]),
 						     g_strdup (tmp));
 				continue;
@@ -159,8 +175,22 @@ gs_plugin_repos_ensure_valid_locked (GsPluginRepos  *self,
 		}
 	}
 
-	/* success */
+	/* success; replace the hash table pointers in the object while the lock
+	 * is held */
+	g_clear_pointer (&self->fns, g_hash_table_unref);
+	self->fns = g_steal_pointer (&new_filenames);
+	g_clear_pointer (&self->urls, g_hash_table_unref);
+	self->urls = g_steal_pointer (&new_urls);
+
 	g_atomic_int_set (&self->valid, TRUE);
+
+out:
+	g_assert (self->fns != NULL && self->urls != NULL);
+
+	if (filenames_out != NULL)
+		*filenames_out = g_hash_table_ref (self->fns);
+	if (urls_out != NULL)
+		*urls_out = g_hash_table_ref (self->urls);
 
 	return TRUE;
 }
@@ -189,7 +219,7 @@ setup_thread_cb (GTask        *task,
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_plugin_repos_ensure_valid_locked (self, cancellable, &local_error))
+	if (!gs_plugin_repos_ensure_valid_locked (self, NULL, NULL, cancellable, &local_error))
 		g_task_return_error (task, g_steal_pointer (&local_error));
 	else
 		g_task_return_boolean (task, TRUE);
@@ -233,11 +263,13 @@ gs_plugin_repos_setup_finish (GsPlugin      *plugin,
 }
 
 static gboolean
-refine_app_locked (GsPluginRepos        *self,
-		   GsApp                *app,
-		   GsPluginRefineFlags   flags,
-		   GCancellable         *cancellable,
-		   GError              **error)
+refine_app (GsPluginRepos        *self,
+            GsApp                *app,
+            GsPluginRefineFlags   flags,
+            GHashTable           *filenames,
+            GHashTable           *urls,
+            GCancellable         *cancellable,
+            GError              **error)
 {
 	const gchar *tmp;
 
@@ -251,23 +283,19 @@ refine_app_locked (GsPluginRepos        *self,
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE)
 		return TRUE;
 
-	/* ensure valid */
-	if (!gs_plugin_repos_ensure_valid_locked (self, cancellable, error))
-		return FALSE;
-
 	/* find hostname */
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (self->urls, gs_app_get_id (app));
+		tmp = g_hash_table_lookup (urls, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tmp);
 		break;
 	default:
 		if (gs_app_get_origin (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (self->urls, gs_app_get_origin (app));
+		tmp = g_hash_table_lookup (urls, gs_app_get_origin (app));
 		if (tmp != NULL)
 			gs_app_set_origin_hostname (app, tmp);
 		else {
@@ -279,7 +307,7 @@ refine_app_locked (GsPluginRepos        *self,
 
 			/* Some repos, such as rpmfusion, can have set the name with a distribution
 			   number in the appstream file, thus check those specifically */
-			g_hash_table_iter_init (&iter, self->urls);
+			g_hash_table_iter_init (&iter, urls);
 			while (g_hash_table_iter_next (&iter, &key, &value)) {
 				if (g_str_has_prefix (origin, key)) {
 					const gchar *rest = origin + strlen (key);
@@ -300,7 +328,7 @@ refine_app_locked (GsPluginRepos        *self,
 	case AS_COMPONENT_KIND_REPOSITORY:
 		if (gs_app_get_id (app) == NULL)
 			return TRUE;
-		tmp = g_hash_table_lookup (self->fns, gs_app_get_id (app));
+		tmp = g_hash_table_lookup (filenames, gs_app_get_id (app));
 		if (tmp != NULL)
 			gs_app_set_metadata (app, "repos::repo-filename", tmp);
 		break;
@@ -320,14 +348,24 @@ gs_plugin_refine (GsPlugin             *plugin,
 {
 	GsPluginRepos *self = GS_PLUGIN_REPOS (plugin);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GHashTable) filenames = NULL;  /* (element-type utf8 filename) mapping origin to filename */
+	g_autoptr(GHashTable) urls = NULL;  /* (element-type utf8 utf8) mapping origin to URL */
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
 		return TRUE;
 
+	/* Ensure the object state is valid, and grab a reference to it so it
+	 * can be accessed without holding the lock, to keep the critical
+	 * section small. */
+	if (!gs_plugin_repos_ensure_valid_locked (self, &filenames, &urls, cancellable, error))
+		return FALSE;
+
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (self, app, flags, cancellable, error))
+		if (!refine_app (self, app, flags, filenames, urls, cancellable, error))
 			return FALSE;
 	}
 
