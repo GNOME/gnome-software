@@ -1002,48 +1002,6 @@ gs_plugin_packagekit_resolve_packages (GsPluginPackagekit  *self,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_refine_from_desktop (GsPluginPackagekit  *self,
-                                          GsApp               *app,
-                                          const gchar         *filename,
-                                          GCancellable        *cancellable,
-                                          GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *to_array[] = { NULL, NULL };
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) packages = NULL;
-
-	to_array[0] = filename;
-	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_search_files (self->client_refine,
-					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
-					  (gchar **) to_array,
-					  cancellable,
-					  gs_packagekit_helper_cb, helper,
-					  error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to search file %s: ", filename);
-		return FALSE;
-	}
-
-	/* get results */
-	packages = pk_results_get_package_array (results);
-	if (packages->len == 1) {
-		PkPackage *package;
-		package = g_ptr_array_index (packages, 0);
-		gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
-	} else {
-		g_warning ("Failed to find one package for %s, %s, [%u]",
-			   gs_app_get_id (app), filename, packages->len);
-	}
-	return TRUE;
-}
-
 /*
  * gs_plugin_packagekit_fixup_update_description:
  *
@@ -1257,6 +1215,11 @@ gs_plugin_refine (GsPlugin *plugin,
 			g_autofree gchar *fn = NULL;
 			GsApp *app = gs_app_list_index (list, i);
 			const gchar *tmp;
+			const gchar *to_array[] = { NULL, NULL };
+			g_autoptr(GsPackagekitHelper) helper = NULL;
+			g_autoptr(PkResults) results = NULL;
+			g_autoptr(GPtrArray) packages = NULL;
+
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
 			if (gs_app_get_source_id_default (app) != NULL)
@@ -1287,12 +1250,34 @@ gs_plugin_refine (GsPlugin *plugin,
 				g_debug ("ignoring %s as does not exist", fn);
 				continue;
 			}
-			if (!gs_plugin_packagekit_refine_from_desktop (self,
-									app,
-									fn,
-									cancellable,
-									error))
+
+			helper = gs_packagekit_helper_new (plugin);
+			to_array[0] = fn;
+			gs_packagekit_helper_add_app (helper, app);
+			g_mutex_lock (&self->client_mutex_refine);
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			results = pk_client_search_files (self->client_refine,
+							  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+							  (gchar **) to_array,
+							  cancellable,
+							  gs_packagekit_helper_cb, helper,
+							  error);
+			g_mutex_unlock (&self->client_mutex_refine);
+			if (!gs_plugin_packagekit_results_valid (results, error)) {
+				g_prefix_error (error, "failed to search file %s: ", fn);
 				return FALSE;
+			}
+
+			/* get results */
+			packages = pk_results_get_package_array (results);
+			if (packages->len == 1) {
+				PkPackage *package;
+				package = g_ptr_array_index (packages, 0);
+				gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
+			} else {
+				g_warning ("Failed to find one package for %s, %s, [%u]",
+					   gs_app_get_id (app), fn, packages->len);
+			}
 		}
 	}
 
