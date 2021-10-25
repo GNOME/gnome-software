@@ -73,10 +73,14 @@ G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
 
 static void gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin);
 static void gs_plugin_packagekit_repo_list_changed_cb (PkControl *control, GsPlugin *plugin);
-static gboolean gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
-                                                     GsAppList           *list,
-                                                     GCancellable        *cancellable,
-                                                     GError             **error);
+static void gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
+                                                       GsAppList           *list,
+                                                       GCancellable        *cancellable,
+                                                       GAsyncReadyCallback  callback,
+                                                       gpointer             user_data);
+static gboolean gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
+                                                            GAsyncResult        *result,
+                                                            GError             **error);
 static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
@@ -87,6 +91,18 @@ static void reload_proxy_settings_async (GsPluginPackagekit  *self,
 static gboolean reload_proxy_settings_finish (GsPluginPackagekit  *self,
                                               GAsyncResult        *result,
                                               GError             **error);
+
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	/* FIXME: This is not the right way to write an async-to-sync converter,
+	 * but this is temporary and will be removed in a subsequent commit. */
+	GAsyncResult **result_out = user_data;
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (NULL);
+}
 
 static void
 gs_plugin_packagekit_init (GsPluginPackagekit *self)
@@ -1553,7 +1569,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0) {
-		gboolean ret;
 		guint i;
 		GsApp *app;
 		GPtrArray *sources;
@@ -1573,11 +1588,16 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_list_add (packages, app);
 		}
 		if (gs_app_list_length (packages) > 0) {
-			ret = gs_plugin_packagekit_refine_history (self,
+			/* FIXME: This will be made async shortly */
+			g_autoptr(GAsyncResult) async_result = NULL;
+			gs_plugin_packagekit_refine_history_async (self,
 								   packages,
 								   cancellable,
-								   error);
-			if (!ret)
+								   async_result_cb,
+								   &async_result);
+			while (async_result == NULL)
+				g_main_context_iteration (NULL, TRUE);
+			if (!gs_plugin_packagekit_refine_history_finish (self, async_result, error))
 				return FALSE;
 		}
 	}
@@ -1728,23 +1748,25 @@ gs_plugin_packagekit_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
-                                     GsAppList           *list,
-                                     GCancellable        *cancellable,
-                                     GError             **error)
+static void refine_history_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+static void
+gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
+                                           GsAppList           *list,
+                                           GCancellable        *cancellable,
+                                           GAsyncReadyCallback  callback,
+                                           gpointer             user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
-	gboolean ret;
-	guint j;
+	guint i = 0, j;
 	GsApp *app;
-	guint i = 0;
-	GVariantIter iter;
-	GVariant *value;
 	g_autofree const gchar **package_names = NULL;
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GVariant) result = NULL;
-	g_autoptr(GVariant) tuple = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_refine_history_async);
+	g_task_set_task_data (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 
 	/* get an array of package names */
 	package_names = g_new0 (const gchar *, gs_app_list_length (list) + 1);
@@ -1754,18 +1776,41 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 	}
 
 	g_debug ("getting history for %u packages", gs_app_list_length (list));
-	result = g_dbus_connection_call_sync (self->connection_history,
-					      "org.freedesktop.PackageKit",
-					      "/org/freedesktop/PackageKit",
-					      "org.freedesktop.PackageKit",
-					      "GetPackageHistory",
-					      g_variant_new ("(^asu)", package_names, 0),
-					      NULL,
-					      G_DBUS_CALL_FLAGS_NONE,
-					      GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT,
-					      cancellable,
-					      &error_local);
-	if (result == NULL) {
+	g_dbus_connection_call (self->connection_history,
+				"org.freedesktop.PackageKit",
+				"/org/freedesktop/PackageKit",
+				"org.freedesktop.PackageKit",
+				"GetPackageHistory",
+				g_variant_new ("(^asu)", package_names, 0),
+				NULL,
+				G_DBUS_CALL_FLAGS_NONE,
+				GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT,
+				cancellable,
+				refine_history_cb,
+				g_steal_pointer (&task));
+}
+
+static void
+refine_history_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	GDBusConnection *connection = G_DBUS_CONNECTION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	GsAppList *list = g_task_get_task_data (task);
+	gboolean ret;
+	guint i = 0;
+	GVariantIter iter;
+	GVariant *value;
+	g_autoptr(GVariant) result_variant = NULL;
+	g_autoptr(GVariant) tuple = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	result_variant = g_dbus_connection_call_finish (connection, result, &error_local);
+
+	if (result_variant == NULL) {
 		g_dbus_error_strip_remote_error (error_local);
 		if (g_error_matches (error_local,
 				     G_DBUS_ERROR,
@@ -1776,41 +1821,42 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 			/* just set this to something non-zero so we don't keep
 			 * trying to call GetPackageHistory */
 			for (i = 0; i < gs_app_list_length (list); i++) {
-				app = gs_app_list_index (list, i);
+				GsApp *app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		} else if (g_error_matches (error_local,
 					    G_IO_ERROR,
 					    G_IO_ERROR_CANCELLED)) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_CANCELLED,
-				     "Failed to get history: %s",
-				     error_local->message);
-			return FALSE;
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_CANCELLED,
+						 "Failed to get history: %s",
+						 error_local->message);
+			return;
 		} else if (g_error_matches (error_local,
 					    G_IO_ERROR,
 					    G_IO_ERROR_TIMED_OUT)) {
 			g_debug ("No history as PackageKit took too long: %s",
 				 error_local->message);
 			for (i = 0; i < gs_app_list_length (list); i++) {
-				app = gs_app_list_index (list, i);
+				GsApp *app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		}
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "Failed to get history: %s",
-			     error_local->message);
-		return FALSE;
+
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "Failed to get history: %s",
+					 error_local->message);
+		return;
 	}
 
 	/* get any results */
-	tuple = g_variant_get_child_value (result, 0);
+	tuple = g_variant_get_child_value (result_variant, 0);
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		g_autoptr(GVariant) entries = NULL;
-		app = gs_app_list_index (list, i);
+		GsApp *app = gs_app_list_index (list, i);
 		ret = g_variant_lookup (tuple,
 					gs_app_get_source_default (app),
 					"@aa{sv}",
@@ -1841,7 +1887,16 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 			g_variant_unref (value);
 		}
 	}
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
+                                            GAsyncResult        *result,
+                                            GError             **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
