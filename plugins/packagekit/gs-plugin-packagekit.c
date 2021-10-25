@@ -1072,72 +1072,6 @@ gs_plugin_packagekit_fixup_update_description (const gchar *text)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_updatedetails (GsPluginPackagekit  *self,
-                                           GsAppList           *list,
-                                           GCancellable        *cancellable,
-                                           GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *package_id;
-	guint j;
-	GsApp *app;
-	guint cnt = 0;
-	PkUpdateDetail *update_detail;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autofree const gchar **package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-
-	package_ids = g_new0 (const gchar *, gs_app_list_length (list) + 1);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		package_id = gs_app_get_source_id_default (app);
-		if (package_id != NULL)
-			package_ids[cnt++] = package_id;
-	}
-
-	/* nothing to do */
-	if (cnt == 0)
-		return TRUE;
-
-	/* get any update details */
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_update_detail (self->client_refine,
-					       (gchar **) package_ids,
-					       cancellable,
-					       gs_packagekit_helper_cb, helper,
-					       error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get update details for %s: ",
-				package_ids[0]);
-		return FALSE;
-	}
-
-	/* set the update details for the update */
-	array = pk_results_get_update_detail_array (results);
-	for (j = 0; j < gs_app_list_length (list); j++) {
-		app = gs_app_list_index (list, j);
-		package_id = gs_app_get_source_id_default (app);
-		for (guint i = 0; i < array->len; i++) {
-			const gchar *tmp;
-			g_autofree gchar *desc = NULL;
-			/* right package? */
-			update_detail = g_ptr_array_index (array, i);
-			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
-				continue;
-			tmp = pk_update_detail_get_update_text (update_detail);
-			desc = gs_plugin_packagekit_fixup_update_description (tmp);
-			if (desc != NULL)
-				gs_app_set_update_details_markup (app, desc);
-			break;
-		}
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
                                     GsApp               *app)
 {
@@ -1379,11 +1313,60 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_list_add (updatedetails_all, app);
 	}
 	if (gs_app_list_length (updatedetails_all) > 0) {
-		if (!gs_plugin_packagekit_refine_updatedetails (self,
-								updatedetails_all,
-								cancellable,
-								error))
-			return FALSE;
+		const gchar *package_id;
+		guint j;
+		GsApp *app;
+		guint cnt = 0;
+		PkUpdateDetail *update_detail;
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		g_autofree const gchar **package_ids = NULL;
+		g_autoptr(PkResults) results = NULL;
+		g_autoptr(GPtrArray) array = NULL;
+
+		package_ids = g_new0 (const gchar *, gs_app_list_length (updatedetails_all) + 1);
+		for (guint i = 0; i < gs_app_list_length (updatedetails_all); i++) {
+			app = gs_app_list_index (updatedetails_all, i);
+			package_id = gs_app_get_source_id_default (app);
+			if (package_id != NULL)
+				package_ids[cnt++] = package_id;
+		}
+
+		if (cnt > 0) {
+			/* get any update details */
+			g_mutex_lock (&self->client_mutex_refine);
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			results = pk_client_get_update_detail (self->client_refine,
+							       (gchar **) package_ids,
+							       cancellable,
+							       gs_packagekit_helper_cb, helper,
+							       error);
+			g_mutex_unlock (&self->client_mutex_refine);
+			if (!gs_plugin_packagekit_results_valid (results, error)) {
+				g_prefix_error (error, "failed to get update details for %s: ",
+						package_ids[0]);
+				return FALSE;
+			}
+
+			/* set the update details for the update */
+			array = pk_results_get_update_detail_array (results);
+			for (j = 0; j < gs_app_list_length (updatedetails_all); j++) {
+				app = gs_app_list_index (updatedetails_all, j);
+				package_id = gs_app_get_source_id_default (app);
+				for (guint i = 0; i < array->len; i++) {
+					const gchar *tmp;
+					g_autofree gchar *desc = NULL;
+					/* right package? */
+					update_detail = g_ptr_array_index (array, i);
+					if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
+						continue;
+					tmp = pk_update_detail_get_update_text (update_detail);
+					desc = gs_plugin_packagekit_fixup_update_description (tmp);
+					if (desc != NULL)
+						gs_app_set_update_details_markup (app, desc);
+					break;
+				}
+			}
+		}
 	}
 
 	/* any package details missing? */
