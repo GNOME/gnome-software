@@ -1138,68 +1138,6 @@ gs_plugin_packagekit_refine_updatedetails (GsPluginPackagekit  *self,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_details2 (GsPluginPackagekit  *self,
-                                      GsAppList           *list,
-                                      GCancellable        *cancellable,
-                                      GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	GPtrArray *source_ids;
-	GsApp *app;
-	const gchar *package_id;
-	guint i, j;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GPtrArray) package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GHashTable) details_collection = NULL;
-
-	package_ids = g_ptr_array_new_with_free_func (g_free);
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		source_ids = gs_app_get_source_ids (app);
-		for (j = 0; j < source_ids->len; j++) {
-			package_id = g_ptr_array_index (source_ids, j);
-			g_ptr_array_add (package_ids, g_strdup (package_id));
-		}
-	}
-	if (package_ids->len == 0)
-		return TRUE;
-	g_ptr_array_add (package_ids, NULL);
-
-	/* get any details */
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_details (self->client_refine,
-					 (gchar **) package_ids->pdata,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
-		g_prefix_error (error, "failed to get details for %s: ",
-		                package_ids_str);
-		return FALSE;
-	}
-
-	/* get the results and copy them into a hash table for fast lookups:
-	 * there are typically 400 to 700 elements in @array, and 100 to 200
-	 * elements in @list, each with 1 or 2 source IDs to look up (but
-	 * sometimes 200) */
-	array = pk_results_get_details_array (results);
-	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
-
-	/* set the update details for the update */
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
-	}
-
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
                                     GsApp               *app)
 {
@@ -1465,11 +1403,57 @@ gs_plugin_refine (GsPlugin *plugin,
 		gs_app_list_add (list_tmp, app);
 	}
 	if (gs_app_list_length (list_tmp) > 0) {
-		if (!gs_plugin_packagekit_refine_details2 (self,
-							   list_tmp,
-							   cancellable,
-							   error))
-			return FALSE;
+		GPtrArray *source_ids;
+		GsApp *app;
+		const gchar *package_id;
+		guint i, j;
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		g_autoptr(GPtrArray) array = NULL;
+		g_autoptr(GPtrArray) package_ids = NULL;
+		g_autoptr(PkResults) results = NULL;
+		g_autoptr(GHashTable) details_collection = NULL;
+
+		package_ids = g_ptr_array_new_with_free_func (g_free);
+		for (i = 0; i < gs_app_list_length (list_tmp); i++) {
+			app = gs_app_list_index (list_tmp, i);
+			source_ids = gs_app_get_source_ids (app);
+			for (j = 0; j < source_ids->len; j++) {
+				package_id = g_ptr_array_index (source_ids, j);
+				g_ptr_array_add (package_ids, g_strdup (package_id));
+			}
+		}
+		if (package_ids->len > 0) {
+			g_ptr_array_add (package_ids, NULL);
+
+			/* get any details */
+			g_mutex_lock (&self->client_mutex_refine);
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			results = pk_client_get_details (self->client_refine,
+							 (gchar **) package_ids->pdata,
+							 cancellable,
+							 gs_packagekit_helper_cb, helper,
+							 error);
+			g_mutex_unlock (&self->client_mutex_refine);
+			if (!gs_plugin_packagekit_results_valid (results, error)) {
+				g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
+				g_prefix_error (error, "failed to get details for %s: ",
+						package_ids_str);
+				return FALSE;
+			}
+
+			/* get the results and copy them into a hash table for fast lookups:
+			 * there are typically 400 to 700 elements in @array, and 100 to 200
+			 * elements in @list, each with 1 or 2 source IDs to look up (but
+			 * sometimes 200) */
+			array = pk_results_get_details_array (results);
+			details_collection = gs_plugin_packagekit_details_array_to_hash (array);
+
+			/* set the update details for the update */
+			for (i = 0; i < gs_app_list_length (list_tmp); i++) {
+				app = gs_app_list_index (list_tmp, i);
+				gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
+			}
+		}
 	}
 
 	/* get the update severity */
