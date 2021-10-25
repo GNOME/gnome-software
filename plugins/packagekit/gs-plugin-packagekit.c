@@ -715,6 +715,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GsApp) first_app = NULL;
+	gboolean all_downloaded = TRUE;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -735,8 +737,24 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		PkPackage *package = g_ptr_array_index (array, i);
 		g_autoptr(GsApp) app = NULL;
 		app = gs_plugin_packagekit_build_update_app (plugin, package);
+		all_downloaded = all_downloaded && !gs_app_get_size_download (app);
+		if (all_downloaded && first_app == NULL)
+			first_app = g_object_ref (app);
 		gs_app_list_add (list, app);
 	}
+	/* Having all packages downloaded doesn't mean the update is also prepared,
+	   because the 'prepared-update' file can be missing, thus verify it and
+	   if not found, then set one application as needed download, to have
+	   the update properly prepared. */
+	if (all_downloaded && first_app != NULL) {
+		g_auto(GStrv) prepared_ids = NULL;
+		/* It's an overhead to get all the package IDs, but there's no easier
+		   way to verify the prepared-update file exists. */
+		prepared_ids = pk_offline_get_prepared_ids (NULL);
+		if (prepared_ids == NULL || prepared_ids[0] == NULL)
+			gs_app_set_size_download (first_app, 1);
+	}
+
 	return TRUE;
 }
 
