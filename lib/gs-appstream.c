@@ -550,11 +550,17 @@ gs_appstream_refine_app_updates (GsApp *app,
 
 	/* get the descriptions with a version prefix */
 	} else if (updates_list->len > 1) {
+		const gchar *version = gs_app_get_version (app);
 		g_autoptr(GString) update_desc = g_string_new ("");
 		for (guint i = 0; i < updates_list->len; i++) {
 			XbNode *release = g_ptr_array_index (updates_list, i);
+			const gchar *release_version = xb_node_get_attr (release, "version");
 			g_autofree gchar *desc = NULL;
 			g_autoptr(XbNode) n = NULL;
+
+			/* skip the currently installed version and all below it */
+			if (version != NULL && as_vercmp_simple (version, release_version) >= 0)
+				continue;
 
 			n = xb_node_query_first (release, "description", NULL);
 			desc = gs_appstream_format_description (n, NULL);
@@ -567,7 +573,8 @@ gs_appstream_refine_app_updates (GsApp *app,
 		/* remove trailing newlines */
 		if (update_desc->len > 2)
 			g_string_truncate (update_desc, update_desc->len - 2);
-		gs_app_set_update_details (app, update_desc->str);
+		if (update_desc->len > 0)
+			gs_app_set_update_details (app, update_desc->str);
 	}
 
 	/* if there is no already set update version use the newest */

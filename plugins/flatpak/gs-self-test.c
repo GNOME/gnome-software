@@ -1511,7 +1511,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	app = gs_app_list_lookup (list_updates, "*/flatpak/test/org.test.Chiron/*");
 	g_assert_nonnull (app);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Version 1.2.4:\nThis is best.\n\nVersion 1.2.3:\nThis is better.");
+	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Version 1.2.4:\nThis is best.");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, "1.2.4");
 
 	/* care about signals */
