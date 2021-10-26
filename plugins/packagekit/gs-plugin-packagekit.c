@@ -1123,9 +1123,53 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
-	g_autoptr(GsAppList) updatedetails_all = gs_app_list_new ();
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GsAppList) resolve_list = gs_app_list_new ();
+	g_autoptr(GsAppList) update_details_list = gs_app_list_new ();
+	g_autoptr(GsAppList) details_list = gs_app_list_new ();
+	g_autoptr(GsAppList) history_list = gs_app_list_new ();
+
+	/* Process the @list and work out what information is needed for each
+	 * app. */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GPtrArray *sources;
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		sources = gs_app_get_sources (app);
+
+		if (sources->len > 0 &&
+		    gs_plugin_packagekit_refine_valid_package_name (g_ptr_array_index (sources, 0)) &&
+		    (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		     gs_plugin_refine_requires_package_id (app, flags) ||
+		     gs_plugin_refine_requires_origin (app, flags) ||
+		     gs_plugin_refine_requires_version (app, flags))) {
+			gs_app_list_add (resolve_list, app);
+		}
+
+		if ((gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
+		     gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) &&
+		    gs_app_get_source_id_default (app) != NULL &&
+		    gs_plugin_refine_requires_update_details (app, flags)) {
+			gs_app_list_add (update_details_list, app);
+		}
+
+		if (gs_app_get_source_id_default (app) != NULL &&
+		    gs_plugin_refine_app_needs_details (flags, app)) {
+			gs_app_list_add (details_list, app);
+		}
+
+		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0 &&
+		    sources->len > 0 &&
+		    gs_app_get_install_date (app) == 0) {
+			gs_app_list_add (history_list, app);
+		}
+	}
 
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
@@ -1178,29 +1222,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* can we resolve in one go? */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GPtrArray *sources;
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		sources = gs_app_get_sources (app);
-		if (sources->len == 0)
-			continue;
-		tmp = g_ptr_array_index (sources, 0);
-		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
-			continue;
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
-		    gs_plugin_refine_requires_package_id (app, flags) ||
-		    gs_plugin_refine_requires_origin (app, flags) ||
-		    gs_plugin_refine_requires_version (app, flags)) {
-			gs_app_list_add (resolve_all, app);
-		}
-	}
-	if (gs_app_list_length (resolve_all) > 0) {
+	if (gs_app_list_length (resolve_list) > 0) {
 		PkBitfield filter;
 		g_autoptr(GsAppList) resolve2_list = NULL;
 		g_autoptr(GAsyncResult) async_result = NULL;
@@ -1214,7 +1236,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* FIXME: This async-to-sync conversion is very hacky, but is
 		 * temporary and will be removed in a subsequent commit. */
 		gs_plugin_packagekit_resolve_packages_with_filter_async (self,
-									 resolve_all,
+									 resolve_list,
 									 filter,
 									 cancellable,
 									 async_result_cb,
@@ -1229,8 +1251,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* if any packages remaining in UNKNOWN state, try to resolve them again,
 		 * but this time without ARCH filter */
 		resolve2_list = gs_app_list_new ();
-		for (guint i = 0; i < gs_app_list_length (resolve_all); i++) {
-			GsApp *app = gs_app_list_index (resolve_all, i);
+		for (guint i = 0; i < gs_app_list_length (resolve_list); i++) {
+			GsApp *app = gs_app_list_index (resolve_list, i);
 			if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 				gs_app_list_add (resolve2_list, app);
 		}
@@ -1328,22 +1350,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* any update details missing? */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		if (gs_plugin_refine_requires_update_details (app, flags))
-			gs_app_list_add (updatedetails_all, app);
-	}
-	if (gs_app_list_length (updatedetails_all) > 0) {
+	if (gs_app_list_length (update_details_list) > 0) {
 		const gchar *package_id;
 		guint j;
 		GsApp *app;
@@ -1354,9 +1361,9 @@ gs_plugin_refine (GsPlugin *plugin,
 		g_autoptr(PkResults) results = NULL;
 		g_autoptr(GPtrArray) array = NULL;
 
-		package_ids = g_new0 (const gchar *, gs_app_list_length (updatedetails_all) + 1);
-		for (guint i = 0; i < gs_app_list_length (updatedetails_all); i++) {
-			app = gs_app_list_index (updatedetails_all, i);
+		package_ids = g_new0 (const gchar *, gs_app_list_length (update_details_list) + 1);
+		for (guint i = 0; i < gs_app_list_length (update_details_list); i++) {
+			app = gs_app_list_index (update_details_list, i);
 			package_id = gs_app_get_source_id_default (app);
 			if (package_id != NULL)
 				package_ids[cnt++] = package_id;
@@ -1380,8 +1387,8 @@ gs_plugin_refine (GsPlugin *plugin,
 
 			/* set the update details for the update */
 			array = pk_results_get_update_detail_array (results);
-			for (j = 0; j < gs_app_list_length (updatedetails_all); j++) {
-				app = gs_app_list_index (updatedetails_all, j);
+			for (j = 0; j < gs_app_list_length (update_details_list); j++) {
+				app = gs_app_list_index (update_details_list, j);
 				package_id = gs_app_get_source_id_default (app);
 				for (guint i = 0; i < array->len; i++) {
 					const gchar *tmp;
@@ -1401,22 +1408,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* any package details missing? */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		if (!gs_plugin_refine_app_needs_details (flags, app))
-			continue;
-		gs_app_list_add (list_tmp, app);
-	}
-	if (gs_app_list_length (list_tmp) > 0) {
+	if (gs_app_list_length (details_list) > 0) {
 		GPtrArray *source_ids;
 		GsApp *app;
 		const gchar *package_id;
@@ -1428,8 +1420,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		g_autoptr(GHashTable) details_collection = NULL;
 
 		package_ids = g_ptr_array_new_with_free_func (g_free);
-		for (i = 0; i < gs_app_list_length (list_tmp); i++) {
-			app = gs_app_list_index (list_tmp, i);
+		for (i = 0; i < gs_app_list_length (details_list); i++) {
+			app = gs_app_list_index (details_list, i);
 			source_ids = gs_app_get_source_ids (app);
 			for (j = 0; j < source_ids->len; j++) {
 				package_id = g_ptr_array_index (source_ids, j);
@@ -1463,8 +1455,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			details_collection = gs_plugin_packagekit_details_array_to_hash (array);
 
 			/* set the update details for the update */
-			for (i = 0; i < gs_app_list_length (list_tmp); i++) {
-				app = gs_app_list_index (list_tmp, i);
+			for (i = 0; i < gs_app_list_length (details_list); i++) {
+				app = gs_app_list_index (details_list, i);
 				gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
 			}
 		}
@@ -1566,38 +1558,19 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	}
 
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0) {
-		guint i;
-		GsApp *app;
-		GPtrArray *sources;
-		g_autoptr(GsAppList) packages = NULL;
-
-		/* add any missing history data */
-		packages = gs_app_list_new ();
-		for (i = 0; i < gs_app_list_length (list); i++) {
-			app = gs_app_list_index (list, i);
-			if (!gs_app_has_management_plugin (app, plugin))
-				continue;
-			sources = gs_app_get_sources (app);
-			if (sources->len == 0)
-				continue;
-			if (gs_app_get_install_date (app) != 0)
-				continue;
-			gs_app_list_add (packages, app);
-		}
-		if (gs_app_list_length (packages) > 0) {
-			/* FIXME: This will be made async shortly */
-			g_autoptr(GAsyncResult) async_result = NULL;
-			gs_plugin_packagekit_refine_history_async (self,
-								   packages,
-								   cancellable,
-								   async_result_cb,
-								   &async_result);
-			while (async_result == NULL)
-				g_main_context_iteration (NULL, TRUE);
-			if (!gs_plugin_packagekit_refine_history_finish (self, async_result, error))
-				return FALSE;
-		}
+	/* add any missing history data */
+	if (gs_app_list_length (history_list) > 0) {
+		/* FIXME: This will be made async shortly */
+		g_autoptr(GAsyncResult) async_result = NULL;
+		gs_plugin_packagekit_refine_history_async (self,
+							   history_list,
+							   cancellable,
+							   async_result_cb,
+							   &async_result);
+		while (async_result == NULL)
+			g_main_context_iteration (NULL, TRUE);
+		if (!gs_plugin_packagekit_refine_history_finish (self, async_result, error))
+			return FALSE;
 	}
 
 	/* success */
