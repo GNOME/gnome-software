@@ -1354,7 +1354,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		const gchar *package_id;
 		guint j;
 		GsApp *app;
-		guint cnt = 0;
 		PkUpdateDetail *update_detail;
 		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 		g_autofree const gchar **package_ids = NULL;
@@ -1364,45 +1363,42 @@ gs_plugin_refine (GsPlugin *plugin,
 		package_ids = g_new0 (const gchar *, gs_app_list_length (update_details_list) + 1);
 		for (guint i = 0; i < gs_app_list_length (update_details_list); i++) {
 			app = gs_app_list_index (update_details_list, i);
-			package_id = gs_app_get_source_id_default (app);
-			if (package_id != NULL)
-				package_ids[cnt++] = package_id;
+			package_ids[i] = gs_app_get_source_id_default (app);
+			g_assert (package_ids[i] != NULL);  /* checked when update_details_list is built */
 		}
 
-		if (cnt > 0) {
-			/* get any update details */
-			g_mutex_lock (&self->client_mutex_refine);
-			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-			results = pk_client_get_update_detail (self->client_refine,
-							       (gchar **) package_ids,
-							       cancellable,
-							       gs_packagekit_helper_cb, helper,
-							       error);
-			g_mutex_unlock (&self->client_mutex_refine);
-			if (!gs_plugin_packagekit_results_valid (results, error)) {
-				g_prefix_error (error, "failed to get update details for %s: ",
-						package_ids[0]);
-				return FALSE;
-			}
+		/* get any update details */
+		g_mutex_lock (&self->client_mutex_refine);
+		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		results = pk_client_get_update_detail (self->client_refine,
+						       (gchar **) package_ids,
+						       cancellable,
+						       gs_packagekit_helper_cb, helper,
+						       error);
+		g_mutex_unlock (&self->client_mutex_refine);
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
+			g_prefix_error (error, "failed to get update details for %s: ",
+					package_ids[0]);
+			return FALSE;
+		}
 
-			/* set the update details for the update */
-			array = pk_results_get_update_detail_array (results);
-			for (j = 0; j < gs_app_list_length (update_details_list); j++) {
-				app = gs_app_list_index (update_details_list, j);
-				package_id = gs_app_get_source_id_default (app);
-				for (guint i = 0; i < array->len; i++) {
-					const gchar *tmp;
-					g_autofree gchar *desc = NULL;
-					/* right package? */
-					update_detail = g_ptr_array_index (array, i);
-					if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
-						continue;
-					tmp = pk_update_detail_get_update_text (update_detail);
-					desc = gs_plugin_packagekit_fixup_update_description (tmp);
-					if (desc != NULL)
-						gs_app_set_update_details_markup (app, desc);
-					break;
-				}
+		/* set the update details for the update */
+		array = pk_results_get_update_detail_array (results);
+		for (j = 0; j < gs_app_list_length (update_details_list); j++) {
+			app = gs_app_list_index (update_details_list, j);
+			package_id = gs_app_get_source_id_default (app);
+			for (guint i = 0; i < array->len; i++) {
+				const gchar *tmp;
+				g_autofree gchar *desc = NULL;
+				/* right package? */
+				update_detail = g_ptr_array_index (array, i);
+				if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
+					continue;
+				tmp = pk_update_detail_get_update_text (update_detail);
+				desc = gs_plugin_packagekit_fixup_update_description (tmp);
+				if (desc != NULL)
+					gs_app_set_update_details_markup (app, desc);
+				break;
 			}
 		}
 	}
