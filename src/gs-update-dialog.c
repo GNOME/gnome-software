@@ -158,7 +158,6 @@ unset_focus (GtkWidget *widget)
 	focus = gtk_window_get_focus (GTK_WINDOW (widget));
 	if (GTK_IS_LABEL (focus))
 		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
-	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
 }
 
 static void
