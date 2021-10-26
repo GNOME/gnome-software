@@ -317,6 +317,7 @@
                                             <property name="name">updates</property>
                                             <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">Updates</property>
                                             <property name="icon-name">emblem-synchronizing-symbolic</property>
+                                            <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
                                             <property name="child">
                                               <object class="GsUpdatesPage" id="updates_page">
                                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
