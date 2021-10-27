@@ -53,10 +53,24 @@
                         <property name="orientation">vertical</property>
                         <property name="valign">center</property>
                         <child>
-                          <object class="GtkSpinner" id="spinner_updates">
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <property name="valign">center</property>
+                            <property name="halign">center</property>
                             <style>
-                              <class name="icon"/>
+                              <class name="iconbox"/>
                             </style>
+                            <child>
+                              <object class="GtkSpinner" id="spinner_updates">
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <property name="hexpand">True</property>
+                                <property name="vexpand">True</property>
+                                <style>
+                                  <class name="icon"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
