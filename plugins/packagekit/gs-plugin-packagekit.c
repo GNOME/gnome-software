@@ -1710,10 +1710,25 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gs_app_set_install_date (app, timestamp);
 }
 
+static void
+gs_plugin_packagekit_get_properties_cb (GObject *source_object,
+					GAsyncResult *result,
+					gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+	gboolean *pdone = user_data;
+	if (!pk_control_get_properties_finish (PK_CONTROL (source_object), result, &error))
+		g_debug ("Failed to get properties: %s", error->message);
+
+	*pdone = TRUE;
+	g_main_context_wakeup (NULL);
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	gboolean done = FALSE;
 
 	self->connection_history = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
@@ -1722,6 +1737,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
+
+	g_mutex_lock (&self->client_mutex_refine);
+
+	/* Only to initialize connection to the D-Bus daemon with the correct GMainContext */
+	pk_control_get_properties_async (self->control_refine, cancellable,
+					 gs_plugin_packagekit_get_properties_cb, &done);
+	while (!done)
+		g_main_context_iteration (NULL, TRUE);
+
+	g_mutex_unlock (&self->client_mutex_refine);
 
 	reload_proxy_settings (self, cancellable);
 
