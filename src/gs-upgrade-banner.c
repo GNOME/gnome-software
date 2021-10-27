@@ -29,7 +29,6 @@ typedef struct
 	GtkWidget	*label_upgrades_summary;
 	GtkWidget	*label_upgrades_title;
 	GtkWidget	*label_download_info;
-	GtkWidget	*label_upgrades_downloading_spacer;
 	GtkWidget	*label_upgrades_downloading;
 	GtkWidget	*progressbar;
 	guint		 progress_pulse_id;
@@ -345,7 +344,6 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_download_info);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_downloading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, label_upgrades_downloading_spacer);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, progressbar);
 }
 

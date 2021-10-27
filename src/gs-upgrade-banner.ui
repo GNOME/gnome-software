@@ -114,6 +114,8 @@
                   <object class="GtkLabel" id="label_upgrades_downloading_spacer">
                     <property name="label"></property> <!-- space-taker -->
                     <property name="halign">start</property>
+                    <property name="margin-start">2</property>
+                    <property name="margin-end">2</property>
                   </object>
                 </child>
                 <child>
@@ -217,4 +219,11 @@
       </object>
     </child>
   </template>
+  <object class="GtkSizeGroup">
+    <property name="mode">horizontal</property>
+    <widgets>
+      <widget name="label_upgrades_downloading_spacer"/>
+      <widget name="button_upgrades_cancel"/>
+    </widgets>
+  </object>
 </interface>
