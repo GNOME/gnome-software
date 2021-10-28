@@ -336,14 +336,15 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 		return TRUE;
 	}
 
+	for (guint i = 0; i < list->array->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (list->array, i);
+		if (app_tmp == app)
+			return FALSE;
+	}
+
 	/* does not exist */
 	id = gs_app_get_unique_id (app);
 	if (id == NULL) {
-		for (guint i = 0; i < list->array->len; i++) {
-			GsApp *app_tmp = g_ptr_array_index (list->array, i);
-			if (app_tmp == app)
-				return FALSE;
-		}
 		/* not much else we can do... */
 		return TRUE;
 	}
@@ -851,8 +852,11 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 	/* add back the apps we want to keep */
 	for (guint i = 0; i < old->array->len; i++) {
 		GsApp *app = gs_app_list_index (old, i);
-		if (g_hash_table_contains (kept_apps, app))
+		if (g_hash_table_contains (kept_apps, app)) {
 			gs_app_list_add_safe (list, app, GS_APP_LIST_ADD_FLAG_NONE);
+			/* In case the same instance is in the 'list' multiple times */
+			g_hash_table_remove (kept_apps, app);
+		}
 	}
 }
 
