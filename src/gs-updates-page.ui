@@ -176,6 +176,8 @@
                       <object class="GtkScrolledWindow">
                         <property name="hscrollbar-policy">never</property>
                         <property name="propagate-natural-height">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">center</property>
                         <style>
                           <class name="fake-adw-status-page"/>
                         </style>
@@ -191,7 +193,7 @@
                                     <property name="valign">center</property>
                                     <child>
                                       <object class="GtkImage">
-                                        <!--><property name="pixel-size">400</property>-->
+                                        <property name="pixel-size">300</property>
                                         <property name="resource">/org/gnome/Software/up-to-date.svg</property>
                                         <style>
                                           <class name="icon"/>
