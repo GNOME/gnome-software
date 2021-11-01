@@ -129,6 +129,12 @@ update_storage_tile (GsAppContextBar *self)
 		g_autofree gchar *size_user_data_str = NULL;
 		g_autofree gchar *size_cache_data_str = NULL;
 
+		/* Treat `0` sizes as `unknown`, to not show `0 bytes` in the text. */
+		if (size_user_data == 0)
+			size_user_data = GS_APP_SIZE_UNKNOWABLE;
+		if (size_cache_data == 0)
+			size_cache_data = GS_APP_SIZE_UNKNOWABLE;
+
 		/* If any installed sizes are unknowable, ignore them. This
 		 * means the stated installed size is a lower bound on the
 		 * actual installed size.
