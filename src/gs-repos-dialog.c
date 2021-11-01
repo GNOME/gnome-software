@@ -501,7 +501,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_show (row);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
-	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
+	                        "https://docs.fedoraproject.org/en-US/workstation-working-group/third-party-repos/",
 	                        /* TRANSLATORS: this is the clickable
 	                         * link on the third party repositories info bar */
 	                        _("more information"));
