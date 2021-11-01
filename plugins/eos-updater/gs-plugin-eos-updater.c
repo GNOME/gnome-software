@@ -571,7 +571,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
-			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
+			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;");
 
 	self->os_upgrade = g_steal_pointer (&app);
