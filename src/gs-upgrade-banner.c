@@ -73,18 +73,27 @@ static void
 gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	const gchar *uri, *summary;
+	const gchar *uri, *summary, *version;
 	g_autofree gchar *str = NULL;
 	guint percentage;
 
 	if (priv->app == NULL)
 		return;
 
-	/* TRANSLATORS: This is the text displayed when a distro
-	 * upgrade is available. The first %s is the distro name
-	 * and the 2nd %s is the version, e.g. "Fedora 35 Available" */
-	str = g_strdup_printf (_("%s %s Available"), gs_app_get_name (priv->app), gs_app_get_version (priv->app));
-	gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
+	version = gs_app_get_version (priv->app);
+
+	if (version != NULL && *version != '\0') {
+		/* TRANSLATORS: This is the text displayed when a distro
+		 * upgrade is available. The first %s is the distro name
+		 * and the 2nd %s is the version, e.g. "Fedora 35 Available" */
+		str = g_strdup_printf (_("%s %s Available"), gs_app_get_name (priv->app), version);
+	} else {
+		/* TRANSLATORS: This is the text displayed when a distro
+		 * upgrade is available. The %s is the distro name,
+		 * e.g. "GNOME OS Available" */
+		str = g_strdup_printf (_("%s Available"), gs_app_get_name (priv->app));
+	}
+	gtk_label_set_text (GTK_LABEL (priv->label_upgrades_title), str);
 
 	/* Normally a distro upgrade state goes from
 	 *
@@ -130,6 +139,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		g_autofree gchar *link = NULL;
 		link = g_markup_printf_escaped ("<a href=\"%s\">%s</a>", uri, _("Learn about the new version"));
 		gtk_label_set_markup (GTK_LABEL (priv->label_download_info), link);
+		gtk_widget_show (priv->label_download_info);
 	} else if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
 		   gs_app_get_size_download (priv->app) != 0) {
 		g_autofree gchar *tmp = NULL;
@@ -138,6 +148,9 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		/* Translators: the '%s' is replaced with the download size, forming text like "2 GB download" */
 		str = g_strdup_printf ("%s download", tmp);
 		gtk_label_set_text (GTK_LABEL (priv->label_download_info), str);
+		gtk_widget_show (priv->label_download_info);
+	} else {
+		gtk_widget_hide (priv->label_download_info);
 	}
 
 	/* do a fill bar for the current progress */
