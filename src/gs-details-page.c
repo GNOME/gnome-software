@@ -1697,8 +1697,15 @@ static void
 gs_details_page_reload (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	if (self->app != NULL && gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
+	if (self->app != NULL && gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
+		GsAppState state = gs_app_get_state (self->app);
+		/* Do not reload the page when the app is "doing something" */
+		if (state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_PURCHASING)
+			return;
 		gs_details_page_load_stage1 (self);
+	}
 }
 
 static gint
