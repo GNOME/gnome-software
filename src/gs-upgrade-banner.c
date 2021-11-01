@@ -139,6 +139,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		g_autofree gchar *link = NULL;
 		link = g_markup_printf_escaped ("<a href=\"%s\">%s</a>", uri, _("Learn about the new version"));
 		gtk_label_set_markup (GTK_LABEL (priv->label_download_info), link);
+		gtk_widget_show (priv->label_download_info);
 	} else if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
 		   gs_app_get_size_download (priv->app) != 0) {
 		g_autofree gchar *tmp = NULL;
@@ -147,6 +148,9 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		/* Translators: the '%s' is replaced with the download size, forming text like "2 GB download" */
 		str = g_strdup_printf ("%s download", tmp);
 		gtk_label_set_text (GTK_LABEL (priv->label_download_info), str);
+		gtk_widget_show (priv->label_download_info);
+	} else {
+		gtk_widget_hide (priv->label_download_info);
 	}
 
 	/* do a fill bar for the current progress */
