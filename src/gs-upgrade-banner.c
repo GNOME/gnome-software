@@ -73,18 +73,27 @@ static void
 gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	const gchar *uri, *summary;
+	const gchar *uri, *summary, *version;
 	g_autofree gchar *str = NULL;
 	guint percentage;
 
 	if (priv->app == NULL)
 		return;
 
-	/* TRANSLATORS: This is the text displayed when a distro
-	 * upgrade is available. The first %s is the distro name
-	 * and the 2nd %s is the version, e.g. "Fedora 35 Available" */
-	str = g_strdup_printf (_("%s %s Available"), gs_app_get_name (priv->app), gs_app_get_version (priv->app));
-	gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
+	version = gs_app_get_version (priv->app);
+
+	if (version != NULL && *version != '\0') {
+		/* TRANSLATORS: This is the text displayed when a distro
+		 * upgrade is available. The first %s is the distro name
+		 * and the 2nd %s is the version, e.g. "Fedora 35 Available" */
+		str = g_strdup_printf (_("%s %s Available"), gs_app_get_name (priv->app), version);
+	} else {
+		/* TRANSLATORS: This is the text displayed when a distro
+		 * upgrade is available. The %s is the distro name,
+		 * e.g. "GNOME OS Available" */
+		str = g_strdup_printf (_("%s Available"), gs_app_get_name (priv->app));
+	}
+	gtk_label_set_text (GTK_LABEL (priv->label_upgrades_title), str);
 
 	/* Normally a distro upgrade state goes from
 	 *
