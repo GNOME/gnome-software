@@ -1285,7 +1285,7 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 									   error);
 			if (cachefn == NULL)
 				return NULL;
-			g_string_append_printf (str, "'%s'", cachefn);
+			g_string_append_printf (str, "'file://%s'", cachefn);
 			g_string_append_c (str, resource[i]);
 			start = 0;
 		}
