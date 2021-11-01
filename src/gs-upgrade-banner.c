@@ -19,7 +19,7 @@ typedef struct
 {
 	GsApp		*app;
 
-	GtkWidget	*box_upgrades_info;
+	GtkWidget	*box_upgrades_row;
 	GtkWidget	*box_upgrades_download;
 	GtkWidget	*box_upgrades_downloading;
 	GtkWidget	*box_upgrades_install;
@@ -263,7 +263,7 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::UpgradeBanner-css");
 	modified_css = gs_utils_set_key_colors_in_css (css, app);
-	gs_utils_widget_set_css (priv->box_upgrades_info, &priv->banner_provider, "upgrade-banner-custom", modified_css);
+	gs_utils_widget_set_css (priv->box_upgrades_row, &priv->banner_provider, "upgrade-banner-custom", modified_css);
 
 	gs_upgrade_banner_refresh (self);
 }
@@ -347,7 +347,7 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-upgrade-banner.ui");
 	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_info);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_row);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_download);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_downloading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades_install);
