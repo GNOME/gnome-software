@@ -272,7 +272,9 @@ gs_update_dialog_set_property (GObject      *object,
 		dialog->plugin_loader = g_object_ref (g_value_get_object (value));
 		break;
 	case PROP_APP:
-		dialog->app = g_object_ref (g_value_get_object (value));
+		dialog->app = g_value_get_object (value);
+		if (dialog->app != NULL)
+			g_object_ref (dialog->app);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
