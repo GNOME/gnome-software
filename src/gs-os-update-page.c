@@ -36,6 +36,7 @@ typedef enum {
 
 typedef enum {
 	PROP_APP = 1,
+	PROP_TITLE,
 } GsOsUpdatePageProperty;
 
 enum {
@@ -43,7 +44,7 @@ enum {
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_TITLE + 1] = { NULL, };
 
 static guint signals[SIGNAL_LAST] = { 0 };
 
@@ -429,6 +430,7 @@ gs_os_update_page_set_app (GsOsUpdatePage *page, GsApp *app)
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_APP]);
+	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
 }
 
 static void
@@ -449,6 +451,9 @@ gs_os_update_page_get_property (GObject *object, guint prop_id, GValue *value, G
 	switch ((GsOsUpdatePageProperty) prop_id) {
 	case PROP_APP:
 		g_value_set_object (value, gs_os_update_page_get_app (page));
+		break;
+	case PROP_TITLE:
+		g_value_set_string (value, adw_window_title_get_title (page->window_title));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -498,6 +503,18 @@ gs_os_update_page_class_init (GsOsUpdatePageClass *klass)
 		g_param_spec_object ("app", NULL, NULL,
 				     GS_TYPE_APP,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsOsUpdatePage:title
+	 *
+	 * Read-only window title.
+	 *
+	 * Since: 42
+	 */
+	obj_props[PROP_TITLE] =
+		g_param_spec_string ("title", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 

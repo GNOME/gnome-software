@@ -54,6 +54,15 @@ leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDia
 
 	while ((child = adw_leaflet_get_adjacent_child (leaflet, ADW_NAVIGATION_DIRECTION_FORWARD)))
 		adw_leaflet_remove (leaflet, child);
+
+	child = adw_leaflet_get_visible_child (leaflet);
+	if (child != NULL) {
+		g_autofree gchar *title = NULL;
+		g_object_get (G_OBJECT (child), "title", &title, NULL);
+		gtk_window_set_title (GTK_WINDOW (dialog), title);
+	} else {
+		gtk_window_set_title (GTK_WINDOW (dialog), "");
+	}
 }
 
 static void
@@ -272,7 +281,9 @@ gs_update_dialog_set_property (GObject      *object,
 		dialog->plugin_loader = g_object_ref (g_value_get_object (value));
 		break;
 	case PROP_APP:
-		dialog->app = g_object_ref (g_value_get_object (value));
+		dialog->app = g_value_get_object (value);
+		if (dialog->app != NULL)
+			g_object_ref (dialog->app);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
