@@ -4,7 +4,7 @@
 
 /* The equivalent of libhandy’s .content class, but applicable to a plain GtkBox */
 .content-box {
-	border-radius: 8px;
+	border-radius: 12px;
 	border: 1px solid shade(@theme_bg_color, 0.9);
 	background-color: @theme_base_color;
 }
@@ -147,7 +147,7 @@ summary-tile {
 
 .view.tile, .category-tile.category-tile-iconless {
   background-color: @theme_base_color;
-  border-radius: 8px;
+  border-radius: 12px;
   border: solid 1px alpha(@borders, 0.7);
   box-shadow: none;
   transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -173,7 +173,7 @@ summary-tile {
 	/* We have to remove the padding: 160px - 2*10px = 140px */
 	min-width: 140px;
 	padding: 20px 10px;
-	border-radius: 8px;
+	border-radius: 12px;
 	font-weight: 900;
 	text-shadow: none;
 	border: none;
@@ -436,7 +436,7 @@ review-bar {
 .app-listbox-header:dir(rtl) { padding-right: 10px; }
 
 .app-updates-section {
-	border-radius: 4px;
+	border-radius: 12px;
 	border: 1px solid darker(@theme_bg_color);
 }
 
@@ -587,7 +587,7 @@ star-image {
 }
 
 .featured-carousel carousel {
-	border-radius: 8px;
+	border-radius: 12px;
 }
 
 /* these typographical classes will be provided in gtk eventually */
@@ -695,21 +695,21 @@ app-context-bar .context-tile {
 }
 
 app-context-bar box:first-child .context-tile:first-child {
-	border-top-left-radius: 8px;
+	border-top-left-radius: 12px;
 }
 
 app-context-bar.horizontal box:last-child .context-tile:last-child,
 app-context-bar.vertical box:first-child .context-tile:last-child {
-	border-top-right-radius: 8px;
+	border-top-right-radius: 12px;
 }
 
 app-context-bar.horizontal box:first-child .context-tile:first-child,
 app-context-bar.vertical box:last-child .context-tile:first-child {
-	border-bottom-left-radius: 8px;
+	border-bottom-left-radius: 12px;
 }
 
 app-context-bar box:last-child .context-tile:last-child {
-	border-bottom-right-radius: 8px;
+	border-bottom-right-radius: 12px;
 }
 
 app-context-bar.horizontal box:not(:last-child) .context-tile,
