@@ -627,7 +627,7 @@ gs_overview_page_setup (GsPage *page,
 						     g_free, (GDestroyNotify) g_object_unref);
 
 	link = g_strdup_printf ("<a href=\"%s\">%s</a>",
-	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
+	                        "https://docs.fedoraproject.org/en-US/workstation-working-group/third-party-repos/",
 	                        /* Translators: This is a clickable link on the third party repositories info bar. It's
 				   part of a constructed sentence: "Provides access to additional software from [selected external sources].
 				   Some proprietary software is included." */
