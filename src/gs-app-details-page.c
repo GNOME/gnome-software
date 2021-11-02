@@ -31,6 +31,7 @@
 typedef enum {
 	PROP_APP = 1,
 	PROP_SHOW_BACK_BUTTON,
+	PROP_TITLE,
 } GsAppDetailsPageProperty;
 
 enum {
@@ -38,7 +39,7 @@ enum {
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_SHOW_BACK_BUTTON + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_TITLE + 1] = { NULL, };
 
 static guint signals[SIGNAL_LAST] = { 0 };
 
@@ -146,6 +147,8 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		adw_window_title_set_title (page->window_title,
 					    gs_app_get_update_version (app));
 	}
+
+	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
 
 	/* set update header */
 	update_details = gs_app_get_update_details (app);
@@ -319,6 +322,9 @@ gs_app_details_page_get_property (GObject *object, guint prop_id, GValue *value,
 	case PROP_SHOW_BACK_BUTTON:
 		g_value_set_boolean (value, gs_app_details_page_get_show_back_button (page));
 		break;
+	case PROP_TITLE:
+		g_value_set_string (value, adw_window_title_get_title (page->window_title));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -382,6 +388,18 @@ gs_app_details_page_class_init (GsAppDetailsPageClass *klass)
 		g_param_spec_boolean ("show-back-button", NULL, NULL,
 				     TRUE,
 				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppDetailsPage:title
+	 *
+	 * Read-only window title.
+	 *
+	 * Since: 42
+	 */
+	obj_props[PROP_TITLE] =
+		g_param_spec_string ("title", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
