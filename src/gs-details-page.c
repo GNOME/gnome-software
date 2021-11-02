@@ -58,7 +58,9 @@
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL | \
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION
 
+static void gs_details_page_refresh_addons (GsDetailsPage *self);
 static void gs_details_page_refresh_all (GsDetailsPage *self);
+static void gs_details_page_app_refine_cb (GObject *source, GAsyncResult *res, gpointer user_data);
 
 typedef enum {
 	GS_DETAILS_PAGE_STATE_LOADING,
@@ -763,8 +765,24 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	gs_details_page_update_origin_button (self, TRUE);
 
-	if (instance_changed)
+	if (instance_changed) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		/* Make sure the changed instance contains the reviews and such */
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+						 "app", self->app,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
+						 NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    self->cancellable,
+						    gs_details_page_app_refine_cb,
+						    self);
+
 		gs_details_page_refresh_all (self);
+	}
 }
 
 static gboolean
@@ -969,7 +987,6 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	g_autoptr(GIcon) icon = NULL;
-	GList *addons;
 	const gchar *tmp;
 	g_autofree gchar *origin = NULL;
 	g_autoptr(GPtrArray) version_history = NULL;
@@ -1142,9 +1159,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* update progress */
 	gs_details_page_refresh_progress (self);
 
-	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
-	gtk_widget_set_visible (self->box_addons, addons != NULL);
-	g_list_free (addons);
+	gs_details_page_refresh_addons (self);
 }
 
 static gint
@@ -1200,7 +1215,7 @@ static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
 {
 	GsAppList *addons;
-	guint i;
+	guint i, rows = 0;
 
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_addons));
 
@@ -1229,7 +1244,10 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
 		gtk_widget_show (row);
 
+		rows++;
 	}
+
+	gtk_widget_set_visible (self->box_addons, rows > 0);
 }
 
 static void gs_details_page_refresh_reviews (GsDetailsPage *self);
@@ -1508,7 +1526,6 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	gs_screenshot_carousel_load_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel), self->app, is_online, NULL);
 	has_screenshots = gs_screenshot_carousel_get_has_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel));
 	gtk_widget_set_visible (self->screenshot_carousel, has_screenshots);
-	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
 	gs_details_page_update_origin_button (self, FALSE);
@@ -1904,9 +1921,6 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 		} else {
 			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
 			gs_page_remove_app (GS_PAGE (self), addon, self->app_cancellable);
-			/* make sure the addon checkboxes are synced if the
-			 * user clicks cancel in the remove confirmation dialog */
-			gs_details_page_refresh_addons (self);
 			gs_details_page_refresh_all (self);
 		}
 		break;
