@@ -3599,7 +3599,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
 	/* use the data from the flatpakref file as a fallback */
 	ref_title = g_key_file_get_string (kf, "Flatpak Ref", "Title", NULL);

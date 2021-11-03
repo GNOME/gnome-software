@@ -727,7 +727,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
 	g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/*/org.test.Chiron/master"));
@@ -736,7 +736,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	/* get runtime */
 	runtime = gs_app_get_runtime (app);
 	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/org.test.Runtime/master");
-	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpint (gs_app_get_state (runtime), ==, GS_APP_STATE_AVAILABLE);
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
@@ -890,7 +890,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
 	g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/*/org.test.Chiron/master"));
@@ -1035,7 +1035,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
 	g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/test/org.test.Chiron/master"));
@@ -1186,7 +1186,6 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_assert_no_error (error);
 	g_assert_true (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
@@ -1199,10 +1198,12 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 				"user/flatpak/flatpak/org.test.Chiron/master"));
 		g_assert_true (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE);
+		g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
 	} else {
 		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 				"user/flatpak/test/org.test.Chiron/master"));
 		g_assert_true (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF);
+		g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 		g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 		g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
 	}

@@ -1397,7 +1397,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 		} else {
 			/* the new runtime is available from the RuntimeRepo */
 			if (gs_flatpak_app_get_runtime_url (runtime) != NULL)
-				gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE_LOCAL);
+				gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE);
 		}
 	}
 
