@@ -682,7 +682,7 @@ build_age_rating_description (AsContentRating *content_rating)
 static void
 update_age_rating_tile (GsAppContextBar *self)
 {
-	AsContentRating *content_rating;
+	g_autoptr(AsContentRating) content_rating = NULL;
 	gboolean is_unknown;
 	g_autofree gchar *description = NULL;
 
@@ -692,7 +692,7 @@ update_age_rating_tile (GsAppContextBar *self)
 	if (!show_tile_for_non_applications (self, AGE_RATING_TILE))
 		return;
 
-	content_rating = gs_app_get_content_rating (self->app);
+	content_rating = gs_app_dup_content_rating (self->app);
 	gs_age_rating_context_dialog_update_lozenge (self->app,
 						     self->tiles[AGE_RATING_TILE].lozenge,
 						     GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content),

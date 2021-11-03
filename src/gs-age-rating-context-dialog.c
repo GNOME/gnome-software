@@ -370,7 +370,7 @@ add_attribute_row (GtkListBox           *list_box,
 /**
  * gs_age_rating_context_dialog_process_attributes:
  * @content_rating: content rating data from an app, retrieved using
- *     gs_app_get_content_rating()
+ *     gs_app_dup_content_rating()
  * @show_worst_only: %TRUE to only process the worst content rating attributes,
  *     %FALSE to process all of them
  * @callback: callback to call for each attribute being processed
@@ -567,7 +567,7 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	const gchar *css_class;
 	const gchar *locale;
 	AsContentRatingSystem system;
-	AsContentRating *content_rating;
+	g_autoptr(AsContentRating) content_rating = NULL;
 	GtkStyleContext *context;
 	const gchar *css_age_classes[] = {
 		"details-rating-18",
@@ -591,7 +591,7 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 		 as_content_rating_system_to_string (system),
 		 locale);
 
-	content_rating = gs_app_get_content_rating (app);
+	content_rating = gs_app_dup_content_rating (app);
 	if (content_rating != NULL)
 		age = as_content_rating_get_minimum_age (content_rating);
 
@@ -649,7 +649,7 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 static void
 update_attributes_list (GsAgeRatingContextDialog *self)
 {
-	AsContentRating *content_rating;
+	g_autoptr(AsContentRating) content_rating = NULL;
 	gboolean is_unknown;
 	g_autofree gchar *title = NULL;
 
@@ -660,7 +660,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 		return;
 
 	/* Update lozenge and title */
-	content_rating = gs_app_get_content_rating (self->app);
+	content_rating = gs_app_dup_content_rating (self->app);
 	gs_age_rating_context_dialog_update_lozenge (self->app,
 						     self->lozenge,
 						     self->age,
