@@ -2114,21 +2114,23 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
 }
 
 /**
- * gs_app_get_content_rating:
+ * gs_app_dup_content_rating:
  * @app: a #GsApp
  *
  * Gets the content rating for this application.
  *
- * Returns: (transfer none): a #AsContentRating, or %NULL
+ * Returns: (transfer full) (nullable): a #AsContentRating, or %NULL
  *
- * Since: 40
+ * Since: 41
  **/
 AsContentRating *
-gs_app_get_content_rating (GsApp *app)
+gs_app_dup_content_rating (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->content_rating;
+	locker = g_mutex_locker_new (&priv->mutex);
+	return (priv->content_rating != NULL) ? g_object_ref (priv->content_rating) : NULL;
 }
 
 /**

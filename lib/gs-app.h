@@ -371,7 +371,7 @@ void		 gs_app_remove_all_icons	(GsApp		*app);
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,
 						 GFile		*local_file);
-AsContentRating	*gs_app_get_content_rating	(GsApp		*app);
+AsContentRating	*gs_app_dup_content_rating	(GsApp		*app);
 void		 gs_app_set_content_rating	(GsApp		*app,
 						 AsContentRating *content_rating);
 GsApp		*gs_app_get_runtime		(GsApp		*app);
