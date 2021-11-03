@@ -103,7 +103,7 @@ app_is_expected_to_have_content_rating (GsApp *app)
 static gboolean
 app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 {
-	AsContentRating *rating = gs_app_get_content_rating (app);  /* (nullable) */
+	g_autoptr(AsContentRating) rating = gs_app_dup_content_rating (app);  /* (nullable) */
 	g_autofree const gchar **oars_sections = mct_app_filter_get_oars_sections (app_filter);
 	AsContentRatingValue default_rating_value;
 
