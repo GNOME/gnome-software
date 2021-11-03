@@ -310,6 +310,7 @@ static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
 	g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
+	guint64 installed_size = 0, download_size = 0;
 
 	/* core */
 	gs_flatpak_claim_app (self, app);
@@ -333,6 +334,17 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 		gs_app_set_metadata (app, "GnomeSoftware::EolReason", flatpak_remote_ref_get_eol (FLATPAK_REMOTE_REF (xref)));
 	else if (FLATPAK_IS_INSTALLED_REF (xref) && flatpak_installed_ref_get_eol (FLATPAK_INSTALLED_REF (xref)) != NULL)
 		gs_app_set_metadata (app, "GnomeSoftware::EolReason", flatpak_installed_ref_get_eol (FLATPAK_INSTALLED_REF (xref)));
+
+	if (FLATPAK_IS_REMOTE_REF (xref)) {
+		installed_size = flatpak_remote_ref_get_installed_size (FLATPAK_REMOTE_REF (xref));
+		download_size = flatpak_remote_ref_get_download_size (FLATPAK_REMOTE_REF (xref));
+	} else if (FLATPAK_IS_INSTALLED_REF (xref)) {
+		installed_size = flatpak_installed_ref_get_installed_size (FLATPAK_INSTALLED_REF (xref));
+	}
+	if (installed_size != 0)
+		gs_app_set_size_installed (app, installed_size);
+	if (download_size != 0)
+		gs_app_set_size_download (app, download_size);
 }
 
 static GsApp *
