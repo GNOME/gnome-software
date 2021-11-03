@@ -1184,23 +1184,30 @@ gs_shell_get_title_from_app (GsApp *app)
 }
 
 static gchar *
-get_first_line (const gchar *str)
+get_first_lines (const gchar *str)
 {
-	g_auto(GStrv) lines = NULL;
-
-	lines = g_strsplit (str, "\n", 2);
-	if (lines != NULL && g_strv_length (lines) != 0)
-		return g_strdup (lines[0]);
-
-	return NULL;
+	const gchar *end = str;
+	/* Some errors can have an "introduction", thus pick few initial lines, not only the first. */
+	for (guint lines = 0; end != NULL && lines < 7; lines++) {
+		end = strchr (end, '\n');
+		if (end != NULL)
+			end++;
+	}
+	if (end != NULL) {
+		g_autofree gchar *tmp = g_strndup (str, end - str);
+		/* Translators: The '%s' is replaced with an error message, which had been shortened.
+		   The dots at the end are there to highlight that to the user. */
+		return g_strdup_printf (_("%s…"), tmp);
+	}
+	return g_strdup (str);
 }
 
 static void
 gs_shell_append_detailed_error (GsShell *shell, GString *str, const GError *error)
 {
-	g_autofree gchar *first_line = get_first_line (error->message);
-	if (first_line != NULL) {
-		g_autofree gchar *escaped = g_markup_escape_text (first_line, -1);
+	g_autofree gchar *text = get_first_lines (error->message);
+	if (text != NULL) {
+		g_autofree gchar *escaped = g_markup_escape_text (text, -1);
 		g_string_append_printf (str, ":\n%s", escaped);
 	}
 }
