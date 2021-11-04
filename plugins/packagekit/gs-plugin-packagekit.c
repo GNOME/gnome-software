@@ -1036,7 +1036,7 @@ gs_plugin_packagekit_fixup_update_description (const gchar *text)
 		return NULL;
 
 	/* try to parse */
-	markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_TEXT);
+	markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 	gs_markdown_set_smart_quoting (markdown, FALSE);
 	gs_markdown_set_autocode (markdown, FALSE);
 	gs_markdown_set_autolinkify (markdown, FALSE);
