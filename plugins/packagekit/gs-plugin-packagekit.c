@@ -225,6 +225,43 @@ gs_plugin_packagekit_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
 
+typedef gboolean (*GsAppFilterFunc) (GsApp *app);
+
+/* The elements in the returned #GPtrArray reference memory from within the
+ * @apps list, so the array is only valid as long as @apps is not modified or
+ * freed. */
+static GPtrArray *
+app_list_get_package_ids (GsAppList       *apps,
+                          GsAppFilterFunc  app_filter,
+                          gboolean         ignore_installed)
+{
+	g_autoptr(GPtrArray) list_package_ids = g_ptr_array_new_with_free_func (NULL);
+
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		GPtrArray *app_source_ids;
+
+		if (app_filter != NULL && !app_filter (app))
+			continue;
+
+		app_source_ids = gs_app_get_source_ids (app);
+		for (guint j = 0; j < app_source_ids->len; j++) {
+			const gchar *package_id = g_ptr_array_index (app_source_ids, j);
+
+			if (ignore_installed &&
+			    g_strstr_len (package_id, -1, ";installed") != NULL)
+				continue;
+
+			g_ptr_array_add (list_package_ids, (gchar *) package_id);
+		}
+	}
+
+	if (list_package_ids->len > 0)
+		g_ptr_array_add (list_package_ids, NULL);
+
+	return g_steal_pointer (&list_package_ids);
+}
+
 static gboolean
 gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GHashTable *hash,
@@ -421,7 +458,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GPtrArray *source_ids;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *package_id;
-	guint i, j;
+	guint i;
 	g_autofree gchar *local_filename = NULL;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
@@ -503,30 +540,18 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "installing not available");
 			return FALSE;
 		}
-		array_package_ids = g_ptr_array_new_with_free_func (g_free);
+
+		addons = gs_app_get_addons (app);
+		array_package_ids = app_list_get_package_ids (addons,
+							      gs_app_get_to_be_installed,
+							      TRUE);
+
 		for (i = 0; i < source_ids->len; i++) {
 			package_id = g_ptr_array_index (source_ids, i);
 			if (g_strstr_len (package_id, -1, ";installed") != NULL)
 				continue;
-			g_ptr_array_add (array_package_ids, g_strdup (package_id));
+			g_ptr_array_add (array_package_ids, (gpointer) package_id);
 		}
-
-		addons = gs_app_get_addons (app);
-		for (i = 0; i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-
-			if (!gs_app_get_to_be_installed (addon))
-				continue;
-
-			source_ids = gs_app_get_source_ids (addon);
-			for (j = 0; j < source_ids->len; j++) {
-				package_id = g_ptr_array_index (source_ids, j);
-				if (g_strstr_len (package_id, -1, ";installed") != NULL)
-					continue;
-				g_ptr_array_add (array_package_ids, g_strdup (package_id));
-			}
-		}
-		g_ptr_array_add (array_package_ids, NULL);
 
 		if (array_package_ids->len == 0) {
 			g_set_error_literal (error,
@@ -537,7 +562,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		addons = gs_app_get_addons (app);
+
 		for (i = 0; i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
@@ -1405,28 +1430,12 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* any package details missing? */
 	if (gs_app_list_length (details_list) > 0) {
-		GPtrArray *source_ids;
-		GsApp *app;
-		const gchar *package_id;
-		guint i, j;
 		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-		g_autoptr(GPtrArray) array = NULL;
 		g_autoptr(GPtrArray) package_ids = NULL;
-		g_autoptr(PkResults) results = NULL;
-		g_autoptr(GHashTable) details_collection = NULL;
 
-		package_ids = g_ptr_array_new_with_free_func (g_free);
-		for (i = 0; i < gs_app_list_length (details_list); i++) {
-			app = gs_app_list_index (details_list, i);
-			source_ids = gs_app_get_source_ids (app);
-			for (j = 0; j < source_ids->len; j++) {
-				package_id = g_ptr_array_index (source_ids, j);
-				g_ptr_array_add (package_ids, g_strdup (package_id));
-			}
-		}
+		package_ids = app_list_get_package_ids (details_list, NULL, FALSE);
+
 		if (package_ids->len > 0) {
-			g_ptr_array_add (package_ids, NULL);
-
 			/* get any details */
 			g_mutex_lock (&self->client_mutex_refine);
 			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
