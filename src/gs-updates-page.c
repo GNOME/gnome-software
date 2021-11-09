@@ -74,7 +74,7 @@ struct _GsUpdatesPage
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
 	GtkWidget		*upgrade_banner;
-	GtkWidget		*box_end_of_life;
+	GtkWidget		*infobar_end_of_life;
 	GtkWidget		*label_end_of_life;
 
 	GtkSizeGroup		*sizegroup_image;
@@ -562,7 +562,7 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 
 	/* show or hide the end of life notification */
 	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE) {
-		gtk_widget_set_visible (self->box_end_of_life, FALSE);
+		gtk_info_bar_set_revealed (GTK_INFO_BAR (self->infobar_end_of_life), FALSE);
 		return;
 	}
 
@@ -587,7 +587,7 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 	g_string_append (str, _("It is recommended that you upgrade to a more recent version."));
 
 	gtk_label_set_label (GTK_LABEL (self->label_end_of_life), str->str);
-	gtk_widget_set_visible (self->box_end_of_life, TRUE);
+	gtk_info_bar_set_revealed (GTK_INFO_BAR (self->infobar_end_of_life), TRUE);
 
 }
 
@@ -1463,7 +1463,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, box_end_of_life);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, infobar_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
 }
 
