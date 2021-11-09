@@ -360,39 +360,55 @@ clamp.status-page .title:not(:last-child) {
 }
 
 app-context-bar .context-tile {
-	border: 1px solid shade(@theme_bg_color, 0.9);
-	background-color: @theme_base_color;
+	border: 1px solid @borders;
+	background-color: transparent;
 	border-radius: 0;
 	padding: 24px 12px 21px 12px;
-	border-right: 1px solid shade(@theme_bg_color, 0.9);
+	outline-offset: 5px;
+	transition-property: outline, outline-offset, background-image;
+	border-bottom: none;
+	border-right: none;
+}
+
+app-context-bar .context-tile:hover {
+	background-image: image(alpha(currentColor, .03));
+}
+
+app-context-bar .context-tile.keyboard-activating,
+app-context-bar .context-tile:active {
+	background-image: image(alpha(currentColor, .08));
+}
+
+app-context-bar .context-tile:focus:focus-visible {
+	outline-offset: -1px;
 }
 
 app-context-bar box:first-child .context-tile:first-child {
-	border-top-left-radius: 8px;
+	border-top-left-radius: 12px;
 }
 
 app-context-bar.horizontal box:last-child .context-tile:last-child,
 app-context-bar.vertical box:first-child .context-tile:last-child {
-	border-top-right-radius: 8px;
+	border-top-right-radius: 12px;
 }
 
 app-context-bar.horizontal box:first-child .context-tile:first-child,
 app-context-bar.vertical box:last-child .context-tile:first-child {
-	border-bottom-left-radius: 8px;
+	border-bottom-left-radius: 12px;
 }
 
 app-context-bar box:last-child .context-tile:last-child {
-	border-bottom-right-radius: 8px;
+	border-bottom-right-radius: 12px;
 }
 
-app-context-bar.horizontal box:not(:last-child) .context-tile,
-app-context-bar.horizontal box:last-child .context-tile:not(:last-child),
-app-context-bar.vertical .context-tile:not(:last-child) {
-	border-right: none;
+app-context-bar.horizontal box:first-child .context-tile:first-child,
+app-context-bar.vertical .context-tile:first-child {
+	border-left: none;
 }
 
-app-context-bar.vertical box:not(:last-child) .context-tile {
-	border-bottom: none;
+app-context-bar.horizontal .context-tile,
+app-context-bar.vertical box:first-child .context-tile {
+	border-top: none;
 }
 
 .context-tile-lozenge {
@@ -421,9 +437,7 @@ app-context-bar.vertical box:not(:last-child) .context-tile {
 	margin-bottom: -28px;
 }
 
-.context-tile-title { font-weight: bold; }
 .context-tile-lozenge image { -gtk-icon-style: symbolic; }
-app-context-bar .context-tile-description { font-size: smaller; font-weight: normal; }
 
 .context-tile-lozenge.grey { background-color: #deddda; color: #5e5c64; }
 .context-tile-lozenge.green, .context-tile-lozenge.details-rating-0 { background-color: #b6f2c4; color: #208255; }
