@@ -3601,6 +3601,38 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL) {
+		g_autofree char *runtime_ref = gs_flatpak_app_get_ref_display (runtime);
+		if (gs_app_get_state (runtime) == GS_APP_STATE_UNKNOWN) {
+			g_autofree gchar *uri = NULL;
+			/* the new runtime is available from the RuntimeRepo */
+			uri = g_key_file_get_string (kf, "Flatpak Ref", "RuntimeRepo", NULL);
+			gs_flatpak_app_set_runtime_url (runtime, uri);
+		}
+
+		/* find the operation for the runtime to set its size data. Since this
+		 * is all happening on a tmp installation, it won't be available later
+		 * during the refine step
+		 */
+		txn_ops = flatpak_transaction_get_operations (transaction);
+		for (GList *l = txn_ops; l != NULL; l = l->next) {
+			FlatpakTransactionOperation *op = l->data;
+			const char *op_ref = flatpak_transaction_operation_get_ref (op);
+			if (g_strcmp0 (runtime_ref, op_ref) == 0) {
+				guint64 installed_size = 0, download_size = 0;
+				download_size = flatpak_transaction_operation_get_download_size (op);
+				if (download_size != 0)
+					gs_app_set_size_download (runtime, download_size);
+				installed_size = flatpak_transaction_operation_get_installed_size (op);
+				if (installed_size != 0)
+					gs_app_set_size_installed (runtime, installed_size);
+				break;
+			}
+		}
+		g_list_free_full (g_steal_pointer (&txn_ops), g_object_unref);
+	}
+
 	/* use the data from the flatpakref file as a fallback */
 	ref_title = g_key_file_get_string (kf, "Flatpak Ref", "Title", NULL);
 	if (ref_title != NULL)
@@ -3657,14 +3689,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	/* get this now, as it's not going to be available at install time */
 	if (!gs_plugin_refine_item_metadata (self, app, cancellable, error))
 		return NULL;
-
-	/* the new runtime is available from the RuntimeRepo */
-	runtime = gs_app_get_runtime (app);
-	if (runtime != NULL && gs_app_get_state (runtime) == GS_APP_STATE_UNKNOWN) {
-		g_autofree gchar *uri = NULL;
-		uri = g_key_file_get_string (kf, "Flatpak Ref", "RuntimeRepo", NULL);
-		gs_flatpak_app_set_runtime_url (runtime, uri);
-	}
 
 	/* parse it */
 	if (!gs_flatpak_add_apps_from_xremote (self, builder, xremote, cancellable, error))
