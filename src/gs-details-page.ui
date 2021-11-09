@@ -950,27 +950,21 @@
 
   <object class="GtkPopover" id="origin_popover">
     <property name="visible">False</property>
+    <style>
+      <class name="menu"/>
+    </style>
     <child>
-      <object class="GtkBox" id="origin_popover_box">
-        <property name="orientation">vertical</property>
-        <property name="spacing">12</property>
+      <object class="GtkScrolledWindow">
+        <property name="propagate-natural-height">true</property>
+        <property name="propagate-natural-width">true</property>
+        <property name="max-content-height">600</property>
+        <property name="visible">true</property>
         <child>
-          <object class="GtkScrolledWindow">
-            <property name="propagate-natural-height">true</property>
-            <property name="propagate-natural-width">true</property>
-            <property name="max-content-height">600</property>
+          <object class="GtkListBox" id="origin_popover_list_box">
+            <property name="selection-mode">none</property>
             <property name="visible">true</property>
-            <child>
-              <object class="GtkListBox" id="origin_popover_list_box">
-                <property name="selection-mode">none</property>
-                <property name="visible">true</property>
-                <property name="valign">start</property>
-                <signal name="row-activated" handler="origin_popover_row_activated_cb"/>
-                <style>
-                  <class name="content"/>
-                </style>
-              </object>
-            </child>
+            <property name="valign">start</property>
+            <signal name="row-activated" handler="origin_popover_row_activated_cb"/>
           </object>
         </child>
       </object>
