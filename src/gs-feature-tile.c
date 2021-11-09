@@ -467,6 +467,8 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, image);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, title);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, subtitle);
+
+	gtk_widget_class_set_css_name (widget_class, "feature-tile");
 }
 
 GtkWidget *

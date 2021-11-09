@@ -44,43 +44,14 @@ screenshot-carousel button,
 	padding: 6px;
 }
 
-summary-tile {
-	border-radius: 6px;
-	min-width: 280px;
-}
-
 /* This mimicks the style of list and row from Adwaita, and of list.content from
  * Libhandy. */
-
-.view.tile, .category-tile.category-tile-iconless {
-  background-color: @theme_base_color;
-  border-radius: 8px;
-  border: solid 1px alpha(@borders, 0.7);
-  box-shadow: none;
-  transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.view.tile:hover, .category-tile.category-tile-iconless:hover {
-  background-color: mix(@theme_fg_color, @theme_base_color, 0.95);
-}
-
-.view.tile:active, .category-tile.category-tile-iconless:active {
-  box-shadow: inset 0 2px 2px -2px mix(black, transparent, 0.8);
-}
-
-.view.tile:hover:active, .category-tile.category-tile-iconless:hover:active {
-  background-color: mix(@theme_fg_color, @theme_base_color, 0.9);
-}
 
 .category-tile {
 	/* We have to remove the padding: 160px - 2*10px = 140px */
 	min-width: 140px;
 	padding: 20px 10px;
-	border-radius: 8px;
 	font-weight: 900;
-	border: none;
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13);
-	transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 clamp.medium .category-tile:not(.category-tile-iconless) {
@@ -95,11 +66,12 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	font-size: 105%;
 	font-weight: normal;
 	padding: 10px 15px;
-	background-image: none;
 }
 
-/* Disable highlight on hover as it doesn’t make these icons look good */
-.category-tile:hover { -gtk-icon-filter: none; }
+.category-tile:not(.category-tile-iconless) {
+	border: none;
+	box-shadow: inset 0 0 0 1px alpha(@card_fg_color, .15);
+}
 
 /* Styling for specific category buttons. */
 .category-tile.category-create {
@@ -111,8 +83,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-create:active {
 	background: linear-gradient(180deg, shade(#ce8cd7, .95) 0%, shade(#2861c6, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-develop {
@@ -124,8 +94,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-develop:active {
 	background-color: shade(#5e5c64, .95);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-learn {
@@ -137,8 +105,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-learn:active {
 	background: linear-gradient(180deg, shade(#2ec27e, .95) 30%, shade(#27a66c, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-play {
@@ -150,8 +116,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-play:active {
 	background: linear-gradient(75deg, shade(#f9e2a7, .97) 0%, shade(#eb5ec3, .95) 50%, shade(#6d53e0, 1.07) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-socialize {
@@ -163,32 +127,26 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-socialize:active {
 	background: linear-gradient(90deg, shade(#ef4e9b, .95) 0%, shade(#f77466, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-work {
 	padding: 1px; /* FIXME: work around https://gitlab.gnome.org/GNOME/gtk/-/issues/4324 */
-	box-shadow: inset 0 0 0 1px #efd185;
 	color: #1c71d8;
 	background-color:#fdf8d7;
 	background-image: linear-gradient(#deddda 1px, transparent 1px),
-			  linear-gradient(90deg, #deddda 1px, transparent 1px);
+	                  linear-gradient(90deg, #deddda 1px, transparent 1px);
 	background-size: 10px 10px, 10px 10px;
 	background-position: -1px -4px, center -1px;
 }
 .category-tile.category-work:hover {
-	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08);
 	background-color: shade(#fdf8d7, 1.03);
 	background-image: linear-gradient(shade(#deddda, 1.04) 1px, transparent 1px),
-			  linear-gradient(90deg, shade(#deddda, 1.04) 1px, transparent 1px);
+	                  linear-gradient(90deg, shade(#deddda, 1.04) 1px, transparent 1px);
 }
 .category-tile.category-work:active {
 	background-color: shade(#fdf8d7, .93);
 	background-image: linear-gradient(shade(#deddda, .97) 1px, transparent 1px),
-			  linear-gradient(90deg, shade(#deddda, .97) 1px, transparent 1px);
-	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
+	                  linear-gradient(90deg, shade(#deddda, .97) 1px, transparent 1px);
 }
 
 /* The rest of the featured-tile CSS is loaded at runtime in gs-feature-tile.c */

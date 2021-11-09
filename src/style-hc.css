@@ -6,6 +6,10 @@
 	color: #999999;
 }
 
+.category-tile:not(.category-tile-iconless) {
+	box-shadow: inset 0 0 0 1px alpha(@card_fg_color, .5);
+}
+
 .application-details-infobar.info {
 	background-color: #d3d7cf;
 	border-color: darker(#d3d7cf);
