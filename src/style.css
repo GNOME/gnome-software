@@ -203,37 +203,32 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 
 .install-progress:dir(rtl) { background-position: 100% bottom; }
 
-.review-summary {
-	font-weight: bold;
-}
+.review-row button { font-size: smaller; }
 
-.review-listbox {
-	all: unset;
-}
-
-.review-row button, .review-row .button { font-size: smaller; }
-
-/* gtk+ 3.20+ only */
 .review-row .vote-buttons button {
 	margin-right: -1px;
-
-	/* restricting transition properties since the hack for the separator*/
-	transition-property: background, box-shadow, border-style;
 }
 
 /* this is the separator between yes and no vote buttons, gtk+ 3.20 only */
-.review-row .vote-buttons button:not(:first-child):not(:hover):not(:active) {
+.review-row .vote-buttons button:not(:first-child) {
 	border-image: linear-gradient(to top, @borders, @borders) 0 0 0 1 / 5px 0 5px 1px;
 }
 
+.review-row .vote-buttons button:hover,
+.review-row .vote-buttons button:active,
+.review-row .vote-buttons button:hover + button,
+.review-row .vote-buttons button:active + button {
+	border-image: none;
+}
+
 review-bar {
+	color: alpha(@theme_fg_color, .4);
 	background-image: none;
-	background-color: @unfocused_insensitive_color;
-	color: @insensitive_fg_color;
+	background-color: alpha(currentColor, .5);
 }
 
 .review-histogram star-image {
-	color: @insensitive_fg_color;
+	color: alpha(@theme_fg_color, .4);
 }
 
 .version-arrow-label {
