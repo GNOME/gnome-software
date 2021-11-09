@@ -17,10 +17,6 @@
 	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
 
-.installed-overlay-box:backdrop label {
-    color: @accent_fg_color;
-}
-
 .installed-icon {
 	color: @accent_bg_color;
 }
@@ -31,10 +27,6 @@
 	border-radius: 0;
 	color: @accent_fg_color;
 	text-shadow: none;
-}
-
-.popular-installed-overlay-box:backdrop label {
-	color: @accent_fg_color;
 }
 
 .index-title-alignment-software {
@@ -90,11 +82,6 @@ sidebar row.needs-attention:selected > box > label {
 .kudo-pill:disabled {
 	color: @theme_bg_color;
 	background-color: mix(@insensitive_fg_color, @theme_bg_color, 0.6);
-}
-
-.kudo-pill:disabled:backdrop {
-	color: @theme_unfocused_bg_color;
-	background-color: mix(@insensitive_fg_color, @theme_unfocused_bg_color, 0.8);
 }
 
 .onlyjustvisible:disabled {
@@ -155,10 +142,6 @@ summary-tile {
 
 .view.tile:hover, .category-tile.category-tile-iconless:hover {
   background-color: mix(@theme_fg_color, @theme_base_color, 0.95);
-}
-
-.view.tile:backdrop:hover, .category-tile.category-tile-iconless:backdrop:hover {
-  background-color: transparent;
 }
 
 .view.tile:active, .category-tile.category-tile-iconless:active {
@@ -302,11 +285,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	color: @theme_fg_color;
 }
 
-.featured-tile:backdrop label {
-	color: inherit;
-	text-shadow: none;
-}
-
 .featured-tile label.title-1 {
 	margin-top: 6px;
 	margin-bottom: 6px;
@@ -391,11 +369,8 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 
 /* this is the separator between yes and no vote buttons, gtk+ 3.20 only */
-.review-row .vote-buttons button:not(:first-child):not(:hover):not(:active):not(:backdrop) {
+.review-row .vote-buttons button:not(:first-child):not(:hover):not(:active) {
 	border-image: linear-gradient(to top, @borders, @borders) 0 0 0 1 / 5px 0 5px 1px;
-}
-.review-row .vote-buttons button:not(:first-child):backdrop {
-	border-image: linear-gradient(to top, @unfocused_borders, @unfocused_borders) 0 0 0 1 / 5px 0 5px 1px;
 }
 
 review-bar {
@@ -488,8 +463,6 @@ star-image {
    setting a background on the scrolled window affects the undershoot and the overshoot so explicitelly
    excluding with :not() */
 .category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
-
-.category-sidebar:backdrop:not(.undershoot):not(.overshoot) { background-color: @theme_unfocused_base_color; }
 
 /* padding removal */
 .list-box-app-row {
@@ -672,10 +645,6 @@ clamp.status-page .icon {
   color: alpha(@theme_fg_color, 0.5);
   min-height: 128px;
   min-width: 128px;
-}
-
-clamp.status-page .icon:backdrop {
-  color: alpha(@theme_unfocused_fg_color, 0.5);
 }
 
 clamp.status-page .icon:not(:last-child) {
