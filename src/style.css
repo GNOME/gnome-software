@@ -298,29 +298,12 @@ star-image {
 .upgrade-banner-background {
 	background: linear-gradient(180deg, shade(@theme_bg_color, 1.0) 0%, shade(@theme_bg_color, 0.9) 100%);
 	color: @theme_fg_color;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-	border: 1px solid darker(@theme_bg_color);
-}
-
-.upgrade-banner-bottom-box {
-	border: 1px solid darker(@theme_bg_color);
-	border-width: 0 1px 1px 1px;
-	border-radius: 0 0 8px 8px;
-}
-
-.upgrade-buttons {
-	border-bottom-left-radius: 8px;
-	border-bottom-right-radius: 8px;
+	border-bottom: 1px solid @borders;
 }
 
 .upgrade-buttons #button_upgrades_install {
 	padding-left: 16px;
 	padding-right: 16px;
-}
-
-.upgrade-progressbar {
-	box-shadow: none;
 }
 
 .eol-box {
