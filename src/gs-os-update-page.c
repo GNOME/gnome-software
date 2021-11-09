@@ -261,7 +261,6 @@ os_updates_sort_func (GtkListBoxRow *a,
 static GtkWidget *
 get_section_header (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 {
-	GtkStyleContext *context;
 	GtkWidget *header;
 	GtkWidget *label;
 
@@ -288,17 +287,14 @@ get_section_header (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 
 	/* create header */
 	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
-	context = gtk_widget_get_style_context (header);
-	gtk_style_context_add_class (context, "app-listbox-header");
+	gtk_widget_add_css_class (header, "app-listbox-header");
 
 	/* put label into the header */
 	gtk_widget_set_hexpand (label, TRUE);
 	gtk_box_append (GTK_BOX (header), label);
-	gtk_widget_set_visible (label, TRUE);
-	gtk_widget_set_margin_start (label, 6);
+	gtk_widget_set_margin_start (label, 16);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-	context = gtk_widget_get_style_context (label);
-	gtk_style_context_add_class (context, "app-listbox-header-title");
+	gtk_widget_add_css_class (label, "heading");
 
 	/* success */
 	return header;
@@ -324,7 +320,6 @@ list_header_func (GtkListBoxRow *row,
 static void
 create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 {
-	GtkStyleContext *context;
 	GtkWidget *previous = NULL;
 
 	page->list_boxes[section] = gtk_list_box_new ();
@@ -338,8 +333,6 @@ create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 				      page, NULL);
 	g_signal_connect (GTK_LIST_BOX (page->list_boxes[section]), "row-activated",
 			  G_CALLBACK (row_activated_cb), page);
-	gtk_widget_set_visible (page->list_boxes[section], TRUE);
-	gtk_widget_set_vexpand (page->list_boxes[section], TRUE);
 	gtk_box_append (GTK_BOX (page->box), page->list_boxes[section]);
 	gtk_widget_set_margin_top (page->list_boxes[section], 24);
 
@@ -354,8 +347,8 @@ create_section (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 	}
 
 	/* make rounded edges */
-	context = gtk_widget_get_style_context (page->list_boxes[section]);
-	gtk_style_context_add_class (context, "app-updates-section");
+	gtk_widget_set_overflow (page->list_boxes[section], GTK_OVERFLOW_HIDDEN);
+	gtk_widget_add_css_class (page->list_boxes[section], "card");
 }
 
 /**
