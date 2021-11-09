@@ -157,6 +157,10 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	font-size: 16pt;  /* 80% of .title-1 */
 }
 
+.featured-carousel carousel {
+	border-radius: 12px;
+}
+
 .application-details-infobar.info {
 	background-color: shade(@theme_bg_color, 0.9);
 	color: @theme_fg_color;
@@ -304,10 +308,6 @@ star-image {
 .upgrade-buttons #button_upgrades_install {
 	padding-left: 16px;
 	padding-right: 16px;
-}
-
-.featured-carousel carousel {
-	border-radius: 8px;
 }
 
 /* these typographical classes will be provided in gtk eventually */
