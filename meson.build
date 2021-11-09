@@ -131,7 +131,7 @@ json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.0.0-alpha.2',
+  version: '>=1.0.0.alpha.3',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
       'examples=false',
