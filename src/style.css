@@ -26,7 +26,6 @@
 	background-color: @accent_bg_color;
 	border-radius: 0;
 	color: @accent_fg_color;
-	text-shadow: none;
 }
 
 .index-title-alignment-software {
@@ -110,7 +109,6 @@ screenshot-carousel button,
 }
 
 .app-row-tag {
-	text-shadow: none;
 	color: @accent_fg_color;
 	background-color: #999999;
 	font-size: smaller;
@@ -158,7 +156,6 @@ summary-tile {
 	padding: 20px 10px;
 	border-radius: 8px;
 	font-weight: 900;
-	text-shadow: none;
 	border: none;
 	box-shadow: inset 0 0 0 1px alpha(black, 0.13);
 	transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -175,7 +172,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 .category-tile.category-tile-iconless {
 	font-size: 105%;
 	font-weight: normal;
-	text-shadow: none;
 	padding: 10px 15px;
 	background-image: none;
 }
@@ -300,7 +296,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-color: darker(shade(@theme_bg_color, 0.9));
 	border-style: solid;
 	border-width: 1px;
-	text-shadow: none;
 }
 
 .application-details-infobar {
@@ -310,7 +305,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-style: solid;
 	border-width: 1px;
 	padding: 12px;
-	text-shadow: none;
 }
 
 .application-details-infobar.warning {
@@ -319,7 +313,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-color: darker(#fcaf3e);
 	border-style: solid;
 	border-width: 1px;
-	text-shadow: none;
 }
 
 .application-details-webapp-warning {
@@ -365,7 +358,7 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	margin-right: -1px;
 
 	/* restricting transition properties since the hack for the separator*/
-	transition-property: background, box-shadow, border-style, text-shadow;
+	transition-property: background, box-shadow, border-style;
 }
 
 /* this is the separator between yes and no vote buttons, gtk+ 3.20 only */
@@ -381,10 +374,6 @@ review-bar {
 
 .review-histogram star-image {
 	color: @insensitive_fg_color;
-}
-
-.error-label {
-	text-shadow: none;
 }
 
 .version-arrow-label {
@@ -451,7 +440,6 @@ star-image {
 }
 
 .counter-label {
-	text-shadow: none;
 	color: @accent_fg_color;
 	background-color: mix(@accent_bg_color, @accent_fg_color, 0.3);
 	font-size: smaller;
@@ -484,7 +472,6 @@ star-image {
 
 .dimmer-label {
 	opacity: 0.25;
-	text-shadow: none;
 }
 
 .update-failed-details {
