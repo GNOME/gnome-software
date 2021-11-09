@@ -36,20 +36,18 @@ static void
 gs_review_bar_snapshot (GtkWidget   *widget,
                         GtkSnapshot *snapshot)
 {
-	gdouble y_offset, bar_width, bar_height;
+	gdouble bar_width, bar_height;
 	GdkRGBA color;
 
 	gtk_style_context_get_color (gtk_widget_get_style_context (widget), &color);
 
-	/* don't fill the complete height (too heavy beside GtkLabel of that height) */
-	y_offset = floor (0.15 * gtk_widget_get_height (widget));
-	bar_height = gtk_widget_get_height (widget) - (y_offset * 2);
 	bar_width = round (GS_REVIEW_BAR (widget)->fraction * gtk_widget_get_width (widget));
+	bar_height = gtk_widget_get_height (widget);
 
 	gtk_snapshot_append_color (snapshot,
 				   &color,
 				   &GRAPHENE_RECT_INIT (0,
-							y_offset,
+							0,
 							bar_width,
 							bar_height));
 
