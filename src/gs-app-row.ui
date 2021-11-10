@@ -2,15 +2,12 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsAppRow" parent="GtkListBoxRow">
-    <style>
-      <class name="list-box-app-row"/>
-    </style>
     <child>
       <object class="GtkBox" id="box">
-        <property name="margin_top">12</property>
-        <property name="margin_bottom">12</property>
-        <property name="margin_start">12</property>
-        <property name="margin_end">18</property>
+        <property name="margin_top">10</property>
+        <property name="margin_bottom">10</property>
+        <property name="margin_start">10</property>
+        <property name="margin_end">16</property>
         <property name="orientation">horizontal</property>
         <child>
           <object class="GtkImage" id="image">
@@ -147,8 +144,7 @@
 			    <property name="pixel-size">16</property>
 			    <property name="icon-name">software-installed-symbolic</property>
 			    <style>
-			      <class name="installed-icon"/>
-			      <class name="app-row-installed-icon"/>
+			      <class name="accent"/>
 			    </style>
 			  </object>
 			</child>
@@ -157,7 +153,7 @@
 			    <property name="valign">center</property>
 			    <property name="label" translatable="yes">Installed</property>
 			    <style>
-			      <class name="app-row-installed-label"/>
+			      <class name="caption"/>
 			    </style>
 			  </object>
 			</child>

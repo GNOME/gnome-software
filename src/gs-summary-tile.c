@@ -181,7 +181,6 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
-	gtk_widget_class_set_css_name (widget_class, "summary-tile");
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-summary-tile.ui");
 	gtk_widget_class_set_layout_manager_type (widget_class, GS_TYPE_SUMMARY_TILE_LAYOUT);
 

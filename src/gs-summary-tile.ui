@@ -6,8 +6,7 @@
     <!-- This is the minimum (sic!) width of a tile when the GtkFlowBox parent container switches to 3 columns -->
     <property name="preferred-width">270</property>
     <style>
-      <class name="view"/>
-      <class name="tile"/>
+      <class name="card"/>
     </style>
     <child>
       <object class="GtkStack" id="stack">
@@ -50,7 +49,7 @@
                         <property name="margin-end">6</property>
                         <property name="icon-name">software-installed-symbolic</property>
                         <style>
-                          <class name="installed-icon"/>
+                          <class name="accent"/>
                         </style>
                       </object>
                     </child>

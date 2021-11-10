@@ -1,12 +1,5 @@
 .details-page {
-  margin: 24px 0px;
-}
-
-/* The equivalent of libhandy’s .content class, but applicable to a plain GtkBox */
-.content-box {
-	border-radius: 8px;
-	border: 1px solid shade(@theme_bg_color, 0.9);
-	background-color: @theme_base_color;
+	margin: 24px 0px;
 }
 
 .installed-overlay-box {
@@ -15,90 +8,6 @@
 	border-radius: 0;
 	color: @accent_fg_color;
 	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
-}
-
-.installed-overlay-box:backdrop label {
-    color: @accent_fg_color;
-}
-
-.installed-icon {
-	color: @accent_bg_color;
-}
-
-.popular-installed-overlay-box {
-	font-size: smaller;
-	background-color: @accent_bg_color;
-	border-radius: 0;
-	color: @accent_fg_color;
-	text-shadow: none;
-}
-
-.popular-installed-overlay-box:backdrop label {
-	color: @accent_fg_color;
-}
-
-.index-title-alignment-software {
-	font-weight: bold;
-	font-size: 125%;
-}
-
-.app-row-installed-label {
-	font-size: smaller;
-}
-
-/* Adapted from Adwaita’s .needs-attention class for stacksidebar */
-sidebar row.needs-attention > box > label {
-	animation: needs_attention 150ms ease-in;
-	background-image: radial-gradient(ellipse at center,
-	                                  @accent_bg_color,
-	                                  transparent),
-	                  radial-gradient(ellipse at center,
-	                                  alpha(@theme_text_color, 0.5),
-	                                  transparent);
-	background-size: 6px 6px, 0 0;
-	background-repeat: no-repeat;
-	background-position: right 3px, right 4px;
-}
-
-sidebar row.needs-attention > box > label:dir(rtl) {
-	background-position: left 3px, left 4px;
-}
-
-sidebar row.needs-attention:selected > box > label {
-	animation: needs_attention 150ms ease-out;
-	background-image: none;
-}
-
-.toolbar-primary-buttons-software {
-	padding-left: 26px;
-	padding-right: 26px;
-}
-
-.round-button {
-	border-radius: 16px;
-}
-
-.kudo-pill {
-	color: @accent_fg_color;
-	background-color: shade(@accent_bg_color, 1.1);
-	background-image: none;
-	border-radius: 16px;
-	padding: 8px;
-}
-
-/* should be :disabled but we need to support older versions of GTK */
-.kudo-pill:disabled {
-	color: @theme_bg_color;
-	background-color: mix(@insensitive_fg_color, @theme_bg_color, 0.6);
-}
-
-.kudo-pill:disabled:backdrop {
-	color: @theme_unfocused_bg_color;
-	background-color: mix(@insensitive_fg_color, @theme_unfocused_bg_color, 0.8);
-}
-
-.onlyjustvisible:disabled {
-	opacity: 0.25;
 }
 
 screenshot-carousel > box {
@@ -122,63 +31,18 @@ screenshot-carousel button,
 	font-size: 105%;
 }
 
-.app-row-tag {
-	text-shadow: none;
-	color: @accent_fg_color;
-	background-color: #999999;
-	font-size: smaller;
-	border-radius: 4px;
-	padding: 2px 10px;
-}
-
 .review-textbox {
 	padding: 6px;
-}
-
-@define-color gs_tile_bg_color mix(@theme_base_color,@theme_bg_color,0.3);
-
-summary-tile {
-	border-radius: 6px;
-	min-width: 280px;
 }
 
 /* This mimicks the style of list and row from Adwaita, and of list.content from
  * Libhandy. */
 
-.view.tile, .category-tile.category-tile-iconless {
-  background-color: @theme_base_color;
-  border-radius: 8px;
-  border: solid 1px alpha(@borders, 0.7);
-  box-shadow: none;
-  transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.view.tile:hover, .category-tile.category-tile-iconless:hover {
-  background-color: mix(@theme_fg_color, @theme_base_color, 0.95);
-}
-
-.view.tile:backdrop:hover, .category-tile.category-tile-iconless:backdrop:hover {
-  background-color: transparent;
-}
-
-.view.tile:active, .category-tile.category-tile-iconless:active {
-  box-shadow: inset 0 2px 2px -2px mix(black, transparent, 0.8);
-}
-
-.view.tile:hover:active, .category-tile.category-tile-iconless:hover:active {
-  background-color: mix(@theme_fg_color, @theme_base_color, 0.9);
-}
-
 .category-tile {
 	/* We have to remove the padding: 160px - 2*10px = 140px */
 	min-width: 140px;
 	padding: 20px 10px;
-	border-radius: 8px;
 	font-weight: 900;
-	text-shadow: none;
-	border: none;
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13);
-	transition: 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 clamp.medium .category-tile:not(.category-tile-iconless) {
@@ -192,13 +56,13 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 .category-tile.category-tile-iconless {
 	font-size: 105%;
 	font-weight: normal;
-	text-shadow: none;
 	padding: 10px 15px;
-	background-image: none;
 }
 
-/* Disable highlight on hover as it doesn’t make these icons look good */
-.category-tile:hover { -gtk-icon-filter: none; }
+.category-tile:not(.category-tile-iconless) {
+	border: none;
+	box-shadow: inset 0 0 0 1px alpha(@card_fg_color, .15);
+}
 
 /* Styling for specific category buttons. */
 .category-tile.category-create {
@@ -210,8 +74,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-create:active {
 	background: linear-gradient(180deg, shade(#ce8cd7, .95) 0%, shade(#2861c6, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-develop {
@@ -223,8 +85,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-develop:active {
 	background-color: shade(#5e5c64, .95);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-learn {
@@ -236,8 +96,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-learn:active {
 	background: linear-gradient(180deg, shade(#2ec27e, .95) 30%, shade(#27a66c, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-play {
@@ -249,8 +107,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-play:active {
 	background: linear-gradient(75deg, shade(#f9e2a7, .97) 0%, shade(#eb5ec3, .95) 50%, shade(#6d53e0, 1.07) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-socialize {
@@ -262,36 +118,26 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 .category-tile.category-socialize:active {
 	background: linear-gradient(90deg, shade(#ef4e9b, .95) 0%, shade(#f77466, .95) 100%);
-	box-shadow: inset 0 0 0 1px alpha(black, 0.13),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
 }
 
 .category-tile.category-work {
 	padding: 1px; /* FIXME: work around https://gitlab.gnome.org/GNOME/gtk/-/issues/4324 */
-	box-shadow: inset 0 0 0 1px #efd185;
 	color: #1c71d8;
 	background-color:#fdf8d7;
 	background-image: linear-gradient(#deddda 1px, transparent 1px),
-			  linear-gradient(90deg, #deddda 1px, transparent 1px);
+	                  linear-gradient(90deg, #deddda 1px, transparent 1px);
 	background-size: 10px 10px, 10px 10px;
 	background-position: -1px -4px, center -1px;
 }
 .category-tile.category-work:hover {
-	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08);
 	background-color: shade(#fdf8d7, 1.03);
 	background-image: linear-gradient(shade(#deddda, 1.04) 1px, transparent 1px),
-			  linear-gradient(90deg, shade(#deddda, 1.04) 1px, transparent 1px);
+	                  linear-gradient(90deg, shade(#deddda, 1.04) 1px, transparent 1px);
 }
 .category-tile.category-work:active {
 	background-color: shade(#fdf8d7, .93);
 	background-image: linear-gradient(shade(#deddda, .97) 1px, transparent 1px),
-			  linear-gradient(90deg, shade(#deddda, .97) 1px, transparent 1px);
-	box-shadow: inset 0 0 0 1px shade(#efd185, 1.08),
-		    inset 0 4px 2px -2px mix(black, transparent, 0.8);
-}
-
-.app-list {
-	background-color: @theme_base_color;
+	                  linear-gradient(90deg, shade(#deddda, .97) 1px, transparent 1px);
 }
 
 /* The rest of the featured-tile CSS is loaded at runtime in gs-feature-tile.c */
@@ -300,11 +146,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	padding: 0;
 	box-shadow: none;
 	color: @theme_fg_color;
-}
-
-.featured-tile:backdrop label {
-	color: inherit;
-	text-shadow: none;
 }
 
 .featured-tile label.title-1 {
@@ -316,13 +157,16 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	font-size: 16pt;  /* 80% of .title-1 */
 }
 
+.featured-carousel carousel {
+	border-radius: 12px;
+}
+
 .application-details-infobar.info {
 	background-color: shade(@theme_bg_color, 0.9);
 	color: @theme_fg_color;
 	border-color: darker(shade(@theme_bg_color, 0.9));
 	border-style: solid;
 	border-width: 1px;
-	text-shadow: none;
 }
 
 .application-details-infobar {
@@ -332,7 +176,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-style: solid;
 	border-width: 1px;
 	padding: 12px;
-	text-shadow: none;
 }
 
 .application-details-infobar.warning {
@@ -341,14 +184,6 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-color: darker(#fcaf3e);
 	border-style: solid;
 	border-width: 1px;
-	text-shadow: none;
-}
-
-.application-details-webapp-warning {
-	font-weight: bold;
-}
-
-.application-details-description {
 }
 
 @keyframes install-progress-unknown-move {
@@ -372,44 +207,32 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 
 .install-progress:dir(rtl) { background-position: 100% bottom; }
 
-.review-summary {
-	font-weight: bold;
-}
+.review-row button { font-size: smaller; }
 
-.review-listbox {
-	all: unset;
-}
-
-.review-row button, .review-row .button { font-size: smaller; }
-
-/* gtk+ 3.20+ only */
 .review-row .vote-buttons button {
 	margin-right: -1px;
-
-	/* restricting transition properties since the hack for the separator*/
-	transition-property: background, box-shadow, border-style, text-shadow;
 }
 
 /* this is the separator between yes and no vote buttons, gtk+ 3.20 only */
-.review-row .vote-buttons button:not(:first-child):not(:hover):not(:active):not(:backdrop) {
+.review-row .vote-buttons button:not(:first-child) {
 	border-image: linear-gradient(to top, @borders, @borders) 0 0 0 1 / 5px 0 5px 1px;
 }
-.review-row .vote-buttons button:not(:first-child):backdrop {
-	border-image: linear-gradient(to top, @unfocused_borders, @unfocused_borders) 0 0 0 1 / 5px 0 5px 1px;
+
+.review-row .vote-buttons button:hover,
+.review-row .vote-buttons button:active,
+.review-row .vote-buttons button:hover + button,
+.review-row .vote-buttons button:active + button {
+	border-image: none;
 }
 
 review-bar {
+	color: alpha(@theme_fg_color, .4);
 	background-image: none;
-	background-color: @unfocused_insensitive_color;
-	color: @insensitive_fg_color;
+	background-color: alpha(currentColor, .5);
 }
 
 .review-histogram star-image {
-	color: @insensitive_fg_color;
-}
-
-.error-label {
-	text-shadow: none;
+	color: alpha(@theme_fg_color, .4);
 }
 
 .version-arrow-label {
@@ -427,34 +250,19 @@ review-bar {
 
 .app-listbox-header {
 	padding: 6px;
-	background-image: none;
-	border-bottom: 1px solid @theme_bg_color;
-}
-
-.app-listbox-header:dir(ltr) { padding-left: 10px; }
-
-.app-listbox-header:dir(rtl) { padding-right: 10px; }
-
-.app-updates-section {
-	border-radius: 4px;
-	border: 1px solid darker(@theme_bg_color);
-}
-
-.app-listbox-header-title {
-	font-size: 100%;
-	font-weight: bold;
+	border-bottom: 1px solid @borders;
 }
 
 .image-list {
 	background-color: transparent;
 }
 
-box.star, GtkBox.star {
+box.star {
 	background-color: transparent;
 	background-image: none;
 }
 
-button.star, .button.star {
+button.star {
 	outline-offset: 0;
 	background-color: transparent;
 	background-image: none;
@@ -475,43 +283,8 @@ star-image {
 	color: #e5a50a;
 }
 
-.counter-label {
-	text-shadow: none;
-	color: @accent_fg_color;
-	background-color: mix(@accent_bg_color, @accent_fg_color, 0.3);
-	font-size: smaller;
-	border-radius: 4px;
-	padding: 0px 4px;
-}
-
-/* the following two selectors are to color the small gap before the list inside the scrolled window
-   setting a background on the scrolled window affects the undershoot and the overshoot so explicitelly
-   excluding with :not() */
-.category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
-
-.category-sidebar:backdrop:not(.undershoot):not(.overshoot) { background-color: @theme_unfocused_base_color; }
-
-/* padding removal */
-.list-box-app-row {
-	padding: 0px;
-}
-
-/* Superfluous borders removal */
-.category-sidebar {
-	border-style: none;
-}
-
-.category-sidebar:dir(rtl) {
-	border-left-style: solid;
-}
-
-.category-sidebar:dir(ltr) {
-	border-right-style: solid;
-}
-
 .dimmer-label {
 	opacity: 0.25;
-	text-shadow: none;
 }
 
 .update-failed-details {
@@ -529,81 +302,12 @@ star-image {
 .upgrade-banner-background {
 	background: linear-gradient(180deg, shade(@theme_bg_color, 1.0) 0%, shade(@theme_bg_color, 0.9) 100%);
 	color: @theme_fg_color;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-	border: 1px solid darker(@theme_bg_color);
-}
-
-.upgrade-banner-bottom-box {
-	border: 1px solid darker(@theme_bg_color);
-	border-width: 0 1px 1px 1px;
-	border-radius: 0 0 8px 8px;
-}
-
-.upgrade-buttons {
-	border-bottom-left-radius: 8px;
-	border-bottom-right-radius: 8px;
+	border-bottom: 1px solid @borders;
 }
 
 .upgrade-buttons #button_upgrades_install {
 	padding-left: 16px;
 	padding-right: 16px;
-}
-
-.upgrade-progressbar {
-	box-shadow: none;
-}
-
-.eol-box {
-	background-color: @accent_bg_color;
-	border: 1px solid shade(@accent_bg_color, 0.8);
-	color: @accent_fg_color;
-}
-
-.category_page_header_filter_box .radio, .category_page_header_filter_box .radio:hover {
-	background-color: transparent; background-image: none;
-	box-shadow: none;
-	border: none;
-	border-radius: 0;
-	border-bottom: 4px solid transparent;
-}
-
-.category_page_header_filter_box .radio:hover {
-	border-bottom-color: @accent_bg_color;
-}
-
-.category_page_header_filter_box .radio:checked {
-	border-bottom-color: @accent_bg_color;
-}
-
-/* uses theme_bg_color and a shade with the ratio of the original color */
-.category_page_header_filter_box {
-	background-color: shade(@theme_bg_color, 0.9);
-	border-bottom: 1px solid darker(shade(@theme_bg_color, 0.9));
-}
-
-.switcher-label {
-	opacity: 0.5;
-}
-
-.featured-carousel carousel {
-	border-radius: 8px;
-}
-
-/* these typographical classes will be provided in gtk eventually */
-.title-1{
-  font-weight: 800;
-  font-size: 20pt;
-}
-.caption{
-  font-weight: 400;
-  font-size: 10pt;
-}
-
-/* the loading page headerbar */
-overlay > headerbar {
-  background: none;
-  border: none;
 }
 
 /* The following style are taken from libhandy's AdwPreferencesPage style, which
@@ -613,42 +317,15 @@ overlay > headerbar {
  * set as a property. */
 
 scrolledwindow.list-page > viewport > clamp > box {
-  margin: 0 12px; transition: margin-bottom 200ms ease;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.section {
-  transition: margin-top 200ms ease;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.small {
-  margin-bottom: 18px;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.small .section {
-  margin-top: 18px;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.medium {
-  margin-bottom: 24px;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.medium .section {
-  margin-top: 24px;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.large {
-  margin-bottom: 30px;
-}
-
-scrolledwindow.list-page > viewport > clamp > box.large .section {
-  margin-top: 30px;
+	margin: 24px 12px;
+	border-spacing: 24px;
 }
 
 /* Increase the spacing in the Update Preferences window between the label and
  * the listbox. */
 
 .update-preferences preferencesgroup > box > box {
-  margin-top: 18px;
+	margin-top: 18px;
 }
 
 /* The following style is taken from libhandy's AdwPreferencesGroup style, which
@@ -665,61 +342,73 @@ scrolledwindow.list-page > viewport > clamp > box.large .section {
  * a spinner and the updates spinner page can be ported to it. */
 
 clamp.status-page {
-  margin: 36px 12px;
+	margin: 36px 12px;
 }
 
 clamp.status-page .icon {
-  color: alpha(@theme_fg_color, 0.5);
-  min-height: 128px;
-  min-width: 128px;
-}
-
-clamp.status-page .icon:backdrop {
-  color: alpha(@theme_unfocused_fg_color, 0.5);
+	color: alpha(@theme_fg_color, 0.5);
+	min-height: 128px;
+	min-width: 128px;
 }
 
 clamp.status-page .icon:not(:last-child) {
-  margin-bottom: 36px;
+	margin-bottom: 36px;
 }
 
 clamp.status-page .title:not(:last-child) {
-  margin-bottom: 12px;
+	margin-bottom: 12px;
 }
 
 app-context-bar .context-tile {
-	border: 1px solid shade(@theme_bg_color, 0.9);
-	background-color: @theme_base_color;
+	border: 1px solid @borders;
+	background-color: transparent;
 	border-radius: 0;
 	padding: 24px 12px 21px 12px;
-	border-right: 1px solid shade(@theme_bg_color, 0.9);
+	outline-offset: 5px;
+	transition-property: outline, outline-offset, background-image;
+	border-bottom: none;
+	border-right: none;
+}
+
+app-context-bar .context-tile:hover {
+	background-image: image(alpha(currentColor, .03));
+}
+
+app-context-bar .context-tile.keyboard-activating,
+app-context-bar .context-tile:active {
+	background-image: image(alpha(currentColor, .08));
+}
+
+app-context-bar .context-tile:focus:focus-visible {
+	outline-offset: -1px;
 }
 
 app-context-bar box:first-child .context-tile:first-child {
-	border-top-left-radius: 8px;
+	border-top-left-radius: 12px;
 }
 
 app-context-bar.horizontal box:last-child .context-tile:last-child,
 app-context-bar.vertical box:first-child .context-tile:last-child {
-	border-top-right-radius: 8px;
+	border-top-right-radius: 12px;
 }
 
 app-context-bar.horizontal box:first-child .context-tile:first-child,
 app-context-bar.vertical box:last-child .context-tile:first-child {
-	border-bottom-left-radius: 8px;
+	border-bottom-left-radius: 12px;
 }
 
 app-context-bar box:last-child .context-tile:last-child {
-	border-bottom-right-radius: 8px;
+	border-bottom-right-radius: 12px;
 }
 
-app-context-bar.horizontal box:not(:last-child) .context-tile,
-app-context-bar.horizontal box:last-child .context-tile:not(:last-child),
-app-context-bar.vertical .context-tile:not(:last-child) {
-	border-right: none;
+app-context-bar.horizontal box:first-child .context-tile:first-child,
+app-context-bar.vertical .context-tile:first-child {
+	border-left: none;
 }
 
-app-context-bar.vertical box:not(:last-child) .context-tile {
-	border-bottom: none;
+app-context-bar.horizontal .context-tile,
+app-context-bar.vertical box:first-child .context-tile {
+	border-top: none;
 }
 
 .context-tile-lozenge {
@@ -748,9 +437,7 @@ app-context-bar.vertical box:not(:last-child) .context-tile {
 	margin-bottom: -28px;
 }
 
-.context-tile-title { font-weight: bold; }
 .context-tile-lozenge image { -gtk-icon-style: symbolic; }
-app-context-bar .context-tile-description { font-size: smaller; font-weight: normal; }
 
 .context-tile-lozenge.grey { background-color: #deddda; color: #5e5c64; }
 .context-tile-lozenge.green, .context-tile-lozenge.details-rating-0 { background-color: #b6f2c4; color: #208255; }
@@ -764,16 +451,12 @@ app-context-bar .context-tile-description { font-size: smaller; font-weight: nor
 	color: #ab3342;
 }
 
-window.toolbox button.titlebutton:not(:hover) {
-  background: @theme_bg_color;
-}
-
 window.narrow .app-title {
-   font-size: 16pt;
+	font-size: 16pt;
 }
 
 window.narrow .app-developer {
-   font-size: small;
+	font-size: small;
 }
 
 .install-progress-label { font-size: smaller; }
@@ -786,10 +469,10 @@ scrolledwindow.fake-adw-status-page > viewport > box > clamp > box > .icon:not(:
 scrolledwindow.fake-adw-status-page > viewport > box > clamp > box > .title:not(:last-child) { margin-bottom: 12px; }
 
 statuspage.icon-dropshadow image.icon {
-  /* This copies the style of .icon-dropshadow from Adwaita. */
-  -gtk-icon-shadow: 0 1px 12px rgba(0,0,0,0.05),
-      0 -1px rgba(0,0,0,0.05),
-      1px 0 rgba(0,0,0,0.1),
-      0 1px rgba(0,0,0,0.3),
-      -1px 0 rgba(0,0,0,0.1);
+	/* This copies the style of .icon-dropshadow from Adwaita. */
+	-gtk-icon-shadow: 0 1px 12px rgba(0,0,0,0.05),
+	                  0 -1px rgba(0,0,0,0.05),
+	                  1px 0 rgba(0,0,0,0.1),
+	                  0 1px rgba(0,0,0,0.3),
+	                  -1px 0 rgba(0,0,0,0.1);
 }

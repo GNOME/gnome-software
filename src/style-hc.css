@@ -2,13 +2,8 @@
 	text-shadow: none;
 }
 
-.installed-icon, .app-row-installed-label {
-	color: #999999;
-}
-
-.app-row-tag {
-	color: white;
-	background-color: #999999;
+.category-tile:not(.category-tile-iconless) {
+	box-shadow: inset 0 0 0 1px alpha(@card_fg_color, .5);
 }
 
 .application-details-infobar.info {
@@ -20,28 +15,13 @@
 	color: @theme_fg_color;
 }
 
-.application-details-description {
-}
-
-.app-listbox-header {
-	background-color: #babdb6;
-	border-color: #000000;
-}
-
-.app-updates-section {
-	border-color: #000000;
-}
-
-.content-box {
-	border-color: alpha(@borders, 0.7);
+review-bar,
+.review-histogram star-image {
+	color: alpha(@theme_fg_color, .8);
 }
 
 star-image {
 	color: #000000;
-}
-
-app-context-bar .context-tile {
-	border-color: alpha(@borders, 0.7);
 }
 
 .context-tile-lozenge.grey { background-color: #deddda; color: @theme_fg_color; }

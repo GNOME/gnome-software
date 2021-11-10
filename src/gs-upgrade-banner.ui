@@ -9,9 +9,9 @@
         <property name="vexpand">True</property>
         <property name="valign">center</property>
         <property name="margin-top">12</property>
+        <property name="overflow">hidden</property>
         <style>
-          <class name="view"/>
-          <class name="upgrade-banner"/>
+          <class name="card"/>
         </style>
         <child>
           <object class="GtkBox" id="box_upgrades_info">
@@ -52,9 +52,6 @@
             <property name="orientation">vertical</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <style>
-              <class name="upgrade-banner-bottom-box"/>
-            </style>
 
             <child>
               <object class="GtkBox" id="box_upgrades_download">
@@ -66,9 +63,6 @@
                 <property name="margin-bottom">18</property>
                 <property name="margin-start">18</property>
                 <property name="margin-end">18</property>
-                <style>
-                  <class name="upgrade-buttons"/>
-                </style>
 
                 <child>
                   <object class="GtkButton" id="button_upgrades_download">
@@ -108,9 +102,6 @@
                 <property name="margin-bottom">18</property>
                 <property name="margin-start">18</property>
                 <property name="margin-end">18</property>
-                <style>
-                  <class name="upgrade-buttons"/>
-                </style>
                 <child>
                   <object class="GtkLabel" id="label_upgrades_downloading_spacer">
                     <property name="label"></property> <!-- space-taker -->
@@ -124,9 +115,6 @@
                     <property name="hexpand">True</property>
                     <property name="valign">center</property>
                     <property name="spacing">8</property>
-                    <style>
-                      <class name="upgrade-buttons"/>
-                    </style>
                     <child>
                       <object class="GtkLabel" id="label_upgrades_downloading">
                         <property name="label"></property> <!-- set in the code -->
