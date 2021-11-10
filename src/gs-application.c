@@ -13,7 +13,6 @@
 #include "gs-application.h"
 
 #include <stdlib.h>
-#include <adwaita.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
@@ -35,9 +34,8 @@
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
 struct _GsApplication {
-	GtkApplication	 parent;
+	AdwApplication	 parent;
 	GCancellable	*cancellable;
-	GtkCssProvider	*provider;
 	GsPluginLoader	*plugin_loader;
 	gint		 pending_apps;
 	GtkWindow	*main_window;
@@ -53,7 +51,7 @@ struct _GsApplication {
 	GsDebug		*debug;  /* (owned) (not nullable) */
 };
 
-G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
+G_DEFINE_TYPE (GsApplication, gs_application, ADW_TYPE_APPLICATION);
 
 typedef enum {
 	PROP_DEBUG = 1,
@@ -237,21 +235,6 @@ gs_application_show_first_run_dialog (GsApplication *app)
 }
 
 static void
-theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
-{
-	g_autoptr(GFile) file = NULL;
-	g_autofree gchar *theme = NULL;
-
-	g_object_get (settings, "gtk-theme-name", &theme, NULL);
-	if (g_strcmp0 (theme, "HighContrast") == 0) {
-		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style-hc.css");
-	} else {
-		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
-	}
-	gtk_css_provider_load_from_file (app->provider, file);
-}
-
-static void
 gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 {
 	g_signal_handler_disconnect (app->shell, app->shell_loaded_handler_id);
@@ -267,16 +250,6 @@ gs_application_initialize_ui (GsApplication *app)
 		return;
 
 	initialized = TRUE;
-
-	/* get CSS */
-	app->provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider_for_display (gdk_display_get_default (),
-						    GTK_STYLE_PROVIDER (app->provider),
-						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-	g_signal_connect (gtk_settings_get_default (), "notify::gtk-theme-name",
-			  G_CALLBACK (theme_changed), app);
-	theme_changed (gtk_settings_get_default (), NULL, app);
 
 	gs_application_initialize_plugins (app);
 
@@ -1002,8 +975,6 @@ gs_application_startup (GApplication *application)
 	GsApplication *app = GS_APPLICATION (application);
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
-	adw_init ();
-
 	gs_application_add_wrapper_actions (application);
 
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
@@ -1109,7 +1080,6 @@ gs_application_dispose (GObject *object)
 
 	g_clear_object (&app->plugin_loader);
 	g_clear_object (&app->shell);
-	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
 #ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
