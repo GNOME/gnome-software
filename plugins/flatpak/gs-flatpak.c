@@ -363,10 +363,12 @@ gs_flatpak_create_app (GsFlatpak *self,
 	if (origin != NULL) {
 		gs_flatpak_set_app_origin (self, app, origin, xremote, cancellable);
 
-		/* return the ref'd cached copy, only if the origin is known */
-		app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
-		if (app_cached != NULL)
-			return app_cached;
+		if (!(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)) {
+			/* return the ref'd cached copy, only if the origin is known */
+			app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+			if (app_cached != NULL)
+				return app_cached;
+		}
 	}
 
 	/* fallback values */
@@ -386,7 +388,7 @@ gs_flatpak_create_app (GsFlatpak *self,
 	 * hash table uses as_utils_data_id_equal() as the equal func and a NULL
 	 * origin becomes a "*" in gs_utils_build_unique_id().
 	 */
-	if (origin != NULL)
+	if (origin != NULL && !(self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY))
 		gs_plugin_cache_add (self->plugin, NULL, app);
 
 	/* no existing match, just steal the temp object */
