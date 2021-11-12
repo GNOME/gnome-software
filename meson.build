@@ -126,10 +126,17 @@ libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxm
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk4', version : '>= 4.2')
-glib = dependency('glib-2.0', version : '>= 2.55.0')
+glib = dependency('glib-2.0', version : '>= 2.66.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
-libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
+if get_option('soup3')
+  libsoup = dependency('libsoup-3.0', version : '>= 3.0')
+  libsoupapiversion = '3.0'
+else
+  libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
+  libsoupapiversion = '2.4'
+  conf.set('SOUP_HTTP_URI_FLAGS', '(G_URI_FLAGS_HAS_PASSWORD | G_URI_FLAGS_ENCODED_PATH | G_URI_FLAGS_ENCODED_QUERY | G_URI_FLAGS_ENCODED_FRAGMENT | G_URI_FLAGS_SCHEME_NORMALIZE)')
+endif
 libadwaita = dependency('libadwaita-1',
   version: '>=1.0.0.alpha.3',
   fallback: ['libadwaita', 'libadwaita_dep'],
@@ -213,6 +220,14 @@ endif
 if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.0.4')
   ostree = dependency('ostree-1')
+
+  flatpak_soupapiversion = flatpak.get_pkgconfig_variable('soupapiversion')
+  if flatpak_soupapiversion == ''
+    flatpak_soupapiversion = '2.4' # Pre libsoup3 support
+  endif
+  if flatpak_soupapiversion != libsoupapiversion
+    error('flatpak was built against a different API of libsoup. @0@ instead of @1@.'.format(flatpak_soupapiversion, libsoupapiversion))
+  endif
 endif
 
 if get_option('malcontent')

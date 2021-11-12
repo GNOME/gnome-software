@@ -1015,19 +1015,19 @@ gs_utils_error_convert_appstream (GError **perror)
 gchar *
 gs_utils_get_url_scheme	(const gchar *url)
 {
-	g_autoptr(SoupURI) uri = NULL;
+	g_autoptr(GUri) uri = NULL;
 
 	/* no data */
 	if (url == NULL)
 		return NULL;
 
 	/* create URI from URL */
-	uri = soup_uri_new (url);
-	if (!SOUP_URI_IS_VALID (uri))
+	uri = g_uri_parse (url, SOUP_HTTP_URI_FLAGS, NULL);
+	if (!uri)
 		return NULL;
 
 	/* success */
-	return g_strdup (soup_uri_get_scheme (uri));
+	return g_strdup (g_uri_get_scheme (uri));
 }
 
 /**
@@ -1041,19 +1041,19 @@ gs_utils_get_url_scheme	(const gchar *url)
 gchar *
 gs_utils_get_url_path (const gchar *url)
 {
-	g_autoptr(SoupURI) uri = NULL;
+	g_autoptr(GUri) uri = NULL;
 	const gchar *host;
 	const gchar *path;
 
-	uri = soup_uri_new (url);
-	if (!SOUP_URI_IS_VALID (uri))
+	uri = g_uri_parse (url, SOUP_HTTP_URI_FLAGS, NULL);
+	if (!uri)
 		return NULL;
 
 	/* foo://bar -> scheme: foo, host: bar, path: / */
 	/* foo:bar -> scheme: foo, host: (empty string), path: /bar */
-	host = soup_uri_get_host (uri);
-	path = soup_uri_get_path (uri);
-	if (host != NULL && (strlen (host) > 0))
+	host = g_uri_get_host (uri);
+	path = g_uri_get_path (uri);
+	if (host != NULL && *host != '\0')
 		path = host;
 
 	/* trim any leading slashes */

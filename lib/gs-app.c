@@ -2957,7 +2957,7 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
-	g_autoptr(SoupURI) uri = NULL;
+	g_autoptr(GUri) uri = NULL;
 	guint i;
 	const gchar *prefixes[] = { "download.", "mirrors.", NULL };
 
@@ -2970,10 +2970,10 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 		return;
 	g_free (priv->origin_hostname);
 
-	/* use libsoup to convert a URL */
-	uri = soup_uri_new (origin_hostname);
+	/* convert a URL */
+	uri = g_uri_parse (origin_hostname, SOUP_HTTP_URI_FLAGS, NULL);
 	if (uri != NULL)
-		origin_hostname = soup_uri_get_host (uri);
+		origin_hostname = g_uri_get_host (uri);
 
 	/* remove some common prefixes */
 	for (i = 0; prefixes[i] != NULL; i++) {

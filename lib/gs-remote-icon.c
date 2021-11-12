@@ -240,6 +240,7 @@ gs_icon_download (SoupSession   *session,
                   GCancellable  *cancellable,
                   GError       **error)
 {
+	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
 	g_autoptr(GInputStream) stream = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
@@ -258,14 +259,19 @@ gs_icon_download (SoupSession   *session,
 	/* Send request synchronously and start reading the response. */
 	stream = soup_session_send (session, msg, cancellable, error);
 
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	status_code = soup_message_get_status (msg);
+#else
+	status_code = msg->status_code;
+#endif
 	if (stream == NULL) {
 		return NULL;
-	} else if (msg->status_code != SOUP_STATUS_OK) {
+	} else if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
-			     SOUP_HTTP_ERROR,
-			     msg->status_code,
+			     G_IO_ERROR,
+			     G_IO_ERROR_FAILED,
 			     "Failed to download icon %s: %s",
-			     uri, soup_status_get_phrase (msg->status_code));
+			     uri, soup_status_get_phrase (status_code));
 		return NULL;
 	}
 

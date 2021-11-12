@@ -219,11 +219,11 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 
 	tmp = gs_app_get_url (repo, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL && *tmp != '\0') {
-		g_autoptr(SoupURI) uri = NULL;
+		g_autoptr(GUri) uri = NULL;
 
-		uri = soup_uri_new (tmp);
-		if (uri && soup_uri_get_host (uri) != NULL && *soup_uri_get_host (uri) != '\0') {
-			gtk_label_set_label (GTK_LABEL (priv->hostname_label), soup_uri_get_host (uri));
+		uri = g_uri_parse (tmp, SOUP_HTTP_URI_FLAGS, NULL);
+		if (uri && g_uri_get_host (uri) != NULL && *g_uri_get_host (uri) != '\0') {
+			gtk_label_set_label (GTK_LABEL (priv->hostname_label), g_uri_get_host (uri));
 			gtk_widget_set_visible (priv->hostname_label, TRUE);
 		}
 	}

@@ -475,24 +475,113 @@ gs_odrs_provider_parse_success (const gchar  *data,
 	return TRUE;
 }
 
+#if SOUP_CHECK_VERSION(3, 0, 0)
+typedef struct {
+	GInputStream *input_stream;
+	gssize length;
+	goffset read_from;
+} MessageData;
+
+static MessageData *
+message_data_new (GInputStream *input_stream,
+		  gssize length)
+{
+	MessageData *md;
+
+	md = g_slice_new0 (MessageData);
+	md->input_stream = g_object_ref (input_stream);
+	md->length = length;
+
+	if (G_IS_SEEKABLE (input_stream))
+		md->read_from = g_seekable_tell (G_SEEKABLE (input_stream));
+
+	return md;
+}
+
+static void
+message_data_free (gpointer ptr,
+		   GClosure *closure)
+{
+	MessageData *md = ptr;
+
+	if (md) {
+		g_object_unref (md->input_stream);
+		g_slice_free (MessageData, md);
+	}
+}
+
+static void
+g_odrs_provider_message_restarted_cb (SoupMessage *message,
+				      gpointer user_data)
+{
+	MessageData *md = user_data;
+
+	if (G_IS_SEEKABLE (md->input_stream) && md->read_from != g_seekable_tell (G_SEEKABLE (md->input_stream)))
+		g_seekable_seek (G_SEEKABLE (md->input_stream), md->read_from, G_SEEK_SET, NULL, NULL);
+
+	soup_message_set_request_body (message, NULL, md->input_stream, md->length);
+}
+
+static void
+g_odrs_provider_set_message_request_body (SoupMessage *message,
+					  const gchar *content_type,
+					  gconstpointer data,
+					  gsize length)
+{
+	MessageData *md;
+	GInputStream *input_stream;
+
+	g_return_if_fail (SOUP_IS_MESSAGE (message));
+	g_return_if_fail (data != NULL);
+
+	input_stream = g_memory_input_stream_new_from_data (data, length, NULL);
+	md = message_data_new (input_stream, length);
+
+	g_signal_connect_data (message, "restarted",
+		G_CALLBACK (g_odrs_provider_message_restarted_cb), md, message_data_free, 0);
+
+	soup_message_set_request_body (message, content_type, input_stream, length);
+
+	g_object_unref (input_stream);
+}
+#endif
+
 static gboolean
 gs_odrs_provider_json_post (SoupSession  *session,
                             const gchar  *uri,
                             const gchar  *data,
+			    GCancellable *cancellable,
                             GError      **error)
 {
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
-
+	gconstpointer downloaded_data;
+	gsize downloaded_data_length;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GBytes) bytes = NULL;
+#endif
 	/* create the GET data */
 	g_debug ("Sending ODRS request to %s: %s", uri, data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
+						  data, strlen (data));
+	bytes = soup_session_send_and_read (session, msg, cancellable, error);
+	if (bytes == NULL)
+		return FALSE;
+
+	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	status_code = soup_message_get_status (msg);
+#else
 	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
 	status_code = soup_session_send_message (session, msg);
-	g_debug ("ODRS server returned status %u: %s", status_code, msg->response_body->data);
+	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
+	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+#endif
+	g_debug ("ODRS server returned status %u: %.*s", status_code, (gint) downloaded_data_length, (const gchar *) downloaded_data);
 	if (status_code != SOUP_STATUS_OK) {
 		g_warning ("Failed to set rating on ODRS: %s",
 			   soup_status_get_phrase (status_code));
@@ -504,9 +593,7 @@ gs_odrs_provider_json_post (SoupSession  *session,
 	}
 
 	/* process returned JSON */
-	return gs_odrs_provider_parse_success (msg->response_body->data,
-					       msg->response_body->length,
-					       error);
+	return gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error);
 }
 
 static GPtrArray *
@@ -654,11 +741,14 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 static GPtrArray *
 gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
                                 GsApp           *app,
+				GCancellable	*cancellable,
                                 GError         **error)
 {
 	JsonNode *json_compat_ids;
 	const gchar *version;
 	guint status_code;
+	gconstpointer downloaded_data;
+	gsize downloaded_data_length;
 	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *data = NULL;
@@ -669,6 +759,9 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	g_autoptr(JsonGenerator) json_generator = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GBytes) bytes = NULL;
+#endif
 
 	/* look in the cache */
 	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
@@ -734,13 +827,24 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	g_debug ("Updating ODRS cache for %s from %s to %s; request %s", gs_app_get_id (app),
 		 uri, cachefn, data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
+						  data, strlen (data));
+	bytes = soup_session_send_and_read (self->session, msg, cancellable, error);
+	if (bytes == NULL)
+		return NULL;
+
+	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	status_code = soup_message_get_status (msg);
+#else
 	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
 	status_code = soup_session_send_message (self->session, msg);
+	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
+	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+#endif
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (msg->response_body->data,
-						     msg->response_body->length,
-						     error))
+		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error))
 			return NULL;
 		/* not sure what to do here */
 		g_set_error_literal (error,
@@ -750,18 +854,12 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return NULL;
 	}
-	reviews = gs_odrs_provider_parse_reviews (self,
-						  msg->response_body->data,
-						  msg->response_body->length,
-						  error);
+	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, error);
 	if (reviews == NULL)
 		return NULL;
 
 	/* save to the cache */
-	if (!g_file_set_contents (cachefn,
-				  msg->response_body->data,
-				  msg->response_body->length,
-				  error))
+	if (!g_file_set_contents (cachefn, downloaded_data, downloaded_data_length, error))
 		return NULL;
 
 	/* success */
@@ -778,7 +876,7 @@ gs_odrs_provider_refine_reviews (GsOdrsProvider  *self,
 	g_autoptr(GPtrArray) reviews = NULL;
 
 	/* get from server */
-	reviews = gs_odrs_provider_fetch_for_app (self, app, error);
+	reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
 	if (reviews == NULL)
 		return FALSE;
 	for (guint i = 0; i < reviews->len; i++) {
@@ -893,6 +991,7 @@ static gboolean
 gs_odrs_provider_vote (GsOdrsProvider  *self,
                        AsReview        *review,
                        const gchar     *uri,
+		       GCancellable    *cancellable,
                        GError         **error)
 {
 	const gchar *tmp;
@@ -936,7 +1035,7 @@ gs_odrs_provider_vote (GsOdrsProvider  *self,
 		return FALSE;
 
 	/* send to server */
-	if (!gs_odrs_provider_json_post (self->session, uri, data, error))
+	if (!gs_odrs_provider_json_post (self->session, uri, data, cancellable, error))
 		return FALSE;
 
 	/* mark as voted */
@@ -1404,7 +1503,7 @@ gs_odrs_provider_submit_review (GsOdrsProvider  *self,
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", self->review_server);
-	if (!gs_odrs_provider_json_post (self->session, uri, data, error))
+	if (!gs_odrs_provider_json_post (self->session, uri, data, cancellable, error))
 		return FALSE;
 
 	/* modify the local app */
@@ -1436,7 +1535,7 @@ gs_odrs_provider_report_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/report", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
 }
 
 /**
@@ -1461,7 +1560,7 @@ gs_odrs_provider_upvote_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/upvote", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
 }
 
 /**
@@ -1486,7 +1585,7 @@ gs_odrs_provider_downvote_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/downvote", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
 }
 
 /**
@@ -1511,7 +1610,7 @@ gs_odrs_provider_dismiss_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/dismiss", self->review_server);
-	return gs_odrs_provider_vote (self, review, uri, error);
+	return gs_odrs_provider_vote (self, review, uri, cancellable, error);
 }
 
 /**
@@ -1536,7 +1635,7 @@ gs_odrs_provider_remove_review (GsOdrsProvider  *self,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", self->review_server);
-	if (!gs_odrs_provider_vote (self, review, uri, error))
+	if (!gs_odrs_provider_vote (self, review, uri, cancellable, error))
 		return FALSE;
 
 	/* update the local app */
@@ -1565,10 +1664,15 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 {
 	guint status_code;
 	guint i;
+	gconstpointer downloaded_data;
+	gsize downloaded_data_length;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GBytes) bytes = NULL;
+#endif
 
 	/* create the GET data *with* the machine hash so we can later
 	 * review the application ourselves */
@@ -1577,11 +1681,20 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 			       self->user_hash,
 			       setlocale (LC_MESSAGES, NULL));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	bytes = soup_session_send_and_read (self->session, msg, cancellable, error);
+	if (bytes == NULL)
+		return FALSE;
+
+	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	status_code = soup_message_get_status (msg);
+#else
 	status_code = soup_session_send_message (self->session, msg);
+	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
+	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+#endif
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (msg->response_body->data,
-						     msg->response_body->length,
-						     error))
+		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error))
 			return FALSE;
 		/* not sure what to do here */
 		g_set_error_literal (error,
@@ -1591,11 +1704,8 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;
 	}
-	g_debug ("odrs returned: %s", msg->response_body->data);
-	reviews = gs_odrs_provider_parse_reviews (self,
-						  msg->response_body->data,
-						  msg->response_body->length,
-						  error);
+	g_debug ("odrs returned: %.*s", (gint) downloaded_data_length, (const gchar *) downloaded_data);
+	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, error);
 	if (reviews == NULL)
 		return FALSE;
 

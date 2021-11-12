@@ -102,7 +102,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 		g_autoptr(SoupSession) soup_session = NULL;
 
 		/* load screenshot */
-		soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+		soup_session = soup_session_new_with_options ("user-agent",
 							      gs_user_agent (), NULL);
 		ssimg = gs_screenshot_image_new (soup_session);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
@@ -373,7 +373,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	gtk_widget_set_sensitive (helper->button_install, FALSE);
 
 	/* load screenshot */
-	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	soup_session = soup_session_new_with_options ("user-agent",
 						      gs_user_agent (), NULL);
 	ssimg = gs_screenshot_image_new (soup_session);
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);

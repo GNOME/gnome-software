@@ -2977,9 +2977,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     (GDestroyNotify) g_object_unref);
 
 	/* share a soup session (also disable the double-compression) */
-	plugin_loader->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-							    SOUP_SESSION_TIMEOUT, 10,
-							    NULL);
+	plugin_loader->soup_session = soup_session_new_with_options ("user-agent", gs_user_agent (),
+								     "timeout", 10,
+								     NULL);
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();

@@ -69,16 +69,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* use libsoup to convert a URL */
 	home_url = gs_os_release_get_home_url (os_release);
 	if (home_url != NULL) {
-		g_autoptr(SoupURI) uri = NULL;
+		g_autoptr(GUri) uri = NULL;
 
 		/* homepage */
 		gs_app_set_url (self->app_system, AS_URL_KIND_HOMEPAGE, home_url);
 
 		/* Build ID from the reverse-DNS URL and the ID and version. */
-		uri = soup_uri_new (home_url);
+		uri = g_uri_parse (home_url, SOUP_HTTP_URI_FLAGS, NULL);
 		if (uri != NULL) {
 			g_auto(GStrv) split = NULL;
-			const gchar *home_host = soup_uri_get_host (uri);
+			const gchar *home_host = g_uri_get_host (uri);
 			split = g_strsplit_set (home_host, ".", -1);
 			if (g_strv_length (split) >= 2) {
 				g_autofree gchar *id = NULL;

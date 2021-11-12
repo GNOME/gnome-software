@@ -241,8 +241,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autofree gchar *user_agent = NULL;
 	/* use a custom user agent to provide the fwupd version */
 	user_agent = fwupd_build_user_agent (PACKAGE_NAME, PACKAGE_VERSION);
-	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, user_agent,
-						      SOUP_SESSION_TIMEOUT, 10,
+	soup_session = soup_session_new_with_options ("user-agent", user_agent,
+						      "timeout", 10,
 						      NULL);
 	soup_session_remove_feature_by_type (soup_session, SOUP_TYPE_CONTENT_DECODER);
 #endif
