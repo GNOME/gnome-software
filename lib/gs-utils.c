@@ -1490,12 +1490,14 @@ gs_utils_get_file_size (const gchar *filename,
 
 					if (g_stat (full_path, &st) == 0 && (include_func == NULL ||
 					    include_func (full_path + base_len,
-							  S_ISLNK (st.st_mode) ? G_FILE_TEST_IS_SYMLINK :
+							  g_file_test (full_path, G_FILE_TEST_IS_SYMLINK) ? G_FILE_TEST_IS_SYMLINK :
 							  S_ISDIR (st.st_mode) ? G_FILE_TEST_IS_DIR :
 							  G_FILE_TEST_IS_REGULAR,
 							  user_data))) {
 						if (S_ISDIR (st.st_mode)) {
-							dirs_to_do = g_slist_prepend (dirs_to_do, g_steal_pointer (&full_path));
+							/* Skip symlinks, they can point to a shared storage */
+							if (!g_file_test (full_path, G_FILE_TEST_IS_SYMLINK))
+								dirs_to_do = g_slist_prepend (dirs_to_do, g_steal_pointer (&full_path));
 						} else {
 							size += st.st_size;
 						}
