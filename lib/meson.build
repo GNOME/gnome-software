@@ -7,7 +7,6 @@ libgnomesoftware_public_headers = [
   'gs-app-collation.h',
   'gs-app-list.h',
   'gs-appstream.h',
-  'gs-autocleanups.h',
   'gs-category.h',
   'gs-category-manager.h',
   'gs-desktop-data.h',

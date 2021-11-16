@@ -32,9 +32,7 @@ gs_test_init (gint *pargc,
 	g_settings_set_string (settings, "review-server", "");
 
 	g_test_init (pargc, pargv,
-#if GLIB_CHECK_VERSION(2, 60, 0)
 		     G_TEST_OPTION_ISOLATE_DIRS,
-#endif
 		     NULL);
 
 	/* only critical and error are fatal */

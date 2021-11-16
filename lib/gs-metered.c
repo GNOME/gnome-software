@@ -119,7 +119,7 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 	g_autoptr(MwscScheduleEntry) schedule_entry = NULL;
 	g_autofree gchar *parameters_str = NULL;
 	g_autoptr(GMainContext) context = NULL;
-	g_autoptr(GsMainContextPusher) pusher = NULL;
+	g_autoptr(GMainContextPusher) pusher = NULL;
 
 	g_return_val_if_fail (schedule_entry_handle_out != NULL, FALSE);
 
@@ -131,7 +131,7 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 
 	/* Push the context early so that the #MwscScheduler is created to run within it. */
 	context = g_main_context_new ();
-	pusher = gs_main_context_pusher_new (context);
+	pusher = g_main_context_pusher_new (context);
 
 	/* Wait until the download can be scheduled.
 	 * FIXME: In future, downloads could be split up by app, so they can all

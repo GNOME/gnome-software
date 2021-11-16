@@ -60,21 +60,4 @@ gboolean	gs_utils_split_time_difference	(gint64 unix_time_seconds,
 						 gint *out_months_ago,
 						 gint *out_years_ago);
 
-#if !GLIB_CHECK_VERSION(2, 62, 0)
-
-#define  g_clear_signal_handler(handler_id_ptr, instance)           \
-  G_STMT_START {                                                    \
-    gpointer const _instance      = (instance);                     \
-    gulong *const _handler_id_ptr = (handler_id_ptr);               \
-    const gulong _handler_id      = *_handler_id_ptr;               \
-                                                                    \
-    if (_handler_id > 0)                                            \
-      {                                                             \
-        *_handler_id_ptr = 0;                                       \
-        g_signal_handler_disconnect (_instance, _handler_id);       \
-      }                                                             \
-  } G_STMT_END                                                      \
-
-#endif
-
 G_END_DECLS
