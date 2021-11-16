@@ -86,7 +86,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update) {
-		tmp = gs_app_get_update_details (priv->app);
+		tmp = gs_app_get_update_details_markup (priv->app);
 		if (tmp != NULL && tmp[0] != '\0')
 			return g_string_new (tmp);
 	}

@@ -270,7 +270,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Do not crash when using libvirt.");
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, "Do not crash when using libvirt.");
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_HIGH);
 
 	/* get the virtual non-apps OS update */

@@ -91,7 +91,7 @@ typedef struct
 	gchar			*origin_hostname;
 	gchar			*update_version;
 	gchar			*update_version_ui;
-	gchar			*update_details;
+	gchar			*update_details_markup;
 	AsUrgencyKind		 update_urgency;
 	GsAppPermissions         update_permissions;
 	gchar			*management_plugin;
@@ -573,8 +573,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "update-version", priv->update_version);
 	if (priv->update_version_ui != NULL)
 		gs_app_kv_lpad (str, "update-version-ui", priv->update_version_ui);
-	if (priv->update_details != NULL)
-		gs_app_kv_lpad (str, "update-details", priv->update_details);
+	if (priv->update_details_markup != NULL)
+		gs_app_kv_lpad (str, "update-details-markup", priv->update_details_markup);
 	if (priv->update_urgency != AS_URGENCY_KIND_UNKNOWN) {
 		gs_app_kv_printf (str, "update-urgency", "%u",
 				  priv->update_urgency);
@@ -3101,40 +3101,72 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 }
 
 /**
- * gs_app_get_update_details:
+ * gs_app_get_update_details_markup:
  * @app: a #GsApp
  *
- * Gets the multi-line description for the update.
+ * Gets the multi-line description for the update as a Pango markup.
  *
  * Returns: a string, or %NULL for unset
  *
- * Since: 3.22
+ * Since: 42.0
  **/
 const gchar *
-gs_app_get_update_details (GsApp *app)
+gs_app_get_update_details_markup (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->update_details;
+	return priv->update_details_markup;
 }
 
 /**
- * gs_app_set_update_details:
+ * gs_app_set_update_details_markup:
  * @app: a #GsApp
- * @update_details: a string
+ * @markup: a Pango markup
  *
- * Sets the multi-line description for the update.
+ * Sets the multi-line description for the update as markup.
  *
- * Since: 3.22
+ * See: gs_app_set_update_details_text()
+ *
+ * Since: 42.0
  **/
 void
-gs_app_set_update_details (GsApp *app, const gchar *update_details)
+gs_app_set_update_details_markup (GsApp *app,
+				  const gchar *markup)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_str (&priv->update_details, update_details);
+	_g_set_str (&priv->update_details_markup, markup);
+}
+
+/**
+ * gs_app_set_update_details_text:
+ * @app: a #GsApp
+ * @text: a text without Pango markup
+ *
+ * Sets the multi-line description for the update as text,
+ * escaping the @text to be safe for a Pango markup.
+ *
+ * See: gs_app_set_update_details_markup()
+ *
+ * Since: 42.0
+ **/
+void
+gs_app_set_update_details_text (GsApp *app,
+				const gchar *text)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (text == NULL) {
+		_g_set_str (&priv->update_details_markup, NULL);
+	} else {
+		gchar *markup = g_markup_escape_text (text, -1);
+		g_free (priv->update_details_markup);
+		priv->update_details_markup = markup;
+	}
 }
 
 /**
@@ -5097,7 +5129,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->description);
 	g_free (priv->update_version);
 	g_free (priv->update_version_ui);
-	g_free (priv->update_details);
+	g_free (priv->update_details_markup);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->categories);

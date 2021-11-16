@@ -367,7 +367,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	app = gs_app_new ("chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
-	gs_app_set_update_details (app, "Do not crash when using libvirt.");
+	gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
 	gs_app_add_icon (app, ic);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
@@ -380,7 +380,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Development files for libvirt");
-	gs_app_set_update_details (app, "Fix several memory leaks.");
+	gs_app_set_update_details_text (app, "Fix several memory leaks.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -396,7 +396,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "chiron-libs");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "library for chiron");
-	gs_app_set_update_details (app, "Do not crash when using libvirt.");
+	gs_app_set_update_details_text (app, "Do not crash when using libvirt.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -412,7 +412,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	proxy = gs_app_new ("proxy.desktop");
 	gs_app_set_name (proxy, GS_APP_QUALITY_NORMAL, "Proxy");
 	gs_app_set_summary (proxy, GS_APP_QUALITY_NORMAL, "A proxy app");
-	gs_app_set_update_details (proxy, "Update all related apps.");
+	gs_app_set_update_details_text (proxy, "Update all related apps.");
 	gs_app_set_update_urgency (proxy, AS_URGENCY_KIND_HIGH);
 	gs_app_add_icon (proxy, ic);
 	gs_app_set_kind (proxy, AS_COMPONENT_KIND_DESKTOP_APP);

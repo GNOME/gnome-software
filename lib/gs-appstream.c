@@ -591,7 +591,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 		g_autofree gchar *desc = NULL;
 		n = xb_node_query_first (release, "description", NULL);
 		desc = gs_appstream_format_description (n, NULL);
-		gs_app_set_update_details (app, desc);
+		gs_app_set_update_details_markup (app, desc);
 
 	/* get the descriptions with a version prefix */
 	} else if (updates_list->len > 1) {
@@ -619,7 +619,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 		if (update_desc->len > 2)
 			g_string_truncate (update_desc, update_desc->len - 2);
 		if (update_desc->len > 0)
-			gs_app_set_update_details (app, update_desc->str);
+			gs_app_set_update_details_markup (app, update_desc->str);
 	}
 
 	/* if there is no already set update version use the newest */

@@ -151,7 +151,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
 
 	/* set update header */
-	update_details = gs_app_get_update_details (app);
+	update_details = gs_app_get_update_details_markup (app);
 	if (update_details == NULL) {
 		/* TRANSLATORS: this is where the packager did not write
 		 * a description for the update */

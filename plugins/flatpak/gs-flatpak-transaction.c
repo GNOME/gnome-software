@@ -630,7 +630,7 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UPDATE:
 		gs_app_set_version (app, gs_app_get_update_version (app));
-		gs_app_set_update_details (app, NULL);
+		gs_app_set_update_details_markup (app, NULL);
 		gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
 		gs_app_set_update_version (app, NULL);
 		/* force getting the new runtime */

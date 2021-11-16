@@ -351,9 +351,13 @@ const gchar	*gs_app_get_update_version	(GsApp		*app);
 const gchar	*gs_app_get_update_version_ui	(GsApp		*app);
 void		 gs_app_set_update_version	(GsApp		*app,
 						 const gchar	*update_version);
-const gchar	*gs_app_get_update_details	(GsApp		*app);
-void		 gs_app_set_update_details	(GsApp		*app,
-						 const gchar	*update_details);
+const gchar	*gs_app_get_update_details_markup
+						(GsApp		*app);
+void		 gs_app_set_update_details_markup
+						(GsApp		*app,
+						 const gchar	*markup);
+void		 gs_app_set_update_details_text	(GsApp		*app,
+						 const gchar	*text);
 AsUrgencyKind	 gs_app_get_update_urgency	(GsApp		*app);
 void		 gs_app_set_update_urgency	(GsApp		*app,
 						 AsUrgencyKind	 update_urgency);

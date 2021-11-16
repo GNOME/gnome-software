@@ -1105,7 +1105,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPluginPackagekit  *self,
 			tmp = pk_update_detail_get_update_text (update_detail);
 			desc = gs_plugin_packagekit_fixup_update_description (tmp);
 			if (desc != NULL)
-				gs_app_set_update_details (app, desc);
+				gs_app_set_update_details_markup (app, desc);
 			break;
 		}
 	}
@@ -1335,7 +1335,7 @@ static gboolean
 gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
 {
 	const gchar *tmp;
-	tmp = gs_app_get_update_details (app);
+	tmp = gs_app_get_update_details_markup (app);
 	if (tmp != NULL)
 		return FALSE;
 	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0;
