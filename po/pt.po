@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-11-01 15:11+0000\n"
-"PO-Revision-Date: 2021-11-06 16:54+0000\n"
+"POT-Creation-Date: 2021-11-16 21:55+0000\n"
+"PO-Revision-Date: 2021-11-17 12:17+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -610,7 +610,7 @@ msgstr "Classificação Etária"
 msgid "How to add missing information"
 msgstr "Como adicionar informação em falta"
 
-#: lib/gs-app.c:5645
+#: lib/gs-app.c:5647
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -619,12 +619,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5661 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5663 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5737
+#: lib/gs-app.c:5739
 msgid "Package"
 msgstr "Pacote"
 
@@ -632,24 +632,24 @@ msgstr "Pacote"
 msgid "Pending"
 msgstr "Pendente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:382
 msgid "Pending install"
 msgstr "Instalação pendente"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:387
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:389
 msgid "Pending remove"
 msgstr "Remoção pendente"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:158 src/gs-app-tile.ui:51
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:154 src/gs-app-tile.ui:50
 #: src/gs-feature-tile.c:378 src/gs-installed-page.c:714 src/gs-shell.ui:297
 msgid "Installed"
 msgstr "Instalado"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:375
 msgid "Installing"
 msgstr "A instalar"
 
@@ -661,81 +661,81 @@ msgstr "A remover"
 msgid "_Uninstall"
 msgstr "_Desinstalar"
 
-#: src/gs-app-details-page.c:67
+#: src/gs-app-details-page.c:68
 msgid "Network"
 msgstr "Rede"
 
-#: src/gs-app-details-page.c:67
+#: src/gs-app-details-page.c:68
 msgid "Can communicate over the network"
 msgstr "Pode comunicar através da rede"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:69
 msgid "System Services"
 msgstr "Serviços do Sistema"
 
-#: src/gs-app-details-page.c:68
+#: src/gs-app-details-page.c:69
 msgid "Can access D-Bus services on the system bus"
 msgstr "Pode aceder a serviços D-Bus através do barramento do sistema"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:70
 msgid "Session Services"
 msgstr "Serviços da Sessão"
 
-#: src/gs-app-details-page.c:69
+#: src/gs-app-details-page.c:70
 msgid "Can access D-Bus services on the session bus"
 msgstr "Pode aceder a serviços D-Bus através do barramento da sessão"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:71
 msgid "Devices"
 msgstr "Dispositivos"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:71
 msgid "Can access system device files"
 msgstr "Pode aceder diretamente aos dispositivos do sistema"
 
-#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
 msgid "Home folder"
 msgstr "Pasta pessoal"
 
-#: src/gs-app-details-page.c:71 src/gs-app-details-page.c:73
-#: src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:76
 msgid "Can view, edit and create files"
 msgstr "Pode ver, editar, e criar ficheiros"
 
-#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:77
 msgid "Can view files"
 msgstr "Pode ver ficheiros"
 
-#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "File system"
 msgstr "Sistema de ficheiros"
 
-#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:76
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
 msgid "Downloads folder"
 msgstr "Pasta das transferências"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Settings"
 msgstr "Definições"
 
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:78
 msgid "Can view and change any settings"
 msgstr "Pode ver e modificar quaisquer definições"
 
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:79
 msgid "Legacy display system"
 msgstr "Sistema de visualização antigo"
 
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:79
 msgid "Uses an old, insecure display system"
 msgstr "Usa um sistema de visualização antigo e inseguro"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Sandbox escape"
 msgstr "Evasão da sandbox"
 
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:80
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Pode sair da sandbox e evitar quaisquer outras restrições à execução"
 
@@ -745,14 +745,14 @@ msgstr "Pode sair da sandbox e evitar quaisquer outras restrições à execuçã
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
+#: src/gs-app-details-page.c:139
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:155
+#: src/gs-app-details-page.c:158
 msgid "No update description available."
 msgstr "Nenhuma descrição de atualização foi fornecida."
 
@@ -789,89 +789,89 @@ msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:132
+#: src/gs-application.c:130
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicialização: pode ser \"updates\" (para atualizações), \"updated"
 "\" (para atualizados), \"installed\" (para instalados) ou \"overview\" (para "
 "visão geral)"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:130
 msgid "MODE"
 msgstr "MODO"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:132
 msgid "Search for applications"
 msgstr "Procurar aplicações"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:132
 msgid "SEARCH"
 msgstr "PROCURA"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:134
 msgid "Show application details (using application ID)"
 msgstr "Mostrar detalhes da aplicação (utilizando o ID da aplicação)"
 
-#: src/gs-application.c:136 src/gs-application.c:140
+#: src/gs-application.c:134 src/gs-application.c:138
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:136
 msgid "Show application details (using package name)"
 msgstr "Mostrar detalhes da aplicação (utilizando o nome do pacote)"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:136
 msgid "PKGNAME"
 msgstr "NOMEPACOTE"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:138
 msgid "Install the application (using application ID)"
 msgstr "Instalar aplicação (utilizando o seu ID)"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:140
 msgid "Open a local package file"
 msgstr "Abrir um ficheiro de pacote local"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:140
 msgid "FILENAME"
 msgstr "NOMEFICHEIRO"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:142
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
 "O tipo de interação esperada para esta ação: 'none', 'notify', ou 'full'"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:145
 msgid "Show verbose debugging information"
 msgstr "Mostrar informação de depuração verbosa"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "Instala qualquer atualização pendente em segundo plano"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:149
 msgid "Show update preferences"
 msgstr "Mostrar definições de atualização"
 
-#: src/gs-application.c:153
+#: src/gs-application.c:151
 msgid "Quit the running instance"
 msgstr "Sair da instância atual"
 
-#: src/gs-application.c:155
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferir ficheiros locais de origens à AppStream"
 
-#: src/gs-application.c:157
+#: src/gs-application.c:155
 msgid "Show version number"
 msgstr "Mostrar número da versão"
 
-#: src/gs-application.c:351
+#: src/gs-application.c:324
 msgid "Copyright © 2016–2021 GNOME Software contributors"
 msgstr "Direitos de autor © 2016-2021 Colaboradores do Software GNOME"
 
-#: src/gs-application.c:354
+#: src/gs-application.c:327
 msgid "translator-credits"
 msgstr ""
 "Tiago Santos <tiagofsantos81@sapo.pt>\n"
@@ -882,17 +882,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:367 src/gs-shell.c:2145
+#: src/gs-application.c:340 src/gs-shell.c:2152
 msgid "About Software"
 msgstr "Sobre o Aplicações"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:370
+#: src/gs-application.c:343
 msgid "A nice way to manage the software on your system."
 msgstr "Um modo agradável de gerir as aplicações no sistema."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:555
+#: src/gs-application.c:528
 msgid "Sorry! There are no details for that application."
 msgstr "Ups! Não foram encontrados detalhes sobre a aplicação."
 
@@ -1969,37 +1969,37 @@ msgstr "Mostrar mai_s"
 msgid "_Show Less"
 msgstr "Mostrar menos"
 
-#: src/gs-details-page.c:368
+#: src/gs-details-page.c:370
 msgid "Removing…"
 msgstr "A remover…"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:380
 msgid "Requires restart to finish install"
 msgstr "É necessário reiniciar para terminar a instalação"
 
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:387
 msgid "Requires restart to finish remove"
 msgstr "É necessário reiniciar para terminar a remoção"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:404
 msgid "Pending installation…"
 msgstr "Instalação pendente…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:409
+#: src/gs-details-page.c:411
 msgid "Pending update…"
 msgstr "Atualização pendente…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:425
+#: src/gs-details-page.c:427
 msgid "Preparing…"
 msgstr "A preparar…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:428
+#: src/gs-details-page.c:430
 msgid "Uninstalling…"
 msgstr "A desinstalar…"
 
@@ -2007,12 +2007,12 @@ msgstr "A desinstalar…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:832 src/gs-details-page.c:858
+#: src/gs-details-page.c:850 src/gs-details-page.c:876
 #: src/gs-details-page.ui:218
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:848
+#: src/gs-details-page.c:866
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -2020,23 +2020,23 @@ msgstr "_Reiniciar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:872
+#: src/gs-details-page.c:890
 msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1404
+#: src/gs-details-page.c:1424
 msgid "You need internet access to write a review"
 msgstr "É necessário conexão à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1550 src/gs-details-page.c:1566
+#: src/gs-details-page.c:1569 src/gs-details-page.c:1585
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossível encontrar «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2132
+#: src/gs-details-page.c:2148
 msgid "Loading…"
 msgstr "A carregar…"
 
@@ -2376,11 +2376,9 @@ msgid ""
 msgid_plural ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] ""
-"Incapaz de encontrar o %s solicitado por %s. Por favor, veja %s para mais "
-"informações."
+"Incapaz de encontrar o %s solicitado por %s. Veja %s para mais informações."
 msgstr[1] ""
-"Incapaz de encontrar os %s solicitado por %s. Por favor, veja %s para mais "
-"informações."
+"Incapaz de encontrar os %s solicitado por %s. Veja %s para mais informações."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
 #: src/gs-extras-page.c:499
@@ -2392,11 +2390,11 @@ msgid_plural ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
 msgstr[0] ""
-"Infelizmente o %s que procura não foi encontrado. Por favor, veja %s para "
-"mais informação."
+"Infelizmente o %s que procura não foi encontrado. Veja %s para mais "
+"informação."
 msgstr[1] ""
-"Infelizmente o %s que procura não foram encontrados. Por favor, veja %s para "
-"mais informação."
+"Infelizmente o %s que procura não foram encontrados. Veja %s para mais "
+"informação."
 
 #: src/gs-extras-page.c:576 src/gs-extras-page.c:632 src/gs-extras-page.c:671
 #, c-format
@@ -2416,15 +2414,15 @@ msgstr "Impossível encontrar o software solicitado"
 msgid "Codecs page"
 msgstr "Página de codecs"
 
-#: src/gs-featured-carousel.ui:39
+#: src/gs-featured-carousel.ui:42
 msgid "Previous"
 msgstr "Anterior"
 
-#: src/gs-featured-carousel.ui:62
+#: src/gs-featured-carousel.ui:65
 msgid "Next"
 msgstr "Próximo"
 
-#: src/gs-featured-carousel.ui:79
+#: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "Lista de aplicações em destaque"
 
@@ -2432,11 +2430,11 @@ msgstr "Lista de aplicações em destaque"
 msgid "Welcome"
 msgstr "Bem-vindo"
 
-#: src/gs-first-run-dialog.ui:21
+#: src/gs-first-run-dialog.ui:18
 msgid "Welcome to Software"
 msgstr "Bem-vindo ao Aplicações"
 
-#: src/gs-first-run-dialog.ui:22
+#: src/gs-first-run-dialog.ui:19
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2446,7 +2444,7 @@ msgstr ""
 "local. Veja as nossas recomendações, navegue pelas categorias ou procure as "
 "aplicações que quiser."
 
-#: src/gs-first-run-dialog.ui:28
+#: src/gs-first-run-dialog.ui:25
 msgid "_Browse Software"
 msgstr "_Procurar aplicações"
 
@@ -3052,7 +3050,7 @@ msgid "These repositories supplement the default software provided by %s."
 msgstr "Estas fontes de aplicações suplementam as fontes predefinidas do %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:87 src/gs-update-dialog.ui:8
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:87
 msgid "Software Repositories"
 msgstr "Fontes de Software"
 
@@ -3150,12 +3148,12 @@ msgstr "Muito boa"
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:118
 msgid "Please take more time writing the review"
-msgstr "Por favor, tire mais tempo para escrever a sua análise"
+msgstr "Demore mais tempo para escrever a sua análise"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:122
 msgid "Please choose a star rating"
-msgstr "Por favor, escolha uma avaliação em estrelas"
+msgstr "Escolha uma avaliação em estrelas"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:126
@@ -3623,29 +3621,37 @@ msgstr "Nenhuma aplicação encontrada"
 #: src/gs-shell.c:1183
 #, c-format
 msgid "“%s”"
-msgstr "«%s»"
+msgstr "“%s”"
+
+#. Translators: The '%s' is replaced with an error message, which had been shortened.
+#. The dots at the end are there to highlight that to the user.
+#: src/gs-shell.c:1200
+#, c-format
+#| msgid "“%s”"
+msgid "%s…"
+msgstr "%s…"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1229
+#: src/gs-shell.c:1236
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Não foi possível descarregar atualizações de firmware de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1235
+#: src/gs-shell.c:1242
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Não foi possível descarregar atualizações de %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1242 src/gs-shell.c:1287
+#: src/gs-shell.c:1249 src/gs-shell.c:1294
 msgid "Unable to download updates"
 msgstr "Não foi possível descarregar atualizações"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1248
+#: src/gs-shell.c:1255
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -3654,28 +3660,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1257
+#: src/gs-shell.c:1264
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Não foi possível descarregar atualizações de %s: sem espaço suficiente"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1262
+#: src/gs-shell.c:1269
 msgid "Unable to download updates: not enough disk space"
 msgstr "Não foi possível descarregar atualizações: sem espaço suficiente"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1269
+#: src/gs-shell.c:1276
 msgid "Unable to download updates: authentication was required"
 msgstr "Não foi possível descarregar atualizações: autenticação necessária"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1274
+#: src/gs-shell.c:1281
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Não foi possível descarregar atualizações: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1279
+#: src/gs-shell.c:1286
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -3683,21 +3689,21 @@ msgstr ""
 "aplicações"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1297
 msgid "Unable to get list of updates"
 msgstr "Não foi possível obter a lista de atualizações"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1332
+#: src/gs-shell.c:1339
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Não foi possível instalar %s porque a transferência de %s falhou"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1338
+#: src/gs-shell.c:1345
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Não foi possível instalar %s porque a transferência falhou"
@@ -3706,74 +3712,74 @@ msgstr "Não foi possível instalar %s porque a transferência falhou"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1351
+#: src/gs-shell.c:1358
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Não foi possível instalar %s porque o runtime %s não está disponível"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Não foi possível instalar %s porque a aplicação não é suportada"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1371
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Não foi possível instalar: acesso à Internet é necessário mas não está "
 "disponível"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1370
+#: src/gs-shell.c:1377
 msgid "Unable to install: the application has an invalid format"
 msgstr "Não foi possível instalar: a aplicação tem um formato inválido"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1375
+#: src/gs-shell.c:1382
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Não foi possível instalar %s: sem espaço em disco"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1382
+#: src/gs-shell.c:1389
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Não foi possível instalar %s: autenticação é necessária"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1389
+#: src/gs-shell.c:1396
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Não foi possível instalar %s: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1396
+#: src/gs-shell.c:1403
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Não foi possível instalar %s: não tem permissão para instalar software"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1404
+#: src/gs-shell.c:1411
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Não foi possível instalar %s: necessària a ligação à corrente elétrica"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1411
+#: src/gs-shell.c:1418
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Não foi possível instalar %s: a bateria não tem carga suficiente"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1420
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to install %s"
 msgstr "Não foi possível instalar %s"
@@ -3782,7 +3788,7 @@ msgstr "Não foi possível instalar %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1466
+#: src/gs-shell.c:1473
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr ""
@@ -3791,7 +3797,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1473
+#: src/gs-shell.c:1480
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Não foi possível atualizar %s porque a transferência falhou"
@@ -3799,7 +3805,7 @@ msgstr "Não foi possível atualizar %s porque a transferência falhou"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1480
+#: src/gs-shell.c:1487
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr ""
@@ -3807,13 +3813,13 @@ msgstr ""
 "transferência falhou"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1484
+#: src/gs-shell.c:1491
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Não foi possível instalar atualizações porque a transferência falhou"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1490
+#: src/gs-shell.c:1497
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Não foi possível atualizar: acesso à Internet é necessário mas não está "
@@ -3821,13 +3827,13 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1500
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Não foi possível atualizar %s: não há espaço suficiente em disco"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1505
+#: src/gs-shell.c:1512
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr ""
@@ -3835,40 +3841,40 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1515
+#: src/gs-shell.c:1522
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Não foi possível atualizar %s: autenticação obrigatória"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1527
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Não foi possível instalar atualizações: autenticação obrigatória"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1529
+#: src/gs-shell.c:1536
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Não foi possível atualizar %s: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1534
+#: src/gs-shell.c:1541
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Não foi possível instalar atualizações: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1543
+#: src/gs-shell.c:1550
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Não foi possível atualizar %s: não tem permissão para atualizar software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1549
+#: src/gs-shell.c:1556
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3878,14 +3884,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1559
+#: src/gs-shell.c:1566
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Não foi possível atualizar %s: necessária ligação à corrente elétrica"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1565
+#: src/gs-shell.c:1572
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr ""
@@ -3894,14 +3900,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1574
+#: src/gs-shell.c:1581
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Não foi possível atualizar %s: a bateria não tem carga suficiente"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1580
+#: src/gs-shell.c:1587
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr ""
@@ -3909,13 +3915,13 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1591
+#: src/gs-shell.c:1598
 #, c-format
 msgid "Unable to update %s"
 msgstr "Não foi possível atualizar %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1594
+#: src/gs-shell.c:1601
 #, c-format
 msgid "Unable to install updates"
 msgstr "Não foi possível instalar atualizações"
@@ -3923,21 +3929,21 @@ msgstr "Não foi possível instalar atualizações"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1636
+#: src/gs-shell.c:1643
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Não foi possível atualizar do %s para o %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1641
+#: src/gs-shell.c:1648
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Não foi possível atualizar para o %s porque a transferência falhou"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1650
+#: src/gs-shell.c:1657
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3945,7 +3951,7 @@ msgstr "Não foi possível atualizar para o %s: a transferência falhou"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1659
+#: src/gs-shell.c:1666
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr ""
@@ -3953,21 +3959,21 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1667
+#: src/gs-shell.c:1674
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Não foi possível atualizar para o %s: autenticação obrigatória"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1674
+#: src/gs-shell.c:1681
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Não foi possível atualizar para o %s: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1681
+#: src/gs-shell.c:1688
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr ""
@@ -3976,7 +3982,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1688
+#: src/gs-shell.c:1695
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr ""
@@ -3984,7 +3990,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1695
+#: src/gs-shell.c:1702
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr ""
@@ -3992,49 +3998,49 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1704
+#: src/gs-shell.c:1711
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Não foi possível atualizar para o %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1741
+#: src/gs-shell.c:1748
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Não foi possível remover %s: autenticação obrigatória"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1747
+#: src/gs-shell.c:1754
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Não foi possível remover %s: autenticação inválida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1753
+#: src/gs-shell.c:1760
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Não foi possível remover %s: não tem permissão para remover software"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1760
+#: src/gs-shell.c:1767
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Não foi possível remover %s: necessária ligação à corrente elétrica"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1767
+#: src/gs-shell.c:1774
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Não foi possível remover %s: a bateria não tem carga suficiente"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1779
+#: src/gs-shell.c:1786
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Não foi possível remover %s"
@@ -4043,64 +4049,64 @@ msgstr "Não foi possível remover %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1821
+#: src/gs-shell.c:1828
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Não foi possível abrir %s: %s não está instalado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1828 src/gs-shell.c:1879 src/gs-shell.c:1920
-#: src/gs-shell.c:1965
+#: src/gs-shell.c:1835 src/gs-shell.c:1886 src/gs-shell.c:1927
+#: src/gs-shell.c:1972
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
-"Não há espaço suficiente em disco. Por favor, liberte algum e tente de novo"
+"Não há espaço suficiente em disco. Liberte algum espaço e tente novamente"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1839 src/gs-shell.c:1890 src/gs-shell.c:1931
-#: src/gs-shell.c:1989
+#: src/gs-shell.c:1846 src/gs-shell.c:1897 src/gs-shell.c:1938
+#: src/gs-shell.c:1996
 msgid "Sorry, something went wrong"
 msgstr "Desculpe, alguma coisa correu mal"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1871
+#: src/gs-shell.c:1878
 msgid "Failed to install file: not supported"
 msgstr "Falha ao instalar o ficheiro: não é suportado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1875
+#: src/gs-shell.c:1882
 msgid "Failed to install file: authentication failed"
 msgstr "Falha ao instalar o ficheiro: a autenticação falhou"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1912
+#: src/gs-shell.c:1919
 msgid "Failed to install: not supported"
 msgstr "Falha ao instalar: não suportado"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1916
+#: src/gs-shell.c:1923
 msgid "Failed to install: authentication failed"
 msgstr "Falha ao instalar: a autenticação falhou"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1959
+#: src/gs-shell.c:1966
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Não foi possível ligar-se a %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1971
+#: src/gs-shell.c:1978
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Aplicações precisa de ser reiniciada para usar os novos plugins."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1976
+#: src/gs-shell.c:1983
 msgid "AC power is required"
 msgstr "Necessária ligação à corrente elétrica"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1980
+#: src/gs-shell.c:1987
 msgid "The battery level is too low"
 msgstr "A bateria não tem carga suficiente"
 
@@ -4227,13 +4233,13 @@ msgstr "%s (A remover)"
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:118
+#: src/gs-update-dialog.c:127
 #, c-format
 msgid "Installed on %s"
 msgstr "Instalada em %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:137
+#: src/gs-update-dialog.c:146
 msgid "Installed Updates"
 msgstr "Atualizações instaladas"
 
@@ -4306,7 +4312,7 @@ msgstr "%s foi atualizada."
 #. TRANSLATORS: the app needs restarting
 #: src/gs-update-monitor.c:362
 msgid "Please restart the application."
-msgstr "Por favor reinicie a aplicação."
+msgstr "Reinicie a aplicação."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
 #: src/gs-update-monitor.c:370
@@ -4329,7 +4335,7 @@ msgid "Includes %s, %s and %s."
 msgstr "Inclui %s, %s e %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:654 src/gs-updates-page.ui:36
+#: src/gs-update-monitor.c:654 src/gs-updates-page.ui:19
 msgid "Operating System Updates Unavailable"
 msgstr "Atualizações do sistema operativo disponíveis"
 
@@ -4424,8 +4430,8 @@ msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr ""
-"Foi pedido acesso à Internet mas não estava disponível. Por favor, assegure-"
-"se que tem acesso à Internet e tente novamente."
+"Foi pedido acesso à Internet mas não estava disponível. Assegure-se que tem "
+"acesso à Internet e tente novamente."
 
 #. TRANSLATORS: if the package is not signed correctly
 #: src/gs-update-monitor.c:1236
@@ -4433,16 +4439,15 @@ msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
-"Houve problemas de segurança com a atualização. Por favor, consulte o seu "
-"fornecedor de programas para mais detalhes."
+"Houve problemas de segurança com a atualização. Consulte o seu fornecedor de "
+"programas para mais detalhes."
 
 #. TRANSLATORS: we ran out of disk space
 #: src/gs-update-monitor.c:1242
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
-"Não houve espaço suficiente em disco. Por favor, liberte algum e tente "
-"novamente."
+"Não houve espaço suficiente em disco. Liberte algum espaço e tente novamente."
 
 #. TRANSLATORS: We didn't handle the error type
 #: src/gs-update-monitor.c:1247
@@ -4450,9 +4455,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"Lamentamos: a atualização falhou a instalação. Por favor, espere por outra "
-"atualização e tente novamente. Se o problema persistir, contacte o seu "
-"fornecedor de programas."
+"Lamentamos: a atualização falhou a instalação. Aguarde por outra atualização "
+"e tente novamente. Se o problema persistir, contacte o seu fornecedor de "
+"programas."
 
 #. TRANSLATORS: This is the time when we last checked for updates
 #: src/gs-updates-page.c:251
@@ -4526,51 +4531,51 @@ msgid "Updates page"
 msgstr "Página das atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:87
+#: src/gs-updates-page.ui:81
 msgid "Loading Updates…"
 msgstr "A carregar atualizações…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:100
+#: src/gs-updates-page.ui:94
 msgid "This could take a while."
 msgstr "Isto pode levar algum tempo."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:208
+#: src/gs-updates-page.ui:202
 msgid "Up to Date"
 msgstr "Atualizado"
 
-#: src/gs-updates-page.ui:247
+#: src/gs-updates-page.ui:241
 msgid "Use Mobile Data?"
 msgstr "Usar dados móveis?"
 
-#: src/gs-updates-page.ui:248
+#: src/gs-updates-page.ui:242
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
 msgstr "Procurar atualizações em redes de banda larga pode incorrer em custos."
 
-#: src/gs-updates-page.ui:251
+#: src/gs-updates-page.ui:245
 msgid "_Check Anyway"
 msgstr "Ainda assim pro_curar"
 
-#: src/gs-updates-page.ui:267
+#: src/gs-updates-page.ui:261
 msgid "No Connection"
 msgstr "Sem ligação"
 
-#: src/gs-updates-page.ui:268
+#: src/gs-updates-page.ui:262
 msgid "Go online to check for updates."
 msgstr "Procurar atualizações online."
 
-#: src/gs-updates-page.ui:271
+#: src/gs-updates-page.ui:265
 msgid "_Network Settings"
 msgstr "Defi_nições de rede"
 
-#: src/gs-updates-page.ui:300
+#: src/gs-updates-page.ui:294
 msgid "Error"
 msgstr "Erro"
 
-#: src/gs-updates-page.ui:301
+#: src/gs-updates-page.ui:295
 msgid "Updates are automatically managed."
 msgstr "As atualizações são geridas automaticamente."
 
@@ -4610,7 +4615,7 @@ msgstr "Atualizações de Aplicações"
 msgid "Device Firmware"
 msgstr "Firmware do Dispositivo"
 
-#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:75
+#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:69
 msgid "_Download"
 msgstr "_Transferir"
 
@@ -4656,11 +4661,11 @@ msgstr "%u%% transferido"
 msgid "A major upgrade, with new features and added polish."
 msgstr "Uma atualização significativa, com novas funções e mais polimento."
 
-#: src/gs-upgrade-banner.ui:194
+#: src/gs-upgrade-banner.ui:182
 msgid "_Restart & Upgrade"
 msgstr "_Reiniciar e Atualizar"
 
-#: src/gs-upgrade-banner.ui:208
+#: src/gs-upgrade-banner.ui:196
 msgid "Remember to back up data and files before upgrading."
 msgstr ""
 "Lembre-se de fazer uma cópia de segurança dos dados e ficheiros antes de "
@@ -4899,7 +4904,7 @@ msgstr "Firmware"
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
 msgid "Firmware Upgrade Support"
-msgstr "Suporte para Atualizações de Firmware"
+msgstr "Suporte para atualizações de firmware"
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:7
 msgid "Provides support for firmware upgrades"
