@@ -70,7 +70,7 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	if (g_strcmp0 (text, gtk_button_get_label (box->button)) != 0)
 		gtk_button_set_label (box->button, text);
 
-	gtk_label_set_text (box->label, box->text);
+	gtk_label_set_markup (box->label, box->text);
 	gtk_label_set_lines (box->label, -1);
 	gtk_label_set_ellipsize (box->label, PANGO_ELLIPSIZE_NONE);
 
@@ -82,11 +82,40 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	if (box->is_collapsed && n_lines > MAX_COLLAPSED_LINES) {
 		PangoLayoutLine *line;
 		GString *str;
+		GSList *opened_markup = NULL;
+		gint start_index, line_index, in_markup = 0;
 
 		line = pango_layout_get_line_readonly (layout, MAX_COLLAPSED_LINES);
 
-		str = g_string_sized_new (line->start_index);
-		g_string_append_len (str, box->text, line->start_index);
+		line_index = line->start_index;
+
+		/* Pango does not count markup in the text, thus calculate the position manually */
+		for (start_index = 0; box->text[start_index] && line_index > 0; start_index++) {
+			if (box->text[start_index] == '<') {
+				if (box->text[start_index + 1] == '/') {
+					g_autofree gchar *value = opened_markup->data;
+					opened_markup = g_slist_remove (opened_markup, value);
+				} else {
+					const gchar *end = strchr (box->text + start_index, '>');
+					opened_markup = g_slist_prepend (opened_markup, g_strndup (box->text + start_index + 1, end - (box->text + start_index) - 1));
+				}
+				in_markup++;
+			} else if (box->text[start_index] == '>') {
+				g_warn_if_fail (in_markup > 0);
+				in_markup--;
+			} else if (!in_markup) {
+				/* Encoded characters count as one */
+				if (box->text[start_index] == '&') {
+					const gchar *end = strchr (box->text + start_index, ';');
+					if (end)
+						start_index += end - box->text - start_index;
+				}
+
+				line_index--;
+			}
+		}
+		str = g_string_sized_new (start_index);
+		g_string_append_len (str, box->text, start_index);
 
 		/* Cut white spaces from the end of the string, thus it doesn't look bad when it's ellipsized. */
 		while (str->len > 0 && strchr ("\r\n\t ", str->str[str->len - 1])) {
@@ -95,10 +124,17 @@ gs_description_box_update_content (GsDescriptionBox *box)
 
 		str->str[str->len] = '\0';
 
+		/* Close any opened tags after cutting the text */
+		for (GSList *link = opened_markup; link; link = g_slist_next (link)) {
+			const gchar *tag = link->data;
+			g_string_append_printf (str, "</%s>", tag);
+		}
+
 		gtk_label_set_lines (box->label, MAX_COLLAPSED_LINES);
 		gtk_label_set_ellipsize (box->label, PANGO_ELLIPSIZE_END);
-		gtk_label_set_text (box->label, str->str);
+		gtk_label_set_markup (box->label, str->str);
 
+		g_slist_free_full (opened_markup, g_free);
 		g_string_free (str, TRUE);
 	}
 }

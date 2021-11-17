@@ -61,33 +61,78 @@ node_set_to_next (XbNode **node)
 	*node = g_steal_pointer (&next_node);
 }
 
+/* Returns escaped text */
+static gchar *
+gs_appstream_format_description_text (XbNode *node)
+{
+	g_autoptr(GString) str = g_string_new (NULL);
+	const gchar *node_text;
+
+	if (node == NULL)
+		return NULL;
+
+	node_text = xb_node_get_text (node);
+	if (node_text != NULL && *node_text != '\0') {
+		g_autofree gchar *escaped = g_markup_escape_text (node_text, -1);
+		g_string_append (str, escaped);
+	}
+
+	for (g_autoptr(XbNode) n = xb_node_get_child (node); n != NULL; node_set_to_next (&n)) {
+		const gchar *start_elem = "", *end_elem = "";
+		g_autofree gchar *text = NULL;
+		if (g_strcmp0 (xb_node_get_element (n), "em") == 0) {
+			start_elem = "<i>";
+			end_elem = "</i>";
+		} else if (g_strcmp0 (xb_node_get_element (n), "code") == 0) {
+			start_elem = "<tt>";
+			end_elem = "</tt>";
+		}
+
+		/* These can be nested */
+		text = gs_appstream_format_description_text (n);
+		if (text != NULL) {
+			g_string_append_printf (str, "%s%s%s", start_elem, text, end_elem);
+		}
+
+		node_text = xb_node_get_tail (n);
+		if (node_text != NULL && *node_text != '\0') {
+			g_autofree gchar *escaped = g_markup_escape_text (node_text, -1);
+			g_string_append (str, escaped);
+		}
+	}
+
+	if (str->len == 0)
+		return NULL;
+
+	return g_string_free (g_steal_pointer (&str), FALSE);
+}
+
 static gchar *
 gs_appstream_format_description (XbNode *root, GError **error)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	for (g_autoptr(XbNode) n = xb_node_get_child (root); n != NULL; node_set_to_next (&n)) {
-		/* support <p>, <ul>, <ol> and <li>, ignore all else */
+		/* support <p>, <em>, <code>, <ul>, <ol> and <li>, ignore all else */
 		if (g_strcmp0 (xb_node_get_element (n), "p") == 0) {
-			const gchar *node_text = xb_node_get_text (n);
-
+			g_autofree gchar *escaped = gs_appstream_format_description_text (n);
 			/* Treat a self-closing paragraph (`<p/>`) as
 			 * nonexistent. This is consistent with Firefox. */
-			if (node_text != NULL)
-				g_string_append_printf (str, "%s\n\n", node_text);
+			if (escaped != NULL)
+				g_string_append_printf (str, "%s\n\n", escaped);
 		} else if (g_strcmp0 (xb_node_get_element (n), "ul") == 0) {
 			g_autoptr(GPtrArray) children = xb_node_get_children (n);
 
 			for (guint i = 0; i < children->len; i++) {
 				XbNode *nc = g_ptr_array_index (children, i);
 				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
-					const gchar *node_text = xb_node_get_text (nc);
+					g_autofree gchar *escaped = gs_appstream_format_description_text (nc);
 
 					/* Treat a self-closing `<li/>` as an empty
 					 * list element (equivalent to `<li></li>`).
 					 * This is consistent with Firefox. */
 					g_string_append_printf (str, " • %s\n",
-								(node_text != NULL) ? node_text : "");
+								(escaped != NULL) ? escaped : "");
 				}
 			}
 			g_string_append (str, "\n");
@@ -96,12 +141,12 @@ gs_appstream_format_description (XbNode *root, GError **error)
 			for (guint i = 0; i < children->len; i++) {
 				XbNode *nc = g_ptr_array_index (children, i);
 				if (g_strcmp0 (xb_node_get_element (nc), "li") == 0) {
-					const gchar *node_text = xb_node_get_text (nc);
+					g_autofree gchar *escaped = gs_appstream_format_description_text (nc);
 
 					/* Treat self-closing elements as with `<ul>` above. */
 					g_string_append_printf (str, " %u. %s\n",
 								i + 1,
-								(node_text != NULL) ? node_text : "");
+								(escaped != NULL) ? escaped : "");
 				}
 			}
 			g_string_append (str, "\n");
@@ -546,7 +591,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 		g_autofree gchar *desc = NULL;
 		n = xb_node_query_first (release, "description", NULL);
 		desc = gs_appstream_format_description (n, NULL);
-		gs_app_set_update_details (app, desc);
+		gs_app_set_update_details_markup (app, desc);
 
 	/* get the descriptions with a version prefix */
 	} else if (updates_list->len > 1) {
@@ -574,7 +619,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 		if (update_desc->len > 2)
 			g_string_truncate (update_desc, update_desc->len - 2);
 		if (update_desc->len > 0)
-			gs_app_set_update_details (app, update_desc->str);
+			gs_app_set_update_details_markup (app, update_desc->str);
 	}
 
 	/* if there is no already set update version use the newest */

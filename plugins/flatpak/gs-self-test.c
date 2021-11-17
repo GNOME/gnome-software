@@ -386,7 +386,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, NULL);
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_UNKNOWN);
 
 	/* check runtime */
@@ -1233,7 +1233,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, NULL);
 
 	/* search for the application */
 	g_object_unref (plugin_job);
@@ -1468,7 +1468,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, NULL);
 
 	/* switch to the new repo */
 	g_assert_true (unlink (repo_path) == 0);
@@ -1511,7 +1511,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	app = gs_app_list_lookup (list_updates, "*/flatpak/test/org.test.Chiron/*");
 	g_assert_nonnull (app);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Version 1.2.4:\nThis is best.");
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, "Version 1.2.4:\nThis is best.");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, "1.2.4");
 
 	/* care about signals */
@@ -1546,7 +1546,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.4");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
-	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==, NULL);
 	g_assert_true (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN ||
 		       gs_app_get_progress (app) == 100);
 	g_assert_true (got_progress_installing);

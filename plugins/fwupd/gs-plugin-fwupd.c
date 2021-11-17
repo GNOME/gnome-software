@@ -640,7 +640,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			}
 			if (update_desc->len > 2) {
 				g_string_truncate (update_desc, update_desc->len - 2);
-				gs_app_set_update_details (app, update_desc->str);
+				gs_app_set_update_details_text (app, update_desc->str);
 			}
 		}
 		gs_app_list_add (list, app);
@@ -1137,7 +1137,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		/* we *might* have no update view for local files */
 		gs_app_set_version (app, gs_app_get_update_version (app));
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
-					gs_app_get_update_details (app));
+					gs_app_get_update_details_markup (app));
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

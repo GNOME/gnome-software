@@ -1816,7 +1816,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			g_debug ("%s has a downloaded update %s->%s",
 				 flatpak_ref_get_name (FLATPAK_REF (xref)),
 				 commit, latest_commit);
-			gs_app_set_update_details (main_app, NULL);
+			gs_app_set_update_details_markup (main_app, NULL);
 			gs_app_set_update_version (main_app, NULL);
 			gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
 			gs_app_set_size_download (main_app, 0);

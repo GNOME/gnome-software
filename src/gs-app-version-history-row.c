@@ -43,6 +43,17 @@ gs_app_version_history_row_init (GsAppVersionHistoryRow *row)
 	gtk_widget_init_template (GTK_WIDGET (row));
 }
 
+/**
+ * gs_app_version_history_row_set_info:
+ * @row: a #GsAppVersionHistoryRow
+ * @version_number: (nullable): version number of the release, or %NULL if unknown
+ * @version_date: release date of the version, as seconds since the Unix epoch,
+ *   or `0` if unknown
+ * @version_description: (nullable): Pango Markup for the full human readable
+ *   description of the release, or %NULL if unknown
+ *
+ * Set information about the release represented by this version history row.
+ */
 void
 gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 				     const char *version_number,
@@ -59,7 +70,7 @@ gs_app_version_history_row_set_info (GsAppVersionHistoryRow *row,
 		g_autofree char *version_tmp = NULL;
 		version_tmp = g_strdup_printf (_("New in Version %s"), version_number);
 		gtk_label_set_label (GTK_LABEL (row->version_number_label), version_tmp);
-		gtk_label_set_label (GTK_LABEL (row->version_description_label), version_description);
+		gtk_label_set_markup (GTK_LABEL (row->version_description_label), version_description);
 		gtk_style_context_remove_class (gtk_widget_get_style_context (row->version_description_label), "dim-label");
 	} else {
 		g_autofree char *version_tmp = NULL;

@@ -269,7 +269,7 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		g_autofree gchar *tmp = NULL;
 		tmp = as_markup_convert_simple (fwupd_release_get_description (rel), NULL);
 		if (tmp != NULL)
-			gs_app_set_update_details (app, tmp);
+			gs_app_set_update_details_text (app, tmp);
 	}
 #if FWUPD_CHECK_VERSION(1,3,3)
 	if (fwupd_release_get_detach_image (rel) != NULL) {

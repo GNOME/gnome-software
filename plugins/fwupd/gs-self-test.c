@@ -50,7 +50,7 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
 			 "cab file.\n\nThis is the second paragraph.");
-	g_assert_cmpstr (gs_app_get_update_details (app), ==,
+	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==,
 			 "Latest firmware release.");
 
 	/* seems wrong, but this is only set if the update is available */
