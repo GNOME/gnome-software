@@ -95,6 +95,8 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	SoupSession *soup_session;
 	guint status_code;
 	gboolean file_written;
+	gconstpointer downloaded_data;
+	gsize downloaded_data_length;
 	g_autofree gchar *tmp_file_path = NULL;
 	g_autofree gchar *file_name = NULL;
 	g_autofree gchar *local_mod_date = NULL;
@@ -102,6 +104,9 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	g_autoptr(GFileIOStream) iostream = NULL;
 	g_autoptr(GFile) tmp_file = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GBytes) bytes = NULL;
+#endif
 
 	/* check age */
 	file_name = g_path_get_basename (url);
@@ -120,14 +125,32 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	if (local_mod_date != NULL) {
 		g_debug ("Requesting contents of %s if modified since %s",
 			 url, local_mod_date);
-		soup_message_headers_append (msg->request_headers,
+		soup_message_headers_append (
+#if SOUP_CHECK_VERSION(3, 0, 0)
+					     soup_message_get_request_headers (msg),
+#else
+					     msg->request_headers,
+#endif
 					     "If-Modified-Since",
 					     local_mod_date);
 	}
 
 	/* get the data */
 	soup_session = gs_plugin_get_soup_session (plugin);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	bytes = soup_session_send_and_read (soup_session, msg, cancellable, error);
+	if (bytes != NULL) {
+		downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	} else {
+		downloaded_data = NULL;
+		downloaded_data_length = 0;
+	}
+	status_code = soup_message_get_status (msg);
+#else
 	status_code = soup_session_send_message (soup_session, msg);
+	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
+	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+#endif
 	if (status_code != SOUP_STATUS_OK) {
 		if (status_code == SOUP_STATUS_NOT_MODIFIED) {
 			g_debug ("Not updating %s has not modified since %s",
@@ -169,9 +192,7 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 
 	/* write to file */
 	outstream = g_io_stream_get_output_stream (G_IO_STREAM (iostream));
-	file_written = g_output_stream_write_all (outstream,
-						  msg->response_body->data,
-						  msg->response_body->length,
+	file_written = g_output_stream_write_all (outstream, downloaded_data, downloaded_data_length,
 						  NULL, cancellable, error);
 
 	/* close the file */

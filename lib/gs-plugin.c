@@ -932,6 +932,58 @@ gs_plugin_reload (GsPlugin *plugin)
 	g_idle_add (gs_plugin_reload_cb, plugin);
 }
 
+#if SOUP_CHECK_VERSION(3, 0, 0)
+static GBytes * /* (transfer full) */
+gs_plugin_download_with_progress (GsPlugin *plugin,
+				  GsApp *app,
+				  SoupMessage *msg,
+				  GInputStream *stream,
+				  GCancellable *cancellable,
+				  GError **error)
+{
+	g_autoptr(GByteArray) byte_array = NULL;
+	gsize nread, total_read, expected_length;
+	guint8 buffer[16384];
+	gboolean success = FALSE;
+
+	if (stream == NULL || !SOUP_STATUS_IS_SUCCESSFUL (soup_message_get_status (msg)) ||
+	    g_cancellable_is_cancelled (cancellable))
+		return NULL;
+
+	byte_array = g_byte_array_new ();
+
+	total_read = 0;
+	expected_length = soup_message_headers_get_content_length (soup_message_get_response_headers (msg));
+
+	while (g_input_stream_read_all (stream, buffer, sizeof (buffer), &nread, cancellable, error)) {
+		if (!nread) {
+			success = TRUE;
+			break;
+		}
+		g_byte_array_append (byte_array, buffer, nread);
+		total_read += nread;
+		if (app != NULL && expected_length > 0) {
+			/* calculate percentage */
+			guint percentage = (guint) ((100 * total_read) / expected_length);
+			g_debug ("%s progress: %u%%", gs_app_get_id (app), percentage);
+			gs_app_set_progress (app, percentage);
+			gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_DOWNLOADING);
+		}
+		if (nread < sizeof (buffer)) {
+			success = TRUE;
+			break;
+		}
+	}
+
+	if (success) {
+		GBytes *bytes = g_byte_array_free_to_bytes (byte_array);
+		byte_array = NULL;
+		return bytes;
+	}
+
+	return NULL;
+}
+#else
 typedef struct {
 	GsPlugin	*plugin;
 	GsApp		*app;
@@ -980,6 +1032,7 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 				 helper->app,
 				 GS_PLUGIN_STATUS_DOWNLOADING);
 }
+#endif
 
 /**
  * gs_plugin_download_data:
@@ -1003,8 +1056,14 @@ gs_plugin_download_data (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GInputStream) stream = NULL;
+	g_autoptr(GError) error_local = NULL;
+	GBytes *bytes;
+#else
 	GsPluginDownloadHelper helper;
 	guint status_code;
+#endif
 	g_autoptr(SoupMessage) msg = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
@@ -1015,7 +1074,9 @@ gs_plugin_download_data (GsPlugin *plugin,
 	if (g_str_has_prefix (uri, "file://")) {
 		gsize length = 0;
 		g_autofree gchar *contents = NULL;
+#if !SOUP_CHECK_VERSION(3, 0, 0)
 		g_autoptr(GError) error_local = NULL;
+#endif
 		g_debug ("copying %s from plugin %s", uri, priv->name);
 		if (!g_file_get_contents (uri + 7, &contents, &length, &error_local)) {
 			g_set_error (error,
@@ -1031,6 +1092,29 @@ gs_plugin_download_data (GsPlugin *plugin,
 	/* remote */
 	g_debug ("downloading %s from plugin %s", uri, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	if (msg == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+			     "failed to parse URI %s", uri);
+		return NULL;
+	}
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	stream = soup_session_send (priv->soup_session, msg, cancellable, &error_local);
+	bytes = gs_plugin_download_with_progress (plugin, app, msg, stream, cancellable, &error_local);
+	if (bytes == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_propagate_error (error, error_local);
+		} else {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     "failed to download %s: %s",
+				     uri, error_local ? error_local->message : "Unknown error");
+		}
+	}
+	return bytes;
+#else
 	if (app != NULL) {
 		helper.plugin = plugin;
 		helper.app = app;
@@ -1056,6 +1140,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 	}
 	return g_bytes_new (msg->response_body->data,
 			    (gsize) msg->response_body->length);
+#endif
 }
 
 /**
@@ -1082,9 +1167,16 @@ gs_plugin_download_file (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_autoptr(GInputStream) stream = NULL;
+	g_autoptr(GBytes) bytes = NULL;
+#else
 	GsPluginDownloadHelper helper;
+#endif
 	const gchar *new_etag;
 	guint status_code;
+	gconstpointer downloaded_data = NULL;
+	gsize downloaded_data_length = 0;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
@@ -1127,6 +1219,23 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     "failed to parse URI %s", uri);
 		return FALSE;
 	}
+	if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
+		g_autofree gchar *last_etag = gs_utils_get_file_etag (filename, cancellable);
+		if (last_etag != NULL && *last_etag != '\0') {
+#if SOUP_CHECK_VERSION(3, 0, 0)
+			soup_message_headers_append (soup_message_get_request_headers (msg), "If-None-Match", last_etag);
+#else
+			soup_message_headers_append (msg->request_headers, "If-None-Match", last_etag);
+#endif
+		}
+	}
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	stream = soup_session_send (priv->soup_session, msg, cancellable, &error_local);
+	bytes = gs_plugin_download_with_progress (plugin, app, msg, stream, cancellable, &error_local);
+	if (bytes != NULL)
+		downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
+	status_code = soup_message_get_status (msg);
+#else
 	if (app != NULL) {
 		helper.plugin = plugin;
 		helper.app = app;
@@ -1135,20 +1244,24 @@ gs_plugin_download_file (GsPlugin *plugin,
 				  G_CALLBACK (gs_plugin_download_chunk_cb),
 				  &helper);
 	}
-	if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
-		g_autofree gchar *last_etag = gs_utils_get_file_etag (filename, cancellable);
-		if (last_etag != NULL && *last_etag != '\0')
-			soup_message_headers_append (msg->request_headers, "If-None-Match", last_etag);
-	}
 	status_code = soup_session_send_message (priv->soup_session, msg);
+	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
+	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+#endif
 	if (status_code == SOUP_STATUS_NOT_MODIFIED)
 		return TRUE;
 	if (status_code != SOUP_STATUS_OK) {
 		g_autoptr(GString) str = g_string_new (NULL);
 		g_string_append (str, soup_status_get_phrase (status_code));
-		if (msg->response_body->data != NULL) {
+#if SOUP_CHECK_VERSION(3, 0, 0)
+		if (error_local != NULL) {
 			g_string_append (str, ": ");
-			g_string_append (str, msg->response_body->data);
+			g_string_append (str, error_local->message);
+		}
+#endif
+		if (downloaded_data != NULL && downloaded_data_length > 0) {
+			g_string_append (str, ": ");
+			g_string_append_len (str, downloaded_data, downloaded_data_length);
 		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -1157,12 +1270,12 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     uri, str->str);
 		return FALSE;
 	}
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	g_clear_error (&error_local);
+#endif
 	if (!gs_mkdir_parent (filename, error))
 		return FALSE;
-	if (!g_file_set_contents (filename,
-				  msg->response_body->data,
-				  msg->response_body->length,
-				  &error_local)) {
+	if (!g_file_set_contents (filename, downloaded_data, downloaded_data_length, &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_WRITE_FAILED,
@@ -1170,7 +1283,11 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     error_local->message);
 		return FALSE;
 	}
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	new_etag = soup_message_headers_get_one (soup_message_get_response_headers (msg), "ETag");
+#else
 	new_etag = soup_message_headers_get_one (msg->response_headers, "ETag");
+#endif
 	if (new_etag != NULL && *new_etag == '\0')
 		new_etag = NULL;
 	gs_utils_set_file_etag (filename, new_etag, cancellable);

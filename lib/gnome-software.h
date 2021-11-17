@@ -15,7 +15,6 @@
 #include <gs-app.h>
 #include <gs-app-list.h>
 #include <gs-app-collation.h>
-#include <gs-autocleanups.h>
 #include <gs-category.h>
 #include <gs-category-manager.h>
 #include <gs-desktop-data.h>

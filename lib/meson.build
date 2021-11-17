@@ -7,7 +7,6 @@ libgnomesoftware_public_headers = [
   'gs-app-collation.h',
   'gs-app-list.h',
   'gs-appstream.h',
-  'gs-autocleanups.h',
   'gs-category.h',
   'gs-category-manager.h',
   'gs-desktop-data.h',
@@ -124,6 +123,7 @@ pkg.generate(
     variables : [
       'gs_private_libdir=${libdir}/gnome-software',
       'plugindir=${gs_private_libdir}/plugins-' + gs_plugin_api_version,
+      'soupapiversion=' + libsoupapiversion,
     ],
     install_dir : join_paths(get_option('prefix'), get_option('libdir'), 'pkgconfig'),  # or it defaults to gs_private_libdir, which is wrong
 )

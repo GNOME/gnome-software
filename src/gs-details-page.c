@@ -78,7 +78,6 @@ struct _GsDetailsPage
 	GsApp			*app;
 	GsApp			*app_local_file;
 	GsShell			*shell;
-	SoupSession		*session;
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
 	GtkSizeGroup		*size_group_origin_popover;
@@ -2212,7 +2211,6 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
-	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->odrs_provider);
 	g_clear_object (&self->app_info_monitor);
@@ -2376,9 +2374,6 @@ gs_details_page_init (GsDetailsPage *self)
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	/* setup networking */
-	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-	                                               NULL);
 	self->packaging_format_preference = g_hash_table_new_full (gs_details_page_strcase_hash, gs_details_page_strcase_equal, g_free, NULL);
 	self->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect_swapped (self->settings, "changed",

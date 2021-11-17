@@ -31,6 +31,9 @@ struct _GsScreenshotImage
 	GSettings	*settings;
 	SoupSession	*session;
 	SoupMessage	*message;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	GCancellable	*cancellable;
+#endif
 	gchar		*filename;
 	const gchar	*current_image;
 	guint		 width;
@@ -303,37 +306,78 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 }
 
 static void
+#if SOUP_CHECK_VERSION(3, 0, 0)
+gs_screenshot_image_complete_cb (GObject *source_object,
+				 GAsyncResult *result,
+				 gpointer user_data)
+#else
 gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
 				 gpointer user_data)
+#endif
 {
 	g_autoptr(GsScreenshotImage) ssimg = GS_SCREENSHOT_IMAGE (user_data);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
+	guint status_code;
 
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	SoupMessage *msg;
+
+	stream = soup_session_send_finish (SOUP_SESSION (source_object), result, &error);
+	if (stream == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_warning ("Failed to download screenshot: %s", error->message);
+			gs_screenshot_image_stop_spinner (ssimg);
+			gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
+		}
+		return;
+	}
+
+	msg = soup_session_get_async_result_message (SOUP_SESSION (source_object), result);
+	status_code = soup_message_get_status (msg);
+#else
+	status_code = msg->status_code;
+#endif
 	if (ssimg->load_timeout_id) {
 		g_source_remove (ssimg->load_timeout_id);
 		ssimg->load_timeout_id = 0;
 	}
 
 	/* return immediately if the message was cancelled or if we're in destruction */
-	if (msg->status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	if (ssimg->session == NULL)
+#else
+	if (status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
+#endif
 		return;
 
-	if (msg->status_code == SOUP_STATUS_NOT_MODIFIED) {
+	if (status_code == SOUP_STATUS_NOT_MODIFIED) {
 		g_debug ("screenshot has not been modified");
 		as_screenshot_show_image (ssimg);
 		gs_screenshot_image_stop_spinner (ssimg);
 		return;
 	}
-	if (msg->status_code != SOUP_STATUS_OK) {
+	if (status_code != SOUP_STATUS_OK) {
 		/* Ignore failures due to being offline */
-		if (msg->status_code != SOUP_STATUS_CANT_RESOLVE)
+#if SOUP_CHECK_VERSION(3, 0, 0)
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_HOST_UNREACHABLE) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NETWORK_UNREACHABLE)) {
+#else
+		if (status_code != SOUP_STATUS_CANT_RESOLVE) {
+#endif
+			const gchar *reason_phrase;
+#if SOUP_CHECK_VERSION(3, 0, 0)
+			reason_phrase = soup_message_get_reason_phrase (msg);
+#else
+			reason_phrase = msg->reason_phrase;
+#endif
 			g_warning ("Result of screenshot downloading attempt with "
-				   "status code '%u': %s", msg->status_code,
-				   msg->reason_phrase);
+				   "status code '%u': %s", status_code,
+				   reason_phrase);
+		}
 		gs_screenshot_image_stop_spinner (ssimg);
 		/* if we're already showing an image, then don't set the error
 		 * as having an image (even if outdated) is better */
@@ -345,6 +389,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		return;
 	}
 
+#if !SOUP_CHECK_VERSION(3, 0, 0)
 	/* create a buffer with the data */
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
 						      msg->response_body->length,
@@ -353,6 +398,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		gs_screenshot_image_stop_spinner (ssimg);
 		return;
 	}
+#endif
 
 	/* load the image */
 	pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
@@ -366,10 +412,10 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT ||
 	    (ssimg->width * ssimg->scale == (guint) gdk_pixbuf_get_width (pixbuf) &&
 	     ssimg->height * ssimg->scale == (guint) gdk_pixbuf_get_height (pixbuf))) {
-		ret = g_file_set_contents (ssimg->filename,
-					   msg->response_body->data,
-					   msg->response_body->length,
-					   &error);
+		ret = gs_pixbuf_save_filename (pixbuf, ssimg->filename,
+					       gdk_pixbuf_get_width (pixbuf),
+					       gdk_pixbuf_get_height (pixbuf),
+					       &error);
 		if (!ret) {
 			gs_screenshot_image_set_error (ssimg, error->message);
 			return;
@@ -450,7 +496,12 @@ gs_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)
 	date_time = g_date_time_new_from_timeval_local (&time_val);
 #endif
 	mod_date = g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
-	soup_message_headers_append (msg->request_headers,
+	soup_message_headers_append (
+#if SOUP_CHECK_VERSION(3, 0, 0)
+				     soup_message_get_request_headers (msg),
+#else
+				     msg->request_headers,
+#endif
 				     "If-Modified-Since",
 				     mod_date);
 }
@@ -476,7 +527,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_autofree gchar *cache_kind = NULL;
 	g_autofree gchar *cachefn_thumb = NULL;
 	g_autofree gchar *sizedir = NULL;
-	g_autoptr(SoupURI) base_uri = NULL;
+	g_autoptr(GUri) base_uri = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 
@@ -587,8 +638,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 
 	/* download file */
 	g_debug ("downloading %s to %s", url, ssimg->filename);
-	base_uri = soup_uri_new (url);
-	if (base_uri == NULL || !SOUP_URI_VALID_FOR_HTTP (base_uri)) {
+	base_uri = g_uri_parse (url, SOUP_HTTP_URI_FLAGS, NULL);
+	if (base_uri == NULL ||
+	    (g_strcmp0 (g_uri_get_scheme (base_uri), "http") != 0 &&
+	     g_strcmp0 (g_uri_get_scheme (base_uri), "https") != 0) ||
+	    g_uri_get_host (base_uri) == NULL ||
+	    g_uri_get_path (base_uri) == NULL) {
 		/* TRANSLATORS: this is when we try to download a screenshot
 		 * that was not a valid URL */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not valid"));
@@ -602,13 +657,25 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 
 	/* cancel any previous messages */
 	if (ssimg->message != NULL) {
+#if SOUP_CHECK_VERSION(3, 0, 0)
+		g_cancellable_cancel (ssimg->cancellable);
+		g_clear_object (&ssimg->cancellable);
+#else
 		soup_session_cancel_message (ssimg->session,
 		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
+#endif
 		g_clear_object (&ssimg->message);
 	}
 
+#if SOUP_CHECK_VERSION(3, 0, 0)
 	ssimg->message = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
+#else
+	{
+	g_autofree gchar *uri_str = g_uri_to_string (base_uri);
+	ssimg->message = soup_message_new (SOUP_METHOD_GET, uri_str);
+	}
+#endif
 	if (ssimg->message == NULL) {
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
@@ -626,10 +693,16 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		gs_screenshot_show_spinner_cb, ssimg);
 
 	/* send async */
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	ssimg->cancellable = g_cancellable_new ();
+	soup_session_send_async (ssimg->session, ssimg->message, G_PRIORITY_DEFAULT, ssimg->cancellable,
+				 gs_screenshot_image_complete_cb, g_object_ref (ssimg));
+#else
 	soup_session_queue_message (ssimg->session,
 				    g_object_ref (ssimg->message) /* transfer full */,
 				    gs_screenshot_image_complete_cb,
 				    g_object_ref (ssimg));
+#endif
 }
 
 gboolean
@@ -661,9 +734,14 @@ gs_screenshot_image_dispose (GObject *object)
 	}
 
 	if (ssimg->message != NULL) {
+#if SOUP_CHECK_VERSION(3, 0, 0)
+		g_cancellable_cancel (ssimg->cancellable);
+		g_clear_object (&ssimg->cancellable);
+#else
 		soup_session_cancel_message (ssimg->session,
 		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
+#endif
 		g_clear_object (&ssimg->message);
 	}
 	gs_widget_remove_all (GTK_WIDGET (ssimg), NULL);

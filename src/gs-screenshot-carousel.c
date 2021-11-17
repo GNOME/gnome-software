@@ -335,7 +335,7 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 #endif
 
 	/* setup networking */
-	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
+	self->session = soup_session_new_with_options ("user-agent", gs_user_agent (),
 	                                               NULL);
 }
 
