@@ -18,7 +18,12 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_PLUGIN_JOB (gs_plugin_job_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsPluginJob, gs_plugin_job, GS, PLUGIN_JOB, GObject)
+G_DECLARE_DERIVABLE_TYPE (GsPluginJob, gs_plugin_job, GS, PLUGIN_JOB, GObject)
+
+struct _GsPluginJobClass
+{
+	GObjectClass	parent_class;
+}
 
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
