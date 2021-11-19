@@ -126,6 +126,7 @@ struct _GsDetailsPage
 	GtkImage		*developer_verified_image;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
+	GtkWidget		*list_box_reviews_summary;
 	GtkWidget		*list_box_version_history;
 	GtkWidget		*row_latest_version;
 	GtkWidget		*version_history_button;
@@ -1940,8 +1941,7 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 }
 
 static void
-gs_details_page_write_review_cb (GtkButton *button,
-                                 GsDetailsPage *self)
+gs_details_page_write_review (GsDetailsPage *self)
 {
 	GtkWidget *dialog;
 	dialog = gs_review_dialog_new ();
@@ -2006,7 +2006,7 @@ gs_details_page_star_pressed_cb (GtkGestureClick *click,
                                  gdouble          y,
                                  GsDetailsPage   *self)
 {
-	gs_details_page_write_review_cb(GTK_BUTTON (self->button_review), self);
+	gs_details_page_write_review (self);
 }
 
 static gboolean
@@ -2238,6 +2238,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews_summary);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
@@ -2260,7 +2261,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_write_review_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_star_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_install_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_update_button_cb);
@@ -2319,6 +2319,9 @@ gs_details_page_init (GsDetailsPage *self)
 
 	g_signal_connect (self->list_box_version_history, "row-activated",
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
+
+	g_signal_connect_swapped (self->list_box_reviews_summary, "row-activated",
+				  G_CALLBACK (gs_details_page_write_review), self);
 
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
 

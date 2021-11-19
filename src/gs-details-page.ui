@@ -799,28 +799,58 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GsReviewHistogram" id="histogram">
-                                        <property name="visible">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="valign">center</property>
-                                        <property name="margin_bottom">32</property>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="GtkButton" id="button_review">
-                                        <property name="visible">False</property>
-                                        <property name="use_underline">True</property>
-                                        <property name="label" translatable="yes" comments="Translators: Button opening a dialog where the users can write and publish their opinions about the apps.">_Write a Review</property>
+                                      <object class="GtkListBox" id="list_box_reviews_summary">
                                         <property name="can_focus">True</property>
-                                        <property name="halign">start</property>
+                                        <property name="selection_mode">none</property>
                                         <property name="valign">start</property>
-                                        <property name="margin_bottom">18</property>
-                                        <signal name="clicked" handler="gs_details_page_write_review_cb"/>
+                                        <style>
+                                          <class name="boxed-list"/>
+                                        </style>
+                                        <child>
+                                          <object class="GtkListBoxRow">
+                                            <property name="activatable">False</property>
+                                            <child>
+                                              <object class="GsReviewHistogram" id="histogram">
+                                                <property name="visible">False</property>
+                                                <property name="halign">start</property>
+                                                <property name="valign">center</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkListBoxRow" id="button_review">
+                                            <property name="can_focus">True</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="orientation">horizontal</property>
+                                                <property name="halign">center</property>
+                                                <property name="margin_top">12</property>
+                                                <property name="margin_bottom">12</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="xalign">0</property>
+                                                    <property name="yalign">0.5</property>
+                                                    <property name="use_underline">True</property>
+                                                    <property name="label" translatable="yes" comments="Translators: Button opening a dialog where the users can write and publish their opinions about the apps.">_Write Review</property>
+                                                  </object>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkImage">
+                                                    <property name="icon-name">go-next-symbolic</property>
+                                                    <property name="margin_start">6</property>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                     <child>
                                       <object class="GtkListBox" id="list_box_reviews">
                                         <property name="can_focus">True</property>
+                                        <property name="margin_top">12</property>
                                         <property name="selection_mode">none</property>
                                         <property name="valign">start</property>
                                         <style>
