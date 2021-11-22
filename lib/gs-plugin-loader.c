@@ -1065,10 +1065,7 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 	}
 
 	/* first pass */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "list", list,
-					 "refine-flags", gs_plugin_job_get_refine_flags (helper->plugin_job),
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new (list, gs_plugin_job_get_refine_flags (helper->plugin_job));
 	helper2 = gs_plugin_loader_helper_new (helper->plugin_loader, plugin_job);
 	helper2->function_name_parent = helper->function_name;
 	ret = gs_plugin_loader_run_refine_internal (helper2, list, cancellable, error);
@@ -1829,7 +1826,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	if (gs_app_list_length (list) > 0) {
 		g_autoptr(GsPluginLoaderHelper) helper = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
+		plugin_job = gs_plugin_job_refine_new (NULL, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
 		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 		if (!gs_plugin_loader_run_refine (helper, list, NULL, error))
 			return FALSE;
@@ -3548,10 +3545,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
 		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-						 "list", list,
-						 "refine-flags", filter_flags,
-						 NULL);
+		plugin_job = gs_plugin_job_refine_new (list, filter_flags);
 		helper2 = gs_plugin_loader_helper_new (helper->plugin_loader, plugin_job);
 		helper2->function_name_parent = helper->function_name;
 		g_debug ("running filter flags with early refine");
@@ -4133,7 +4127,7 @@ gs_plugin_loader_job_app_create_thread_cb (GTask *task,
 	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_from_unique_id (app, unique_id, AS_COMPONENT_KIND_UNKNOWN);
 	gs_app_list_add (list, app);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
+	plugin_job = gs_plugin_job_refine_new (NULL, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	if (!gs_plugin_loader_run_refine (helper, list, NULL, &error)) {
 		g_prefix_error (&error, "Failed to refine '%s': ", unique_id);

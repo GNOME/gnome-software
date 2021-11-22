@@ -68,11 +68,9 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_nonnull (app);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app,
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -136,10 +134,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	gs_app_list_add (list, app2);
 
 	/* refine to make the generic-updates plugin merge them into a single OsUpdate item */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-	                                 "list", list,
-	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
-	                                 NULL);
+	plugin_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -165,10 +160,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	gs_app_add_quirk (app_wildcard, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_kind (app_wildcard, AS_COMPONENT_KIND_GENERIC);
 	gs_app_list_add (list_wildcard, app_wildcard);
-	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-	                                  "list", list_wildcard,
-	                                  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
-	                                  NULL);
+	plugin_job2 = gs_plugin_job_refine_new (list_wildcard, GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

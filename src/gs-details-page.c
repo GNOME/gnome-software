@@ -769,13 +769,11 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
 		/* Make sure the changed instance contains the reviews and such */
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-						 "app", self->app,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
-						 NULL);
+		plugin_job = gs_plugin_job_refine_new_for_app (self->app,
+							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+							       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
 		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 						    self->cancellable,
 						    gs_details_page_app_refine_cb,
@@ -1537,13 +1535,11 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
-	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					  "app", self->app,
-					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
-					  NULL);
+	plugin_job1 = gs_plugin_job_refine_new_for_app (self->app,
+							GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+							GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
 	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
 					  "interactive", TRUE,
 					  "app", self->app,
@@ -1702,10 +1698,7 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 
 	/* get extra details about the app */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", self->app,
-					 "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (self->app, GS_DETAILS_PAGE_REFINE_FLAGS);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_load_stage1_cb,

@@ -143,12 +143,10 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("chiron.desktop");
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app,
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -172,10 +170,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("chiron.desktop");
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -190,10 +185,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "true");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -205,10 +197,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "false");
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -229,10 +218,7 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
