@@ -623,10 +623,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
 	case GS_PLUGIN_ACTION_REFINE:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_refine_wildcard") == 0) {
-			GsPluginRefineWildcardFunc plugin_func = func;
-			ret = plugin_func (plugin, app, list, refine_flags, cancellable, &error_local);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
+		if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
 			GsPluginRefineFunc plugin_func = func;
 			ret = plugin_func (plugin, list, refine_flags, cancellable, &error_local);
 		} else {
@@ -869,24 +866,6 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, list,
 						  refine_flags, cancellable, error)) {
 			return FALSE;
-		}
-
-		if (gs_plugin_get_symbol (plugin, "gs_plugin_refine_wildcard") != NULL) {
-			/* use a copy of the list for the loop because a function called
-			 * on the plugin may affect the list which can lead to problems
-			 * (e.g. inserting an app in the list on every call results in
-			 * an infinite loop) */
-			app_list = gs_app_list_copy (list);
-			helper->function_name = "gs_plugin_refine_wildcard";
-
-			for (guint j = 0; j < gs_app_list_length (app_list); j++) {
-				GsApp *app = gs_app_list_index (app_list, j);
-				if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
-				    !gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
-								  refine_flags, cancellable, error)) {
-					return FALSE;
-				}
-			}
 		}
 
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
