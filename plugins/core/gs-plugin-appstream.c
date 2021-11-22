@@ -1036,6 +1036,13 @@ gs_plugin_appstream_refine_async (GsPlugin            *plugin,
 				refine_thread_cb, g_steal_pointer (&task));
 }
 
+static gboolean refine_wildcard (GsPluginAppstream    *self,
+                                 GsApp                *app,
+                                 GsAppList            *list,
+                                 GsPluginRefineFlags   refine_flags,
+                                 GCancellable         *cancellable,
+                                 GError              **error);
+
 /* Run in @worker. */
 static void
 refine_thread_cb (GTask        *task,
@@ -1048,6 +1055,7 @@ refine_thread_cb (GTask        *task,
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
 	gboolean found = FALSE;
+	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1079,6 +1087,24 @@ refine_thread_cb (GTask        *task,
 		}
 	}
 
+	/* Refine wildcards.
+	 *
+	 * Use a copy of the list for the loop because a function called
+	 * on the plugin may affect the list which can lead to problems
+	 * (e.g. inserting an app in the list on every call results in
+	 * an infinite loop) */
+	app_list = gs_app_list_copy (list);
+
+	for (guint j = 0; j < gs_app_list_length (app_list); j++) {
+		GsApp *app = gs_app_list_index (app_list, j);
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+		    !refine_wildcard (self, app, list, flags, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	}
+
 	/* success */
 	g_task_return_boolean (task, TRUE);
 }
@@ -1091,24 +1117,20 @@ gs_plugin_appstream_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_refine_wildcard (GsPlugin *plugin,
-			   GsApp *app,
-			   GsAppList *list,
-			   GsPluginRefineFlags refine_flags,
-			   GCancellable *cancellable,
-			   GError **error)
+/* Run in @worker. Silo must be valid */
+static gboolean
+refine_wildcard (GsPluginAppstream    *self,
+                 GsApp                *app,
+                 GsAppList            *list,
+                 GsPluginRefineFlags   refine_flags,
+                 GCancellable         *cancellable,
+                 GError              **error)
 {
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
 	const gchar *id;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GPtrArray) components = NULL;
-
-	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
 
 	/* not enough info to find */
 	id = gs_app_get_id (app);
