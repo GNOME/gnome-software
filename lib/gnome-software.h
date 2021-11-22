@@ -25,6 +25,7 @@
 #include <gs-os-release.h>
 #include <gs-plugin.h>
 #include <gs-plugin-helpers.h>
+#include <gs-plugin-job.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-remote-icon.h>
 #include <gs-utils.h>
