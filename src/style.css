@@ -470,3 +470,17 @@ statuspage.icon-dropshadow image.icon {
 	                  0 1px rgba(0,0,0,0.3),
 	                  -1px 0 rgba(0,0,0,0.1);
 }
+
+window.info scrollbar.vertical {
+  /* The size a typical headerbar takes: 46px + 1px for the bottom border. */
+  margin-top: 47px;
+
+  /* Revelant for scrollbars without .overlay-indicator. */
+  background: none;
+  box-shadow: none;
+}
+
+window.info scrollbar.vertical trough {
+  /* The size a typical headerbar takes: 46px + 1px for the bottom border. */
+  margin-top: 0;
+}
