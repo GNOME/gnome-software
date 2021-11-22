@@ -532,6 +532,7 @@ refine_thread_cb (GTask        *task,
 	GsPluginRefineData *data = task_data;
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
+	g_autoptr(GsAppList) app_list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -544,6 +545,31 @@ refine_thread_cb (GTask        *task,
 		}
 	}
 
+	/* Refine wildcards.
+	 *
+	 * Use a copy of the list for the loop because a function called
+	 * on the plugin may affect the list which can lead to problems
+	 * (e.g. inserting an app in the list on every call results in
+	 * an infinite loop) */
+	app_list = gs_app_list_copy (list);
+
+	for (guint j = 0; j < gs_app_list_length (app_list); j++) {
+		GsApp *app = gs_app_list_index (app_list, j);
+
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+
+		for (guint i = 0; i < self->installations->len; i++) {
+			GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+
+			if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags,
+							 cancellable, &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+	}
+
 	g_task_return_boolean (task, TRUE);
 }
 
@@ -553,26 +579,6 @@ gs_plugin_flatpak_refine_finish (GsPlugin      *plugin,
                                  GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_refine_wildcard (GsPlugin *plugin,
-			   GsApp *app,
-			   GsAppList *list,
-			   GsPluginRefineFlags flags,
-			   GCancellable *cancellable,
-			   GError **error)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags,
-						 cancellable, error)) {
-			return FALSE;
-		}
-	}
-	return TRUE;
 }
 
 gboolean
