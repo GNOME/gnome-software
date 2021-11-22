@@ -115,31 +115,48 @@ gs_plugin_os_release_setup_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_refine_wildcard (GsPlugin *plugin,
-			   GsApp *app,
-			   GsAppList *list,
-			   GsPluginRefineFlags flags,
-			   GCancellable *cancellable,
-			   GError **error)
+static void
+gs_plugin_os_release_refine_async (GsPlugin            *plugin,
+                                   GsAppList           *list,
+                                   GsPluginRefineFlags  flags,
+                                   GCancellable        *cancellable,
+                                   GAsyncReadyCallback  callback,
+                                   gpointer             user_data)
 {
 	GsPluginOsRelease *self = GS_PLUGIN_OS_RELEASE (plugin);
+	g_autoptr(GTask) task = NULL;
 
-	/* match meta-id */
-	if (g_strcmp0 (gs_app_get_id (app), "system") == 0) {
-		/* copy over interesting metadata */
-		if (gs_app_get_install_date (app) != 0 &&
-		    gs_app_get_install_date (self->app_system) == 0) {
-			gs_app_set_install_date (self->app_system,
-			                         gs_app_get_install_date (app));
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_os_release_refine_async);
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		/* match meta-id */
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+		    g_strcmp0 (gs_app_get_id (app), "system") == 0) {
+			/* copy over interesting metadata */
+			if (gs_app_get_install_date (app) != 0 &&
+			    gs_app_get_install_date (self->app_system) == 0) {
+				gs_app_set_install_date (self->app_system,
+					                 gs_app_get_install_date (app));
+			}
+
+			gs_app_list_add (list, self->app_system);
+			break;
 		}
-
-		gs_app_list_add (list, self->app_system);
-		return TRUE;
 	}
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_os_release_refine_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -152,6 +169,8 @@ gs_plugin_os_release_class_init (GsPluginOsReleaseClass *klass)
 
 	plugin_class->setup_async = gs_plugin_os_release_setup_async;
 	plugin_class->setup_finish = gs_plugin_os_release_setup_finish;
+	plugin_class->refine_async = gs_plugin_os_release_refine_async;
+	plugin_class->refine_finish = gs_plugin_os_release_refine_finish;
 }
 
 GType
