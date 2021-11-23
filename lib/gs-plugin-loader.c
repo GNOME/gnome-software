@@ -1294,19 +1294,6 @@ gs_plugin_loader_get_app_str (GsApp *app)
 }
 
 static gboolean
-gs_plugin_loader_app_set_prio (GsApp *app, gpointer user_data)
-{
-	g_autoptr(GsPlugin) plugin = NULL;
-
-	/* if set, copy the priority */
-	plugin = gs_app_dup_management_plugin (app);
-	if (plugin == NULL)
-		return TRUE;
-	gs_app_set_priority (app, gs_plugin_get_priority (plugin));
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
 	/* even without AppData, show things in progress */
@@ -3616,7 +3603,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* filter duplicates with priority, taking into account the source name
 	 * & version, so we combine available updates with the installed app */
-	gs_app_list_filter (list, gs_plugin_loader_app_set_prio, plugin_loader);
 	dedupe_flags = gs_plugin_job_get_dedupe_flags (helper->plugin_job);
 	if (dedupe_flags != GS_APP_LIST_FILTER_FLAG_NONE)
 		gs_app_list_filter_duplicates (list, dedupe_flags);

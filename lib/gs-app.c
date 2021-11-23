@@ -48,6 +48,7 @@
 #include "gs-key-colors.h"
 #include "gs-os-release.h"
 #include "gs-plugin.h"
+#include "gs-plugin-private.h"
 #include "gs-remote-icon.h"
 #include "gs-utils.h"
 
@@ -564,8 +565,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	}
 	if (priv->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
-	if (priv->priority != 0)
-		gs_app_kv_printf (str, "priority", "%u", priv->priority);
+	if (gs_app_get_priority (app) != 0)
+		gs_app_kv_printf (str, "priority", "%u", gs_app_get_priority (app));
 	if (priv->version != NULL)
 		gs_app_kv_lpad (str, "version", priv->version);
 	if (priv->version_ui != NULL)
@@ -4807,6 +4808,15 @@ gs_app_get_priority (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
+
+	/* If the priority hasn’t been explicitly set, fetch it from the app’s
+	 * management plugin. */
+	if (priv->priority == 0) {
+		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (app);
+		if (plugin != NULL)
+			return gs_plugin_get_priority (plugin);
+	}
+
 	return priv->priority;
 }
 
