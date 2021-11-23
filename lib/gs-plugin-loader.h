@@ -109,4 +109,7 @@ void		 gs_plugin_loader_claim_job_error	(GsPluginLoader *plugin_loader,
 							 GsPluginJob *job,
 							 const GError *error);
 
+gboolean	 gs_plugin_loader_app_is_valid		(GsApp *app,
+							 GsPluginRefineFlags flags);
+
 G_END_DECLS

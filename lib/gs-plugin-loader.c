@@ -1274,11 +1274,10 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
+gboolean
+gs_plugin_loader_app_is_valid (GsApp               *app,
+                               GsPluginRefineFlags  refine_flags)
 {
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
-
 	/* never show addons */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
 		g_debug ("app invalid as addon %s",
@@ -1347,8 +1346,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (!gs_plugin_job_has_refine_flags (helper->plugin_job,
-					     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
+	if (!(refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
 	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC &&
 	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_NONE) {
 		g_debug ("app invalid as only a %s: %s",
@@ -1378,9 +1376,18 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 }
 
 static gboolean
+gs_plugin_loader_app_is_valid_filter (GsApp    *app,
+                                      gpointer  user_data)
+{
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
+
+	return gs_plugin_loader_app_is_valid (app, gs_plugin_job_get_refine_flags (helper->plugin_job));
+}
+
+static gboolean
 gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 {
-	return gs_plugin_loader_app_is_valid (app, user_data) &&
+	return gs_plugin_loader_app_is_valid_filter (app, user_data) &&
 		(gs_app_is_updatable (app) || gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
 }
 
@@ -3653,30 +3660,30 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* filter package list */
 	switch (action) {
 	case GS_PLUGIN_ACTION_URL_TO_APP:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_INSTALLED:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_installed, helper);
 		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
 			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
 		} else {
-			gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+			gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 			gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		}
 		break;
@@ -3685,15 +3692,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_REFINE:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_GET_POPULAR:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
