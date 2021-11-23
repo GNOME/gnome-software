@@ -193,44 +193,9 @@
           <object class="GtkStackPage">
             <property name="name">no-results</property>
             <property name="child">
-              <object class="GtkGrid" id="noresults_grid_overview">
-                <property name="hexpand">True</property>
-                <property name="vexpand">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="row-spacing">12</property>
-                <property name="column-spacing">12</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-                <child>
-                  <object class="GtkImage" id="noappdata_icon">
-                    <property name="icon_name">org.gnome.Software-symbolic</property>
-                    <property name="pixel-size">64</property>
-                    <style>
-                      <class name="dim-label"/>
-                    </style>
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="noappdata_label">
-                    <property name="label" translatable="yes">No Application Data Found</property>
-                    <property name="halign">start</property>
-                    <property name="valign">center</property>
-                    <property name="wrap">True</property>
-                    <attributes>
-                      <attribute name="scale" value="1.4"/>
-                    </attributes>
-                    <layout>
-                      <property name="column">1</property>
-                      <property name="row">0</property>
-                    </layout>
-                  </object>
-                </child>
+              <object class="AdwStatusPage" id="noresults_grid_overview">
+                <property name="icon_name">org.gnome.Software-symbolic</property>
+                <property name="title" translatable="yes">No Application Data Found</property>
               </object>
             </property>
           </object>
