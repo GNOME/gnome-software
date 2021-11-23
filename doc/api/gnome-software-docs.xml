@@ -320,7 +320,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
         <para>
           By filling in the optional details (which can also be filled in using
-          <code>gs_plugin_refine()</code> you can also make the details
+          <code>refine_async()</code> you can also make the details
           page a much more exciting place.
           Adding a set of screenshots is left as an exercise to the reader.
         </para>
@@ -447,30 +447,48 @@ gs_plugin_refresh (GsPlugin *plugin,
         <example>
           <title>Refine example</title>
           <programlisting>
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-                  GsAppList *list,
-                  GsPluginRefineFlags flags,
-                  GCancellable *cancellable,
-                  GError **error)
+static void
+gs_plugin_example_refine_async (GsPlugin *plugin,
+                                GsAppList *list,
+                                GsPluginRefineFlags flags,
+                                GCancellable *cancellable,
+                                GAsyncReadyCallback callback,
+                                gpointer user_data)
 {
+  g_autoptr(GTask) task = NULL;
+
+  task = g_task_new (plugin, cancellable, callback, user_data);
+  g_task_set_source_tag (task, gs_plugin_example_refine_async);
+
   /* not required */
-  if ((flags &amp; GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
-    return TRUE;
+  if ((flags &amp; GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0) {
+    g_task_return_boolean (task, TRUE);
+    return;
+  }
 
   for (guint i = 0; i &lt; gs_app_list_length (list); i++) {
     GsApp *app = gs_app_list_index (list, i);
 
     /* already set */
-    if (gs_app_get_license (app) != NULL)
-      return TRUE;
+    if (gs_app_get_license (app) != NULL) {
+      g_task_return_boolean (task, TRUE);
+      return;
+    }
 
     /* FIXME, not just hardcoded! */
     if (g_strcmp0 (gs_app_get_id (app, "chiron.desktop") == 0))
       gs_app_set_license (app, "GPL-2.0 and LGPL-2.0+");
   }
 
-  return TRUE;
+  g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_example_refine_finish (GsPlugin *plugin,
+                                 GAsyncResult *result,
+                                 GError **error)
+{
+  return g_task_propagate_boolean (G_TASK (result), error);
 }
           </programlisting>
         </example>
