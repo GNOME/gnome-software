@@ -283,13 +283,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	g_slice_free (GsPluginLoaderHelper, helper);
 }
 
-static void
-gs_plugin_loader_job_debug (GsPluginLoaderHelper *helper)
-{
-	g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-	g_debug ("%s", str);
-}
-
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free)
 
 static gint
@@ -1593,6 +1586,7 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 	GsCategory * const *categories = NULL;
 	gsize n_categories;
+	g_autofree gchar *job_debug = NULL;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -1631,7 +1625,8 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 #endif  /* HAVE_SYSPROF */
 
 	/* show elapsed time */
-	gs_plugin_loader_job_debug (helper);
+	job_debug = gs_plugin_job_to_string (helper->plugin_job);
+	g_debug ("%s", job_debug);
 
 	/* success */
 	if (helper->catlist->len == 0)
@@ -3408,6 +3403,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsAppListSortFunc sort_func;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+	g_autofree gchar *job_debug = NULL;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -3755,7 +3751,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 #endif  /* HAVE_SYSPROF */
 
 	/* show elapsed time */
-	gs_plugin_loader_job_debug (helper);
+	job_debug = gs_plugin_job_to_string (helper->plugin_job);
+	g_debug ("%s", job_debug);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
