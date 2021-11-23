@@ -202,7 +202,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
   /* the trigger exists, so create a fake app */
   app = gs_app_new ("chiron.desktop");
-  gs_app_set_management_plugin (app, "example");
+  gs_app_set_management_plugin (app, plugin);
   gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
   gs_app_set_state (app, GS_APP_STATE_INSTALLED);
   gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
@@ -533,7 +533,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
   if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
-    gs_app_set_management_plugin (app, "fwupd");
+    gs_app_set_management_plugin (app, plugin);
 }
           </programlisting>
         </informalexample>

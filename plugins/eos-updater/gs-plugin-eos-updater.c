@@ -569,7 +569,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;");
@@ -772,8 +772,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* if the OS upgrade has been disabled */

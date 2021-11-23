@@ -148,7 +148,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_SNAP)
-		gs_app_set_management_plugin (app, "snap");
+		gs_app_set_management_plugin (app, plugin);
 
 	if (gs_app_get_id (app) != NULL && g_str_has_prefix (gs_app_get_id (app), "io.snapcraft.")) {
 		g_autofree gchar *name_and_id = NULL;
@@ -161,7 +161,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 			snap_name = name_and_id;
 			/*id = divider + 1;*/ /* NOTE: Should probably validate ID */
 
-			gs_app_set_management_plugin (app, "snap");
+			gs_app_set_management_plugin (app, plugin);
 			gs_app_set_metadata (app, "snap::name", snap_name);
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		}
@@ -359,7 +359,7 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 		gs_plugin_cache_add (GS_PLUGIN (self), cache_id, app);
 	}
 
-	gs_app_set_management_plugin (app, "snap");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
@@ -719,7 +719,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 
 	/* If it is a snap, find the channels that snap provides, otherwise find snaps that match on common id */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") == 0) {
+	if (gs_app_has_management_plugin (app, plugin)) {
 		const gchar *snap_name;
 		g_autoptr(SnapdSnap) snap = NULL;
 
@@ -1083,7 +1083,7 @@ refine_app_with_client (GsPluginSnap         *self,
 	guint64 release_date = 0;
 
 	/* not us */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 		return TRUE;
 
 	snap_name = gs_app_get_metadata_item (app, "snap::name");
@@ -1301,7 +1301,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 
 	/* We can only install apps we know of */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	client = get_client (self, error);
@@ -1391,7 +1391,7 @@ gs_plugin_launch (GsPlugin *plugin,
 	g_autoptr(GAppInfo) info = NULL;
 
 	/* We can only launch apps we know of */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	launch_name = gs_app_get_metadata_item (app, "snap::launch-name");
@@ -1431,7 +1431,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(SnapdClient) client = NULL;
 
 	/* We can only remove apps we know of */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	client = get_client (self, error);

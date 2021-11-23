@@ -126,7 +126,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 		fn = gs_app_get_metadata_item (app, "repos::repo-filename");
 		if (fn == NULL)

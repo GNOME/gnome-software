@@ -56,10 +56,12 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
+	GsPlugin *plugin;
 
 	/* install */
 	app = gs_app_new ("chiron.desktop");
-	gs_app_set_management_plugin (app, "dummy");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
@@ -92,6 +94,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -99,7 +102,8 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 
 	/* update, which should cause an error to be emitted */
 	app = gs_app_new ("chiron.desktop");
-	gs_app_set_management_plugin (app, "dummy");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", app,
@@ -133,10 +137,12 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
-	gs_app_set_management_plugin (app, "dummy");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
+	gs_app_set_management_plugin (app, plugin);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
@@ -160,10 +166,12 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
-	gs_app_set_management_plugin (app, "dummy");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
+	gs_app_set_management_plugin (app, plugin);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
@@ -618,6 +626,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
         GsApp *app1 = NULL;
 	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app3 = NULL;
+	GsPlugin *plugin;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
 	g_autoptr(GsPluginJob) plugin_job3 = NULL;
@@ -646,12 +655,13 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 1);
 
 	app2 = gs_app_new ("chiron.desktop");
-	gs_app_set_management_plugin (app2, "dummy");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
+	gs_app_set_management_plugin (app2, plugin);
 	gs_app_set_state (app2, GS_APP_STATE_AVAILABLE);
 
 	/* use "proxy" prefix so the update function succeeds... */
 	app3 = gs_app_new ("proxy-zeus.desktop");
-	gs_app_set_management_plugin (app3, "dummy");
+	gs_app_set_management_plugin (app3, plugin);
 	gs_app_set_state (app3, GS_APP_STATE_UPDATABLE_LIVE);
 
 	context = g_main_context_new ();

@@ -542,12 +542,15 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 			continue;
 		for (j = 0; j < gs_app_list_length (list); j++) {
 			GsApp *app = gs_app_list_index (list, j);
-			if (gs_app_get_management_plugin (app) != NULL)
-				continue;
+
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
+			if (!gs_app_has_management_plugin (app, NULL))
+				continue;
+
 			adopt_app_func (plugin, app);
-			if (gs_app_get_management_plugin (app) != NULL) {
+
+			if (!gs_app_has_management_plugin (app, NULL)) {
 				g_debug ("%s adopted %s",
 					 gs_plugin_get_name (plugin),
 					 gs_app_get_unique_id (app));
@@ -556,10 +559,12 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 	}
 	for (j = 0; j < gs_app_list_length (list); j++) {
 		GsApp *app = gs_app_list_index (list, j);
-		if (gs_app_get_management_plugin (app) != NULL)
-			continue;
+
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
+		if (!gs_app_has_management_plugin (app, NULL))
+			continue;
+
 		g_debug ("nothing adopted %s", gs_app_get_unique_id (app));
 	}
 }
@@ -1291,15 +1296,10 @@ gs_plugin_loader_get_app_str (GsApp *app)
 static gboolean
 gs_plugin_loader_app_set_prio (GsApp *app, gpointer user_data)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	GsPlugin *plugin;
-	const gchar *tmp;
+	g_autoptr(GsPlugin) plugin = NULL;
 
 	/* if set, copy the priority */
-	tmp = gs_app_get_management_plugin (app);
-	if (tmp == NULL)
-		return TRUE;
-	plugin = gs_plugin_loader_find_plugin (plugin_loader, tmp);
+	plugin = gs_app_dup_management_plugin (app);
 	if (plugin == NULL)
 		return TRUE;
 	gs_app_set_priority (app, gs_plugin_get_priority (plugin));

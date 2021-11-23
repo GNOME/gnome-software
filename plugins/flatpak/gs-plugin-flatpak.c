@@ -101,7 +101,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK)
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 }
 
 static gboolean
@@ -295,10 +295,8 @@ gs_plugin_flatpak_get_handler (GsPluginFlatpak *self,
 	const gchar *object_id;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (GS_PLUGIN (self))) != 0) {
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 		return NULL;
-	}
 
 	/* specified an explicit name */
 	object_id = gs_flatpak_app_get_object_id (app);
@@ -365,10 +363,8 @@ refine_app (GsPluginFlatpak      *self,
             GError              **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (GS_PLUGIN (self))) != 0) {
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 		return TRUE;
-	}
 
 	/* get the runtime first */
 	if (!gs_plugin_flatpak_refine_app (self, app, flags, cancellable, error))
@@ -1284,7 +1280,7 @@ gs_plugin_flatpak_file_to_app_repo (GsPluginFlatpak  *self,
 	}
 
 	/* this is new */
-	gs_app_set_management_plugin (app, gs_plugin_get_name (GS_PLUGIN (self)));
+	gs_app_set_management_plugin (app, GS_PLUGIN (self));
 	return g_steal_pointer (&app);
 }
 

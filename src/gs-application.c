@@ -603,16 +603,19 @@ details_pkg_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *name;
-	const gchar *plugin;
+	const gchar *plugin_name;
 	g_autoptr (GsApp) a = NULL;
 
 	gs_application_present_window (app, NULL);
 
-	g_variant_get (parameter, "(&s&s)", &name, &plugin);
+	g_variant_get (parameter, "(&s&s)", &name, &plugin_name);
 	a = gs_app_new (NULL);
 	gs_app_add_source (a, name);
-	if (strcmp (plugin, "") != 0)
+	if (strcmp (plugin_name, "") != 0) {
+		GsPlugin *plugin = gs_plugin_loader_find_plugin (app->plugin_loader, plugin_name);
 		gs_app_set_management_plugin (a, plugin);
+	}
+
 	gs_shell_reset_state (app->shell);
 	gs_shell_show_app (app->shell, a);
 }
@@ -784,14 +787,15 @@ launch_activated (GSimpleAction *action,
 {
 	GsApplication *self = GS_APPLICATION (data);
 	GsApp *app = NULL;
-	const gchar *id, *management_plugin;
+	const gchar *id, *management_plugin_name;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) search_job = NULL;
 	g_autoptr(GsPluginJob) launch_job = NULL;
 	g_autoptr(GError) error = NULL;
 	guint ii, len;
+	GsPlugin *management_plugin;
 
-	g_variant_get (parameter, "(&s&s)", &id, &management_plugin);
+	g_variant_get (parameter, "(&s&s)", &id, &management_plugin_name);
 
 	search_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", id,
@@ -801,21 +805,23 @@ launch_activated (GSimpleAction *action,
 					 NULL);
 	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
 	if (!list) {
-		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin, error ? error->message : "Unknown error");
+		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");
 		return;
 	}
+
+	management_plugin = gs_plugin_loader_find_plugin (self->plugin_loader, management_plugin_name);
 
 	len = gs_app_list_length (list);
 	for (ii = 0; ii < len && !app; ii++) {
 		GsApp *list_app = gs_app_list_index (list, ii);
 
 		if (gs_app_is_installed (list_app) &&
-		    g_strcmp0 (gs_app_get_management_plugin (list_app), management_plugin) == 0)
+		    gs_app_has_management_plugin (list_app, management_plugin))
 			app = list_app;
 	}
 
 	if (!app) {
-		g_warning ("Did not find application '%s' from '%s'", id, management_plugin);
+		g_warning ("Did not find application '%s' from '%s'", id, management_plugin_name);
 		return;
 	}
 

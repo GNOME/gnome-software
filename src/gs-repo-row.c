@@ -196,7 +196,7 @@ static void
 gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 {
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (self);
-	GsPlugin *plugin;
+	g_autoptr(GsPlugin) plugin = NULL;
 	g_autofree gchar *comment = NULL;
 	const gchar *tmp;
 
@@ -207,7 +207,7 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 	                         G_CALLBACK (repo_state_changed_cb),
 	                         self, 0);
 
-	plugin = gs_plugin_loader_find_plugin (priv->plugin_loader, gs_app_get_management_plugin (repo));
+	plugin = gs_app_dup_management_plugin (repo);
 	priv->supports_remove = plugin != NULL && gs_plugin_get_action_supported (plugin, GS_PLUGIN_ACTION_REMOVE_REPO);
 	priv->supports_enable_disable = plugin != NULL &&
 		gs_plugin_get_action_supported (plugin, GS_PLUGIN_ACTION_ENABLE_REPO) &&

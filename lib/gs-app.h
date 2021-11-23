@@ -17,6 +17,9 @@
 
 G_BEGIN_DECLS
 
+/* Dependency loop means we can’t include the header. */
+typedef struct _GsPlugin GsPlugin;
+
 #define GS_TYPE_APP (gs_app_get_type ())
 
 G_DECLARE_DERIVABLE_TYPE (GsApp, gs_app, GS, APP, GObject)
@@ -361,9 +364,11 @@ void		 gs_app_set_update_details_text	(GsApp		*app,
 AsUrgencyKind	 gs_app_get_update_urgency	(GsApp		*app);
 void		 gs_app_set_update_urgency	(GsApp		*app,
 						 AsUrgencyKind	 update_urgency);
-const gchar	*gs_app_get_management_plugin	(GsApp		*app);
+GsPlugin	*gs_app_dup_management_plugin	(GsApp		*app);
+gboolean	 gs_app_has_management_plugin	(GsApp		*app,
+						 GsPlugin	*plugin);
 void		 gs_app_set_management_plugin	(GsApp		*app,
-						 const gchar	*management_plugin);
+						 GsPlugin	*management_plugin);
 GIcon		*gs_app_get_icon_for_size	(GsApp		*app,
 						 guint		 size,
 						 guint		 scale,
