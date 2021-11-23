@@ -15,7 +15,6 @@
 
 typedef struct
 {
-	GsPluginLoader	*plugin_loader; /* owned */
 	GsApp		*repo;
 	GtkWidget	*name_label;
 	GtkWidget	*hostname_label;
@@ -292,8 +291,6 @@ gs_repo_row_dispose (GObject *object)
 		priv->refresh_idle_id = 0;
 	}
 
-	g_clear_object (&priv->plugin_loader);
-
 	G_OBJECT_CLASS (gs_repo_row_parent_class)->dispose (object);
 }
 
@@ -345,12 +342,8 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 
 /*
  * gs_repo_row_new:
- * @plugin_loader: a #GsPluginLoader
  * @repo: a #GsApp to represent the repo in the new row
  * @always_allow_enable_disable: always allow enabled/disable of the @repo
- *
- * The @plugin_loader is used to check which operations the associated plugin
- * for the @repo can do and which not, to show only relevant buttons on the row.
  *
  * The @always_allow_enable_disable, when %TRUE, means that the @repo in this row
  * can be always enabled/disabled by the user, if supported by the related plugin,
@@ -359,13 +352,11 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
  * Returns: (transfer full): a newly created #GsRepoRow
  */
 GtkWidget *
-gs_repo_row_new (GsPluginLoader	*plugin_loader,
-		 GsApp *repo,
+gs_repo_row_new (GsApp *repo,
 		 gboolean always_allow_enable_disable)
 {
 	GsRepoRow *row = g_object_new (GS_TYPE_REPO_ROW, NULL);
 	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
-	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->always_allow_enable_disable = always_allow_enable_disable;
 	gs_repo_row_set_repo (row, repo);
 	return GTK_WIDGET (row);

@@ -20,8 +20,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsReposSection, gs_repos_section, GS, REPOS_SECTION, AdwPreferencesGroup)
 
-GtkWidget	*gs_repos_section_new			(GsPluginLoader		*plugin_loader,
-							 gboolean		 always_allow_enable_disable);
+GtkWidget	*gs_repos_section_new			(gboolean		 always_allow_enable_disable);
 void		 gs_repos_section_add_repo		(GsReposSection		*self,
 							 GsApp			*repo);
 const gchar	*gs_repos_section_get_title		(GsReposSection		*self);
