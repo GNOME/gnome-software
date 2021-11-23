@@ -3871,6 +3871,59 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);
 }
 
+static void
+run_job_cb (GObject      *source_object,
+            GAsyncResult *result,
+            gpointer      user_data)
+{
+	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
+	GsPluginJobClass *job_class;
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec = GPOINTER_TO_SIZE (g_task_get_task_data (task));
+#endif  /* HAVE_SYSPROF */
+	g_autoptr(GError) local_error = NULL;
+
+#ifdef HAVE_SYSPROF
+	if (plugin_loader->sysprof_writer != NULL) {
+		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", G_OBJECT_TYPE_NAME (plugin_job), NULL);
+		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (plugin_job);
+		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 sysprof_name,
+						 sysprof_message);
+	}
+#endif  /* HAVE_SYSPROF */
+
+	/* if the plugin used updates-changed actually schedule it now */
+	if (plugin_loader->updates_changed_cnt > 0)
+		gs_plugin_loader_updates_changed (plugin_loader);
+
+	/* FIXME: This will eventually go away when
+	 * gs_plugin_loader_job_process_finish() is removed. */
+	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
+
+	g_assert (job_class->run_finish != NULL);
+
+	if (!job_class->run_finish (plugin_job, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (GS_IS_PLUGIN_JOB_REFINE (plugin_job)) {
+		GsAppList *list = gs_plugin_job_refine_get_result_list (GS_PLUGIN_JOB_REFINE (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
+	}
+
+	g_assert_not_reached ();
+}
+
 /**
  * gs_plugin_loader_job_process_async:
  * @plugin_loader: A #GsPluginLoader
@@ -3888,6 +3941,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
 {
+	GsPluginJobClass *job_class;
 	GsPluginAction action;
 	GsPluginLoaderHelper *helper;
 	g_autoptr(GTask) task = NULL;
@@ -3897,6 +3951,29 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* If the job provides a more specific async run function, use that.
+	 *
+	 * FIXME: This will eventually go away when
+	 * gs_plugin_loader_job_process_async() is removed. */
+	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
+
+	if (job_class->run_async != NULL) {
+#ifdef HAVE_SYSPROF
+		gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
+		task = g_task_new (plugin_loader, cancellable, callback, user_data);
+		task_name = g_strdup_printf ("%s %s", G_STRFUNC, G_OBJECT_TYPE_NAME (plugin_job));
+		g_task_set_name (task, task_name);
+#ifdef HAVE_SYSPROF
+		g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
+#endif
+
+		job_class->run_async (plugin_job, plugin_loader, cancellable,
+				      run_job_cb, g_steal_pointer (&task));
+		return;
+	}
 
 	action = gs_plugin_job_get_action (plugin_job);
 	task_name = g_strdup_printf ("%s %s", G_STRFUNC, gs_plugin_action_to_string (action));

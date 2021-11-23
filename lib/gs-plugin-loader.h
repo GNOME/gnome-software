@@ -17,12 +17,13 @@
 #include "gs-odrs-provider.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
-#include "gs-plugin-job.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_PLUGIN_LOADER		(gs_plugin_loader_get_type ())
 G_DECLARE_FINAL_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObject)
+
+#include "gs-plugin-job.h"
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_job_process_async	(GsPluginLoader	*plugin_loader,

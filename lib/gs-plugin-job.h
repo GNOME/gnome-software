@@ -20,10 +20,21 @@ G_BEGIN_DECLS
 
 G_DECLARE_DERIVABLE_TYPE (GsPluginJob, gs_plugin_job, GS, PLUGIN_JOB, GObject)
 
+#include "gs-plugin-loader.h"
+
 struct _GsPluginJobClass
 {
-	GObjectClass	parent_class;
-}
+	GObjectClass parent_class;
+
+	void (*run_async) (GsPluginJob         *self,
+	                   GsPluginLoader      *plugin_loader,
+	                   GCancellable        *cancellable,
+	                   GAsyncReadyCallback  callback,
+	                   gpointer             user_data);
+	gboolean (*run_finish) (GsPluginJob   *self,
+	                        GAsyncResult  *result,
+	                        GError       **error);
+};
 
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
