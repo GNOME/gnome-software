@@ -120,7 +120,6 @@ get_client (GsPluginSnap  *self,
 static void
 gs_plugin_snap_init (GsPluginSnap *self)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr (GError) error = NULL;
 
@@ -128,21 +127,21 @@ gs_plugin_snap_init (GsPluginSnap *self)
 
 	client = get_client (self, &error);
 	if (client == NULL) {
-		gs_plugin_set_enabled (plugin, FALSE);
+		gs_plugin_set_enabled (GS_PLUGIN (self), FALSE);
 		return;
 	}
 
 	self->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) cache_entry_free);
 
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "icons");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "icons");
 
 	/* Override hardcoded popular apps */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "hardcoded-popular");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "hardcoded-popular");
 
 	/* set name of MetaInfo file */
-	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Snap");
+	gs_plugin_set_appstream_id (GS_PLUGIN (self), "org.gnome.Software.Plugin.Snap");
 }
 
 void
@@ -340,7 +339,7 @@ snap_guess_component_kind (SnapdSnap *snap)
 }
 
 static GsApp *
-snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
+snap_to_app (GsPluginSnap *self, SnapdSnap *snap)
 {
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
@@ -349,20 +348,20 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	appstream_id = get_appstream_id (snap);
 	unique_id = g_strdup_printf ("system/snap/*/%s/*", appstream_id);
 
-	app = gs_plugin_cache_lookup (plugin, unique_id);
+	app = gs_plugin_cache_lookup (GS_PLUGIN (self), unique_id);
 	if (app == NULL) {
 		app = gs_app_new (appstream_id);
 		gs_app_set_from_unique_id (app, unique_id, snap_guess_component_kind (snap));
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
-		gs_plugin_cache_add (plugin, unique_id, app);
+		gs_plugin_cache_add (GS_PLUGIN (self), unique_id, app);
 	}
 
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
+	if (gs_plugin_check_distro_id (GS_PLUGIN (self), "ubuntu"))
 		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 
 	return g_steal_pointer (&app);
@@ -398,7 +397,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
-	app = snap_to_app (plugin, g_ptr_array_index (snaps, 0));
+	app = snap_to_app (self, g_ptr_array_index (snaps, 0));
 	gs_app_list_add (list, app);
 
 	return TRUE;
@@ -463,7 +462,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
+		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i));
 		gs_app_list_add (list, app);
 	}
 
@@ -526,7 +525,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			if (snaps == NULL)
 				return FALSE;
 			for (j = 0; j < snaps->len; j++) {
-				g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, j));
+				g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j));
 				gs_app_list_add (list, app);
 			}
 		}
@@ -559,7 +558,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		SnapdSnap *snap = g_ptr_array_index (snaps, i);
 		g_autoptr(GsApp) app = NULL;
 
-		app = snap_to_app (plugin, snap);
+		app = snap_to_app (self, snap);
 		gs_app_list_add (list, app);
 	}
 
@@ -584,7 +583,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
+		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i));
 		gs_app_list_add (list, app);
 	}
 
@@ -681,7 +680,7 @@ expand_channel_name (const gchar *name)
 }
 
 static void
-add_channels (GsPlugin *plugin, SnapdSnap *snap, GsAppList *list)
+add_channels (GsPluginSnap *self, SnapdSnap *snap, GsAppList *list)
 {
 	GStrv tracks;
 	GPtrArray *channels;
@@ -701,7 +700,7 @@ add_channels (GsPlugin *plugin, SnapdSnap *snap, GsAppList *list)
 		g_autoptr(GsApp) app = NULL;
 		g_autofree gchar *expanded_name = NULL;
 
-		app = snap_to_app (plugin, snap);
+		app = snap_to_app (self, snap);
 		expanded_name = expand_channel_name (snapd_channel_get_name (channel));
 		gs_app_set_branch (app, expanded_name);
 
@@ -731,7 +730,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			return TRUE;
 		}
 
-		add_channels (plugin, snap, list);
+		add_channels (self, snap, list);
 	} else {
 		g_autoptr(GPtrArray) snaps = NULL;
 		guint i;
@@ -742,7 +741,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			SnapdSnap *store_snap;
 
 			store_snap = get_store_snap (self, snapd_snap_get_name (snap), TRUE, cancellable, NULL);
-			add_channels (plugin, store_snap, list);
+			add_channels (self, store_snap, list);
 		}
 		return TRUE;
 	}
@@ -1451,7 +1450,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* Convert SnapdSnap to a GsApp */
-		app = snap_to_app (plugin, snap);
+		app = snap_to_app (self, snap);
 
 		/* If for some reason the app is already getting updated, then
 		 * don't change its state */
