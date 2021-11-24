@@ -519,7 +519,19 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	return TRUE;
 }
 
-static void
+/**
+ * gs_plugin_loader_run_adopt:
+ * @plugin_loader: a #GsPluginLoader
+ * @list: list of apps to try and adopt
+ *
+ * Call the gs_plugin_adopt_app() function on each plugin on each app in @list
+ * to try and find the plugin which should manage each app.
+ *
+ * This function is intended to be used by internal gnome-software code.
+ *
+ * Since: 42
+ */
+void
 gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 {
 	guint i;
