@@ -4245,6 +4245,29 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 	return FALSE;
 }
 
+/**
+ * gs_plugin_loader_get_plugins:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the set of currently loaded plugins.
+ *
+ * This includes disabled plugins, which should be checked for using
+ * gs_plugin_get_enabled().
+ *
+ * This is intended to be used by internal gnome-software code. Plugin and UI
+ * code should typically use #GsPluginJob to run operations.
+ *
+ * Returns: (transfer none) (element-type GsPlugin): list of #GsPlugins
+ * Since: 42
+ */
+GPtrArray *
+gs_plugin_loader_get_plugins (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->plugins;
+}
+
 static void app_create_cb (GObject      *source_object,
                            GAsyncResult *result,
                            gpointer      user_data);
