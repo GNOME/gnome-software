@@ -4018,12 +4018,21 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		}
 		if (apps != NULL && g_strv_length (apps) > 0) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
+			g_autoptr(GsPluginJob) refine_job = NULL;
+
 			for (guint i = 0; apps[i] != NULL; i++) {
 				g_autoptr(GsApp) app = gs_app_new (apps[i]);
 				gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 				gs_app_list_add (list, app);
 			}
-			gs_plugin_job_set_action (plugin_job, GS_PLUGIN_ACTION_REFINE);
+
+			/* Refine the list of wildcard popular apps and return
+			 * to the caller. */
+			refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+			gs_plugin_loader_job_process_async (plugin_loader, refine_job,
+							    cancellable,
+							    callback, user_data);
+			return;
 		}
 	}
 
