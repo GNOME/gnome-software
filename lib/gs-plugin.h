@@ -43,6 +43,14 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   doesn’t need to be explicitly shut down.
  * @shutdown_finish: (nullable): Finish method for @shutdown_async. Must be
  *   implemented if @shutdown_async is implemented.
+ * @refine_async: (nullable): Refining looks up and adds data to #GsApps. The
+ *   apps to refine are provided in a list, and the flags specify what data to
+ *   look up and add. Refining certain kinds of data can be very expensive (for
+ *   example, requiring network requests), which is why it’s not all loaded by
+ *   default. By refining multiple applications at once, data requests can be
+ *   batched by the plugin where possible.
+ * @refine_finish: (nullable): Finish method for @refine_async. Must be
+ *   implemented if @refine_async is implemented.
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -86,6 +94,16 @@ struct _GsPluginClass
 							 GAsyncReadyCallback	 callback,
 							 gpointer		 user_data);
 	gboolean		(*shutdown_finish)	(GsPlugin		*plugin,
+							 GAsyncResult		*result,
+							 GError			**error);
+
+	void			(*refine_async)		(GsPlugin		*plugin,
+							 GsAppList		*list,
+							 GsPluginRefineFlags	 flags,
+							 GCancellable		*cancellable,
+							 GAsyncReadyCallback	 callback,
+							 gpointer		 user_data);
+	gboolean		(*refine_finish)	(GsPlugin		*plugin,
 							 GAsyncResult		*result,
 							 GError			**error);
 
