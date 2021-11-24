@@ -17,6 +17,8 @@
  * SECTION:
  * Sets the package provenance to TRUE if installed by an official
  * software source. Also sets compulsory quirk when a required repository.
+ *
+ * This plugin executes entirely in the main thread.
  */
 
 struct _GsPluginProvenance {
@@ -218,43 +220,69 @@ refine_app (GsPlugin             *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
+static void
+gs_plugin_provenance_refine_async (GsPlugin            *plugin,
+                                   GsAppList           *list,
+                                   GsPluginRefineFlags  flags,
+                                   GCancellable        *cancellable,
+                                   GAsyncReadyCallback  callback,
+                                   gpointer             user_data)
 {
 	GsPluginProvenance *self = GS_PLUGIN_PROVENANCE (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GHashTable) repos = NULL;
 	g_autoptr(GPtrArray) provenance_wildcards = NULL;
 	g_autoptr(GPtrArray) compulsory_wildcards = NULL;
 
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_provenance_refine_async);
+
 	/* nothing to do here */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
-		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
 	repos = g_hash_table_ref (self->repos);
 	provenance_wildcards = self->provenance_wildcards != NULL ? g_ptr_array_ref (self->provenance_wildcards) : NULL;
 	compulsory_wildcards = self->compulsory_wildcards != NULL ? g_ptr_array_ref (self->compulsory_wildcards) : NULL;
+
 	/* nothing to search */
-	if (g_hash_table_size (repos) == 0 && provenance_wildcards == NULL && compulsory_wildcards == NULL)
-		return TRUE;
+	if (g_hash_table_size (repos) == 0 && provenance_wildcards == NULL && compulsory_wildcards == NULL) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (plugin, app, flags, repos, provenance_wildcards, compulsory_wildcards, cancellable, error))
-			return FALSE;
+		if (!refine_app (plugin, app, flags, repos, provenance_wildcards, compulsory_wildcards, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_provenance_refine_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
 gs_plugin_provenance_class_init (GsPluginProvenanceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_provenance_dispose;
+
+	plugin_class->refine_async = gs_plugin_provenance_refine_async;
+	plugin_class->refine_finish = gs_plugin_provenance_refine_finish;
 }
 
 GType
