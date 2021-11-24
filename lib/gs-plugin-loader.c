@@ -615,16 +615,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_REFINE:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
-			GsPluginRefineFunc plugin_func = func;
-			ret = plugin_func (plugin, list, refine_flags, cancellable, &error_local);
-		} else {
-			g_critical ("function_name %s invalid for %s",
-				    helper->function_name,
-				    gs_plugin_action_to_string (action));
-		}
-		break;
 	case GS_PLUGIN_ACTION_UPDATE:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_update_app") == 0) {
 			GsPluginActionFunc plugin_func = func;
@@ -1147,7 +1137,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 #endif
 
 	/* Refining is done separately as it’s a special action */
-	g_assert (action != GS_PLUGIN_ACTION_REFINE);
+	g_assert (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job));
 
 	/* Download updated external appstream before anything else */
 #ifdef ENABLE_EXTERNAL_APPSTREAM
@@ -3430,7 +3420,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_plugin_loader_pending_apps_add (plugin_loader, helper);
 
 	/* run each plugin */
-	if (action != GS_PLUGIN_ACTION_REFINE) {
+	if (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
 		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
 			if (add_to_pending_array) {
 				gs_app_set_state_recover (gs_plugin_job_get_app (helper->plugin_job));
@@ -3518,10 +3508,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			return;
 		}
 		break;
-	case GS_PLUGIN_ACTION_REFINE:
-		break;
 	default:
-		if (!helper->anything_ran) {
+		if (!helper->anything_ran && !GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job)) {
 			g_debug ("no plugin could handle %s",
 				 gs_plugin_action_to_string (action));
 		}
@@ -3695,9 +3683,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
-	case GS_PLUGIN_ACTION_REFINE:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
