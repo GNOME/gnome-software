@@ -1124,21 +1124,36 @@ find_snap_in_array (GPtrArray   *snaps,
 	return NULL;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
+static void get_snaps_cb (GObject      *object,
+                          GAsyncResult *result,
+                          gpointer      user_data);
+
+static void
+gs_plugin_snap_refine_async (GsPlugin            *plugin,
+                             GsAppList           *list,
+                             GsPluginRefineFlags  flags,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(GPtrArray) snap_names = g_ptr_array_new_with_free_func (NULL);
-	g_autoptr(GPtrArray) local_snaps = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsPluginRefineData) data = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	client = get_client (self, error);
-	if (client == NULL)
-		return FALSE;
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_refine_async);
+
+	data = gs_plugin_refine_data_new (list, flags);
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) gs_plugin_refine_data_free);
+
+	client = get_client (self, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* Get information from locally installed snaps */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -1152,7 +1167,23 @@ gs_plugin_refine (GsPlugin             *plugin,
 
 	g_ptr_array_add (snap_names, NULL);  /* NULL terminator */
 
-	local_snaps = snapd_client_get_snaps_sync (client, SNAPD_GET_SNAPS_FLAGS_NONE, (gchar **) snap_names->pdata, cancellable, NULL);
+	snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, (gchar **) snap_names->pdata, cancellable, get_snaps_cb, g_steal_pointer (&task));
+}
+
+static void
+get_snaps_cb (GObject      *object,
+              GAsyncResult *result,
+              gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginSnap *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginRefineData *data = g_task_get_task_data (task);
+	GsAppList *list = data->list;
+	GsPluginRefineFlags flags = data->flags;
+	g_autoptr(GPtrArray) local_snaps = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1331,7 +1362,15 @@ gs_plugin_refine (GsPlugin             *plugin,
 		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_snap_refine_finish (GsPlugin      *plugin,
+                              GAsyncResult  *result,
+                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1598,6 +1637,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 
 	plugin_class->setup_async = gs_plugin_snap_setup_async;
 	plugin_class->setup_finish = gs_plugin_snap_setup_finish;
+	plugin_class->refine_async = gs_plugin_snap_refine_async;
+	plugin_class->refine_finish = gs_plugin_snap_refine_finish;
 }
 
 GType
