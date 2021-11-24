@@ -3533,17 +3533,25 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
 	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, NULL);
 	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
-		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
-		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_refine_new (list, filter_flags);
-		helper2 = gs_plugin_loader_helper_new (helper->plugin_loader, plugin_job);
-		helper2->function_name_parent = helper->function_name;
+		g_autoptr(GsPluginJob) refine_job = NULL;
+		g_autoptr(GAsyncResult) refine_result = NULL;
+
 		g_debug ("running filter flags with early refine");
-		if (!gs_plugin_loader_run_refine_filter (helper2, list,
-							 filter_flags,
-							 cancellable, &error)) {
+
+		refine_job = gs_plugin_job_refine_new (list, filter_flags);
+		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
+						    cancellable,
+						    async_result_cb,
+						    &refine_result);
+
+		/* FIXME: Make this sync until the enclosing function is
+		 * refactored to be async. */
+		while (refine_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error)) {
 			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, error);
+			g_task_return_error (task, g_steal_pointer (&error));
 			return;
 		}
 	}
