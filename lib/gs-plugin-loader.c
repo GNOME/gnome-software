@@ -2485,6 +2485,71 @@ plugin_setup_cb (GObject      *source_object,
 	g_main_context_wakeup (data->context);
 }
 
+typedef struct {
+	GsPluginLoader *plugin_loader;  /* (unowned) */
+	GMainContext *context;  /* (owned) */
+	guint n_pending;
+} ShutdownData;
+
+static void plugin_shutdown_cb (GObject      *source_object,
+                                GAsyncResult *result,
+                                gpointer      user_data);
+
+static void
+gs_plugin_loader_call_shutdown (GsPluginLoader *plugin_loader,
+                                GCancellable   *cancellable)
+{
+	ShutdownData shutdown_data;
+
+	shutdown_data.plugin_loader = plugin_loader;
+	shutdown_data.n_pending = 1;  /* incremented until all operations have been started */
+	shutdown_data.context = g_main_context_new ();
+
+	g_main_context_push_thread_default (shutdown_data.context);
+
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
+
+		if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
+			GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
+								      plugin_shutdown_cb, &shutdown_data);
+			shutdown_data.n_pending++;
+		}
+	}
+
+	/* Wait for setup to complete in all plugins. */
+	shutdown_data.n_pending--;
+
+	while (shutdown_data.n_pending > 0)
+		g_main_context_iteration (shutdown_data.context, TRUE);
+
+	g_main_context_pop_thread_default (shutdown_data.context);
+	g_clear_pointer (&shutdown_data.context, g_main_context_unref);
+}
+
+static void
+plugin_shutdown_cb (GObject      *source_object,
+                    GAsyncResult *result,
+                    gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	ShutdownData *data = user_data;
+	g_autoptr(GError) local_error = NULL;
+
+	g_assert (GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish != NULL);
+
+	if (!GS_PLUGIN_GET_CLASS (plugin)->shutdown_finish (plugin, result, &local_error)) {
+		g_debug ("disabling %s as shutdown failed: %s",
+			 gs_plugin_get_name (plugin),
+			 local_error->message);
+		gs_plugin_set_enabled (plugin, FALSE);
+	}
+
+	/* Indicate this plugin has finished shutting down. */
+	data->n_pending--;
+	g_main_context_wakeup (data->context);
+}
+
 /**
  * gs_plugin_loader_setup_again:
  * @plugin_loader: a #GsPluginLoader
@@ -2498,6 +2563,9 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
+
+	/* Shut down */
+	gs_plugin_loader_call_shutdown (plugin_loader, NULL);
 
 	/* clear global cache */
 	gs_plugin_loader_clear_caches (plugin_loader);
@@ -2859,11 +2927,7 @@ gs_plugin_loader_dispose (GObject *object)
 
 	if (plugin_loader->plugins != NULL) {
 		/* Shut down all the plugins first. */
-		for (guint i = 0; i < plugin_loader->plugins->len; i++) {
-			GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
-			if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL)
-				GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, NULL, NULL, NULL);
-		}
+		gs_plugin_loader_call_shutdown (plugin_loader, NULL);
 
 		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
