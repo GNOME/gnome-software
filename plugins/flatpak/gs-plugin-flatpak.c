@@ -497,22 +497,62 @@ refine_app (GsPluginFlatpak      *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
+static void refine_thread_cb (GTask        *task,
+                              gpointer      source_object,
+                              gpointer      task_data,
+                              GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_refine_async (GsPlugin            *plugin,
+                                GsAppList           *list,
+                                GsPluginRefineFlags  flags,
+                                GCancellable        *cancellable,
+                                GAsyncReadyCallback  callback,
+                                gpointer             user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_refine_async);
+
+	/* Queue a job to refine the apps. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refine_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+refine_thread_cb (GTask        *task,
+                  gpointer      source_object,
+                  gpointer      task_data,
+                  GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginRefineData *data = task_data;
+	GsAppList *list = data->list;
+	GsPluginRefineFlags flags = data->flags;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, cancellable, error))
-			return FALSE;
+		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_refine_finish (GsPlugin      *plugin,
+                                 GAsyncResult  *result,
+                                 GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -1828,6 +1868,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->setup_finish = gs_plugin_flatpak_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_flatpak_shutdown_async;
 	plugin_class->shutdown_finish = gs_plugin_flatpak_shutdown_finish;
+	plugin_class->refine_async = gs_plugin_flatpak_refine_async;
+	plugin_class->refine_finish = gs_plugin_flatpak_refine_finish;
 }
 
 GType
