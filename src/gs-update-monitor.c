@@ -536,7 +536,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 			"security-timestamp", "x", &security_timestamp_old);
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
-		if (gs_app_get_metadata_item (app, "is-security") != NULL) {
+		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL &&
+		    gs_app_get_size_download (app) > 0 &&
+		    gs_app_get_size_download (app) != GS_APP_SIZE_UNKNOWABLE) {
 			security_timestamp = (guint64) g_get_monotonic_time ();
 			break;
 		}
