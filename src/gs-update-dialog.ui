@@ -100,7 +100,8 @@
                             <child>
                               <object class="GsUpdateList" id="list_box_installed_updates">
                                 <style>
-                                  <class name="content" />
+                                  <!-- FIXME: It's not a GtkListBox, will this work nonetheless‽ -->
+                                  <class name="boxed-list" />
                                 </style>
                               </object>
                             </child>
