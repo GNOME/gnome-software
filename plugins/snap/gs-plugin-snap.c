@@ -339,22 +339,24 @@ snap_guess_component_kind (SnapdSnap *snap)
 }
 
 static GsApp *
-snap_to_app (GsPluginSnap *self, SnapdSnap *snap)
+snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 {
-	g_autofree gchar *appstream_id = NULL;
-	g_autofree gchar *unique_id = NULL;
+	g_autofree gchar *cache_id = NULL;
 	g_autoptr(GsApp) app = NULL;
 
-	appstream_id = get_appstream_id (snap);
-	unique_id = g_strdup_printf ("system/snap/*/%s/*", appstream_id);
+	cache_id = g_strdup_printf ("%s:%s", snapd_snap_get_name (snap), branch != NULL ? branch : "");
 
-	app = gs_plugin_cache_lookup (GS_PLUGIN (self), unique_id);
+	app = gs_plugin_cache_lookup (GS_PLUGIN (self), cache_id);
 	if (app == NULL) {
+		g_autofree gchar *appstream_id = NULL;
+
+		appstream_id = get_appstream_id (snap);
 		app = gs_app_new (appstream_id);
-		gs_app_set_from_unique_id (app, unique_id, snap_guess_component_kind (snap));
+		gs_app_set_kind (app, snap_guess_component_kind (snap));
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		gs_app_set_branch (app, branch);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
-		gs_plugin_cache_add (GS_PLUGIN (self), unique_id, app);
+		gs_plugin_cache_add (GS_PLUGIN (self), cache_id, app);
 	}
 
 	gs_app_set_management_plugin (app, "snap");
@@ -397,7 +399,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
-	app = snap_to_app (self, g_ptr_array_index (snaps, 0));
+	app = snap_to_app (self, g_ptr_array_index (snaps, 0), NULL);
 	gs_app_list_add (list, app);
 
 	return TRUE;
@@ -462,7 +464,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i));
+		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i), NULL);
 		gs_app_list_add (list, app);
 	}
 
@@ -525,7 +527,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			if (snaps == NULL)
 				return FALSE;
 			for (j = 0; j < snaps->len; j++) {
-				g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j));
+				g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j), NULL);
 				gs_app_list_add (list, app);
 			}
 		}
@@ -558,7 +560,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		SnapdSnap *snap = g_ptr_array_index (snaps, i);
 		g_autoptr(GsApp) app = NULL;
 
-		app = snap_to_app (self, snap);
+		app = snap_to_app (self, snap, NULL);
 		gs_app_list_add (list, app);
 	}
 
@@ -583,7 +585,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i));
+		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i), NULL);
 		gs_app_list_add (list, app);
 	}
 
@@ -700,9 +702,8 @@ add_channels (GsPluginSnap *self, SnapdSnap *snap, GsAppList *list)
 		g_autoptr(GsApp) app = NULL;
 		g_autofree gchar *expanded_name = NULL;
 
-		app = snap_to_app (self, snap);
 		expanded_name = expand_channel_name (snapd_channel_get_name (channel));
-		gs_app_set_branch (app, expanded_name);
+		app = snap_to_app (self, snap, expanded_name);
 
 		gs_app_list_add (list, app);
 	}
@@ -1450,7 +1451,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* Convert SnapdSnap to a GsApp */
-		app = snap_to_app (self, snap);
+		app = snap_to_app (self, snap, NULL);
 
 		/* If for some reason the app is already getting updated, then
 		 * don't change its state */
