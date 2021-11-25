@@ -71,9 +71,6 @@ static void
 gs_plugin_flatpak_init (GsPluginFlatpak *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPermission) permission = NULL;
 
 	self->installations = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 
@@ -88,18 +85,6 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Flatpak");
-
-	/* TODO Move this to setup as it’s sync */
-	/* if we can't update the AppStream database system-wide don't even
-	 * pull the data as we can't do anything with it */
-	permission = gs_utils_get_permission (action_id, NULL, &error_local);
-	if (permission == NULL) {
-		g_debug ("no permission for %s: %s", action_id, error_local->message);
-		g_clear_error (&error_local);
-	} else {
-		self->has_system_helper = g_permission_get_allowed (permission) ||
-					  g_permission_get_can_acquire (permission);
-	}
 
 	/* used for self tests */
 	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
@@ -193,8 +178,22 @@ setup_thread_cb (GTask        *task,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
 	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(GPtrArray) installations = NULL;
+	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
+	g_autoptr(GError) permission_error = NULL;
+	g_autoptr(GPermission) permission = NULL;
 
 	assert_in_worker (self);
+
+	/* if we can't update the AppStream database system-wide don't even
+	 * pull the data as we can't do anything with it */
+	permission = gs_utils_get_permission (action_id, NULL, &permission_error);
+	if (permission == NULL) {
+		g_debug ("no permission for %s: %s", action_id, permission_error->message);
+		g_clear_error (&permission_error);
+	} else {
+		self->has_system_helper = g_permission_get_allowed (permission) ||
+					  g_permission_get_can_acquire (permission);
+	}
 
 	/* if we're not just running the tests */
 	if (self->destdir_for_tests == NULL) {
