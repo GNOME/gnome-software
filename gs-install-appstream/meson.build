@@ -15,4 +15,5 @@ executable(
   c_args : ['-DG_LOG_DOMAIN="GsInstallAppstream"'],
   install : true,
   install_dir : get_option('libexecdir'),
+  install_rpath : gs_private_libdir,
 )
