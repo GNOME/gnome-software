@@ -129,13 +129,13 @@ gtk = dependency('gtk4', version : '>= 4.2')
 glib = dependency('glib-2.0', version : '>= 2.66.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
-if get_option('soup3')
-  libsoup = dependency('libsoup-3.0', version : '>= 3.0')
-  libsoupapiversion = '3.0'
-else
+if get_option('soup2')
   libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
   libsoupapiversion = '2.4'
   conf.set('SOUP_HTTP_URI_FLAGS', '(G_URI_FLAGS_HAS_PASSWORD | G_URI_FLAGS_ENCODED_PATH | G_URI_FLAGS_ENCODED_QUERY | G_URI_FLAGS_ENCODED_FRAGMENT | G_URI_FLAGS_SCHEME_NORMALIZE)')
+else
+  libsoup = dependency('libsoup-3.0', version : '>= 3.0')
+  libsoupapiversion = '3.0'
 endif
 libadwaita = dependency('libadwaita-1',
   version: '>=1.0.0.alpha.3',

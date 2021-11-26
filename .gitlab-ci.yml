@@ -11,7 +11,7 @@ cache:
 variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
-  MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr"
+  MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr -Dsoup2=true"
   BUNDLE: "gnome-software-dev.flatpak"
 
 .build:
