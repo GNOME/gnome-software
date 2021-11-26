@@ -529,7 +529,6 @@ _group_apps_by_installation (GsPluginFlatpak *self,
 	return g_steal_pointer (&applist_by_flatpaks);
 }
 
-#if FLATPAK_CHECK_VERSION(1,6,0)
 typedef struct {
 	FlatpakTransaction *transaction;
 	guint id;
@@ -641,37 +640,18 @@ _webflow_done (FlatpakTransaction *transaction,
 {
 	g_debug ("Browser done");
 }
-#endif
 
 static FlatpakTransaction *
 _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
 {
 	FlatpakInstallation *installation;
-#if !FLATPAK_CHECK_VERSION(1, 7, 3)
-	g_autoptr(GFile) installation_path = NULL;
-#endif  /* flatpak < 1.7.3 */
 	g_autoptr(FlatpakInstallation) installation_clone = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
 	installation = gs_flatpak_get_installation (flatpak);
 
-#if !FLATPAK_CHECK_VERSION(1, 7, 3)
-	/* Operate on a copy of the installation so we can set the interactive
-	 * flag for the duration of this transaction. */
-	installation_path = flatpak_installation_get_path (installation);
-	installation_clone = flatpak_installation_new_for_path (installation_path,
-								flatpak_installation_get_is_user (installation),
-								cancellable, error);
-	if (installation_clone == NULL)
-		return NULL;
-
-	/* Let flatpak know if it is a background operation */
-	flatpak_installation_set_no_interaction (installation_clone,
-						 !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-#else  /* if flatpak ≥ 1.7.3 */
 	installation_clone = g_object_ref (installation);
-#endif  /* flatpak ≥ 1.7.3 */
 
 	/* create transaction */
 	transaction = gs_flatpak_transaction_new (installation_clone, cancellable, error);
@@ -681,23 +661,19 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		return NULL;
 	}
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 	/* Let flatpak know if it is a background operation */
 	flatpak_transaction_set_no_interaction (transaction,
 						!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-#endif  /* flatpak ≥ 1.7.3 */
 
 	/* connect up signals */
 	g_signal_connect (transaction, "ref-to-app",
 			  G_CALLBACK (_ref_to_app), plugin);
-#if FLATPAK_CHECK_VERSION(1,6,0)
 	g_signal_connect (transaction, "basic-auth-start",
 			  G_CALLBACK (_basic_auth_start), plugin);
 	g_signal_connect (transaction, "webflow-start",
 			  G_CALLBACK (_webflow_start), plugin);
 	g_signal_connect (transaction, "webflow-done",
 			  G_CALLBACK (_webflow_done), plugin);
-#endif
 
 	/* use system installations as dependency sources for user installations */
 	flatpak_transaction_add_default_dependency_sources (transaction);
@@ -752,11 +728,9 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-		gs_flatpak_transaction_set_no_deploy (transaction, TRUE);
-#else
+
 		flatpak_transaction_set_no_deploy (transaction, TRUE);
-#endif
+
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);
 			g_autofree gchar *ref = NULL;
@@ -1204,10 +1178,8 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 		flatpak_transaction_set_no_pull (transaction, TRUE);
 	}
 
-#if FLATPAK_CHECK_VERSION(1, 9, 1)
 	/* automatically clean up unused EOL runtimes when updating */
 	flatpak_transaction_set_include_unused_uninstall_ops (transaction, TRUE);
-#endif
 
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {

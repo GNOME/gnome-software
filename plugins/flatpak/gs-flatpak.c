@@ -578,36 +578,6 @@ gs_flatpak_filter_noenumerate_cb (XbBuilderFixup *self,
 	return TRUE;
 }
 
-#if !FLATPAK_CHECK_VERSION(1,1,1)
-static gchar *
-gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError **error)
-{
-	g_autoptr(GFile) dir = NULL;
-	g_autofree gchar *dir_path = NULL;
-	g_autofree gchar *config_fn = NULL;
-	g_autofree gchar *group = NULL;
-	g_autofree gchar *main_ref = NULL;
-	g_autoptr(GKeyFile) kf = NULL;
-
-	/* figure out the path to the config keyfile */
-	dir = flatpak_installation_get_path (self->installation);
-	if (dir == NULL)
-		return NULL;
-	dir_path = g_file_get_path (dir);
-	if (dir_path == NULL)
-		return NULL;
-	config_fn = g_build_filename (dir_path, "repo", "config", NULL);
-
-	kf = g_key_file_new ();
-	if (!g_key_file_load_from_file (kf, config_fn, G_KEY_FILE_NONE, error))
-		return NULL;
-
-	group = g_strdup_printf ("remote \"%s\"", flatpak_remote_get_name (xremote));
-	main_ref = g_key_file_get_string (kf, group, "xa.main-ref", error);
-	return g_steal_pointer (&main_ref);
-}
-#endif
-
 #if LIBXMLB_CHECK_VERSION(0,3,0)
 static gboolean
 gs_flatpak_tokenize_cb (XbBuilderFixup *self,
@@ -795,16 +765,9 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	/* only add the specific app for noenumerate=true */
 	if (flatpak_remote_get_noenumerate (xremote)) {
 		g_autofree gchar *main_ref = NULL;
-#if FLATPAK_CHECK_VERSION(1,1,1)
+
 		main_ref = flatpak_remote_get_main_ref (xremote);
-#else
-		g_autoptr(GError) error_local = NULL;
-		main_ref = gs_flatpak_get_xremote_main_ref (self, xremote, &error_local);
-		if (main_ref == NULL) {
-			g_warning ("failed to get main ref: %s", error_local->message);
-			g_clear_error (&error_local);
-		}
-#endif
+
 		if (main_ref != NULL) {
 			g_autoptr(XbBuilderFixup) fixup = NULL;
 			fixup = xb_builder_fixup_new ("FilterNoEnumerate",
@@ -1297,9 +1260,7 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self,
 				   FlatpakInstalledRef *xref,
 				   GCancellable *cancellable)
 {
-#if FLATPAK_CHECK_VERSION(1,1,3)
 	const gchar *appdata_version;
-#endif
 	guint64 mtime;
 	guint64 size_installed;
 	g_autofree gchar *metadata_fn = NULL;
@@ -1361,11 +1322,9 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self,
 	if (size_installed != 0)
 		gs_app_set_size_installed (app, size_installed);
 
-#if FLATPAK_CHECK_VERSION(1,1,3)
 	appdata_version = flatpak_installed_ref_get_appdata_version (xref);
 	if (appdata_version != NULL)
 		gs_app_set_version (app, appdata_version);
-#endif
 }
 
 static GsApp *
@@ -1632,10 +1591,8 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 		g_debug ("modifying existing remote %s", flatpak_remote_get_name (xremote));
 		flatpak_remote_set_disabled (xremote, FALSE);
 		if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REPO) {
-			#if FLATPAK_CHECK_VERSION(1, 4, 0)
 			flatpak_remote_set_filter (xremote, gs_flatpak_app_get_repo_filter (app));
 			flatpak_remote_set_description (xremote, gs_app_get_description (app));
-			#endif
 			flatpak_remote_set_title (xremote, gs_app_get_origin_ui (app));
 		}
 	} else if (!is_install) {
@@ -2342,11 +2299,7 @@ gs_flatpak_fetch_remote_metadata (GsFlatpak *self,
 								cancellable,
 								&local_error);
 	if (data == NULL) {
-#if FLATPAK_CHECK_VERSION(1,4,0)
 		if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REF_NOT_FOUND) &&
-#else
-		if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_INVALID_DATA) &&
-#endif
 		    !gs_plugin_get_network_available (self->plugin)) {
 			local_error->code = GS_PLUGIN_ERROR_NO_NETWORK;
 			local_error->domain = GS_PLUGIN_ERROR;
@@ -2986,9 +2939,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 		if (installed_ref == NULL)
 			return TRUE; /* the app may not be installed */
 
-#if FLATPAK_CHECK_VERSION(1,1,2)
 		appstream_gz = flatpak_installed_ref_load_appdata (installed_ref, NULL, NULL);
-#endif
 		if (appstream_gz == NULL)
 			return TRUE;
 

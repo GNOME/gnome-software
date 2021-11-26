@@ -218,7 +218,7 @@ if get_option('fwupd')
 endif
 
 if get_option('flatpak')
-  flatpak = dependency('flatpak', version : '>= 1.0.4')
+  flatpak = dependency('flatpak', version : '>= 1.9.1')
   ostree = dependency('ostree-1')
 
   flatpak_soupapiversion = flatpak.get_pkgconfig_variable('soupapiversion')

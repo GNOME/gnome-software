@@ -16,17 +16,7 @@ struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-	gboolean		 no_deploy;
-#endif
 };
-
-
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-typedef enum {
-  PROP_NO_DEPLOY = 1,
-} GsFlatpakTransactionProperty;
-#endif
 
 enum {
 	SIGNAL_REF_TO_APP,
@@ -51,25 +41,6 @@ gs_flatpak_transaction_finalize (GObject *object)
 
 	G_OBJECT_CLASS (gs_flatpak_transaction_parent_class)->finalize (object);
 }
-
-
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-void
-gs_flatpak_transaction_set_no_deploy (FlatpakTransaction *transaction, gboolean no_deploy)
-{
-	GsFlatpakTransaction *self;
-
-	g_return_if_fail (GS_IS_FLATPAK_TRANSACTION (transaction));
-
-	self = GS_FLATPAK_TRANSACTION (transaction);
-	if (self->no_deploy == no_deploy)
-		return;
-	self->no_deploy = no_deploy;
-	flatpak_transaction_set_no_deploy (transaction, no_deploy);
-
-	g_object_notify (G_OBJECT (self), "no-deploy");
-}
-#endif
 
 GsApp *
 gs_flatpak_transaction_get_app_by_ref (FlatpakTransaction *transaction, const gchar *ref)
@@ -184,7 +155,6 @@ _transaction_ready (FlatpakTransaction *transaction)
 			}
 		}
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 		/* Debug dump. */
 		{
 			GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (op);
@@ -204,7 +174,6 @@ _transaction_ready (FlatpakTransaction *transaction)
 			g_string_append (debug_message, "\n └ (end)");
 			g_debug ("%s", debug_message->str);
 		}
-#endif  /* flatpak ≥ 1.7.3 */
 	}
 	return TRUE;
 }
@@ -227,7 +196,6 @@ progress_data_free (ProgressData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (ProgressData, progress_data_free)
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 static gboolean
 op_is_related_to_op (FlatpakTransactionOperation *op,
                      FlatpakTransactionOperation *root_op)
@@ -368,9 +336,7 @@ update_progress_for_op (GsFlatpakTransaction        *self,
 			   gs_app_get_unique_id (root_app));
 	}
 }
-#endif  /* flatpak 1.7.3 */
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 static void
 update_progress_for_op_recurse_up (GsFlatpakTransaction        *self,
 				   FlatpakTransactionProgress  *progress,
@@ -389,7 +355,6 @@ update_progress_for_op_recurse_up (GsFlatpakTransaction        *self,
 		update_progress_for_op_recurse_up (self, progress, ops, current_op, related_to_op);
 	}
 }
-#endif  /* flatpak 1.7.3 */
 
 static void
 _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
@@ -397,12 +362,8 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 {
 	ProgressData *data = user_data;
 	GsApp *app = data->app;
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 	GsFlatpakTransaction *self = data->transaction;
 	g_autolist(FlatpakTransactionOperation) ops = NULL;
-#else
-	guint percent;
-#endif
 
 	if (flatpak_transaction_progress_get_is_estimating (progress)) {
 		/* "Estimating" happens while fetching the metadata, which
@@ -413,7 +374,6 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 		return;
 	}
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 	/* Update the progress on this app, and then do the same for each
 	 * related parent app up the hierarchy. For example, @data->operation
 	 * could be for a runtime which was added to the transaction because of
@@ -439,19 +399,6 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 	 */
 	ops = flatpak_transaction_get_operations (FLATPAK_TRANSACTION (self));
 	update_progress_for_op_recurse_up (self, progress, ops, data->operation, data->operation);
-#else  /* if !flatpak 1.7.3 */
-	percent = flatpak_transaction_progress_get_progress (progress);
-
-	if (gs_app_get_progress (app) != 100 &&
-	    gs_app_get_progress (app) != GS_APP_PROGRESS_UNKNOWN &&
-	    gs_app_get_progress (app) > percent) {
-		g_warning ("ignoring percentage %u%% -> %u%% as going down...",
-			   gs_app_get_progress (app), percent);
-		return;
-	}
-
-	gs_app_set_progress (app, percent);
-#endif  /* !flatpak 1.7.3 */
 }
 
 static const gchar *
@@ -533,7 +480,6 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 	}
 }
 
-#if FLATPAK_CHECK_VERSION(1, 7, 3)
 static gboolean
 later_op_also_related (GList                       *ops,
 		       FlatpakTransactionOperation *current_op,
@@ -601,7 +547,6 @@ set_skipped_related_apps_to_installed (GsFlatpakTransaction        *self,
 		}
 	}
 }
-#endif  /* flatpak 1.7.3 */
 
 static void
 _transaction_operation_done (FlatpakTransaction *transaction,
@@ -609,9 +554,8 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 			     const gchar *commit,
 			     FlatpakTransactionResult details)
 {
-#if !FLATPAK_CHECK_VERSION(1,5,1) || FLATPAK_CHECK_VERSION(1,7,3)
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
-#endif
+
 	/* invalidate */
 	GsApp *app = _transaction_operation_get_app (operation);
 	if (app == NULL) {
@@ -624,9 +568,7 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL_BUNDLE:
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
-#if FLATPAK_CHECK_VERSION(1,7,3)
 		set_skipped_related_apps_to_installed (self, transaction, operation);
-#endif
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UPDATE:
 		gs_app_set_version (app, gs_app_get_update_version (app));
@@ -636,18 +578,12 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 		/* force getting the new runtime */
 		gs_app_remove_kudo (app, GS_APP_KUDO_SANDBOXED);
                 /* downloaded, but not yet installed */
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-		if (self->no_deploy)
-#else
 		if (flatpak_transaction_get_no_deploy (transaction))
-#endif
 			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 		else
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
-#if FLATPAK_CHECK_VERSION(1,7,3)
 		set_skipped_related_apps_to_installed (self, transaction, operation);
-#endif
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UNINSTALL:
 		/* we don't actually know if this app is re-installable */
@@ -720,7 +656,6 @@ _transaction_end_of_lifed (FlatpakTransaction *transaction,
 	//FIXME: show something in the UI
 }
 
-#if FLATPAK_CHECK_VERSION(1,4,1)
 static gboolean
 _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 				       const gchar         *remote,
@@ -759,7 +694,6 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 
 	return FALSE;
 }
-#endif
 
 static gboolean
 _transaction_add_new_remote (FlatpakTransaction *transaction,
@@ -783,30 +717,9 @@ _transaction_add_new_remote (FlatpakTransaction *transaction,
 	return FALSE;
 }
 
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-static void
-gs_flatpak_transaction_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
-{
-	FlatpakTransaction *transaction = FLATPAK_TRANSACTION (object);
-
-	switch ((GsFlatpakTransactionProperty) prop_id) {
-	case PROP_NO_DEPLOY:
-		gs_flatpak_transaction_set_no_deploy (transaction, g_value_get_boolean (value));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-#endif
-
 static void
 gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 {
-
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-	GParamSpec *pspec;
-#endif
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	FlatpakTransactionClass *transaction_class = FLATPAK_TRANSACTION_CLASS (klass);
 	object_class->finalize = gs_flatpak_transaction_finalize;
@@ -817,17 +730,7 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 	transaction_class->operation_error = _transaction_operation_error;
 	transaction_class->choose_remote_for_ref = _transaction_choose_remote_for_ref;
 	transaction_class->end_of_lifed = _transaction_end_of_lifed;
-#if FLATPAK_CHECK_VERSION(1,4,1)
 	transaction_class->end_of_lifed_with_rebase = _transaction_end_of_lifed_with_rebase;
-#endif
-#if !FLATPAK_CHECK_VERSION(1,5,1)
-	object_class->set_property = gs_flatpak_transaction_set_property;
-
-	pspec = g_param_spec_boolean ("no-deploy", NULL,
-				      "Whether the current transaction will deploy the downloaded objects",
-				      FALSE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_NO_DEPLOY, pspec);
-#endif
 
 	signals[SIGNAL_REF_TO_APP] =
 		g_signal_new ("ref-to-app",
