@@ -124,7 +124,6 @@ static gchar *
 gs_fwupd_release_get_name (FwupdRelease *release)
 {
 	const gchar *name = fwupd_release_get_name (release);
-#if FWUPD_CHECK_VERSION(1,2,7)
 	GPtrArray *cats = fwupd_release_get_categories (release);
 
 	for (guint i = 0; i < cats->len; i++) {
@@ -216,7 +215,6 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			return g_strdup_printf (_("%s Network Interface Update"), name);
 		}
 	}
-#endif
 
 	/* default fallback */
 	return g_strdup (name);
@@ -225,9 +223,8 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 void
 gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 {
-#if FWUPD_CHECK_VERSION(1,5,6)
 	GPtrArray *locations = fwupd_release_get_locations (rel);
-#endif
+
 	if (fwupd_release_get_name (rel) != NULL) {
 		g_autofree gchar *tmp = gs_fwupd_release_get_name (rel);
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, tmp);
@@ -250,7 +247,6 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
 				    fwupd_release_get_license (rel));
 	}
-#if FWUPD_CHECK_VERSION(1,5,6)
 	if (locations->len > 0) {
 		const gchar *uri = g_ptr_array_index (locations, 0);
 		/* typically the first URI will be the main HTTP mirror, and we
@@ -258,20 +254,12 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		gs_app_set_origin_hostname (app, uri);
 		gs_fwupd_app_set_update_uri (app, uri);
 	}
-#else
-	if (fwupd_release_get_uri (rel) != NULL) {
-		gs_app_set_origin_hostname (app,
-					    fwupd_release_get_uri (rel));
-		gs_fwupd_app_set_update_uri (app, fwupd_release_get_uri (rel));
-	}
-#endif
 	if (fwupd_release_get_description (rel) != NULL) {
 		g_autofree gchar *tmp = NULL;
 		tmp = as_markup_convert_simple (fwupd_release_get_description (rel), NULL);
 		if (tmp != NULL)
 			gs_app_set_update_details_text (app, tmp);
 	}
-#if FWUPD_CHECK_VERSION(1,3,3)
 	if (fwupd_release_get_detach_image (rel) != NULL) {
 		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
 		g_autoptr(AsImage) im = as_image_new ();
@@ -283,5 +271,4 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 			as_screenshot_set_caption (ss, NULL, fwupd_release_get_detach_caption (rel));
 		gs_app_set_action_screenshot (app, ss);
 	}
-#endif
 }

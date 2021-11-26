@@ -79,11 +79,9 @@ gs_plugin_fwupd_error_convert (GError **perror)
 		case FWUPD_ERROR_AC_POWER_REQUIRED:
 			error->code = GS_PLUGIN_ERROR_AC_POWER_REQUIRED;
 			break;
-#if FWUPD_CHECK_VERSION(1,2,10)
 		case FWUPD_ERROR_BATTERY_LEVEL_TOO_LOW:
 			error->code = GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW;
 			break;
-#endif
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
@@ -220,7 +218,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	g_autoptr(SoupSession) soup_session = NULL;
 
-#if FWUPD_CHECK_VERSION(1,4,5)
 	g_autoptr(GError) error_local = NULL;
 	/* send our implemented feature set */
 	if (!fwupd_client_set_feature_flags (self->client,
@@ -237,15 +234,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		return FALSE;
 	}
 	g_object_get (self->client, "soup-session", &soup_session, NULL);
-#else
-	g_autofree gchar *user_agent = NULL;
-	/* use a custom user agent to provide the fwupd version */
-	user_agent = fwupd_build_user_agent (PACKAGE_NAME, PACKAGE_VERSION);
-	soup_session = soup_session_new_with_options ("user-agent", user_agent,
-						      "timeout", 10,
-						      NULL);
-	soup_session_remove_feature_by_type (soup_session, SOUP_TYPE_CONTENT_DECODER);
-#endif
 
 	/* use for gnome-software downloads */
 	if (soup_session != NULL)
@@ -383,9 +371,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 {
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
 	GPtrArray *checksums;
-#if FWUPD_CHECK_VERSION(1,5,6)
 	GPtrArray *locations = fwupd_release_get_locations (rel);
-#endif
 	const gchar *update_uri = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *filename_cache = NULL;
@@ -436,14 +422,12 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 			     gs_app_get_update_version (app));
 		return NULL;
 	}
-#if FWUPD_CHECK_VERSION(1,5,6)
+
 	/* typically the first URI will be the main HTTP mirror, and we
 	 * don't have the capability to use an IPFS/IPNS URL anyway */
 	if (locations->len > 0)
 		update_uri = g_ptr_array_index (locations, 0);
-#else
-	update_uri = fwupd_release_get_uri (rel);
-#endif
+
 	if (update_uri == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -655,8 +639,6 @@ gs_plugin_fwupd_refresh_remote (GsPluginFwupd  *self,
                                 GCancellable   *cancellable,
                                 GError        **error)
 {
-#if FWUPD_CHECK_VERSION(1,5,2)
-
 	/* check cache age */
 	if (cache_age > 0) {
 		guint64 age = fwupd_remote_get_age (remote);
@@ -672,114 +654,7 @@ gs_plugin_fwupd_refresh_remote (GsPluginFwupd  *self,
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
-#else
-	GChecksumType checksum_kind;
-	const gchar *url_sig = NULL;
-	const gchar *url = NULL;
-	g_autoptr(GError) error_local = NULL;
-	g_autofree gchar *basename = NULL;
-	g_autofree gchar *basename_sig = NULL;
-	g_autofree gchar *cache_id = NULL;
-	g_autofree gchar *checksum = NULL;
-	g_autofree gchar *filename = NULL;
-	g_autofree gchar *filename_sig = NULL;
-	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
-	/* sanity check */
-	if (fwupd_remote_get_filename_cache_sig (remote) == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "remote %s has no cache signature",
-			     fwupd_remote_get_id (remote));
-		return FALSE;
-	}
-
-	/* check cache age */
-	if (cache_age > 0) {
-		guint64 age = fwupd_remote_get_age (remote);
-		guint tmp = age < G_MAXUINT ? (guint) age : G_MAXUINT;
-		if (tmp < cache_age) {
-			g_debug ("fwupd remote is only %u seconds old, so ignoring refresh",
-				 tmp);
-			return TRUE;
-		}
-	}
-
-	/* download the signature first, it's smaller */
-	cache_id = g_strdup_printf ("fwupd/remotes.d/%s", fwupd_remote_get_id (remote));
-	basename_sig = g_path_get_basename (fwupd_remote_get_filename_cache_sig (remote));
-	filename_sig = gs_utils_get_cache_filename (cache_id, basename_sig,
-						    GS_UTILS_CACHE_FLAG_WRITEABLE |
-						    GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-						    error);
-
-	/* download the signature first, it's smaller */
-	url_sig = fwupd_remote_get_metadata_uri_sig (remote);
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading firmware update signature…"));
-	data = gs_plugin_download_data (plugin, app_dl, url_sig, cancellable, error);
-	if (data == NULL) {
-		gs_utils_error_add_origin_id (error, self->cached_origin);
-		return FALSE;
-	}
-
-	/* is the signature hash the same as we had before? */
-	checksum_kind = fwupd_checksum_guess_kind (fwupd_remote_get_checksum (remote));
-	checksum = g_compute_checksum_for_data (checksum_kind,
-						(const guchar *) g_bytes_get_data (data, NULL),
-						g_bytes_get_size (data));
-	if (g_strcmp0 (checksum, fwupd_remote_get_checksum (remote)) == 0) {
-		g_debug ("signature of %s is unchanged", url_sig);
-		return TRUE;
-	}
-
-	/* save to a file */
-	g_debug ("saving new remote signature to %s:", filename_sig);
-	if (!g_file_set_contents (filename_sig,
-				  g_bytes_get_data (data, NULL),
-				  (guint) g_bytes_get_size (data),
-				  &error_local)) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_WRITE_FAILED,
-			     "Failed to save firmware signature: %s",
-			     error_local->message);
-		return FALSE;
-	}
-
-	/* download the payload and save to file */
-	basename = g_path_get_basename (fwupd_remote_get_filename_cache (remote));
-	filename = gs_utils_get_cache_filename (cache_id, basename,
-						GS_UTILS_CACHE_FLAG_WRITEABLE |
-						GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-						error);
-	if (filename == NULL)
-		return FALSE;
-	g_debug ("saving new firmware metadata to %s:", filename);
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading firmware update metadata…"));
-	url = fwupd_remote_get_metadata_uri (remote);
-	if (!gs_plugin_download_file (plugin, app_dl, url, filename,
-				      cancellable, error)) {
-		gs_utils_error_add_origin_id (error, self->cached_origin);
-		return FALSE;
-	}
-
-	/* phew, lets send all this to fwupd */
-	if (!fwupd_client_update_metadata (self->client,
-					   fwupd_remote_get_id (remote),
-					   filename,
-					   filename_sig,
-					   cancellable,
-					   error)) {
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
-	}
-#endif
 	return TRUE;
 }
 
@@ -847,7 +722,6 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
-#if FWUPD_CHECK_VERSION(1,5,2)
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		if (!fwupd_client_download_file (self->client,
@@ -858,12 +732,7 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 			gs_plugin_fwupd_error_convert (error);
 			return FALSE;
 		}
-#else
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		if (!gs_plugin_download_file (plugin, app, uri, filename,
-					      cancellable, error))
-			return FALSE;
-#endif
+
 		downloaded_to_cache = TRUE;
 	}
 
@@ -908,7 +777,6 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 		if (fwupd_device_get_update_message (dev) != NULL) {
 			g_autoptr(AsScreenshot) ss = as_screenshot_new ();
 
-#if FWUPD_CHECK_VERSION(1,4,5)
 			/* image is optional */
 			if (fwupd_device_get_update_image (dev) != NULL) {
 				g_autoptr(AsImage) im = as_image_new ();
@@ -916,7 +784,6 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 				as_image_set_url (im, fwupd_device_get_update_image (dev));
 				as_screenshot_add_image (ss, im);
 			}
-#endif
 
 			/* caption is required */
 			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
@@ -992,9 +859,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-#if FWUPD_CHECK_VERSION(1,5,2)
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-#endif
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
 	gpointer schedule_entry_handle = NULL;
@@ -1020,9 +885,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
-#if FWUPD_CHECK_VERSION(1,5,2)
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
-#endif
 		gboolean download_success;
 
 		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
@@ -1033,7 +896,6 @@ gs_plugin_download_app (GsPlugin *plugin,
 			}
 		}
 
-#if FWUPD_CHECK_VERSION(1,5,2)
 		download_success = fwupd_client_download_file (self->client,
 							       uri, file,
 							       FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
@@ -1041,10 +903,6 @@ gs_plugin_download_app (GsPlugin *plugin,
 							       error);
 		if (!download_success)
 			gs_plugin_fwupd_error_convert (error);
-#else
-		download_success = gs_plugin_download_file (plugin, app, uri, filename,
-							    cancellable, error);
-#endif
 
 		if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
 			g_warning ("Failed to remove schedule entry: %s", error_local->message);
@@ -1175,9 +1033,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 				 fwupd_remote_get_title (remote));
-#if FWUPD_CHECK_VERSION(1,0,7)
 		gs_app_set_agreement (app, fwupd_remote_get_agreement (remote));
-#endif
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 				fwupd_remote_get_metadata_uri (remote));
 		gs_app_set_metadata (app, "fwupd::remote-id",
