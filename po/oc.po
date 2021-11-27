@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-calendar master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-11-25 14:20+0000\n"
-"PO-Revision-Date: 2021-11-25 22:59+0100\n"
+"POT-Creation-Date: 2021-11-26 12:15+0000\n"
+"PO-Revision-Date: 2021-11-27 21:21+0100\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: Tot en òc\n"
 "Language: oc\n"
@@ -250,13 +250,8 @@ msgstr ""
 "partidas"
 
 #: data/org.gnome.software.gschema.xml:99
-#, fuzzy
-#| msgid ""
-#| "A list of official repositories that should not be considered 3rd party"
 msgid "A list of required repositories that cannot be disabled or removed"
-msgstr ""
-"Una lista de depauses oficials que devon pas èsser considerats coma tèrças "
-"partidas"
+msgstr "Una lista de depauses oficials que se pòt pas desactivar o suprimir"
 
 #: data/org.gnome.software.gschema.xml:103
 msgid "A list of official repositories that should be considered free software"
@@ -326,16 +321,21 @@ msgid ""
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last."
 msgstr ""
+"Òrdre de prioritat dels formats d’empaquetatge a preferir, format mai "
+"importat en primièr. Una cadena de tèxt voida significa òrdre per defaut. "
+"Los formats omeses son considerats coma listats en darrièr."
 
 #: data/org.gnome.software.gschema.xml:149
 msgid "The URI that references the background for an upgrade banner."
-msgstr ""
+msgstr "L’URI que fa referéncia al rèireplan per una banièra de mesa a nivèl."
 
 #: data/org.gnome.software.gschema.xml:150
 msgid ""
 "The URI can contain up to three '%u', which will be replaced by the upgrade "
 "version."
 msgstr ""
+"L’URI pòt conténer fins a tres « %u », que seràn remplaçats per la version "
+"de la mesa a nivèl."
 
 #: data/org.gnome.software.gschema.xml:156
 msgid "A string storing the gnome-online-account id used to login"
@@ -385,24 +385,18 @@ msgstr "Installar l'aplicacion seleccionada sul sistèma"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:78
-#, fuzzy
-#| msgid "No cartoon violence"
 msgid "Cartoon Violence"
-msgstr "Pas cap de violéncia de dessenhs animats"
+msgstr "Violéncia de dessenhs animats"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:85
-#, fuzzy
-#| msgid "No fantasy violence"
 msgid "Fantasy Violence"
-msgstr "Pas de violéncias fantasticas"
+msgstr "Violéncias fantasticas"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:92
-#, fuzzy
-#| msgid "No realistic violence"
 msgid "Realistic Violence"
-msgstr "Pas cap de violéncia realista"
+msgstr "Violéncia realista"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:99
@@ -411,10 +405,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:106
-#, fuzzy
-#| msgid "No sexual violence"
 msgid "Sexual Violence"
-msgstr "Pas cap de violéncia sexuala"
+msgstr "Violéncia sexuala"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:113
@@ -505,11 +497,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:248
-#, fuzzy
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Presentation"
 msgid "Prostitution"
-msgstr "Presentacion"
+msgstr "Prostitucion"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:255
@@ -617,7 +606,7 @@ msgstr "%s es adeqüat per %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:238
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:241
 msgid "Age Rating"
 msgstr "Evaluacion per edat"
 
@@ -989,10 +978,8 @@ msgstr "Utiliza los servicis de session"
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:296
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access hardware devices"
-msgstr "Pòt accedir als fichièrs del sistèma"
+msgstr "Pòt accedir als periferics materials"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
@@ -1021,10 +1008,8 @@ msgstr "Pòt legir vòstres telecargaments"
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:218
-#, fuzzy
-#| msgid "Can view and change any settings"
 msgid "Can access and change user settings"
-msgstr "Pòt veire e modificar quin paramètre que siá"
+msgstr "Pòt veire e modificar los paramètre de l’utilizaire"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
@@ -1186,10 +1171,8 @@ msgstr "Fonciona suls ordenadors de burèu e portatius"
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
 #: src/gs-app-context-bar.c:670
-#, fuzzy
-#| msgid "The application contains no age-inappropriate content."
 msgid "Contains no age-inappropriate content"
-msgstr "L'aplicacion conten pas cap de contengut somés a un atge minimum."
+msgstr "L'aplicacion conten pas cap de contengut somés a un atge minimum"
 
 #: src/gs-app-context-bar.c:719
 msgid "No age rating information available"
@@ -1332,10 +1315,8 @@ msgstr "Mesas en avant"
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: src/gs-category-page.ui:42 src/gs-overview-page.ui:110
-#, fuzzy
-#| msgid "Editor’s Pick"
 msgid "Editor’s Choice"
-msgstr "Seleccion de la distribucion"
+msgstr "Seleccion de l’editor"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
@@ -1853,12 +1834,10 @@ msgstr[1] "De mesas a jorn son estadas installadas sus aqueste sistèma"
 
 #. TRANSLATORS: we've just removed some apps
 #: src/gs-common.c:747
-#, fuzzy
-#| msgid "Enter GApplication service mode"
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
-msgstr[0] "Passar en mòde servici GApplication"
-msgstr[1] "Passar en mòde servici GApplication"
+msgstr[0] "Una aplicacion es estada suprimida"
+msgstr[1] "D’aplicacions son estadas suprimidas"
 
 #. TRANSLATORS: the new apps will not be run until we restart
 #: src/gs-common.c:753
@@ -2451,10 +2430,8 @@ msgid "Next"
 msgstr "Seguent"
 
 #: src/gs-featured-carousel.ui:82
-#, fuzzy
-#| msgid "Featured App"
 msgid "Featured Apps List"
-msgstr "Aplicacion mesa en avant"
+msgstr "List d’aplicacions mesas en avant"
 
 #: src/gs-first-run-dialog.ui:9
 msgid "Welcome"
@@ -2486,7 +2463,7 @@ msgstr "Presa en carga burèu"
 #: src/gs-hardware-support-context-dialog.c:563
 #: src/gs-hardware-support-context-dialog.c:572
 msgid "Supports being used on a large screen"
-msgstr ""
+msgstr "Se pòt pas utilizar sus un ecran grand"
 
 #: src/gs-hardware-support-context-dialog.c:565
 msgid "Desktop Support Unknown"
@@ -2495,12 +2472,11 @@ msgstr "Presa en carga burèu desconeguda"
 #: src/gs-hardware-support-context-dialog.c:566
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
+"Pas pro d’informacions per saber se los ecrans grands son preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:569
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Requires a large screen"
-msgstr "Requerís un ecran tactil"
+msgstr "Requerís un ecran grand"
 
 #: src/gs-hardware-support-context-dialog.c:574
 #, fuzzy
@@ -2520,7 +2496,7 @@ msgstr "Presa en carga mobil"
 #: src/gs-hardware-support-context-dialog.c:583
 #: src/gs-hardware-support-context-dialog.c:592
 msgid "Supports being used on a small screen"
-msgstr ""
+msgstr "Se pòt pas utilizar sus un ecran pichon"
 
 #: src/gs-hardware-support-context-dialog.c:585
 msgid "Mobile Support Unknown"
@@ -2529,12 +2505,11 @@ msgstr "Presa en carga mobil desconeguda"
 #: src/gs-hardware-support-context-dialog.c:586
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
+"Pas pro d’informacions per saber se los ecrans pichons son preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:589
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Requires a small screen"
-msgstr "Requerís un ecran tactil"
+msgstr "Requerís un ecran pichon"
 
 #: src/gs-hardware-support-context-dialog.c:594
 msgid "Mobile Not Supported"
@@ -2555,17 +2530,15 @@ msgstr "Presa en carga clavièr desconeguda"
 
 #: src/gs-hardware-support-context-dialog.c:622
 msgid "Not enough information to know if keyboards are supported"
-msgstr ""
+msgstr "Pas pro d’informacions per saber se los clavièrs son preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:624
 msgid "Keyboard Required"
 msgstr "Clavièr requerit"
 
 #: src/gs-hardware-support-context-dialog.c:628
-#, fuzzy
-#| msgid "Requires a keyboard"
 msgid "Supports keyboards"
-msgstr "Requerís un clavièr"
+msgstr "Pren en carga los clavièrs"
 
 #: src/gs-hardware-support-context-dialog.c:630
 msgid "Keyboard Not Supported"
@@ -2582,10 +2555,8 @@ msgstr "Presa en carga de la mirga"
 
 #: src/gs-hardware-support-context-dialog.c:639
 #: src/gs-hardware-support-context-dialog.c:645
-#, fuzzy
-#| msgid "Requires a mouse"
 msgid "Requires a mouse or pointing device"
-msgstr "Requerís una mirga"
+msgstr "Requerís una mirga o un dispositiu de puntatge"
 
 #: src/gs-hardware-support-context-dialog.c:641
 msgid "Mouse Support Unknown"
@@ -2595,6 +2566,8 @@ msgstr "Presa en carga de la mirga desconeguda"
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
+"Pas pro d’informacions per saber se las morgas o los dispositius de puntatge "
+"son preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:644
 msgid "Mouse Required"
@@ -2602,7 +2575,7 @@ msgstr "Mirga requerida"
 
 #: src/gs-hardware-support-context-dialog.c:648
 msgid "Supports mice and pointing devices"
-msgstr ""
+msgstr "Mirgas e dispositius de puntatge preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:650
 msgid "Mouse Not Supported"
@@ -2610,7 +2583,7 @@ msgstr "Mirga pas presa en carga"
 
 #: src/gs-hardware-support-context-dialog.c:651
 msgid "Cannot be used with a mouse or pointing device"
-msgstr ""
+msgstr "Se pòt pas utilizar amb una mirga o un dispositiu de puntatge"
 
 #: src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:667
@@ -2624,26 +2597,23 @@ msgstr "Presa en carga ecran tactil desconeguda"
 #: src/gs-hardware-support-context-dialog.c:662
 msgid "Not enough information to know if touchscreens are supported"
 msgstr ""
+"Pas pro d’informacions per saber se los ecrans tactils son preses en carga"
 
 #: src/gs-hardware-support-context-dialog.c:664
 msgid "Touchscreen Required"
 msgstr "Ecran tactil requerit"
 
 #: src/gs-hardware-support-context-dialog.c:668
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Supports touchscreens"
-msgstr "Requerís un ecran tactil"
+msgstr "Pren en carga los ecrans tactils"
 
 #: src/gs-hardware-support-context-dialog.c:670
 msgid "Touchscreen Not Supported"
-msgstr ""
+msgstr "Ecran tactil pas pres en carga"
 
 #: src/gs-hardware-support-context-dialog.c:671
-#, fuzzy
-#| msgid "Requires a touchscreen"
 msgid "Cannot be used with a touchscreen"
-msgstr "Requerís un ecran tactil"
+msgstr "Se pòt pas utilizar sus un ecran tactil"
 
 #: src/gs-hardware-support-context-dialog.c:684
 msgid "Gamepad Required"
@@ -2659,7 +2629,7 @@ msgstr "Presa en carga maneta"
 
 #: src/gs-hardware-support-context-dialog.c:688
 msgid "Supports gamepads"
-msgstr ""
+msgstr "Pren en cagar las manetas"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
@@ -2876,15 +2846,13 @@ msgstr "sorgas extèrnas seleccionadas"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:636
-#, fuzzy, c-format
-#| msgid ""
-#| "Provides access to additional software, including web browsers and games."
+#, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
 msgstr ""
-"Provesís l'accès a de logicials suplementaris, dont de navigadors Web e de "
-"jòcs."
+"Provesís l'accès a de logicials suplementaris de %s estant. D’unes logicials "
+"proprietaris son incluses."
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
@@ -3052,7 +3020,7 @@ msgstr "Activar de depauses de logicials novèls"
 
 #: src/gs-repos-dialog.c:498
 msgid "Turn on new repositories when they are added."
-msgstr ""
+msgstr "Activar los repertòris novèls quand son aponduts."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -3064,10 +3032,9 @@ msgstr "mai d'informacions"
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
 #: src/gs-repos-dialog.c:512
-#, fuzzy, c-format
-#| msgid "Access additional software from selected third party sources."
+#, c-format
 msgid "Additional repositories from selected third parties — %s."
-msgstr "Accedir a mai de logicials a partir de fonts tèrças."
+msgstr "Repertòris addicionals a partir de fonts tèrças seleccionadas — %s."
 
 #: src/gs-repos-dialog.c:517
 msgid "Fedora Third Party Repositories"
@@ -3370,10 +3337,8 @@ msgid "Uses System Services"
 msgstr "Utiliza los servicis sistèma"
 
 #: src/gs-safety-context-dialog.c:175
-#, fuzzy
-#| msgid "Uses system services"
 msgid "Can request data from system services"
-msgstr "Utiliza los servicis sistèma"
+msgstr "Pòt demandar de donadas als servicis del sistèma"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:182
@@ -3381,10 +3346,8 @@ msgid "Uses Session Services"
 msgstr "Utiliza los servicis de session"
 
 #: src/gs-safety-context-dialog.c:183
-#, fuzzy
-#| msgid "Uses session services"
 msgid "Can request data from session services"
-msgstr "Utiliza los servicis de session"
+msgstr "Pòt demandar de donadas als servicis de session"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:190
@@ -3426,7 +3389,7 @@ msgstr "Paramètres de l’utilizaire"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:229
 msgid "Full File System Read/Write Access"
-msgstr ""
+msgstr "Accès complet en lectura e escritura al sistèma de fichièrs"
 
 #: src/gs-safety-context-dialog.c:230
 msgid "Can read and write all data on the file system"
@@ -3435,44 +3398,39 @@ msgstr ""
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:238
 msgid "Home Folder Read/Write Access"
-msgstr ""
+msgstr "Accès en lectura e escritura al repertòri personal"
 
 #: src/gs-safety-context-dialog.c:239
-#, fuzzy
-#| msgid "Can read/write all your data"
 msgid "Can read and write all data in your home directory"
-msgstr "Pòt legir/escriure totas vòstras donadas"
+msgstr "Pòt legir e escriure totas las donadas del repertòri personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:247
 msgid "Full File System Read Access"
-msgstr ""
+msgstr "Accès complet al sistèma de fichièrs"
 
 #: src/gs-safety-context-dialog.c:248
 msgid "Can read all data on the file system"
-msgstr ""
+msgstr "Pòt legir totas las donadas del sistèma de fichièrs"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:257
 msgid "Home Folder Read Access"
-msgstr ""
+msgstr "Accès complet al repertòri personal"
 
 #: src/gs-safety-context-dialog.c:258
-#, fuzzy
-#| msgid "Can read all your data"
 msgid "Can read all data in your home directory"
-msgstr "Pòt legir totas vòstras donadas"
+msgstr "Pòt legir totas las donadas del repertòri personal"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:267
 msgid "Download Folder Read/Write Access"
-msgstr ""
+msgstr "Accès en lectura e escritura sul dossièr de telecargaments"
 
 #: src/gs-safety-context-dialog.c:268
-#, fuzzy
-#| msgid "Can read/write your downloads"
 msgid "Can read and write all data in your downloads directory"
-msgstr "Pòt legir/escriure vòstres telecargaments"
+msgstr ""
+"Pòt legir e escriure totas las donadas de vòstre dossièr de telecargaments"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:279
@@ -3480,23 +3438,17 @@ msgid "Download Folder Read Access"
 msgstr "Accès en lectura sul dorsièr de telecargaments"
 
 #: src/gs-safety-context-dialog.c:280
-#, fuzzy
-#| msgid "Can read your downloads"
 msgid "Can read all data in your downloads directory"
-msgstr "Pòt legir vòstres telecargaments"
+msgstr "Pòt legir las donadas de vòstre dossièr de telecargaments"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:293
-#, fuzzy
-#| msgid "File system"
 msgid "No File System Access"
-msgstr "Sistèma de fichièrs"
+msgstr "Cap d’accès al sistèma de fichièrs"
 
 #: src/gs-safety-context-dialog.c:294
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Cannot access the file system at all"
-msgstr "Pòt accedir als fichièrs del sistèma"
+msgstr "Pòt pas accedir als fichièrs del sistèma del tot"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:308
@@ -4222,10 +4174,8 @@ msgid "User Data"
 msgstr "Donadas utilizaire"
 
 #: src/gs-storage-context-dialog.c:138
-#, fuzzy
-#| msgid "Please restart the application."
 msgid "Data created by you in the application"
-msgstr "Reaviatz l’aplicacion."
+msgstr "Donadas que creèretz dins l’aplicacion"
 
 #: src/gs-storage-context-dialog.c:144
 msgid "Cache Data"
@@ -4718,12 +4668,9 @@ msgid "_Restart & Upgrade"
 msgstr "_Reaviar e metre a jorn"
 
 #: src/gs-upgrade-banner.ui:196
-#, fuzzy
-#| msgid ""
-#| "It is recommended that you back up your data and files before upgrading."
 msgid "Remember to back up data and files before upgrading."
 msgstr ""
-"Es recomandat de salvar vòstras donadas e fichièrs abans la mesa al nivèl."
+"Remembratz-vos de salvar vòstras donadas e fichièrs abans una mesa al nivèl."
 
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
