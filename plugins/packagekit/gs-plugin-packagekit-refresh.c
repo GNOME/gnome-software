@@ -72,6 +72,7 @@ gs_plugin_packagekit_refresh_finalize (GObject *object)
 static gboolean
 _download_only (GsPluginPackagekitRefresh  *self,
                 GsAppList                  *list,
+		GsAppList                  *progress_list,
                 GCancellable               *cancellable,
                 GError                    **error)
 {
@@ -110,6 +111,7 @@ _download_only (GsPluginPackagekitRefresh  *self,
 		GsApp *app = gs_app_list_index (list, i);
 		gs_packagekit_helper_add_app (helper, app);
 	}
+	gs_packagekit_helper_set_progress_list (helper, progress_list);
 	g_mutex_lock (&self->task_mutex);
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
@@ -122,10 +124,13 @@ _download_only (GsPluginPackagekitRefresh  *self,
 						 gs_packagekit_helper_cb, helper,
 						 error);
 	g_mutex_unlock (&self->task_mutex);
+	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
 	if (results2 == NULL) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		return FALSE;
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		/* To indicate the app is already downloaded */
@@ -152,8 +157,8 @@ gs_plugin_download (GsPlugin *plugin,
 		GsAppList *related = gs_app_get_related (app);
 
 		/* add this app */
-		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
-			if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0) {
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0)
 				gs_app_list_add (list_tmp, app);
 			continue;
 		}
@@ -177,7 +182,7 @@ gs_plugin_download (GsPlugin *plugin,
 		}
 	}
 
-	retval = _download_only (self, list_tmp, cancellable, error);
+	retval = _download_only (self, list_tmp, list, cancellable, error);
 
 	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
 		g_warning ("Failed to remove schedule entry: %s", error_local->message);

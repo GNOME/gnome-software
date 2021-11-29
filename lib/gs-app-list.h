@@ -82,5 +82,7 @@ void		 gs_app_list_sort		(GsAppList	*list,
 void		 gs_app_list_filter		(GsAppList	*list,
 						 GsAppListFilterFunc func,
 						 gpointer	 user_data);
+void		 gs_app_list_override_progress	(GsAppList	*list,
+						 guint		 progress);
 
 G_END_DECLS

@@ -35,6 +35,7 @@ struct _GsAppList
 	GsAppListFlags		 flags;
 	GsAppState		 state;
 	guint			 progress;  /* 0–100 inclusive, or %GS_APP_PROGRESS_UNKNOWN */
+	guint			 custom_progress; /* overrides the 'progress', if not %GS_APP_PROGRESS_UNKNOWN */
 };
 
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
@@ -91,7 +92,43 @@ guint
 gs_app_list_get_progress (GsAppList *list)
 {
 	g_return_val_if_fail (GS_IS_APP_LIST (list), GS_APP_PROGRESS_UNKNOWN);
+	if (list->custom_progress != GS_APP_PROGRESS_UNKNOWN)
+		return list->custom_progress;
 	return list->progress;
+}
+
+static gboolean
+app_list_notify_progress_idle_cb (gpointer user_data)
+{
+	GsAppList *list = user_data;
+
+	g_object_notify (G_OBJECT (list), "progress");
+	g_object_unref (list);
+
+	return G_SOURCE_REMOVE;
+}
+
+/**
+ * gs_app_list_override_progress:
+ * @list: a #GsAppList
+ * @progress: a progress to set, between 0 and 100 inclusive, or %GS_APP_PROGRESS_UNKNOWN
+ *
+ * Override the progress property to be this value, or use %GS_APP_PROGRESS_UNKNOWN,
+ * to unset the override. This can be used when only the overall progress is known,
+ * instead of a per-application progress.
+ *
+ * Since: 42
+ **/
+void
+gs_app_list_override_progress (GsAppList *list,
+			       guint progress)
+{
+	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	if (list->custom_progress != progress) {
+		list->custom_progress = progress;
+		g_idle_add (app_list_notify_progress_idle_cb, g_object_ref (list));
+	}
 }
 
 static void
@@ -973,6 +1010,7 @@ gs_app_list_init (GsAppList *list)
 {
 	g_mutex_init (&list->mutex);
 	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	list->custom_progress = GS_APP_PROGRESS_UNKNOWN;
 }
 
 /**
