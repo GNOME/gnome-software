@@ -309,9 +309,15 @@ gs_installed_page_is_actual_app (GsApp *app)
 {
 	if (gs_app_get_description (app) != NULL)
 		return TRUE;
+
 	/* special snowflake */
 	if (g_strcmp0 (gs_app_get_id (app), "google-chrome.desktop") == 0)
 		return TRUE;
+
+	/* web apps sometimes don't have descriptions */
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP)
+		return TRUE;
+
 	g_debug ("%s is not an actual app", gs_app_get_unique_id (app));
 	return FALSE;
 }
