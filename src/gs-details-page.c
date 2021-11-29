@@ -1291,6 +1291,12 @@ gs_details_page_review_button_clicked_cb (GsReviewRow *row,
 	gs_details_page_refresh_reviews (self);
 }
 
+static gint
+sort_reviews (AsReview **a, AsReview **b)
+{
+	return -g_date_time_compare (as_review_get_date (*a), as_review_get_date (*b));
+}
+
 static void
 gs_details_page_refresh_reviews (GsDetailsPage *self)
 {
@@ -1379,6 +1385,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	/* add all the reviews */
 	gs_widget_remove_all (self->list_box_reviews, (GsRemoveFunc) gtk_list_box_remove);
 	reviews = gs_app_get_reviews (self->app);
+	g_ptr_array_sort (reviews, (GCompareFunc) sort_reviews);
 	for (i = 0; i < reviews->len; i++) {
 		AsReview *review = g_ptr_array_index (reviews, i);
 		GtkWidget *row = gs_review_row_new (review);
