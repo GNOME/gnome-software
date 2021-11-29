@@ -415,6 +415,17 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
+static gboolean
+gs_shell_ask_untrusted_cb (GsPluginLoader *plugin_loader,
+			   const gchar *title,
+			   const gchar *msg,
+			   const gchar *details,
+			   const gchar *accept_label,
+			   GsShell *shell)
+{
+	return gs_utils_ask_user_accepts (GTK_WINDOW (shell), title, msg, details, accept_label);
+}
+
 static void
 free_back_entry (BackEntry *entry)
 {
@@ -2200,6 +2211,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				 shell, 0);
 	g_signal_connect_object (shell->plugin_loader, "basic-auth-start",
 				 G_CALLBACK (gs_shell_basic_auth_start_cb),
+				 shell, 0);
+	g_signal_connect_object (shell->plugin_loader, "ask-untrusted",
+				 G_CALLBACK (gs_shell_ask_untrusted_cb),
 				 shell, 0);
 
 	g_object_bind_property (shell->plugin_loader, "allow-updates",

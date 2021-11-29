@@ -14,6 +14,7 @@
 
 #include "gs-metered.h"
 #include "gs-packagekit-helper.h"
+#include "gs-packagekit-task.h"
 #include "packagekit-common.h"
 
 #include "gs-plugin-packagekit-refresh.h"
@@ -39,7 +40,7 @@ gs_plugin_packagekit_refresh_init (GsPluginPackagekitRefresh *self)
 	GsPlugin *plugin = GS_PLUGIN (self);
 
 	g_mutex_init (&self->task_mutex);
-	self->task = pk_task_new ();
+	self->task = gs_packagekit_task_new (plugin);
 	pk_task_set_only_download (self->task, TRUE);
 	pk_client_set_background (PK_CLIENT (self->task), TRUE);
 	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
@@ -89,7 +90,7 @@ _download_only (GsPluginPackagekitRefresh  *self,
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (self->task), G_MAXUINT);
-	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results = pk_client_get_updates (PK_CLIENT (self->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
@@ -114,7 +115,7 @@ _download_only (GsPluginPackagekitRefresh  *self,
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (self->task), G_MAXUINT);
-	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	results2 = pk_task_update_packages_sync (self->task,
 						 package_ids,
 						 cancellable,
@@ -201,7 +202,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_mutex_lock (&self->task_mutex);
 	/* cache age of 1 is user-initiated */
 	pk_client_set_background (PK_CLIENT (self->task), cache_age > 1);
-	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_REFRESH, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	pk_client_set_cache_age (PK_CLIENT (self->task), cache_age);
 	/* refresh the metadata */
 	results = pk_client_refresh_cache (PK_CLIENT (self->task),
