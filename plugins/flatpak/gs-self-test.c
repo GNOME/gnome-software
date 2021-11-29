@@ -1037,13 +1037,8 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
-#if FLATPAK_CHECK_VERSION(1,1,2)
 	g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/chiron-origin/org.test.Chiron/master"));
-#else
-	g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
-			"user/flatpak/org.test.Chiron-origin/org.test.Chiron/master"));
-#endif
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
@@ -1205,13 +1200,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 				"user/flatpak/flatpak/org.test.Chiron/master"));
 		g_assert_true (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE);
 	} else {
-#if FLATPAK_CHECK_VERSION(1,1,2)
 		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
 				"user/flatpak/chiron-origin/org.test.Chiron/master"));
-#else
-		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app),
-				"user/flatpak/org.test.Chiron-origin/org.test.Chiron/master"));
-#endif
 		g_assert_true (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF);
 		g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 		g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
@@ -1261,13 +1251,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_assert_true (app2 != NULL);
 	g_assert_cmpint (gs_app_get_state (app2), ==, GS_APP_STATE_INSTALLED);
 	if (is_bundle) {
-#if FLATPAK_CHECK_VERSION(1,1,2)
 		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app2),
 				"user/flatpak/chiron-origin/org.test.Chiron/master"));
-#else
-		g_assert_true (as_utils_data_id_equal (gs_app_get_unique_id (app2),
-				"user/flatpak/org.test.Chiron-origin/org.test.Chiron/master"));
-#endif
 	} else {
 		/* Note: the origin is now test-1 because that remote was created from the
 		 * RuntimeRepo= setting
@@ -1795,14 +1780,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 					    loop);
 	g_main_loop_run (loop);
 	gs_test_flush_main_context ();
-#if !FLATPAK_CHECK_VERSION(1,7,3)
-	/* Older flatpak versions don't have the API we use to propagate state
-	 * between extension and app
-	 */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-#else
+
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
-#endif
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_true (got_progress_installing);
 	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
