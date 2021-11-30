@@ -3295,6 +3295,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 GsApp *
 gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GFile *file,
+			       gboolean unrefined,
 			       GCancellable *cancellable,
 			       GError **error)
 {
@@ -3303,8 +3304,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	g_autoptr(GBytes) metadata = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
-	g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
-	const char *origin = NULL;
 
 	/* load bundle */
 	xref_bundle = flatpak_bundle_ref_new (file, error);
@@ -3314,23 +3313,11 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		return NULL;
 	}
 
-	/* get the origin if it's already installed */
-	installed_ref = flatpak_installation_get_installed_ref (self->installation,
-								flatpak_ref_get_kind (FLATPAK_REF (xref_bundle)),
-								flatpak_ref_get_name (FLATPAK_REF (xref_bundle)),
-								flatpak_ref_get_arch (FLATPAK_REF (xref_bundle)),
-								flatpak_ref_get_branch (FLATPAK_REF (xref_bundle)),
-								NULL, NULL);
-	if (installed_ref != NULL)
-		origin = flatpak_installed_ref_get_origin (installed_ref);
-
 	/* load metadata */
-	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref_bundle), NULL, cancellable);
-	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
-		if (gs_flatpak_app_get_ref_name (app) == NULL)
-			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
+	app = gs_flatpak_create_app (self, NULL, FLATPAK_REF (xref_bundle), NULL, cancellable);
+	if (unrefined)
 		return g_steal_pointer (&app);
-	}
+
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_BUNDLE);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
@@ -3345,7 +3332,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
-		if (!gs_flatpak_refine_appstream_from_bytes (self, app, origin, installed_ref,
+		if (!gs_flatpak_refine_appstream_from_bytes (self, app, NULL, NULL,
 							     appstream_gz,
 							     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 							     cancellable, error))
@@ -3421,6 +3408,7 @@ _txn_choose_remote_for_ref (FlatpakTransaction *transaction,
 GsApp *
 gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GFile *file,
+			    gboolean unrefined,
 			    GCancellable *cancellable,
 			    GError **error)
 {
@@ -3504,6 +3492,26 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		return NULL;
 	}
 
+	if (unrefined) {
+		/* Note: we don't support non-default arch here but it's not a
+		 * regression since we never have for a flatpakref
+		 */
+		g_autofree char *app_ref = g_strdup_printf ("%s/%s/%s/%s",
+				                            is_runtime ? "runtime" : "app",
+							    ref_name,
+							    flatpak_get_default_arch (),
+							    ref_branch);
+		parsed_ref = flatpak_ref_parse (app_ref, error);
+		if (parsed_ref == NULL) {
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
+
+		/* early return */
+		app = gs_flatpak_create_app (self, NULL, parsed_ref, NULL, cancellable);
+		return g_steal_pointer (&app);
+	}
+
 	/* Add the remote (to the temporary installation) but abort the
 	 * transaction before it installs the app
 	 */
@@ -3524,29 +3532,13 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	success = flatpak_transaction_run (transaction, cancellable, &error_local);
 	g_assert (!success); /* aborted in _txn_abort_on_ready */
 
-	if (!g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ALREADY_INSTALLED) &&
-	    !g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ABORTED)) {
+	/* We don't check for FLATPAK_ERROR_ALREADY_INSTALLED here because it's
+	 * a temporary installation
+	 */
+	if (!g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ABORTED)) {
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		gs_flatpak_error_convert (error);
 		return NULL;
-	}
-
-	/* handle the already installed case */
-	if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_ALREADY_INSTALLED)) {
-		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
-		installed_ref = flatpak_installation_get_installed_ref (self->installation,
-									is_runtime ? FLATPAK_REF_KIND_RUNTIME : FLATPAK_REF_KIND_APP,
-									ref_name,
-									NULL, /* arch */
-									ref_branch,
-									cancellable,
-									error);
-		if (installed_ref == NULL) {
-			gs_flatpak_error_convert (error);
-			return NULL;
-		}
-		app = gs_flatpak_create_installed (self, installed_ref, NULL, cancellable);
-		return g_steal_pointer (&app);
 	}
 
 	g_clear_error (&error_local);
