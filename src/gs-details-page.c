@@ -14,6 +14,8 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "lib/gs-appstream.h"
+
 #include "gs-common.h"
 #include "gs-utils.h"
 
@@ -1508,7 +1510,8 @@ _set_app (GsDetailsPage *self, GsApp *app)
 
 /* show the UI and do operations that should not block page load */
 static void
-gs_details_page_load_stage2 (GsDetailsPage *self)
+gs_details_page_load_stage2 (GsDetailsPage *self,
+			     gboolean continue_loading)
 {
 	g_autofree gchar *tmp = NULL;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
@@ -1528,6 +1531,9 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
 	gs_details_page_update_origin_button (self, FALSE);
+
+	if (!continue_loading)
+		return;
 
 	/* if these tasks fail (e.g. because we have no networking) then it's
 	 * of no huge importance if we don't get the required data */
@@ -1595,7 +1601,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 	}
 
 	/* do 2nd stage refine */
-	gs_details_page_load_stage2 (self);
+	gs_details_page_load_stage2 (self, TRUE);
 }
 
 static void
@@ -1619,7 +1625,7 @@ gs_details_page_file_to_app_cb (GObject *source,
 		GsApp *app = gs_app_list_index (list, 0);
 		g_set_object (&self->app_local_file, app);
 		_set_app (self, app);
-		gs_details_page_load_stage2 (self);
+		gs_details_page_load_stage2 (self, TRUE);
 	}
 }
 
@@ -1643,7 +1649,7 @@ gs_details_page_url_to_app_cb (GObject *source,
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		_set_app (self, app);
-		gs_details_page_load_stage2 (self);
+		gs_details_page_load_stage2 (self, TRUE);
 	}
 }
 
@@ -2499,4 +2505,134 @@ gs_details_page_set_is_narrow (GsDetailsPage *self, gboolean is_narrow)
 
 	self->is_narrow = is_narrow;
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
+}
+
+static void
+gs_details_page_metainfo_ready_cb (GObject *source_object,
+				   GAsyncResult *result,
+				   gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (source_object);
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = g_task_propagate_pointer (G_TASK (result), &error);
+	if (error) {
+		gtk_label_set_text (GTK_LABEL (self->label_failed), error->message);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
+		return;
+	}
+
+	g_set_object (&self->app_local_file, app);
+	_set_app (self, app);
+	gs_details_page_load_stage2 (self, FALSE);
+}
+
+static void
+gs_details_page_metainfo_thread (GTask *task,
+				 gpointer source_object,
+				 gpointer task_data,
+				 GCancellable *cancellable)
+{
+	const gchar *const *locales;
+	g_autofree gchar *xml = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(XbBuilder) builder = NULL;
+	g_autoptr(XbBuilderSource) builder_source = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GPtrArray) nodes = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+	GFile *file = task_data;
+	XbNode *component;
+
+	builder_source = xb_builder_source_new ();
+	if (!xb_builder_source_load_file (builder_source, file, XB_BUILDER_SOURCE_FLAG_NONE, cancellable, &error)) {
+		g_task_return_error (task, g_steal_pointer (&error));
+		return;
+	}
+
+	builder = xb_builder_new ();
+	locales = g_get_language_names ();
+
+	/* add current locales */
+	for (guint i = 0; locales[i] != NULL; i++) {
+		xb_builder_add_locale (builder, locales[i]);
+	}
+
+	xb_builder_import_source (builder, builder_source);
+
+	silo = xb_builder_compile (builder, XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID | XB_BUILDER_COMPILE_FLAG_SINGLE_LANG, cancellable, &error);
+	if (silo == NULL) {
+		g_task_return_error (task, g_steal_pointer (&error));
+		return;
+	}
+
+	nodes = xb_silo_query (silo, "component", 0, NULL);
+	if (nodes == NULL)
+		nodes = xb_silo_query (silo, "application", 0, NULL);
+	if (nodes == NULL) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s",
+			"Passed-in file doesn't have a 'component' (nor 'application') top-level element");
+		return;
+	}
+
+	if (nodes->len != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED,
+			"Only one top-level element expected, received %u instead", nodes->len);
+		return;
+	}
+
+	component = g_ptr_array_index (nodes, 0);
+
+	app = gs_appstream_create_app (NULL, silo, component, &error);
+	if (app == NULL) {
+		g_task_return_error (task, g_steal_pointer (&error));
+		return;
+	}
+
+	if (!gs_appstream_refine_app (NULL, app, silo, component, GS_DETAILS_PAGE_REFINE_FLAGS, &error)) {
+		g_task_return_error (task, g_steal_pointer (&error));
+		return;
+	}
+
+	path = g_file_get_path (file);
+	gs_app_set_origin (app, path);
+
+	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+
+	g_task_return_pointer (task, g_steal_pointer (&app), g_object_unref);
+}
+
+/**
+ * gs_details_page_set_metainfo:
+ * @self: a #GsDetailsPage
+ * @file: path to a metainfo file to display
+ *
+ * Load and show the given metainfo @file on the details page.
+ *
+ * The file must be a single metainfo file, not an appstream file
+ * containing multiple components. It will be shown as if it came
+ * from a configured repository. This function is intended to be
+ * used by application developers wanting to test how their metainfo
+ * will appear to users.
+ *
+ * Since: 42
+ */
+void
+gs_details_page_set_metainfo (GsDetailsPage *self,
+			      GFile *file)
+{
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+	g_return_if_fail (G_IS_FILE (file));
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+	g_clear_object (&self->app_local_file);
+	g_clear_object (&self->app);
+	self->origin_by_packaging_format = FALSE;
+	task = g_task_new (self, self->cancellable, gs_details_page_metainfo_ready_cb, NULL);
+	g_task_set_source_tag (task, gs_details_page_set_metainfo);
+	g_task_set_task_data (task, g_object_ref (file), g_object_unref);
+	g_task_run_in_thread (task, gs_details_page_metainfo_thread);
 }

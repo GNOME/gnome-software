@@ -31,6 +31,15 @@ Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.
 
 For development discussion, join us on `#gnome-software` on [irc.gnome.org](https://wiki.gnome.org/Community/GettingInTouch/IRC).
 
+# Testing a metainfo/appdata file of an application
+
+If you are developing an application, and want to see how your under-development
+metainfo file will appear when it’s eventually published into GNOME Software,
+run:
+```
+$ gnome-software --show-metainfo=./path/to/your/org.example.App.appdata.xml.in
+```
+
 # Running a nightly build
 
 A [flatpak bundle](https://docs.flatpak.org/en/latest/single-file-bundles.html)
