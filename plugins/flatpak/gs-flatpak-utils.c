@@ -74,6 +74,7 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 	g_autofree gchar *url = NULL;
 	g_autofree gchar *filter = NULL;
 	g_autofree gchar *description = NULL;
+	g_autofree gchar *comment = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	app = gs_flatpak_app_new (flatpak_remote_get_name (xremote));
@@ -117,6 +118,10 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 	filter = flatpak_remote_get_filter (xremote);
 	if (filter != NULL)
 		gs_flatpak_app_set_repo_filter (app, filter);
+
+	comment = flatpak_remote_get_comment (xremote);
+	if (comment != NULL)
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, comment);
 
 	/* success */
 	return g_steal_pointer (&app);
