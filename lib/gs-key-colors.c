@@ -119,6 +119,28 @@ nearest_cluster (const Pixel8 *pixel,
 	return nearest_cluster;
 }
 
+/* A variant of g_random_int_range() which chooses without replacement,
+ * tracking the used integers in @used_ints and @n_used_ints.
+ * Once all integers in 0..max_ints have been used once, it will choose
+ * with replacement. */
+static gint32
+random_int_range_no_replacement (guint max_ints,
+				 gboolean *used_ints,
+				 guint *n_used_ints)
+{
+	gint32 random_value = g_random_int_range (0, (gint32) max_ints);
+
+	if (*n_used_ints < max_ints) {
+		while (used_ints[random_value])
+			random_value = (random_value + 1) % max_ints;
+
+		used_ints[random_value] = TRUE;
+		*n_used_ints = *n_used_ints + 1;
+	}
+
+	return random_value;
+}
+
 /* Extract the key colors from @pb by clustering the pixels in RGB space.
  * Clustering is done using k-means, with initialisation using a
  * Random Partition.
@@ -161,6 +183,8 @@ k_means (GArray    *colors,
 	const ClusterPixel8 *pixels_end;
 	Pixel8 cluster_centres[n_clusters];
 	CentroidAccumulator cluster_accumulators[n_clusters];
+	gboolean used_clusters[n_clusters];
+	guint n_used_clusters = 0;
 	guint n_assignments_changed;
 	guint n_iterations = 0;
 	guint assignments_termination_limit;
@@ -181,6 +205,7 @@ k_means (GArray    *colors,
 	pixels_end = &pixels[height * width];
 
 	memset (cluster_centres, 0, sizeof (cluster_centres));
+	memset (used_clusters, 0, sizeof (used_clusters));
 
 	/* Initialise the clusters using the Random Partition method: randomly
 	 * assign a starting cluster to each pixel.
@@ -194,7 +219,7 @@ k_means (GArray    *colors,
 		if (p->alpha < minimum_alpha)
 			p->cluster = G_N_ELEMENTS (cluster_centres);
 		else
-			p->cluster = g_random_int_range (0, G_N_ELEMENTS (cluster_centres));
+			p->cluster = random_int_range_no_replacement (G_N_ELEMENTS (cluster_centres), used_clusters, &n_used_clusters);
 	}
 
 	/* Iterate until every cluster is relatively settled. This is determined
