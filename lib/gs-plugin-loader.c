@@ -3356,8 +3356,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_FILE_TO_APP);
 				gs_plugin_job_set_file (helper->plugin_job, file);
 				helper->function_name = gs_plugin_action_to_function_name (GS_PLUGIN_ACTION_FILE_TO_APP);
-				if (!gs_plugin_loader_run_results (helper, cancellable, &local_error))
+				if (gs_plugin_loader_run_results (helper, cancellable, &local_error)) {
+					for (guint j = 0; j < gs_app_list_length (list); j++) {
+						GsApp *app = gs_app_list_index (list, j);
+						if (gs_app_get_local_file (app) == NULL)
+							gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
+					}
+				} else {
 					g_debug ("Failed to convert file:// URI to app using file-to-app action: %s", local_error->message);
+				}
 				gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_URL_TO_APP);
 				gs_plugin_job_set_file (helper->plugin_job, NULL);
 			}

@@ -1334,8 +1334,8 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 	if (flatpak_tmp == NULL)
 		return NULL;
 
-	/* add object */
-	app = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, cancellable, error);
+	/* First make a quick GsApp to get the ref */
+	app = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, TRUE /* unrefined */, cancellable, error);
 	if (app == NULL)
 		return NULL;
 
@@ -1344,6 +1344,12 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, cancellable, NULL);
 	if (app_tmp != NULL)
 		return g_steal_pointer (&app_tmp);
+
+	/* If not installed/available, make a fully refined GsApp */
+	g_clear_object (&app);
+	app = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, FALSE /* unrefined */, cancellable, error);
+	if (app == NULL)
+		return NULL;
 
 	/* force this to be 'any' scope for installation */
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
@@ -1369,8 +1375,8 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 	if (flatpak_tmp == NULL)
 		return NULL;
 
-	/* add object */
-	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, cancellable, error);
+	/* First make a quick GsApp to get the ref */
+	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, TRUE /* unrefined */, cancellable, error);
 	if (app == NULL)
 		return NULL;
 
@@ -1379,6 +1385,12 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 	app_tmp = gs_plugin_flatpak_find_app_by_ref (self, ref, cancellable, NULL);
 	if (app_tmp != NULL)
 		return g_steal_pointer (&app_tmp);
+
+	/* If not installed/available, make a fully refined GsApp */
+	g_clear_object (&app);
+	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, FALSE /* unrefined */, cancellable, error);
+	if (app == NULL)
+		return NULL;
 
 	/* force this to be 'any' scope for installation */
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
@@ -1397,7 +1409,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPluginFlatpak  *self,
 		} else {
 			/* the new runtime is available from the RuntimeRepo */
 			if (gs_flatpak_app_get_runtime_url (runtime) != NULL)
-				gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE_LOCAL);
+				gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE);
 		}
 	}
 

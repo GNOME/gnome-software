@@ -88,10 +88,12 @@ gboolean	gs_flatpak_app_install_source	(GsFlatpak		*self,
 						 GError			**error);
 GsApp		*gs_flatpak_file_to_app_ref	(GsFlatpak		*self,
 						 GFile			*file,
+						 gboolean		 unrefined,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_file_to_app_bundle	(GsFlatpak		*self,
 						 GFile			*file,
+						 gboolean		 unrefined,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_find_source_by_url	(GsFlatpak		*self,
