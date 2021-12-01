@@ -1127,69 +1127,6 @@ gs_utils_get_memory_total (void)
 }
 
 /**
- * gs_utils_parse_evr:
- * @evr: an EVR version string
- * @out_epoch: (out): return location for the epoch string
- * @out_version: (out): return location for the version string
- * @out_release: (out): return location for the release string
- *
- * Splits EVR into epoch-version-release strings.
- *
- * Returns: %TRUE for success
- **/
-gboolean
-gs_utils_parse_evr (const gchar *evr,
-                    gchar **out_epoch,
-                    gchar **out_version,
-                    gchar **out_release)
-{
-	const gchar *version_release;
-	g_auto(GStrv) split_colon = NULL;
-	g_auto(GStrv) split_dash = NULL;
-
-	/* split on : to get epoch */
-	split_colon = g_strsplit (evr, ":", -1);
-	switch (g_strv_length (split_colon)) {
-	case 1:
-		/* epoch is 0 when not set */
-		*out_epoch = g_strdup ("0");
-		version_release = split_colon[0];
-		break;
-	case 2:
-		/* epoch set */
-		*out_epoch = g_strdup (split_colon[0]);
-		version_release = split_colon[1];
-		break;
-	default:
-		/* error */
-		return FALSE;
-	}
-
-	/* split on - to get version and release */
-	split_dash = g_strsplit (version_release, "-", -1);
-	switch (g_strv_length (split_dash)) {
-	case 1:
-		/* all of the string is version */
-		*out_version = g_strdup (split_dash[0]);
-		*out_release = g_strdup ("0");
-		break;
-	case 2:
-		/* both version and release set */
-		*out_version = g_strdup (split_dash[0]);
-		*out_release = g_strdup (split_dash[1]);
-		break;
-	default:
-		/* error */
-		return FALSE;
-	}
-
-	g_assert (*out_epoch != NULL);
-	g_assert (*out_version != NULL);
-	g_assert (*out_release != NULL);
-	return TRUE;
-}
-
-/**
  * gs_utils_set_online_updates_timestamp:
  *
  * Sets the value of online-updates-timestamp to current epoch. "online-updates-timestamp" represents

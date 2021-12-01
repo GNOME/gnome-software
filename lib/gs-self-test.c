@@ -170,78 +170,6 @@ gs_utils_error_func (void)
 }
 
 static void
-gs_utils_parse_evr_func (void)
-{
-	gboolean ret;
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("3.26.0-1.fc27", &epoch, &version, &release);
-		g_assert (ret);
-		g_assert_cmpstr (epoch, ==, "0");
-		g_assert_cmpstr (version, ==, "3.26.0");
-		g_assert_cmpstr (release, ==, "1.fc27");
-	}
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("1:3.26.0-1.fc27", &epoch, &version, &release);
-		g_assert (ret);
-		g_assert_cmpstr (epoch, ==, "1");
-		g_assert_cmpstr (version, ==, "3.26.0");
-		g_assert_cmpstr (release, ==, "1.fc27");
-	}
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("234", &epoch, &version, &release);
-		g_assert (ret);
-		g_assert_cmpstr (epoch, ==, "0");
-		g_assert_cmpstr (version, ==, "234");
-		g_assert_cmpstr (release, ==, "0");
-	}
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("3:1.6~git20131207+dfsg-2ubuntu1~14.04.3", &epoch, &version, &release);
-		g_assert (ret);
-		g_assert_cmpstr (epoch, ==, "3");
-		g_assert_cmpstr (version, ==, "1.6~git20131207+dfsg");
-		g_assert_cmpstr (release, ==, "2ubuntu1~14.04.3");
-	}
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("1-2-3-4-5-6", &epoch, &version, &release);
-		g_assert (!ret);
-	}
-
-	{
-		g_autofree gchar *epoch = NULL;
-		g_autofree gchar *version = NULL;
-		g_autofree gchar *release = NULL;
-
-		ret = gs_utils_parse_evr ("", &epoch, &version, &release);
-		g_assert (!ret);
-	}
-}
-
-static void
 gs_plugin_download_rewrite_func (void)
 {
 	g_autofree gchar *css = NULL;
@@ -827,7 +755,6 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
 	g_test_add_func ("/gnome-software/lib/utils{cache}", gs_utils_cache_func);
 	g_test_add_func ("/gnome-software/lib/utils{append-kv}", gs_utils_append_kv_func);
-	g_test_add_func ("/gnome-software/lib/utils{parse-evr}", gs_utils_parse_evr_func);
 	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
 	g_test_add_func ("/gnome-software/lib/app/progress-clamping", gs_app_progress_clamping_func);
