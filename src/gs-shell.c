@@ -263,14 +263,10 @@ gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
 					  gpointer    user_data)
 {
 	GsShell *shell = GS_SHELL (user_data);
-	GtkDialog *dialog;
+	GtkWidget *dialog;
 
-	dialog = GTK_DIALOG (gs_metered_data_dialog_new (GTK_WINDOW (shell)));
+	dialog = gs_metered_data_dialog_new (GTK_WINDOW (shell));
 	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static void
