@@ -1251,7 +1251,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
 				g_string_append_printf (str, _("Unable to download updates from %s"),
 							str_origin);
-				if (gs_app_get_management_plugin (origin) != NULL)
+				if (!gs_app_has_management_plugin (origin, NULL))
 					buttons |= GS_SHELL_EVENT_BUTTON_SOURCES;
 			}
 		} else {

@@ -301,7 +301,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
@@ -402,8 +402,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* enable repo, handled by dedicated function */
@@ -613,8 +612,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_auto(GStrv) package_ids = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* disable repo, handled by dedicated function */
@@ -696,7 +694,7 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 			    pk_package_get_summary (package));
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
-	gs_app_set_management_plugin (app, "packagekit");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_update_version (app, pk_package_get_version (package));
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
@@ -832,9 +830,9 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
+
 	return gs_plugin_app_launch (plugin, app, error);
 }
 
@@ -855,11 +853,11 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 	    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM) {
-		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_management_plugin (app, plugin);
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		return;
 	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
-		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_management_plugin (app, plugin);
 	}
 }
 
@@ -1301,9 +1299,12 @@ gs_plugin_packagekit_refine_details (GsPluginPackagekit   *self,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
+
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+
+		/* only process this app if was created by this plugin */
+		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
@@ -1453,8 +1454,8 @@ gs_plugin_packagekit_refine_name_to_id (GsPluginPackagekit   *self,
 		const gchar *tmp;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		tmp = gs_app_get_management_plugin (app);
-		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
@@ -1498,8 +1499,8 @@ gs_plugin_packagekit_refine_filename_to_id (GsPluginPackagekit   *self,
 			continue;
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
-		tmp = gs_app_get_management_plugin (app);
-		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
 		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
@@ -1544,15 +1545,15 @@ gs_plugin_packagekit_refine_update_details (GsPluginPackagekit   *self,
 	g_autoptr(GsAppList) updatedetails_all = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
+
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
-		tmp = gs_app_get_management_plugin (app);
-		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
 		if (gs_plugin_refine_requires_update_details (app, flags))
 			gs_app_list_add (updatedetails_all, app);
@@ -1616,7 +1617,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		GsApp *app = gs_app_list_index (list, i);
 
 		/* only process this app if was created by this plugin */
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 
 		/* the scope is always system-wide */
@@ -1637,7 +1638,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		packages = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
-			if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+			if (!gs_app_has_management_plugin (app, plugin))
 				continue;
 			sources = gs_app_get_sources (app);
 			if (sources->len == 0)
@@ -2040,7 +2041,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 			     "invalid package-id: %s", package_id);
 		return FALSE;
 	}
-	gs_app_set_management_plugin (app, "packagekit");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
@@ -2199,7 +2200,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 		app = gs_app_new (NULL);
 		gs_app_set_from_unique_id (app, "*/*/*/system/*", AS_COMPONENT_KIND_GENERIC);
-		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
@@ -2226,7 +2227,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		gs_app_add_source (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
-		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_add_source_id (app, package_id);
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
@@ -2578,7 +2579,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* check is distro-upgrade */
@@ -2651,8 +2652,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	g_autoptr(PkError) error_code = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* is repo */
@@ -2707,8 +2707,7 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	g_autoptr(PkError) error_code = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* is repo */

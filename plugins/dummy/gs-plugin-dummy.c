@@ -89,7 +89,7 @@ gs_plugin_setup (GsPlugin      *plugin,
 	self->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (self->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_origin_hostname (self->cached_origin, "http://www.bbc.co.uk/");
-	gs_app_set_management_plugin (self->cached_origin, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (self->cached_origin, plugin);
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -119,7 +119,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_id (app) != NULL &&
 	    g_str_has_prefix (gs_app_get_id (app), "dummy:")) {
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		return;
 	}
 	if (g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
@@ -128,7 +128,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	    g_strcmp0 (gs_app_get_id (app), "com.hughski.ColorHug2.driver") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0 ||
 	    g_strcmp0 (gs_app_get_source_default (app), "chiron") == 0)
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 }
 
 static gboolean
@@ -204,7 +204,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	/* create app */
 	path = gs_utils_get_url_path (url);
 	app = gs_app_new (path);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
@@ -332,7 +332,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_set_size_download (app, 50 * 1024 * 1024);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
@@ -372,7 +372,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_add_icon (app, ic);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 
@@ -388,7 +388,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	gs_app_add_source (app, "libvirt-glib-devel");
 	gs_app_add_source_id (app, "libvirt-glib-devel;0.0.1;noarch;fedora");
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 
@@ -404,7 +404,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_add_source (app, "chiron-libs");
 	gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 
@@ -418,7 +418,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_kind (proxy, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_add_quirk (proxy, GS_APP_QUIRK_IS_PROXY);
 	gs_app_set_state (proxy, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (proxy, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (proxy, plugin);
 	gs_app_list_add (list, proxy);
 	g_object_unref (proxy);
 
@@ -428,7 +428,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_related (proxy, app);
 	g_object_unref (app);
 
@@ -438,7 +438,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_related (proxy, app);
 	g_object_unref (app);
 
@@ -462,7 +462,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_origin (app, "london-west");
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_list_add (list, app);
 	}
 
@@ -471,7 +471,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		g_autoptr(GsApp) app = gs_app_new (app_ids[i]);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_list_add (list, app);
 	}
 
@@ -513,8 +513,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* remove app */
@@ -544,8 +543,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* install app */
@@ -577,8 +575,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
@@ -755,7 +752,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_add_icon (app, icon);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_list_add (list, app);
 	return TRUE;
 }
@@ -776,7 +773,7 @@ gs_plugin_add_recent (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_add_icon (app, icon);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_list_add (list, app);
 	return TRUE;
 }
@@ -817,7 +814,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_size_installed (app, 256 * 1024 * 1024);
 	gs_app_set_size_download (app, 1024 * 1024 * 1024);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;"
@@ -854,8 +851,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 			        GCancellable *cancellable, GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	g_debug ("starting download");
@@ -873,8 +869,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 			       GCancellable *cancellable, GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* NOP */

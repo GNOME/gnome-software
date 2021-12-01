@@ -116,6 +116,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GIcon) icon = NULL;
+	g_autoptr(GsPlugin) management_plugin = NULL;
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -143,7 +144,9 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_REPOSITORY);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "example");
-	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak");
+	management_plugin = gs_app_dup_management_plugin (app);
+	g_assert_nonnull (management_plugin);
+	g_assert_cmpstr (gs_plugin_get_name (management_plugin), ==, "flatpak");
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://foo.bar");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "foo-bar");
@@ -267,6 +270,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gulong signal_id;
 	gboolean seen_unknown;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -305,7 +309,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL_REPO,
@@ -545,6 +550,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app_source = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -569,7 +575,8 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL_REPO,
@@ -983,6 +990,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_source = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -998,7 +1006,8 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	if (testdir == NULL)
 		return;
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, "file:///wont/work");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL_REPO,
@@ -1077,6 +1086,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_autoptr(GsAppList) search2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -1093,7 +1103,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL_REPO,
@@ -1293,7 +1304,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		/* remove remote added by RuntimeRepo= in flatpakref */
 		g_autoptr(GsApp) runtime_source = gs_flatpak_app_new ("test-1");
 		gs_app_set_kind (runtime_source, AS_COMPONENT_KIND_REPOSITORY);
-		gs_app_set_management_plugin (runtime_source, "flatpak");
+		plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+		gs_app_set_management_plugin (runtime_source, plugin);
 		gs_app_set_state (runtime_source, GS_APP_STATE_INSTALLED);
 		g_object_unref (plugin_job);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE_REPO,
@@ -1370,6 +1382,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
 	g_autofree gchar *repo_path = NULL;
 	g_autofree gchar *repo_url = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -1401,7 +1414,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* add a remote */
 	app_source = gs_flatpak_app_new ("test");
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	repo_url = g_strdup_printf ("file://%s", repo_path);
 	gs_flatpak_app_set_repo_url (app_source, repo_url);
@@ -1623,6 +1637,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
 	g_autofree gchar *repo_path = NULL;
 	g_autofree gchar *repo_url = NULL;
+	GsPlugin *plugin;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -1652,7 +1667,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	/* add a remote */
 	app_source = gs_flatpak_app_new ("test");
 	gs_app_set_kind (app_source, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	gs_app_set_management_plugin (app_source, plugin);
 	gs_app_set_state (app_source, GS_APP_STATE_AVAILABLE);
 	repo_url = g_strdup_printf ("file://%s", repo_path);
 	gs_flatpak_app_set_repo_url (app_source, repo_url);

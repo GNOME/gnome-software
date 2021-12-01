@@ -338,10 +338,13 @@ static gboolean
 is_third_party_repo (GsReposDialog *dialog,
 		     GsApp *repo)
 {
+	g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (repo);
+	const gchar *plugin_name = (plugin != NULL) ? gs_plugin_get_name (plugin) : NULL;
+
 	return gs_app_get_scope (repo) == AS_COMPONENT_SCOPE_SYSTEM &&
 	       gs_fedora_third_party_util_is_third_party_repo (dialog->third_party_repos,
 							       gs_app_get_id (repo),
-							       gs_app_get_management_plugin (repo));
+							       plugin_name);
 }
 
 static void
@@ -373,11 +376,14 @@ add_repo (GsReposDialog *dialog,
 	origin_ui = gs_app_get_origin_ui (repo);
 	if (!origin_ui)
 		origin_ui = gs_app_get_packaging_format (repo);
-	if (!origin_ui)
-		origin_ui = g_strdup (gs_app_get_management_plugin (repo));
+	if (!origin_ui) {
+		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (repo);
+		origin_ui = (plugin != NULL) ? g_strdup (gs_plugin_get_name (plugin)) : NULL;
+	}
+
 	section = g_hash_table_lookup (dialog->sections, origin_ui);
 	if (section == NULL) {
-		section = gs_repos_section_new (dialog->plugin_loader, FALSE);
+		section = gs_repos_section_new (FALSE);
 		adw_preferences_group_set_title (ADW_PREFERENCES_GROUP (section),
 						 origin_ui);
 		g_signal_connect_object (section, "remove-clicked",
@@ -532,7 +538,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		section_id = g_strdup_printf ("fedora-third-party::1::%p", widget);
 		g_hash_table_insert (dialog->sections, g_steal_pointer (&section_id), widget);
 
-		section = GS_REPOS_SECTION (gs_repos_section_new (dialog->plugin_loader, TRUE));
+		section = GS_REPOS_SECTION (gs_repos_section_new (TRUE));
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);

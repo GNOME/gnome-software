@@ -48,6 +48,7 @@
 #include "gs-key-colors.h"
 #include "gs-os-release.h"
 #include "gs-plugin.h"
+#include "gs-plugin-private.h"
 #include "gs-remote-icon.h"
 #include "gs-utils.h"
 
@@ -94,7 +95,7 @@ typedef struct
 	gchar			*update_details_markup;
 	AsUrgencyKind		 update_urgency;
 	GsAppPermissions         update_permissions;
-	gchar			*management_plugin;
+	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
 	guint			 match_value;
 	guint			 priority;
 	gint			 rating;
@@ -518,6 +519,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	GList *keys;
 	const gchar *tmp;
 	guint i;
+	g_autoptr(GsPlugin) management_plugin = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (str != NULL);
@@ -563,8 +565,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	}
 	if (priv->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
-	if (priv->priority != 0)
-		gs_app_kv_printf (str, "priority", "%u", priv->priority);
+	if (gs_app_get_priority (app) != 0)
+		gs_app_kv_printf (str, "priority", "%u", gs_app_get_priority (app));
 	if (priv->version != NULL)
 		gs_app_kv_lpad (str, "version", priv->version);
 	if (priv->version_ui != NULL)
@@ -636,8 +638,9 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "license-is-free",
 				gs_app_get_license_is_free (app) ? "yes" : "no");
 	}
-	if (priv->management_plugin != NULL)
-		gs_app_kv_lpad (str, "management-plugin", priv->management_plugin);
+	management_plugin = g_weak_ref_get (&priv->management_plugin_weak);
+	if (management_plugin != NULL)
+		gs_app_kv_lpad (str, "management-plugin", gs_plugin_get_name (management_plugin));
 	if (priv->summary_missing != NULL)
 		gs_app_kv_lpad (str, "summary-missing", priv->summary_missing);
 	if (priv->menu_path != NULL &&
@@ -3207,48 +3210,70 @@ gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 }
 
 /**
- * gs_app_get_management_plugin:
+ * gs_app_dup_management_plugin:
  * @app: a #GsApp
  *
  * Gets the management plugin.
- * This is some metadata about the application which is used to work out
- * which plugin should handle the install, remove or upgrade actions.
  *
- * Typically plugins will just set this to the plugin name using
- * gs_plugin_get_name().
+ * This is some metadata about the application which gives which plugin should
+ * handle the install, remove or upgrade actions.
  *
- * Returns: a string, or %NULL for unset
+ * Returns: (nullable) (transfer full): the management plugin, or %NULL for unset
  *
- * Since: 3.22
+ * Since: 42
  **/
-const gchar *
-gs_app_get_management_plugin (GsApp *app)
+GsPlugin *
+gs_app_dup_management_plugin (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->management_plugin;
+	return g_weak_ref_get (&priv->management_plugin_weak);
+}
+
+/**
+ * gs_app_has_management_plugin:
+ * @app: a #GsApp
+ * @plugin: (nullable) (transfer none): a #GsPlugin to check against, or %NULL
+ *
+ * Check whether the management plugin for @app is set to @plugin.
+ *
+ * If @plugin is %NULL, %TRUE is returned only if the @app has no management
+ * plugin set.
+ *
+ * Returns: %TRUE if @plugin is the management plugin for @app, %FALSE otherwise
+ * Since: 42
+ */
+gboolean
+gs_app_has_management_plugin (GsApp    *app,
+                              GsPlugin *plugin)
+{
+	g_autoptr(GsPlugin) app_plugin = gs_app_dup_management_plugin (app);
+	return (app_plugin == plugin);
 }
 
 /**
  * gs_app_set_management_plugin:
  * @app: a #GsApp
- * @management_plugin: a string, or %NULL, e.g. "fwupd"
+ * @management_plugin: (nullable) (transfer none): a plugin, or %NULL
  *
  * The management plugin is the plugin that can handle doing install and remove
  * operations on the #GsApp.
- * Typical values include "packagekit" and "flatpak"
  *
  * It is an error to attempt to change the management plugin once it has been
  * previously set or to try to use this function on a wildcard application.
  *
- * Since: 3.22
+ * Since: 42
  **/
 void
-gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
+gs_app_set_management_plugin (GsApp    *app,
+                              GsPlugin *management_plugin)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GsPlugin) old_plugin = NULL;
+
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (management_plugin == NULL || GS_IS_PLUGIN (management_plugin));
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
@@ -3257,26 +3282,27 @@ gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 		g_warning ("plugins should not set the management plugin on "
 			   "%s to %s -- create a new GsApp in refine()!",
 			   gs_app_get_unique_id_unlocked (app),
-			   management_plugin);
+			   (management_plugin != NULL) ? gs_plugin_get_name (management_plugin) : "(null)");
 		return;
 	}
 
 	/* same */
-	if (g_strcmp0 (priv->management_plugin, management_plugin) == 0)
+	old_plugin = g_weak_ref_get (&priv->management_plugin_weak);
+
+	if (old_plugin == management_plugin)
 		return;
 
 	/* trying to change */
-	if (priv->management_plugin != NULL && management_plugin != NULL) {
+	if (old_plugin != NULL && management_plugin != NULL) {
 		g_warning ("automatically prevented from changing "
 			   "management plugin on %s from %s to %s!",
 			   gs_app_get_unique_id_unlocked (app),
-			   priv->management_plugin,
-			   management_plugin);
+			   gs_plugin_get_name (old_plugin),
+			   gs_plugin_get_name (management_plugin));
 		return;
 	}
 
-	g_free (priv->management_plugin);
-	priv->management_plugin = g_strdup (management_plugin);
+	g_weak_ref_set (&priv->management_plugin_weak, management_plugin);
 }
 
 /**
@@ -4782,6 +4808,15 @@ gs_app_get_priority (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
+
+	/* If the priority hasn’t been explicitly set, fetch it from the app’s
+	 * management plugin. */
+	if (priv->priority == 0) {
+		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (app);
+		if (plugin != NULL)
+			return gs_plugin_get_priority (plugin);
+	}
+
 	return priv->priority;
 }
 
@@ -5092,6 +5127,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
 	g_clear_pointer (&priv->version_history, g_ptr_array_unref);
 	g_clear_pointer (&priv->relations, g_ptr_array_unref);
+	g_weak_ref_clear (&priv->management_plugin_weak);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -5130,7 +5166,6 @@ gs_app_finalize (GObject *object)
 	g_free (priv->update_version);
 	g_free (priv->update_version_ui);
 	g_free (priv->update_details_markup);
-	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->categories);
 	g_clear_pointer (&priv->key_colors, g_array_unref);

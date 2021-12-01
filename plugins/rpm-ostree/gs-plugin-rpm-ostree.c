@@ -59,10 +59,7 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (object);
 
-	if (self->inactive_timeout_id) {
-		g_source_remove (self->inactive_timeout_id);
-		self->inactive_timeout_id = 0;
-	}
+	g_clear_handle_id (&self->inactive_timeout_id, g_source_remove);
 	g_clear_object (&self->os_proxy);
 	g_clear_object (&self->sysroot_proxy);
 	g_clear_object (&self->ot_sysroot);
@@ -344,13 +341,13 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 	    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM) {
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 		app_set_rpm_ostree_packaging_format (app);
 	}
 
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	}
 }
@@ -630,7 +627,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 
 	/* create new app */
 	app = gs_app_new (NULL);
-	gs_app_set_management_plugin (app, "rpm-ostree");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
@@ -669,7 +666,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 
 	/* create new app */
 	app = gs_app_new (NULL);
-	gs_app_set_management_plugin (app, "rpm-ostree");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
@@ -1166,7 +1163,7 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 		return TRUE;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (GS_PLUGIN (self))) != 0)
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 		return TRUE;
 
 	/* already in correct state */
@@ -1256,7 +1253,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* check is distro-upgrade */
@@ -1393,7 +1390,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* enable repo, handled by dedicated function */
@@ -1499,7 +1496,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
@@ -1745,7 +1742,7 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 		if (gs_app_get_source_default (app) == NULL) {
 			g_debug ("rpm: setting source to %s", name);
 			gs_app_add_source (app, name);
-			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+			gs_app_set_management_plugin (app, plugin);
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 			app_set_rpm_ostree_packaging_format (app);
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -1837,23 +1834,23 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		/* set management plugin for apps where appstream just added the source package name in refine() */
-		if (gs_app_get_management_plugin (app) == NULL &&
+		if (gs_app_has_management_plugin (app, NULL) &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) != NULL) {
-			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+			gs_app_set_management_plugin (app, plugin);
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 			app_set_rpm_ostree_packaging_format (app);
 		}
 		/* resolve the source package name based on installed appdata/desktop file name */
-		if (gs_app_get_management_plugin (app) == NULL &&
+		if (gs_app_has_management_plugin (app, NULL) &&
 		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
 		    gs_app_get_scope (app) == AS_COMPONENT_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) == NULL) {
 			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
 				return FALSE;
 		}
-		if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		if (!gs_app_has_management_plugin (app, plugin))
 			continue;
 		if (gs_app_get_source_default (app) == NULL)
 			continue;
@@ -1900,7 +1897,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* check is distro-upgrade */
@@ -1972,8 +1969,7 @@ gs_plugin_launch (GsPlugin *plugin,
                   GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-	               gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	return gs_plugin_app_launch (plugin, app, error);
@@ -2053,7 +2049,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	app = gs_app_new (NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	if (h) {
 		const gchar *str;
 
@@ -2181,7 +2177,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 		/* create new app */
 		app = gs_app_new (NULL);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 		app_set_rpm_ostree_packaging_format (app);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
@@ -2224,7 +2220,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			continue;
 
 		app = gs_app_new (dnf_repo_get_id (repo));
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
@@ -2256,7 +2252,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if it was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* enable repo */
@@ -2287,7 +2283,7 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 
 	/* only process this app if it was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo), gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* disable repo */

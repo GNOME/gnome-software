@@ -85,7 +85,7 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 			 flatpak_remote_get_name (xremote));
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_scope (app, is_user ? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM);
 

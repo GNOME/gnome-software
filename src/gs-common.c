@@ -169,10 +169,12 @@ gs_app_notify_installed (GsApp *app)
 						       "app.reboot", NULL);
 	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
+		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (app);
+		const gchar *plugin_name = (plugin != NULL) ? gs_plugin_get_name (plugin) : "";
 		g_notification_add_button_with_target (n, _("Launch"),
 						       "app.launch", "(ss)",
 						       gs_app_get_id (app),
-						       gs_app_get_management_plugin (app));
+						       plugin_name);
 	}
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
 						       gs_app_get_unique_id (app), "");

@@ -62,9 +62,10 @@ gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 static void
 gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
 {
-	if (gs_app_get_management_plugin (app) != NULL)
+	if (!gs_app_has_management_plugin (app, NULL))
 		return;
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+
+	gs_app_set_management_plugin (app, self->plugin);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 
 	/* only when we have a non-temp object */

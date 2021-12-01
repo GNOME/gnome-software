@@ -118,7 +118,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, plugin);
 }
 
 static void
@@ -243,7 +243,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	self->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (self->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
 	gs_app_set_bundle_kind (self->cached_origin, AS_BUNDLE_KIND_CABINET);
-	gs_app_set_management_plugin (self->cached_origin, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (self->cached_origin, plugin);
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -297,7 +297,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_CABINET);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
-	gs_app_set_management_plugin (app, "fwupd");
+	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_category (app, "System");
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
@@ -348,7 +348,7 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_description (device));
 	gs_app_set_origin (app, fwupd_device_get_vendor (device));
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (device));
-	gs_app_set_management_plugin (app, "fwupd");
+	gs_app_set_management_plugin (app, plugin);
 
 	/* create icon */
 	icons = fwupd_device_get_icons (device);
@@ -842,8 +842,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* source -> remote, handled by dedicated function */
@@ -866,8 +865,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* not set */
@@ -922,8 +920,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
 	/* locked devices need unlocking, rather than installing */
@@ -1038,7 +1035,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 				fwupd_remote_get_metadata_uri (remote));
 		gs_app_set_metadata (app, "fwupd::remote-id",
 				     fwupd_remote_get_id (remote));
-		gs_app_set_management_plugin (app, "fwupd");
+		gs_app_set_management_plugin (app, plugin);
 		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "fwupd");
 		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "800");
 		gs_app_set_origin_ui (app, _("Firmware"));
@@ -1095,8 +1092,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 
 	/* only process this app if it was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* source -> remote */
@@ -1121,8 +1117,7 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 
 	/* only process this app if it was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (repo),
-		       gs_plugin_get_name (plugin)) != 0)
+	if (!gs_app_has_management_plugin (repo, plugin))
 		return TRUE;
 
 	/* source -> remote */
