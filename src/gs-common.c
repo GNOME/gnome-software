@@ -294,7 +294,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 					  "free and open source software</a>, "
 					  "and is provided by “%s”."),
 					gs_app_get_name (app),
-					gs_app_get_origin (app));
+					gs_app_get_origin_ui (app));
 	} else {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
@@ -302,7 +302,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 					 * 2. Software repository name, e.g. fedora-optional */
 					_("%s is provided by “%s”."),
 					gs_app_get_name (app),
-					gs_app_get_origin (app));
+					gs_app_get_origin_ui (app));
 	}
 
 	/* tell the use what needs to be done */
