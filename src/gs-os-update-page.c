@@ -175,32 +175,11 @@ is_downgrade (const gchar *evr1,
               const gchar *evr2)
 {
 	gint rc;
-	g_autofree gchar *epoch1 = NULL;
-	g_autofree gchar *epoch2 = NULL;
-	g_autofree gchar *version1 = NULL;
-	g_autofree gchar *version2 = NULL;
-	g_autofree gchar *release1 = NULL;
-	g_autofree gchar *release2 = NULL;
 
 	if (evr1 == NULL || evr2 == NULL)
 		return FALSE;
 
-	/* split into epoch-version-release */
-	if (!gs_utils_parse_evr (evr1, &epoch1, &version1, &release1))
-		return FALSE;
-	if (!gs_utils_parse_evr (evr2, &epoch2, &version2, &release2))
-		return FALSE;
-
-	/* ignore epoch here as it's a way to make downgrades happen and not
-	 * part of the semantic version */
-
-	/* check version */
-	rc = as_vercmp_simple (version1, version2);
-	if (rc != 0)
-		return rc > 0;
-
-	/* check release */
-	rc = as_vercmp_simple (release1, release2);
+	rc = as_vercmp (evr1, evr2, AS_VERCMP_FLAG_IGNORE_EPOCH);
 	if (rc != 0)
 		return rc > 0;
 
