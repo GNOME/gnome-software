@@ -359,7 +359,7 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 		gs_plugin_cache_add (GS_PLUGIN (self), cache_id, app);
 	}
 
-	gs_app_set_management_plugin (app, plugin);
+	gs_app_set_management_plugin (app, GS_PLUGIN (self));
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	if (gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
