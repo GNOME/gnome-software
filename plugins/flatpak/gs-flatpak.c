@@ -1356,8 +1356,10 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	/* create new object */
 	origin = flatpak_installed_ref_get_origin (xref);
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref), xremote, cancellable);
-	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
 	gs_flatpak_set_metadata_installed (self, app, xref, cancellable);
 	return g_steal_pointer (&app);
 }
