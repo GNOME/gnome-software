@@ -1499,7 +1499,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 	}
 
 	for (guint i = 0; i < self->installed_refs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (self->installed_refs, i);
+		g_autoptr(FlatpakInstalledRef) xref = g_object_ref (g_ptr_array_index (self->installed_refs, i));
 		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
 		if (g_strcmp0 (ref, ref_tmp) == 0) {
 			g_mutex_unlock (&self->installed_refs_mutex);
