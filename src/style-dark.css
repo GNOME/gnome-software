@@ -1,3 +1,29 @@
 .upgrade-banner-background {
 	background: linear-gradient(to bottom, @green_5, @blue_5);
 }
+
+.context-tile-lozenge.green,
+.context-tile-lozenge.details-rating-0 {
+	color: @green_1;
+	background-color: alpha(@green_4, .25);
+}
+
+.context-tile-lozenge.blue,
+.context-tile-lozenge.details-rating-5 {
+	color: @blue_1;
+}
+
+.context-tile-lozenge.yellow,
+.context-tile-lozenge.details-rating-12 {
+	color: @yellow_2;
+	background: alpha(#cd9309, .25);
+}
+
+.context-tile-lozenge.details-rating-15 {
+	color: @orange_1;
+}
+
+.context-tile-lozenge.red,
+.context-tile-lozenge.details-rating-18 {
+	color: #ff7b63;
+}
