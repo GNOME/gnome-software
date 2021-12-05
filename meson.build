@@ -289,6 +289,10 @@ test_env = [
   'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.build_root()),
   'GSETTINGS_BACKEND=memory',
   'MALLOC_CHECK_=2',
+
+  # Make flatpak skip parental controls since it requires the system bus.
+  # https://github.com/flatpak/flatpak/issues/2993
+  'FLATPAK_SYSTEM_HELPER_ON_SESSION=1',
 ]
 
 subdir('data')
