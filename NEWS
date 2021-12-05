@@ -222,8 +222,8 @@ This is an unstable release with the following changes:
  * UI elements for displaying app add-ons have been tweaked to more closely match the designs.
  * Installed icons and the badge showing the number of updates available were changed back to blue
    from green.
- * The dropdown showing the available sources of an application includes the packaging format (e.g.
-   Flatpak vs RPM).
+ * The dropdown showing the available sources of an application includes the packaging format
+   (e.g. Flatpak vs RPM).
  * A bug was fixed that prevented installation of .flatpakref files
 
 Translation updates:
@@ -514,8 +514,8 @@ cycle. Next release will be 3.32.0!
  * Sort the items in the Source drop down
  * Don't show error notifications for background download and refresh errors
  * Fix an issue that could cause an explosion of "A restart is required" notifications
- * Various flatpak plugin fixes to make it correctly match the data when multiple flatpak repos are
-   available
+ * Various flatpak plugin fixes to make it correctly match the data when multiple flatpak repos
+   are available
  * Fix the rpm-ostree plugin to correctly convert remote dbus errors
 
 This release also updates translations.
@@ -611,8 +611,8 @@ This is an unstable release in the 3.31 development series, with the following i
  * Add a source selection drop down to details pages
  * Move the search button to the left side in the header bar
  * Various other minor UI tweaks
- * GtkBuilder UI file changes to pave the way for an eventual GTK4 port (please file issues for any
-   UI layout regressions if you notice any!)
+ * GtkBuilder UI file changes to pave the way for an eventual GTK4 port (please file issues for
+   any UI layout regressions if you notice any!)
  * Various internal plugin loader fixes and cleanups
  * Remove the steam plugin
  * Simplify the details page loading
@@ -764,8 +764,8 @@ cycle. Next release will be 3.28.0!
    were unable to remove shell extension packages
  * Category page rewrite that landed earlier this cycle went through UI review and got a number of
    fixes
- * Package version comparison in the updates dialog was fixed and should no longer incorrectly show
-   updates as downgrades
+ * Package version comparison in the updates dialog was fixed and should no longer incorrectly
+   show updates as downgrades
  * Distro upgrade notifications are now rate limited to once per week
  * Install buttons in codec install view that got lost in the 3.22 cycle are now back
  * Various paper cuts with distro upgrades were fixed
@@ -857,7 +857,8 @@ Version 3.26.2
 Released: 2017-11-09
 
 This is a stable release with the following changes:
- * Various fixes to cancellable handling, making it more robust to cancel install/remove operations
+ * Various fixes to cancellable handling, making it more robust to cancel install/remove
+   operations
  * Fix a common crash in Fedora distro upgrades plugin
  * Fix showing N+2 Fedora upgrades
  * Fix flatpak updates inadvertently triggering a reboot
