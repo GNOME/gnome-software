@@ -1156,7 +1156,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		fn = gs_test_get_filename (TESTDATADIR, "chiron.flatpak");
 		g_assert_true (fn != NULL);
 		file = g_file_new_for_path (fn);
-		refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+		refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	} else {
 		const gchar *fn_repo = "test.flatpakrepo";
 		g_autoptr(GFile) fn_repo_file = NULL;
@@ -1826,8 +1826,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "Bingo",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();

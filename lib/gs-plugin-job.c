@@ -163,14 +163,14 @@ gs_plugin_job_set_dedupe_flags (GsPluginJob *self, GsAppListFilterFlags dedupe_f
 GsPluginRefineFlags
 gs_plugin_job_get_refine_flags (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_DEFAULT);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_NONE);
 	return self->refine_flags;
 }
 
 GsPluginRefineFlags
 gs_plugin_job_get_filter_flags (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_DEFAULT);
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_NONE);
 	return self->filter_flags;
 }
 
@@ -556,12 +556,12 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 	g_object_class_install_property (object_class, PROP_AGE, pspec);
 
 	pspec = g_param_spec_flags ("refine-flags", NULL, NULL,
-				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFINE_FLAGS, pspec);
 
 	pspec = g_param_spec_flags ("filter-flags", NULL, NULL,
-				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
 				    G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILTER_FLAGS, pspec);
 
@@ -625,8 +625,8 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 static void
 gs_plugin_job_init (GsPluginJob *self)
 {
-	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
-	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	self->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
 			     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
 			     GS_APP_LIST_FILTER_FLAG_KEY_VERSION;

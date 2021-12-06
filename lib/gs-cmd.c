@@ -151,11 +151,11 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 {
 	GsPluginRefineFlags tmp;
 	guint i;
-	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
 	g_auto(GStrv) split = NULL;
 
 	if (extra == NULL)
-		return GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+		return GS_PLUGIN_REFINE_FLAGS_NONE;
 
 	split = g_strsplit (extra, ",", -1);
 	for (i = 0; split[i] != NULL; i++) {

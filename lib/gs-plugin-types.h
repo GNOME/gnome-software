@@ -94,7 +94,7 @@ typedef enum {
 
 /**
  * GsPluginRefineFlags:
- * @GS_PLUGIN_REFINE_FLAGS_DEFAULT:			No explicit flags set
+ * @GS_PLUGIN_REFINE_FLAGS_NONE:			No explicit flags set
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID:			Require the app’s ID; this is the minimum possible requirement
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE:		Require the license
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL:			Require the URL
@@ -131,7 +131,7 @@ typedef enum {
  * The refine flags.
  **/
 typedef enum {
-	GS_PLUGIN_REFINE_FLAGS_DEFAULT			= 0,
+	GS_PLUGIN_REFINE_FLAGS_NONE			= 0,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID		= 1 << 0,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE		= 1 << 1,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL		= 1 << 2,

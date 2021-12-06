@@ -612,7 +612,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		app = gs_plugin_job_get_app (helper->plugin_job);
 	if (list == NULL)
 		list = gs_plugin_job_get_list (helper->plugin_job);
-	if (refine_flags == GS_PLUGIN_REFINE_FLAGS_DEFAULT)
+	if (refine_flags == GS_PLUGIN_REFINE_FLAGS_NONE)
 		refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
 
 	/* set what plugin is running on the job */
@@ -1200,7 +1200,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			return FALSE;
 		}
 		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						  GS_PLUGIN_REFINE_FLAGS_NONE,
 						  cancellable, error)) {
 			return FALSE;
 		}
