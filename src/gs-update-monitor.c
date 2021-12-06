@@ -652,7 +652,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
 		return;
 
-	/* TRANSLATORS: this is when the current OS version goes end-of-life */
+	/* TRANSLATORS: this is when the current operating system version goes end-of-life */
 	n = g_notification_new (_("Operating System Updates Unavailable"));
 	/* TRANSLATORS: this is the message dialog for the distro EOL notice */
 	g_notification_set_body (n, _("Upgrade to continue receiving security updates."));
@@ -1113,7 +1113,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		/* TRANSLATORS: title when we offline updates have failed */
 		notification = g_notification_new (_("Software Updates Failed"));
 		/* TRANSLATORS: message when we offline updates have failed */
-		g_notification_set_body (notification, _("An important OS update failed to be installed."));
+		g_notification_set_body (notification, _("An important operating system update failed to be installed."));
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
 		g_notification_set_default_action (notification, "app.show-offline-update-error");
 		g_application_send_notification (monitor->application, "offline-updates", notification);
@@ -1152,8 +1152,8 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 				  "Software Updates Installed",
 				  gs_app_list_length (apps));
 		/* TRANSLATORS: message when we've done offline updates */
-		message = ngettext ("An important OS update has been installed.",
-				    "Important OS updates have been installed.",
+		message = ngettext ("An important operating system update has been installed.",
+				    "Important operating system updates have been installed.",
 				    gs_app_list_length (apps));
 
 		notification = g_notification_new (title);

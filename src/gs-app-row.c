@@ -28,6 +28,7 @@ typedef struct
 	GtkWidget	*version_current_label;
 	GtkWidget	*version_arrow_label;
 	GtkWidget	*version_update_label;
+	GtkWidget	*system_updates_label; /* Only for "System Updates" app */
 	GtkWidget	*star;
 	GtkWidget	*description_box;
 	GtkWidget	*description_label;
@@ -413,6 +414,13 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
 						   gs_app_get_rating (priv->app));
 		}
+	}
+
+	if (priv->show_update && gs_app_get_special_kind (priv->app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
+		gtk_label_set_label (GTK_LABEL (priv->system_updates_label), gs_app_get_summary (priv->app));
+		gtk_widget_show (priv->system_updates_label);
+	} else {
+		gtk_widget_hide (priv->system_updates_label);
 	}
 
 	/* pixbuf */
@@ -816,6 +824,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_current_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_arrow_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_update_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, system_updates_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);

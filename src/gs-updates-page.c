@@ -574,8 +574,7 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 					gs_app_get_name (app),
 					gs_app_get_version (app));
 	} else {
-		/* TRANSLATORS: OS refers to operating system, e.g. Fedora */
-		g_string_append (str, _("Your OS is no longer supported."));
+		g_string_append (str, _("Your operating system is no longer supported."));
 	}
 	g_string_append (str, " ");
 
