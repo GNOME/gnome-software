@@ -3768,10 +3768,60 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 	g_object_unref (task);
 }
 
+/* This needs to err on the side of being fast, rather than perfectly accurate.
+ * False positives (saying the program is running under gdb when it isn’t) are
+ * not OK. False negatives (saying the program is not running under gdb when it
+ * is) are OK. */
+static gboolean
+is_running_under_gdb (void)
+{
+	g_autofree gchar *status = NULL;
+	gsize status_len = 0;
+	const gchar *tracer_pid, *end;
+
+	/* Look for a line of the form:
+	 * ```
+	 * TracerPid:	748899
+	 * ```
+	 * or
+	 * ```
+	 * TracerPid:	0
+	 * ```
+	 * in `/proc/self/status`. If it’s 0, the process is not being traced. */
+	if (!g_file_get_contents ("/proc/self/status", &status, &status_len, NULL))
+		return FALSE;
+
+	tracer_pid = g_strstr_len (status, status_len, "TracerPid:");
+	if (tracer_pid == NULL)
+		return FALSE;
+
+	end = status + status_len;
+
+	/* Find the number. */
+	for (tracer_pid += strlen ("TracerPid:");
+	     tracer_pid < end &&
+	     g_ascii_isspace (*tracer_pid);
+	     tracer_pid++);
+
+	if (tracer_pid >= end)
+		return FALSE;
+
+	return (*tracer_pid != '0');
+}
+
 static gboolean
 gs_plugin_loader_job_timeout_cb (gpointer user_data)
 {
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
+
+	/* Don’t impose timeouts if running under gdb. */
+	if (is_running_under_gdb ()) {
+		g_debug ("Not cancelling job %s even though it took longer "
+			 "than %u seconds, as running under gdb",
+			 helper->function_name,
+			 gs_plugin_job_get_timeout (helper->plugin_job));
+		return G_SOURCE_REMOVE;
+	}
 
 	/* call the cancellable */
 	g_debug ("cancelling job %s as it took longer than %u seconds",
