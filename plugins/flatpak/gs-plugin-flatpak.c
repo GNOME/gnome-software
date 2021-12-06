@@ -1001,14 +1001,14 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 	if (!gs_flatpak_refine_app (flatpak, app,
-				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 				    cancellable, error)) {
 		g_prefix_error (error, "failed to run refine for %s: ", ref);
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
 
-	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, GS_APP_STATE_REMOVING, cancellable);
+	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID, GS_APP_STATE_REMOVING, cancellable);
 
 	return TRUE;
 }
@@ -1197,7 +1197,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 	if (!gs_flatpak_refine_app (flatpak, app,
-				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 				    cancellable, error)) {
 		g_prefix_error (error, "failed to run refine for %s: ",
 				gs_app_get_unique_id (app));
@@ -1205,7 +1205,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, GS_APP_STATE_INSTALLING, cancellable);
+	gs_flatpak_refine_addons (flatpak, app, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID, GS_APP_STATE_INSTALLING, cancellable);
 
 	return TRUE;
 }

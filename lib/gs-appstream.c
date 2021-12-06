@@ -24,7 +24,7 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
-				      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 				      error))
 		return NULL;
 
