@@ -894,9 +894,6 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 
 	/* Add ODRS data if needed */
 	if (plugin_loader->odrs_provider != NULL) {
-		if (refine_flags == GS_PLUGIN_REFINE_FLAGS_DEFAULT)
-			refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
-
 		if (!gs_odrs_provider_refine (plugin_loader->odrs_provider,
 					      list, refine_flags, cancellable, error))
 			return FALSE;
@@ -925,7 +922,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 
 	/* run each plugin */
 	if (!gs_plugin_loader_run_refine_filter (helper, list,
-						 GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						 gs_plugin_job_get_refine_flags (helper->plugin_job),
 						 cancellable, error)) {
 		if (previous_list != NULL)
 			gs_plugin_job_set_list (helper->plugin_job, previous_list);
