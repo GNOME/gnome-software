@@ -244,13 +244,6 @@ run_refine_internal (GsPluginJobRefine  *self,
                      GCancellable       *cancellable,
                      GError            **error)
 {
-	g_autoptr(GsAppList) previous_list = NULL;
-
-	if (list != gs_plugin_job_get_list (GS_PLUGIN_JOB (self))) {
-		previous_list = g_object_ref (gs_plugin_job_get_list (GS_PLUGIN_JOB (self)));
-		gs_plugin_job_set_list (GS_PLUGIN_JOB (self), list);
-	}
-
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
@@ -258,8 +251,6 @@ run_refine_internal (GsPluginJobRefine  *self,
 	if (!run_refine_filter (self, plugin_loader, list,
 				GS_PLUGIN_REFINE_FLAGS_NONE,
 				cancellable, error)) {
-		if (previous_list != NULL)
-			gs_plugin_job_set_list (GS_PLUGIN_JOB (self), previous_list);
 		return FALSE;
 	}
 
@@ -298,8 +289,6 @@ run_refine_internal (GsPluginJobRefine  *self,
 			if (!run_refine_internal (self, plugin_loader,
 						  addons_list, cancellable,
 						  error)) {
-				if (previous_list != NULL)
-					gs_plugin_job_set_list (GS_PLUGIN_JOB (self), previous_list);
 				return FALSE;
 			}
 		}
@@ -320,8 +309,6 @@ run_refine_internal (GsPluginJobRefine  *self,
 			if (!run_refine_internal (self, plugin_loader,
 						  list2, cancellable,
 						  error)) {
-				if (previous_list != NULL)
-					gs_plugin_job_set_list (GS_PLUGIN_JOB (self), previous_list);
 				return FALSE;
 			}
 		}
@@ -349,15 +336,10 @@ run_refine_internal (GsPluginJobRefine  *self,
 			if (!run_refine_internal (self, plugin_loader,
 						  related_list, cancellable,
 						  error)) {
-				if (previous_list != NULL)
-					gs_plugin_job_set_list (GS_PLUGIN_JOB (self), previous_list);
 				return FALSE;
 			}
 		}
 	}
-
-	if (previous_list != NULL)
-		gs_plugin_job_set_list (GS_PLUGIN_JOB (self), previous_list);
 
 	/* success */
 	return TRUE;
