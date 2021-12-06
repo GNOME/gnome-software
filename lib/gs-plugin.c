@@ -1916,8 +1916,8 @@ gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
 	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY)
-		g_ptr_array_add (cstrs, "use-history");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID)
+		g_ptr_array_add (cstrs, "require-id");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE)
 		g_ptr_array_add (cstrs, "require-license");
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL)

@@ -95,7 +95,7 @@ typedef enum {
 /**
  * GsPluginRefineFlags:
  * @GS_PLUGIN_REFINE_FLAGS_DEFAULT:			No explicit flags set
- * @GS_PLUGIN_REFINE_FLAGS_USE_HISTORY:			Get the historical view (unused)
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID:			Require the app’s ID; this is the minimum possible requirement
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE:		Require the license
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL:			Require the URL
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION:		Require the long description
@@ -132,7 +132,7 @@ typedef enum {
  **/
 typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_DEFAULT			= 0,
-	GS_PLUGIN_REFINE_FLAGS_USE_HISTORY		= 1 << 0, /* unused, TODO: perhaps ->STATE */
+	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID		= 1 << 0,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE		= 1 << 1,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL		= 1 << 2,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION	= 1 << 3,
