@@ -29,6 +29,12 @@
  *
  * This plugin calls UpdatesChanged() if any updatable devices are
  * added or removed or if a device has been updated live.
+ *
+ * Since fwupd is a daemon accessible over D-Bus, this plugin basically
+ * translates every job into one or more D-Bus calls, and all the real work is
+ * done in the fwupd daemon. FIXME: This means the plugin can therefore execute
+ * entirely in the main thread, making asynchronous D-Bus calls, once all the
+ * vfuncs have been ported.
  */
 
 struct _GsPluginFwupd {
@@ -212,26 +218,75 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 	return g_compute_checksum_for_data (checksum_type, (const guchar *)data, len);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void setup_connect_cb (GObject      *source_object,
+                              GAsyncResult *result,
+                              gpointer      user_data);
+static void setup_features_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+static void
+gs_plugin_fwupd_setup_async (GsPlugin            *plugin,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-	g_autoptr(SoupSession) soup_session = NULL;
+	g_autoptr(GTask) task = NULL;
 
-	g_autoptr(GError) error_local = NULL;
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_setup_async);
+
+	/* connect a proxy */
+	fwupd_client_connect_async (self->client, cancellable, setup_connect_cb,
+				    g_steal_pointer (&task));
+}
+
+static void
+setup_connect_cb (GObject      *source_object,
+                  GAsyncResult *result,
+                  gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!fwupd_client_connect_finish (self->client, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	/* send our implemented feature set */
-	if (!fwupd_client_set_feature_flags (self->client,
-					     FWUPD_FEATURE_FLAG_UPDATE_ACTION |
-					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
-					     cancellable, &error_local))
-		g_debug ("Failed to set front-end features: %s", error_local->message);
+	fwupd_client_set_feature_flags_async (self->client,
+					      FWUPD_FEATURE_FLAG_UPDATE_ACTION |
+					      FWUPD_FEATURE_FLAG_DETACH_ACTION,
+					      cancellable, setup_features_cb,
+					      g_steal_pointer (&task));
+}
+
+static void
+setup_features_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	g_autoptr(SoupSession) soup_session = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!fwupd_client_set_feature_flags_finish (self->client, result, &local_error))
+		g_debug ("Failed to set front-end features: %s", local_error->message);
+	g_clear_error (&local_error);
 
 	/* we know the runtime daemon version now */
 	fwupd_client_set_user_agent_for_package (self->client, PACKAGE_NAME, PACKAGE_VERSION);
-	if (!fwupd_client_ensure_networking (self->client, error)) {
-		gs_plugin_fwupd_error_convert (error);
-		g_prefix_error (error, "Failed to setup networking: ");
-		return FALSE;
+	if (!fwupd_client_ensure_networking (self->client, &local_error)) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		g_prefix_error (&local_error, "Failed to setup networking: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 	g_object_get (self->client, "soup-session", &soup_session, NULL);
 
@@ -265,7 +320,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_fwupd_notify_percentage_cb), self);
 	g_signal_connect (self->client, "notify::status",
 			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), self);
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_fwupd_setup_finish (GsPlugin      *plugin,
+                              GAsyncResult  *result,
+                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static GsApp *
@@ -1130,8 +1194,12 @@ static void
 gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_fwupd_dispose;
+
+	plugin_class->setup_async = gs_plugin_fwupd_setup_async;
+	plugin_class->setup_finish = gs_plugin_fwupd_setup_finish;
 }
 
 GType

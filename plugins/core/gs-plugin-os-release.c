@@ -39,21 +39,32 @@ gs_plugin_os_release_init (GsPluginOsRelease *self)
 	gs_app_set_state (self->app_system, GS_APP_STATE_INSTALLED);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void
+gs_plugin_os_release_setup_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
 {
 	GsPluginOsRelease *self = GS_PLUGIN_OS_RELEASE (plugin);
+	g_autoptr(GTask) task = NULL;
 	const gchar *cpe_name;
 	const gchar *home_url;
 	const gchar *name;
 	const gchar *version;
 	const gchar *os_id;
 	g_autoptr(GsOsRelease) os_release = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_os_release_setup_async);
 
 	/* parse os-release, wherever it may be */
-	os_release = gs_os_release_new (error);
-	if (os_release == NULL)
-		return FALSE;
+	os_release = gs_os_release_new (&local_error);
+	if (os_release == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	cpe_name = gs_os_release_get_cpe_name (os_release);
 	if (cpe_name != NULL)
 		gs_app_set_metadata (self->app_system, "GnomeSoftware::CpeName", cpe_name);
@@ -93,7 +104,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_os_release_setup_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -127,8 +146,12 @@ static void
 gs_plugin_os_release_class_init (GsPluginOsReleaseClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_os_release_dispose;
+
+	plugin_class->setup_async = gs_plugin_os_release_setup_async;
+	plugin_class->setup_finish = gs_plugin_os_release_setup_finish;
 }
 
 GType

@@ -25,7 +25,8 @@ libgnomesoftware_public_headers = [
   'gs-plugin-types.h',
   'gs-plugin-vfuncs.h',
   'gs-remote-icon.h',
-  'gs-utils.h'
+  'gs-utils.h',
+  'gs-worker-thread.h',
 ]
 
 install_headers(libgnomesoftware_public_headers,
@@ -97,6 +98,7 @@ libgnomesoftware = library(
     'gs-remote-icon.c',
     'gs-test.c',
     'gs-utils.c',
+    'gs-worker-thread.c',
   ] + libgnomesoftware_enums + [gs_build_ident_h],
   soversion: gs_plugin_api_version,
   include_directories : libgnomesoftware_include_directories,

@@ -69,7 +69,7 @@
  * faked because we can’t get reasonable progress data out of OSTree.
  *
  * The proxy object (`updater_proxy`) uses the thread-default main context from
- * the gs_plugin_setup() function, which is currently the global default main
+ * the gs_plugin_eos_updater_setup() function, which is currently the global default main
  * context from gnome-software’s main thread. This means all the signal
  * callbacks from the proxy will be executed in the main thread, and *must not
  * block*.
@@ -84,7 +84,7 @@
  * `GsPluginEosUpdater` must lock it using the `mutex`.
  *
  * `updater_proxy`, `os_upgrade` and `cancellable` are only set in
- * gs_plugin_setup(), and are both internally thread-safe — so they can both be
+ * gs_plugin_eos_updater_setup(), and are both internally thread-safe — so they can both be
  * dereferenced and have their methods called from any thread without
  * necessarily holding `mutex`.
  *
@@ -94,6 +94,9 @@
  * which persists for the lifetime of the plugin. The #GCancellable instances
  * for various operations can be temporarily chained to it for the duration of
  * each operation.
+ *
+ * FIXME: Once all methods are made asynchronous, the locking can be dropped
+ * from this plugin.
  */
 
 static const guint max_progress_for_update = 75;  /* percent */
@@ -196,7 +199,7 @@ struct _GsPluginEosUpdater
 {
 	GsPlugin parent;
 
-	/* These members are only set once in gs_plugin_setup(), and are
+	/* These members are only set once in gs_plugin_eos_updater_setup(), and are
 	 * internally thread-safe, so can be accessed without holding @mutex: */
 	GsEosUpdater *updater_proxy;  /* (owned) */
 	GsApp *os_upgrade;  /* (owned) */
@@ -484,19 +487,24 @@ sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
 	}
 }
 
+static void proxy_new_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data);
+
 /* This is called in the main thread, so will end up creating an @updater_proxy
  * which is tied to the main thread’s #GMainContext. */
-gboolean
-gs_plugin_setup (GsPlugin *plugin,
-		 GCancellable *cancellable,
-		 GError **error)
+static void
+gs_plugin_eos_updater_setup_async (GsPlugin            *plugin,
+                                   GCancellable        *cancellable,
+                                   GAsyncReadyCallback  callback,
+                                   gpointer             user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
-	g_autoptr(GError) error_local = NULL;
-	g_autofree gchar *name_owner = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GIcon) ic = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_setup_async);
 
 	g_debug ("%s", G_STRFUNC);
 
@@ -518,23 +526,43 @@ gs_plugin_setup (GsPlugin *plugin,
 	 * the poll/fetch/apply sequence is run through again to recover from
 	 * the error. This is the only point in the plugin where we consider an
 	 * error from eos-updater to be fatal to the plugin. */
-	self->updater_proxy = gs_eos_updater_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
-								     G_DBUS_PROXY_FLAGS_NONE,
-								     "com.endlessm.Updater",
-								     "/com/endlessm/Updater",
-								     cancellable,
-								     error);
+	gs_eos_updater_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
+					  G_DBUS_PROXY_FLAGS_NONE,
+					  "com.endlessm.Updater",
+					  "/com/endlessm/Updater",
+					  cancellable,
+					  proxy_new_cb,
+					  g_steal_pointer (&task));
+}
+
+static void
+proxy_new_cb (GObject      *source_object,
+              GAsyncResult *result,
+              gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginEosUpdater *self = g_task_get_source_object (task);
+	g_autofree gchar *name_owner = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GIcon) ic = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	locker = g_mutex_locker_new (&self->mutex);
+
+	self->updater_proxy = gs_eos_updater_proxy_new_for_bus_finish (result, &local_error);
 	if (self->updater_proxy == NULL) {
-		gs_eos_updater_error_convert (error);
-		return FALSE;
+		gs_eos_updater_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	name_owner = g_dbus_proxy_get_name_owner (G_DBUS_PROXY (self->updater_proxy));
 
 	if (name_owner == NULL) {
-		g_set_error_literal (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Couldn’t create EOS Updater proxy: couldn’t get name owner");
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "Couldn’t create EOS Updater proxy: couldn’t get name owner");
+		return;
 	}
 
 	g_signal_connect_object (self->updater_proxy, "notify::state",
@@ -569,7 +597,7 @@ gs_plugin_setup (GsPlugin *plugin,
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_management_plugin (app, plugin);
+	gs_app_set_management_plugin (app, GS_PLUGIN (self));
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;");
@@ -579,7 +607,15 @@ gs_plugin_setup (GsPlugin *plugin,
 	/* sync initial state */
 	sync_state_from_updater_unlocked (self);
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_eos_updater_setup_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -971,9 +1007,13 @@ static void
 gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_eos_updater_dispose;
 	object_class->finalize = gs_plugin_eos_updater_finalize;
+
+	plugin_class->setup_async = gs_plugin_eos_updater_setup_async;
+	plugin_class->setup_finish = gs_plugin_eos_updater_setup_finish;
 }
 
 GType

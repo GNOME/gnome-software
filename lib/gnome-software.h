@@ -27,3 +27,4 @@
 #include <gs-plugin-vfuncs.h>
 #include <gs-remote-icon.h>
 #include <gs-utils.h>
+#include <gs-worker-thread.h>

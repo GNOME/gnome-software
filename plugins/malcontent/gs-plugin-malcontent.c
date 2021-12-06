@@ -259,25 +259,84 @@ gs_plugin_malcontent_init (GsPluginMalcontent *self)
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Malcontent");
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void get_bus_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data);
+static void get_app_filter_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+static void
+gs_plugin_malcontent_setup_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
 {
 	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_malcontent_setup_async);
+
+	g_bus_get (G_BUS_TYPE_SYSTEM, cancellable, get_bus_cb, g_steal_pointer (&task));
+}
+
+static void
+get_bus_cb (GObject      *source_object,
+            GAsyncResult *result,
+            gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginMalcontent *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GDBusConnection) system_bus = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	system_bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
-	if (system_bus == NULL)
-		return FALSE;
+	system_bus = g_bus_get_finish (result, &local_error);
+	if (system_bus == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	self->manager = mct_manager_new (system_bus);
 	self->manager_app_filter_changed_id = g_signal_connect (self->manager,
 								"app-filter-changed",
 								(GCallback) app_filter_changed_cb,
 								self);
-	self->app_filter = query_app_filter (self, cancellable, error);
 
-	return (self->app_filter != NULL);
+	mct_manager_get_app_filter_async (self->manager, getuid (),
+					  /* FIXME: Should this be unconditionally interactive? */
+					  MCT_GET_APP_FILTER_FLAGS_INTERACTIVE, cancellable,
+					  get_app_filter_cb,
+					  g_steal_pointer (&task));
+}
+
+static void
+get_app_filter_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginMalcontent *self = g_task_get_source_object (task);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GError) local_error = NULL;
+
+	self->app_filter = mct_manager_get_app_filter_finish (self->manager, result, &local_error);
+	if (self->app_filter == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_malcontent_setup_finish (GsPlugin      *self,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -351,8 +410,12 @@ static void
 gs_plugin_malcontent_class_init (GsPluginMalcontentClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_malcontent_dispose;
+
+	plugin_class->setup_async = gs_plugin_malcontent_setup_async;
+	plugin_class->setup_finish = gs_plugin_malcontent_setup_finish;
 }
 
 GType

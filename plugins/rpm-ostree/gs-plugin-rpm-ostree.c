@@ -25,6 +25,16 @@
 #include "gs-plugin-rpm-ostree.h"
 #include "gs-rpmostree-generated.h"
 
+/*
+ * SECTION:
+ * Exposes rpm-ostree system updates and overlays.
+ *
+ * The plugin has a worker thread which all operations are delegated to, as
+ * while the rpm-ostreed API is asynchronous over D-Bus, the plugin also needs
+ * to use lower level libostree and libdnf APIs which are entirely synchronous.
+ * Message passing to the worker thread is by gs_worker_thread_queue().
+ */
+
 /* This shows up in the `rpm-ostree status` as the software that
  * initiated the update.
  */
@@ -42,6 +52,8 @@ G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 struct _GsPluginRpmOstree {
 	GsPlugin		 parent;
 
+	GsWorkerThread		*worker;  /* (owned) */
+
 	GMutex			 mutex;
 	GsRPMOSTreeOS		*os_proxy;
 	GsRPMOSTreeSysroot	*sysroot_proxy;
@@ -54,6 +66,9 @@ struct _GsPluginRpmOstree {
 
 G_DEFINE_TYPE (GsPluginRpmOstree, gs_plugin_rpm_ostree, GS_TYPE_PLUGIN)
 
+#define assert_in_worker(self) \
+	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
+
 static void
 gs_plugin_rpm_ostree_dispose (GObject *object)
 {
@@ -65,6 +80,7 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 	g_clear_object (&self->ot_sysroot);
 	g_clear_object (&self->ot_repo);
 	g_clear_object (&self->dnf_context);
+	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->dispose (object);
 }
@@ -323,11 +339,107 @@ gs_rpmostree_ref_proxies (GsPluginRpmOstree *self,
 	return gs_rpmostree_ref_proxies_locked (self, out_os_proxy, out_sysroot_proxy, cancellable, error);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void setup_thread_cb (GTask        *task,
+                             gpointer      source_object,
+                             gpointer      task_data,
+                             GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_setup_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	return gs_rpmostree_ref_proxies (self, NULL, NULL, cancellable, error);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_setup_async);
+
+	/* Start up a worker thread to process all the plugin’s function calls. */
+	self->worker = gs_worker_thread_new ("gs-plugin-rpm-ostree");
+
+	/* Queue a job to set up the D-Bus proxies. While these could be set
+	 * up from the main thread asynchronously, setting them up in the worker
+	 * thread means their signal emissions will correctly be in the worker
+	 * thread, and locking is simpler. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				setup_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+setup_thread_cb (GTask        *task,
+                 gpointer      source_object,
+                 gpointer      task_data,
+                 GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	if (!gs_rpmostree_ref_proxies (self, NULL, NULL, cancellable, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_rpm_ostree_setup_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void shutdown_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data);
+
+static void
+gs_plugin_rpm_ostree_shutdown_async (GsPlugin            *plugin,
+                                     GCancellable        *cancellable,
+                                     GAsyncReadyCallback  callback,
+                                     gpointer             user_data)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_shutdown_async);
+
+	/* Stop checking for inactivity. */
+	g_clear_handle_id (&self->inactive_timeout_id, g_source_remove);
+
+	/* Stop the worker thread. */
+	gs_worker_thread_shutdown_async (self->worker, cancellable, shutdown_cb, g_steal_pointer (&task));
+}
+
+static void
+shutdown_cb (GObject      *source_object,
+             GAsyncResult *result,
+             gpointer      user_data)
+{
+	g_autoptr(GTask) task = G_TASK (user_data);
+	GsPluginRpmOstree *self = g_task_get_source_object (task);
+	g_autoptr(GsWorkerThread) worker = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	worker = g_steal_pointer (&self->worker);
+
+	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_rpm_ostree_shutdown_finish (GsPlugin      *plugin,
+                                      GAsyncResult  *result,
+                                      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -2299,9 +2411,15 @@ static void
 gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_rpm_ostree_dispose;
 	object_class->finalize = gs_plugin_rpm_ostree_finalize;
+
+	plugin_class->setup_async = gs_plugin_rpm_ostree_setup_async;
+	plugin_class->setup_finish = gs_plugin_rpm_ostree_setup_finish;
+	plugin_class->shutdown_async = gs_plugin_rpm_ostree_shutdown_async;
+	plugin_class->shutdown_finish = gs_plugin_rpm_ostree_shutdown_finish;
 }
 
 GType

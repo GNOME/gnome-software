@@ -54,6 +54,12 @@ gchar		*gs_utils_get_user_hash		(GError		**error);
 GPermission	*gs_utils_get_permission	(const gchar	*id,
 						 GCancellable	*cancellable,
 						 GError		**error);
+void		 gs_utils_get_permission_async	(const gchar		*id,
+						 GCancellable		*cancellable,
+						 GAsyncReadyCallback	 callback,
+						 gpointer		 user_data);
+GPermission	*gs_utils_get_permission_finish	(GAsyncResult	*result,
+						 GError		**error);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
 gchar           *gs_utils_sort_key		(const gchar    *str);

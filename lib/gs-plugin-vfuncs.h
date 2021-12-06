@@ -39,7 +39,7 @@ G_BEGIN_DECLS
  * init function.
  *
  * NOTE: Do not do any failable actions in the plugin class’ init function; use
- * gs_plugin_setup() instead.
+ * #GsPluginClass.setup_async instead.
  *
  * Since: 42
  */
@@ -143,27 +143,6 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 gboolean	 gs_plugin_add_alternates		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_setup:
- * @plugin: a #GsPlugin
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Called when the plugin should set up the initial state, and with the write
- * lock held.
- *
- * All functions can block, but should sent progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * This function will also not be called if the plugin is disabled.
- *
- * Returns: %TRUE for success
- **/
-gboolean	 gs_plugin_setup			(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

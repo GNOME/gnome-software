@@ -1356,8 +1356,10 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	/* create new object */
 	origin = flatpak_installed_ref_get_origin (xref);
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref), xremote, cancellable);
-	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
 	gs_flatpak_set_metadata_installed (self, app, xref, cancellable);
 	return g_steal_pointer (&app);
 }
@@ -1497,7 +1499,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 	}
 
 	for (guint i = 0; i < self->installed_refs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (self->installed_refs, i);
+		g_autoptr(FlatpakInstalledRef) xref = g_object_ref (g_ptr_array_index (self->installed_refs, i));
 		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
 		if (g_strcmp0 (ref, ref_tmp) == 0) {
 			g_mutex_unlock (&self->installed_refs_mutex);

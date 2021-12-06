@@ -8,11 +8,20 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-/* Notes:
+/*
+ * SECTION:
+ * Exposes flatpaks from the user and system repositories.
  *
  * All GsApp's created have management-plugin set to flatpak
  * Some GsApp's created have have flatpak::kind of app or runtime
  * The GsApp:origin is the remote name, e.g. test-repo
+ *
+ * The plugin has a worker thread which all operations are delegated to, as the
+ * libflatpak API is entirely synchronous (and thread-safe). * Message passing
+ * to the worker thread is by gs_worker_thread_queue().
+ *
+ * FIXME: It may speed things up in future to have one worker thread *per*
+ * `FlatpakInstallation`, all operating in parallel.
  */
 
 #include <config.h>
@@ -27,11 +36,15 @@
 #include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
 #include "gs-metered.h"
+#include "gs-worker-thread.h"
+
 #include "gs-plugin-flatpak.h"
 
 struct _GsPluginFlatpak
 {
 	GsPlugin		 parent;
+
+	GsWorkerThread		*worker;  /* (owned) */
 
 	GPtrArray		*installations;  /* (element-type GsFlatpak) (owned); may be NULL before setup or after shutdown */
 	gboolean		 has_system_helper;
@@ -40,12 +53,16 @@ struct _GsPluginFlatpak
 
 G_DEFINE_TYPE (GsPluginFlatpak, gs_plugin_flatpak, GS_TYPE_PLUGIN)
 
+#define assert_in_worker(self) \
+	g_assert (gs_worker_thread_is_in_worker_context (self->worker))
+
 static void
 gs_plugin_flatpak_dispose (GObject *object)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (object);
 
 	g_clear_pointer (&self->installations, g_ptr_array_unref);
+	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_flatpak_parent_class)->dispose (object);
 }
@@ -54,9 +71,6 @@ static void
 gs_plugin_flatpak_init (GsPluginFlatpak *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GPermission) permission = NULL;
 
 	self->installations = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 
@@ -71,17 +85,6 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Flatpak");
-
-	/* if we can't update the AppStream database system-wide don't even
-	 * pull the data as we can't do anything with it */
-	permission = gs_utils_get_permission (action_id, NULL, &error_local);
-	if (permission == NULL) {
-		g_debug ("no permission for %s: %s", action_id, error_local->message);
-		g_clear_error (&error_local);
-	} else {
-		self->has_system_helper = g_permission_get_allowed (permission) ||
-					  g_permission_get_can_acquire (permission);
-	}
 
 	/* used for self tests */
 	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
@@ -137,14 +140,60 @@ gs_plugin_flatpak_report_warning (GsPlugin *plugin,
 	gs_plugin_report_event (plugin, event);
 }
 
-gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+static void setup_thread_cb (GTask        *task,
+                             gpointer      source_object,
+                             gpointer      task_data,
+                             GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_setup_async (GsPlugin            *plugin,
+                               GCancellable        *cancellable,
+                               GAsyncReadyCallback  callback,
+                               gpointer             user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	g_autoptr(GPtrArray) installations = NULL;
+	g_autoptr(GTask) task = NULL;
 
-	/* clear in case we're called from resetup in the self tests */
-	g_ptr_array_set_size (self->installations, 0);
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_setup_async);
+
+	/* Shouldn’t end up setting up twice */
+	g_assert (self->installations == NULL || self->installations->len == 0);
+
+	/* Start up a worker thread to process all the plugin’s function calls. */
+	self->worker = gs_worker_thread_new ("gs-plugin-flatpak");
+
+	/* Queue a job to find and set up the installations. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				setup_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+setup_thread_cb (GTask        *task,
+                 gpointer      source_object,
+                 gpointer      task_data,
+                 GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	g_autoptr(GPtrArray) installations = NULL;
+	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
+	g_autoptr(GError) permission_error = NULL;
+	g_autoptr(GPermission) permission = NULL;
+
+	assert_in_worker (self);
+
+	/* if we can't update the AppStream database system-wide don't even
+	 * pull the data as we can't do anything with it */
+	permission = gs_utils_get_permission (action_id, NULL, &permission_error);
+	if (permission == NULL) {
+		g_debug ("no permission for %s: %s", action_id, permission_error->message);
+		g_clear_error (&permission_error);
+	} else {
+		self->has_system_helper = g_permission_get_allowed (permission) ||
+					  g_permission_get_can_acquire (permission);
+	}
 
 	/* if we're not just running the tests */
 	if (self->destdir_for_tests == NULL) {
@@ -178,6 +227,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			g_ptr_array_add (installations, g_steal_pointer (&installation));
 		}
 	} else {
+		g_autoptr(GError) error_local = NULL;
+
 		/* use the test installation */
 		g_autofree gchar *full_path = g_build_filename (self->destdir_for_tests,
 								"flatpak",
@@ -187,10 +238,11 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		g_debug ("using custom flatpak path %s", full_path);
 		installation = flatpak_installation_new_for_path (file, TRUE,
 								  cancellable,
-								  error);
+								  &error_local);
 		if (installation == NULL) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
+			gs_flatpak_error_convert (&error_local);
+			g_task_return_error (task, g_steal_pointer (&error_local));
+			return;
 		}
 
 		installations = g_ptr_array_new_with_free_func (g_object_unref);
@@ -215,12 +267,72 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* when no installation has been loaded, return the error so the
 	 * plugin gets disabled */
 	if (self->installations->len == 0) {
-		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
-			     "Failed to load any Flatpak installations");
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+					 "Failed to load any Flatpak installations");
+		return;
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_setup_finish (GsPlugin      *plugin,
+                                GAsyncResult  *result,
+                                GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void shutdown_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data);
+
+static void
+gs_plugin_flatpak_shutdown_async (GsPlugin            *plugin,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_shutdown_async);
+
+	/* Stop the worker thread. */
+	gs_worker_thread_shutdown_async (self->worker, cancellable, shutdown_cb, g_steal_pointer (&task));
+}
+
+static void
+shutdown_cb (GObject      *source_object,
+             GAsyncResult *result,
+             gpointer      user_data)
+{
+	g_autoptr(GTask) task = G_TASK (user_data);
+	GsPluginFlatpak *self = g_task_get_source_object (task);
+	g_autoptr(GsWorkerThread) worker = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	worker = g_steal_pointer (&self->worker);
+
+	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Clear the flatpak installations */
+	g_ptr_array_set_size (self->installations, 0);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_shutdown_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -1708,8 +1820,14 @@ static void
 gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_flatpak_dispose;
+
+	plugin_class->setup_async = gs_plugin_flatpak_setup_async;
+	plugin_class->setup_finish = gs_plugin_flatpak_setup_finish;
+	plugin_class->shutdown_async = gs_plugin_flatpak_shutdown_async;
+	plugin_class->shutdown_finish = gs_plugin_flatpak_shutdown_finish;
 }
 
 GType
