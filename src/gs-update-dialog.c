@@ -217,36 +217,6 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	adw_leaflet_set_visible_child (ADW_LEAFLET (dialog->leaflet), page);
 }
 
-static gboolean
-key_pressed_cb (GtkEventControllerKey *key_controller,
-                guint                  keyval,
-                guint                  keycode,
-                GdkModifierType        state,
-                GsUpdateDialog        *dialog)
-{
-	gboolean is_rtl = gtk_widget_get_direction (GTK_WIDGET (dialog)) == GTK_TEXT_DIR_RTL;
-
-	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
-	    keyval == GDK_KEY_Back) {
-		adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
-		return GDK_EVENT_STOP;
-	}
-
-	return GDK_EVENT_PROPAGATE;
-}
-
-static void
-button_pressed_cb (GtkGestureClick *click_gesture,
-                   gint             n_press,
-                   gdouble          x,
-                   gdouble          y,
-                   GsUpdateDialog  *dialog)
-{
-	adw_leaflet_navigate (ADW_LEAFLET (dialog->leaflet), ADW_NAVIGATION_DIRECTION_BACK);
-	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
-}
-
 static void
 gs_update_dialog_get_property (GObject    *object,
                                guint       prop_id,
@@ -390,9 +360,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, window_title);
-	gtk_widget_class_bind_template_callback (widget_class, button_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, leaflet_child_transition_cb);
-	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL);
 }
