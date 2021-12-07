@@ -137,6 +137,7 @@ typedef struct {
 	GTask *refine_task;  /* (owned) (not nullable) */
 	GsApp *app;  /* (owned) (not nullable) */
 	gchar *filename;  /* (owned) (not nullable) */
+	GsPackagekitHelper *progress_data;  /* (owned) (not nullable) */
 } SearchFilesData;
 
 static void
@@ -145,20 +146,27 @@ search_files_data_free (SearchFilesData *data)
 	g_free (data->filename);
 	g_clear_object (&data->app);
 	g_clear_object (&data->refine_task);
+	g_clear_object (&data->progress_data);
 	g_free (data);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (SearchFilesData, search_files_data_free)
 
+/* The @progress_data is referenced purely so it stays alive for the duration of
+ * the async operation. It has separately been passed in as the closure for the
+ * progress callback, which will be called zero or more times during the
+ * operation. */
 static SearchFilesData *
-search_files_data_new_operation (GTask       *refine_task,
-                                 GsApp       *app,
-                                 const gchar *filename)
+search_files_data_new_operation (GTask              *refine_task,
+                                 GsApp              *app,
+                                 const gchar        *filename,
+                                 GsPackagekitHelper *progress_data)
 {
 	g_autoptr(SearchFilesData) data = g_new0 (SearchFilesData, 1);
 	data->refine_task = refine_task_add_operation (refine_task);
 	data->app = g_object_ref (app);
 	data->filename = g_strdup (filename);
+	data->progress_data = g_object_ref (progress_data);
 
 	return g_steal_pointer (&data);
 }
@@ -210,10 +218,9 @@ gs_plugin_packagekit_refine_repos_refine_async (GsPlugin            *plugin,
 					      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					      (gchar **) to_array,
 					      cancellable,
-					      /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-					      gs_packagekit_helper_cb, g_object_ref (helper),
+					      gs_packagekit_helper_cb, helper,
 					      search_files_cb,
-					      search_files_data_new_operation (task, app, filename));
+					      search_files_data_new_operation (task, app, filename, helper));
 		g_mutex_unlock (&self->client_mutex);
 	}
 
