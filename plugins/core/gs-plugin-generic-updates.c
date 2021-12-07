@@ -64,12 +64,12 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 			 GS_APP_QUALITY_NORMAL,
 			 /* TRANSLATORS: this is a group of updates that are not
 			  * packages and are not shown in the main list */
-			 _("OS Updates"));
+			 _("System Updates"));
 	gs_app_set_summary (app,
 			    GS_APP_QUALITY_NORMAL,
 			    /* TRANSLATORS: this is a longer description of the
-			     * "OS Updates" string */
-			    _("Includes performance, stability and security improvements."));
+			     * "System Updates" string */
+			    _("General system updates, such as security or bug fixes, and performance improvements."));
 	gs_app_set_description (app,
 				GS_APP_QUALITY_NORMAL,
 				gs_app_get_summary (app));

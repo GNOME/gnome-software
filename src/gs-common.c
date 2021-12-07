@@ -143,7 +143,7 @@ gs_app_notify_installed (GsApp *app)
 		    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
 			/* TRANSLATORS: this is the summary of a notification that OS updates
 			* have been successfully installed */
-			summary = g_strdup (_("OS updates are now installed"));
+			summary = g_strdup (_("System updates are now installed"));
 			/* TRANSLATORS: this is the body of a notification that OS updates
 			* have been successfully installed */
 			body = _("Recently installed updates are available to review");
