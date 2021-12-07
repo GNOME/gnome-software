@@ -238,25 +238,24 @@ plugin_refine_cb (GObject      *source_object,
 }
 
 static gboolean
-run_refine_internal (GsPluginJobRefine  *self,
-                     GsPluginLoader     *plugin_loader,
-                     GsAppList          *list,
-                     GCancellable       *cancellable,
-                     GError            **error)
+run_refine_internal (GsPluginJobRefine    *self,
+                     GsPluginLoader       *plugin_loader,
+                     GsAppList            *list,
+                     GsPluginRefineFlags   flags,
+                     GCancellable         *cancellable,
+                     GError              **error)
 {
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
 	/* run each plugin */
-	if (!run_refine_filter (self, plugin_loader, list,
-				GS_PLUGIN_REFINE_FLAGS_NONE,
+	if (!run_refine_filter (self, plugin_loader, list, flags,
 				cancellable, error)) {
 		return FALSE;
 	}
 
 	/* ensure these are sorted by score */
-	if (gs_plugin_job_has_refine_flags (GS_PLUGIN_JOB (self),
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
 		GPtrArray *reviews;
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
@@ -266,13 +265,14 @@ run_refine_internal (GsPluginJobRefine  *self,
 	}
 
 	/* refine addons one layer deep */
-	if (gs_plugin_job_has_refine_flags (GS_PLUGIN_JOB (self),
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
 		g_autoptr(GsAppList) addons_list = NULL;
-		gs_plugin_job_remove_refine_flags (GS_PLUGIN_JOB (self),
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS);
+		GsPluginRefineFlags addons_flags = flags;
+
+		addons_flags &= ~(GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
+				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS);
+
 		addons_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
@@ -287,16 +287,15 @@ run_refine_internal (GsPluginJobRefine  *self,
 		}
 		if (gs_app_list_length (addons_list) > 0) {
 			if (!run_refine_internal (self, plugin_loader,
-						  addons_list, cancellable,
-						  error)) {
+						  addons_list, addons_flags,
+						  cancellable, error)) {
 				return FALSE;
 			}
 		}
 	}
 
 	/* also do runtime */
-	if (gs_plugin_job_has_refine_flags (GS_PLUGIN_JOB (self),
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME)) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
 		g_autoptr(GsAppList) list2 = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *runtime;
@@ -307,7 +306,7 @@ run_refine_internal (GsPluginJobRefine  *self,
 		}
 		if (gs_app_list_length (list2) > 0) {
 			if (!run_refine_internal (self, plugin_loader,
-						  list2, cancellable,
+						  list2, flags, cancellable,
 						  error)) {
 				return FALSE;
 			}
@@ -315,11 +314,12 @@ run_refine_internal (GsPluginJobRefine  *self,
 	}
 
 	/* also do related packages one layer deep */
-	if (gs_plugin_job_has_refine_flags (GS_PLUGIN_JOB (self),
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) {
 		g_autoptr(GsAppList) related_list = NULL;
-		gs_plugin_job_remove_refine_flags (GS_PLUGIN_JOB (self),
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
+		GsPluginRefineFlags related_flags = flags;
+
+		related_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
+
 		related_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
@@ -334,8 +334,8 @@ run_refine_internal (GsPluginJobRefine  *self,
 		}
 		if (gs_app_list_length (related_list) > 0) {
 			if (!run_refine_internal (self, plugin_loader,
-						  related_list, cancellable,
-						  error)) {
+						  related_list, related_flags,
+						  cancellable, error)) {
 				return FALSE;
 			}
 		}
@@ -376,7 +376,7 @@ run_refine (GsPluginJobRefine  *self,
 	}
 
 	/* first pass */
-	ret = run_refine_internal (self, plugin_loader, list, cancellable, error);
+	ret = run_refine_internal (self, plugin_loader, list, self->flags, cancellable, error);
 	if (!ret)
 		goto out;
 
