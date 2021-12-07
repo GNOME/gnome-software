@@ -201,7 +201,7 @@ _carousel_navigate (AdwCarousel *carousel, AdwNavigationDirection direction)
 
 	child = g_list_nth_data (children, position);
 	if (child)
-		adw_carousel_scroll_to (carousel, child);
+		adw_carousel_scroll_to (carousel, child, TRUE);
 }
 
 static void

@@ -83,7 +83,7 @@ show_relative_page (GsFeaturedCarousel *self,
 	guint n_pages = adw_carousel_get_n_pages (self->carousel);
 	gdouble new_page;
 	GtkWidget *new_page_widget;
-	gint64 animation_duration_ms = adw_carousel_get_animation_duration (self->carousel);
+	gboolean animate = TRUE;
 
 	if (n_pages == 0)
 		return;
@@ -99,9 +99,9 @@ show_relative_page (GsFeaturedCarousel *self,
      * or from the first page to the last going backwards as it means rapidly
      * spooling through all the pages, which looks confusing. */
 	if ((new_page == 0.0 && delta > 0) || (new_page == n_pages - 1 && delta < 0))
-		animation_duration_ms = 0;
+		animate = FALSE;
 
-	adw_carousel_scroll_to_full (self->carousel, new_page_widget, animation_duration_ms);
+	adw_carousel_scroll_to (self->carousel, new_page_widget, animate);
 }
 
 static gboolean
