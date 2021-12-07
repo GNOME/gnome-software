@@ -3593,7 +3593,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	}
 
 	/* run refine() on each one if required */
-	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0) {
+	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0 &&
+	    list != NULL &&
+	    gs_app_list_length (list) > 0) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
 		g_autoptr(GsAppList) new_list = NULL;
