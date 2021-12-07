@@ -1808,6 +1808,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	if (gs_app_list_length (list) > 0) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
+		g_autoptr(GsAppList) new_list = NULL;
 
 		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
@@ -1820,7 +1821,8 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 		while (refine_result == NULL)
 			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
 
-		if (!gs_plugin_loader_job_process_finish (plugin_loader, refine_result, error))
+		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, error);
+		if (new_list == NULL)
 			return FALSE;
 	}
 	return TRUE;
@@ -3391,7 +3393,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
 	GsAppListFilterFlags dedupe_flags;
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
+	g_autoptr(GsAppList) list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginRefineFlags filter_flags;
@@ -3535,6 +3537,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
+		g_autoptr(GsAppList) new_list = NULL;
 
 		g_debug ("running filter flags with early refine");
 
@@ -3549,11 +3552,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		while (refine_result == NULL)
 			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
 
-		if (!gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error)) {
+		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
+		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
 			return;
 		}
+
+		/* Update the app list in case the refine resolved any wildcards. */
+		g_set_object (&list, new_list);
 	}
 
 	/* filter to reduce to a sane set */
@@ -3589,6 +3596,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
+		g_autoptr(GsAppList) new_list = NULL;
 
 		refine_job = gs_plugin_job_refine_new (list, gs_plugin_job_get_refine_flags (helper->plugin_job));
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
@@ -3601,11 +3609,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		while (refine_result == NULL)
 			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
 
-		if (!gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error)) {
+		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
+		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
 			return;
 		}
+
+		/* Update the app list in case the refine resolved any wildcards. */
+		g_set_object (&list, new_list);
 	} else {
 		g_debug ("no refine flags set for transaction");
 	}
@@ -3616,6 +3628,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_FILE_TO_APP: {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 		g_autoptr(GAsyncResult) refine_result = NULL;
+		g_autoptr(GsAppList) new_list = NULL;
 
 		for (guint j = 0; j < gs_app_list_length (list); j++) {
 			GsApp *app = gs_app_list_index (list, j);
@@ -3642,11 +3655,16 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		while (refine_result == NULL)
 			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
 
-		if (!gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error)) {
+		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
+		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
 			return;
 		}
+
+		/* Update the app list in case the refine resolved any wildcards. */
+		g_set_object (&list, new_list);
+
 		break;
 	}
 	default:
