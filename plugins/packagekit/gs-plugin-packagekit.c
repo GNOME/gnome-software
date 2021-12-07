@@ -900,6 +900,23 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	}
 }
 
+typedef struct
+{
+	GsAppList *list;  /* (owned) (not nullable) */
+	GsPackagekitHelper *progress_data;  /* (owned) (not nullable) */
+} ResolvePackagesWithFilterData;
+
+static void
+resolve_packages_with_filter_data_free (ResolvePackagesWithFilterData *data)
+{
+	g_clear_object (&data->list);
+	g_clear_object (&data->progress_data);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ResolvePackagesWithFilterData, resolve_packages_with_filter_data_free)
+
 static void resolve_packages_with_filter_cb (GObject      *source_object,
                                              GAsyncResult *result,
                                              gpointer      user_data);
@@ -918,13 +935,17 @@ gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *se
 	const gchar *pkgname;
 	guint i;
 	guint j;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(ResolvePackagesWithFilterData) data = NULL;
+	ResolvePackagesWithFilterData *data_unowned;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_resolve_packages_with_filter_async);
-	g_task_set_task_data (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+	data_unowned = data = g_new0 (ResolvePackagesWithFilterData, 1);
+	data->list = g_object_ref (list);
+	data->progress_data = gs_packagekit_helper_new (plugin);
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) resolve_packages_with_filter_data_free);
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -956,8 +977,7 @@ gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *se
 				 filter,
 				 (gchar **) package_ids->pdata,
 				 cancellable,
-				 /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-				 gs_packagekit_helper_cb, g_object_ref (helper),
+				 gs_packagekit_helper_cb, data_unowned->progress_data,
 				 resolve_packages_with_filter_cb,
 				 g_steal_pointer (&task));
 	g_mutex_unlock (&self->client_mutex_refine);
@@ -972,7 +992,8 @@ resolve_packages_with_filter_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginPackagekit *self = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
-	GsAppList *list = g_task_get_task_data (task);
+	ResolvePackagesWithFilterData *data = g_task_get_task_data (task);
+	GsAppList *list = data->list;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -1133,6 +1154,7 @@ typedef struct {
 	guint n_pending_operations;
 	gboolean completed;
 	GError *error;  /* (nullable) (owned) */
+	GPtrArray *progress_datas;  /* (element-type GsPackagekitHelper) (owned) (not nullable) */
 
 	/* Input data for operations. */
 	GsAppList *full_list;  /* (nullable) (owned) */
@@ -1149,6 +1171,7 @@ refine_data_free (RefineData *data)
 	g_assert (data->completed);
 
 	g_clear_error (&data->error);
+	g_clear_pointer (&data->progress_datas, g_ptr_array_unref);
 	g_clear_object (&data->full_list);
 	g_clear_object (&data->resolve_list);
 	g_clear_object (&data->app_operating_system);
@@ -1159,6 +1182,20 @@ refine_data_free (RefineData *data)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineData, refine_data_free)
+
+/* Add @helper to the list of progress data closures to free when the
+ * #RefineData is freed. This means it can be reliably used, 0 or more times,
+ * by the async operation up until the operation is finished. */
+static GsPackagekitHelper *
+refine_task_add_progress_data (GTask              *refine_task,
+                               GsPackagekitHelper *helper)
+{
+	RefineData *data = g_task_get_task_data (refine_task);
+
+	g_ptr_array_add (data->progress_datas, g_object_ref (helper));
+
+	return helper;
+}
 
 static GTask *
 refine_task_add_operation (GTask *refine_task)
@@ -1279,6 +1316,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	data_unowned = data = g_new0 (RefineData, 1);
 	data->full_list = g_object_ref (list);
 	data->n_pending_operations = 1;  /* to prevent the task being completed before all operations have been started */
+	data->progress_datas = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refine_data_free);
 
 	/* Process the @list and work out what information is needed for each
@@ -1354,8 +1392,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 							gs_app_get_version (app),
 							PK_UPGRADE_KIND_ENUM_COMPLETE,
 							cancellable,
-							/* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-							gs_packagekit_helper_cb, g_object_ref (helper),
+							gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 							upgrade_system_cb,
 							refine_task_add_operation (task));
 			pk_client_set_cache_age (self->client_refine, cache_age_save);
@@ -1437,8 +1474,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 						      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 						      (gchar **) to_array,
 						      cancellable,
-						      /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-						      gs_packagekit_helper_cb, g_object_ref (helper),
+						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						      search_files_cb,
 						      search_files_data_new_operation (task, app, fn));
 			g_mutex_unlock (&self->client_mutex_refine);
@@ -1469,8 +1505,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		pk_client_get_update_detail_async (self->client_refine,
 						   (gchar **) package_ids,
 						   cancellable,
-						   /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-						   gs_packagekit_helper_cb, g_object_ref (helper),
+						   gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						   get_update_detail_cb,
 						   refine_task_add_operation (task));
 		g_mutex_unlock (&self->client_mutex_refine);
@@ -1495,8 +1530,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			pk_client_get_details_async (self->client_refine,
 						     (gchar **) package_ids->pdata,
 						     cancellable,
-						     /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-						     gs_packagekit_helper_cb, g_object_ref (helper),
+						     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						     get_details_cb,
 						     refine_task_add_operation (task));
 			g_mutex_unlock (&self->client_mutex_refine);
@@ -1515,8 +1549,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		pk_client_get_updates_async (self->client_refine,
 					     filter,
 					     cancellable,
-					     /* TODO: @helper is leaked here; this will be reworked in a subsequent commit */
-					     gs_packagekit_helper_cb, g_object_ref (helper),
+					     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 					     get_updates_cb,
 					     refine_task_add_operation (task));
 		g_mutex_unlock (&self->client_mutex_refine);
