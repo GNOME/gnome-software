@@ -31,7 +31,7 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 
 	/* load local file */
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-0.2.cab");
-	g_assert (fn != NULL);
+	g_assert_nonnull (fn);
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -39,10 +39,10 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (app != NULL);
+	g_assert_nonnull (app);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_FIRMWARE);
-	g_assert (gs_app_get_license (app) != NULL);
-	g_assert (gs_app_has_category (app, "System"));
+	g_assert_nonnull (gs_app_get_license (app));
+	g_assert_true (gs_app_has_category (app, "System"));
 	g_assert_cmpstr (gs_app_get_id (app), ==, "com.test.chiron.firmware");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
@@ -95,7 +95,7 @@ main (int argc, char **argv)
 				      NULL,
 				      &error);
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert_true (ret);
 
 	/* plugin tests go here */
 	g_test_add_data_func ("/gnome-software/plugins/fwupd",
