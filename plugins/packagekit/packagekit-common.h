@@ -36,5 +36,7 @@ void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
 								 GsApp *app);
 void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
 								 GsApp *app);
+gboolean	gs_plugin_packagekit_is_packagekit_app		(GsApp *app,
+								 GsPlugin *plugin);
 
 G_END_DECLS

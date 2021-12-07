@@ -158,7 +158,7 @@ gs_plugin_download (GsPlugin *plugin,
 
 		/* add this app */
 		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
-			if (gs_app_has_management_plugin (app, plugin))
+			if (gs_plugin_packagekit_is_packagekit_app (app, plugin))
 				gs_app_list_add (list_tmp, app);
 			continue;
 		}
@@ -166,7 +166,7 @@ gs_plugin_download (GsPlugin *plugin,
 		/* add each related app */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
-			if (gs_app_has_management_plugin (app_tmp, plugin))
+			if (gs_plugin_packagekit_is_packagekit_app (app_tmp, plugin))
 				gs_app_list_add (list_tmp, app_tmp);
 		}
 	}

@@ -412,7 +412,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	/* enable repo, handled by dedicated function */
@@ -622,7 +622,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_auto(GStrv) package_ids = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	/* disable repo, handled by dedicated function */
@@ -840,7 +840,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	return gs_plugin_app_launch (plugin, app, error);
@@ -1314,7 +1314,7 @@ gs_plugin_packagekit_refine_details (GsPluginPackagekit   *self,
 			continue;
 
 		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+		if (!gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
@@ -1465,7 +1465,7 @@ gs_plugin_packagekit_refine_name_to_id (GsPluginPackagekit   *self,
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+		    !gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 			continue;
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
@@ -1510,7 +1510,7 @@ gs_plugin_packagekit_refine_filename_to_id (GsPluginPackagekit   *self,
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
 		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+		    !gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 			continue;
 		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
@@ -1563,7 +1563,7 @@ gs_plugin_packagekit_refine_update_details (GsPluginPackagekit   *self,
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+		    !gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 			continue;
 		if (gs_plugin_refine_requires_update_details (app, flags))
 			gs_app_list_add (updatedetails_all, app);
@@ -1627,7 +1627,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		GsApp *app = gs_app_list_index (list, i);
 
 		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, plugin))
+		if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 			continue;
 
 		/* the scope is always system-wide */
@@ -1648,7 +1648,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		packages = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
-			if (!gs_app_has_management_plugin (app, plugin))
+			if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 				continue;
 			sources = gs_app_get_sources (app);
 			if (sources->len == 0)
@@ -2727,7 +2727,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	/* check is distro-upgrade */
@@ -2800,7 +2800,7 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	g_autoptr(PkError) error_code = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (repo, plugin))
 		return TRUE;
 
 	/* is repo */
@@ -2855,7 +2855,7 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	g_autoptr(PkError) error_code = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (repo, plugin))
 		return TRUE;
 
 	/* is repo */

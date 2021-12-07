@@ -574,3 +574,18 @@ gs_plugin_packagekit_set_packaging_format (GsPlugin *plugin, GsApp *app)
 		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "deb");
 	}
 }
+
+gboolean
+gs_plugin_packagekit_is_packagekit_app (GsApp *app,
+					GsPlugin *plugin)
+{
+	g_autoptr(GsPlugin) mngmt_plugin = NULL;
+
+	if (gs_app_has_management_plugin (app, plugin))
+		return TRUE;
+
+	mngmt_plugin = gs_app_dup_management_plugin (app);
+
+	return mngmt_plugin != NULL &&
+	       g_strcmp0 (gs_plugin_get_name (mngmt_plugin), "packagekit") == 0;
+}

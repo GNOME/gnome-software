@@ -163,7 +163,7 @@ gs_plugin_systemd_refine_app (GsPluginSystemdUpdates *self,
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 		return;
 
 	/* the package is already downloaded */
@@ -445,7 +445,7 @@ _systemd_trigger_app (GsPluginSystemdUpdates  *self,
 		return TRUE;
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, GS_PLUGIN (self)))
 		return TRUE;
 
 	/* already in correct state */
@@ -506,7 +506,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	/* already in correct state */
@@ -533,7 +533,7 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
                                GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
+	if (!gs_plugin_packagekit_is_packagekit_app (app, plugin))
 		return TRUE;
 
 	if (!gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
