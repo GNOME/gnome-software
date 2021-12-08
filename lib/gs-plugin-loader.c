@@ -2486,6 +2486,9 @@ gs_plugin_loader_call_shutdown (GsPluginLoader *plugin_loader,
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
 		GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
 
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+
 		if (GS_PLUGIN_GET_CLASS (plugin)->shutdown_async != NULL) {
 			GS_PLUGIN_GET_CLASS (plugin)->shutdown_async (plugin, cancellable,
 								      plugin_shutdown_cb, &shutdown_data);
