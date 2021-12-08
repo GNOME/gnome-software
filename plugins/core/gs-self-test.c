@@ -111,6 +111,8 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app_wildcard = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) list_wildcard = NULL;
+	GsAppList *result_list;
+	GsAppList *result_list_wildcard;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -141,8 +143,9 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 
 	/* make sure there is one entry, the os update */
-	g_assert_cmpint (gs_app_list_length (list), ==, 1);
-	os_update = gs_app_list_index (list, 0);
+	result_list = gs_plugin_job_refine_get_result_list (GS_PLUGIN_JOB_REFINE (plugin_job));
+	g_assert_cmpint (gs_app_list_length (result_list), ==, 1);
+	os_update = gs_app_list_index (result_list, 0);
 
 	/* make sure the os update is valid */
 	g_assert_cmpstr (gs_app_get_id (os_update), ==, "org.gnome.Software.OsUpdate");
@@ -165,10 +168,11 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_true (ret);
+	result_list_wildcard = gs_plugin_job_refine_get_result_list (GS_PLUGIN_JOB_REFINE (plugin_job2));
 
 	/* no OsUpdate item created */
-	for (guint i = 0; i < gs_app_list_length (list_wildcard); i++) {
-		GsApp *app_tmp = gs_app_list_index (list_wildcard, i);
+	for (guint i = 0; i < gs_app_list_length (result_list_wildcard); i++) {
+		GsApp *app_tmp = gs_app_list_index (result_list_wildcard, i);
 		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_COMPONENT_KIND_GENERIC);
 		g_assert_cmpint (gs_app_get_special_kind (app_tmp), !=, GS_APP_SPECIAL_KIND_OS_UPDATE);
 		g_assert_false (gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_PROXY));
