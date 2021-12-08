@@ -157,11 +157,23 @@ gs_utils_get_cache_filename (const gchar *kind,
 	g_autofree gchar *cachedir = NULL;
 	g_autoptr(GFile) cachedir_file = NULL;
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
+	g_autoptr(GError) local_error = NULL;
 
 	/* in the self tests */
 	tmp = g_getenv ("GS_SELF_TEST_CACHEDIR");
-	if (tmp != NULL)
-		return g_build_filename (tmp, kind, resource, NULL);
+	if (tmp != NULL) {
+		cachedir = g_build_filename (tmp, kind, NULL);
+		cachedir_file = g_file_new_for_path (cachedir);
+
+		if ((flags & GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY) &&
+		    !g_file_make_directory_with_parents (cachedir_file, NULL, &local_error) &&
+		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+			g_propagate_error (error, g_steal_pointer (&local_error));
+			return NULL;
+		}
+
+		return g_build_filename (cachedir, resource, NULL);;
+	}
 
 	/* get basename */
 	if (flags & GS_UTILS_CACHE_FLAG_USE_HASH) {
