@@ -200,13 +200,8 @@ _carousel_navigate (AdwCarousel *carousel, AdwNavigationDirection direction)
 	position = MAX (0, position);
 
 	child = g_list_nth_data (children, position);
-	if (child) {
-#ifdef HAVE_ADW_CAROUSEL_SCROLL_TO_FULL
+	if (child)
 		adw_carousel_scroll_to (carousel, child);
-#else
-		adw_carousel_scroll_to (carousel, child, TRUE);
-#endif
-	}
 }
 
 static void

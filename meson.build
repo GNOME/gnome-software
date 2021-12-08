@@ -148,19 +148,6 @@ libadwaita = dependency('libadwaita-1',
     ]
   )
 
-# FIXME: These libadwaita checks can be dropped when we depend on 1.0.0.beta.1
-if libadwaita.type_name() == 'internal'
-  conf.set('HAVE_ADW_CAROUSEL_GET_ANIMATION_DURATION', '1')
-  conf.set('HAVE_ADW_CAROUSEL_SCROLL_TO_FULL', '1')
-else
-  if meson.get_compiler('c').has_function('adw_carousel_get_animation_duration', prefix: '#include <adwaita.h>', dependencies: libadwaita)
-    conf.set('HAVE_ADW_CAROUSEL_GET_ANIMATION_DURATION', '1')
-  endif
-  if meson.get_compiler('c').has_function('adw_carousel_scroll_to_full', prefix: '#include <adwaita.h>', dependencies: libadwaita)
-    conf.set('HAVE_ADW_CAROUSEL_SCROLL_TO_FULL', '1')
-  endif
-endif
-
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),
   default_options: [
