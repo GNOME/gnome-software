@@ -1562,7 +1562,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 		g_autoptr(GAsyncResult) refine_result = NULL;
 		g_autoptr(GsAppList) new_list = NULL;
 
-		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    NULL,
 						    async_result_cb,
@@ -3293,7 +3293,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 		g_debug ("running filter flags with early refine");
 
-		refine_job = gs_plugin_job_refine_new (list, filter_flags);
+		refine_job = gs_plugin_job_refine_new (list, filter_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    async_result_cb,
@@ -3352,7 +3352,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		g_autoptr(GAsyncResult) refine_result = NULL;
 		g_autoptr(GsAppList) new_list = NULL;
 
-		refine_job = gs_plugin_job_refine_new (list, gs_plugin_job_get_refine_flags (helper->plugin_job));
+		refine_job = gs_plugin_job_refine_new (list, gs_plugin_job_get_refine_flags (helper->plugin_job) | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    async_result_cb,
@@ -3398,7 +3398,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			}
 		}
 
-		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    async_result_cb,
@@ -3793,7 +3793,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 			/* Refine the list of wildcard popular apps and return
 			 * to the caller. */
-			refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+			refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 			gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 							    cancellable,
 							    callback, user_data);
@@ -4052,7 +4052,7 @@ gs_plugin_loader_app_create_async (GsPluginLoader *plugin_loader,
 	gs_app_list_add (list, app);
 
 	/* Refine the wildcard app. */
-	refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID);
+	refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 	gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 					    cancellable,
 					    app_create_cb,

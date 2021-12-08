@@ -114,6 +114,9 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE:		Require the provenance
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS:		Require user-reviews
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS:	Require user-ratings
+ * @GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING:		Normally the results of a refine are
+ * 	filtered to remove non-valid apps; if this flag is set, that won’t happen.
+ * 	This is intended to be used by internal #GsPluginLoader code. (Since: 42)
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON:		Require the icon to be loaded
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS:		Require the needed permissions
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME:	Require the origin hostname
@@ -152,7 +155,7 @@ typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE	= 1 << 17,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS		= 1 << 18,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS	= 1 << 19,
-	/* 1 << 20 is currently unused; was previously REQUIRE_KEY_COLORS */
+	GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING	= 1 << 20,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON		= 1 << 21,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS	= 1 << 22,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME	= 1 << 23,

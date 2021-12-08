@@ -450,7 +450,18 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 		g_debug ("no refine flags set for transaction");
 	}
 
-	gs_app_list_filter (result_list, app_is_valid_filter, self);
+	/* Internal calls to #GsPluginJobRefine may want to do their own
+	 * filtering, typically if the refine is being done as part of another
+	 * plugin job. If so, only filter to remove wildcards. Wildcards should
+	 * always be removed, as they should have been resolved as part of the
+	 * refine; any remaining wildcards will never be resolved.
+	 *
+	 * If the flag is not specified, filter by a variety of indicators of
+	 * what a ‘valid’ app is. */
+	if (self->flags & GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING)
+		gs_app_list_filter (result_list, app_is_non_wildcard, NULL);
+	else
+		gs_app_list_filter (result_list, app_is_valid_filter, self);
 
 	/* show elapsed time */
 	job_debug = gs_plugin_job_to_string (job);
