@@ -466,7 +466,7 @@ gs_age_rating_context_dialog_process_attributes (AsContentRating                
 		if (g_strv_contains (coalesce_groups + 1, rating_ids[i]) &&
 		    as_content_rating_attribute_to_csm_age (coalesce_groups[0],
 							    as_content_rating_get_value (content_rating,
-											 coalesce_groups[0])) == rating_age)
+											 coalesce_groups[0])) >= rating_age)
 			continue;
 
 		callback (rating_ids[i], rating_value, user_data);
