@@ -3390,7 +3390,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	if (appstream_gz != NULL) {
 		if (!gs_flatpak_refine_appstream_from_bytes (self, app, NULL, NULL,
 							     appstream_gz,
-							     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+							     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID,
 							     cancellable, error))
 			return NULL;
 	} else {

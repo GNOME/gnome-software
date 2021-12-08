@@ -42,7 +42,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (list != NULL);
+	g_assert_nonnull (list);
 
 	/* make sure there is one entry, the parent app */
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
@@ -76,7 +76,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert_true (ret);
 
 	/* make sure there is valid content */
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.fedora-25");
@@ -96,7 +96,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	app3 = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_nonnull (app3);
-	g_assert (app3 == app);
+	g_assert_true (app3 == app);
 }
 
 static void
@@ -143,7 +143,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert_true (ret);
 
 	/* make sure there is one entry, the os update */
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
@@ -153,7 +153,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (os_update), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpint (gs_app_get_kind (os_update), ==, AS_COMPONENT_KIND_GENERIC);
 	g_assert_cmpint (gs_app_get_special_kind (os_update), ==, GS_APP_SPECIAL_KIND_OS_UPDATE);
-	g_assert (gs_app_has_quirk (os_update, GS_APP_QUIRK_IS_PROXY));
+	g_assert_true (gs_app_has_quirk (os_update, GS_APP_QUIRK_IS_PROXY));
 
 	/* must have two related apps, the ones we added earlier */
 	related = gs_app_get_related (os_update);
@@ -172,14 +172,14 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job2, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert_true (ret);
 
 	/* no OsUpdate item created */
 	for (guint i = 0; i < gs_app_list_length (list_wildcard); i++) {
 		GsApp *app_tmp = gs_app_list_index (list_wildcard, i);
 		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_COMPONENT_KIND_GENERIC);
 		g_assert_cmpint (gs_app_get_special_kind (app_tmp), !=, GS_APP_SPECIAL_KIND_OS_UPDATE);
-		g_assert (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_PROXY));
+		g_assert_false (gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_PROXY));
 	}
 }
 
@@ -215,11 +215,11 @@ main (int argc, char **argv)
 	/* Use a common cache directory for all tests, since the appstream
 	 * plugin uses it and cannot be reinitialised for each test. */
 	tmp_root = g_dir_make_tmp ("gnome-software-core-test-XXXXXX", NULL);
-	g_assert (tmp_root != NULL);
+	g_assert_nonnull (tmp_root);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
 
 	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
-	g_assert (os_release_filename != NULL);
+	g_assert_nonnull (os_release_filename);
 	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", os_release_filename, TRUE);
 
 	/* fake some data */
@@ -253,7 +253,7 @@ main (int argc, char **argv)
 				      NULL,
 				      &error);
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert_true (ret);
 
 	/* plugin tests go here */
 	g_test_add_data_func ("/gnome-software/plugins/core/search-repo-name",
