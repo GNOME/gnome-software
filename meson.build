@@ -147,7 +147,7 @@ else
   libsoupapiversion = '3.0'
 endif
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.0.0.alpha.3',
+  version: '>=1.0.1',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'examples=false',
