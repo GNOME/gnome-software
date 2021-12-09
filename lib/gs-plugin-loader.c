@@ -652,7 +652,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		{
@@ -959,42 +958,6 @@ gs_plugin_loader_get_app_str (GsApp *app)
 
 	/* urmmm */
 	return "<invalid>";
-}
-
-static gboolean
-gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
-{
-	/* even without AppData, show things in progress */
-	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_REMOVING:
-		return TRUE;
-		break;
-	default:
-		break;
-	}
-
-	switch (gs_app_get_kind (app)) {
-	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
-	case AS_COMPONENT_KIND_CODEC:
-	case AS_COMPONENT_KIND_FONT:
-		g_debug ("app invalid as %s: %s",
-			 as_component_kind_to_string (gs_app_get_kind (app)),
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-		break;
-	default:
-		break;
-	}
-
-	/* sanity check */
-	if (!gs_app_is_installed (app)) {
-		g_autofree gchar *tmp = gs_app_to_string (app);
-		g_warning ("ignoring non-installed app %s", tmp);
-		return FALSE;
-	}
-
-	return TRUE;
 }
 
 gboolean
@@ -3220,7 +3183,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* some functions are really required for proper operation */
 	switch (action) {
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
@@ -3423,10 +3385,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_installed, helper);
 		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
@@ -3915,7 +3873,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_RECENT:
 	case GS_PLUGIN_ACTION_SEARCH:

@@ -202,7 +202,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
  * @GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:	Get the list of distro updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
- * @GS_PLUGIN_ACTION_GET_INSTALLED:		Get the list of installed applications
  * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
  * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
  * @GS_PLUGIN_ACTION_SEARCH:			Get the search results for a query
@@ -237,7 +236,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_GET_UPDATES,
 	GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 	GS_PLUGIN_ACTION_GET_SOURCES,
-	GS_PLUGIN_ACTION_GET_INSTALLED,
 	GS_PLUGIN_ACTION_GET_POPULAR,
 	GS_PLUGIN_ACTION_GET_FEATURED,
 	GS_PLUGIN_ACTION_SEARCH,

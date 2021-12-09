@@ -147,24 +147,6 @@ gboolean	 gs_plugin_add_alternates		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_installed:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get the list of installed applications.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_updates:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
