@@ -143,22 +143,6 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsAppList	*list,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc)		(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GCancellable	*cancellable,
