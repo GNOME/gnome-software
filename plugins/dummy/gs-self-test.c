@@ -346,17 +346,18 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GIcon) icon = NULL;
+	GsPluginRefineFlags refine_flags;
 
 	/* get installed packages */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
-					 NULL);
+	refine_flags = (GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
+			GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE);
+
+	plugin_job = gs_plugin_job_list_installed_apps_new (refine_flags, 0, GS_APP_LIST_FILTER_FLAGS_DEFAULT);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);

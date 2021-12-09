@@ -453,10 +453,7 @@ gs_installed_page_load (GsInstalledPage *self)
 		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
 
 	/* get installed apps */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
-					 "refine-flags", flags,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
-					 NULL);
+	plugin_job = gs_plugin_job_list_installed_apps_new (flags, 0, GS_APP_LIST_FILTER_FLAG_NONE);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    plugin_job,
 					    self->cancellable,
