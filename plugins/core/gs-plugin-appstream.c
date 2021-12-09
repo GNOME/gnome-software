@@ -1295,31 +1295,66 @@ gs_plugin_add_search (GsPlugin *plugin,
 				    error);
 }
 
-gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
-			 GsAppList *list,
-			 GCancellable *cancellable,
-			 GError **error)
+static void list_installed_apps_thread_cb (GTask        *task,
+                                           gpointer      source_object,
+                                           gpointer      task_data,
+                                           GCancellable *cancellable);
+
+static void
+gs_plugin_appstream_list_installed_apps_async (GsPlugin            *plugin,
+                                               GCancellable        *cancellable,
+                                               GAsyncReadyCallback  callback,
+                                               gpointer             user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_appstream_list_installed_apps_async);
+
+	/* Queue a job to check the silo, which will cause it to be loaded. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				list_installed_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+list_installed_apps_thread_cb (GTask        *task,
+                               gpointer      source_object,
+                               gpointer      task_data,
+                               GCancellable *cancellable)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
+	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	/* get all installed appdata files (notice no 'components/' prefix...) */
 	components = xb_silo_query (self->silo, "component/description/..", 0, NULL);
-	if (components == NULL)
-		return TRUE;
+	if (components == NULL) {
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+		return;
+	}
+
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, self->silo, component, error);
-		if (app == NULL)
-			return FALSE;
+		g_autoptr(GsApp) app = gs_appstream_create_app (GS_PLUGIN (self), self->silo, component, &local_error);
+		if (app == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
 		/* Can get cached gsApp, which has the state already updated */
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
 		    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
@@ -1327,7 +1362,16 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_list_add (list, app);
 	}
-	return TRUE;
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_appstream_list_installed_apps_finish (GsPlugin      *plugin,
+                                                GAsyncResult  *result,
+                                                GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -1439,6 +1483,8 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_appstream_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_appstream_refine_async;
 	plugin_class->refine_finish = gs_plugin_appstream_refine_finish;
+	plugin_class->list_installed_apps_async = gs_plugin_appstream_list_installed_apps_async;
+	plugin_class->list_installed_apps_finish = gs_plugin_appstream_list_installed_apps_finish;
 }
 
 GType
