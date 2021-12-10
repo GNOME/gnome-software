@@ -331,28 +331,28 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * saturation to the valid range. */
 			if (colors != NULL && colors->len > 0) {
 				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+				GsHSBC chosen_hsbc_modified;
 				GdkRGBA chosen_rgba;
-				gfloat modified_saturation, modified_brightness;
 
-				modified_saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
+				chosen_hsbc_modified = *chosen_hsbc;
 
-				if (chosen_hsbc->contrast < -min_abs_contrast ||
-				    chosen_hsbc->contrast > min_abs_contrast)
-					modified_brightness = chosen_hsbc->brightness;
-				else
-					modified_brightness = weber_contrast_find_brightness (&fg_hsbc, min_abs_contrast);
+				chosen_hsbc_modified.saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
 
-				gtk_hsv_to_rgb (chosen_hsbc->hue,
-						modified_saturation,
-						modified_brightness,
+				if (chosen_hsbc->contrast >= -min_abs_contrast &&
+				    chosen_hsbc->contrast <= min_abs_contrast)
+					chosen_hsbc_modified.brightness = weber_contrast_find_brightness (&fg_hsbc, min_abs_contrast);
+
+				gtk_hsv_to_rgb (chosen_hsbc_modified.hue,
+						chosen_hsbc_modified.saturation,
+						chosen_hsbc_modified.brightness,
 						&chosen_rgba.red, &chosen_rgba.green, &chosen_rgba.blue);
 
 				g_debug ("Chosen background colour for %s (saturation %s, brightness %s): RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
 					 gs_app_get_id (app),
-					 (modified_saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
-					 (modified_brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
+					 (chosen_hsbc_modified.saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
+					 (chosen_hsbc_modified.brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
 					 chosen_rgba.red, chosen_rgba.green, chosen_rgba.blue,
-					 chosen_hsbc->hue, modified_saturation, modified_brightness);
+					 chosen_hsbc_modified.hue, chosen_hsbc_modified.saturation, chosen_hsbc_modified.brightness);
 
 				css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f);",
 						       chosen_rgba.red * 255.f,
