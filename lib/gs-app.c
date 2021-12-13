@@ -309,8 +309,6 @@ _as_component_quirk_flag_to_string (GsAppQuirk quirk)
 		return "needs-reboot";
 	case GS_APP_QUIRK_NOT_REVIEWABLE:
 		return "not-reviewable";
-	case GS_APP_QUIRK_HAS_SHORTCUT:
-		return "has-shortcut";
 	case GS_APP_QUIRK_NOT_LAUNCHABLE:
 		return "not-launchable";
 	case GS_APP_QUIRK_NEEDS_USER_ACTION:

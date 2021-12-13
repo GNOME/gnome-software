@@ -133,7 +133,6 @@ typedef enum {
  * @GS_APP_QUIRK_IS_WILDCARD:		Matches applications from any plugin
  * @GS_APP_QUIRK_NEEDS_REBOOT:		A reboot is required after the action
  * @GS_APP_QUIRK_NOT_REVIEWABLE:	The app is not reviewable
- * @GS_APP_QUIRK_HAS_SHORTCUT:		The app has a shortcut in the system
  * @GS_APP_QUIRK_NOT_LAUNCHABLE:	The app is not launchable (run-able)
  * @GS_APP_QUIRK_NEEDS_USER_ACTION:	The component requires some kind of user action
  * @GS_APP_QUIRK_IS_PROXY:		Is a proxy app that operates on other applications
@@ -156,7 +155,7 @@ typedef enum {
 	GS_APP_QUIRK_IS_WILDCARD	= 1 << 3,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEEDS_REBOOT	= 1 << 4,	/* Since: 3.32 */
 	GS_APP_QUIRK_NOT_REVIEWABLE	= 1 << 5,	/* Since: 3.32 */
-	GS_APP_QUIRK_HAS_SHORTCUT	= 1 << 6,	/* Since: 3.32 */
+	/* there’s a hole here where GS_APP_QUIRK_HAS_SHORTCUT used to be */
 	GS_APP_QUIRK_NOT_LAUNCHABLE	= 1 << 7,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEEDS_USER_ACTION	= 1 << 8,	/* Since: 3.32 */
 	GS_APP_QUIRK_IS_PROXY 		= 1 << 9,	/* Since: 3.32 */

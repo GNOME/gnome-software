@@ -1679,10 +1679,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_launch";
 	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
 		return "gs_plugin_update_cancel";
-	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
-		return "gs_plugin_add_shortcut";
-	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
-		return "gs_plugin_remove_shortcut";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "gs_plugin_update";
 	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
@@ -1763,10 +1759,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "launch";
 	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
 		return "update-cancel";
-	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
-		return "add-shortcut";
-	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
-		return "remove-shortcut";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "get-updates";
 	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
@@ -1845,10 +1837,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_LAUNCH;
 	if (g_strcmp0 (action, "update-cancel") == 0)
 		return GS_PLUGIN_ACTION_UPDATE_CANCEL;
-	if (g_strcmp0 (action, "add-shortcut") == 0)
-		return GS_PLUGIN_ACTION_ADD_SHORTCUT;
-	if (g_strcmp0 (action, "remove-shortcut") == 0)
-		return GS_PLUGIN_ACTION_REMOVE_SHORTCUT;
 	if (g_strcmp0 (action, "get-updates") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
 	if (g_strcmp0 (action, "get-distro-updates") == 0)

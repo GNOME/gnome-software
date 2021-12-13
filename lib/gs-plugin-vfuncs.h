@@ -376,38 +376,6 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_shortcut:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Adds a shortcut for the application in a desktop-defined location.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_shortcut			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_remove_shortcut:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Removes a shortcut for the application in a desktop-defined location.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_remove_shortcut		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_update_cancel:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
