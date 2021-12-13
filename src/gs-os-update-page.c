@@ -201,6 +201,7 @@ get_app_section (GsApp *app)
 		section = GS_OS_UPDATE_PAGE_SECTION_ADDITIONS;
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_INSTALLED:
 		section = GS_OS_UPDATE_PAGE_SECTION_REMOVALS;
 		break;
 	case GS_APP_STATE_UPDATABLE:
