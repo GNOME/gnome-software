@@ -1669,8 +1669,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
 		return "gs_plugin_app_remove";
-	if (action == GS_PLUGIN_ACTION_SET_RATING)
-		return "gs_plugin_app_set_rating";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
 		return "gs_plugin_app_upgrade_download";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
@@ -1749,8 +1747,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "remove";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "update";
-	if (action == GS_PLUGIN_ACTION_SET_RATING)
-		return "set-rating";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
 		return "upgrade-download";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
@@ -1827,8 +1823,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_REMOVE;
 	if (g_strcmp0 (action, "update") == 0)
 		return GS_PLUGIN_ACTION_UPDATE;
-	if (g_strcmp0 (action, "set-rating") == 0)
-		return GS_PLUGIN_ACTION_SET_RATING;
 	if (g_strcmp0 (action, "upgrade-download") == 0)
 		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
 	if (g_strcmp0 (action, "upgrade-trigger") == 0)

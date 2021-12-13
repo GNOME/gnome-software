@@ -195,7 +195,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_INSTALL:			Install an application
  * @GS_PLUGIN_ACTION_REMOVE:			Remove an application
  * @GS_PLUGIN_ACTION_UPDATE:			Update an application
- * @GS_PLUGIN_ACTION_SET_RATING:		Set rating on an application
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
  * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an application
@@ -231,7 +230,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_INSTALL,
 	GS_PLUGIN_ACTION_REMOVE,
 	GS_PLUGIN_ACTION_UPDATE,
-	GS_PLUGIN_ACTION_SET_RATING,
 	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_ACTION_LAUNCH,

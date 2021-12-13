@@ -450,24 +450,6 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_app_set_rating:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Gets any ratings for the applications.
- *
- * Plugins are expected to call gs_app_set_rating() on @app.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_update_app:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
