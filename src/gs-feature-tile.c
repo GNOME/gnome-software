@@ -40,7 +40,7 @@ typedef struct
 	gfloat hue;  /* [0.0, 1.0] */
 	gfloat saturation;  /* [0.0, 1.0] */
 	gfloat brightness;  /* [0.0, 1.0]; also known as lightness (HSL) or value (HSV) */
-	gfloat contrast;  /* [-1.0, ∞], may actually be `INF` */
+	gfloat contrast;  /* (0.047, 21] */
 } GsHSBC;
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -61,13 +61,10 @@ gs_feature_tile_dispose (GObject *object)
 static const gfloat min_valid_saturation = 0.5;
 static const gfloat max_valid_saturation = 0.85;
 
-/* Subjectively chosen as the minimum absolute contrast ratio between the
- * foreground and background colours.
- *
- * Note that contrast is in the range [-1.0, ∞], so @min_abs_contrast always has
- * to be handled with positive and negative branches.
- */
-static const gfloat min_abs_contrast = 0.78;
+/* The minimum absolute contrast ratio between the foreground and background
+ * colours, from WCAG:
+ * https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html */
+static const gfloat min_abs_contrast = 4.5;
 
 /* Sort two candidate background colours for the feature tile, ranking them by
  * suitability for being chosen as the background colour, with the most suitable
@@ -114,62 +111,89 @@ colors_sort_cb (gconstpointer a,
 		return ABS (hsbc_b->contrast) - ABS (hsbc_a->contrast);
 }
 
-/* Calculate the weber contrast between @foreground and @background. This is
- * only valid if the area covered by @foreground is significantly smaller than
- * that covered by @background.
+/* Calculate the relative luminance of @colour. This is [0.0, 1.0], where 0.0 is
+ * the darkest black, and 1.0 is the lightest white.
  *
- * See https://en.wikipedia.org/wiki/Contrast_(vision)#Weber_contrast
- *
- * The return value is in the range [-1.0, ∞], and may actually be `INF`.
- */
+ * https://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef */
 static gfloat
-weber_contrast (const GsHSBC *foreground,
-                const GsHSBC *background)
+relative_luminance (const GsHSBC *colour)
 {
-	/* Note that this may divide by zero, and that’s fine. However, in
-	 * IEEE 754, dividing ±0.0 by ±0.0 results in NAN, so avoid that. */
-	if (foreground->brightness == background->brightness)
-		return 0.0;
+	gfloat red, green, blue;
+	gfloat r, g, b;
+	gfloat luminance;
 
-	return (foreground->brightness - background->brightness) / background->brightness;
+	/* Convert to sRGB */
+	gtk_hsv_to_rgb (colour->hue, colour->saturation, colour->brightness,
+			&red, &green, &blue);
+
+	r = (red <= 0.03928) ? red / 12.92 : pow ((red + 0.055) / 1.055, 2.4);
+	g = (green <= 0.03928) ? green / 12.92 : pow ((green + 0.055) / 1.055, 2.4);
+	b = (blue <= 0.03928) ? blue / 12.92 : pow ((blue + 0.055) / 1.055, 2.4);
+
+	luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	g_assert (luminance >= 0.0 && luminance <= 1.0);
+	return luminance;
 }
 
-/* Inverse of the Weber contrast function which finds a brightness (luminance)
- * level for the background which gives an absolute contrast of at least
- * @desired_abs_contrast against @foreground. The same validity restrictions
- * apply as for weber_contrast().
+/* Calculate the WCAG contrast ratio between the two colours. The returned ratio
+ * is in the range (0.047, 21].
+ *
+ * https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html#contrast-ratiodef */
+static gfloat
+wcag_contrast (const GsHSBC *foreground,
+               const GsHSBC *background)
+{
+	const GsHSBC *lighter, *darker;
+	gfloat ratio;
+
+	if (foreground->brightness >= background->brightness) {
+		lighter = foreground;
+		darker = background;
+	} else {
+		lighter = background;
+		darker = foreground;
+	}
+
+	ratio = (relative_luminance (lighter) + 0.05) / (relative_luminance (darker) + 0.05);
+	g_assert (ratio > 0.047 && ratio <= 21);
+	return ratio;
+}
+
+/* Calculate a new brightness value for @background which improves its contrast
+ * (as calculated using wcag_contrast()) with @foreground to at least
+ * @desired_contrast.
  *
  * The return value is in the range [0.0, 1.0].
  */
 static gfloat
-weber_contrast_find_brightness (const GsHSBC *foreground,
-                                gfloat        desired_abs_contrast)
+wcag_contrast_find_brightness (const GsHSBC *foreground,
+                               const GsHSBC *background,
+                               gfloat        desired_contrast)
 {
-	g_assert (desired_abs_contrast >= 0.0);
+	GsHSBC modified_background;
 
-	/* There are two solutions to solving
-	 *    |(I - I_B) / I_B| ≥ C
-	 * in the general case, although given that I (`foreground->brightness`)
-	 * and I_B (the return value) are only valid in the range [0.0, 1.0],
-	 * there are many cases where only one solution is valid.
+	g_assert (desired_contrast > 0.047 && desired_contrast <= 21);
+
+	/* This is an optimisation problem of modifying @background until
+	 * the WCAG contrast is at least @desired_contrast. There might be a
+	 * closed-form solution to this but I can’t be bothered to work it out
+	 * right now. An optimisation loop should work.
 	 *
-	 * Solutions are:
-	 *    I_B ≤ I / (1 + C)
-	 *    I_B ≥ I / (1 - C)
-	 *
-	 * When given a choice, prefer the solution which gives a higher
-	 * brightness.
-	 *
-	 * In the case I == 0.0, and value of I_B is valid (as per the second
-	 * solution), so arbitrarily choose 0.5 as a solution.
-	 */
-	if (foreground->brightness == 0.0)
-		return 0.5;
-	else if (foreground->brightness <= 1.0 - desired_abs_contrast &&
-		 desired_abs_contrast < 1.0)
-		return foreground->brightness / (1.0 - desired_abs_contrast);
-	else
-		return foreground->brightness / (1.0 + desired_abs_contrast);
+	 * wcag_contrast() compares the lightest and darkest of the two colours,
+	 * so ensure the background brightness is modified in the correct
+	 * direction (increased or decreased) depending on whether the
+	 * foreground colour is originally the brighter. This gives the largest
+	 * search space for the background colour brightness, and ensures the
+	 * optimisation works with dark and light themes. */
+	for (modified_background = *background;
+	     modified_background.brightness >= 0.0 &&
+	     modified_background.brightness <= 1.0 &&
+	     wcag_contrast (foreground, &modified_background) < desired_contrast;
+	     modified_background.brightness += ((foreground->brightness > 0.5) ? -0.1 : 0.1)) {
+		/* Nothing to do here */
+	}
+
+	return CLAMP (modified_background.brightness, 0.0, 1.0);
 }
 
 static void
@@ -313,7 +337,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 
 				gtk_rgb_to_hsv (rgba->red, rgba->green, rgba->blue,
 						&hsbc.hue, &hsbc.saturation, &hsbc.brightness);
-				hsbc.contrast = weber_contrast (&fg_hsbc, &hsbc);
+				hsbc.contrast = wcag_contrast (&fg_hsbc, &hsbc);
 				g_array_append_val (colors, hsbc);
 
 				g_debug (" • RGB: (%f, %f, %f), HSB: (%f, %f, %f), contrast: %f",
@@ -331,28 +355,28 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * saturation to the valid range. */
 			if (colors != NULL && colors->len > 0) {
 				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+				GsHSBC chosen_hsbc_modified;
 				GdkRGBA chosen_rgba;
-				gfloat modified_saturation, modified_brightness;
 
-				modified_saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
+				chosen_hsbc_modified = *chosen_hsbc;
 
-				if (chosen_hsbc->contrast < -min_abs_contrast ||
-				    chosen_hsbc->contrast > min_abs_contrast)
-					modified_brightness = chosen_hsbc->brightness;
-				else
-					modified_brightness = weber_contrast_find_brightness (&fg_hsbc, min_abs_contrast);
+				chosen_hsbc_modified.saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
 
-				gtk_hsv_to_rgb (chosen_hsbc->hue,
-						modified_saturation,
-						modified_brightness,
+				if (chosen_hsbc->contrast >= -min_abs_contrast &&
+				    chosen_hsbc->contrast <= min_abs_contrast)
+					chosen_hsbc_modified.brightness = wcag_contrast_find_brightness (&fg_hsbc, &chosen_hsbc_modified, min_abs_contrast);
+
+				gtk_hsv_to_rgb (chosen_hsbc_modified.hue,
+						chosen_hsbc_modified.saturation,
+						chosen_hsbc_modified.brightness,
 						&chosen_rgba.red, &chosen_rgba.green, &chosen_rgba.blue);
 
 				g_debug ("Chosen background colour for %s (saturation %s, brightness %s): RGB: (%f, %f, %f), HSB: (%f, %f, %f)",
 					 gs_app_get_id (app),
-					 (modified_saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
-					 (modified_brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
+					 (chosen_hsbc_modified.saturation == chosen_hsbc->saturation) ? "not modified" : "modified",
+					 (chosen_hsbc_modified.brightness == chosen_hsbc->brightness) ? "not modified" : "modified",
 					 chosen_rgba.red, chosen_rgba.green, chosen_rgba.blue,
-					 chosen_hsbc->hue, modified_saturation, modified_brightness);
+					 chosen_hsbc_modified.hue, chosen_hsbc_modified.saturation, chosen_hsbc_modified.brightness);
 
 				css = g_strdup_printf ("background-color: rgb(%.0f,%.0f,%.0f);",
 						       chosen_rgba.red * 255.f,
