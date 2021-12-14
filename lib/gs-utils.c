@@ -1591,5 +1591,3 @@ gs_utils_set_file_etag (const gchar *filename,
 
 	return g_file_set_attribute_string (file, METADATA_ETAG_ATTRIBUTE, etag, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
 }
-
-/* vim: set noexpandtab: */
