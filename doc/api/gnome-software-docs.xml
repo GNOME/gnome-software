@@ -65,9 +65,12 @@
         </para>
 
         <para>
-          The plugin only needs to define the vfuncs that are required, and the
+          The plugin needs to create a class derived from <type>GsPlugin</type>,
+          and define the vfuncs that it needs. The
           plugin name is taken automatically from the suffix of the
-          <filename>.so</filename> file.
+          <filename>.so</filename> file. The type of the plugin is exposed to
+          gnome-software using <function>gs_plugin_query_type()</function>, which
+          must be exported from the module.
         </para>
         <example>
           <title>A sample plugin</title>
@@ -79,9 +82,19 @@
 #include &lt;glib.h&gt;
 #include &lt;gnome-software.h&gt;
 
-void
-gs_plugin_initialize (GsPlugin *plugin)
+struct _GsPluginSample {
+  GsPlugin parent;
+
+  /* private data here */
+};
+
+G_DEFINE_TYPE (GsPluginSample, gs_plugin_sample, GS_TYPE_PLUGIN)
+
+static void
+gs_plugin_sample_init (GsPluginSample *self)
 {
+  GsPlugin *plugin = GS_PLUGIN (self);
+
   gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
 }
 
@@ -100,6 +113,17 @@ gs_plugin_add_search (GsPlugin *plugin,
     }
   }
   return TRUE;
+}
+
+static void
+gs_plugin_sample_class_init (GsPluginSampleClass *klass)
+{
+}
+
+GType
+gs_plugin_query_type (void)
+{
+  return GS_TYPE_PLUGIN_SAMPLE;
 }
           </programlisting>
         </example>
@@ -149,14 +173,16 @@ cp libgs_plugin_example.so $(pkg-config gnome-software --variable=plugindir)
         <example>
           <title>Self disabling on other distributions</title>
           <programlisting>
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_sample_init (GsPluginSample *self)
 {
+  GsPlugin *plugin = GS_PLUGIN (self);
+
   if (!gs_plugin_check_distro_id (plugin, "ubuntu")) {
     gs_plugin_set_enabled (plugin, FALSE);
     return;
   }
-  /* allocate private data etc. */
+  /* set up private data etc. */
 }
           </programlisting>
         </example>
@@ -177,11 +203,11 @@ gs_plugin_initialize (GsPlugin *plugin)
         <example>
           <title>Example showing a custom installed application</title>
           <programlisting>
-#include &lt;gnome-software.h&gt;
-
-void
-gs_plugin_initialize (GsPlugin *plugin)
+static void
+gs_plugin_sample_init (GsPluginSample *self)
 {
+  GsPlugin *plugin = GS_PLUGIN (self);
+
   gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "icons");
 }
 
