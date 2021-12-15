@@ -69,10 +69,6 @@ gs_plugin_repos_init (GsPluginRepos *self)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
-
-	/* need application IDs */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
 }
 
 static void
