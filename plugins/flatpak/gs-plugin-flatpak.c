@@ -393,7 +393,17 @@ gs_plugin_refresh (GsPlugin *plugin,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 
 	for (guint i = 0; i < self->installations->len; i++) {
+		FlatpakInstallation *installation;
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+		g_autoptr(FlatpakInstallation) installation_clone = NULL;
+
+		installation = gs_flatpak_get_installation (flatpak);
+		installation_clone = g_object_ref (installation);
+
+		/* Let flatpak know if it is a background operation */
+		flatpak_installation_set_no_interaction (installation_clone,
+							 !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
 		if (!gs_flatpak_refresh (flatpak, cache_age, cancellable, error))
 			return FALSE;
 	}
