@@ -1683,8 +1683,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_shortcut";
 	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
 		return "gs_plugin_remove_shortcut";
-	if (action == GS_PLUGIN_ACTION_REFINE)
-		return "gs_plugin_refine";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "gs_plugin_update";
 	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
@@ -1791,8 +1789,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-categories";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
 		return "get-category-apps";
-	if (action == GS_PLUGIN_ACTION_REFINE)
-		return "refine";
 	if (action == GS_PLUGIN_ACTION_REFRESH)
 		return "refresh";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
@@ -1875,8 +1871,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_CATEGORIES;
 	if (g_strcmp0 (action, "get-category-apps") == 0)
 		return GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
-	if (g_strcmp0 (action, "refine") == 0)
-		return GS_PLUGIN_ACTION_REFINE;
 	if (g_strcmp0 (action, "refresh") == 0)
 		return GS_PLUGIN_ACTION_REFRESH;
 	if (g_strcmp0 (action, "file-to-app") == 0)

@@ -146,30 +146,50 @@ refine_app (GsPluginModalias     *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin             *plugin,
-		  GsAppList            *list,
-		  GsPluginRefineFlags   flags,
-		  GCancellable         *cancellable,
-		  GError              **error)
+static void
+gs_plugin_modalias_refine_async (GsPlugin            *plugin,
+                                 GsAppList           *list,
+                                 GsPluginRefineFlags  flags,
+                                 GCancellable        *cancellable,
+                                 GAsyncReadyCallback  callback,
+                                 gpointer             user_data)
 {
 	GsPluginModalias *self = GS_PLUGIN_MODALIAS (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_modalias_refine_async);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app (self, app, flags, cancellable, error))
-			return FALSE;
+		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_modalias_refine_finish (GsPlugin      *plugin,
+                                  GAsyncResult  *result,
+                                  GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
 gs_plugin_modalias_class_init (GsPluginModaliasClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPluginClass *plugin_class = GS_PLUGIN_CLASS (klass);
 
 	object_class->dispose = gs_plugin_modalias_dispose;
+
+	plugin_class->refine_async = gs_plugin_modalias_refine_async;
+	plugin_class->refine_finish = gs_plugin_modalias_refine_finish;
 }
 
 GType

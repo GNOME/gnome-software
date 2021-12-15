@@ -243,17 +243,15 @@ gs_moderate_page_load (GsModeratePage *self)
 		return;
 	}
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "list", list,
-					 "interactive", TRUE,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new (list,
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS);
+	gs_plugin_job_set_interactive (plugin_job, TRUE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_moderate_page_refine_unvoted_reviews_cb,

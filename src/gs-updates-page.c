@@ -618,11 +618,8 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 
 	helper = gs_page_helper_new (self, app);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "interactive", TRUE,
-					 "app", app,
-					 "refine-flags", refine_flags,
-					 NULL);
+	plugin_job = gs_plugin_job_refine_new_for_app (app, refine_flags);
+	gs_plugin_job_set_interactive (plugin_job, TRUE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_updates_page_refine_system_finished_cb,

@@ -94,7 +94,8 @@ gs_plugin_systemd_update_cache (GsPluginSystemdUpdates  *self,
 	/* invalidate */
 	g_hash_table_remove_all (self->hash_prepared);
 
-	/* get new list of package-ids */
+	/* get new list of package-ids. This loads a local file, so should be
+	 * just about fast enough to be sync. */
 	package_ids = pk_offline_get_prepared_ids (&error_local);
 	if (package_ids == NULL) {
 		if (g_error_matches (error_local,
@@ -175,22 +176,32 @@ gs_plugin_systemd_refine_app (GsPluginSystemdUpdates *self,
 		gs_app_set_size_download (app, 0);
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-                  GsAppList *list,
-                  GsPluginRefineFlags flags,
-                  GCancellable *cancellable,
-                  GError **error)
+static void
+gs_plugin_systemd_updates_refine_async (GsPlugin            *plugin,
+                                        GsAppList           *list,
+                                        GsPluginRefineFlags  flags,
+                                        GCancellable        *cancellable,
+                                        GAsyncReadyCallback  callback,
+                                        gpointer             user_data)
 {
 	GsPluginSystemdUpdates *self = GS_PLUGIN_SYSTEMD_UPDATES (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_systemd_updates_refine_async);
 
 	/* not now */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0)
-		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* re-read /var/lib/PackageKit/prepared-update */
-	if (!gs_plugin_systemd_update_cache (self, error))
-		return FALSE;
+	if (!gs_plugin_systemd_update_cache (self, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -204,7 +215,15 @@ gs_plugin_refine (GsPlugin *plugin,
 		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_systemd_updates_refine_finish (GsPlugin      *plugin,
+                                         GAsyncResult  *result,
+                                         GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void get_permission_cb (GObject      *source_object,
@@ -554,6 +573,8 @@ gs_plugin_systemd_updates_class_init (GsPluginSystemdUpdatesClass *klass)
 
 	plugin_class->setup_async = gs_plugin_systemd_updates_setup_async;
 	plugin_class->setup_finish = gs_plugin_systemd_updates_setup_finish;
+	plugin_class->refine_async = gs_plugin_systemd_updates_refine_async;
+	plugin_class->refine_finish = gs_plugin_systemd_updates_refine_finish;
 }
 
 GType

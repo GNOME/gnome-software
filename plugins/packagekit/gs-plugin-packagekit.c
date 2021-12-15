@@ -73,10 +73,14 @@ G_DEFINE_TYPE (GsPluginPackagekit, gs_plugin_packagekit, GS_TYPE_PLUGIN)
 
 static void gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin);
 static void gs_plugin_packagekit_repo_list_changed_cb (PkControl *control, GsPlugin *plugin);
-static gboolean gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
-                                                     GsAppList           *list,
-                                                     GCancellable        *cancellable,
-                                                     GError             **error);
+static void gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
+                                                       GsAppList           *list,
+                                                       GCancellable        *cancellable,
+                                                       GAsyncReadyCallback  callback,
+                                                       gpointer             user_data);
+static gboolean gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
+                                                            GAsyncResult        *result,
+                                                            GError             **error);
 static void gs_plugin_packagekit_proxy_changed_cb (GSettings   *settings,
                                                    const gchar *key,
                                                    gpointer     user_data);
@@ -207,6 +211,43 @@ gs_plugin_packagekit_finalize (GObject *object)
 	g_mutex_clear (&self->task_mutex_upgrade);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
+}
+
+typedef gboolean (*GsAppFilterFunc) (GsApp *app);
+
+/* The elements in the returned #GPtrArray reference memory from within the
+ * @apps list, so the array is only valid as long as @apps is not modified or
+ * freed. */
+static GPtrArray *
+app_list_get_package_ids (GsAppList       *apps,
+                          GsAppFilterFunc  app_filter,
+                          gboolean         ignore_installed)
+{
+	g_autoptr(GPtrArray) list_package_ids = g_ptr_array_new_with_free_func (NULL);
+
+	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		GPtrArray *app_source_ids;
+
+		if (app_filter != NULL && !app_filter (app))
+			continue;
+
+		app_source_ids = gs_app_get_source_ids (app);
+		for (guint j = 0; j < app_source_ids->len; j++) {
+			const gchar *package_id = g_ptr_array_index (app_source_ids, j);
+
+			if (ignore_installed &&
+			    g_strstr_len (package_id, -1, ";installed") != NULL)
+				continue;
+
+			g_ptr_array_add (list_package_ids, (gchar *) package_id);
+		}
+	}
+
+	if (list_package_ids->len > 0)
+		g_ptr_array_add (list_package_ids, NULL);
+
+	return g_steal_pointer (&list_package_ids);
 }
 
 static gboolean
@@ -405,7 +446,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GPtrArray *source_ids;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *package_id;
-	guint i, j;
+	guint i;
 	g_autofree gchar *local_filename = NULL;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
@@ -487,30 +528,18 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "installing not available");
 			return FALSE;
 		}
-		array_package_ids = g_ptr_array_new_with_free_func (g_free);
+
+		addons = gs_app_get_addons (app);
+		array_package_ids = app_list_get_package_ids (addons,
+							      gs_app_get_to_be_installed,
+							      TRUE);
+
 		for (i = 0; i < source_ids->len; i++) {
 			package_id = g_ptr_array_index (source_ids, i);
 			if (g_strstr_len (package_id, -1, ";installed") != NULL)
 				continue;
-			g_ptr_array_add (array_package_ids, g_strdup (package_id));
+			g_ptr_array_add (array_package_ids, (gpointer) package_id);
 		}
-
-		addons = gs_app_get_addons (app);
-		for (i = 0; i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-
-			if (!gs_app_get_to_be_installed (addon))
-				continue;
-
-			source_ids = gs_app_get_source_ids (addon);
-			for (j = 0; j < source_ids->len; j++) {
-				package_id = g_ptr_array_index (source_ids, j);
-				if (g_strstr_len (package_id, -1, ";installed") != NULL)
-					continue;
-				g_ptr_array_add (array_package_ids, g_strdup (package_id));
-			}
-		}
-		g_ptr_array_add (array_package_ids, NULL);
 
 		if (array_package_ids->len == 0) {
 			g_set_error_literal (error,
@@ -521,7 +550,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		addons = gs_app_get_addons (app);
+
 		for (i = 0; i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
@@ -871,12 +900,34 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	}
 }
 
-static gboolean
-gs_plugin_packagekit_resolve_packages_with_filter (GsPluginPackagekit  *self,
-                                                   GsAppList           *list,
-                                                   PkBitfield           filter,
-                                                   GCancellable        *cancellable,
-                                                   GError             **error)
+typedef struct
+{
+	GsAppList *list;  /* (owned) (not nullable) */
+	GsPackagekitHelper *progress_data;  /* (owned) (not nullable) */
+} ResolvePackagesWithFilterData;
+
+static void
+resolve_packages_with_filter_data_free (ResolvePackagesWithFilterData *data)
+{
+	g_clear_object (&data->list);
+	g_clear_object (&data->progress_data);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ResolvePackagesWithFilterData, resolve_packages_with_filter_data_free)
+
+static void resolve_packages_with_filter_cb (GObject      *source_object,
+                                             GAsyncResult *result,
+                                             gpointer      user_data);
+
+static void
+gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *self,
+                                                         GsAppList           *list,
+                                                         PkBitfield           filter,
+                                                         GCancellable        *cancellable,
+                                                         GAsyncReadyCallback  callback,
+                                                         gpointer             user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 	GPtrArray *sources;
@@ -884,10 +935,17 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPluginPackagekit  *self,
 	const gchar *pkgname;
 	guint i;
 	guint j;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
-	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(ResolvePackagesWithFilterData) data = NULL;
+	ResolvePackagesWithFilterData *data_unowned;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_resolve_packages_with_filter_async);
+	data_unowned = data = g_new0 (ResolvePackagesWithFilterData, 1);
+	data->list = g_object_ref (list);
+	data->progress_data = gs_packagekit_helper_new (plugin);
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) resolve_packages_with_filter_data_free);
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -904,23 +962,48 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPluginPackagekit  *self,
 			g_ptr_array_add (package_ids, g_strdup (pkgname));
 		}
 	}
-	if (package_ids->len == 0)
-		return TRUE;
+
+	if (package_ids->len == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
 	g_ptr_array_add (package_ids, NULL);
 
 	/* resolve them all at once */
 	g_mutex_lock (&self->client_mutex_refine);
 	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_resolve (self->client_refine,
-				     filter,
-				     (gchar **) package_ids->pdata,
-				     cancellable,
-				     gs_packagekit_helper_cb, helper,
-				     error);
+	pk_client_resolve_async (self->client_refine,
+				 filter,
+				 (gchar **) package_ids->pdata,
+				 cancellable,
+				 gs_packagekit_helper_cb, data_unowned->progress_data,
+				 resolve_packages_with_filter_cb,
+				 g_steal_pointer (&task));
 	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to resolve package_ids: ");
-		return FALSE;
+}
+
+static void
+resolve_packages_with_filter_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	ResolvePackagesWithFilterData *data = g_task_get_task_data (task);
+	GsAppList *list = data->list;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_prefix_error (&local_error, "failed to resolve package_ids: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* get results */
@@ -928,104 +1011,28 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPluginPackagekit  *self,
 
 	/* if the user types more characters we'll get cancelled - don't go on
 	 * to mark apps as unavailable because packages->len = 0 */
-	if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+	if (g_cancellable_set_error_if_cancelled (cancellable, &local_error)) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		if (gs_app_get_local_file (app) != NULL)
-			continue;
-		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
-	}
-	return TRUE;
-}
-
-static gboolean
-gs_plugin_packagekit_resolve_packages (GsPluginPackagekit  *self,
-                                       GsAppList           *list,
-                                       GCancellable        *cancellable,
-                                       GError             **error)
-{
-	PkBitfield filter;
-	g_autoptr(GsAppList) resolve2_list = NULL;
-
-	/* first, try to resolve packages with ARCH filter */
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
-	                                 PK_FILTER_ENUM_ARCH,
-	                                 -1);
-	if (!gs_plugin_packagekit_resolve_packages_with_filter (self,
-	                                                        list,
-	                                                        filter,
-	                                                        cancellable,
-	                                                        error)) {
-		return FALSE;
-	}
-
-	/* if any packages remaining in UNKNOWN state, try to resolve them again,
-	 * but this time without ARCH filter */
-	resolve2_list = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_list_add (resolve2_list, app);
-	}
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
-	                                 PK_FILTER_ENUM_NOT_ARCH,
-	                                 PK_FILTER_ENUM_NOT_SOURCE,
-	                                 -1);
-	if (!gs_plugin_packagekit_resolve_packages_with_filter (self,
-	                                                        resolve2_list,
-	                                                        filter,
-	                                                        cancellable,
-	                                                        error)) {
-		return FALSE;
+		if (gs_app_get_local_file (app) != NULL)
+			continue;
+		gs_plugin_packagekit_resolve_packages_app (GS_PLUGIN (self), packages, app);
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
-gs_plugin_packagekit_refine_from_desktop (GsPluginPackagekit  *self,
-                                          GsApp               *app,
-                                          const gchar         *filename,
-                                          GCancellable        *cancellable,
-                                          GError             **error)
+gs_plugin_packagekit_resolve_packages_with_filter_finish (GsPluginPackagekit  *self,
+                                                          GAsyncResult        *result,
+                                                          GError             **error)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *to_array[] = { NULL, NULL };
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) packages = NULL;
-
-	to_array[0] = filename;
-	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_search_files (self->client_refine,
-					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
-					  (gchar **) to_array,
-					  cancellable,
-					  gs_packagekit_helper_cb, helper,
-					  error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to search file %s: ", filename);
-		return FALSE;
-	}
-
-	/* get results */
-	packages = pk_results_get_package_array (results);
-	if (packages->len == 1) {
-		PkPackage *package;
-		package = g_ptr_array_index (packages, 0);
-		gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
-	} else {
-		g_warning ("Failed to find one package for %s, %s, [%u]",
-			   gs_app_get_id (app), filename, packages->len);
-	}
-	return TRUE;
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /*
@@ -1056,228 +1063,6 @@ gs_plugin_packagekit_fixup_update_description (const gchar *text)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_updatedetails (GsPluginPackagekit  *self,
-                                           GsAppList           *list,
-                                           GCancellable        *cancellable,
-                                           GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	const gchar *package_id;
-	guint j;
-	GsApp *app;
-	guint cnt = 0;
-	PkUpdateDetail *update_detail;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autofree const gchar **package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-
-	package_ids = g_new0 (const gchar *, gs_app_list_length (list) + 1);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		package_id = gs_app_get_source_id_default (app);
-		if (package_id != NULL)
-			package_ids[cnt++] = package_id;
-	}
-
-	/* nothing to do */
-	if (cnt == 0)
-		return TRUE;
-
-	/* get any update details */
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_update_detail (self->client_refine,
-					       (gchar **) package_ids,
-					       cancellable,
-					       gs_packagekit_helper_cb, helper,
-					       error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get update details for %s: ",
-				package_ids[0]);
-		return FALSE;
-	}
-
-	/* set the update details for the update */
-	array = pk_results_get_update_detail_array (results);
-	for (j = 0; j < gs_app_list_length (list); j++) {
-		app = gs_app_list_index (list, j);
-		package_id = gs_app_get_source_id_default (app);
-		for (guint i = 0; i < array->len; i++) {
-			const gchar *tmp;
-			g_autofree gchar *desc = NULL;
-			/* right package? */
-			update_detail = g_ptr_array_index (array, i);
-			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
-				continue;
-			tmp = pk_update_detail_get_update_text (update_detail);
-			desc = gs_plugin_packagekit_fixup_update_description (tmp);
-			if (desc != NULL)
-				gs_app_set_update_details_markup (app, desc);
-			break;
-		}
-	}
-	return TRUE;
-}
-
-static gboolean
-gs_plugin_packagekit_refine_details2 (GsPluginPackagekit  *self,
-                                      GsAppList           *list,
-                                      GCancellable        *cancellable,
-                                      GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	GPtrArray *source_ids;
-	GsApp *app;
-	const gchar *package_id;
-	guint i, j;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GPtrArray) package_ids = NULL;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GHashTable) details_collection = NULL;
-
-	package_ids = g_ptr_array_new_with_free_func (g_free);
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		source_ids = gs_app_get_source_ids (app);
-		for (j = 0; j < source_ids->len; j++) {
-			package_id = g_ptr_array_index (source_ids, j);
-			g_ptr_array_add (package_ids, g_strdup (package_id));
-		}
-	}
-	if (package_ids->len == 0)
-		return TRUE;
-	g_ptr_array_add (package_ids, NULL);
-
-	/* get any details */
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_details (self->client_refine,
-					 (gchar **) package_ids->pdata,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
-		g_prefix_error (error, "failed to get details for %s: ",
-		                package_ids_str);
-		return FALSE;
-	}
-
-	/* get the results and copy them into a hash table for fast lookups:
-	 * there are typically 400 to 700 elements in @array, and 100 to 200
-	 * elements in @list, each with 1 or 2 source IDs to look up (but
-	 * sometimes 200) */
-	array = pk_results_get_details_array (results);
-	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
-
-	/* set the update details for the update */
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
-	}
-
-	return TRUE;
-}
-
-static gboolean
-gs_plugin_packagekit_refine_update_urgency (GsPluginPackagekit   *self,
-                                            GsAppList            *list,
-                                            GsPluginRefineFlags   flags,
-                                            GCancellable         *cancellable,
-                                            GError              **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	guint i;
-	GsApp *app;
-	const gchar *package_id;
-	PkBitfield filter;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* not required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
-		return TRUE;
-
-	/* get the list of updates */
-	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_updates (self->client_refine,
-					 filter,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	g_mutex_unlock (&self->client_mutex_refine);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get updates for urgency: ");
-		return FALSE;
-	}
-
-	/* set the update severity for the app */
-	sack = pk_results_get_package_sack (results);
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		g_autoptr (PkPackage) pkg = NULL;
-		app = gs_app_list_index (list, i);
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		package_id = gs_app_get_source_id_default (app);
-		if (package_id == NULL)
-			continue;
-		pkg = pk_package_sack_find_by_id (sack, package_id);
-		if (pkg == NULL)
-			continue;
-		#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
-		switch (pk_package_get_update_severity (pkg)) {
-		case PK_INFO_ENUM_LOW:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-			break;
-		case PK_INFO_ENUM_NORMAL:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
-			break;
-		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-			break;
-		case PK_INFO_ENUM_CRITICAL:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
-			break;
-		default:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-			break;
-		}
-		#else
-		switch (pk_package_get_info (pkg)) {
-		case PK_INFO_ENUM_AVAILABLE:
-		case PK_INFO_ENUM_NORMAL:
-		case PK_INFO_ENUM_LOW:
-		case PK_INFO_ENUM_ENHANCEMENT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
-			break;
-		case PK_INFO_ENUM_BUGFIX:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
-			break;
-		case PK_INFO_ENUM_SECURITY:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
-			break;
-		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-			break;
-		default:
-			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-			g_warning ("unhandled info state %s",
-				   pk_info_enum_to_string (pk_package_get_info (pkg)));
-			break;
-		}
-		#endif
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
                                     GsApp               *app)
 {
@@ -1294,43 +1079,6 @@ gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
 	    gs_app_get_size_download (app) == 0)
 		return TRUE;
 	return FALSE;
-}
-
-static gboolean
-gs_plugin_packagekit_refine_details (GsPluginPackagekit   *self,
-                                     GsAppList            *list,
-                                     GsPluginRefineFlags   flags,
-                                     GCancellable         *cancellable,
-                                     GError              **error)
-{
-	gboolean ret = TRUE;
-	g_autoptr(GsAppList) list_tmp = NULL;
-
-	list_tmp = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-
-		/* only process this app if was created by this plugin */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		if (!gs_plugin_refine_app_needs_details (flags, app))
-			continue;
-		gs_app_list_add (list_tmp, app);
-	}
-	if (gs_app_list_length (list_tmp) == 0)
-		return TRUE;
-	ret = gs_plugin_packagekit_refine_details2 (self,
-						    list_tmp,
-						    cancellable,
-						    error);
-	if (!ret)
-		return FALSE;
-	return TRUE;
 }
 
 static gboolean
@@ -1394,55 +1142,6 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 }
 
 static gboolean
-gs_plugin_packagekit_refine_distro_upgrade (GsPluginPackagekit  *self,
-                                            GsApp               *app,
-                                            GCancellable        *cancellable,
-                                            GError             **error)
-{
-	GsPlugin *plugin = GS_PLUGIN (self);
-	guint i;
-	GsApp *app2;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	guint cache_age_save;
-
-	gs_packagekit_helper_add_app (helper, app);
-
-	/* ask PK to simulate upgrading the system */
-	g_mutex_lock (&self->client_mutex_refine);
-	cache_age_save = pk_client_get_cache_age (self->client_refine);
-	pk_client_set_cache_age (self->client_refine, 60 * 60 * 24 * 7); /* once per week */
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_upgrade_system (self->client_refine,
-					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
-					    gs_app_get_version (app),
-					    PK_UPGRADE_KIND_ENUM_COMPLETE,
-					    cancellable,
-					    gs_packagekit_helper_cb, helper,
-					    error);
-	pk_client_set_cache_age (self->client_refine, cache_age_save);
-	g_mutex_unlock (&self->client_mutex_refine);
-
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to refine distro upgrade: ");
-		return FALSE;
-	}
-	list = gs_app_list_new ();
-	if (!gs_plugin_packagekit_add_results (plugin, list, results, error))
-		return FALSE;
-
-	/* add each of these as related applications */
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app2 = gs_app_list_index (list, i);
-		if (gs_app_get_state (app2) != GS_APP_STATE_UNAVAILABLE)
-			continue;
-		gs_app_add_related (app, app2);
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 {
 	if (g_strstr_len (source, -1, "/") != NULL)
@@ -1450,142 +1149,218 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_refine_name_to_id (GsPluginPackagekit   *self,
-                                        GsAppList            *list,
-                                        GsPluginRefineFlags   flags,
-                                        GCancellable         *cancellable,
-                                        GError              **error)
+typedef struct {
+	/* Track pending operations. */
+	guint n_pending_operations;
+	gboolean completed;
+	GError *error;  /* (nullable) (owned) */
+	GPtrArray *progress_datas;  /* (element-type GsPackagekitHelper) (owned) (not nullable) */
+
+	/* Input data for operations. */
+	GsAppList *full_list;  /* (nullable) (owned) */
+	GsAppList *resolve_list;  /* (nullable) (owned) */
+	GsApp *app_operating_system;  /* (nullable) (owned) */
+	GsAppList *update_details_list;  /* (nullable) (owned) */
+	GsAppList *details_list;  /* (nullable) (owned) */
+} RefineData;
+
+static void
+refine_data_free (RefineData *data)
 {
-	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GPtrArray *sources;
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		sources = gs_app_get_sources (app);
-		if (sources->len == 0)
-			continue;
-		tmp = g_ptr_array_index (sources, 0);
-		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
-			continue;
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
-		    gs_plugin_refine_requires_package_id (app, flags) ||
-		    gs_plugin_refine_requires_origin (app, flags) ||
-		    gs_plugin_refine_requires_version (app, flags)) {
-			gs_app_list_add (resolve_all, app);
-		}
-	}
-	if (gs_app_list_length (resolve_all) > 0) {
-		if (!gs_plugin_packagekit_resolve_packages (self,
-							    resolve_all,
-							    cancellable,
-							    error))
-			return FALSE;
-	}
-	return TRUE;
+	g_assert (data->n_pending_operations == 0);
+	g_assert (data->completed);
+
+	g_clear_error (&data->error);
+	g_clear_pointer (&data->progress_datas, g_ptr_array_unref);
+	g_clear_object (&data->full_list);
+	g_clear_object (&data->resolve_list);
+	g_clear_object (&data->app_operating_system);
+	g_clear_object (&data->update_details_list);
+	g_clear_object (&data->details_list);
+
+	g_free (data);
 }
 
-static gboolean
-gs_plugin_packagekit_refine_filename_to_id (GsPluginPackagekit   *self,
-                                            GsAppList            *list,
-                                            GsPluginRefineFlags   flags,
-                                            GCancellable         *cancellable,
-                                            GError              **error)
-{
-	/* not now */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
-		return TRUE;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineData, refine_data_free)
 
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		g_autofree gchar *fn = NULL;
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *tmp;
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (gs_app_get_source_id_default (app) != NULL)
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		tmp = gs_app_get_id (app);
-		if (tmp == NULL)
-			continue;
-		switch (gs_app_get_kind (app)) {
-		case AS_COMPONENT_KIND_DESKTOP_APP:
-			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
-			break;
-		case AS_COMPONENT_KIND_ADDON:
-			fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
-			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
-				g_free (fn);
-				fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
-			}
-			break;
-		default:
-			break;
-		}
-		if (fn == NULL)
-			continue;
-		if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
-			g_debug ("ignoring %s as does not exist", fn);
-			continue;
-		}
-		if (!gs_plugin_packagekit_refine_from_desktop (self,
-								app,
-								fn,
-								cancellable,
-								error))
-			return FALSE;
-	}
-	return TRUE;
+/* Add @helper to the list of progress data closures to free when the
+ * #RefineData is freed. This means it can be reliably used, 0 or more times,
+ * by the async operation up until the operation is finished. */
+static GsPackagekitHelper *
+refine_task_add_progress_data (GTask              *refine_task,
+                               GsPackagekitHelper *helper)
+{
+	RefineData *data = g_task_get_task_data (refine_task);
+
+	g_ptr_array_add (data->progress_datas, g_object_ref (helper));
+
+	return helper;
 }
 
-static gboolean
-gs_plugin_packagekit_refine_update_details (GsPluginPackagekit   *self,
-                                            GsAppList            *list,
-                                            GsPluginRefineFlags   flags,
-                                            GCancellable         *cancellable,
-                                            GError              **error)
+static GTask *
+refine_task_add_operation (GTask *refine_task)
 {
-	g_autoptr(GsAppList) updatedetails_all = gs_app_list_new ();
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
+	RefineData *data = g_task_get_task_data (refine_task);
 
-		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		if (!gs_app_has_management_plugin (app, NULL) &&
-		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
-		if (gs_plugin_refine_requires_update_details (app, flags))
-			gs_app_list_add (updatedetails_all, app);
-	}
-	if (gs_app_list_length (updatedetails_all) > 0) {
-		if (!gs_plugin_packagekit_refine_updatedetails (self,
-								updatedetails_all,
-								cancellable,
-								error))
-			return FALSE;
-	}
-	return TRUE;
+	g_assert (!data->completed);
+	data->n_pending_operations++;
+
+	return g_object_ref (refine_task);
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GsAppList *list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+static void
+refine_task_complete_operation (GTask *refine_task)
+{
+	RefineData *data = g_task_get_task_data (refine_task);
+
+	g_assert (data->n_pending_operations > 0);
+	data->n_pending_operations--;
+
+	/* Have all operations completed? */
+	if (data->n_pending_operations == 0) {
+		g_assert (!data->completed);
+		data->completed = TRUE;
+
+		if (data->error != NULL)
+			g_task_return_error (refine_task, g_steal_pointer (&data->error));
+		else
+			g_task_return_boolean (refine_task, TRUE);
+	}
+}
+
+static void
+refine_task_complete_operation_with_error (GTask  *refine_task,
+					   GError *error  /* (transfer full) */)
+{
+	RefineData *data = g_task_get_task_data (refine_task);
+	g_autoptr(GError) owned_error = g_steal_pointer (&error);
+
+	/* Multiple operations might fail. Just take the first error. */
+	if (data->error == NULL)
+		data->error = g_steal_pointer (&owned_error);
+
+	refine_task_complete_operation (refine_task);
+}
+
+typedef struct {
+	GTask *refine_task;  /* (owned) (not nullable) */
+	GsApp *app;  /* (owned) (not nullable) */
+	gchar *filename;  /* (owned) (not nullable) */
+} SearchFilesData;
+
+static void
+search_files_data_free (SearchFilesData *data)
+{
+	g_free (data->filename);
+	g_clear_object (&data->app);
+	g_clear_object (&data->refine_task);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (SearchFilesData, search_files_data_free)
+
+static SearchFilesData *
+search_files_data_new_operation (GTask       *refine_task,
+                                 GsApp       *app,
+                                 const gchar *filename)
+{
+	g_autoptr(SearchFilesData) data = g_new0 (SearchFilesData, 1);
+	data->refine_task = refine_task_add_operation (refine_task);
+	data->app = g_object_ref (app);
+	data->filename = g_strdup (filename);
+
+	return g_steal_pointer (&data);
+}
+
+static void upgrade_system_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void resolve_all_packages_with_filter_cb (GObject      *source_object,
+                                                 GAsyncResult *result,
+                                                 gpointer      user_data);
+static void search_files_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data);
+static void get_update_detail_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void get_details_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+static void get_updates_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+static void refine_all_history_cb (GObject      *source_object,
+                                   GAsyncResult *result,
+                                   gpointer      user_data);
+
+static void
+gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
+                                   GsAppList           *list,
+                                   GsPluginRefineFlags  flags,
+                                   GCancellable        *cancellable,
+                                   GAsyncReadyCallback  callback,
+                                   gpointer             user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GsAppList) resolve_list = gs_app_list_new ();
+	g_autoptr(GsAppList) update_details_list = gs_app_list_new ();
+	g_autoptr(GsAppList) details_list = gs_app_list_new ();
+	g_autoptr(GsAppList) history_list = gs_app_list_new ();
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(RefineData) data = NULL;
+	RefineData *data_unowned = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_refine_async);
+	data_unowned = data = g_new0 (RefineData, 1);
+	data->full_list = g_object_ref (list);
+	data->n_pending_operations = 1;  /* to prevent the task being completed before all operations have been started */
+	data->progress_datas = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refine_data_free);
+
+	/* Process the @list and work out what information is needed for each
+	 * app. */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GPtrArray *sources;
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+
+		if (!gs_app_has_management_plugin (app, NULL) &&
+		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+			continue;
+
+		sources = gs_app_get_sources (app);
+
+		if (sources->len > 0 &&
+		    gs_plugin_packagekit_refine_valid_package_name (g_ptr_array_index (sources, 0)) &&
+		    (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		     gs_plugin_refine_requires_package_id (app, flags) ||
+		     gs_plugin_refine_requires_origin (app, flags) ||
+		     gs_plugin_refine_requires_version (app, flags))) {
+			gs_app_list_add (resolve_list, app);
+		}
+
+		if ((gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
+		     gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) &&
+		    gs_app_get_source_id_default (app) != NULL &&
+		    gs_plugin_refine_requires_update_details (app, flags)) {
+			gs_app_list_add (update_details_list, app);
+		}
+
+		if (gs_app_get_source_id_default (app) != NULL &&
+		    gs_plugin_refine_app_needs_details (flags, app)) {
+			gs_app_list_add (details_list, app);
+		}
+
+		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0 &&
+		    sources->len > 0 &&
+		    gs_app_get_install_date (app) == 0) {
+			gs_app_list_add (history_list, app);
+		}
+	}
 
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
@@ -1593,35 +1368,192 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
+			g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+			guint cache_age_save;
+
 			if (gs_app_get_kind (app) != AS_COMPONENT_KIND_OPERATING_SYSTEM)
 				continue;
-			if (!gs_plugin_packagekit_refine_distro_upgrade (self,
-									 app,
-									 cancellable,
-									 error))
-				return FALSE;
+
+			gs_packagekit_helper_add_app (helper, app);
+
+			/* Expose the @app to the callback functions so that
+			 * upgrade packages can be added as related. This only
+			 * supports one OS. */
+			g_assert (data_unowned->app_operating_system == NULL);
+			data_unowned->app_operating_system = g_object_ref (app);
+
+			/* ask PK to simulate upgrading the system */
+			g_mutex_lock (&self->client_mutex_refine);
+			cache_age_save = pk_client_get_cache_age (self->client_refine);
+			pk_client_set_cache_age (self->client_refine, 60 * 60 * 24 * 7); /* once per week */
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			pk_client_upgrade_system_async (self->client_refine,
+							pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
+							gs_app_get_version (app),
+							PK_UPGRADE_KIND_ENUM_COMPLETE,
+							cancellable,
+							gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+							upgrade_system_cb,
+							refine_task_add_operation (task));
+			pk_client_set_cache_age (self->client_refine, cache_age_save);
+			g_mutex_unlock (&self->client_mutex_refine);
+
+			/* Only support one operating system. */
+			break;
 		}
 	}
 
 	/* can we resolve in one go? */
-	if (!gs_plugin_packagekit_refine_name_to_id (self, list, flags, cancellable, error))
-		return FALSE;
+	if (gs_app_list_length (resolve_list) > 0) {
+		PkBitfield filter;
+
+		/* Expose the @resolve_list to the callback functions in case a
+		 * second attempt is needed. */
+		g_assert (data_unowned->resolve_list == NULL);
+		data_unowned->resolve_list = g_object_ref (resolve_list);
+
+		/* first, try to resolve packages with ARCH filter */
+		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+			                         PK_FILTER_ENUM_ARCH,
+			                         -1);
+
+		gs_plugin_packagekit_resolve_packages_with_filter_async (self,
+									 resolve_list,
+									 filter,
+									 cancellable,
+									 resolve_all_packages_with_filter_cb,
+									 refine_task_add_operation (task));
+	}
 
 	/* set the package-id for an installed desktop file */
-	if (!gs_plugin_packagekit_refine_filename_to_id (self, list, flags, cancellable, error))
-		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) != 0) {
+		for (guint i = 0; i < gs_app_list_length (list); i++) {
+			g_autofree gchar *fn = NULL;
+			GsApp *app = gs_app_list_index (list, i);
+			const gchar *tmp;
+			const gchar *to_array[] = { NULL, NULL };
+			g_autoptr(GsPackagekitHelper) helper = NULL;
+
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+				continue;
+			if (gs_app_get_source_id_default (app) != NULL)
+				continue;
+			if (!gs_app_has_management_plugin (app, NULL) &&
+			    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+				continue;
+			tmp = gs_app_get_id (app);
+			if (tmp == NULL)
+				continue;
+			switch (gs_app_get_kind (app)) {
+			case AS_COMPONENT_KIND_DESKTOP_APP:
+				fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
+				break;
+			case AS_COMPONENT_KIND_ADDON:
+				fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
+				if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+					g_free (fn);
+					fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
+				}
+				break;
+			default:
+				break;
+			}
+			if (fn == NULL)
+				continue;
+			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+				g_debug ("ignoring %s as does not exist", fn);
+				continue;
+			}
+
+			helper = gs_packagekit_helper_new (plugin);
+			to_array[0] = fn;
+			gs_packagekit_helper_add_app (helper, app);
+			g_mutex_lock (&self->client_mutex_refine);
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			pk_client_search_files_async (self->client_refine,
+						      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+						      (gchar **) to_array,
+						      cancellable,
+						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+						      search_files_cb,
+						      search_files_data_new_operation (task, app, fn));
+			g_mutex_unlock (&self->client_mutex_refine);
+		}
+	}
 
 	/* any update details missing? */
-	if (!gs_plugin_packagekit_refine_update_details (self, list, flags, cancellable, error))
-		return FALSE;
+	if (gs_app_list_length (update_details_list) > 0) {
+		GsApp *app;
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		g_autofree const gchar **package_ids = NULL;
+
+		/* Expose the @update_details_list to the callback functions so
+		 * its apps can be updated. */
+		g_assert (data_unowned->update_details_list == NULL);
+		data_unowned->update_details_list = g_object_ref (update_details_list);
+
+		package_ids = g_new0 (const gchar *, gs_app_list_length (update_details_list) + 1);
+		for (guint i = 0; i < gs_app_list_length (update_details_list); i++) {
+			app = gs_app_list_index (update_details_list, i);
+			package_ids[i] = gs_app_get_source_id_default (app);
+			g_assert (package_ids[i] != NULL);  /* checked when update_details_list is built */
+		}
+
+		/* get any update details */
+		g_mutex_lock (&self->client_mutex_refine);
+		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		pk_client_get_update_detail_async (self->client_refine,
+						   (gchar **) package_ids,
+						   cancellable,
+						   gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+						   get_update_detail_cb,
+						   refine_task_add_operation (task));
+		g_mutex_unlock (&self->client_mutex_refine);
+	}
 
 	/* any package details missing? */
-	if (!gs_plugin_packagekit_refine_details (self, list, flags, cancellable, error))
-		return FALSE;
+	if (gs_app_list_length (details_list) > 0) {
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+		g_autoptr(GPtrArray) package_ids = NULL;
+
+		/* Expose the @details_list to the callback functions so
+		 * its apps can be updated. */
+		g_assert (data_unowned->details_list == NULL);
+		data_unowned->details_list = g_object_ref (details_list);
+
+		package_ids = app_list_get_package_ids (details_list, NULL, FALSE);
+
+		if (package_ids->len > 0) {
+			/* get any details */
+			g_mutex_lock (&self->client_mutex_refine);
+			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			pk_client_get_details_async (self->client_refine,
+						     (gchar **) package_ids->pdata,
+						     cancellable,
+						     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+						     get_details_cb,
+						     refine_task_add_operation (task));
+			g_mutex_unlock (&self->client_mutex_refine);
+		}
+	}
 
 	/* get the update severity */
-	if (!gs_plugin_packagekit_refine_update_urgency (self, list, flags, cancellable, error))
-		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) != 0) {
+		PkBitfield filter;
+		g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+
+		/* get the list of updates */
+		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+		g_mutex_lock (&self->client_mutex_refine);
+		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		pk_client_get_updates_async (self->client_refine,
+					     filter,
+					     cancellable,
+					     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+					     get_updates_cb,
+					     refine_task_add_operation (task));
+		g_mutex_unlock (&self->client_mutex_refine);
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1637,38 +1569,349 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	}
 
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) != 0) {
-		gboolean ret;
-		guint i;
-		GsApp *app;
-		GPtrArray *sources;
-		g_autoptr(GsAppList) packages = NULL;
+	/* add any missing history data */
+	if (gs_app_list_length (history_list) > 0) {
+		gs_plugin_packagekit_refine_history_async (self,
+							   history_list,
+							   cancellable,
+							   refine_all_history_cb,
+							   refine_task_add_operation (task));
+	}
 
-		/* add any missing history data */
-		packages = gs_app_list_new ();
-		for (i = 0; i < gs_app_list_length (list); i++) {
-			app = gs_app_list_index (list, i);
-			if (!gs_app_has_management_plugin (app, plugin))
+	/* Mark the operation to set up all the other operations as completed.
+	 * The @refine_task will now be completed once all the async operations
+	 * have completed, and the task callback invoked. */
+	refine_task_complete_operation (task);
+}
+
+static void
+upgrade_system_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (refine_task));
+	RefineData *data = g_task_get_task_data (refine_task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GsAppList) results_list = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_prefix_error (&local_error, "failed to refine distro upgrade: ");
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	results_list = gs_app_list_new ();
+	if (!gs_plugin_packagekit_add_results (GS_PLUGIN (self), results_list, results, &local_error)) {
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* add each of these as related applications */
+	for (guint j = 0; j < gs_app_list_length (results_list); j++) {
+		GsApp *app2 = gs_app_list_index (results_list, j);
+		if (gs_app_get_state (app2) != GS_APP_STATE_UNAVAILABLE)
+			continue;
+		gs_app_add_related (data->app_operating_system, app2);
+	}
+
+	refine_task_complete_operation (refine_task);
+}
+
+static gboolean
+gs_plugin_packagekit_refine_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void resolve_all_packages_with_filter_cb2 (GObject      *source_object,
+                                                  GAsyncResult *result,
+                                                  gpointer      user_data);
+
+static void
+resolve_all_packages_with_filter_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	RefineData *data = g_task_get_task_data (refine_task);
+	GCancellable *cancellable = g_task_get_cancellable (refine_task);
+	GsAppList *resolve_list = data->resolve_list;
+	g_autoptr(GsAppList) resolve2_list = NULL;
+	PkBitfield filter;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_packagekit_resolve_packages_with_filter_finish (self,
+								       result,
+								       &local_error)) {
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* if any packages remaining in UNKNOWN state, try to resolve them again,
+	 * but this time without ARCH filter */
+	resolve2_list = gs_app_list_new ();
+	for (guint i = 0; i < gs_app_list_length (resolve_list); i++) {
+		GsApp *app = gs_app_list_index (resolve_list, i);
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_list_add (resolve2_list, app);
+	}
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+		                         PK_FILTER_ENUM_NOT_ARCH,
+		                         PK_FILTER_ENUM_NOT_SOURCE,
+		                         -1);
+
+	gs_plugin_packagekit_resolve_packages_with_filter_async (self,
+								 resolve2_list,
+								 filter,
+								 cancellable,
+								 resolve_all_packages_with_filter_cb2,
+								 g_steal_pointer (&refine_task));
+}
+
+static void
+resolve_all_packages_with_filter_cb2 (GObject      *source_object,
+                                      GAsyncResult *result,
+                                      gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_packagekit_resolve_packages_with_filter_finish (self,
+								       result,
+								       &local_error)) {
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	refine_task_complete_operation (refine_task);
+}
+
+static void
+search_files_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(SearchFilesData) search_files_data = g_steal_pointer (&user_data);
+	GTask *refine_task = search_files_data->refine_task;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (refine_task));
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_prefix_error (&local_error, "failed to search file %s: ", search_files_data->filename);
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* get results */
+	packages = pk_results_get_package_array (results);
+	if (packages->len == 1) {
+		PkPackage *package;
+		package = g_ptr_array_index (packages, 0);
+		gs_plugin_packagekit_set_metadata_from_package (GS_PLUGIN (self), search_files_data->app, package);
+	} else {
+		g_warning ("Failed to find one package for %s, %s, [%u]",
+			   gs_app_get_id (search_files_data->app), search_files_data->filename, packages->len);
+	}
+
+	refine_task_complete_operation (refine_task);
+}
+
+static void
+get_update_detail_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	RefineData *data = g_task_get_task_data (refine_task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_prefix_error (&local_error, "failed to get update details: ");
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* set the update details for the update */
+	array = pk_results_get_update_detail_array (results);
+	for (guint j = 0; j < gs_app_list_length (data->update_details_list); j++) {
+		GsApp *app = gs_app_list_index (data->update_details_list, j);
+		const gchar *package_id = gs_app_get_source_id_default (app);
+
+		for (guint i = 0; i < array->len; i++) {
+			const gchar *tmp;
+			g_autofree gchar *desc = NULL;
+			PkUpdateDetail *update_detail;
+
+			/* right package? */
+			update_detail = g_ptr_array_index (array, i);
+			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
 				continue;
-			sources = gs_app_get_sources (app);
-			if (sources->len == 0)
-				continue;
-			if (gs_app_get_install_date (app) != 0)
-				continue;
-			gs_app_list_add (packages, app);
-		}
-		if (gs_app_list_length (packages) > 0) {
-			ret = gs_plugin_packagekit_refine_history (self,
-								   packages,
-								   cancellable,
-								   error);
-			if (!ret)
-				return FALSE;
+			tmp = pk_update_detail_get_update_text (update_detail);
+			desc = gs_plugin_packagekit_fixup_update_description (tmp);
+			if (desc != NULL)
+				gs_app_set_update_details_markup (app, desc);
+			break;
 		}
 	}
 
-	/* success */
-	return TRUE;
+	refine_task_complete_operation (refine_task);
+}
+
+static void
+get_details_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (refine_task));
+	RefineData *data = g_task_get_task_data (refine_task);
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GHashTable) details_collection = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_autoptr(GPtrArray) package_ids = app_list_get_package_ids (data->details_list, NULL, FALSE);
+		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
+		g_prefix_error (&local_error, "failed to get details for %s: ",
+				package_ids_str);
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* get the results and copy them into a hash table for fast lookups:
+	 * there are typically 400 to 700 elements in @array, and 100 to 200
+	 * elements in @list, each with 1 or 2 source IDs to look up (but
+	 * sometimes 200) */
+	array = pk_results_get_details_array (results);
+	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
+
+	/* set the update details for the update */
+	for (guint i = 0; i < gs_app_list_length (data->details_list); i++) {
+		GsApp *app = gs_app_list_index (data->details_list, i);
+		gs_plugin_packagekit_refine_details_app (GS_PLUGIN (self), details_collection, app);
+	}
+
+	refine_task_complete_operation (refine_task);
+}
+
+static void
+get_updates_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	RefineData *data = g_task_get_task_data (refine_task);
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_prefix_error (&local_error, "failed to get updates for urgency: ");
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* set the update severity for the app */
+	sack = pk_results_get_package_sack (results);
+	for (guint i = 0; i < gs_app_list_length (data->full_list); i++) {
+		g_autoptr(PkPackage) pkg = NULL;
+		const gchar *package_id;
+		GsApp *app = gs_app_list_index (data->full_list, i);
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			continue;
+		package_id = gs_app_get_source_id_default (app);
+		if (package_id == NULL)
+			continue;
+		pkg = pk_package_sack_find_by_id (sack, package_id);
+		if (pkg == NULL)
+			continue;
+		#ifdef HAVE_PK_PACKAGE_GET_UPDATE_SEVERITY
+		switch (pk_package_get_update_severity (pkg)) {
+		case PK_INFO_ENUM_LOW:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+			break;
+		case PK_INFO_ENUM_NORMAL:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
+			break;
+		case PK_INFO_ENUM_IMPORTANT:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+			break;
+		case PK_INFO_ENUM_CRITICAL:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
+			break;
+		default:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+			break;
+		}
+		#else
+		switch (pk_package_get_info (pkg)) {
+		case PK_INFO_ENUM_AVAILABLE:
+		case PK_INFO_ENUM_NORMAL:
+		case PK_INFO_ENUM_LOW:
+		case PK_INFO_ENUM_ENHANCEMENT:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+			break;
+		case PK_INFO_ENUM_BUGFIX:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
+			break;
+		case PK_INFO_ENUM_SECURITY:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
+			break;
+		case PK_INFO_ENUM_IMPORTANT:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
+			break;
+		default:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+			g_warning ("unhandled info state %s",
+				   pk_info_enum_to_string (pk_package_get_info (pkg)));
+			break;
+		}
+		#endif
+	}
+
+	refine_task_complete_operation (refine_task);
+}
+
+static void
+refine_all_history_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (source_object);
+	g_autoptr(GTask) refine_task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_packagekit_refine_history_finish (self, result, &local_error)) {
+		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	refine_task_complete_operation (refine_task);
 }
 
 static void
@@ -1813,23 +2056,25 @@ gs_plugin_packagekit_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
-                                     GsAppList           *list,
-                                     GCancellable        *cancellable,
-                                     GError             **error)
+static void refine_history_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+static void
+gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
+                                           GsAppList           *list,
+                                           GCancellable        *cancellable,
+                                           GAsyncReadyCallback  callback,
+                                           gpointer             user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (self);
-	gboolean ret;
-	guint j;
+	guint i = 0, j;
 	GsApp *app;
-	guint i = 0;
-	GVariantIter iter;
-	GVariant *value;
 	g_autofree const gchar **package_names = NULL;
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GVariant) result = NULL;
-	g_autoptr(GVariant) tuple = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_refine_history_async);
+	g_task_set_task_data (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 
 	/* get an array of package names */
 	package_names = g_new0 (const gchar *, gs_app_list_length (list) + 1);
@@ -1839,18 +2084,41 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 	}
 
 	g_debug ("getting history for %u packages", gs_app_list_length (list));
-	result = g_dbus_connection_call_sync (self->connection_history,
-					      "org.freedesktop.PackageKit",
-					      "/org/freedesktop/PackageKit",
-					      "org.freedesktop.PackageKit",
-					      "GetPackageHistory",
-					      g_variant_new ("(^asu)", package_names, 0),
-					      NULL,
-					      G_DBUS_CALL_FLAGS_NONE,
-					      GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT,
-					      cancellable,
-					      &error_local);
-	if (result == NULL) {
+	g_dbus_connection_call (self->connection_history,
+				"org.freedesktop.PackageKit",
+				"/org/freedesktop/PackageKit",
+				"org.freedesktop.PackageKit",
+				"GetPackageHistory",
+				g_variant_new ("(^asu)", package_names, 0),
+				NULL,
+				G_DBUS_CALL_FLAGS_NONE,
+				GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT,
+				cancellable,
+				refine_history_cb,
+				g_steal_pointer (&task));
+}
+
+static void
+refine_history_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	GDBusConnection *connection = G_DBUS_CONNECTION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GsPlugin *plugin = GS_PLUGIN (self);
+	GsAppList *list = g_task_get_task_data (task);
+	gboolean ret;
+	guint i = 0;
+	GVariantIter iter;
+	GVariant *value;
+	g_autoptr(GVariant) result_variant = NULL;
+	g_autoptr(GVariant) tuple = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	result_variant = g_dbus_connection_call_finish (connection, result, &error_local);
+
+	if (result_variant == NULL) {
 		g_dbus_error_strip_remote_error (error_local);
 		if (g_error_matches (error_local,
 				     G_DBUS_ERROR,
@@ -1861,41 +2129,42 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 			/* just set this to something non-zero so we don't keep
 			 * trying to call GetPackageHistory */
 			for (i = 0; i < gs_app_list_length (list); i++) {
-				app = gs_app_list_index (list, i);
+				GsApp *app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		} else if (g_error_matches (error_local,
 					    G_IO_ERROR,
 					    G_IO_ERROR_CANCELLED)) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_CANCELLED,
-				     "Failed to get history: %s",
-				     error_local->message);
-			return FALSE;
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_CANCELLED,
+						 "Failed to get history: %s",
+						 error_local->message);
+			return;
 		} else if (g_error_matches (error_local,
 					    G_IO_ERROR,
 					    G_IO_ERROR_TIMED_OUT)) {
 			g_debug ("No history as PackageKit took too long: %s",
 				 error_local->message);
 			for (i = 0; i < gs_app_list_length (list); i++) {
-				app = gs_app_list_index (list, i);
+				GsApp *app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		}
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "Failed to get history: %s",
-			     error_local->message);
-		return FALSE;
+
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "Failed to get history: %s",
+					 error_local->message);
+		return;
 	}
 
 	/* get any results */
-	tuple = g_variant_get_child_value (result, 0);
+	tuple = g_variant_get_child_value (result_variant, 0);
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		g_autoptr(GVariant) entries = NULL;
-		app = gs_app_list_index (list, i);
+		GsApp *app = gs_app_list_index (list, i);
 		ret = g_variant_lookup (tuple,
 					gs_app_get_source_default (app),
 					"@aa{sv}",
@@ -1926,7 +2195,16 @@ gs_plugin_packagekit_refine_history (GsPluginPackagekit  *self,
 			g_variant_unref (value);
 		}
 	}
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_refine_history_finish (GsPluginPackagekit  *self,
+                                            GAsyncResult        *result,
+                                            GError             **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -2397,7 +2675,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 		details_collection = gs_plugin_packagekit_details_array_to_hash (details);
 
-		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
+		gs_plugin_packagekit_resolve_packages_app (GS_PLUGIN (self), packages, app);
 		gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
 
 		gs_app_list_add (list, app);
@@ -2907,6 +3185,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->setup_finish = gs_plugin_packagekit_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_packagekit_shutdown_async;
 	plugin_class->shutdown_finish = gs_plugin_packagekit_shutdown_finish;
+	plugin_class->refine_async = gs_plugin_packagekit_refine_async;
+	plugin_class->refine_finish = gs_plugin_packagekit_refine_finish;
 }
 
 GType

@@ -17,12 +17,13 @@
 #include "gs-odrs-provider.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
-#include "gs-plugin-job.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_PLUGIN_LOADER		(gs_plugin_loader_get_type ())
 G_DECLARE_FINAL_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObject)
+
+#include "gs-plugin-job.h"
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_job_process_async	(GsPluginLoader	*plugin_loader,
@@ -63,6 +64,8 @@ gboolean	 gs_plugin_loader_get_network_available	(GsPluginLoader *plugin_loader)
 gboolean	 gs_plugin_loader_get_network_metered	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*function_name);
+
+GPtrArray	*gs_plugin_loader_get_plugins		(GsPluginLoader	*plugin_loader);
 
 void		 gs_plugin_loader_add_event		(GsPluginLoader *plugin_loader,
 							 GsPluginEvent	*event);
@@ -107,5 +110,11 @@ void		 gs_plugin_loader_claim_job_error	(GsPluginLoader *plugin_loader,
 							 GsPlugin *plugin,
 							 GsPluginJob *job,
 							 const GError *error);
+
+gboolean	 gs_plugin_loader_app_is_valid		(GsApp *app,
+							 GsPluginRefineFlags flags);
+
+void		 gs_plugin_loader_run_adopt		(GsPluginLoader *plugin_loader,
+							 GsAppList *list);
 
 G_END_DECLS

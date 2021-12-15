@@ -356,53 +356,6 @@ gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_refine:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @flags: a #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Adds required information to a list of #GsApp's. It allows requests to be
- * batched up, which allows better performance than individual calls per app.
- *
- * An example for when this is useful would be in the PackageKit plugin where
- * we want to do one transaction of GetDetails with multiple source-ids rather
- * than scheduling a large number of pending requests.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_refine_wildcard:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @list: a #GsAppList
- * @flags: a #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Adds applications that match the wildcard specified in @app.
- *
- * The general idea is that plugins create and add *new* applications rather
- * than all trying to fight over the wildcard application.
- * This allows the plugin loader to filter using the #GsApp priority value.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_refine_wildcard		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsAppList	*list,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_launch:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

@@ -15,9 +15,8 @@
 #include "gs-plugin-private.h"
 #include "gs-plugin-job-private.h"
 
-struct _GsPluginJob
+typedef struct
 {
-	GObject			 parent_instance;
 	GsPluginRefineFlags	 refine_flags;
 	GsPluginRefineFlags	 filter_flags;
 	GsAppListFilterFlags	 dedupe_flags;
@@ -37,7 +36,7 @@ struct _GsPluginJob
 	GsCategory		*category;
 	AsReview		*review;
 	gint64			 time_created;
-};
+} GsPluginJobPrivate;
 
 enum {
 	PROP_0,
@@ -59,82 +58,83 @@ enum {
 	PROP_LAST
 };
 
-G_DEFINE_TYPE (GsPluginJob, gs_plugin_job, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsPluginJob, gs_plugin_job, G_TYPE_OBJECT)
 
 gchar *
 gs_plugin_job_to_string (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	GString *str = g_string_new (NULL);
 	gint64 time_now = g_get_monotonic_time ();
 	g_string_append_printf (str, "running %s",
-				gs_plugin_action_to_string (self->action));
-	if (self->plugin != NULL) {
+				gs_plugin_action_to_string (priv->action));
+	if (priv->plugin != NULL) {
 		g_string_append_printf (str, " on plugin=%s",
-					gs_plugin_get_name (self->plugin));
+					gs_plugin_get_name (priv->plugin));
 	}
-	if (self->filter_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->filter_flags);
+	if (priv->filter_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->filter_flags);
 		g_string_append_printf (str, " with filter-flags=%s", tmp);
 	}
-	if (self->dedupe_flags > 0)
-		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, self->dedupe_flags);
-	if (self->refine_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->refine_flags);
+	if (priv->dedupe_flags > 0)
+		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, priv->dedupe_flags);
+	if (priv->refine_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (priv->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
 	}
-	if (self->interactive)
+	if (priv->interactive)
 		g_string_append_printf (str, " with interactive=True");
-	if (self->propagate_error)
+	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
-	if (self->timeout > 0)
-		g_string_append_printf (str, " with timeout=%u", self->timeout);
-	if (self->max_results > 0)
-		g_string_append_printf (str, " with max-results=%u", self->max_results);
-	if (self->age != 0) {
-		if (self->age == G_MAXUINT) {
+	if (priv->timeout > 0)
+		g_string_append_printf (str, " with timeout=%u", priv->timeout);
+	if (priv->max_results > 0)
+		g_string_append_printf (str, " with max-results=%u", priv->max_results);
+	if (priv->age != 0) {
+		if (priv->age == G_MAXUINT) {
 			g_string_append (str, " with cache age=any");
 		} else {
 			g_string_append_printf (str, " with cache age=%" G_GUINT64_FORMAT,
-						self->age);
+						priv->age);
 		}
 	}
-	if (self->search != NULL) {
+	if (priv->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
-					self->search);
+					priv->search);
 	}
-	if (self->category != NULL) {
-		GsCategory *parent = gs_category_get_parent (self->category);
+	if (priv->category != NULL) {
+		GsCategory *parent = gs_category_get_parent (priv->category);
 		if (parent != NULL) {
 			g_string_append_printf (str, " with category=%s/%s",
 						gs_category_get_id (parent),
-						gs_category_get_id (self->category));
+						gs_category_get_id (priv->category));
 		} else {
 			g_string_append_printf (str, " with category=%s",
-						gs_category_get_id (self->category));
+						gs_category_get_id (priv->category));
 		}
 	}
-	if (self->review != NULL) {
+	if (priv->review != NULL) {
 		g_string_append_printf (str, " with review=%s",
-					as_review_get_id (self->review));
+					as_review_get_id (priv->review));
 	}
-	if (self->file != NULL) {
-		g_autofree gchar *path = g_file_get_path (self->file);
+	if (priv->file != NULL) {
+		g_autofree gchar *path = g_file_get_path (priv->file);
 		g_string_append_printf (str, " with file=%s", path);
 	}
-	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
+	if (priv->list != NULL && gs_app_list_length (priv->list) > 0) {
 		g_autofree const gchar **unique_ids = NULL;
 		g_autofree gchar *unique_ids_str = NULL;
-		unique_ids = g_new0 (const gchar *, gs_app_list_length (self->list) + 1);
-		for (guint i = 0; i < gs_app_list_length (self->list); i++) {
-			GsApp *app = gs_app_list_index (self->list, i);
+		unique_ids = g_new0 (const gchar *, gs_app_list_length (priv->list) + 1);
+		for (guint i = 0; i < gs_app_list_length (priv->list); i++) {
+			GsApp *app = gs_app_list_index (priv->list, i);
 			unique_ids[i] = gs_app_get_unique_id (app);
 		}
 		unique_ids_str = g_strjoinv (",", (gchar**) unique_ids);
 		g_string_append_printf (str, " on apps %s", unique_ids_str);
 	}
-	if (time_now - self->time_created > 1000) {
+	if (time_now - priv->time_created > 1000) {
 		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
-					(time_now - self->time_created) / 1000);
+					(time_now - priv->time_created) / 1000);
 	}
 	return g_string_free (str, FALSE);
 }
@@ -142,322 +142,360 @@ gs_plugin_job_to_string (GsPluginJob *self)
 void
 gs_plugin_job_set_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->refine_flags = refine_flags;
+	priv->refine_flags = refine_flags;
 }
 
 void
 gs_plugin_job_set_filter_flags (GsPluginJob *self, GsPluginRefineFlags filter_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->filter_flags = filter_flags;
+	priv->filter_flags = filter_flags;
 }
 
 void
 gs_plugin_job_set_dedupe_flags (GsPluginJob *self, GsAppListFilterFlags dedupe_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->dedupe_flags = dedupe_flags;
+	priv->dedupe_flags = dedupe_flags;
 }
 
 GsPluginRefineFlags
 gs_plugin_job_get_refine_flags (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_NONE);
-	return self->refine_flags;
+	return priv->refine_flags;
 }
 
 GsPluginRefineFlags
 gs_plugin_job_get_filter_flags (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_REFINE_FLAGS_NONE);
-	return self->filter_flags;
+	return priv->filter_flags;
 }
 
 GsAppListFilterFlags
 gs_plugin_job_get_dedupe_flags (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_APP_LIST_FILTER_FLAG_NONE);
-	return self->dedupe_flags;
+	return priv->dedupe_flags;
 }
 
 gboolean
 gs_plugin_job_has_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return (self->refine_flags & refine_flags) > 0;
+	return (priv->refine_flags & refine_flags) > 0;
 }
 
 void
 gs_plugin_job_add_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->refine_flags |= refine_flags;
+	priv->refine_flags |= refine_flags;
 }
 
 void
 gs_plugin_job_remove_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_flags)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->refine_flags &= ~refine_flags;
+	priv->refine_flags &= ~refine_flags;
 }
 
 void
 gs_plugin_job_set_interactive (GsPluginJob *self, gboolean interactive)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->interactive = interactive;
+	priv->interactive = interactive;
 }
 
 gboolean
 gs_plugin_job_get_interactive (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return self->interactive;
+	return priv->interactive;
 }
 
 void
 gs_plugin_job_set_propagate_error (GsPluginJob *self, gboolean propagate_error)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->propagate_error = propagate_error;
+	priv->propagate_error = propagate_error;
 }
 
 gboolean
 gs_plugin_job_get_propagate_error (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
-	return self->propagate_error;
+	return priv->propagate_error;
 }
 
 void
 gs_plugin_job_set_max_results (GsPluginJob *self, guint max_results)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->max_results = max_results;
+	priv->max_results = max_results;
 }
 
 guint
 gs_plugin_job_get_max_results (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->max_results;
+	return priv->max_results;
 }
 
 void
 gs_plugin_job_set_timeout (GsPluginJob *self, guint timeout)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->timeout = timeout;
+	priv->timeout = timeout;
 }
 
 guint
 gs_plugin_job_get_timeout (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->timeout;
+	return priv->timeout;
 }
 
 void
 gs_plugin_job_set_age (GsPluginJob *self, guint64 age)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->age = age;
+	priv->age = age;
 }
 
 guint64
 gs_plugin_job_get_age (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->age;
+	return priv->age;
 }
 
 void
 gs_plugin_job_set_action (GsPluginJob *self, GsPluginAction action)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->action = action;
+	priv->action = action;
 }
 
 GsPluginAction
 gs_plugin_job_get_action (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_ACTION_UNKNOWN);
-	return self->action;
+	return priv->action;
 }
 
 void
 gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func, gpointer user_data)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->sort_func = sort_func;
-	self->sort_func_data = user_data;
+	priv->sort_func = sort_func;
+	priv->sort_func_data = user_data;
 }
 
 GsAppListSortFunc
 gs_plugin_job_get_sort_func (GsPluginJob *self, gpointer *user_data_out)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
 	if (user_data_out != NULL)
-		*user_data_out = self->sort_func_data;
-	return self->sort_func;
+		*user_data_out = priv->sort_func_data;
+	return priv->sort_func;
 }
 
 void
 gs_plugin_job_set_search (GsPluginJob *self, const gchar *search)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_free (self->search);
-	self->search = g_strdup (search);
+	g_free (priv->search);
+	priv->search = g_strdup (search);
 }
 
 const gchar *
 gs_plugin_job_get_search (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->search;
+	return priv->search;
 }
 
 void
 gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->app, app);
+	g_set_object (&priv->app, app);
 
 	/* ensure we can always operate on a list object */
-	if (self->list != NULL && app != NULL && gs_app_list_length (self->list) == 0)
-		gs_app_list_add (self->list, self->app);
+	if (priv->list != NULL && app != NULL && gs_app_list_length (priv->list) == 0)
+		gs_app_list_add (priv->list, priv->app);
 }
 
 GsApp *
 gs_plugin_job_get_app (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->app;
+	return priv->app;
 }
 
 void
 gs_plugin_job_set_list (GsPluginJob *self, GsAppList *list)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 	if (list == NULL)
 		g_warning ("trying to set list to NULL, not a good idea");
-	g_set_object (&self->list, list);
+	g_set_object (&priv->list, list);
 }
 
 GsAppList *
 gs_plugin_job_get_list (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->list;
+	return priv->list;
 }
 
 void
 gs_plugin_job_set_file (GsPluginJob *self, GFile *file)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->file, file);
+	g_set_object (&priv->file, file);
 }
 
 GFile *
 gs_plugin_job_get_file (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->file;
+	return priv->file;
 }
 
 void
 gs_plugin_job_set_plugin (GsPluginJob *self, GsPlugin *plugin)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->plugin, plugin);
+	g_set_object (&priv->plugin, plugin);
 }
 
 GsPlugin *
 gs_plugin_job_get_plugin (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->plugin;
+	return priv->plugin;
 }
 
 void
 gs_plugin_job_set_category (GsPluginJob *self, GsCategory *category)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->category, category);
+	g_set_object (&priv->category, category);
 }
 
 GsCategory *
 gs_plugin_job_get_category (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->category;
+	return priv->category;
 }
 
 void
 gs_plugin_job_set_review (GsPluginJob *self, AsReview *review)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->review, review);
+	g_set_object (&priv->review, review);
 }
 
 AsReview *
 gs_plugin_job_get_review (GsPluginJob *self)
 {
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->review;
+	return priv->review;
 }
 
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 
 	switch (prop_id) {
 	case PROP_ACTION:
-		g_value_set_enum (value, self->action);
+		g_value_set_enum (value, priv->action);
 		break;
 	case PROP_AGE:
-		g_value_set_uint64 (value, self->age);
+		g_value_set_uint64 (value, priv->age);
 		break;
 	case PROP_REFINE_FLAGS:
-		g_value_set_flags (value, self->refine_flags);
+		g_value_set_flags (value, priv->refine_flags);
 		break;
 	case PROP_FILTER_FLAGS:
-		g_value_set_flags (value, self->filter_flags);
+		g_value_set_flags (value, priv->filter_flags);
 		break;
 	case PROP_DEDUPE_FLAGS:
-		g_value_set_flags (value, self->dedupe_flags);
+		g_value_set_flags (value, priv->dedupe_flags);
 		break;
 	case PROP_INTERACTIVE:
-		g_value_set_boolean (value, self->interactive);
+		g_value_set_boolean (value, priv->interactive);
 		break;
 	case PROP_SEARCH:
-		g_value_set_string (value, self->search);
+		g_value_set_string (value, priv->search);
 		break;
 	case PROP_APP:
-		g_value_set_object (value, self->app);
+		g_value_set_object (value, priv->app);
 		break;
 	case PROP_LIST:
-		g_value_set_object (value, self->list);
+		g_value_set_object (value, priv->list);
 		break;
 	case PROP_FILE:
-		g_value_set_object (value, self->file);
+		g_value_set_object (value, priv->file);
 		break;
 	case PROP_CATEGORY:
-		g_value_set_object (value, self->category);
+		g_value_set_object (value, priv->category);
 		break;
 	case PROP_REVIEW:
-		g_value_set_object (value, self->review);
+		g_value_set_object (value, priv->review);
 		break;
 	case PROP_MAX_RESULTS:
-		g_value_set_uint (value, self->max_results);
+		g_value_set_uint (value, priv->max_results);
 		break;
 	case PROP_TIMEOUT:
-		g_value_set_uint (value, self->timeout);
+		g_value_set_uint (value, priv->timeout);
 		break;
 	case PROP_PROPAGATE_ERROR:
-		g_value_set_boolean (value, self->propagate_error);
+		g_value_set_boolean (value, priv->propagate_error);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
@@ -526,13 +564,16 @@ static void
 gs_plugin_job_finalize (GObject *obj)
 {
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
-	g_free (self->search);
-	g_clear_object (&self->app);
-	g_clear_object (&self->list);
-	g_clear_object (&self->file);
-	g_clear_object (&self->plugin);
-	g_clear_object (&self->category);
-	g_clear_object (&self->review);
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+
+	g_free (priv->search);
+	g_clear_object (&priv->app);
+	g_clear_object (&priv->list);
+	g_clear_object (&priv->file);
+	g_clear_object (&priv->plugin);
+	g_clear_object (&priv->category);
+	g_clear_object (&priv->review);
+
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -625,11 +666,13 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 static void
 gs_plugin_job_init (GsPluginJob *self)
 {
-	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
-	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
-	self->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
+	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
+
+	priv->refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	priv->filter_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+	priv->dedupe_flags = GS_APP_LIST_FILTER_FLAG_KEY_ID |
 			     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
 			     GS_APP_LIST_FILTER_FLAG_KEY_VERSION;
-	self->list = gs_app_list_new ();
-	self->time_created = g_get_monotonic_time ();
+	priv->list = gs_app_list_new ();
+	priv->time_created = g_get_monotonic_time ();
 }

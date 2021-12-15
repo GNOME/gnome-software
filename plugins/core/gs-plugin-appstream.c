@@ -1012,19 +1012,59 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GsAppList *list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+static void refine_thread_cb (GTask        *task,
+                              gpointer      source_object,
+                              gpointer      task_data,
+                              GCancellable *cancellable);
+
+static void
+gs_plugin_appstream_refine_async (GsPlugin            *plugin,
+                                  GsAppList           *list,
+                                  GsPluginRefineFlags  flags,
+                                  GCancellable        *cancellable,
+                                  GAsyncReadyCallback  callback,
+                                  gpointer             user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_appstream_refine_async);
+
+	/* Queue a job for the refine. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refine_thread_cb, g_steal_pointer (&task));
+}
+
+static gboolean refine_wildcard (GsPluginAppstream    *self,
+                                 GsApp                *app,
+                                 GsAppList            *list,
+                                 GsPluginRefineFlags   refine_flags,
+                                 GCancellable         *cancellable,
+                                 GError              **error);
+
+/* Run in @worker. */
+static void
+refine_thread_cb (GTask        *task,
+                  gpointer      source_object,
+                  gpointer      task_data,
+                  GCancellable *cancellable)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	GsPluginRefineData *data = task_data;
+	GsAppList *list = data->list;
+	GsPluginRefineFlags flags = data->flags;
 	gboolean found = FALSE;
+	g_autoptr(GsAppList) app_list = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
+	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -1035,36 +1075,62 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 
 		/* find by ID then fall back to package name */
-		if (!gs_plugin_refine_from_id (self, app, flags, &found, error))
-			return FALSE;
+		if (!gs_plugin_refine_from_id (self, app, flags, &found, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 		if (!found) {
-			if (!gs_plugin_refine_from_pkgname (self, app, flags, error))
-				return FALSE;
+			if (!gs_plugin_refine_from_pkgname (self, app, flags, &local_error)) {
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+	}
+
+	/* Refine wildcards.
+	 *
+	 * Use a copy of the list for the loop because a function called
+	 * on the plugin may affect the list which can lead to problems
+	 * (e.g. inserting an app in the list on every call results in
+	 * an infinite loop) */
+	app_list = gs_app_list_copy (list);
+
+	for (guint j = 0; j < gs_app_list_length (app_list); j++) {
+		GsApp *app = gs_app_list_index (app_list, j);
+
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+		    !refine_wildcard (self, app, list, flags, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 	}
 
 	/* success */
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
 }
 
-gboolean
-gs_plugin_refine_wildcard (GsPlugin *plugin,
-			   GsApp *app,
-			   GsAppList *list,
-			   GsPluginRefineFlags refine_flags,
-			   GCancellable *cancellable,
-			   GError **error)
+static gboolean
+gs_plugin_appstream_refine_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
 {
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+/* Run in @worker. Silo must be valid */
+static gboolean
+refine_wildcard (GsPluginAppstream    *self,
+                 GsApp                *app,
+                 GsAppList            *list,
+                 GsPluginRefineFlags   refine_flags,
+                 GCancellable         *cancellable,
+                 GError              **error)
+{
 	const gchar *id;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GPtrArray) components = NULL;
-
-	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
 
 	/* not enough info to find */
 	id = gs_app_get_id (app);
@@ -1289,6 +1355,8 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->setup_finish = gs_plugin_appstream_setup_finish;
 	plugin_class->shutdown_async = gs_plugin_appstream_shutdown_async;
 	plugin_class->shutdown_finish = gs_plugin_appstream_shutdown_finish;
+	plugin_class->refine_async = gs_plugin_appstream_refine_async;
+	plugin_class->refine_finish = gs_plugin_appstream_refine_finish;
 }
 
 GType
