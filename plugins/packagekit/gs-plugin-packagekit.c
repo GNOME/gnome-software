@@ -32,6 +32,9 @@
  *
  * Supports setting the session proxy on the system PackageKit instance.
  *
+ * Also supports doing a PackageKit UpdatePackages(ONLY_DOWNLOAD) method on
+ * refresh and also converts any package files to applications the best we can.
+ *
  * Requires:    | [source-id]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
  */
@@ -65,6 +68,9 @@ struct _GsPluginPackagekit {
 
 	PkTask			*task_upgrade;
 	GMutex			 task_mutex_upgrade;
+
+	PkTask			*task_refresh;
+	GMutex			 task_mutex_refresh;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 };
@@ -157,8 +163,18 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_cache_age (PK_CLIENT (self->task_upgrade), 60 * 60 * 24);
 	pk_client_set_interactive (PK_CLIENT (self->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
+	/* refresh */
+	g_mutex_init (&self->task_mutex_refresh);
+	self->task_refresh = gs_packagekit_task_new (plugin);
+	pk_task_set_only_download (self->task_refresh, TRUE);
+	pk_client_set_background (PK_CLIENT (self->task_refresh), TRUE);
+	pk_client_set_interactive (PK_CLIENT (self->task_refresh), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+
+	/* we can return better results than dpkg directly */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
 }
 
 static void
@@ -196,6 +212,9 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* upgrade */
 	g_clear_object (&self->task_upgrade);
 
+	/* refresh */
+	g_clear_object (&self->task_refresh);
+
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
 }
 
@@ -209,6 +228,7 @@ gs_plugin_packagekit_finalize (GObject *object)
 	g_mutex_clear (&self->task_mutex_local);
 	g_mutex_clear (&self->client_mutex_url_to_app);
 	g_mutex_clear (&self->task_mutex_upgrade);
+	g_mutex_clear (&self->task_mutex_refresh);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
@@ -3168,6 +3188,160 @@ gs_plugin_disable_repo (GsPlugin *plugin,
 	gs_app_set_state (repo, GS_APP_STATE_AVAILABLE);
 
 	gs_plugin_repository_changed (plugin, repo);
+
+	return TRUE;
+}
+
+static gboolean
+_download_only (GsPluginPackagekit  *self,
+                GsAppList           *list,
+                GsAppList           *progress_list,
+                GCancellable        *cancellable,
+                GError             **error)
+{
+	GsPlugin *plugin = GS_PLUGIN (self);
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_autoptr(PkResults) results2 = NULL;
+	g_autoptr(PkResults) results = NULL;
+
+	/* get the list of packages to update */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
+	g_mutex_lock (&self->task_mutex_refresh);
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
+	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), G_MAXUINT);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results = pk_client_get_updates (PK_CLIENT (self->task_refresh),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+	g_mutex_unlock (&self->task_mutex_refresh);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		return FALSE;
+	}
+
+	/* download all the packages */
+	sack = pk_results_get_package_sack (results);
+	if (pk_package_sack_get_size (sack) == 0)
+		return TRUE;
+	package_ids = pk_package_sack_get_ids (sack);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		gs_packagekit_helper_add_app (helper, app);
+	}
+	gs_packagekit_helper_set_progress_list (helper, progress_list);
+	g_mutex_lock (&self->task_mutex_refresh);
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
+	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), G_MAXUINT);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	results2 = pk_task_update_packages_sync (self->task_refresh,
+						 package_ids,
+						 cancellable,
+						 gs_packagekit_helper_cb, helper,
+						 error);
+	g_mutex_unlock (&self->task_mutex_refresh);
+	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
+	if (results2 == NULL) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
+	if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		return FALSE;
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		/* To indicate the app is already downloaded */
+		gs_app_set_size_download (app, 0);
+	}
+	return TRUE;
+}
+
+gboolean
+gs_plugin_download (GsPlugin *plugin,
+                    GsAppList *list,
+                    GCancellable *cancellable,
+                    GError **error)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GError) error_local = NULL;
+	gboolean retval;
+	gpointer schedule_entry_handle = NULL;
+
+	/* add any packages */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsAppList *related = gs_app_get_related (app);
+
+		/* add this app */
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			if (gs_app_has_management_plugin (app, plugin))
+				gs_app_list_add (list_tmp, app);
+			continue;
+		}
+
+		/* add each related app */
+		for (guint j = 0; j < gs_app_list_length (related); j++) {
+			GsApp *app_tmp = gs_app_list_index (related, j);
+			if (gs_app_has_management_plugin (app_tmp, plugin))
+				gs_app_list_add (list_tmp, app_tmp);
+		}
+	}
+
+	if (gs_app_list_length (list_tmp) == 0)
+		return TRUE;
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+
+	retval = _download_only (self, list_tmp, list, cancellable, error);
+
+	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
+		g_warning ("Failed to remove schedule entry: %s", error_local->message);
+
+	return retval;
+}
+
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(PkResults) results = NULL;
+
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_packagekit_helper_set_progress_app (helper, app_dl);
+
+	g_mutex_lock (&self->task_mutex_refresh);
+	/* cache age of 1 is user-initiated */
+	pk_client_set_background (PK_CLIENT (self->task_refresh), cache_age > 1);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_REFRESH, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age);
+	/* refresh the metadata */
+	results = pk_client_refresh_cache (PK_CLIENT (self->task_refresh),
+	                                   FALSE /* force */,
+	                                   cancellable,
+	                                   gs_packagekit_helper_cb, helper,
+	                                   error);
+	g_mutex_unlock (&self->task_mutex_refresh);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		return FALSE;
+	}
 
 	return TRUE;
 }
