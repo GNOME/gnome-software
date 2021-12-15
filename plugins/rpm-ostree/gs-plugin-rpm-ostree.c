@@ -113,7 +113,6 @@ gs_plugin_rpm_ostree_init (GsPluginRpmOstree *self)
 	 * more sense to use a custom plugin instead of using PackageKit.
 	 */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "packagekit");
-	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "packagekit-refine-repos");
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_CONFLICTS, "systemd-updates");
 
 	/* need pkgname */

@@ -45,23 +45,6 @@ shared_module(
   dependencies : deps,
 )
 
-shared_module(
-  'gs_plugin_packagekit-refine-repos',
-  sources : [
-    'gs-plugin-packagekit-refine-repos.c',
-    'gs-packagekit-helper.c',
-    'packagekit-common.c',
-  ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : [ plugin_libs, packagekit ],
-)
-
 if get_option('tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(

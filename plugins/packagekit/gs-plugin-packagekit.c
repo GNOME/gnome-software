@@ -35,7 +35,9 @@
  * Also supports doing a PackageKit UpdatePackages(ONLY_DOWNLOAD) method on
  * refresh and also converts any package files to applications the best we can.
  *
- * Requires:    | [source-id]
+ * Also supports converting repo filenames to package-ids.
+ *
+ * Requires:    | [source-id], [repos::repo-filename]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
  */
 
@@ -71,6 +73,9 @@ struct _GsPluginPackagekit {
 
 	PkTask			*task_refresh;
 	GMutex			 task_mutex_refresh;
+
+	PkClient		*client_refine_repos;
+	GMutex			 client_mutex_refine_repos;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 };
@@ -170,11 +175,21 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_background (PK_CLIENT (self->task_refresh), TRUE);
 	pk_client_set_interactive (PK_CLIENT (self->task_refresh), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
+	/* repos refine */
+	g_mutex_init (&self->client_mutex_refine_repos);
+	self->client_refine_repos = pk_client_new ();
+	pk_client_set_background (self->client_refine_repos, FALSE);
+	pk_client_set_cache_age (self->client_refine_repos, G_MAXUINT);
+	pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 
 	/* we can return better results than dpkg directly */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
+
+	/* need repos::repo-filename */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "repos");
 }
 
 static void
@@ -215,6 +230,9 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* refresh */
 	g_clear_object (&self->task_refresh);
 
+	/* refine repos */
+	g_clear_object (&self->client_refine_repos);
+
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
 }
 
@@ -229,6 +247,7 @@ gs_plugin_packagekit_finalize (GObject *object)
 	g_mutex_clear (&self->client_mutex_url_to_app);
 	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->task_mutex_refresh);
+	g_mutex_clear (&self->client_mutex_refine_repos);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
@@ -1327,6 +1346,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	g_autoptr(GsAppList) update_details_list = gs_app_list_new ();
 	g_autoptr(GsAppList) details_list = gs_app_list_new ();
 	g_autoptr(GsAppList) history_list = gs_app_list_new ();
+	g_autoptr(GsAppList) repos_list = gs_app_list_new ();
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(RefineData) data = NULL;
 	RefineData *data_unowned = NULL;
@@ -1344,6 +1364,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GPtrArray *sources;
+		const gchar *filename;
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
@@ -1352,6 +1373,15 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		    !gs_app_has_management_plugin (app, GS_PLUGIN (self)))
 			continue;
 
+		/* Repositories */
+		filename = gs_app_get_metadata_item (app, "repos::repo-filename");
+
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY &&
+		    filename != NULL) {
+			gs_app_list_add (repos_list, app);
+		}
+
+		/* Apps */
 		sources = gs_app_get_sources (app);
 
 		if (sources->len > 0 &&
@@ -1499,6 +1529,31 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 						      search_files_data_new_operation (task, app, fn));
 			g_mutex_unlock (&self->client_mutex_refine);
 		}
+	}
+
+	/* Refine repo package names */
+	for (guint i = 0; i < gs_app_list_length (repos_list); i++) {
+		GsApp *app = gs_app_list_index (repos_list, i);
+		const gchar *filename;
+		const gchar *to_array[] = { NULL, NULL };
+		g_autoptr(GsPackagekitHelper) helper = NULL;
+
+		filename = gs_app_get_metadata_item (app, "repos::repo-filename");
+
+		/* set the source package name for an installed .repo file */
+		helper = gs_packagekit_helper_new (plugin);
+		to_array[0] = filename;
+		gs_packagekit_helper_add_app (helper, app);
+		g_mutex_lock (&self->client_mutex_refine_repos);
+		pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+		pk_client_search_files_async (self->client_refine_repos,
+					      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
+					      (gchar **) to_array,
+					      cancellable,
+					      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
+					      search_files_cb,
+					      search_files_data_new_operation (task, app, filename));
+		g_mutex_unlock (&self->client_mutex_refine_repos);
 	}
 
 	/* any update details missing? */
