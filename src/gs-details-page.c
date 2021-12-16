@@ -103,8 +103,6 @@ struct _GsDetailsPage
 	GtkWidget		*label_review_count;
 	GtkWidget		*screenshot_carousel;
 	GtkWidget		*button_details_launch;
-	GtkWidget		*button_details_add_shortcut;
-	GtkWidget		*button_details_remove_shortcut;
 	GtkStack		*links_stack;
 	AdwActionRow		*project_website_row;
 	AdwActionRow		*donate_row;
@@ -213,60 +211,6 @@ gs_details_page_set_state (GsDetailsPage *self,
 
 	/* the page title will have changed */
 	g_object_notify (G_OBJECT (self), "title");
-}
-
-static void
-gs_details_page_update_shortcut_button (GsDetailsPage *self)
-{
-	gboolean add_shortcut_func;
-	gboolean remove_shortcut_func;
-	gboolean has_shortcut;
-
-	gtk_widget_set_visible (self->button_details_add_shortcut,
-				FALSE);
-	gtk_widget_set_visible (self->button_details_remove_shortcut,
-				FALSE);
-
-	if (gs_app_get_kind (self->app) != AS_COMPONENT_KIND_DESKTOP_APP)
-		return;
-
-	/* Leave the button hidden if the app can’t be launched by the current
-	 * user. */
-	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE))
-		return;
-
-	/* only consider the shortcut button if the app is installed */
-	switch (gs_app_get_state (self->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_UPDATABLE_LIVE:
-		break;
-	default:
-		return;
-	}
-
-	add_shortcut_func =
-		gs_plugin_loader_get_plugin_supported (self->plugin_loader,
-						       "gs_plugin_add_shortcut");
-	remove_shortcut_func =
-		gs_plugin_loader_get_plugin_supported (self->plugin_loader,
-						       "gs_plugin_remove_shortcut");
-
-	has_shortcut = gs_app_has_quirk (self->app, GS_APP_QUIRK_HAS_SHORTCUT);
-
-	if (add_shortcut_func) {
-		gtk_widget_set_visible (self->button_details_add_shortcut,
-					!has_shortcut || !remove_shortcut_func);
-		gtk_widget_set_sensitive (self->button_details_add_shortcut,
-					  !has_shortcut);
-	}
-
-	if (remove_shortcut_func) {
-		gtk_widget_set_visible (self->button_details_remove_shortcut,
-					has_shortcut || !add_shortcut_func);
-		gtk_widget_set_sensitive (self->button_details_remove_shortcut,
-					  has_shortcut);
-	}
 }
 
 static gboolean
@@ -1151,8 +1095,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	}
 
-	gs_details_page_update_shortcut_button (self);
-
 	/* update progress */
 	gs_details_page_refresh_progress (self);
 
@@ -1953,24 +1895,6 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
-gs_details_page_app_add_shortcut_button_cb (GtkWidget *widget,
-                                            GsDetailsPage *self)
-{
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
-	g_set_object (&self->cancellable, cancellable);
-	gs_page_shortcut_add (GS_PAGE (self), self->app, self->cancellable);
-}
-
-static void
-gs_details_page_app_remove_shortcut_button_cb (GtkWidget *widget,
-                                               GsDetailsPage *self)
-{
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
-	g_set_object (&self->cancellable, cancellable);
-	gs_page_shortcut_remove (GS_PAGE (self), self->app, self->cancellable);
-}
-
-static void
 gs_details_page_review_response_cb (GtkDialog *dialog,
                                     gint response,
                                     GsDetailsPage *self)
@@ -2291,8 +2215,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, links_stack);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, project_website_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, donate_row);
@@ -2346,8 +2268,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_cancel_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_more_reviews_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_launch_button_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_add_shortcut_button_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_shortcut_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
 }
 

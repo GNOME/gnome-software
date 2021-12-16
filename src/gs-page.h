@@ -56,12 +56,6 @@ void		 gs_page_update_app			(GsPage		*page,
 void		 gs_page_launch_app			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);
-void		 gs_page_shortcut_add			(GsPage		*page,
-							 GsApp		*app,
-							 GCancellable	*cancellable);
-void		 gs_page_shortcut_remove		(GsPage		*page,
-							 GsApp		*app,
-							 GCancellable	*cancellable);
 void		 gs_page_switch_to			(GsPage		*page);
 void		 gs_page_switch_from			(GsPage		*page);
 void		 gs_page_scroll_up			(GsPage		*page);

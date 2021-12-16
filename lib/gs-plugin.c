@@ -1669,8 +1669,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
 		return "gs_plugin_app_remove";
-	if (action == GS_PLUGIN_ACTION_SET_RATING)
-		return "gs_plugin_app_set_rating";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
 		return "gs_plugin_app_upgrade_download";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
@@ -1679,10 +1677,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_launch";
 	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
 		return "gs_plugin_update_cancel";
-	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
-		return "gs_plugin_add_shortcut";
-	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
-		return "gs_plugin_remove_shortcut";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "gs_plugin_update";
 	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
@@ -1753,8 +1747,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "remove";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "update";
-	if (action == GS_PLUGIN_ACTION_SET_RATING)
-		return "set-rating";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
 		return "upgrade-download";
 	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
@@ -1763,10 +1755,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "launch";
 	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
 		return "update-cancel";
-	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
-		return "add-shortcut";
-	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
-		return "remove-shortcut";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "get-updates";
 	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
@@ -1835,8 +1823,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_REMOVE;
 	if (g_strcmp0 (action, "update") == 0)
 		return GS_PLUGIN_ACTION_UPDATE;
-	if (g_strcmp0 (action, "set-rating") == 0)
-		return GS_PLUGIN_ACTION_SET_RATING;
 	if (g_strcmp0 (action, "upgrade-download") == 0)
 		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
 	if (g_strcmp0 (action, "upgrade-trigger") == 0)
@@ -1845,10 +1831,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_LAUNCH;
 	if (g_strcmp0 (action, "update-cancel") == 0)
 		return GS_PLUGIN_ACTION_UPDATE_CANCEL;
-	if (g_strcmp0 (action, "add-shortcut") == 0)
-		return GS_PLUGIN_ACTION_ADD_SHORTCUT;
-	if (g_strcmp0 (action, "remove-shortcut") == 0)
-		return GS_PLUGIN_ACTION_REMOVE_SHORTCUT;
 	if (g_strcmp0 (action, "get-updates") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
 	if (g_strcmp0 (action, "get-distro-updates") == 0)

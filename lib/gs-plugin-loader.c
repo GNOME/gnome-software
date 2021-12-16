@@ -143,22 +143,6 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsAppList	*list,
-							 GsPluginRefineFlags refine_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc)		(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GCancellable	*cancellable,
@@ -643,13 +627,10 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		break;
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_SET_RATING:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
-	case GS_PLUGIN_ACTION_ADD_SHORTCUT:
-	case GS_PLUGIN_ACTION_REMOVE_SHORTCUT:
 	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_REMOVE_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
