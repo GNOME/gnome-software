@@ -69,10 +69,6 @@ gs_plugin_repos_init (GsPluginRepos *self)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
-
-	/* need application IDs */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "rpm-ostree");
 }
 
 static void
@@ -143,25 +139,25 @@ gs_plugin_repos_load (GsPluginRepos  *self,
 		/* we can have multiple repos in one file */
 		groups = g_key_file_get_groups (kf, NULL);
 		for (i = 0; groups[i] != NULL; i++) {
-			g_autofree gchar *tmp = NULL;
+			g_autofree gchar *baseurl = NULL, *metalink = NULL;
 
 			g_hash_table_insert (new_filenames,
 			                     g_strdup (groups[i]),
 			                     g_strdup (filename));
 
-			tmp = g_key_file_get_string (kf, groups[i], "baseurl", NULL);
-			if (tmp != NULL) {
+			baseurl = g_key_file_get_string (kf, groups[i], "baseurl", NULL);
+			if (baseurl != NULL) {
 				g_hash_table_insert (new_urls,
 						     g_strdup (groups[i]),
-						     g_strdup (tmp));
+						     g_steal_pointer (&baseurl));
 				continue;
 			}
 
-			tmp = g_key_file_get_string (kf, groups[i], "metalink", NULL);
-			if (tmp != NULL) {
+			metalink = g_key_file_get_string (kf, groups[i], "metalink", NULL);
+			if (metalink != NULL) {
 				g_hash_table_insert (new_urls,
 						     g_strdup (groups[i]),
-						     g_strdup (tmp));
+						     g_steal_pointer (&metalink));
 				continue;
 			}
 		}

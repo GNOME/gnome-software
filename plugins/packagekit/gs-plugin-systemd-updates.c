@@ -40,7 +40,6 @@ gs_plugin_systemd_updates_init (GsPluginSystemdUpdates *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refresh");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
 
