@@ -1020,9 +1020,9 @@ window_button_pressed_cb (GtkGestureClick *click_gesture,
 }
 
 static gboolean
-main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
+gs_shell_close_request (GtkWindow *window)
 {
-	GsShell *shell = user_data;
+	GsShell *shell = GS_SHELL (window);
 
 	/* hide any notifications */
 	g_application_withdraw_notification (g_application_get_default (),
@@ -1052,7 +1052,7 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 #endif  /* HAVE_MOGWAI */
 
 	gs_shell_clean_back_entry_stack (shell);
-	gtk_widget_hide (dialog);
+	gtk_widget_hide (GTK_WIDGET (window));
 	return TRUE;
 }
 
@@ -2563,12 +2563,15 @@ gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+	GtkWindowClass *window_class = GTK_WINDOW_CLASS (klass);
 
 	object_class->get_property = gs_shell_get_property;
 	object_class->set_property = gs_shell_set_property;
 	object_class->dispose = gs_shell_dispose;
 
 	widget_class->size_allocate = gs_shell_size_allocate;
+
+	window_class->close_request = gs_shell_close_request;
 
 	/**
 	 * GsShell:is-narrow:
@@ -2630,7 +2633,6 @@ gs_shell_class_init (GsShellClass *klass)
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_mapped_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_main_window_realized_cb);
-	gtk_widget_class_bind_template_callback (widget_class, main_window_closed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, window_key_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, window_keypress_handler);
 	gtk_widget_class_bind_template_callback (widget_class, window_button_pressed_cb);

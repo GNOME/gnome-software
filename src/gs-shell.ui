@@ -22,7 +22,6 @@
     <property name="icon_name">org.gnome.Software</property>
     <signal name="map" handler="gs_shell_main_window_mapped_cb"/>
     <signal name="realize" handler="gs_shell_main_window_realized_cb"/>
-    <signal name="close-request" handler="main_window_closed_cb"/>
     <child>
       <object class="GtkEventControllerKey">
         <property name="propagation-phase">capture</property>
