@@ -25,7 +25,6 @@ struct _GsInstalledPage
 
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
-	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -360,7 +359,6 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	update_groups (self);
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
 				    self->sizegroup_button_label,
@@ -747,7 +745,6 @@ gs_installed_page_dispose (GObject *object)
 {
 	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
 
-	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
@@ -819,7 +816,6 @@ gs_installed_page_init (GsInstalledPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
