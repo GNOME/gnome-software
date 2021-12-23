@@ -26,7 +26,6 @@ struct _GsSearchPage
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
 	GCancellable		*search_cancellable;
-	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -153,7 +152,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 				  self);
 		gtk_list_box_append (GTK_LIST_BOX (self->list_box_search), app_row);
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-					    self->sizegroup_image,
 					    self->sizegroup_name,
 					    self->sizegroup_desc,
 					    self->sizegroup_button_label,
@@ -476,7 +474,6 @@ gs_search_page_dispose (GObject *object)
 {
 	GsSearchPage *self = GS_SEARCH_PAGE (object);
 
-	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
@@ -534,7 +531,6 @@ gs_search_page_init (GsSearchPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);

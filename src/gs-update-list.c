@@ -18,7 +18,6 @@
 
 typedef struct
 {
-	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
 	GtkListBox		*listbox;
@@ -63,7 +62,6 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), FALSE);
 	gtk_list_box_append (priv->listbox, app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    priv->sizegroup_image,
 				    priv->sizegroup_name,
 				    priv->sizegroup_desc,
 				    NULL,
@@ -95,7 +93,6 @@ gs_update_list_dispose (GObject *object)
 		priv->listbox = NULL;
 	}
 
-	g_clear_object (&priv->sizegroup_image);
 	g_clear_object (&priv->sizegroup_name);
 	g_clear_object (&priv->sizegroup_desc);
 
@@ -106,7 +103,6 @@ static void
 gs_update_list_init (GsUpdateList *update_list)
 {
 	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
-	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	priv->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 

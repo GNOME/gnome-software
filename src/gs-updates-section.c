@@ -40,7 +40,6 @@ struct _GsUpdatesSection
 	GCancellable		*cancellable;
 	GsPage			*page;
 	GsPluginLoader		*plugin_loader;
-	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -146,7 +145,6 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	gs_app_list_add (self->list, app);
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_desc,
 				    self->sizegroup_button_label,
@@ -562,7 +560,6 @@ gs_updates_section_dispose (GObject *object)
 	g_clear_object (&self->list);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->page);
-	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
@@ -634,7 +631,6 @@ gs_updates_section_set_size_groups (GsUpdatesSection *self,
 {
 	g_return_if_fail (GS_IS_UPDATES_SECTION (self));
 
-	g_set_object (&self->sizegroup_image, image);
 	g_set_object (&self->sizegroup_name, name);
 	g_set_object (&self->sizegroup_desc, desc);
 	g_set_object (&self->sizegroup_button_label, button_label);

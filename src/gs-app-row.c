@@ -861,7 +861,6 @@ gs_app_row_init (GsAppRow *app_row)
 
 void
 gs_app_row_set_size_groups (GsAppRow *app_row,
-			    GtkSizeGroup *image,
 			    GtkSizeGroup *name,
 			    GtkSizeGroup *desc,
 			    GtkSizeGroup *button_label,
@@ -869,8 +868,6 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
-	if (image != NULL)
-		gtk_size_group_add_widget (image, priv->image);
 	if (name != NULL)
 		gtk_size_group_add_widget (name, priv->name_box);
 	if (desc != NULL)
