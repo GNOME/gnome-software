@@ -14,6 +14,7 @@
 #include <xmlb.h>
 
 #include "gs-appstream.h"
+#include "gs-external-appstream-utils.h"
 #include "gs-plugin-appstream.h"
 
 /*
@@ -490,6 +491,14 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	if (dir == NULL)
 		return FALSE;
 	while ((fn = g_dir_read_name (dir)) != NULL) {
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+		/* Ignore our own system-installed files when
+		   external-appstream-system-wide is FALSE */
+		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide") &&
+		    g_strcmp0 (path, gs_external_appstream_utils_get_system_dir ()) == 0 &&
+		    g_str_has_prefix (fn, EXTERNAL_APPSTREAM_PREFIX))
+			continue;
+#endif
 		if (g_str_has_suffix (fn, ".xml") ||
 		    g_str_has_suffix (fn, ".yml") ||
 		    g_str_has_suffix (fn, ".yml.gz") ||
@@ -599,6 +608,15 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "xmls", NULL));
 		g_ptr_array_add (parent_appstream,
 				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "yaml", NULL));
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+		/* check for the corresponding setting */
+		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide")) {
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL));
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename (g_get_user_data_dir (), "app-info", "yaml", NULL));
+		}
+#endif
 
 		/* Add the normal system directories if the installation prefix
 		 * is different from normal — typically this happens when doing
