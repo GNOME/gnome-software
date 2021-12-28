@@ -257,7 +257,7 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
-	if (g_settings_get_strv (settings, "external-appstream-urls")) {
+	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
 		return gs_external_appstream_refresh_sys (plugin, url,
 							  cache_age,
 							  cancellable,
