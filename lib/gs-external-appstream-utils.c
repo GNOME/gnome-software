@@ -87,6 +87,7 @@ gs_external_appstream_get_modification_date (const gchar *file_path)
 static gboolean
 gs_external_appstream_refresh_sys (GsPlugin      *plugin,
                                    const gchar   *url,
+                                   const gchar   *basename,
                                    guint          cache_age,
                                    GCancellable  *cancellable,
                                    GError       **error)
@@ -98,7 +99,6 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	gconstpointer downloaded_data;
 	gsize downloaded_data_length;
 	g_autofree gchar *tmp_file_path = NULL;
-	g_autofree gchar *file_name = NULL;
 	g_autofree gchar *local_mod_date = NULL;
 	g_autofree gchar *target_file_path = NULL;
 	g_autoptr(GFileIOStream) iostream = NULL;
@@ -109,8 +109,7 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 #endif
 
 	/* check age */
-	file_name = g_path_get_basename (url);
-	target_file_path = gs_external_appstream_utils_get_file_cache_path (file_name);
+	target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
 	if (!gs_external_appstream_check (target_file_path, cache_age)) {
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",
@@ -168,7 +167,7 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	/* write the download contents into a file that will be copied into
 	 * the system */
 	tmp_file_path = gs_utils_get_cache_filename ("external-appstream",
-						     file_name,
+						     basename,
 						     GS_UTILS_CACHE_FLAG_WRITEABLE |
 						     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 						     error);
@@ -217,18 +216,17 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 static gboolean
 gs_external_appstream_refresh_user (GsPlugin      *plugin,
                                     const gchar   *url,
+                                    const gchar   *basename,
                                     guint          cache_age,
                                     GCancellable  *cancellable,
                                     GError       **error)
 {
 	guint file_age;
-	g_autofree gchar *basename = NULL;
 	g_autofree gchar *fullpath = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check age */
-	basename = g_path_get_basename (url);
 	fullpath = g_build_filename (g_get_user_data_dir (),
 				     "app-info",
 				     "xmls",
@@ -257,13 +255,27 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *basename_url = g_path_get_basename (url);
+	/* make sure different uris with same basenames differ */
+	g_autofree gchar *hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
+								url, -1);
+	if (hash == NULL) {
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+			     "Failed to hash url %s", url);
+		return FALSE;
+	}
+	basename = g_strdup_printf ("%s-%s", hash, basename_url);
+
 	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
 		return gs_external_appstream_refresh_sys (plugin, url,
+							  basename,
 							  cache_age,
 							  cancellable,
 							  error);
 	}
-	return gs_external_appstream_refresh_user (plugin, url, cache_age,
+	return gs_external_appstream_refresh_user (plugin, url, basename,
+						   cache_age,
 						   cancellable, error);
 }
 
