@@ -192,6 +192,12 @@ gs_featured_carousel_init (GsFeaturedCarousel *self)
 	gtk_widget_set_has_window (GTK_WIDGET (self), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (self));
 
+#if HDY_CHECK_VERSION(1, 3, 0)
+	/* Disable scrolling through the carousel, as it’s typically used
+	 * in category pages which are themselves scrollable. */
+	hdy_carousel_set_allow_scroll_wheel (HDY_CAROUSEL (self->carousel), FALSE);
+#endif
+
 	/* Ensure the text directions are up to date */
 	next_button_direction_changed_cb (GTK_WIDGET (self->next_button_image), GTK_TEXT_DIR_NONE, self);
 	previous_button_direction_changed_cb (GTK_WIDGET (self->previous_button_image), GTK_TEXT_DIR_NONE, self);
