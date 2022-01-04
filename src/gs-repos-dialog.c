@@ -521,13 +521,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		widget = adw_preferences_group_new ();
 		adw_preferences_group_set_title (ADW_PREFERENCES_GROUP (widget),
 						 _("Fedora Third Party Repositories"));
-/* AdwPreferencesGroup:use-markup doesn't exist before 1.3.90, configurations
- * where GNOME 41 will be used and Libhandy 1.3.90 won't be available are
- * unlikely, so let's just ignore the description in such cases. */
-#if ADW_CHECK_VERSION(1, 3, 90)
+
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (widget), hint);
-		adw_preferences_group_set_use_markup (ADW_PREFERENCES_GROUP (widget), TRUE);
-#endif
 
 		gtk_widget_show (widget);
 		adw_preferences_group_add (ADW_PREFERENCES_GROUP (widget), row);
