@@ -37,6 +37,9 @@
  *
  * Also supports converting repo filenames to package-ids.
  *
+ * Also supports marking previously downloaded packages as zero size, and allows
+ * scheduling the offline update.
+ *
  * Requires:    | [source-id], [repos::repo-filename]
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
  */
@@ -76,6 +79,13 @@ struct _GsPluginPackagekit {
 
 	PkClient		*client_refine_repos;
 	GMutex			 client_mutex_refine_repos;
+
+	GFileMonitor		*monitor;
+	GFileMonitor		*monitor_trigger;
+	GPermission		*permission;
+	gboolean		 is_triggered;
+	GHashTable		*prepared_updates;  /* (element-type utf8); set of package IDs for updates which are already prepared */
+	GMutex			 prepared_updates_mutex;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 };
@@ -182,6 +192,11 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_cache_age (self->client_refine_repos, G_MAXUINT);
 	pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
+	/* offline updates */
+	g_mutex_init (&self->prepared_updates_mutex);
+	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
+							g_free, NULL);
+
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 
@@ -190,6 +205,9 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 
 	/* need repos::repo-filename */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "repos");
+
+	/* generic updates happen after PackageKit offline updates */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
 }
 
 static void
@@ -233,6 +251,11 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* refine repos */
 	g_clear_object (&self->client_refine_repos);
 
+	/* offline updates */
+	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
+	g_clear_object (&self->monitor);
+	g_clear_object (&self->monitor_trigger);
+
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->dispose (object);
 }
 
@@ -248,6 +271,7 @@ gs_plugin_packagekit_finalize (GObject *object)
 	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->task_mutex_refresh);
 	g_mutex_clear (&self->client_mutex_refine_repos);
+	g_mutex_clear (&self->prepared_updates_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
 }
@@ -1188,6 +1212,45 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_systemd_update_cache (GsPluginPackagekit  *self,
+                                GError             **error)
+{
+	g_autoptr(GError) error_local = NULL;
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->prepared_updates_mutex);
+
+	/* invalidate */
+	g_hash_table_remove_all (self->prepared_updates);
+
+	/* get new list of package-ids. This loads a local file, so should be
+	 * just about fast enough to be sync. */
+	package_ids = pk_offline_get_prepared_ids (&error_local);
+	if (package_ids == NULL) {
+		if (g_error_matches (error_local,
+				     PK_OFFLINE_ERROR,
+				     PK_OFFLINE_ERROR_NO_DATA)) {
+			return TRUE;
+		}
+		gs_plugin_packagekit_error_convert (&error_local);
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "Failed to get prepared IDs: %s",
+			     error_local->message);
+		return FALSE;
+	}
+
+	for (guint i = 0; package_ids[i] != NULL; i++) {
+		g_hash_table_add (self->prepared_updates, g_steal_pointer (&package_ids[i]));
+	}
+
+	/* Already stolen all the elements */
+	g_clear_pointer (&package_ids, g_free);
+
+	return TRUE;
+}
+
 typedef struct {
 	/* Track pending operations. */
 	guint n_pending_operations;
@@ -1350,6 +1413,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(RefineData) data = NULL;
 	RefineData *data_unowned = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_refine_async);
@@ -1410,6 +1474,14 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		    gs_app_get_install_date (app) == 0) {
 			gs_app_list_add (history_list, app);
 		}
+	}
+
+	/* re-read /var/lib/PackageKit/prepared-update so we know what packages
+	 * to mark as already downloaded and prepared for offline updates */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) &&
+	    !gs_plugin_systemd_update_cache (self, &local_error)) {
+		refine_task_complete_operation_with_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* when we need the cannot-be-upgraded applications, we implement this
@@ -1861,6 +1933,7 @@ get_details_cb (GObject      *source_object,
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GHashTable) details_collection = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	results = pk_client_generic_finish (client, result, &local_error);
@@ -1882,9 +1955,10 @@ get_details_cb (GObject      *source_object,
 	details_collection = gs_plugin_packagekit_details_array_to_hash (array);
 
 	/* set the update details for the update */
+	locker = g_mutex_locker_new (&self->prepared_updates_mutex);
 	for (guint i = 0; i < gs_app_list_length (data->details_list); i++) {
 		GsApp *app = gs_app_list_index (data->details_list, i);
-		gs_plugin_packagekit_refine_details_app (GS_PLUGIN (self), details_collection, app);
+		gs_plugin_packagekit_refine_details_app (GS_PLUGIN (self), details_collection, self->prepared_updates, app);
 	}
 
 	refine_task_complete_operation (refine_task);
@@ -2040,12 +2114,65 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gs_app_set_install_date (app, timestamp);
 }
 
+/* Run in the main thread. */
+static void
+gs_plugin_packagekit_permission_cb (GPermission *permission,
+                                    GParamSpec  *pspec,
+                                    gpointer     data)
+{
+	GsPlugin *plugin = GS_PLUGIN (data);
+	gboolean ret = g_permission_get_allowed (permission) ||
+			g_permission_get_can_acquire (permission);
+	gs_plugin_set_allow_updates (plugin, ret);
+}
+
+/* Run in the main thread. */
+static void
+gs_plugin_packagekit_changed_cb (GFileMonitor      *monitor,
+                                 GFile             *file,
+                                 GFile             *other_file,
+                                 GFileMonitorEvent  event_type,
+                                 gpointer           user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
+
+	/* update UI */
+	gs_plugin_systemd_update_cache (self, NULL);
+	gs_plugin_updates_changed (GS_PLUGIN (self));
+}
+
+static void
+gs_plugin_packagekit_refresh_is_triggered (GsPluginPackagekit *self,
+                                           GCancellable       *cancellable)
+{
+	g_autoptr(GFile) file_trigger = NULL;
+	file_trigger = g_file_new_for_path ("/system-update");
+	self->is_triggered = g_file_query_exists (file_trigger, NULL);
+	g_debug ("offline trigger is now %s",
+		 self->is_triggered ? "enabled" : "disabled");
+}
+
+/* Run in the main thread. */
+static void
+gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
+				      GFile *file, GFile *other_file,
+				      GFileMonitorEvent event_type,
+				      gpointer user_data)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
+
+	gs_plugin_packagekit_refresh_is_triggered (self, NULL);
+}
+
 static void setup_cb (GObject      *source_object,
                       GAsyncResult *result,
                       gpointer      user_data);
 static void setup_proxy_settings_cb (GObject      *source_object,
                                      GAsyncResult *result,
                                      gpointer      user_data);
+static void get_offline_update_permission_cb (GObject      *source_object,
+                                              GAsyncResult *result,
+                                              gpointer      user_data);
 
 static void
 gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
@@ -2088,13 +2215,68 @@ setup_proxy_settings_cb (GObject      *source_object,
 {
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginPackagekit *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GFile) file_trigger = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	if (!reload_proxy_settings_finish (self, result, &local_error))
 		g_warning ("Failed to load proxy settings: %s", local_error->message);
 	g_clear_error (&local_error);
 
-	g_task_return_boolean (task, TRUE);
+	/* watch the prepared file */
+	self->monitor = pk_offline_get_prepared_monitor (cancellable, &local_error);
+	if (self->monitor == NULL) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_signal_connect (self->monitor, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_changed_cb),
+			  self);
+
+	/* watch the trigger file */
+	file_trigger = g_file_new_for_path ("/system-update");
+	self->monitor_trigger = g_file_monitor_file (file_trigger,
+						     G_FILE_MONITOR_NONE,
+						     NULL,
+						     &local_error);
+	if (self->monitor_trigger == NULL) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_signal_connect (self->monitor_trigger, "changed",
+			  G_CALLBACK (gs_plugin_systemd_trigger_changed_cb),
+			  self);
+
+	/* check if we have permission to trigger offline updates */
+	gs_utils_get_permission_async ("org.freedesktop.packagekit.trigger-offline-update",
+				       cancellable, get_offline_update_permission_cb, g_steal_pointer (&task));
+}
+
+static void
+get_offline_update_permission_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginPackagekit *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	self->permission = gs_utils_get_permission_finish (result, &local_error);
+	if (self->permission != NULL) {
+		g_signal_connect (self->permission, "notify",
+				  G_CALLBACK (gs_plugin_packagekit_permission_cb),
+				  self);
+	}
+
+	/* get the list of currently downloaded packages */
+	if (!gs_plugin_systemd_update_cache (self, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
@@ -2744,6 +2926,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	if (packages->len >= 1) {
 		g_autoptr(GHashTable) details_collection = NULL;
+		g_autoptr(GMutexLocker) locker = NULL;
 
 		if (gs_app_get_local_file (app) != NULL)
 			return TRUE;
@@ -2751,7 +2934,8 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		details_collection = gs_plugin_packagekit_details_array_to_hash (details);
 
 		gs_plugin_packagekit_resolve_packages_app (GS_PLUGIN (self), packages, app);
-		gs_plugin_packagekit_refine_details_app (plugin, details_collection, app);
+		locker = g_mutex_locker_new (&self->prepared_updates_mutex);
+		gs_plugin_packagekit_refine_details_app (plugin, details_collection, self->prepared_updates, app);
 
 		gs_app_list_add (list, app);
 	} else {
@@ -3398,6 +3582,260 @@ gs_plugin_refresh (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	return TRUE;
+}
+
+#ifdef HAVE_PK_OFFLINE_WITH_FLAGS
+
+static PkOfflineFlags
+gs_systemd_get_offline_flags (GsPlugin *plugin)
+{
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return PK_OFFLINE_FLAGS_INTERACTIVE;
+	return PK_OFFLINE_FLAGS_NONE;
+}
+
+static gboolean
+gs_systemd_call_trigger (GsPlugin *plugin,
+			 PkOfflineAction action,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return pk_offline_trigger_with_flags (action,
+					      gs_systemd_get_offline_flags (plugin),
+					      cancellable, error);
+}
+
+static gboolean
+gs_systemd_call_cancel (GsPlugin *plugin,
+			GCancellable *cancellable,
+			GError **error)
+{
+	return pk_offline_cancel_with_flags (gs_systemd_get_offline_flags (plugin), cancellable, error);
+}
+
+static gboolean
+gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
+				 PkOfflineAction action,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return pk_offline_trigger_upgrade_with_flags (action,
+						      gs_systemd_get_offline_flags (plugin),
+						      cancellable, error);
+}
+
+#else /* HAVE_PK_OFFLINE_WITH_FLAGS */
+
+static GDBusCallFlags
+gs_systemd_get_gdbus_call_flags (GsPlugin *plugin)
+{
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return G_DBUS_CALL_FLAGS_ALLOW_INTERACTIVE_AUTHORIZATION;
+	return G_DBUS_CALL_FLAGS_NONE;
+}
+
+static gboolean
+gs_systemd_call_trigger (GsPlugin *plugin,
+			 PkOfflineAction action,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	tmp = pk_offline_action_to_string (action);
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "Trigger",
+					   g_variant_new ("(s)", tmp),
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+static gboolean
+gs_systemd_call_cancel (GsPlugin *plugin,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "Cancel",
+					   NULL,
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+static gboolean
+gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
+				 PkOfflineAction action,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GVariant) res = NULL;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
+	if (connection == NULL)
+		return FALSE;
+	tmp = pk_offline_action_to_string (action);
+	res = g_dbus_connection_call_sync (connection,
+					   "org.freedesktop.PackageKit",
+					   "/org/freedesktop/PackageKit",
+					   "org.freedesktop.PackageKit.Offline",
+					   "TriggerUpgrade",
+					   g_variant_new ("(s)", tmp),
+					   NULL,
+					   gs_systemd_get_gdbus_call_flags (plugin),
+					   -1,
+					   cancellable,
+					   error);
+	if (res == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+#endif /* HAVE_PK_OFFLINE_WITH_FLAGS */
+
+static gboolean
+_systemd_trigger_app (GsPluginPackagekit  *self,
+                      GsApp               *app,
+                      GCancellable        *cancellable,
+                      GError             **error)
+{
+	/* if we can process this online do not require a trigger */
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
+		return TRUE;
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
+		return TRUE;
+
+	/* already in correct state */
+	if (self->is_triggered)
+		return TRUE;
+
+	/* trigger offline update */
+	if (!gs_systemd_call_trigger (GS_PLUGIN (self), PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
+
+	/* don't rely on the file monitor */
+	gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
+
+	/* success */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_update (GsPlugin *plugin,
+		  GsAppList *list,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+
+	/* any are us? */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsAppList *related = gs_app_get_related (app);
+
+		/* try to trigger this app */
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+			if (!_systemd_trigger_app (self, app, cancellable, error))
+				return FALSE;
+			continue;
+		}
+
+		/* try to trigger each related app */
+		for (guint j = 0; j < gs_app_list_length (related); j++) {
+			GsApp *app_tmp = gs_app_list_index (related, j);
+			if (!_systemd_trigger_app (self, app_tmp, cancellable, error))
+				return FALSE;
+		}
+	}
+
+	/* success */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_update_cancel (GsPlugin *plugin,
+			 GsApp *app,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin))
+		return TRUE;
+
+	/* already in correct state */
+	if (!self->is_triggered)
+		return TRUE;
+
+	/* cancel offline update */
+	if (!gs_systemd_call_cancel (plugin, cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
+
+	/* don't rely on the file monitor */
+	gs_plugin_packagekit_refresh_is_triggered (self, cancellable);
+
+	/* success! */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
+                               GsApp *app,
+                               GCancellable *cancellable,
+                               GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (app, plugin))
+		return TRUE;
+
+	if (!gs_systemd_call_trigger_upgrade (plugin, PK_OFFLINE_ACTION_REBOOT, cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
 	return TRUE;
 }
 

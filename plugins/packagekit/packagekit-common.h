@@ -33,6 +33,7 @@ void		gs_plugin_packagekit_set_metadata_from_package	(GsPlugin *plugin,
 GHashTable *	gs_plugin_packagekit_details_array_to_hash	(GPtrArray *array);
 void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
 								 GHashTable *details_collection,
+								 GHashTable *prepared_updates,
 								 GsApp *app);
 void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
 								 GsApp *app);

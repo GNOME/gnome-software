@@ -490,6 +490,7 @@ gs_plugin_packagekit_details_array_to_hash (GPtrArray *array)
 void
 gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 					 GHashTable *details_collection,
+					 GHashTable *prepared_updates,
 					 GsApp *app)
 {
 	GPtrArray *source_ids;
@@ -535,7 +536,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 		install_size += pk_details_get_size (details);
 		#ifdef HAVE_PK_DETAILS_GET_DOWNLOAD_SIZE
 		download_sz = pk_details_get_download_size (details);
-		if (download_sz != G_MAXUINT64)
+
+		/* If the package is already prepared as part of an offline
+		 * update, no additional downloads need to be done. */
+		if (download_sz != G_MAXUINT64 &&
+		    !g_hash_table_contains (prepared_updates, package_id))
 			download_size += download_sz;
 		#endif
 	}

@@ -10,23 +10,6 @@ if get_option('mogwai')
 endif
 
 shared_module(
-  'gs_plugin_systemd-updates',
-  sources : [
-    'gs-plugin-systemd-updates.c',
-    'gs-packagekit-helper.c',
-    'packagekit-common.c',
-  ],
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : deps,
-)
-
-shared_module(
   'gs_plugin_packagekit',
   sources : [
     'gs-plugin-packagekit.c',
