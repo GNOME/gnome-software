@@ -164,6 +164,7 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkWindow *window)
 void
 gs_shell_activate (GsShell *shell)
 {
+	gtk_widget_show (GTK_WIDGET (shell));
 	gtk_window_present (GTK_WINDOW (shell));
 }
 
