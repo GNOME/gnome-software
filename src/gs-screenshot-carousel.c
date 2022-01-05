@@ -333,11 +333,9 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-#if ADW_CHECK_VERSION(1, 3, 0)
 	/* Disable scrolling through the carousel, as it’s typically used
 	 * in application pages which are themselves scrollable. */
 	adw_carousel_set_allow_scroll_wheel (ADW_CAROUSEL (self->carousel), FALSE);
-#endif
 
 	/* setup networking */
 	self->session = soup_session_new_with_options ("user-agent", gs_user_agent (),
