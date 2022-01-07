@@ -66,6 +66,64 @@
    Validate with `appstreamcli validate *.appdata.xml`
   -->
   <releases>
+    <release date="2022-01-07" version="42.alpha" type="development">
+      <description>
+        <p>This is the first unstable release for GNOME 42.</p>
+        <ul>
+          <li>Various UI parts updated</li>
+          <li>Support more markup in the application description</li>
+          <li>Ask about package signature with PackageKit on signing issue</li>
+          <li>Show better System Update progress</li>
+          <li>Remove various cultural sensitivity badges</li>
+          <li>Fix a crash when processing age ratings</li>
+          <li>Reload application details only when not installing/removing the application</li>
+          <li>Do not follow symlinks when calculating disk size usage</li>
+          <li>Fix addons section, which could show addons for different application</li>
+          <li>Fix showing a ‘transaction in progress’ error when using the rpm-ostree plugin</li>
+          <li>Don’t recommend a reboot if firmware updates fail</li>
+          <li>Fix flathub repo being considered present on Fedora 35 with filtered flathub</li>
+          <li>Allow searching for extensions</li>
+          <li>Fix translation of main button on updates page</li>
+          <li>Fix codec installation process</li>
+          <li>Add new GNOME Circle apps to the featured carousel</li>
+          <li>Improve metadata support for snaps</li>
+          <li>Fix update checks being missed across suspend/hibernation</li>
+          <li>Ensure application lists are updated when repositories are enabled/installed or disabled/removed</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Basque</li>
+          <li>Belarusian</li>
+          <li>Bulgarian</li>
+          <li>Catalan</li>
+          <li>Chinese (China)</li>
+          <li>Croatian</li>
+          <li>Dutch</li>
+          <li>English (United Kingdom)</li>
+          <li>Friulian</li>
+          <li>Galician</li>
+          <li>German</li>
+          <li>Hebrew</li>
+          <li>Icelandic</li>
+          <li>Indonesian</li>
+          <li>Latvian</li>
+          <li>Lithuanian</li>
+          <li>Occitan (post 1500)</li>
+          <li>Persian</li>
+          <li>Portuguese</li>
+          <li>Portuguese (Brazil)</li>
+          <li>Russian</li>
+          <li>Serbian</li>
+          <li>Slovak</li>
+          <li>Slovenian</li>
+          <li>Spanish</li>
+          <li>Swedish</li>
+          <li>Turkish</li>
+          <li>Ukrainian</li>
+          <li>Vietnamese</li>
+        </ul>
+      </description>
+    </release>
     <release date="2021-09-17" version="41.0" type="stable">
       <description>
         <p>This is a stable release with the following changes:</p>
