@@ -57,7 +57,7 @@ Build the release tarball:
 # Only execute git clean if you don't have anything not tracked by git that you
 # want to keep
 git clean -dfx
-meson --prefix $PWD/install -Dbuildtype=release build/
+meson --prefix $PWD/install -Dbuildtype=release -Dsoup2=true build/
 ninja -C build/ dist
 ```
 
