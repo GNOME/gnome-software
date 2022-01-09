@@ -484,7 +484,7 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
 
-	/* parent patch does not exist */
+	/* parent path does not exist */
 	if (!g_file_query_exists (parent, cancellable))
 		return TRUE;
 	dir = g_dir_open (path, 0, error);
