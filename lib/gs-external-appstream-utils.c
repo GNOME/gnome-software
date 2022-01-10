@@ -18,7 +18,7 @@
 gchar *
 gs_external_appstream_utils_get_file_cache_path (const gchar *file_name)
 {
-	g_autofree gchar *prefixed_file_name = g_strdup_printf ("org.gnome.Software-%s",
+	g_autofree gchar *prefixed_file_name = g_strdup_printf (EXTERNAL_APPSTREAM_PREFIX "-%s",
 								file_name);
 	return g_build_filename (APPSTREAM_SYSTEM_DIR, prefixed_file_name, NULL);
 }
@@ -257,7 +257,7 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
-	if (g_settings_get_strv (settings, "external-appstream-urls")) {
+	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
 		return gs_external_appstream_refresh_sys (plugin, url,
 							  cache_age,
 							  cancellable,

@@ -15,6 +15,8 @@
 #include <glib.h>
 #include <gnome-software.h>
 
+#define EXTERNAL_APPSTREAM_PREFIX "org.gnome.Software"
+
 const gchar	*gs_external_appstream_utils_get_system_dir (void);
 gchar		*gs_external_appstream_utils_get_file_cache_path (const gchar	*file_name);
 gboolean	 gs_external_appstream_refresh (GsPlugin	 *plugin,
