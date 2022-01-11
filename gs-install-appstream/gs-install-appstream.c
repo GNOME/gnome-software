@@ -32,7 +32,7 @@
 #include "gs-external-appstream-utils.h"
 
 static gboolean
-gs_install_appstream_copy_file (GFile *file, GError **error)
+gs_install_appstream_move_file (GFile *file, GError **error)
 {
 	g_autofree gchar *basename = g_file_get_basename (file);
 	g_autofree gchar *cachefn = gs_external_appstream_utils_get_file_cache_path (basename);
@@ -46,9 +46,9 @@ gs_install_appstream_copy_file (GFile *file, GError **error)
 			return FALSE;
 	}
 
-	/* do the copy, overwriting existing files and setting the permissions
+	/* do the move, overwriting existing files and setting the permissions
 	 * of the current process (so that should be -rw-r--r--) */
-	return g_file_copy (file, cachefn_file,
+	return g_file_move (file, cachefn_file,
 			    G_FILE_COPY_OVERWRITE |
 			    G_FILE_COPY_NOFOLLOW_SYMLINKS |
 			    G_FILE_COPY_TARGET_DEFAULT_PERMS,
@@ -139,7 +139,7 @@ main (int argc, char *argv[])
 	textdomain (GETTEXT_PACKAGE);
 
 	context = g_option_context_new (NULL);
-	/* TRANSLATORS: tool that is used when copying profiles system-wide */
+	/* TRANSLATORS: tool that is used when moving profiles system-wide */
 	g_option_context_set_summary (context, _("GNOME Software AppStream system-wide installer"));
 	if (!g_option_context_parse (context, &argc, &argv, &error)) {
 		g_print ("%s\n", _("Failed to parse command line arguments"));
@@ -172,10 +172,10 @@ main (int argc, char *argv[])
 	/* Set the umask to ensure it is read-only to all users except root. */
 	umask (022);
 
-	/* do the copy */
-	if (!gs_install_appstream_copy_file (file, &error)) {
+	/* do the move */
+	if (!gs_install_appstream_move_file (file, &error)) {
 		/* TRANSLATORS: error details */
-		g_print (_("Failed to copy: %s"), error->message);
+		g_print (_("Failed to move: %s"), error->message);
 		g_print ("\n");
 		return EXIT_FAILURE;
 	}
