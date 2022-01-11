@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-10 12:53+0000\n"
-"PO-Revision-Date: 2022-01-10 16:09+0200\n"
+"POT-Creation-Date: 2022-01-11 16:44+0000\n"
+"PO-Revision-Date: 2022-01-11 20:32+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -291,13 +291,14 @@ msgstr ""
 "програми"
 
 #: data/org.gnome.software.gschema.xml:140
-#| msgid "Install the AppStream files to a system-wide location for all users"
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
 "false, files are installed in non-standard $XDG_DATA_HOME/app-info/xmls "
 "directory"
 msgstr ""
-"Встановлювати файли AppStream до загальносистемної теки для усіх користувачів. Якщо матиме значення «false», файли буде встановлено до нестандартного каталогу $XDG_DATA_HOME/app-info/xmls "
+"Встановлювати файли AppStream до загальносистемної теки для усіх "
+"користувачів. Якщо матиме значення «false», файли буде встановлено до "
+"нестандартного каталогу $XDG_DATA_HOME/app-info/xmls "
 
 #: data/org.gnome.software.gschema.xml:144
 msgid ""
@@ -327,7 +328,7 @@ msgstr ""
 "Рядок, у якому зберігається ідентифікатор gnome-online-account, який "
 "використовуватиметься для входу до системи"
 
-#. TRANSLATORS: tool that is used when copying profiles system-wide
+#. TRANSLATORS: tool that is used when moving profiles system-wide
 #: gs-install-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Керування програмами у GNOME по всій системі"
@@ -355,8 +356,9 @@ msgstr "Не вдалося перевірити тип вмісту: %s"
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
 #, c-format
-msgid "Failed to copy: %s"
-msgstr "Не вдалось скопіювати: %s"
+#| msgid "Failed to copy: %s"
+msgid "Failed to move: %s"
+msgstr "Не вдалося пересунути: %s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -2182,7 +2184,7 @@ msgid "Source"
 msgstr "Джерело"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:247
+#: lib/gs-external-appstream-utils.c:245
 msgid "Downloading extra metadata files…"
 msgstr "Отримання додаткових файлів метаданих…"
 
