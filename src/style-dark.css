@@ -27,3 +27,79 @@
 .context-tile-lozenge.details-rating-18 {
 	color: #ff7b63;
 }
+
+/* Dark styling for specific category buttons. */
+.category-tile.category-create {
+	background: linear-gradient(180deg, #9141ac 0%, #2D5AA8 100%);
+	color: white;
+}
+.category-tile.category-create:hover {
+	background: linear-gradient(180deg, shade(#9141ac, 1.07) 0%, shade(#2D5AA8, 1.1) 100%);
+}
+.category-tile.category-create:active {
+	background: linear-gradient(180deg, shade(#9141ac, .95) 0%, shade(#2D5AA8, .95) 100%);
+}
+
+.category-tile.category-develop {
+	background: #4E4C54;
+	color: white;
+}
+.category-tile.category-develop:hover {
+	background: shade(#4E4C54, 1.2);
+}
+.category-tile.category-develop:active {
+	background-color: shade(#4E4C54, .95);
+}
+
+.category-tile.category-learn {
+	background: linear-gradient(180deg, #28AA6E 30%, #1E7E52 100%);
+	color: white;
+}
+.category-tile.category-learn:hover {
+	background: linear-gradient(180deg, shade(#28AA6E, 1.06) 30%, shade(#1E7E52, 1.06) 100%);
+}
+.category-tile.category-learn:active {
+	background: linear-gradient(180deg, shade(#28AA6E, .95) 30%, shade(#1E7E52, .95) 100%);
+}
+
+.category-tile.category-play {
+	background: linear-gradient(75deg, #E9CF90 0%, #C8499C 50%, #4B35BA 100%);
+	color: #393484;
+}
+.category-tile.category-play:hover {
+	background: linear-gradient(75deg, shade(#E9CF90, 1.07) 0%, shade(#C8499C, 1.07) 50%, shade(#4B35BA, 1.07) 100%);
+}
+.category-tile.category-play:active {
+	background: linear-gradient(75deg, shade(#E9CF90, .97) 0%, shade(#C8499C, .95) 50%, shade(#4B35BA, 1.07) 100%);
+}
+
+.category-tile.category-socialize {
+	background: linear-gradient(90deg, #CC307F 0%, #DD6C62 100%);
+	color: alpha(black, 0.75);
+}
+.category-tile.category-socialize:hover {
+	background: linear-gradient(90deg, shade(#CC307F, 1.08) 0%, shade(#DD6C62, 1.08) 100%);
+}
+.category-tile.category-socialize:active {
+	background: linear-gradient(90deg, shade(#CC307F, .95) 0%, shade(#DD6C62, .95) 100%);
+}
+
+.category-tile.category-work {
+	padding: 1px; /* FIXME: work around https://gitlab.gnome.org/GNOME/gtk/-/issues/4324 */
+	color: #1c71d8;
+	background-color:#ECDDA8;
+	background-image: linear-gradient(#C2C1BE 1px, transparent 1px),
+	                  linear-gradient(90deg, #C2C1BE 1px, transparent 1px);
+	background-size: 10px 10px, 10px 10px;
+	background-position: -1px -4px, center -1px;
+}
+.category-tile.category-work:hover {
+	background-color: shade(#ECDDA8, 1.03);
+	background-image: linear-gradient(shade(#C2C1BE, 1.04) 1px, transparent 1px),
+	                  linear-gradient(90deg, shade(#C2C1BE, 1.04) 1px, transparent 1px);
+}
+.category-tile.category-work:active {
+	background-color: shade(#ECDDA8, .93);
+	background-image: linear-gradient(shade(#C2C1BE, .97) 1px, transparent 1px),
+	                  linear-gradient(90deg, shade(#C2C1BE, .97) 1px, transparent 1px);
+}
