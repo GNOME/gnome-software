@@ -1824,3 +1824,22 @@ gs_appstream_component_add_extra_info (XbBuilderNode *component)
 		break;
 	}
 }
+
+/* Resolve any media URIs which are actually relative
+ * paths against the media_baseurl property */
+void
+gs_appstream_component_fix_url (XbBuilderNode *component, const gchar *baseurl)
+{
+	const gchar *text = xb_builder_node_get_text (component);
+	g_autofree gchar *url = NULL;
+
+	if (text == NULL)
+		return;
+
+	if (g_str_has_prefix (text, "http:") ||
+	    g_str_has_prefix (text, "https:"))
+		return;
+
+	url = g_strconcat (baseurl, "/", text, NULL);
+	xb_builder_node_set_text (component, url , -1);
+}

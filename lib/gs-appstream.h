@@ -72,5 +72,7 @@ void		 gs_appstream_component_add_icon	(XbBuilderNode	*component,
 							 const gchar	*str);
 void		 gs_appstream_component_add_provide	(XbBuilderNode	*component,
 							 const gchar	*str);
+void		 gs_appstream_component_fix_url		(XbBuilderNode  *component,
+							 const gchar    *baseurl);
 
 G_END_DECLS
