@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-11 16:44+0000\n"
-"PO-Revision-Date: 2022-01-11 20:32+0200\n"
+"POT-Creation-Date: 2022-01-17 11:34+0000\n"
+"PO-Revision-Date: 2022-01-17 16:50+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -301,14 +301,20 @@ msgstr ""
 "нестандартного каталогу $XDG_DATA_HOME/app-info/xmls "
 
 #: data/org.gnome.software.gschema.xml:144
+#| msgid ""
+#| "Priority order of packaging formats to prefer, with more important "
+#| "formats listed first. An empty array means the default order. Omitted "
+#| "formats are assumed to be listed last."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last."
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
 msgstr ""
 "Порядок пріоритетності форматів пакунків. Важливіші формати передують у "
 "списку. Порожній масив означає типове упорядкування. Пропущені формати буде "
-"пересунуто у кінець списку."
+"пересунуто у кінець списку. Приклади форматів пакунків: deb, flatpak, rpm, "
+"snap."
 
 #: data/org.gnome.software.gschema.xml:149
 msgid "The URI that references the background for an upgrade banner."
@@ -356,7 +362,6 @@ msgstr "Не вдалося перевірити тип вмісту: %s"
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
 #, c-format
-#| msgid "Failed to copy: %s"
 msgid "Failed to move: %s"
 msgstr "Не вдалося пересунути: %s"
 
