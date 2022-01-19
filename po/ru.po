@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-10 12:53+0000\n"
-"PO-Revision-Date: 2022-01-10 16:48+0300\n"
+"POT-Creation-Date: 2022-01-17 11:34+0000\n"
+"PO-Revision-Date: 2022-01-17 19:41+0300\n"
 "Last-Translator: Aleksandr Melman <Alexmelman88@gmail.com>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -315,11 +315,13 @@ msgstr ""
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last."
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
 msgstr ""
 "Приоритетный порядок предпочтительных форматов пакета, при этом более важные "
 "форматы перечислены первыми. Пустой массив означает порядок по умолчанию. "
-"Пропущенные форматы считаются перечисленными последними."
+"Пропущенные форматы считаются перечисленными последними. Примеры форматов "
+"упаковки: deb, flatpak, rpm, snap."
 
 #: data/org.gnome.software.gschema.xml:149
 msgid "The URI that references the background for an upgrade banner."
@@ -338,7 +340,7 @@ msgstr ""
 "Строка, в которой хранится идентификатор gnome-online-account, используемый "
 "для входа"
 
-#. TRANSLATORS: tool that is used when copying profiles system-wide
+#. TRANSLATORS: tool that is used when moving profiles system-wide
 #: gs-install-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Общесистемный установщик AppStream центра приложений GNOME"
@@ -366,8 +368,8 @@ msgstr "Не удалось проверить тип содержимого: %s
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
 #, c-format
-msgid "Failed to copy: %s"
-msgstr "Сбой копирования: %s"
+msgid "Failed to move: %s"
+msgstr "Не удалось переместить: %s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -870,7 +872,7 @@ msgstr ""
 "Станислав Соловей <whats_up@tut.by>, 2013-2019.\n"
 "Юрий Мясоедов <ymyasoedov@yandex.ru>, 2014.\n"
 "Alexey Rubtsov <rushills@gmail.com>, 2021.\n"
-"Aleksandr Melman <Alexmelman88@gmail.com>, 2021"
+"Aleksandr Melman <Alexmelman88@gmail.com>, 2022"
 
 #  перевод по аналогии с ubuntu software - центр приложений ubuntu
 #. TRANSLATORS: this is the title of the about window
@@ -2205,7 +2207,7 @@ msgid "Source"
 msgstr "Источник"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:247
+#: lib/gs-external-appstream-utils.c:245
 msgid "Downloading extra metadata files…"
 msgstr "Загрузка дополнительных файлов с метаданными…"
 
