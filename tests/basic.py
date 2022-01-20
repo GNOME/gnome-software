@@ -39,12 +39,6 @@ try:
 
     search_page_listbox = search_page.child(roleName='list box')
 
-    try:
-        shopping_button = app.child(name=u'Browse Software', retry=False)
-        shopping_button.click()
-    except tree.SearchError:
-        print "not first-run, moving on"
-
     all_button.click()
     assert (all_button.checked)
     assert (not installed_button.checked)

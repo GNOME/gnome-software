@@ -24,7 +24,6 @@
 #include "gs-build-ident.h"
 #include "gs-common.h"
 #include "gs-debug.h"
-#include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
@@ -220,18 +219,6 @@ gs_application_dbus_unregister (GApplication    *application,
 	if (app->search_provider != NULL) {
 		gs_shell_search_provider_unregister (app->search_provider);
 		g_clear_object (&app->search_provider);
-	}
-}
-
-static void
-gs_application_show_first_run_dialog (GsApplication *app)
-{
-	GtkWidget *dialog;
-
-	if (g_settings_get_boolean (app->settings, "first-run") == TRUE) {
-		dialog = gs_first_run_dialog_new ();
-		gs_shell_modal_dialog_present (app->shell, GTK_WINDOW (dialog));
-		g_settings_set_boolean (app->settings, "first-run", FALSE);
 	}
 }
 
@@ -1035,8 +1022,6 @@ gs_application_activate (GApplication *application)
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 
 	gs_shell_activate (GS_APPLICATION (application)->shell);
-
-	gs_application_show_first_run_dialog (GS_APPLICATION (application));
 }
 
 static void
