@@ -239,6 +239,8 @@ perms_from_metadata (GKeyFile *keyfile)
 		permissions |= GS_APP_PERMISSIONS_DOWNLOADS_FULL;
 	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "xdg-download:ro"))
 		permissions |= GS_APP_PERMISSIONS_DOWNLOADS_READ;
+	if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "xdg-data/flatpak/overrides:create"))
+		permissions |= GS_APP_PERMISSIONS_ESCAPE_SANDBOX;
 	g_strfreev (strv);
 
 	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
@@ -246,10 +248,19 @@ perms_from_metadata (GKeyFile *keyfile)
 		permissions |= GS_APP_PERMISSIONS_SETTINGS;
 	g_free (str);
 
-	str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
-	if (str != NULL && g_str_equal (str, "talk"))
-		permissions |= GS_APP_PERMISSIONS_ESCAPE_SANDBOX;
-	g_free (str);
+	if (!(permissions & GS_APP_PERMISSIONS_ESCAPE_SANDBOX)) {
+		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
+		if (str != NULL && g_str_equal (str, "talk"))
+			permissions |= GS_APP_PERMISSIONS_ESCAPE_SANDBOX;
+		g_free (str);
+	}
+
+	if (!(permissions & GS_APP_PERMISSIONS_ESCAPE_SANDBOX)) {
+		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.impl.portal.PermissionStore", NULL);
+		if (str != NULL && g_str_equal (str, "talk"))
+			permissions |= GS_APP_PERMISSIONS_ESCAPE_SANDBOX;
+		g_free (str);
+	}
 
 	/* no permissions set */
 	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
