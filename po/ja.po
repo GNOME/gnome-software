@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2021-09-28 14:50+0000\n"
-"PO-Revision-Date: 2022-01-16 19:00+0900\n"
+"PO-Revision-Date: 2022-01-20 22:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -557,7 +557,7 @@ msgstr "推奨年齢レーティング"
 #: src/gs-hardware-support-context-dialog.ui:115
 #: src/gs-safety-context-dialog.ui:264
 msgid "How to add missing information"
-msgstr ""
+msgstr "足りない情報を追加するには"
 
 #: lib/gs-app.c:5607
 msgid "Local file"
@@ -571,7 +571,7 @@ msgstr "ローカルファイル"
 #: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:391
 #, c-format
 msgid "%s (%s)"
-msgstr ""
+msgstr "%s (%s)"
 
 #: lib/gs-app.c:5699
 msgid "Package"
@@ -587,7 +587,7 @@ msgstr "インストール保留"
 
 #: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:388
 msgid "Pending remove"
-msgstr ""
+msgstr "削除保留"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
@@ -608,7 +608,7 @@ msgstr "削除中"
 
 #: src/gs-app-addon-row.ui:70
 msgid "_Uninstall"
-msgstr "アンインストール(_I)"
+msgstr "アンインストール(_U)"
 
 #: src/gs-app-details-page.c:70
 msgid "Network"
@@ -697,7 +697,7 @@ msgstr "サンドボックスから抜け出して色々な制限を回避でき
 #: src/gs-app-details-page.c:159
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
@@ -720,7 +720,7 @@ msgstr "バージョン履歴"
 #: src/gs-app-version-history-row.c:61
 #, c-format
 msgid "New in Version %s"
-msgstr ""
+msgstr "バージョン %s の更新内容"
 
 #: src/gs-app-version-history-row.c:68
 #, c-format
@@ -815,7 +815,7 @@ msgstr "バージョン情報を表示する"
 
 #: src/gs-application.c:358
 msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr ""
+msgstr "Copyright © 2016–2021 GNOME Software contributors"
 
 #: src/gs-application.c:361
 msgid "translator-credits"
@@ -956,7 +956,7 @@ msgstr "ダウンロードデータを読み取り可能"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:334 src/gs-safety-context-dialog.c:217
 msgid "Can access and change user settings"
-msgstr "ユーザー設定のアクセス/変更可能"
+msgstr "ユーザー設定へのアクセスと変更が可能"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
@@ -1018,7 +1018,7 @@ msgstr "ソフトウェア開発者は認証済み"
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
 #: src/gs-app-context-bar.c:418 src/gs-app-context-bar.c:679
 msgid "; "
-msgstr ""
+msgstr ", "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
@@ -1115,7 +1115,7 @@ msgstr ""
 
 #: src/gs-app-context-bar.c:703
 msgid "No age rating information available"
-msgstr ""
+msgstr "推奨年齢レーティング情報がありません"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
@@ -1181,13 +1181,13 @@ msgstr "ソース: %s"
 #: src/gs-app-row.c:511
 #, c-format
 msgid "Renamed from %s"
-msgstr ""
+msgstr "%s から名前が変更されました"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:67
 #, c-format
 msgid "Help Translate %s"
-msgstr ""
+msgstr "%s の翻訳を手伝う"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:70
@@ -1199,6 +1199,11 @@ msgid ""
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
+"%s はボランティアによる国際コミュニティによってデザイン、開発、翻訳されてい"
+"ます。\n"
+"\n"
+"まだあなたの言語には翻訳されていませんが、あなた自身がコミュニティに参加して"
+"翻訳することが可能です。"
 
 #: src/gs-app-translation-dialog.ui:9
 msgid "Translations"
@@ -1261,7 +1266,7 @@ msgstr "新規 & アップデート"
 #. Heading for the rest of the apps on a category page
 #: src/gs-category-page.ui:102
 msgid "Other Software"
-msgstr "他のソフトウェア"
+msgstr "その他のソフトウェア"
 
 #. TRANSLATORS: the user isn't reading the question
 #: lib/gs-cmd.c:193
@@ -2076,13 +2081,15 @@ msgstr "信頼できるソフトウェアリポジトリのみを利用しまし
 
 #: src/gs-details-page.ui:731
 msgid "No Metadata"
-msgstr ""
+msgstr "メタデータなし"
 
 #: src/gs-details-page.ui:741
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
 msgstr ""
+"このソフトウェアはウェブサイト、コードリポジトリ、課題管理システム (Issue "
+"Tracker) へのリンクを提供していません。"
 
 #: src/gs-details-page.ui:769
 msgid "Project _Website"
@@ -2293,30 +2300,17 @@ msgstr "ドキュメント"
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
 #: src/gs-extras-page.c:483
-#, fuzzy, c-format
-#| msgid ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
-#| msgid_plural ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
+#, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] ""
-"残念ながら、お探しの %s は見つかりませんでした。詳しくは %s を参照してくださ"
-"い。"
+"%2$s が要求している %1$s が見つかりません。詳しくは %3$s を参照してください。"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
 #: src/gs-extras-page.c:492
-#, fuzzy, c-format
-#| msgid ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
-#| msgid_plural ""
-#| "Unfortunately, the %s you were searching for could not be found. Please "
-#| "see %s for more information."
+#, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
@@ -2324,8 +2318,7 @@ msgid_plural ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
 msgstr[0] ""
-"残念ながら、お探しの %s は見つかりませんでした。詳しくは %s を参照してくださ"
-"い。"
+"お探しの %s が見つかりません。詳しくは %s を参照してください。"
 
 #: src/gs-extras-page.c:562 src/gs-extras-page.c:618 src/gs-extras-page.c:657
 #, c-format
@@ -2476,7 +2469,7 @@ msgstr "マウスサポート"
 #: src/gs-hardware-support-context-dialog.c:638
 #: src/gs-hardware-support-context-dialog.c:644
 msgid "Requires a mouse or pointing device"
-msgstr "マウスかポインティングディバイスが必要"
+msgstr "マウスかポインティングデバイスが必要"
 
 #: src/gs-hardware-support-context-dialog.c:640
 msgid "Mouse Support Unknown"
@@ -2486,7 +2479,7 @@ msgstr "マウスサポート不明"
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
-"マウスかポインティングディバイスをサポートしているかどうかの十分な情報なし"
+"マウスかポインティングデバイスをサポートしているかどうかの十分な情報なし"
 
 #: src/gs-hardware-support-context-dialog.c:643
 msgid "Mouse Required"
@@ -2494,7 +2487,7 @@ msgstr "マウスが必要"
 
 #: src/gs-hardware-support-context-dialog.c:647
 msgid "Supports mice and pointing devices"
-msgstr "マウスとポインティングディバイスをサポート"
+msgstr "マウスとポインティングデバイスをサポート"
 
 #: src/gs-hardware-support-context-dialog.c:649
 msgid "Mouse Not Supported"
@@ -2502,7 +2495,7 @@ msgstr "マウス非サポート"
 
 #: src/gs-hardware-support-context-dialog.c:650
 msgid "Cannot be used with a mouse or pointing device"
-msgstr "マウスとポインティングディバイスの使用不可"
+msgstr "マウスとポインティングデバイスの使用不可"
 
 #: src/gs-hardware-support-context-dialog.c:657
 #: src/gs-hardware-support-context-dialog.c:666
@@ -2575,7 +2568,7 @@ msgstr "%s はこのデバイスでは正しく動作しないかもしれませ
 #: src/gs-hardware-support-context-dialog.c:717
 #, c-format
 msgid "%s will not work on this device"
-msgstr "%s はこのデバイスではどうさしません"
+msgstr "%s はこのデバイスでは動作しないかもしれません"
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:9
@@ -2631,9 +2624,9 @@ msgid ""
 "You may not be able to contribute to this software or influence its "
 "development."
 msgstr ""
-"このソフトウェアはオープンな場で開発されていないため、どのように動作するか知"
-"っているのは開発者だけです。使用に制限がある場合や、安全なソフトウェアかどう"
-"か判断しづらい場合があるかもしれません。\n"
+"このソフトウェアはオープンな場で開発されていないため、開発者だけがどのように"
+"動作するか把握しています。使用に制限がある場合や、安全なソフトウェアかどうか"
+"判断しづらい場合があるかもしれません。\n"
 "\n"
 "このソフトウェアに貢献したり開発に関わったりすることはできないかもしれません"
 "。"
@@ -2769,7 +2762,7 @@ msgstr "ダウングレード"
 #. Some proprietary software is included."
 #: src/gs-overview-page.c:607
 msgid "selected external sources"
-msgstr ""
+msgstr "選択した外部ソース"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:609
@@ -2817,7 +2810,7 @@ msgstr "不明"
 
 #: src/gs-page.c:276
 msgid "User declined installation"
-msgstr ""
+msgstr "ユーザーがインストールを拒否しました"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
@@ -3039,7 +3032,7 @@ msgstr[0] "%s と %s をインストールしました"
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
-msgstr ""
+msgstr "%s • %s"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
@@ -3218,12 +3211,16 @@ msgstr "削除する…"
 #: src/gs-safety-context-dialog.c:140
 msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgstr ""
+"アプリケーションはサンドボックス化されていないため信頼できるベンダーかどうか"
+"確認が必要"
 
 #: src/gs-safety-context-dialog.c:143
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
 msgstr ""
+"アプリケーションはサンドボックス化されていないもののディストリビューションが"
+"悪意のないことを確認済み"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:150
@@ -3384,27 +3381,29 @@ msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr ""
+"ソースコードが非公開なため第三者による監査ができず安全でない可能性あり"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:311
 msgid "Auditable Code"
-msgstr ""
+msgstr "監査可能コード"
 
 #: src/gs-safety-context-dialog.c:312
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
 msgstr ""
+"ソースコードは公開されており第三者による監査が可能なため安全であることが期待できる"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-safety-context-dialog.c:320
 msgid "App developer is verified"
-msgstr ""
+msgstr "アプリ開発者は認証済み"
 
 #: src/gs-safety-context-dialog.c:321
 msgid "The developer of this app has been verified to be who they say they are"
-msgstr ""
+msgstr "このアプリの開発者の身元は確認済み"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
@@ -3506,7 +3505,7 @@ msgstr "検索ページ"
 
 #: src/gs-search-page.ui:17
 msgid "Search for Apps"
-msgstr ""
+msgstr "アプリを検索"
 
 #: src/gs-search-page.ui:39
 msgid "No Application Found"
@@ -4037,7 +4036,7 @@ msgstr "検索"
 
 #: src/gs-shell.ui:194
 msgid "Primary Menu"
-msgstr ""
+msgstr "プライマリーメニュー"
 
 #: src/gs-shell.ui:284
 msgid "Find Out _More"
@@ -4077,15 +4076,15 @@ msgstr "一時的にキャッシュされたデータ"
 
 #: src/gs-storage-context-dialog.c:161
 msgid "The application itself"
-msgstr ""
+msgstr "アプリケーション自体"
 
 #: src/gs-storage-context-dialog.c:165
 msgid "Required Dependencies"
-msgstr ""
+msgstr "必要な依存関係"
 
 #: src/gs-storage-context-dialog.c:166
 msgid "Shared system components required by this application"
-msgstr ""
+msgstr "このアプリケーションが必要としている共有システムコンポーネント"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:9
@@ -4144,7 +4143,7 @@ msgstr "ソフトウェアアップデートを確認してください。"
 
 #: src/gs-update-monitor.c:217
 msgid "Critical Software Update Ready to Install"
-msgstr ""
+msgstr "重要なソフトウェアアップデートのインストール準備完了"
 
 #: src/gs-update-monitor.c:218
 msgid "An important software update is ready to be installed."
@@ -4153,11 +4152,11 @@ msgstr ""
 
 #: src/gs-update-monitor.c:221
 msgid "Critical Software Updates Available to Download"
-msgstr ""
+msgstr "重要なソフトウェアアップデートがダウンロード可能"
 
 #: src/gs-update-monitor.c:222
 msgid "Important: critical software updates are waiting."
-msgstr ""
+msgstr "注意: 重要なソフトウェアアップデートが待機中です。"
 
 #: src/gs-update-monitor.c:230
 msgid "Software Updates Ready to Install"
@@ -4169,11 +4168,11 @@ msgstr "ソフトウェアアップデートをインストールする準備が
 
 #: src/gs-update-monitor.c:236
 msgid "Software Updates Available to Download"
-msgstr ""
+msgstr "ソフトウェアアップデートがダウンロード可能"
 
 #: src/gs-update-monitor.c:237
 msgid "Please download waiting software updates."
-msgstr ""
+msgstr "待機中のソフトウェアアップデートをダウンロードしてください。"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
 #: src/gs-update-monitor.c:343
@@ -4430,7 +4429,7 @@ msgstr "最新です"
 
 #: src/gs-updates-page.ui:263
 msgid "Use Mobile Data?"
-msgstr ""
+msgstr "モバイルデータを使用しますか?"
 
 #: src/gs-updates-page.ui:264
 msgid ""
@@ -4440,7 +4439,7 @@ msgstr "モバイル接続でのアップデートの確認は費用が発生す
 
 #: src/gs-updates-page.ui:267
 msgid "_Check Anyway"
-msgstr "確認する(_C)"
+msgstr "とにかく確認する(_C)"
 
 #: src/gs-updates-page.ui:282
 msgid "No Connection"
@@ -4512,7 +4511,7 @@ msgstr "%s %s が利用可能です"
 
 #: src/gs-upgrade-banner.c:131
 msgid "Learn about the new version"
-msgstr ""
+msgstr "新しいバージョンについて確認する"
 
 #: src/gs-upgrade-banner.c:151
 msgid "Downloading…"
@@ -4622,7 +4621,7 @@ msgstr "%s の Flatpak メタデータを取得中…"
 #: plugins/flatpak/gs-flatpak.c:3164
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
-msgstr ""
+msgstr "アドオン‘%s’のリファインに失敗しました: %s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:95
 msgid "User Installation"
@@ -4718,38 +4717,38 @@ msgstr "%s の設定のアップデート"
 #: plugins/fwupd/gs-fwupd-app.c:186
 #, c-format
 msgid "%s Battery Update"
-msgstr ""
+msgstr "%s バッテリーのアップデート"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
 #: plugins/fwupd/gs-fwupd-app.c:191
 #, c-format
 msgid "%s Camera Update"
-msgstr ""
+msgstr "%s カメラのアップデート"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
 #: plugins/fwupd/gs-fwupd-app.c:195
 #, c-format
 msgid "%s TPM Update"
-msgstr ""
+msgstr "%s TPM のアップデート"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
 #: plugins/fwupd/gs-fwupd-app.c:199
 #, c-format
 msgid "%s Touchpad Update"
-msgstr ""
+msgstr "%s タッチパッドのアップデート"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
 #: plugins/fwupd/gs-fwupd-app.c:203
 #, c-format
 msgid "%s Mouse Update"
-msgstr ""
+msgstr "%s マウスのアップデート"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:207
 #, c-format
 msgid "%s Keyboard Update"
-msgstr ""
+msgstr "%s キーボードのアップデート"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:716
