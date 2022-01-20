@@ -377,7 +377,8 @@ gs_category_page_load_category (GsCategoryPage *self)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
-	gtk_widget_hide (self->top_carousel);
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
+	gtk_widget_show (self->top_carousel);
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 					   MIN (30, gs_category_get_size (self->subcategory)));
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), 8);
@@ -386,9 +387,11 @@ gs_category_page_load_category (GsCategoryPage *self)
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
+		gtk_widget_show (self->top_carousel);
 	} else {
 		gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
 		gtk_widget_hide (self->featured_flow_box);
+		gtk_widget_hide (self->top_carousel);
 	}
 
 	/* Load the list of apps in the category, and also the list of all
@@ -530,6 +533,8 @@ gs_category_page_init (GsCategoryPage *self)
 				    recently_updated_sort_cb,
 				    NULL,
 				    NULL);
+
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->top_carousel), NULL);
 }
 
 static void
