@@ -11,6 +11,7 @@
 #include "config.h"
 
 #include <adwaita.h>
+#include <malloc.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -1054,6 +1055,10 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 
 	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
+
+	/* Free unused memory */
+	malloc_trim (0);
+
 	return TRUE;
 }
 
