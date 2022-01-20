@@ -362,7 +362,9 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 	g_return_if_fail (GS_IS_FEATURED_CAROUSEL (self));
 	g_return_if_fail (apps == NULL || GS_IS_APP_LIST (apps));
 
-	if (apps == self->apps)
+	/* Need to cleanup the content also after the widget is created,
+	 * thus always pass through for the NULL 'apps'. */
+	if (apps != NULL && apps == self->apps)
 		return;
 
 	stop_rotation_timer (self);
@@ -370,14 +372,22 @@ gs_featured_carousel_set_apps (GsFeaturedCarousel *self,
 
 	g_set_object (&self->apps, apps);
 
-	for (guint i = 0; i < gs_app_list_length (apps); i++) {
-		GsApp *app = gs_app_list_index (apps, i);
-		GtkWidget *tile = gs_feature_tile_new (app);
+	if (apps != NULL) {
+		for (guint i = 0; i < gs_app_list_length (apps); i++) {
+			GsApp *app = gs_app_list_index (apps, i);
+			GtkWidget *tile = gs_feature_tile_new (app);
+			gtk_widget_set_hexpand (tile, TRUE);
+			gtk_widget_set_vexpand (tile, TRUE);
+			gtk_widget_set_can_focus (tile, FALSE);
+			g_signal_connect (tile, "clicked",
+					  G_CALLBACK (app_tile_clicked_cb), self);
+			adw_carousel_append (self->carousel, tile);
+		}
+	} else  {
+		GtkWidget *tile = gs_feature_tile_new (NULL);
 		gtk_widget_set_hexpand (tile, TRUE);
 		gtk_widget_set_vexpand (tile, TRUE);
 		gtk_widget_set_can_focus (tile, FALSE);
-		g_signal_connect (tile, "clicked",
-				  G_CALLBACK (app_tile_clicked_cb), self);
 		adw_carousel_append (self->carousel, tile);
 	}
 
