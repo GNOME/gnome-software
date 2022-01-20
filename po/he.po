@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-11 16:44+0000\n"
-"PO-Revision-Date: 2022-01-14 09:11+0200\n"
+"POT-Creation-Date: 2022-01-20 13:58+0000\n"
+"PO-Revision-Date: 2022-01-20 21:03+0200\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
@@ -284,7 +284,6 @@ msgstr ""
 "app-info folder"
 
 #: data/org.gnome.software.gschema.xml:140
-#| msgid "Install the AppStream files to a system-wide location for all users"
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
 "false, files are installed in non-standard $XDG_DATA_HOME/app-info/xmls "
@@ -295,13 +294,19 @@ msgstr ""
 "directory"
 
 #: data/org.gnome.software.gschema.xml:144
+#| msgid ""
+#| "Priority order of packaging formats to prefer, with more important "
+#| "formats listed first. An empty array means the default order. Omitted "
+#| "formats are assumed to be listed last."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last."
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
 msgstr ""
 "סדר עדיפות תצורות חבילות לפי העדפה, כאשר התצורות החשובות יותר בהתחלה. מערך "
-"ריק משמעו סדר בררת מחדל. תצורות שלא תיכללנה תיחשב כאילו הן מופיעות בסוף."
+"ריק משמעו סדר בררת מחדל. תצורות שלא תיכללנה תיחשב כאילו הן מופיעות בסוף. "
+"דוגמאות לתצורות חבילות הן: deb, flatpak, rpm, snap."
 
 #: data/org.gnome.software.gschema.xml:149
 msgid "The URI that references the background for an upgrade banner."
@@ -346,7 +351,6 @@ msgstr "תיקוף סוג התוכן נכשל: %s"
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
 #, c-format
-#| msgid "Failed to copy: %s"
 msgid "Failed to move: %s"
 msgstr "העברה נכשלה: %s"
 
@@ -758,51 +762,51 @@ msgid "%e %B %Y"
 msgstr "‏%e ב%B ‏%Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:129
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "MODE"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Search for applications"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "SEARCH"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Show application details (using application ID)"
 
-#: src/gs-application.c:133 src/gs-application.c:137
+#: src/gs-application.c:132 src/gs-application.c:136
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Show application details (using package name)"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "PKGNAME"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Install the application (using application ID)"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:138
 msgid "Open a local package file"
 msgstr "Open a local package file"
 
-#: src/gs-application.c:139 src/gs-application.c:144
+#: src/gs-application.c:138 src/gs-application.c:143
 msgid "FILENAME"
 msgstr "FILENAME"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:140
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -810,39 +814,39 @@ msgstr ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:143
 msgid "Show a local metainfo or appdata file"
 msgstr "הצגת קובצי metainfo או appdata מקומיים"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:145
 msgid "Show verbose debugging information"
 msgstr "Show verbose debugging information"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "Installs any pending updates in the background"
 
-#: src/gs-application.c:150
+#: src/gs-application.c:149
 msgid "Show update preferences"
 msgstr "Show update preferences"
 
-#: src/gs-application.c:152
+#: src/gs-application.c:151
 msgid "Quit the running instance"
 msgstr "Quit the running instance"
 
-#: src/gs-application.c:154
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "Prefer local file sources to AppStream"
 
-#: src/gs-application.c:156
+#: src/gs-application.c:155
 msgid "Show version number"
 msgstr "Show version number"
 
-#: src/gs-application.c:325
+#: src/gs-application.c:312
 msgid "Copyright © 2016–2021 GNOME Software contributors"
 msgstr "כל הזכויות שמורות © 2016–2021 יוצרי מרכז התכנה של GNOME"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:315
 msgid "translator-credits"
 msgstr ""
 "Elad Alfassa <elad@fedoraproject.org>\n"
@@ -851,17 +855,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:341 src/gs-shell.c:2163
+#: src/gs-application.c:328 src/gs-shell.c:2163
 msgid "About Software"
 msgstr "על אודות תכנה"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:344
+#: src/gs-application.c:331
 msgid "A nice way to manage the software on your system."
 msgstr "דרך נוחה לנהל את התכניות במחשב שלך."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:529
+#: src/gs-application.c:516
 msgid "Sorry! There are no details for that application."
 msgstr "אנו מצטערים! אין מידע עבור יישום זה."
 
@@ -2383,27 +2387,6 @@ msgstr "הבא"
 #: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "רשימת יישומים מומלצים"
-
-#: src/gs-first-run-dialog.ui:9
-msgid "Welcome"
-msgstr "ברוך בואך"
-
-#: src/gs-first-run-dialog.ui:18
-msgid "Welcome to Software"
-msgstr "ברוך בואך לתכנה"
-
-#: src/gs-first-run-dialog.ui:19
-msgid ""
-"Software lets you install all the software you need, all from one place. See "
-"our recommendations, browse the categories, or search for the applications "
-"you want."
-msgstr ""
-"תכנה מאפשר לכם להתקין את כל התכנות שתצטרכו, הכל ממקום אחד. ראו ההמלצות שלנו, "
-"סיירו בקטגוריות, או חפשו את היישומים שברצונכם."
-
-#: src/gs-first-run-dialog.ui:25
-msgid "_Browse Software"
-msgstr "_סיור בתכנה"
 
 #: src/gs-hardware-support-context-dialog.c:562
 #: src/gs-hardware-support-context-dialog.c:571
@@ -4874,6 +4857,23 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "Welcome"
+#~ msgstr "ברוך בואך"
+
+#~ msgid "Welcome to Software"
+#~ msgstr "ברוך בואך לתכנה"
+
+#~ msgid ""
+#~ "Software lets you install all the software you need, all from one place. "
+#~ "See our recommendations, browse the categories, or search for the "
+#~ "applications you want."
+#~ msgstr ""
+#~ "תכנה מאפשר לכם להתקין את כל התכנות שתצטרכו, הכל ממקום אחד. ראו ההמלצות "
+#~ "שלנו, סיירו בקטגוריות, או חפשו את היישומים שברצונכם."
+
+#~ msgid "_Browse Software"
+#~ msgstr "_סיור בתכנה"
 
 #~ msgid "_Add shortcut"
 #~ msgstr "הוס_פת צירוף מקשים"
