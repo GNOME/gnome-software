@@ -128,9 +128,10 @@ gs_loading_page_load (GsLoadingPage *self)
 	 * completely missing app data — otherwise, we want to start up as fast
 	 * as possible. */
 	settings = g_settings_new ("org.gnome.software");
-	if (g_settings_get_boolean (settings, "first-run"))
+	if (g_settings_get_boolean (settings, "first-run")) {
+		g_settings_set_boolean (settings, "first-run", FALSE);
 		cache_age = 60 * 60 * 24;  /* 24 hours */
-	else
+	} else
 		cache_age = G_MAXUINT;
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,

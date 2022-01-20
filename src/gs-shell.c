@@ -2247,6 +2247,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	} else {
 		g_debug ("Skipped refresh of the repositories due to 'download-updates' disabled");
 		initial_refresh_done (GS_LOADING_PAGE (shell->pages[GS_SHELL_MODE_LOADING]), shell);
+
+		if (g_settings_get_boolean (shell->settings, "first-run"))
+			g_settings_set_boolean (shell->settings, "first-run", FALSE);
 	}
 }
 
