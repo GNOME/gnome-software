@@ -864,6 +864,15 @@ install_resources_activated (GSimpleAction *action,
 	gs_shell_show_extras_search (app->shell, mode, resources, desktop_id, ident);
 }
 
+static void
+verbose_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	gs_debug_set_verbose (app->debug, TRUE);
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
@@ -873,6 +882,7 @@ static GActionEntry actions[] = {
 	{ "launch", launch_activated, "(ss)", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "autoupdate", autoupdate_activated, NULL, NULL, NULL },
+	{ "verbose", verbose_activated, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 
@@ -1156,6 +1166,12 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						"shutdown",
 						NULL);
 		return 0;
+	}
+
+	if (g_variant_dict_contains (options, "verbose")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"verbose",
+						NULL);
 	}
 
 	if (g_variant_dict_lookup (options, "mode", "&s", &mode)) {
