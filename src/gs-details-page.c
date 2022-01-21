@@ -2450,14 +2450,31 @@ gs_details_page_metainfo_thread (GTask *task,
 	const gchar *const *locales;
 	g_autofree gchar *xml = NULL;
 	g_autofree gchar *path = NULL;
+	g_autofree gchar *icon_path = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(XbBuilderSource) builder_source = NULL;
 	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GPtrArray) nodes = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GFile) tmp_file = NULL;
 	GFile *file = task_data;
 	XbNode *component;
+
+	path = g_file_get_path (file);
+	if (path && strstr (path, ",icon=")) {
+		gchar *pos = strstr (path, ",icon=");
+
+		*pos = '\0';
+
+		tmp_file = g_file_new_for_path (path);
+		file = tmp_file;
+
+		pos += 6;
+		if (*pos)
+			icon_path = g_strdup (pos);
+	}
+	g_clear_pointer (&path, g_free);
 
 	builder_source = xb_builder_source_new ();
 	if (!xb_builder_source_load_file (builder_source, file, XB_BUILDER_SOURCE_FLAG_NONE, cancellable, &error)) {
@@ -2511,6 +2528,13 @@ gs_details_page_metainfo_thread (GTask *task,
 
 	path = g_file_get_path (file);
 	gs_app_set_origin (app, path);
+
+	if (icon_path) {
+		g_autoptr(GFile) icon_file = g_file_new_for_path (icon_path);
+		g_autoptr(GIcon) icon = g_file_icon_new (icon_file);
+		gs_icon_set_width (icon, (guint) -1);
+		gs_app_add_icon (app, G_ICON (icon));
+	}
 
 	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 
