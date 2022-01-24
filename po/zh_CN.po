@@ -21,16 +21,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-14 07:12+0000\n"
-"PO-Revision-Date: 2022-01-14 14:09-0500\n"
-"Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
+"POT-Creation-Date: 2022-01-20 13:58+0000\n"
+"PO-Revision-Date: 2022-01-24 18:37+0800\n"
+"Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.0.1\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Gtranslator 41.0\n"
 "X-DamnedLies-Scope: partial\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -289,13 +289,18 @@ msgstr ""
 "$XDG_DATA_HOME/app-info/xmls 目录中"
 
 #: data/org.gnome.software.gschema.xml:144
+#| msgid ""
+#| "Priority order of packaging formats to prefer, with more important "
+#| "formats listed first. An empty array means the default order. Omitted "
+#| "formats are assumed to be listed last."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last."
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
 msgstr ""
 "首选的打包格式优先顺序，格式越重要越靠前列出。空数组代表默认顺序。省略的格式"
-"将被列于后方。"
+"将被列于后方。作为举例的打包格式有：deb、flatpak、rpm、snap。"
 
 #: data/org.gnome.software.gschema.xml:149
 msgid "The URI that references the background for an upgrade banner."
@@ -750,89 +755,89 @@ msgid "%e %B %Y"
 msgstr "%Y年%-m月%-d日"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:129
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr "启动模式：可选“updates”“updated”“installed”或“overview”"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "模式"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "搜索应用程序"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "搜索"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "显示应用程序详情（使用应用程序 ID）"
 
-#: src/gs-application.c:133 src/gs-application.c:137
+#: src/gs-application.c:132 src/gs-application.c:136
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "显示应用程序详情（使用软件包名）"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "软件包名"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "安装应用程序（使用应用程序 ID）"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:138
 msgid "Open a local package file"
 msgstr "打开一个本地的软件包文件"
 
-#: src/gs-application.c:139 src/gs-application.c:144
+#: src/gs-application.c:138 src/gs-application.c:143
 msgid "FILENAME"
 msgstr "文件名"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:140
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr "此操作期望的交互类型：可选“none”“notify”或“full”"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:143
 msgid "Show a local metainfo or appdata file"
 msgstr "显示本地元信息或应用数据文件"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:145
 msgid "Show verbose debugging information"
 msgstr "显示详细的调试信息"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "在后台安装任何等待的更新"
 
-#: src/gs-application.c:150
+#: src/gs-application.c:149
 msgid "Show update preferences"
 msgstr "显示更新首选项"
 
-#: src/gs-application.c:152
+#: src/gs-application.c:151
 msgid "Quit the running instance"
 msgstr "退出运行中的实例"
 
-#: src/gs-application.c:154
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "对 AppStream 优先使用本地文件源"
 
-#: src/gs-application.c:156
+#: src/gs-application.c:155
 msgid "Show version number"
 msgstr "显示版本号"
 
-#: src/gs-application.c:325
+#: src/gs-application.c:312
 msgid "Copyright © 2016–2021 GNOME Software contributors"
 msgstr "版权所有 © 2016–2021 GNOME 软件贡献者"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:315
 msgid "translator-credits"
 msgstr ""
 "eternalhui <www.eternalhui@gmail.com>, 2013\n"
@@ -851,17 +856,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:341 src/gs-shell.c:2163
+#: src/gs-application.c:328 src/gs-shell.c:2163
 msgid "About Software"
 msgstr "关于软件"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:344
+#: src/gs-application.c:331
 msgid "A nice way to manage the software on your system."
 msgstr "一种管理您系统中软件的好方法。"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:529
+#: src/gs-application.c:516
 msgid "Sorry! There are no details for that application."
 msgstr "抱歉！该应用程序没有详细信息。"
 
@@ -2339,27 +2344,6 @@ msgstr "下一页"
 #: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "特色应用列表"
-
-#: src/gs-first-run-dialog.ui:9
-msgid "Welcome"
-msgstr "欢迎"
-
-#: src/gs-first-run-dialog.ui:18
-msgid "Welcome to Software"
-msgstr "欢迎使用"
-
-#: src/gs-first-run-dialog.ui:19
-msgid ""
-"Software lets you install all the software you need, all from one place. See "
-"our recommendations, browse the categories, or search for the applications "
-"you want."
-msgstr ""
-"“软件”让您在一个地方安装所有软件。请查看我们的推荐，浏览分类或者搜索想要的软"
-"件。"
-
-#: src/gs-first-run-dialog.ui:25
-msgid "_Browse Software"
-msgstr "浏览软件(_B)"
 
 #: src/gs-hardware-support-context-dialog.c:562
 #: src/gs-hardware-support-context-dialog.c:571
@@ -4772,6 +4756,23 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "Welcome"
+#~ msgstr "欢迎"
+
+#~ msgid "Welcome to Software"
+#~ msgstr "欢迎使用"
+
+#~ msgid ""
+#~ "Software lets you install all the software you need, all from one place. "
+#~ "See our recommendations, browse the categories, or search for the "
+#~ "applications you want."
+#~ msgstr ""
+#~ "“软件”让您在一个地方安装所有软件。请查看我们的推荐，浏览分类或者搜索想要的"
+#~ "软件。"
+
+#~ msgid "_Browse Software"
+#~ msgstr "浏览软件(_B)"
 
 #~ msgid "_Add shortcut"
 #~ msgstr "添加快捷方式(_A)"
