@@ -56,8 +56,9 @@
  * updates the state of a single #GsApp instance (`os_upgrade`) to reflect the
  * OS upgrade in the UI.
  *
- * Calling gs_plugin_refresh() will result in this plugin calling the `Poll()`
- * method on the `eos-updater` daemon to check for a new update.
+ * Calling gs_plugin_eos_updater_refresh_metadata_async() will result in this
+ * plugin calling the `Poll()` method on the `eos-updater` daemon to check for a
+ * new update.
  *
  * Calling gs_plugin_app_upgrade_download() will result in this plugin calling
  * a sequence of methods on the `eos-updater` daemon to check for, download and
@@ -74,7 +75,12 @@
  * callbacks from the proxy will be executed in the main thread, and *must not
  * block*.
  *
- * The other functions (gs_plugin_refresh(), gs_plugin_app_upgrade_download(),
+ * Asynchronous plugin vfuncs (such as
+ * gs_plugin_eos_updater_refresh_metadata_async()) are run in gnome-software’s
+ * main thread and *must not block*. As they all call D-Bus methods, the work
+ * they do is minimal and hence is OK to happen in the main thread.
+ *
+ * The other functions (gs_plugin_app_upgrade_download(),
  * etc.) are called in #GTask worker threads. They are allowed to call methods
  * on the proxy; the main thread is only allowed to receive signals and check
  * properties on the proxy, to avoid blocking. Consequently, worker threads need
@@ -675,31 +681,42 @@ gs_plugin_eos_updater_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_eos_updater_parent_class)->finalize (object);
 }
 
-/* Called in a #GTask worker thread, but it can run without holding
- * `self->mutex` since it doesn’t need to synchronise on state. */
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void poll_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data);
+
+/* Called in the main thread. */
+static void
+gs_plugin_eos_updater_refresh_metadata_async (GsPlugin                     *plugin,
+                                              guint64                       cache_age_secs,
+                                              GsPluginRefreshMetadataFlags  flags,
+                                              GCancellable                 *cancellable,
+                                              GAsyncReadyCallback           callback,
+                                              gpointer                      user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
 	EosUpdaterState updater_state;
-	gboolean success;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_refresh_metadata_async);
 
 	/* We let the eos-updater daemon do its own caching, so ignore the
-	 * @cache_age, unless it’s %G_MAXUINT, which signifies startup of g-s.
+	 * @cache_age_secs, unless it’s %G_MAXUINT64, which signifies startup of g-s.
 	 * In that case, it’s probably just going to load the system too much to
 	 * do an update check now. We can wait. */
-	g_debug ("%s: cache_age: %u", G_STRFUNC, cache_age);
+	g_debug ("%s: cache_age_secs: %" G_GUINT64_FORMAT, G_STRFUNC, cache_age_secs);
 
-	if (cache_age == G_MAXUINT)
-		return TRUE;
+	if (cache_age_secs == G_MAXUINT64) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* check if the OS upgrade has been disabled */
 	if (self->updater_proxy == NULL) {
 		g_debug ("%s: Updater disabled", G_STRFUNC);
-		return TRUE;
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
 	/* poll in the error/none/ready states to check if there's an
@@ -709,16 +726,42 @@ gs_plugin_refresh (GsPlugin *plugin,
 	case EOS_UPDATER_STATE_ERROR:
 	case EOS_UPDATER_STATE_NONE:
 	case EOS_UPDATER_STATE_READY:
-		/* This sync call will block the job thread, which is OK. */
-		success = gs_eos_updater_call_poll_sync (self->updater_proxy,
-							 cancellable, error);
-		gs_eos_updater_error_convert (error);
-		return success;
+		gs_eos_updater_call_poll (self->updater_proxy,
+					  cancellable,
+					  poll_cb,
+					  g_steal_pointer (&task));
+		return;
 	default:
 		g_debug ("%s: Updater in state %s; not polling",
 			 G_STRFUNC, eos_updater_state_to_str (updater_state));
-		return TRUE;
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
+}
+
+static void
+poll_cb (GObject      *source_object,
+         GAsyncResult *result,
+         gpointer      user_data)
+{
+	GsEosUpdater *updater_proxy = GS_EOS_UPDATER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_eos_updater_call_poll_finish (updater_proxy, result, &local_error)) {
+		gs_eos_updater_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static gboolean
+gs_plugin_eos_updater_refresh_metadata_finish (GsPlugin      *plugin,
+                                               GAsyncResult  *result,
+                                               GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /* Called in a #GTask worker thread, but it can run without holding
@@ -1027,6 +1070,8 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 
 	plugin_class->setup_async = gs_plugin_eos_updater_setup_async;
 	plugin_class->setup_finish = gs_plugin_eos_updater_setup_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_eos_updater_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_eos_updater_refresh_metadata_finish;
 }
 
 GType
