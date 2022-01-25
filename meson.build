@@ -141,12 +141,12 @@ libadwaita = dependency('libadwaita-1',
   version: '>=1.0.0.alpha.3',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
-      'examples=false',
-      'introspection=disabled',
-      'tests=false',
-      'vapi=false',
-    ]
-  )
+    'examples=false',
+    'introspection=disabled',
+    'tests=false',
+    'vapi=false',
+  ]
+)
 
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),
