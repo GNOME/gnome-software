@@ -190,16 +190,6 @@ app_set_parental_quirks (GsPluginMalcontent *self,
 	return filtered;
 }
 
-static MctAppFilter *
-query_app_filter (GsPluginMalcontent  *self,
-                  GCancellable        *cancellable,
-                  GError             **error)
-{
-	return mct_manager_get_app_filter (self->manager, getuid (),
-					   MCT_GET_APP_FILTER_FLAGS_INTERACTIVE, cancellable,
-					   error);
-}
-
 static gboolean
 reload_app_filter (GsPluginMalcontent  *self,
                    GCancellable        *cancellable,
@@ -209,7 +199,11 @@ reload_app_filter (GsPluginMalcontent  *self,
 	g_autoptr(MctAppFilter) old_app_filter = NULL;
 
 	/* Refresh the app filter. This blocks on a D-Bus request. */
-	new_app_filter = query_app_filter (self, cancellable, error);
+	new_app_filter = mct_manager_get_app_filter (self->manager,
+						     getuid (),
+						     MCT_GET_APP_FILTER_FLAGS_INTERACTIVE,
+						     cancellable,
+						     error);
 
 	/* on failure, keep the old app filter around since it might be more
 	 * useful than nothing */
