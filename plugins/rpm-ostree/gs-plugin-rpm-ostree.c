@@ -1003,18 +1003,49 @@ gs_rpmostree_ref_dnf_context_locked (GsPluginRpmOstree *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-                   guint cache_age,
-                   GCancellable *cancellable,
-                   GError **error)
+static void refresh_metadata_thread_cb (GTask        *task,
+                                        gpointer      source_object,
+                                        gpointer      task_data,
+                                        GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_refresh_metadata_async (GsPlugin                     *plugin,
+                                             guint64                       cache_age_secs,
+                                             GsPluginRefreshMetadataFlags  flags,
+                                             GCancellable                 *cancellable,
+                                             GAsyncReadyCallback           callback,
+                                             gpointer                      user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refresh_metadata_async);
+	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
+
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refresh_metadata_thread_cb, g_steal_pointer (&task));
+}
+
+static void
+refresh_metadata_thread_cb (GTask        *task,
+                            gpointer      source_object,
+                            gpointer      task_data,
+                            GCancellable *cancellable)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	GsPluginRefreshMetadataData *data = task_data;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
+	assert_in_worker (self);
+
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	{
 		g_autofree gchar *transaction_address = NULL;
@@ -1022,8 +1053,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = NULL;
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-			return FALSE;
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
 		progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		tp = transaction_progress_new ();
@@ -1035,23 +1068,27 @@ gs_plugin_refresh (GsPlugin *plugin,
 							   options,
 							   &transaction_address,
 							   cancellable,
-							   error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+							   &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 								 transaction_address,
 								 tp,
 								 cancellable,
-								 error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+								 &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 	}
 
-	if (cache_age == G_MAXUINT)
-		return TRUE;
+	if (data->cache_age_secs == G_MAXUINT64) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	{
 		g_autofree gchar *transaction_address = NULL;
@@ -1059,8 +1096,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-			return FALSE;
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1079,18 +1118,20 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                        &transaction_address,
 		                                        NULL /* fd list out */,
 		                                        cancellable,
-		                                        error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+		                                        &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 		                                                 transaction_address,
 		                                                 tp,
 		                                                 cancellable,
-		                                                 error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+		                                                 &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 	}
 
@@ -1101,8 +1142,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 		GVariantDict dict;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
-			return FALSE;
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1116,25 +1159,35 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                                         NULL,
 		                                                         &transaction_address,
 		                                                         cancellable,
-		                                                         error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+		                                                         &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
 		                                                 transaction_address,
 		                                                 tp,
 		                                                 cancellable,
-		                                                 error)) {
-			gs_rpmostree_error_convert (error);
-			return FALSE;
+		                                                 &local_error)) {
+			gs_rpmostree_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
 		}
 	}
 
 	/* update UI */
 	gs_plugin_updates_changed (plugin);
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_rpm_ostree_refresh_metadata_finish (GsPlugin      *plugin,
+                                              GAsyncResult  *result,
+                                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2392,6 +2445,19 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
+
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
+
 gboolean
 gs_plugin_enable_repo (GsPlugin *plugin,
 		       GsApp *repo,
@@ -2401,6 +2467,9 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GMainContext) context = NULL;
+	g_autoptr(GAsyncResult) result = NULL;
+	GsPluginRefreshMetadataFlags flags = GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
 
 	/* only process this app if it was created by this plugin */
 	if (!gs_app_has_management_plugin (repo, plugin))
@@ -2415,12 +2484,30 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	if (!gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error))
 		return FALSE;
 
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
+
 	/* This can fail silently, it's only to update necessary caches, to provide
-	 * up-to-date information after the successful repository enable/install. */
-	gs_plugin_refresh (plugin, 1, cancellable, NULL);
+	 * up-to-date information after the successful repository enable/install.
+	 *
+	 * FIXME: This has to run synchronously until gs_plugin_enable_repo() is
+	 * ported to be asynchronous. */
+	context = g_main_context_new ();
+	g_main_context_push_thread_default (context);
+	gs_plugin_rpm_ostree_refresh_metadata_async (plugin,
+						     1,  /* cache age */
+						     flags,
+						     cancellable,
+						     async_result_cb,
+						     &result);
+
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+
+	g_main_context_pop_thread_default (context);
+	/* ignore the @result */
 
 	return TRUE;
-
 }
 
 gboolean
@@ -2461,6 +2548,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_rpm_ostree_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_rpm_ostree_refine_async;
 	plugin_class->refine_finish = gs_plugin_rpm_ostree_refine_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_rpm_ostree_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_rpm_ostree_refresh_metadata_finish;
 }
 
 GType
