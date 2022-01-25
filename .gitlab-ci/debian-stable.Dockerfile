@@ -20,25 +20,41 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     lcov \
     libaccountsservice-dev \
     libappstream-dev \
+    libcairo2-dev \
+    libcairo-gobject2 \
     libcurl4-gnutls-dev \
+    libepoxy-dev \
     libflatpak-dev \
+    libfontconfig-dev \
     libfwupd-dev \
+    libgdk-pixbuf-2.0-dev \
     libgirepository1.0-dev \
     libglib2.0-dev \
     libglib-testing-0-dev \
     libgoa-1.0-dev \
-    libgtk-4-dev \
+    libgraphene-1.0-dev \
+    libgstreamer-plugins-bad1.0-dev \
     libgudev-1.0-dev \
+    libjpeg62-turbo-dev \
     libjson-glib-dev \
     liblmdb-dev \
     libmalcontent-0-dev \
     libpackagekit-glib2-dev \
     libpam0g-dev \
+    libpango1.0-dev \
     libpolkit-gobject-1-dev \
     libsoup2.4-dev \
     libstemmer-dev \
+    libxcursor-dev \
+    libxdamage-dev \
+    libxext-dev \
+    libxfixes-dev \
+    libxi-dev \
+    libxinerama-dev \
+    libxkbcommon-dev \
     libxmlb-dev \
     libxml2-utils \
+    libxrandr-dev \
     libyaml-dev \
     ninja-build \
     packagekit \
@@ -54,6 +70,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     sysprof \
     unzip \
     valgrind \
+    wayland-protocols \
     wget \
     xsltproc \
     xz-utils \
