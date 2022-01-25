@@ -57,6 +57,10 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @list_installed_apps_finish: (nullable): Finish method for
  *   @list_installed_apps_async. Must be implemented if
  *   @list_installed_apps_async is implemented.
+ * @refresh_metadata_async: (nullable): Refresh plugin metadata.
+ * @refresh_metadata_finish: (nullable): Finish method for
+ *   @refresh_metadata_async. Must be implemented if @refresh_metadata_async is
+ *   implemented.
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -118,6 +122,16 @@ struct _GsPluginClass
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
 	GsAppList *		(*list_installed_apps_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+
+	void			(*refresh_metadata_async)	(GsPlugin		*plugin,
+								 guint64		 cache_age_secs,
+								 GsPluginRefreshMetadataFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*refresh_metadata_finish)	(GsPlugin		*plugin,
 								 GAsyncResult		*result,
 								 GError			**error);
 

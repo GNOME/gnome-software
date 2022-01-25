@@ -171,6 +171,20 @@ typedef enum {
 } GsPluginRefineFlags;
 
 /**
+ * GsPluginRefreshMetadataFlags:
+ * @GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to refresh metadata.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE = 0,
+	GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginRefreshMetadataFlags;
+
+/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
