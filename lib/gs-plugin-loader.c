@@ -3092,10 +3092,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	g_autoptr(GsAppList) list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginRefineFlags filter_flags;
 	gboolean add_to_pending_array = FALSE;
-	guint max_results;
-	GsAppListSortFunc sort_func;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 	g_autofree gchar *job_debug = NULL;
@@ -3222,40 +3219,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_to_be_installed (addon, FALSE);
 		}
-	}
-
-	/* refine with enough data so that the sort_func in
-	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
-	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
-	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, NULL);
-	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
-		g_autoptr(GsPluginJob) refine_job = NULL;
-		g_autoptr(GAsyncResult) refine_result = NULL;
-		g_autoptr(GsAppList) new_list = NULL;
-
-		g_debug ("running filter flags with early refine");
-
-		refine_job = gs_plugin_job_refine_new (list, filter_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
-		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
-						    cancellable,
-						    async_result_cb,
-						    &refine_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
-		if (new_list == NULL) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, g_steal_pointer (&error));
-			return;
-		}
-
-		/* Update the app list in case the refine resolved any wildcards. */
-		g_set_object (&list, new_list);
 	}
 
 	/* filter to reduce to a sane set */

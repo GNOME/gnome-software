@@ -38,8 +38,6 @@ struct _GsPluginJobClass
 
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
-void		 gs_plugin_job_set_filter_flags		(GsPluginJob	*self,
-							 GsPluginRefineFlags filter_flags);
 void		 gs_plugin_job_set_dedupe_flags		(GsPluginJob	*self,
 							 GsAppListFilterFlags dedupe_flags);
 void		 gs_plugin_job_set_interactive		(GsPluginJob	*self,
