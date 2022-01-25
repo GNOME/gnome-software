@@ -3310,36 +3310,24 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_refresh (GsPlugin *plugin,
-			      GsApp *progress_app,
-			      guint cache_age,
-			      GCancellable *cancellable,
-			      GError **error)
+static void gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugin,
+                                                         guint64                       cache_age_secs,
+                                                         GsPluginRefreshMetadataFlags  flags,
+                                                         GCancellable                 *cancellable,
+                                                         GAsyncReadyCallback           callback,
+                                                         gpointer                      user_data);
+
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
+	GAsyncResult **result_out = user_data;
 
-	gs_packagekit_helper_set_progress_app (helper, progress_app);
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
 
-	g_mutex_lock (&self->task_mutex);
-	/* cache age of 1 is user-initiated */
-	pk_client_set_background (PK_CLIENT (self->task), cache_age > 1);
-	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	pk_client_set_cache_age (PK_CLIENT (self->task), cache_age);
-	/* refresh the metadata */
-	results = pk_client_refresh_cache (PK_CLIENT (self->task),
-	                                   FALSE /* force */,
-	                                   cancellable,
-	                                   gs_packagekit_helper_cb, helper,
-	                                   error);
-	g_mutex_unlock (&self->task_mutex);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		return FALSE;
-	}
-
-	return TRUE;
+	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
 gboolean
@@ -3352,6 +3340,8 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(GMainContext) context = NULL;
+	g_autoptr(GAsyncResult) result = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (repo, plugin))
@@ -3389,8 +3379,24 @@ gs_plugin_enable_repo (GsPlugin *plugin,
 	gs_app_set_state (repo, GS_APP_STATE_INSTALLED);
 
 	/* This can fail silently, it's only to update necessary caches, to provide
-	 * up-to-date information after the successful repository enable/install. */
-	gs_plugin_packagekit_refresh (plugin, repo, 1, cancellable, NULL);
+	 * up-to-date information after the successful repository enable/install.
+	 *
+	 * FIXME: This has to run synchronously until gs_plugin_enable_repo() is
+	 * ported to be asynchronous. */
+	context = g_main_context_new ();
+	g_main_context_push_thread_default (context);
+	gs_plugin_packagekit_refresh_metadata_async (plugin,
+						     1,  /* cache age */
+						     gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE) ? GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE : GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE,
+						     cancellable,
+						     async_result_cb,
+						     &result);
+
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+
+	g_main_context_pop_thread_default (context);
+	/* ignore the @result */
 
 	gs_plugin_repository_changed (plugin, repo);
 
@@ -3572,39 +3578,72 @@ gs_plugin_download (GsPlugin *plugin,
 	return retval;
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void refresh_metadata_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
+static void
+gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugin,
+                                             guint64                       cache_age_secs,
+                                             GsPluginRefreshMetadataFlags  flags,
+                                             GCancellable                 *cancellable,
+                                             GAsyncReadyCallback           callback,
+                                             gpointer                      user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-	g_autoptr(PkResults) results = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_refresh_metadata_async);
+	g_task_set_task_data (task, g_object_ref (helper), g_object_unref);
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	g_mutex_lock (&self->task_mutex_refresh);
-	/* cache age of 1 is user-initiated */
-	pk_client_set_background (PK_CLIENT (self->task_refresh), cache_age > 1);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_REFRESH, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age);
+	pk_client_set_background (PK_CLIENT (self->task_refresh), !interactive);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_REFRESH, interactive);
+	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age_secs);
+
 	/* refresh the metadata */
-	results = pk_client_refresh_cache (PK_CLIENT (self->task_refresh),
-	                                   FALSE /* force */,
-	                                   cancellable,
-	                                   gs_packagekit_helper_cb, helper,
-	                                   error);
+	pk_client_refresh_cache_async (PK_CLIENT (self->task_refresh),
+				       FALSE /* force */,
+				       cancellable,
+				       gs_packagekit_helper_cb, helper,
+				       refresh_metadata_cb, g_steal_pointer (&task));
 	g_mutex_unlock (&self->task_mutex_refresh);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		return FALSE;
+}
+
+static void
+refresh_metadata_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPlugin *plugin = g_task_get_source_object (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	} else {
+		gs_plugin_updates_changed (plugin);
+		g_task_return_boolean (task, TRUE);
 	}
+}
 
-	gs_plugin_updates_changed (plugin);
-
-	return TRUE;
+static gboolean
+gs_plugin_packagekit_refresh_metadata_finish (GsPlugin      *plugin,
+                                              GAsyncResult  *result,
+                                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 #ifdef HAVE_PK_OFFLINE_WITH_FLAGS
@@ -3876,6 +3915,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_packagekit_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_packagekit_refine_async;
 	plugin_class->refine_finish = gs_plugin_packagekit_refine_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_packagekit_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_packagekit_refresh_metadata_finish;
 }
 
 GType
