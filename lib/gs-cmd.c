@@ -394,7 +394,7 @@ main (int argc, char **argv)
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_list_installed_apps_new (self->refine_flags, self->max_results, GS_APP_LIST_FILTER_FLAGS_DEFAULT);
+			plugin_job = gs_plugin_job_list_installed_apps_new (self->refine_flags, self->max_results, GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
