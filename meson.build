@@ -125,7 +125,16 @@ gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
-gtk = dependency('gtk4', version : '>= 4.2')
+gtk = dependency('gtk4',
+  version : '>= 4.6',
+  fallback: ['gtk', 'gtk_dep'],
+  default_options: [
+      'build-examples=false',
+      'build-tests=false',
+      'introspection=disabled',
+      'demos=false',
+    ]
+  )
 glib = dependency('glib-2.0', version : '>= 2.66.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
