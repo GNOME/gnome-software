@@ -171,6 +171,89 @@ gs_plugin_dummy_delay (GsPlugin *plugin,
 	return ret;
 }
 
+typedef struct {
+	GsApp *app;  /* (owned) (nullable) */
+	guint percent_complete;
+} DelayData;
+
+static void
+delay_data_free (DelayData *data)
+{
+	g_clear_object (&data->app);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DelayData, delay_data_free)
+
+static gboolean delay_timeout_cb (gpointer user_data);
+
+/* Simulate a download on app, updating its progress one percentage point at a
+ * time, with an overall interval of @timeout_ms to go from 0% to 100%. The
+ * download is cancelled within @timeout_ms / 100 if @cancellable is cancelled. */
+static void
+gs_plugin_dummy_delay_async (GsPlugin            *plugin,
+                             GsApp               *app,
+                             guint                timeout_ms,
+                             GCancellable        *cancellable,
+                             GAsyncReadyCallback  callback,
+                             gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(DelayData) data = NULL;
+	g_autoptr(GSource) source = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_delay_async);
+
+	data = g_new0 (DelayData, 1);
+	data->app = (app != NULL) ? g_object_ref (app) : NULL;
+	data->percent_complete = 0;
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) delay_data_free);
+
+	source = g_timeout_source_new (timeout_ms / 100);
+	g_task_attach_source (task, source, delay_timeout_cb);
+}
+
+static gboolean
+delay_timeout_cb (gpointer user_data)
+{
+	GTask *task = G_TASK (user_data);
+	GsPlugin *plugin = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	DelayData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	/* Iterate until 100%. */
+	if (data->percent_complete >= 100) {
+		g_task_return_boolean (task, TRUE);
+		return G_SOURCE_REMOVE;
+	}
+
+	/* Has the task been cancelled? */
+	if (g_cancellable_set_error_if_cancelled (cancellable, &local_error)) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return G_SOURCE_REMOVE;
+	}
+
+	/* Update the app’s progress and continue. */
+	if (data->app != NULL)
+		gs_app_set_progress (data->app, data->percent_complete);
+	gs_plugin_status_update (plugin, data->app, GS_PLUGIN_STATUS_DOWNLOADING);
+
+	data->percent_complete++;
+
+	return G_SOURCE_CONTINUE;
+}
+
+static gboolean
+gs_plugin_dummy_delay_finish (GsPlugin      *plugin,
+                              GAsyncResult  *result,
+                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
 static gboolean
 gs_plugin_dummy_poll_cb (gpointer user_data)
 {
@@ -885,14 +968,49 @@ gs_plugin_download_app (GsPlugin *plugin,
 	return gs_plugin_dummy_delay (plugin, app, 5100, cancellable, error);
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void refresh_metadata_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
+static void
+gs_plugin_dummy_refresh_metadata_async (GsPlugin                     *plugin,
+                                        guint64                       cache_age_secs,
+                                        GsPluginRefreshMetadataFlags  flags,
+                                        GCancellable                 *cancellable,
+                                        GAsyncReadyCallback           callback,
+                                        gpointer                      user_data)
 {
-	g_autoptr(GsApp) app = gs_app_new (NULL);
-	return gs_plugin_dummy_delay (plugin, app, 3100, cancellable, error);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_refresh_metadata_async);
+
+	app = gs_app_new (NULL);
+	gs_plugin_dummy_delay_async (plugin, app, 3100, cancellable, refresh_metadata_cb, g_steal_pointer (&task));
+}
+
+static void
+refresh_metadata_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_dummy_delay_finish (plugin, result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_refresh_metadata_finish (GsPlugin      *plugin,
+                                         GAsyncResult  *result,
+                                         GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -946,6 +1064,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->refine_finish = gs_plugin_dummy_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_dummy_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_dummy_list_installed_apps_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_dummy_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
 }
 
 GType
