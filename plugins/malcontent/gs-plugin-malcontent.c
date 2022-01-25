@@ -190,20 +190,33 @@ app_set_parental_quirks (GsPluginMalcontent *self,
 	return filtered;
 }
 
+static void
+reload_app_filter_async (GsPluginMalcontent  *self,
+                         gboolean             interactive,
+                         GCancellable        *cancellable,
+                         GAsyncReadyCallback  callback,
+                         gpointer             user_data)
+{
+	/* Refresh the app filter. This causes a D-Bus request. */
+	mct_manager_get_app_filter_async (self->manager,
+					  getuid (),
+					  interactive ? MCT_GET_APP_FILTER_FLAGS_INTERACTIVE : MCT_GET_APP_FILTER_FLAGS_NONE,
+					  cancellable,
+					  callback,
+					  user_data);
+}
+
 static gboolean
-reload_app_filter (GsPluginMalcontent  *self,
-                   GCancellable        *cancellable,
-                   GError             **error)
+reload_app_filter_finish (GsPluginMalcontent  *self,
+                          GAsyncResult        *result,
+                          GError             **error)
 {
 	g_autoptr(MctAppFilter) new_app_filter = NULL;
 	g_autoptr(MctAppFilter) old_app_filter = NULL;
 
-	/* Refresh the app filter. This blocks on a D-Bus request. */
-	new_app_filter = mct_manager_get_app_filter (self->manager,
-						     getuid (),
-						     MCT_GET_APP_FILTER_FLAGS_INTERACTIVE,
-						     cancellable,
-						     error);
+	new_app_filter = mct_manager_get_app_filter_finish (self->manager,
+							    result,
+							    error);
 
 	/* on failure, keep the old app filter around since it might be more
 	 * useful than nothing */
@@ -219,13 +232,16 @@ reload_app_filter (GsPluginMalcontent  *self,
 	return TRUE;
 }
 
+static void reload_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data);
+
 static void
 app_filter_changed_cb (MctManager *manager,
                        guint64     user_id,
                        gpointer    user_data)
 {
 	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (user_data);
-	g_autoptr(GError) error_local = NULL;
 
 	if (user_id != getuid ())
 		return;
@@ -234,10 +250,21 @@ app_filter_changed_cb (MctManager *manager,
 	 * apps could be filtered from before. Reload everything to be
 	 * sure of re-filtering correctly. */
 	g_debug ("Reloading due to app filter changing for user %" G_GUINT64_FORMAT, user_id);
-	if (reload_app_filter (self, NULL, &error_local))
+	reload_app_filter_async (self, FALSE, NULL, reload_cb, g_object_ref (self));
+}
+
+static void
+reload_cb (GObject      *source_object,
+           GAsyncResult *result,
+           gpointer      user_data)
+{
+	g_autoptr(GsPluginMalcontent) self = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (reload_app_filter_finish (self, result, &local_error))
 		gs_plugin_reload (GS_PLUGIN (self));
 	else
-		g_warning ("Failed to reload changed app filter: %s", error_local->message);
+		g_warning ("Failed to reload changed app filter: %s", local_error->message);
 }
 
 static void
@@ -389,15 +416,52 @@ gs_plugin_malcontent_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void refresh_metadata_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
+static void
+gs_plugin_malcontent_refresh_metadata_async (GsPlugin                     *plugin,
+                                             guint64                       cache_age_secs,
+                                             GsPluginRefreshMetadataFlags  flags,
+                                             GCancellable                 *cancellable,
+                                             GAsyncReadyCallback           callback,
+                                             gpointer                      user_data)
 {
 	GsPluginMalcontent *self = GS_PLUGIN_MALCONTENT (plugin);
+	g_autoptr(GTask) task = NULL;
 
-	return reload_app_filter (self, cancellable, error);
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_malcontent_refresh_metadata_async);
+
+	reload_app_filter_async (self,
+				 (flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE),
+				 cancellable,
+				 refresh_metadata_cb,
+				 g_steal_pointer (&task));
+}
+
+static void
+refresh_metadata_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginMalcontent *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (reload_app_filter_finish (self, result, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static gboolean
+gs_plugin_malcontent_refresh_metadata_finish (GsPlugin      *plugin,
+                                              GAsyncResult  *result,
+                                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -428,6 +492,8 @@ gs_plugin_malcontent_class_init (GsPluginMalcontentClass *klass)
 	plugin_class->setup_finish = gs_plugin_malcontent_setup_finish;
 	plugin_class->refine_async = gs_plugin_malcontent_refine_async;
 	plugin_class->refine_finish = gs_plugin_malcontent_refine_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_malcontent_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_malcontent_refresh_metadata_finish;
 }
 
 GType
