@@ -121,7 +121,7 @@ gs_repos_section_init (GsReposSection *self)
 	gtk_list_box_set_sort_func (self->list, _list_sort_func, self, NULL);
 
 	style_context = gtk_widget_get_style_context (GTK_WIDGET (self->list));
-	gtk_style_context_add_class (style_context, "content");
+	gtk_style_context_add_class (style_context, "boxed-list");
 
 	adw_preferences_group_add (ADW_PREFERENCES_GROUP (self), GTK_WIDGET (self->list));
 
