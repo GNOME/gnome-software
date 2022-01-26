@@ -148,6 +148,11 @@ struct _GsDetailsPage
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
+enum {
+	SIGNAL_METAINFO_LOADED,
+	SIGNAL_LAST
+};
+
 typedef enum {
 	PROP_ODRS_PROVIDER = 1,
 	PROP_IS_NARROW,
@@ -156,6 +161,7 @@ typedef enum {
 } GsDetailsPageProperty;
 
 static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
+static guint signals[SIGNAL_LAST] = { 0 };
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -2200,6 +2206,21 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
+	/**
+	 * GsDetailsPage::metainfo-loaded:
+	 * @app: a #GsApp
+	 *
+	 * Emitted after a custom metainfo @app is loaded in the page, but before
+	 * it's fully shown.
+	 *
+	 * Since: 42
+	 */
+	signals[SIGNAL_METAINFO_LOADED] =
+		g_signal_new ("metainfo-loaded",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_icon);
@@ -2439,6 +2460,8 @@ gs_details_page_metainfo_ready_cb (GObject *source_object,
 	g_set_object (&self->app_local_file, app);
 	_set_app (self, app);
 	gs_details_page_load_stage2 (self, FALSE);
+
+	g_signal_emit (self, signals[SIGNAL_METAINFO_LOADED], 0, app);
 }
 
 static void
