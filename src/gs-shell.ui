@@ -67,7 +67,8 @@
                         </style>
                         <child>
                           <object class="GtkLabel" id="label_events">
-                            <property name="halign">start</property>
+                            <property name="halign">fill</property>
+                            <property name="hexpand">True</property>
                             <property name="label">Some Title</property>
                             <property name="wrap">True</property>
                             <property name="wrap_mode">word-char</property>
@@ -87,6 +88,7 @@
                                 <property name="label" translatable="yes" comments="button in the info bar">Software Repositories</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                                 <signal name="clicked" handler="gs_shell_plugin_events_sources_cb"/>
                               </object>
                             </child>
@@ -96,6 +98,7 @@
                                 <property name="label" translatable="yes" comments="button in the info bar">Examine Disk</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                                 <signal name="clicked" handler="gs_shell_plugin_events_no_space_cb"/>
                               </object>
                             </child>
@@ -105,6 +108,7 @@
                                 <property name="label" translatable="yes" comments="button in the info bar">Network Settings</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                                 <signal name="clicked" handler="gs_shell_plugin_events_network_settings_cb"/>
                               </object>
                             </child>
@@ -114,6 +118,7 @@
                                 <property name="label" translatable="yes" comments="button in the info bar">Restart Now</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                                 <signal name="clicked" handler="gs_shell_plugin_events_restart_required_cb"/>
                               </object>
                             </child>
@@ -123,6 +128,7 @@
                                 <property name="label" translatable="yes" comments="button in the info bar">More Information</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="valign">center</property>
                                 <signal name="clicked" handler="gs_shell_plugin_events_more_info_cb"/>
                               </object>
                             </child>
@@ -130,6 +136,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_dismiss">
+                            <property name="halign">end</property>
                             <property name="valign">start</property>
                             <signal name="clicked" handler="gs_shell_plugin_event_dismissed_cb"/>
                             <style>
