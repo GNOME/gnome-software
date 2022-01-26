@@ -115,10 +115,8 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	g_autoptr(GIcon) icon = NULL;
 	guint icon_size;
 	const gchar *update_details;
-#if ADW_CHECK_VERSION(1, 0, 1)
 	GdkDisplay *display;
 	g_autoptr (GtkIconPaintable) paintable = NULL;
-#endif
 
 	/* FIXME support app == NULL */
 
@@ -183,7 +181,6 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 						 "system-component-application");
 	}
 
-#if ADW_CHECK_VERSION(1, 0, 1)
 	display = gdk_display_get_default ();
 	paintable = gtk_icon_theme_lookup_by_gicon (gtk_icon_theme_get_for_display (display),
 						    icon,
@@ -192,16 +189,6 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 						    gtk_widget_get_direction (GTK_WIDGET (page)),
 						    GTK_ICON_LOOKUP_FORCE_REGULAR);
 	adw_status_page_set_paintable (ADW_STATUS_PAGE (page->status_page), GDK_PAINTABLE (paintable));
-#else
-	if (G_IS_THEMED_ICON (icon)) {
-		const gchar *const *names = g_themed_icon_get_names (G_THEMED_ICON (icon));
-
-		adw_status_page_set_icon_name (ADW_STATUS_PAGE (page->status_page),
-					       names ? names[0] : NULL);
-	} else {
-		adw_status_page_set_icon_name (ADW_STATUS_PAGE (page->status_page), NULL);
-	}
-#endif
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		gtk_widget_show (page->permissions_section);

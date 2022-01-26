@@ -125,7 +125,16 @@ gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 libxmlb = dependency('xmlb', version : '>= 0.1.7', fallback : ['libxmlb', 'libxmlb_dep'])
 gio_unix = dependency('gio-unix-2.0', version : '>= 2.56.0')
 gmodule = dependency('gmodule-2.0')
-gtk = dependency('gtk4', version : '>= 4.2')
+gtk = dependency('gtk4',
+  version : '>= 4.6',
+  fallback: ['gtk', 'gtk_dep'],
+  default_options: [
+      'build-examples=false',
+      'build-tests=false',
+      'introspection=disabled',
+      'demos=false',
+    ]
+  )
 glib = dependency('glib-2.0', version : '>= 2.66.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
@@ -138,28 +147,15 @@ else
   libsoupapiversion = '3.0'
 endif
 libadwaita = dependency('libadwaita-1',
-  version: '>=1.0.0.alpha.3',
+  version: '>=1.0.1',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
-      'examples=false',
-      'introspection=disabled',
-      'tests=false',
-      'vapi=false',
-    ]
-  )
-
-# FIXME: These libadwaita checks can be dropped when we depend on 1.0.0.beta.1
-if libadwaita.type_name() == 'internal'
-  conf.set('HAVE_ADW_CAROUSEL_GET_ANIMATION_DURATION', '1')
-  conf.set('HAVE_ADW_CAROUSEL_SCROLL_TO_FULL', '1')
-else
-  if meson.get_compiler('c').has_function('adw_carousel_get_animation_duration', prefix: '#include <adwaita.h>', dependencies: libadwaita)
-    conf.set('HAVE_ADW_CAROUSEL_GET_ANIMATION_DURATION', '1')
-  endif
-  if meson.get_compiler('c').has_function('adw_carousel_scroll_to_full', prefix: '#include <adwaita.h>', dependencies: libadwaita)
-    conf.set('HAVE_ADW_CAROUSEL_SCROLL_TO_FULL', '1')
-  endif
-endif
+    'examples=false',
+    'introspection=disabled',
+    'tests=false',
+    'vapi=false',
+  ]
+)
 
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),

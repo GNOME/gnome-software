@@ -3,6 +3,8 @@ FROM fedora:35
 RUN dnf -y install \
     appstream \
     accountsservice-devel \
+    cairo-devel \
+    cairo-gobject-devel \
     clang \
     clang-analyzer \
     dbus-daemon \
@@ -12,15 +14,17 @@ RUN dnf -y install \
     flatpak-devel \
     fwupd-devel \
     gcc \
+    gdk-pixbuf2-devel \
     gettext \
     git \
     glib2-devel \
     gobject-introspection \
     gobject-introspection-devel \
     gperf \
+    graphene-devel \
     gsettings-desktop-schemas-devel \
+    gstreamer1-plugins-bad-free-devel \
     gtk-doc \
-    gtk4-devel \
     json-glib-devel \
     itstool \
     lcov \
@@ -28,12 +32,22 @@ RUN dnf -y install \
     appstream-devel \
     libcurl-devel \
     libdnf-devel \
+    libepoxy-devel \
     libgudev-devel \
+    libjpeg-turbo-devel \
     liboauth-devel \
     libsecret-devel \
     libsoup-devel \
     libstemmer-devel \
+    libXcursor-devel \
+    libXdamage-devel \
+    libXext-devel \
+    libXfixes-devel \
+    libXi-devel \
+    libXinerama-devel \
+    libxkbcommon-devel \
     libxmlb-devel \
+    libXrandr-devel \
     libxslt \
     libyaml-devel \
     malcontent-devel \
@@ -43,6 +57,7 @@ RUN dnf -y install \
     PackageKit \
     PackageKit-glib-devel \
     pam-devel \
+    pango-devel \
     pcre-devel \
     polkit-devel \
     python3 \
@@ -57,6 +72,7 @@ RUN dnf -y install \
     unzip \
     valgrind \
     valgrind-devel \
+    wayland-protocols-devel \
     wget \
     xz \
     zlib-devel \

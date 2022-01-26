@@ -10,21 +10,8 @@
     <property name="default-height">576</property>
 
     <child>
-      <object class="GtkEventControllerKey">
-        <signal name="key-pressed" handler="key_pressed_cb"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkGestureClick">
-        <!-- Mouse hardware back button -->
-        <property name="button">8</property>
-        <signal name="pressed" handler="button_pressed_cb"/>
-      </object>
-    </child>
-
-    <child>
       <object class="AdwLeaflet" id="leaflet">
-        <property name="can_swipe_back">True</property>
+        <property name="can-navigate-back">True</property>
         <property name="can-unfold">False</property>
         <!-- We need both signals to support the animations being disabled, as
              notify::child-transition-running isn't emitted in that case. -->
