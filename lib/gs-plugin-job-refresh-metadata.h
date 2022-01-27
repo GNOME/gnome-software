@@ -18,6 +18,10 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_PLUGIN_JOB_REFRESH_METADATA (gs_plugin_job_refresh_metadata_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsPluginJobRefreshMetadata, gs_plugin_job_refresh_metadata, GS, PLUGIN_JOB_REFRESH_METADATA, GsPluginJob)
+
 GsPluginJob	*gs_plugin_job_refresh_metadata_new	(guint64                      cache_age_secs,
 							 GsPluginRefreshMetadataFlags flags);
 
