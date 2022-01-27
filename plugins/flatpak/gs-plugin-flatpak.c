@@ -439,13 +439,43 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void refresh_metadata_thread_cb (GTask        *task,
+                                        gpointer      source_object,
+                                        gpointer      task_data,
+                                        GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_refresh_metadata_async (GsPlugin                     *plugin,
+                                          guint64                       cache_age_secs,
+                                          GsPluginRefreshMetadataFlags  flags,
+                                          GCancellable                 *cancellable,
+                                          GAsyncReadyCallback           callback,
+                                          gpointer                      user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_refresh_metadata_async);
+	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
+
+	/* Queue a job to get the installed apps. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refresh_metadata_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+refresh_metadata_thread_cb (GTask        *task,
+                            gpointer      source_object,
+                            gpointer      task_data,
+                            GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginRefreshMetadataData *data = task_data;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		FlatpakInstallation *installation;
@@ -457,12 +487,23 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		/* Let flatpak know if it is a background operation */
 		flatpak_installation_set_no_interaction (installation_clone,
-							 !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+							 !(data->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE));
 
-		if (!gs_flatpak_refresh (flatpak, cache_age, cancellable, error))
-			return FALSE;
+		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_refresh_metadata_finish (GsPlugin      *plugin,
+                                           GAsyncResult  *result,
+                                           GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static GsFlatpak *
@@ -1959,6 +2000,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->refine_finish = gs_plugin_flatpak_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_flatpak_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_flatpak_list_installed_apps_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_flatpak_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_flatpak_refresh_metadata_finish;
 }
 
 GType
