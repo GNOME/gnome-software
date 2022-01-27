@@ -712,43 +712,149 @@ remote_cache_is_expired (FwupdRemote *remote,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+typedef struct {
+	/* Input data. */
+	guint64 cache_age_secs;
+
+	/* In-progress state. */
+	guint n_operations_pending;
+	GError *error;  /* (owned) (nullable) */
+} RefreshMetadataData;
+
+static void
+refresh_metadata_data_free (RefreshMetadataData *data)
+{
+	g_clear_error (&data->error);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefreshMetadataData, refresh_metadata_data_free)
+
+static void get_remotes_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+static void refresh_remote_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void finish_refresh_metadata_op (GTask *task);
+
+static void
+gs_plugin_fwupd_refresh_metadata_async (GsPlugin                     *plugin,
+                                        guint64                       cache_age_secs,
+                                        GsPluginRefreshMetadataFlags  flags,
+                                        GCancellable                 *cancellable,
+                                        GAsyncReadyCallback           callback,
+                                        gpointer                      user_data)
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(RefreshMetadataData) data = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fwupd_refresh_metadata_async);
+
+	data = g_new0 (RefreshMetadataData, 1);
+	data->cache_age_secs = cache_age_secs;
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refresh_metadata_data_free);
+
+	/* get the list of enabled remotes */
+	fwupd_client_get_remotes_async (self->client, cancellable, get_remotes_cb, g_steal_pointer (&task));
+}
+
+static void
+get_remotes_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	RefreshMetadataData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) remotes = NULL;
 
-	/* get the list of enabled remotes */
-	remotes = fwupd_client_get_remotes (self->client, cancellable, &error_local);
+	remotes = fwupd_client_get_remotes_finish (client, result, &error_local);
+
 	if (remotes == NULL) {
 		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
 		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
 		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
-		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND)) {
+			g_task_return_boolean (task, TRUE);
+			return;
+		}
+
+		gs_plugin_fwupd_error_convert (&error_local);
+		g_task_return_error (task, g_steal_pointer (&error_local));
+		return;
 	}
+
+	/* Refresh each of the remotes in parallel. Keep the pending operation
+	 * count incremented until all operations have been started, so that
+	 * the overall operation doesn’t complete too early. */
+	data->n_operations_pending = 1;
+
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+
 		if (!fwupd_remote_get_enabled (remote))
 			continue;
 		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
 			continue;
-		if (!remote_cache_is_expired (remote, cache_age))
+		if (!remote_cache_is_expired (remote, data->cache_age_secs))
 			continue;
 
-		if (!fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
+		data->n_operations_pending++;
+		fwupd_client_refresh_remote_async (client, remote, cancellable,
+						   refresh_remote_cb, g_object_ref (task));
 	}
-	return TRUE;
+
+	finish_refresh_metadata_op (task);
+}
+
+static void
+refresh_remote_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	FwupdClient *client = FWUPD_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	RefreshMetadataData *data = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!fwupd_client_refresh_remote_finish (client, result, &local_error)) {
+		gs_plugin_fwupd_error_convert (&local_error);
+		if (data->error == NULL)
+			data->error = g_steal_pointer (&local_error);
+		else
+			g_debug ("Another remote refresh error: %s", local_error->message);
+	}
+
+	finish_refresh_metadata_op (task);
+}
+
+static void
+finish_refresh_metadata_op (GTask *task)
+{
+	RefreshMetadataData *data = g_task_get_task_data (task);
+
+	g_assert (data->n_operations_pending > 0);
+	data->n_operations_pending--;
+
+	if (data->n_operations_pending == 0) {
+		if (data->error != NULL)
+			g_task_return_error (task, g_steal_pointer (&data->error));
+		else
+			g_task_return_boolean (task, TRUE);
+	}
+}
+
+static gboolean
+gs_plugin_fwupd_refresh_metadata_finish (GsPlugin      *plugin,
+                                         GAsyncResult  *result,
+                                         GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -1197,6 +1303,8 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 
 	plugin_class->setup_async = gs_plugin_fwupd_setup_async;
 	plugin_class->setup_finish = gs_plugin_fwupd_setup_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_fwupd_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_fwupd_refresh_metadata_finish;
 }
 
 GType
