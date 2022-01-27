@@ -147,18 +147,14 @@ gs_plugin_job_list_installed_apps_set_property (GObject      *object,
 }
 
 static gboolean
-app_is_valid_filter (GsApp    *app,
-                     gpointer  user_data)
+app_is_valid_filter_installed (GsApp    *app,
+                               gpointer  user_data)
 {
 	GsPluginJobListInstalledApps *self = GS_PLUGIN_JOB_LIST_INSTALLED_APPS (user_data);
 
-	return gs_plugin_loader_app_is_valid (app, self->refine_flags);
-}
+	if (!gs_plugin_loader_app_is_valid (app, self->refine_flags))
+		return FALSE;
 
-static gboolean
-app_is_valid_installed (GsApp    *app,
-                        gpointer  user_data)
-{
 	/* even without AppData, show things in progress */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLING:
@@ -403,8 +399,7 @@ finish_task (GTask     *task,
 	g_autofree gchar *job_debug = NULL;
 
 	/* filter package list */
-	gs_app_list_filter (merged_list, app_is_valid_filter, self);
-	gs_app_list_filter (merged_list, app_is_valid_installed, self);
+	gs_app_list_filter (merged_list, app_is_valid_filter_installed, self);
 
 	/* filter duplicates with priority, taking into account the source name
 	 * & version, so we combine available updates with the installed app */
