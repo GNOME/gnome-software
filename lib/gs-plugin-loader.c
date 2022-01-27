@@ -652,7 +652,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		{
@@ -959,42 +958,6 @@ gs_plugin_loader_get_app_str (GsApp *app)
 
 	/* urmmm */
 	return "<invalid>";
-}
-
-static gboolean
-gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
-{
-	/* even without AppData, show things in progress */
-	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_REMOVING:
-		return TRUE;
-		break;
-	default:
-		break;
-	}
-
-	switch (gs_app_get_kind (app)) {
-	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
-	case AS_COMPONENT_KIND_CODEC:
-	case AS_COMPONENT_KIND_FONT:
-		g_debug ("app invalid as %s: %s",
-			 as_component_kind_to_string (gs_app_get_kind (app)),
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-		break;
-	default:
-		break;
-	}
-
-	/* sanity check */
-	if (!gs_app_is_installed (app)) {
-		g_autofree gchar *tmp = gs_app_to_string (app);
-		g_warning ("ignoring non-installed app %s", tmp);
-		return FALSE;
-	}
-
-	return TRUE;
 }
 
 gboolean
@@ -3129,10 +3092,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	g_autoptr(GsAppList) list = g_object_ref (gs_plugin_job_get_list (helper->plugin_job));
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginRefineFlags filter_flags;
 	gboolean add_to_pending_array = FALSE;
-	guint max_results;
-	GsAppListSortFunc sort_func;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
 	g_autofree gchar *job_debug = NULL;
@@ -3220,7 +3180,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* some functions are really required for proper operation */
 	switch (action) {
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
@@ -3260,40 +3219,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_to_be_installed (addon, FALSE);
 		}
-	}
-
-	/* refine with enough data so that the sort_func in
-	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
-	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
-	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, NULL);
-	if (filter_flags > 0 && max_results > 0 && sort_func != NULL) {
-		g_autoptr(GsPluginJob) refine_job = NULL;
-		g_autoptr(GAsyncResult) refine_result = NULL;
-		g_autoptr(GsAppList) new_list = NULL;
-
-		g_debug ("running filter flags with early refine");
-
-		refine_job = gs_plugin_job_refine_new (list, filter_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
-		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
-						    cancellable,
-						    async_result_cb,
-						    &refine_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, &error);
-		if (new_list == NULL) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, g_steal_pointer (&error));
-			return;
-		}
-
-		/* Update the app list in case the refine resolved any wildcards. */
-		g_set_object (&list, new_list);
 	}
 
 	/* filter to reduce to a sane set */
@@ -3423,10 +3348,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_installed, helper);
 		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
@@ -3672,6 +3593,10 @@ run_job_cb (GObject      *source_object,
 		GsAppList *list = gs_plugin_job_refine_get_result_list (GS_PLUGIN_JOB_REFINE (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
+	} else if (GS_IS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job)) {
+		GsAppList *list = gs_plugin_job_list_installed_apps_get_result_list (GS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
 	}
 
 	g_assert_not_reached ();
@@ -3911,7 +3836,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
-	case GS_PLUGIN_ACTION_GET_INSTALLED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_RECENT:
 	case GS_PLUGIN_ACTION_SEARCH:

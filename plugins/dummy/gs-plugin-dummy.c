@@ -458,15 +458,20 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
-			 GsAppList *list,
-			 GCancellable *cancellable,
-			 GError **error)
+static void
+gs_plugin_dummy_list_installed_apps_async (GsPlugin            *plugin,
+                                           GCancellable        *cancellable,
+                                           GAsyncReadyCallback  callback,
+                                           gpointer             user_data)
 {
 	const gchar *packages[] = { "zeus", "zeus-common", NULL };
 	const gchar *app_ids[] = { "Uninstall Zeus.desktop", NULL };
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GTask) task = NULL;
 	guint i;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_list_installed_apps_async);
 
 	/* add all packages */
 	for (i = 0; packages[i] != NULL; i++) {
@@ -488,7 +493,15 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_list_add (list, app);
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_dummy_list_installed_apps_finish (GsPlugin      *plugin,
+                                            GAsyncResult  *result,
+                                            GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -924,6 +937,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->setup_finish = gs_plugin_dummy_setup_finish;
 	plugin_class->refine_async = gs_plugin_dummy_refine_async;
 	plugin_class->refine_finish = gs_plugin_dummy_refine_finish;
+	plugin_class->list_installed_apps_async = gs_plugin_dummy_list_installed_apps_async;
+	plugin_class->list_installed_apps_finish = gs_plugin_dummy_list_installed_apps_finish;
 }
 
 GType

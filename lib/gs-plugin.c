@@ -1689,8 +1689,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_distro_upgrades";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
-	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
-		return "gs_plugin_add_installed";
 	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
 		return "gs_plugin_add_featured";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
@@ -1761,8 +1759,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-distro-updates";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "get-sources";
-	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
-		return "get-installed";
 	if (action == GS_PLUGIN_ACTION_GET_POPULAR)
 		return "get-popular";
 	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
@@ -1837,8 +1833,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
 	if (g_strcmp0 (action, "get-sources") == 0)
 		return GS_PLUGIN_ACTION_GET_SOURCES;
-	if (g_strcmp0 (action, "get-installed") == 0)
-		return GS_PLUGIN_ACTION_GET_INSTALLED;
 	if (g_strcmp0 (action, "get-popular") == 0)
 		return GS_PLUGIN_ACTION_GET_POPULAR;
 	if (g_strcmp0 (action, "get-featured") == 0)

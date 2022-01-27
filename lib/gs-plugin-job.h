@@ -38,8 +38,6 @@ struct _GsPluginJobClass
 
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
-void		 gs_plugin_job_set_filter_flags		(GsPluginJob	*self,
-							 GsPluginRefineFlags filter_flags);
 void		 gs_plugin_job_set_dedupe_flags		(GsPluginJob	*self,
 							 GsAppListFilterFlags dedupe_flags);
 void		 gs_plugin_job_set_interactive		(GsPluginJob	*self,
@@ -71,5 +69,9 @@ void		 gs_plugin_job_set_review		(GsPluginJob	*self,
 							 AsReview	*review);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
+
+#define		 GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT	(GS_APP_LIST_FILTER_FLAG_KEY_ID | \
+							 GS_APP_LIST_FILTER_FLAG_KEY_SOURCE | \
+							 GS_APP_LIST_FILTER_FLAG_KEY_VERSION)
 
 G_END_DECLS
