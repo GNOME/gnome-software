@@ -377,9 +377,8 @@ main (int argc, char **argv)
 	 * spin up the plugins enough as to prime caches */
 	if (g_getenv ("GS_CMD_NO_INITIAL_REFRESH") == NULL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", (guint64) G_MAXUINT,
-						 NULL);
+		plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
+								 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (!ret) {
@@ -662,9 +661,8 @@ main (int argc, char **argv)
 		}
 	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", cache_age_secs,
-						 NULL);
+		plugin_job = gs_plugin_job_refresh_metadata_new (cache_age_secs,
+								 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 	} else if (argc >= 1 && g_strcmp0 (argv[1], "user-hash") == 0) {

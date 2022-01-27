@@ -132,9 +132,8 @@ gs_loading_page_load (GsLoadingPage *self)
 	} else
 		cache_age_secs = G_MAXUINT64;
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", cache_age_secs,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (cache_age_secs,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					priv->cancellable,
 					gs_loading_page_refresh_cb,

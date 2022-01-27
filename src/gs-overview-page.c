@@ -602,10 +602,8 @@ third_party_response_cb (GtkInfoBar *info_bar,
 	self->third_party_needs_question = FALSE;
 	refresh_third_party_repo (self);
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "interactive", FALSE,
-					 "age", (guint64) 1,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (1,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_overview_page_refresh_cb,

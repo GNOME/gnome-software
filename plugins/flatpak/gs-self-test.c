@@ -350,9 +350,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) G_MAXUINT,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -597,9 +596,8 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) G_MAXUINT,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1124,9 +1122,8 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) 0,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (0,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1441,9 +1438,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) G_MAXUINT,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1487,9 +1483,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) 0, /* force now */
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (0,  /* force now */
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);
@@ -1694,9 +1689,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) G_MAXUINT,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -1747,9 +1741,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) 0, /* force now */
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (0,  /* force now */
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert_true (ret);

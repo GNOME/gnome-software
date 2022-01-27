@@ -984,9 +984,8 @@ check_updates (GsUpdateMonitor *monitor)
 	}
 
 	g_debug ("Daily update check due");
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) (60 * 60 * 24),
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (60 * 60 * 24,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
 					    monitor->refresh_cancellable,
 					    refresh_cache_finished_cb,
