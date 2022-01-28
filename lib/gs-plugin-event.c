@@ -274,16 +274,24 @@ gs_plugin_event_get_error (GsPluginEvent *event)
 }
 
 static void
+gs_plugin_event_dispose (GObject *object)
+{
+	GsPluginEvent *event = GS_PLUGIN_EVENT (object);
+
+	g_clear_object (&event->app);
+	g_clear_object (&event->origin);
+
+	G_OBJECT_CLASS (gs_plugin_event_parent_class)->dispose (object);
+}
+
+static void
 gs_plugin_event_finalize (GObject *object)
 {
 	GsPluginEvent *event = GS_PLUGIN_EVENT (object);
-	if (event->error != NULL)
-		g_error_free (event->error);
-	if (event->app != NULL)
-		g_object_unref (event->app);
-	if (event->origin != NULL)
-		g_object_unref (event->origin);
+
+	g_clear_error (&event->error);
 	g_free (event->unique_id);
+
 	G_OBJECT_CLASS (gs_plugin_event_parent_class)->finalize (object);
 }
 
@@ -291,6 +299,8 @@ static void
 gs_plugin_event_class_init (GsPluginEventClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gs_plugin_event_dispose;
 	object_class->finalize = gs_plugin_event_finalize;
 }
 
