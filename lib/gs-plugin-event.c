@@ -41,6 +41,15 @@ struct _GsPluginEvent
 
 G_DEFINE_TYPE (GsPluginEvent, gs_plugin_event, G_TYPE_OBJECT)
 
+typedef enum {
+	PROP_APP = 1,
+	PROP_ORIGIN,
+	PROP_ACTION,
+	PROP_ERROR,
+} GsPluginEventProperty;
+
+static GParamSpec *props[PROP_ERROR + 1] = { NULL, };
+
 /**
  * gs_plugin_event_set_app:
  * @event: A #GsPluginEvent
@@ -274,6 +283,72 @@ gs_plugin_event_get_error (GsPluginEvent *event)
 }
 
 static void
+gs_plugin_event_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsPluginEvent *self = GS_PLUGIN_EVENT (object);
+
+	switch ((GsPluginEventProperty) prop_id) {
+	case PROP_APP:
+		g_value_set_object (value, self->app);
+		break;
+	case PROP_ORIGIN:
+		g_value_set_object (value, self->origin);
+		break;
+	case PROP_ACTION:
+		g_value_set_enum (value, self->action);
+		break;
+	case PROP_ERROR:
+		g_value_set_boxed (value, self->error);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_plugin_event_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+	GsPluginEvent *self = GS_PLUGIN_EVENT (object);
+
+	switch ((GsPluginEventProperty) prop_id) {
+	case PROP_APP:
+		/* Construct only. */
+		g_assert (self->app == NULL);
+		self->app = g_value_dup_object (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	case PROP_ORIGIN:
+		/* Construct only. */
+		g_assert (self->origin == NULL);
+		self->origin = g_value_dup_object (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	case PROP_ACTION:
+		/* Construct only. */
+		g_assert (self->action == GS_PLUGIN_ACTION_UNKNOWN);
+		self->action = g_value_get_enum (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	case PROP_ERROR:
+		/* Construct only. */
+		g_assert (self->error == NULL);
+		gs_plugin_event_set_error (self, g_value_get_boxed (value));
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_plugin_event_dispose (GObject *object)
 {
 	GsPluginEvent *event = GS_PLUGIN_EVENT (object);
@@ -300,8 +375,69 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->get_property = gs_plugin_event_get_property;
+	object_class->set_property = gs_plugin_event_set_property;
 	object_class->dispose = gs_plugin_event_dispose;
 	object_class->finalize = gs_plugin_event_finalize;
+
+	/**
+	 * GsPluginEvent:app: (nullable)
+	 *
+	 * The application (or source, or whatever component) that caused the
+	 * event to be created.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_APP] =
+		g_param_spec_object ("app", "App",
+				     "The application (or source, or whatever component) that caused the event to be created.",
+				     GS_TYPE_APP,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginEvent:origin: (nullable)
+	 *
+	 * The origin that caused the event to be created.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_ORIGIN] =
+		g_param_spec_object ("origin", "Origin",
+				     "The origin that caused the event to be created.",
+				     GS_TYPE_APP,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginEvent:action:
+	 *
+	 * The action that caused the event to be created.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_ACTION] =
+		g_param_spec_enum ("action", "Action",
+				   "The action that caused the event to be created.",
+				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginEvent:error: (nullable)
+	 *
+	 * The error the event is reporting.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_ERROR] =
+		g_param_spec_boxed ("error", "Error",
+				    "The error the event is reporting.",
+				    G_TYPE_ERROR,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
 static void
