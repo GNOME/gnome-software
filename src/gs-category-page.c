@@ -96,6 +96,7 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 		GtkWidget *tile = gs_summary_tile_new (NULL);
 		gtk_flow_box_insert (flow_box, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+		gtk_widget_remove_css_class (tile, "activatable");
 	}
 
 	gtk_widget_show (GTK_WIDGET (flow_box));
