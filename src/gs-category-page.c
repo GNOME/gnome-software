@@ -381,12 +381,12 @@ gs_category_page_load_category (GsCategoryPage *self)
 	gtk_widget_show (self->top_carousel);
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 					   MIN (30, gs_category_get_size (self->subcategory)));
-	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), 8);
+	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENTLY_UPDATED_APPS);
 
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
-		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 4);
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 6);
 		gtk_widget_show (self->top_carousel);
 	} else {
 		gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
