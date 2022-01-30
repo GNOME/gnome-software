@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2021-10-11 07:42+0000\n"
-"PO-Revision-Date: 2022-01-30 21:30+0000\n"
+"PO-Revision-Date: 2022-01-30 22:26+0000\n"
 "Last-Translator: Sveinn í Felli <sv1@fellsnet.is>\n"
 "Language-Team: Icelandic <translation-team-is@lists.sourceforge.org>\n"
 "Language: is\n"
@@ -1622,13 +1622,13 @@ msgstr "Staðfærsla"
 #: src/gs-common.c:130 src/gs-common.c:153
 #, c-format
 msgid "%s is now installed"
-msgstr ""
+msgstr "%s er núna uppsett"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
 #: src/gs-common.c:134 src/gs-common.c:157
 msgid "A restart is required for the changes to take effect."
-msgstr ""
+msgstr "Endurræsing er nauðsynleg til að breytingarnar taki gildi."
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
@@ -1661,12 +1661,12 @@ msgstr "Ræsa"
 #. TRANSLATORS: window title
 #: src/gs-common.c:231
 msgid "Install Third-Party Software?"
-msgstr ""
+msgstr "Setja inn hugbúnað frá utanaðkomandi aðilum?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:235 src/gs-repos-dialog.c:193
 msgid "Enable Third-Party Software Repository?"
-msgstr ""
+msgstr "Virkja hugbúnaðarsöfn utanaðkomandi aðila?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -1685,7 +1685,7 @@ msgstr ""
 #: src/gs-common.c:261
 #, c-format
 msgid "%s is provided by “%s”."
-msgstr ""
+msgstr "%s er gefið út af “%s”."
 
 #: src/gs-common.c:270
 msgid "This software repository must be enabled to continue installation."
@@ -1868,52 +1868,47 @@ msgid "_Show More"
 msgstr "_Birta meira"
 
 #: src/gs-description-box.c:65
-#, fuzzy
 #| msgid "_Show More"
 msgid "_Show Less"
-msgstr "_Birta meira"
+msgstr "_Birta minna"
 
 #: src/gs-details-page.c:369
 msgid "Removing…"
 msgstr "Fjarlægi…"
 
 #: src/gs-details-page.c:379
-#, fuzzy
 #| msgid "Requires Restart"
 msgid "Requires restart to finish install"
-msgstr "Krefst endurræsingar"
+msgstr "Krefst endurræsingar til að ljúka uppsetningu"
 
 #: src/gs-details-page.c:386
-#, fuzzy
 #| msgid "Requires Restart"
 msgid "Requires restart to finish remove"
-msgstr "Krefst endurræsingar"
+msgstr "Krefst endurræsingar til að ljúka fjarlægingu"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
 #: src/gs-details-page.c:403
 msgid "Pending installation…"
-msgstr ""
+msgstr "Bíður uppsetningar…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
 #: src/gs-details-page.c:410
 msgid "Pending update…"
-msgstr ""
+msgstr "Bíður uppfærslu…"
 
 #. Translators: This string is shown when preparing to download and install an app.
 #: src/gs-details-page.c:426
-#, fuzzy
 #| msgid "Removing…"
 msgid "Preparing…"
-msgstr "Fjarlægi…"
+msgstr "Undirbý…"
 
 #. Translators: This string is shown when uninstalling an app.
 #: src/gs-details-page.c:429
-#, fuzzy
 #| msgid "Installing"
 msgid "Uninstalling…"
-msgstr "Set upp"
+msgstr "Tek út uppsetningu…"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
@@ -1925,10 +1920,9 @@ msgid "_Install"
 msgstr "Setja _inn"
 
 #: src/gs-details-page.c:849
-#, fuzzy
 #| msgid "Restart"
 msgid "_Restart"
-msgstr "Endurræsa"
+msgstr "Endu_rræsa"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
@@ -1951,10 +1945,9 @@ msgstr "Gat ekki fundið \"%s\""
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
 #: src/gs-details-page.c:2131
-#, fuzzy
 #| msgid "Removing…"
 msgid "Loading…"
-msgstr "Fjarlægi…"
+msgstr "Hleð inn..."
 
 #: src/gs-details-page.ui:8
 msgid "Details page"
@@ -1972,7 +1965,7 @@ msgstr ""
 
 #: src/gs-details-page.ui:87
 msgid "Help _Translate"
-msgstr ""
+msgstr "Hjálpa _til við þýðingu"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
 #: src/gs-details-page.ui:257
@@ -2054,7 +2047,7 @@ msgstr ""
 
 #: src/gs-details-page.ui:735
 msgid "No Metadata"
-msgstr ""
+msgstr "Engin lýsigögn"
 
 #: src/gs-details-page.ui:745
 msgid ""
@@ -2063,26 +2056,25 @@ msgid ""
 msgstr ""
 
 #: src/gs-details-page.ui:773
-#, fuzzy
 #| msgid "_Website"
 msgid "Project _Website"
-msgstr "_Vefsvæði"
+msgstr "_Vefsvæði verkefnisins"
 
 #: src/gs-details-page.ui:799
 msgid "_Donate"
-msgstr "_Gefa pening"
+msgstr "St_yrkja"
 
 #: src/gs-details-page.ui:825
 msgid "Contribute _Translations"
-msgstr ""
+msgstr "_Taka þátt í þýðingum"
 
 #: src/gs-details-page.ui:851
 msgid "_Report an Issue"
-msgstr ""
+msgstr "Til_kynna um vandamál"
 
 #: src/gs-details-page.ui:877
 msgid "_Help"
-msgstr ""
+msgstr "_Hjálp"
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-details-page.ui:930
@@ -2134,14 +2126,13 @@ msgstr[0] "Tiltækur hugbúnaður fyrir %s"
 msgstr[1] "Tiltækur hugbúnaður fyrir %s"
 
 #: src/gs-extras-page.c:243
-#, fuzzy
 #| msgid "Screenshot not found"
 msgid "Requested software not found"
-msgstr "Skjámynd fannst ekki"
+msgstr "Umbeðinn hugbúnaður fannst ekki"
 
 #: src/gs-extras-page.c:245
 msgid "Failed to find requested software"
-msgstr ""
+msgstr "Mistókst að finna umbeðinn hugbúnað"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
 #: src/gs-extras-page.c:341
@@ -2259,10 +2250,9 @@ msgstr ""
 
 #. TRANSLATORS: hyperlink title
 #: src/gs-extras-page.c:477
-#, fuzzy
 #| msgid "Documentation"
 msgid "the documentation"
-msgstr "Handbækur"
+msgstr "handbækurnar"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
@@ -2303,21 +2293,20 @@ msgstr ""
 
 #: src/gs-extras-page.ui:7
 msgid "Codecs page"
-msgstr ""
+msgstr "Síða um kóðunarlykla (codecs)"
 
 #: src/gs-featured-carousel.ui:43
 msgid "Previous"
-msgstr ""
+msgstr "Fyrri"
 
 #: src/gs-featured-carousel.ui:73
 msgid "Next"
-msgstr ""
+msgstr "Næsta"
 
 #: src/gs-featured-carousel.ui:100
-#, fuzzy
 #| msgid "Featured App"
 msgid "Featured Apps List"
-msgstr "Forrit í deiglunni"
+msgstr "Listi yfir forrit í deiglunni"
 
 #: src/gs-first-run-dialog.ui:10
 msgid "Welcome"
@@ -2335,17 +2324,15 @@ msgid ""
 msgstr ""
 
 #: src/gs-first-run-dialog.ui:34
-#, fuzzy
 #| msgid "Free Software"
 msgid "_Browse Software"
-msgstr "Frjáls hugbúnaður"
+msgstr "Skoða hug_búnað"
 
 #: src/gs-hardware-support-context-dialog.c:561
 #: src/gs-hardware-support-context-dialog.c:570
-#, fuzzy
 #| msgid "Snap Support"
 msgid "Desktop Support"
-msgstr "Stuðningur við Snap"
+msgstr "Stuðningur við skjáborðsumhverfi"
 
 #: src/gs-hardware-support-context-dialog.c:562
 #: src/gs-hardware-support-context-dialog.c:571
@@ -2361,10 +2348,9 @@ msgid "Not enough information to know if large screens are supported"
 msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:568
-#, fuzzy
 #| msgid "Requires Restart"
 msgid "Requires a large screen"
-msgstr "Krefst endurræsingar"
+msgstr "Krefst stórs skjás"
 
 #: src/gs-hardware-support-context-dialog.c:573
 msgid "Desktop Not Supported"
@@ -2376,10 +2362,9 @@ msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:581
 #: src/gs-hardware-support-context-dialog.c:590
-#, fuzzy
 #| msgid "Snap Support"
 msgid "Mobile Support"
-msgstr "Stuðningur við Snap"
+msgstr "Stuðningur við farsíma"
 
 #: src/gs-hardware-support-context-dialog.c:582
 #: src/gs-hardware-support-context-dialog.c:591
@@ -2395,10 +2380,9 @@ msgid "Not enough information to know if small screens are supported"
 msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:588
-#, fuzzy
 #| msgid "Requires Restart"
 msgid "Requires a small screen"
-msgstr "Krefst endurræsingar"
+msgstr "Krefst lítils skjás"
 
 #: src/gs-hardware-support-context-dialog.c:593
 msgid "Mobile Not Supported"
@@ -2410,10 +2394,9 @@ msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:617
 #: src/gs-hardware-support-context-dialog.c:626
-#, fuzzy
 #| msgid "Snap Support"
 msgid "Keyboard Support"
-msgstr "Stuðningur við Snap"
+msgstr "Stuðningur við lyklaborð"
 
 #: src/gs-hardware-support-context-dialog.c:620
 msgid "Keyboard Support Unknown"
@@ -2441,10 +2424,9 @@ msgstr ""
 
 #: src/gs-hardware-support-context-dialog.c:637
 #: src/gs-hardware-support-context-dialog.c:646
-#, fuzzy
 #| msgid "Snap Support"
 msgid "Mouse Support"
-msgstr "Stuðningur við Snap"
+msgstr "Stuðningur við mús"
 
 #: src/gs-hardware-support-context-dialog.c:638
 #: src/gs-hardware-support-context-dialog.c:644
@@ -2555,10 +2537,9 @@ msgstr ""
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:9
-#, fuzzy
 #| msgid "Snap Support"
 msgid "Hardware Support"
-msgstr "Stuðningur við Snap"
+msgstr "Vélbúnaðarstuðningur"
 
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
@@ -2566,15 +2547,14 @@ msgstr ""
 
 #: src/gs-installed-page.ui:54
 msgid "In Progress"
-msgstr ""
+msgstr "Í vinnslu"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
 #: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:108
-#, fuzzy
 #| msgid "System Applications"
 msgid "Applications"
-msgstr "Kerfisforrit"
+msgstr "Forrit"
 
 #: src/gs-installed-page.ui:98
 msgid "System Applications"
@@ -2627,10 +2607,9 @@ msgstr "Keyri upp…"
 
 #: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
 #: src/gs-shell.ui:264
-#, fuzzy
 #| msgid "Automatic Updates"
 msgid "Automatic Updates Paused"
-msgstr "Sjálfvirkar uppfærslur"
+msgstr "Sjálfvirkar uppfærslur í bið"
 
 #: src/gs-metered-data-dialog.ui:38
 msgid ""
@@ -2646,10 +2625,9 @@ msgid ""
 msgstr ""
 
 #: src/gs-metered-data-dialog.ui:53
-#, fuzzy
 #| msgid "Network Settings"
 msgid "Open Network _Settings"
-msgstr "Netstillingar"
+msgstr "Opna net_stillingar"
 
 #: src/gs-moderate-page.ui:7
 msgid "Moderate page"
@@ -2682,13 +2660,13 @@ msgstr "notanda"
 #. TRANSLATORS: the title for Snap channels
 #: src/gs-origin-popover-row.c:91
 msgid "Channel"
-msgstr ""
+msgstr "Rás"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
 #: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
 msgid "Branch"
-msgstr ""
+msgstr "Grein"
 
 #: src/gs-origin-popover-row.ui:35
 msgid "URL"
@@ -2755,7 +2733,7 @@ msgstr "Virkja"
 #. Translators: A label for a button to show all available software.
 #: src/gs-overview-page.c:673 src/gs-shell.ui:306
 msgid "Explore"
-msgstr ""
+msgstr "Kanna"
 
 #: src/gs-overview-page.ui:8
 msgid "Overview page"
@@ -2767,17 +2745,15 @@ msgstr "Virkja hugbúnaðarsöfn annarra aðila?"
 
 #. Translators: This is a heading for a list of categories.
 #: src/gs-overview-page.ui:175
-#, fuzzy
 #| msgid "Categories"
 msgid "Other Categories"
-msgstr "Flokkar"
+msgstr "Aðrir flokkar"
 
 #: src/gs-overview-page.ui:239
 msgid "No Application Data Found"
-msgstr ""
+msgstr "Engin forritsgögn fundust"
 
 #: lib/gs-plugin-loader.c:3042
-#, fuzzy
 #| msgid "Unknown"
 msgctxt "Distribution name"
 msgid "Unknown"
@@ -2812,10 +2788,10 @@ msgstr ""
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
 #: src/gs-page.c:510
-#, fuzzy, c-format
+#, c-format
 #| msgid "Are you sure you want to purchase %s?"
 msgid "Are you sure you want to uninstall %s?"
-msgstr "Ertu viss um að þú viljir kaupa %s?"
+msgstr "Ertu viss um að þú viljir fjarlægja %s?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:513
@@ -2827,11 +2803,11 @@ msgstr ""
 #. Translators: This is the accessibility label for a screenshot.
 #: src/gs-picture.c:391
 msgid "Picture"
-msgstr ""
+msgstr "Mynd"
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
-msgstr ""
+msgstr "Kjörstillingar uppfærslu"
 
 #: src/gs-prefs-dialog.ui:18
 msgid ""
@@ -2880,23 +2856,20 @@ msgid "Software that has been installed from “%s” will cease receive updates
 msgstr ""
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
 #| msgid "Software Repositories"
 msgid "Disable Repository?"
-msgstr "Hugbúnaðarsöfn"
+msgstr "Gera hugbúnaðarsafn óvirkt?"
 
 #: src/gs-repos-dialog.c:274
-#, fuzzy
 #| msgid "Software Repositories"
 msgid "Remove Repository?"
-msgstr "Hugbúnaðarsöfn"
+msgstr "Fjarlægja hugbúnaðarsafnið?"
 
 #. TRANSLATORS: this is button text to disable a repo
 #: src/gs-repos-dialog.c:280
-#, fuzzy
 #| msgid "Disable"
 msgid "_Disable"
-msgstr "Gera óvirkt"
+msgstr "_Gera óvirkt"
 
 #. TRANSLATORS: this is button text to remove a repo
 #: src/gs-repos-dialog.c:283
@@ -2904,10 +2877,9 @@ msgid "_Remove"
 msgstr "Fja_rlægja"
 
 #: src/gs-repos-dialog.c:519
-#, fuzzy
 #| msgid "Software Repositories"
 msgid "Enable New Repositories"
-msgstr "Hugbúnaðarsöfn"
+msgstr "Virkja ný hugbúnaðarsöfn"
 
 #: src/gs-repos-dialog.c:520
 msgid "Turn on new repositories when they are added."
@@ -2916,10 +2888,9 @@ msgstr ""
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
 #: src/gs-repos-dialog.c:529
-#, fuzzy
 #| msgid "More information"
 msgid "more information"
-msgstr "Nánari upplýsingar"
+msgstr "nánari upplýsingar"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
@@ -2931,16 +2902,15 @@ msgid "Additional repositories from selected third parties — %s."
 msgstr "Settu upp hugbúnað frá utanaðkomandi aðilum/upptökum."
 
 #: src/gs-repos-dialog.c:539
-#, fuzzy
 #| msgid "Third Party Repositories"
 msgid "Fedora Third Party Repositories"
-msgstr "Hugbúnaðarsöfn annarra aðila"
+msgstr "Fedora -hugbúnaðarsöfn utanaðkomandi aðila"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
 #: src/gs-repos-dialog.c:676
 msgid "the operating system"
-msgstr ""
+msgstr "stýrikerfið"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
@@ -2955,10 +2925,9 @@ msgid "Software Repositories"
 msgstr "Hugbúnaðarsöfn"
 
 #: src/gs-repos-dialog.ui:50
-#, fuzzy
 #| msgid "Software Repositories"
 msgid "No Repositories"
-msgstr "Hugbúnaðarsöfn"
+msgstr "Engin hugbúnaðarsöfn"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
@@ -3015,7 +2984,7 @@ msgstr[1] "%s og %s uppsett"
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
-msgstr ""
+msgstr "%s • %s"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
@@ -3050,32 +3019,32 @@ msgstr "Kann mjög vel við"
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:120
 msgid "Please take more time writing the review"
-msgstr ""
+msgstr "Taktu þér meiri tíma í að skrifa umsögnina"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:124
 msgid "Please choose a star rating"
-msgstr ""
+msgstr "Veldu stjörnugjöf"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:128
 msgid "The summary is too short"
-msgstr ""
+msgstr "Samantektin er of stutt"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:132
 msgid "The summary is too long"
-msgstr ""
+msgstr "Samantektin er of löng"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:136
 msgid "The description is too short"
-msgstr ""
+msgstr "Lýsingin er of stutt"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:140
 msgid "The description is too long"
-msgstr ""
+msgstr "Lýsingin er of löng"
 
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
@@ -3121,18 +3090,16 @@ msgstr ""
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%u umsögn alls"
+msgstr[1] "%u umsagnir alls"
 
 #: src/gs-review-histogram.ui:100
-#, fuzzy
 #| msgid "About Software"
 msgid "out of 5 stars"
-msgstr "Um hugbúnaðinn"
+msgstr "af 5 stjörnum"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #: src/gs-review-row.c:58
-#, fuzzy
 #| msgid "Unknown"
 msgctxt "Reviewer name"
 msgid "Unknown"
@@ -3142,6 +3109,7 @@ msgstr "Óþekkt"
 #: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
+"Þú getur kært umsagnir fyrir misnotkun, ókurteisi eða særandi framkomu."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: src/gs-review-row.c:228
@@ -3149,24 +3117,26 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
+"Eftir að umsögn hefur verið kærð, er hún falin þar til stjórnandi hefur"
+" yfirfarið málið."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
 #: src/gs-review-row.c:242
 msgid "Report Review?"
-msgstr ""
+msgstr "Kæra umsögn?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: src/gs-review-row.c:246
 msgid "Report"
-msgstr "Skýrsla"
+msgstr "Kæra"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
 #: src/gs-review-row.ui:89
 msgid "Was this review useful to you?"
-msgstr ""
+msgstr "Var þessi umsögn hjálpleg?"
 
 #: src/gs-review-row.ui:106
 msgid "Yes"
@@ -3183,7 +3153,7 @@ msgstr "Meh"
 
 #: src/gs-review-row.ui:135
 msgid "Report…"
-msgstr "Skýrsla…"
+msgstr "Kæra…"
 
 #: src/gs-review-row.ui:148
 msgid "Remove…"
@@ -3201,10 +3171,9 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:150
-#, fuzzy
 #| msgid "Permissions"
 msgid "No Permissions"
-msgstr "Heimildir"
+msgstr "Engar heimildir"
 
 #: src/gs-safety-context-dialog.c:151
 msgid "App is fully sandboxed"
@@ -3212,10 +3181,9 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:162
-#, fuzzy
 #| msgid "Network Settings"
 msgid "Network Access"
-msgstr "Netstillingar"
+msgstr "Netaðgangur"
 
 #: src/gs-safety-context-dialog.c:163
 msgid "Can access the internet"
@@ -3223,19 +3191,18 @@ msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:166
-#, fuzzy
 #| msgid "No Network"
 msgid "No Network Access"
-msgstr "Engin nettenging"
+msgstr "Engin netaðgangur"
 
 #: src/gs-safety-context-dialog.c:167
 msgid "Cannot access the internet"
-msgstr ""
+msgstr "Getur ekki tengst við internetið"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:173
 msgid "Uses System Services"
-msgstr ""
+msgstr "Notar kerfisþjónustur"
 
 #: src/gs-safety-context-dialog.c:174
 msgid "Can request data from system services"
@@ -3286,10 +3253,9 @@ msgstr "Heimildir"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:216
-#, fuzzy
 #| msgid "Settings"
 msgid "User Settings"
-msgstr "Stillingar"
+msgstr "Stillingar notanda"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:228
@@ -3416,7 +3382,7 @@ msgstr ""
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:9
 msgid "Safety"
-msgstr ""
+msgstr "Öryggi"
 
 #: src/gs-safety-context-dialog.ui:146
 msgid "License"
@@ -3424,25 +3390,23 @@ msgstr "Notkunarleyfi"
 
 #: src/gs-safety-context-dialog.ui:232
 msgid "SDK"
-msgstr ""
+msgstr "SDK"
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:41
-#, fuzzy
 #| msgid "Screenshot"
 msgid "Previous Screenshot"
-msgstr "Skjámynd"
+msgstr "Fyrri skjámynd"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:82
-#, fuzzy
 #| msgid "Screenshot"
 msgid "Next Screenshot"
-msgstr "Skjámynd"
+msgstr "Næsta skjámynd"
 
 #: src/gs-screenshot-carousel.ui:150
 msgid "No screenshot provided"
-msgstr ""
+msgstr "Engin skjámynd uppgefin"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -3496,7 +3460,6 @@ msgid "Search page"
 msgstr "Leitarsíða"
 
 #: src/gs-search-page.ui:17
-#, fuzzy
 #| msgid "Search for applications"
 msgid "Search for Apps"
 msgstr "Leita að forritum"
@@ -3778,10 +3741,10 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1576
-#, fuzzy, c-format
+#, c-format
 #| msgid "Unable to install updates"
 msgid "Unable to install updates: The battery level is too low"
-msgstr "Tókst ekki að setja inn uppfærslur"
+msgstr "Tókst ekki að setja inn uppfærslur: Hleðsla rafhlöðu er of lítil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3923,13 +3886,13 @@ msgstr ""
 #: src/gs-shell.c:1824 src/gs-shell.c:1875 src/gs-shell.c:1916
 #: src/gs-shell.c:1961
 msgid "Not enough disk space — free up some space and try again"
-msgstr ""
+msgstr "Það er ekki nóg diskpláss - losaðu meira pláss og prófaðu svo aftur"
 
 #. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1835 src/gs-shell.c:1886 src/gs-shell.c:1927
 #: src/gs-shell.c:1985
 msgid "Sorry, something went wrong"
-msgstr ""
+msgstr "Því miður, eitthvað fór úrskeiðis"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1867
@@ -3972,7 +3935,7 @@ msgstr ""
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1976
 msgid "The battery level is too low"
-msgstr ""
+msgstr "Hleðsla rafhlöðu er of lítil"
 
 #: src/gs-shell.ui:7
 msgid "_Software Repositories"
@@ -3980,7 +3943,7 @@ msgstr "Hugbúnaðar_söfn"
 
 #: src/gs-shell.ui:12
 msgid "_Update Preferences"
-msgstr "Kjörstillingar uppfærslu"
+msgstr "Kjörstillingar _uppfærslu"
 
 #: src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
 msgid "Software"
@@ -4014,7 +3977,7 @@ msgstr "Leita"
 
 #: src/gs-shell.ui:194
 msgid "Primary Menu"
-msgstr ""
+msgstr "Aðalvalmynd"
 
 #: src/gs-shell.ui:284
 #, fuzzy
@@ -4027,18 +3990,16 @@ msgstr "Frekari upplýsingar…"
 #. * bubble is small, so the string should be as short as
 #. * possible.
 #: src/gs-storage-context-dialog.c:93
-#, fuzzy
 #| msgctxt "content rating violence-cartoon"
 #| msgid "None"
 msgid "None"
 msgstr "Ekkert"
 
 #: src/gs-storage-context-dialog.c:132
-#, fuzzy
 #| msgid "%u Application Updated"
 #| msgid_plural "%u Applications Updated"
 msgid "Application Data"
-msgstr "%u forrit uppfært"
+msgstr "Forritsgögn"
 
 #: src/gs-storage-context-dialog.c:133
 msgid "Data needed for the application to run"
@@ -4046,7 +4007,7 @@ msgstr ""
 
 #: src/gs-storage-context-dialog.c:137
 msgid "User Data"
-msgstr ""
+msgstr "Notandagögn"
 
 #: src/gs-storage-context-dialog.c:138
 #, fuzzy
@@ -4056,22 +4017,21 @@ msgstr "Endurræstu forritið."
 
 #: src/gs-storage-context-dialog.c:144
 msgid "Cache Data"
-msgstr ""
+msgstr "Gögn í skyndiminni"
 
 #: src/gs-storage-context-dialog.c:145
 msgid "Temporary cached data"
-msgstr ""
+msgstr "Bráðabirgðagögn tímabundið í skyndiminni"
 
 #: src/gs-storage-context-dialog.c:161
-#, fuzzy
 #| msgid "%u application installed"
 #| msgid_plural "%u applications installed"
 msgid "The application itself"
-msgstr "%u forrit uppsett"
+msgstr "Forritið sjálft"
 
 #: src/gs-storage-context-dialog.c:165
 msgid "Required Dependencies"
-msgstr ""
+msgstr "Nauðsynleg kerfisákvæði"
 
 #: src/gs-storage-context-dialog.c:166
 msgid "Shared system components required by this application"
@@ -4080,7 +4040,7 @@ msgstr ""
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:9
 msgid "Storage"
-msgstr ""
+msgstr "Geymslurými"
 
 #. Translators: Please do not translate the markup or link href
 #: src/gs-storage-context-dialog.ui:117
@@ -4127,10 +4087,9 @@ msgid "Software Updates Are Out of Date"
 msgstr ""
 
 #: src/gs-update-monitor.c:204
-#, fuzzy
 #| msgid "Check for updates"
 msgid "Please check for software updates."
-msgstr "Leita að uppfærslum"
+msgstr "Athugaðu með hugbúnaðaruppfærslur."
 
 #: src/gs-update-monitor.c:210
 msgid "Critical Software Update Ready to Install"
@@ -4149,10 +4108,9 @@ msgid "Important: critical software updates are waiting."
 msgstr ""
 
 #: src/gs-update-monitor.c:223
-#, fuzzy
 #| msgid "Software Install"
 msgid "Software Updates Ready to Install"
-msgstr "Uppsetning hugbúnaðar"
+msgstr "Hugbúnaðaruppfærslur tilbúnar til uppsetningar"
 
 #: src/gs-update-monitor.c:224
 msgid "Software updates are waiting and ready to be installed."
@@ -4289,18 +4247,18 @@ msgstr "Yfirfara"
 #. TRANSLATORS: this is when the offline update failed
 #: src/gs-update-monitor.c:1213
 msgid "Failed To Update"
-msgstr ""
+msgstr "Mistókst að uppfæra"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
 #: src/gs-update-monitor.c:1219
 msgid "The system was already up to date."
-msgstr ""
+msgstr "Kerfið var þegar með öllum nýjasta hugbúnaðinum."
 
 #. TRANSLATORS: the user aborted the update manually
 #: src/gs-update-monitor.c:1224
 msgid "The update was cancelled."
-msgstr ""
+msgstr "Hætt var við uppfærsluna."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
@@ -4334,19 +4292,19 @@ msgstr ""
 #: src/gs-updates-page.c:251
 #, c-format
 msgid "Last checked: %s"
-msgstr ""
+msgstr "Síðast athugað: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
 #: src/gs-updates-page.c:576
 #, c-format
 msgid "%s %s is no longer supported."
-msgstr ""
+msgstr "%s %s er ekki lengur stutt."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
 #: src/gs-updates-page.c:581
 msgid "Your OS is no longer supported."
-msgstr ""
+msgstr "Stýrikerfið þitt er ekki lengur stutt."
 
 #. TRANSLATORS: EOL distros do not get important updates
 #: src/gs-updates-page.c:586
@@ -4360,10 +4318,9 @@ msgstr ""
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:874
-#, fuzzy
 #| msgid "Charges may apply"
 msgid "Charges May Apply"
-msgstr "Gjöld gætu fylgt gagnamagni"
+msgstr "Gæti leitt til kostnaðar"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
@@ -4377,7 +4334,7 @@ msgstr ""
 #. * control-center network panel
 #: src/gs-updates-page.c:882
 msgid "Check _Anyway"
-msgstr ""
+msgstr "_Athuga samt"
 
 #. TRANSLATORS: can't do updates check
 #: src/gs-updates-page.c:898
@@ -4400,19 +4357,18 @@ msgstr "Leita að uppfærslum"
 
 #: src/gs-updates-page.ui:7
 msgid "Updates page"
-msgstr ""
+msgstr "Uppfærslusíða"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:96
-#, fuzzy
 #| msgid "Loading page"
 msgid "Loading Updates…"
-msgstr "Hleð inn síðu"
+msgstr "Hleð inn uppfærslum…"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:110
 msgid "This could take a while."
-msgstr ""
+msgstr "Þetta gæti tekið nokkra stund."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
@@ -4421,7 +4377,7 @@ msgstr ""
 
 #: src/gs-updates-page.ui:263
 msgid "Use Mobile Data?"
-msgstr ""
+msgstr "Nota farsímagögn?"
 
 #: src/gs-updates-page.ui:264
 msgid ""
@@ -4431,17 +4387,16 @@ msgstr ""
 
 #: src/gs-updates-page.ui:267
 msgid "_Check Anyway"
-msgstr ""
+msgstr "Athu_ga samt"
 
 #: src/gs-updates-page.ui:282
 msgid "No Connection"
-msgstr ""
+msgstr "Engin nettenging"
 
 #: src/gs-updates-page.ui:283
-#, fuzzy
 #| msgid "Check for updates"
 msgid "Go online to check for updates."
-msgstr "Leita að uppfærslum"
+msgstr "Farðu á netið til að athuga með uppfærslur."
 
 #: src/gs-updates-page.ui:286
 msgid "_Network Settings"
@@ -4449,7 +4404,7 @@ msgstr "_Netstillingar"
 
 #: src/gs-updates-page.ui:312
 msgid "Error"
-msgstr ""
+msgstr "Villa"
 
 #: src/gs-updates-page.ui:313
 msgid "Updates are automatically managed."
@@ -4471,7 +4426,7 @@ msgstr "Uppfæra allt"
 #. * requires a reboot to apply
 #: src/gs-updates-section.c:481
 msgid "Integrated Firmware"
-msgstr ""
+msgstr "Innbyggður grunnhugbúnaður/firmware"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
@@ -4483,13 +4438,13 @@ msgstr "Krefst endurræsingar"
 #. * app updates, typically flatpaks or snaps
 #: src/gs-updates-section.c:491
 msgid "Application Updates"
-msgstr ""
+msgstr "Uppfærslur forrita"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
 #: src/gs-updates-section.c:496
 msgid "Device Firmware"
-msgstr ""
+msgstr "Grunnhugbúnaður/firmware tækja"
 
 #: src/gs-updates-section.ui:36 src/gs-upgrade-banner.ui:78
 msgid "_Download"
@@ -4499,20 +4454,19 @@ msgstr "Sæ_kja"
 #. * upgrade is available. The first %s is the distro name
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
 #: src/gs-upgrade-banner.c:86
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s is not available."
 msgid "%s %s Available"
-msgstr "%s er ekki tiltækt."
+msgstr "%s %s tiltækt"
 
 #: src/gs-upgrade-banner.c:131
 msgid "Learn about the new version"
 msgstr ""
 
 #: src/gs-upgrade-banner.c:151
-#, fuzzy
 #| msgid "Downloading"
 msgid "Downloading…"
-msgstr "Sæki gögn"
+msgstr "Sæki gögn…"
 
 #. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 #. with the total download size, forming text like "135 MB of 2 GB downloaded"
@@ -4533,7 +4487,6 @@ msgid "A major upgrade, with new features and added polish."
 msgstr ""
 
 #: src/gs-upgrade-banner.ui:213
-#, fuzzy
 #| msgid "_Restart & Update"
 msgid "_Restart & Upgrade"
 msgstr "Endu_rræsa & uppfæra"
@@ -4573,7 +4526,7 @@ msgstr ""
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
 #: plugins/eos-updater/gs-plugin-eos-updater.c:560
 msgid "Endless OS"
-msgstr ""
+msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
 #: plugins/eos-updater/gs-plugin-eos-updater.c:563
@@ -4597,7 +4550,7 @@ msgstr ""
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
-msgstr ""
+msgstr "Flatpak-stuðningur"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
 msgid "Flatpak is a framework for desktop applications on Linux"
@@ -4616,16 +4569,14 @@ msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Gat ekki fundið \"%s\""
 
 #: plugins/flatpak/gs-flatpak-utils.c:95
-#, fuzzy
 #| msgid "Installation"
 msgid "User Installation"
-msgstr "Uppsetning"
+msgstr "Uppsetning notanda"
 
 #: plugins/flatpak/gs-flatpak-utils.c:95
-#, fuzzy
 #| msgid "System Integration"
 msgid "System Installation"
-msgstr "Aðlögun að stýrikerfi"
+msgstr "Uppsetning kerfis"
 
 #: plugins/flatpak/gs-plugin-flatpak.c:821
 #, c-format
@@ -4777,10 +4728,9 @@ msgid "Provides support for firmware upgrades"
 msgstr ""
 
 #: plugins/packagekit/gs-plugin-packagekit.c:301
-#, fuzzy
 #| msgid "Package"
 msgid "Packages"
-msgstr "Pakki"
+msgstr "Pakkar"
 
 #: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2225
 msgid "Operating System (OSTree)"
