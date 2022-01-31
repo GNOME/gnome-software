@@ -1425,8 +1425,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_REFRESH)
-		return "gs_plugin_refresh";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
@@ -1535,8 +1533,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-categories";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
 		return "get-category-apps";
-	if (action == GS_PLUGIN_ACTION_REFRESH)
-		return "refresh";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1609,8 +1605,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_CATEGORIES;
 	if (g_strcmp0 (action, "get-category-apps") == 0)
 		return GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
-	if (g_strcmp0 (action, "refresh") == 0)
-		return GS_PLUGIN_ACTION_REFRESH;
 	if (g_strcmp0 (action, "file-to-app") == 0)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)

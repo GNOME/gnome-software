@@ -711,14 +711,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_REFRESH:
-		{
-			GsPluginRefreshFunc plugin_func = func;
-			ret = plugin_func (plugin,
-					   gs_plugin_job_get_age (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
@@ -870,101 +862,18 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 	gs_app_list_truncate (list, max_results);
 }
 
-typedef struct {
-	GsPluginLoader *plugin_loader;  /* (not nullable) (unowned) */
-	GsApp *app;  /* (not nullable) (unowned) */
-} RefreshProgressData;
-
-static void
-refresh_progress_cb (gsize    bytes_downloaded,
-                     gsize    total_download_size,
-                     gpointer user_data)
-{
-	RefreshProgressData *data = user_data;
-	guint percentage;
-
-	if (total_download_size > 0)
-		percentage = (guint) ((100 * bytes_downloaded) / total_download_size);
-	else
-		percentage = 0;
-
-	g_debug ("%s progress: %u%%", gs_app_get_id (data->app), percentage);
-	gs_app_set_progress (data->app, percentage);
-
-	gs_plugin_loader_status_changed_cb (NULL, data->app,
-					    GS_PLUGIN_STATUS_DOWNLOADING,
-					    data->plugin_loader);
-}
-
 static gboolean
 gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	GsPluginLoader *plugin_loader = helper->plugin_loader;
-	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job));
-
-	/* Download updated external appstream before anything else */
-#ifdef ENABLE_EXTERNAL_APPSTREAM
-	if (action == GS_PLUGIN_ACTION_REFRESH) {
-		g_autoptr(GsApp) app_dl = NULL;
-		RefreshProgressData progress_data;
-		g_autoptr(GAsyncResult) external_appstream_result = NULL;
-		g_autoptr(GError) local_error = NULL;
-
-		app_dl = gs_app_new ("external-appstream");
-		gs_app_set_summary_missing (app_dl,
-					    /* TRANSLATORS: status text when downloading */
-					    _("Downloading extra metadata files…"));
-
-		progress_data.plugin_loader = plugin_loader;
-		progress_data.app = app_dl;
-
-		gs_external_appstream_refresh_async (gs_plugin_job_get_age (helper->plugin_job),
-						     refresh_progress_cb,
-						     &progress_data,
-						     cancellable,
-						     async_result_cb,
-						     &external_appstream_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (external_appstream_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		if (!gs_external_appstream_refresh_finish (external_appstream_result, &local_error)) {
-			/* Don’t fail updates if the external AppStream server is unavailable */
-			if (g_error_matches (local_error, GS_EXTERNAL_APPSTREAM_ERROR,
-					     GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING) ||
-			    g_error_matches (local_error, GS_EXTERNAL_APPSTREAM_ERROR,
-					     GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK)) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
-				event = gs_plugin_event_new ("error", local_error,
-							     "action", GS_PLUGIN_ACTION_DOWNLOAD,
-							     NULL);
-
-				if (gs_plugin_job_get_interactive (helper->plugin_job))
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				else
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_loader_add_event (plugin_loader, event);
-
-				return TRUE;
-			}
-
-			g_propagate_error (error, g_steal_pointer (&local_error));
-
-			return FALSE;
-		}
-	}
-#endif
 
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
@@ -979,63 +888,6 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			return FALSE;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
-
-	if (action == GS_PLUGIN_ACTION_REFRESH &&
-	    plugin_loader->odrs_provider != NULL) {
-		g_autoptr(GsApp) app_dl = NULL;
-		RefreshProgressData progress_data;
-		g_autoptr(GAsyncResult) odrs_result = NULL;
-		g_autoptr(GError) local_error = NULL;
-
-		app_dl = gs_app_new ("odrs");
-		gs_app_set_summary_missing (app_dl,
-					    /* TRANSLATORS: status text when downloading */
-					    _("Downloading application ratings…"));
-
-		progress_data.plugin_loader = plugin_loader;
-		progress_data.app = app_dl;
-
-		gs_odrs_provider_refresh_ratings_async (plugin_loader->odrs_provider,
-							gs_plugin_job_get_age (helper->plugin_job),
-							refresh_progress_cb,
-							&progress_data,
-							cancellable,
-							async_result_cb,
-							&odrs_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (odrs_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		if (!gs_odrs_provider_refresh_ratings_finish (plugin_loader->odrs_provider,
-							      odrs_result,
-							      &local_error)) {
-			/* Don’t fail updates if the ratings server is unavailable */
-			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_DOWNLOADING) ||
-			    g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
-				event = gs_plugin_event_new ("error", local_error,
-							     "action", GS_PLUGIN_ACTION_DOWNLOAD,
-							     NULL);
-
-				if (gs_plugin_job_get_interactive (helper->plugin_job))
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-				else
-					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_loader_add_event (plugin_loader, event);
-
-				return TRUE;
-			}
-
-			g_propagate_error (error, g_steal_pointer (&local_error));
-
-			return FALSE;
-		}
 	}
 
 #ifdef HAVE_SYSPROF
@@ -3353,7 +3205,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:
-	case GS_PLUGIN_ACTION_REFRESH:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_UPDATE:
