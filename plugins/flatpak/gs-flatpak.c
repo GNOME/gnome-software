@@ -1259,9 +1259,9 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 
 			/* allow the plugin loader to decide if this should be
 			 * shown the user, possibly only for interactive jobs */
-			event = gs_plugin_event_new ();
 			gs_flatpak_error_convert (&error_local);
-			gs_plugin_event_set_error (event, error_local);
+			event = gs_plugin_event_new ("error", error_local,
+						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			gs_plugin_report_event (self->plugin, event);
 			continue;
@@ -3212,8 +3212,8 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 			errors->str);
 
-		event = gs_plugin_event_new ();
-		gs_plugin_event_set_error (event, error_local);
+		event = gs_plugin_event_new ("error", error_local,
+					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);
 	}
@@ -3738,10 +3738,13 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	/* get the new appstream data (nonfatal for failure) */
 	if (!gs_flatpak_refresh_appstream_remote (self, remote_name,
 						  cancellable, &error_local)) {
-		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+		g_autoptr(GsPluginEvent) event = NULL;
+
 		gs_flatpak_error_convert (&error_local);
-		gs_plugin_event_set_app (event, app);
-		gs_plugin_event_set_error (event, error_local);
+
+		event = gs_plugin_event_new ("app", app,
+					     "error", error_local,
+					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);
 		g_clear_error (&error_local);

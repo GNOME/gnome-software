@@ -24,6 +24,7 @@
 
 #include <glib.h>
 
+#include "gs-enums.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-event.h"
 #include "gs-utils.h"
@@ -447,17 +448,29 @@ gs_plugin_event_init (GsPluginEvent *event)
 
 /**
  * gs_plugin_event_new:
+ * @first_property_name: the name of the first property
+ * @...: the value of the first property, followed by zero or more pairs of
+ *   property name/value pairs, then %NULL
  *
  * Creates a new event.
  *
- * Returns: A newly allocated #GsPluginEvent
+ * The arguments are as for g_object_new(): property name/value pairs to set
+ * the properties of the event.
  *
- * Since: 3.22
+ * Returns: (transfer full): A newly allocated #GsPluginEvent
+ *
+ * Since: 42
  **/
 GsPluginEvent *
-gs_plugin_event_new (void)
+gs_plugin_event_new (const gchar *first_property_name,
+		     ...)
 {
 	GsPluginEvent *event;
-	event = g_object_new (GS_TYPE_PLUGIN_EVENT, NULL);
+	va_list args;
+
+	va_start (args, first_property_name);
+	event = GS_PLUGIN_EVENT (g_object_new_valist (GS_TYPE_PLUGIN_EVENT, first_property_name, args));
+	va_end (args);
+
 	return GS_PLUGIN_EVENT (event);
 }

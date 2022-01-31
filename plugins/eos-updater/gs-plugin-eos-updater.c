@@ -862,14 +862,17 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 			} else {
 				/* Display an error to the user. */
 				g_autoptr(GError) error_local = NULL;
-				g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+				g_autoptr(GsPluginEvent) event = NULL;
+
 				g_set_error_literal (&error_local, GS_PLUGIN_ERROR,
 						     GS_PLUGIN_ERROR_FAILED,
 						     _("EOS update service could not fetch and apply the update."));
 				gs_eos_updater_error_convert (&error_local);
-				gs_plugin_event_set_app (event, app);
-				gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
-				gs_plugin_event_set_error (event, error_local);
+
+				event = gs_plugin_event_new ("app", app,
+							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+							     "error", error_local,
+							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				gs_plugin_report_event (plugin, event);
 
@@ -936,11 +939,14 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 			/* Display an error to the user, unless they cancelled
 			 * the download. */
 			if (!eos_updater_error_is_cancelled (error_name)) {
-				g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+				g_autoptr(GsPluginEvent) event = NULL;
+
 				gs_eos_updater_error_convert (&error_local);
-				gs_plugin_event_set_app (event, app);
-				gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
-				gs_plugin_event_set_error (event, error_local);
+
+				event = gs_plugin_event_new ("app", app,
+							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+							     "error", error_local,
+							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				gs_plugin_report_event (plugin, event);
 			}

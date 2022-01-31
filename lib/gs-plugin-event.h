@@ -38,7 +38,8 @@ typedef enum {
 	GS_PLUGIN_EVENT_FLAG_LAST  /*< skip >*/
 } GsPluginEventFlag;
 
-GsPluginEvent		*gs_plugin_event_new		(void);
+GsPluginEvent		*gs_plugin_event_new		(const gchar		*first_property_name,
+							 ...) G_GNUC_NULL_TERMINATED;
 
 const gchar		*gs_plugin_event_get_unique_id	(GsPluginEvent		*event);
 
