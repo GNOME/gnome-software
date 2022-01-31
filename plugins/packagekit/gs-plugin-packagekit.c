@@ -423,10 +423,10 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
 				  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app,
-				 GS_APP_QUALITY_LOWEST,
+				 GS_APP_QUALITY_NORMAL,
 				 pk_repo_detail_get_description (rd));
 		gs_app_set_summary (app,
-				    GS_APP_QUALITY_LOWEST,
+				    GS_APP_QUALITY_NORMAL,
 				    pk_repo_detail_get_description (rd));
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "300");
