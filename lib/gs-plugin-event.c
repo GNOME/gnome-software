@@ -52,24 +52,6 @@ typedef enum {
 static GParamSpec *props[PROP_ERROR + 1] = { NULL, };
 
 /**
- * gs_plugin_event_set_app:
- * @event: A #GsPluginEvent
- * @app: A #GsApp
- *
- * Set the application (or source, or whatever component) that caused the event
- * to be created.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_event_set_app (GsPluginEvent *event, GsApp *app)
-{
-	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
-	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&event->app, app);
-}
-
-/**
  * gs_plugin_event_get_app:
  * @event: A #GsPluginEvent
  *
@@ -87,23 +69,6 @@ gs_plugin_event_get_app (GsPluginEvent *event)
 }
 
 /**
- * gs_plugin_event_set_origin:
- * @event: A #GsPluginEvent
- * @origin: A #GsApp
- *
- * Set the origin that caused the event to be created.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_event_set_origin (GsPluginEvent *event, GsApp *origin)
-{
-	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
-	g_return_if_fail (GS_IS_APP (origin));
-	g_set_object (&event->origin, origin);
-}
-
-/**
  * gs_plugin_event_get_origin:
  * @event: A #GsPluginEvent
  *
@@ -118,22 +83,6 @@ gs_plugin_event_get_origin (GsPluginEvent *event)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), NULL);
 	return event->origin;
-}
-
-/**
- * gs_plugin_event_set_action:
- * @event: A #GsPluginEvent
- * @action: A #GsPluginAction, e.g. %GS_PLUGIN_ACTION_UPDATE
- *
- * Set the action that caused the event to be created.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_event_set_action (GsPluginEvent *event, GsPluginAction action)
-{
-	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
-	event->action = action;
 }
 
 /**
@@ -248,26 +197,6 @@ gs_plugin_event_has_flag (GsPluginEvent *event, GsPluginEventFlag flag)
 }
 
 /**
- * gs_plugin_event_set_error:
- * @event: A #GsPluginEvent
- * @error: A #GError
- *
- * Sets the event error.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_event_set_error (GsPluginEvent *event, const GError *error)
-{
-	g_clear_error (&event->error);
-	event->error = g_error_copy (error);
-	if (event->error) {
-		/* Just in case the caller left there any D-Bus remote error notes */
-		g_dbus_error_strip_remote_error (event->error);
-	}
-}
-
-/**
  * gs_plugin_event_get_error:
  * @event: A #GsPluginEvent
  *
@@ -340,7 +269,11 @@ gs_plugin_event_set_property (GObject      *object,
 	case PROP_ERROR:
 		/* Construct only. */
 		g_assert (self->error == NULL);
-		gs_plugin_event_set_error (self, g_value_get_boxed (value));
+		self->error = g_value_dup_boxed (value);
+		if (self->error) {
+			/* Just in case the caller left there any D-Bus remote error notes */
+			g_dbus_error_strip_remote_error (self->error);
+		}
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
