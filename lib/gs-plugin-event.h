@@ -38,22 +38,14 @@ typedef enum {
 	GS_PLUGIN_EVENT_FLAG_LAST  /*< skip >*/
 } GsPluginEventFlag;
 
-GsPluginEvent		*gs_plugin_event_new		(void);
+GsPluginEvent		*gs_plugin_event_new		(const gchar		*first_property_name,
+							 ...) G_GNUC_NULL_TERMINATED;
 
 const gchar		*gs_plugin_event_get_unique_id	(GsPluginEvent		*event);
 
-void			 gs_plugin_event_set_app	(GsPluginEvent		*event,
-							 GsApp			*app);
 GsApp			*gs_plugin_event_get_app	(GsPluginEvent		*event);
-void			 gs_plugin_event_set_origin	(GsPluginEvent		*event,
-							 GsApp			*origin);
 GsApp			*gs_plugin_event_get_origin	(GsPluginEvent		*event);
-void			 gs_plugin_event_set_action	(GsPluginEvent		*event,
-							 GsPluginAction		 action);
 GsPluginAction		 gs_plugin_event_get_action	(GsPluginEvent		*event);
-
-void			 gs_plugin_event_set_error	(GsPluginEvent		*event,
-							 const GError		*error);
 const GError		*gs_plugin_event_get_error	(GsPluginEvent		*event);
 
 void			 gs_plugin_event_add_flag	(GsPluginEvent		*event,

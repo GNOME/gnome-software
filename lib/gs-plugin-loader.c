@@ -346,6 +346,8 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *origin_id = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
+	g_autoptr(GsApp) event_app = NULL;
+	g_autoptr(GsApp) event_origin = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (error != NULL);
@@ -374,22 +376,15 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 		error_copy->code = GS_PLUGIN_ERROR_FAILED;
 	}
 
-	/* create event which is handled by the GsShell */
-	event = gs_plugin_event_new ();
-	gs_plugin_event_set_error (event, error_copy);
-	gs_plugin_event_set_action (event, action);
-	if (app != NULL)
-		gs_plugin_event_set_app (event, app);
-	if (interactive)
-		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-
 	/* set the app and origin IDs if we managed to scrape them from the error above */
+	event_app = g_object_ref (app);
+	event_origin = NULL;
+
 	if (plugin != NULL && as_utils_data_id_valid (app_id)) {
 		g_autoptr(GsApp) cached_app = gs_plugin_cache_lookup (plugin, app_id);
 		if (cached_app != NULL) {
 			g_debug ("found app %s in error", app_id);
-			gs_plugin_event_set_app (event, cached_app);
+			g_set_object (&event_app, cached_app);
 		} else {
 			g_debug ("no unique ID found for app %s", app_id);
 		}
@@ -398,11 +393,21 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
 		if (origin != NULL) {
 			g_debug ("found origin %s in error", origin_id);
-			gs_plugin_event_set_origin (event, origin);
+			g_set_object (&event_origin, origin);
 		} else {
 			g_debug ("no unique ID found for origin %s", origin_id);
 		}
 	}
+
+	/* create event which is handled by the GsShell */
+	event = gs_plugin_event_new ("error", error_copy,
+				     "action", action,
+				     "app", event_app,
+				     "origin", event_origin,
+				     NULL);
+	if (interactive)
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 
 	/* add event to the queue */
 	gs_plugin_loader_add_event (plugin_loader, event);
@@ -2012,22 +2017,20 @@ gs_plugin_loader_software_app_created_cb (GObject *source_object,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+	g_autoptr(GsPluginEvent) event = NULL;
 	g_autoptr(GError) error = NULL;
 
 	app = gs_plugin_loader_app_create_finish (plugin_loader, result, NULL);
 
-	/* add app */
-	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UNKNOWN);
-	if (app != NULL)
-		gs_plugin_event_set_app (event, app);
-
-	/* add error */
 	g_set_error_literal (&error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_RESTART_REQUIRED,
 			     "A restart is required");
-	gs_plugin_event_set_error (event, error);
+	event = gs_plugin_event_new ("action", GS_PLUGIN_ACTION_UNKNOWN,
+				     "app", app,
+				     "error", error,
+				     NULL);
+
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
 

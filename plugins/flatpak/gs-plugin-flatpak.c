@@ -144,11 +144,13 @@ static void
 gs_plugin_flatpak_report_warning (GsPlugin *plugin,
 				  GError **error)
 {
-	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+	g_autoptr(GsPluginEvent) event = NULL;
 	g_assert (error != NULL);
 	if (*error != NULL && (*error)->domain != GS_PLUGIN_ERROR)
 		gs_flatpak_error_convert (error);
-	gs_plugin_event_set_error (event, *error);
+
+	event = gs_plugin_event_new ("error", *error,
+				     NULL);
 	gs_plugin_event_add_flag (event,
 				  GS_PLUGIN_EVENT_FLAG_WARNING);
 	gs_plugin_report_event (plugin, event);
@@ -820,9 +822,10 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			g_warning ("Failed to start browser %s: %s", browser, error_local->message);
 
-			event = gs_plugin_event_new ();
 			gs_flatpak_error_convert (&error_local);
-			gs_plugin_event_set_error (event, error_local);
+
+			event = gs_plugin_event_new ("error", error_local,
+						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			gs_plugin_report_event (plugin, event);
 
@@ -834,9 +837,10 @@ _webflow_start (FlatpakTransaction *transaction,
 
 			g_warning ("Failed to show url: %s", error_local->message);
 
-			event = gs_plugin_event_new ();
 			gs_flatpak_error_convert (&error_local);
-			gs_plugin_event_set_error (event, error_local);
+
+			event = gs_plugin_event_new ("error", error_local,
+						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			gs_plugin_report_event (plugin, event);
 
@@ -965,9 +969,10 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 
 				g_warning ("Skipping update for ‘%s’: %s", ref, error_local->message);
 
-				event = gs_plugin_event_new ();
 				gs_flatpak_error_convert (&error_local);
-				gs_plugin_event_set_error (event, error_local);
+
+				event = gs_plugin_event_new ("error", error_local,
+							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 				gs_plugin_report_event (plugin, event);
 			} else {
@@ -1052,8 +1057,8 @@ gs_flatpak_cover_addons_in_transaction (GsPlugin *plugin,
 		g_autoptr(GError) error_local = g_error_new_literal (GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 			errors->str);
 
-		event = gs_plugin_event_new ();
-		gs_plugin_event_set_error (event, error_local);
+		event = gs_plugin_event_new ("error", error_local,
+					     NULL);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (plugin, event);
 	}
@@ -1371,9 +1376,10 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 
 			g_warning ("Skipping update for ‘%s’: %s", ref, error_local->message);
 
-			event = gs_plugin_event_new ();
 			gs_flatpak_error_convert (&error_local);
-			gs_plugin_event_set_error (event, error_local);
+
+			event = gs_plugin_event_new ("error", error_local,
+						     NULL);
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 			gs_plugin_report_event (plugin, event);
 		} else {

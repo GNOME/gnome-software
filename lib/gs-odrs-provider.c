@@ -1308,11 +1308,13 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading application ratings…"));
 	if (!gs_plugin_download_file (plugin, app_dl, uri, cache_filename, cancellable, &error_local)) {
-		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+		g_autoptr(GsPluginEvent) event = NULL;
 
-		gs_plugin_event_set_error (event, error_local);
-		gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_DOWNLOAD);
-		gs_plugin_event_set_origin (event, self->cached_origin);
+		event = gs_plugin_event_new ("error", error_local,
+					     "action", GS_PLUGIN_ACTION_DOWNLOAD,
+					     "origin", self->cached_origin,
+					     NULL);
+
 		if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		else
