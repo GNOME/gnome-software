@@ -13,6 +13,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-application.h"
+#include "gs-download-utils.h"
 #include "gs-page.h"
 #include "gs-common.h"
 #include "gs-screenshot-image.h"
@@ -102,8 +103,7 @@ gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
 		g_autoptr(SoupSession) soup_session = NULL;
 
 		/* load screenshot */
-		soup_session = soup_session_new_with_options ("user-agent",
-							      gs_user_agent (), NULL);
+		soup_session = gs_build_soup_session ();
 		ssimg = gs_screenshot_image_new (soup_session);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
@@ -373,8 +373,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	gtk_widget_set_sensitive (helper->button_install, FALSE);
 
 	/* load screenshot */
-	soup_session = soup_session_new_with_options ("user-agent",
-						      gs_user_agent (), NULL);
+	soup_session = gs_build_soup_session ();
 	ssimg = gs_screenshot_image_new (soup_session);
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);

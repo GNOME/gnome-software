@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "gs-common.h"
+#include "gs-download-utils.h"
 #include "gs-utils.h"
 
 #include "gs-screenshot-carousel.h"
@@ -333,8 +334,7 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 	adw_carousel_set_allow_scroll_wheel (ADW_CAROUSEL (self->carousel), FALSE);
 
 	/* setup networking */
-	self->session = soup_session_new_with_options ("user-agent", gs_user_agent (),
-	                                               NULL);
+	self->session = gs_build_soup_session ();
 }
 
 /**
