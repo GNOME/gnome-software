@@ -18,6 +18,7 @@
 #include <gs-category.h>
 #include <gs-category-manager.h>
 #include <gs-desktop-data.h>
+#include <gs-download-utils.h>
 #include <gs-enums.h>
 #include <gs-icon.h>
 #include <gs-metered.h>
