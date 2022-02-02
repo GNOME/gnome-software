@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
@@ -33,28 +34,24 @@
 
 struct _GsContextDialogRow
 {
-	GtkListBoxRow			 parent_instance;
+	AdwActionRow			 parent_instance;
 
 	GsContextDialogRowImportance	 importance;
 
 	GtkWidget			*lozenge;  /* (unowned) */
 	GtkImage			*lozenge_content_image;  /* (unowned) */
 	GtkLabel			*lozenge_content_text;  /* (unowned) */
-	GtkLabel			*title;  /* (unowned) */
-	GtkLabel			*description;  /* (unowned) */
 };
 
-G_DEFINE_TYPE (GsContextDialogRow, gs_context_dialog_row, GTK_TYPE_LIST_BOX_ROW)
+G_DEFINE_TYPE (GsContextDialogRow, gs_context_dialog_row, ADW_TYPE_ACTION_ROW)
 
 typedef enum {
 	PROP_ICON_NAME = 1,
 	PROP_CONTENT,
 	PROP_IMPORTANCE,
-	PROP_TITLE,
-	PROP_DESCRIPTION,
 } GsContextDialogRowProperty;
 
-static GParamSpec *obj_props[PROP_DESCRIPTION + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_IMPORTANCE + 1] = { NULL, };
 
 /* These match the CSS classes from gtk-style.css. */
 static const gchar *
@@ -98,12 +95,6 @@ gs_context_dialog_row_get_property (GObject    *object,
 	case PROP_IMPORTANCE:
 		g_value_set_enum (value, gs_context_dialog_row_get_importance (self));
 		break;
-	case PROP_TITLE:
-		g_value_set_string (value, gs_context_dialog_row_get_title (self));
-		break;
-	case PROP_DESCRIPTION:
-		g_value_set_string (value, gs_context_dialog_row_get_description (self));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -146,12 +137,6 @@ gs_context_dialog_row_set_property (GObject      *object,
 		gtk_style_context_add_class (context, css_class);
 		break;
 	}
-	case PROP_TITLE:
-		gtk_label_set_text (self->title, g_value_get_string (value));
-		break;
-	case PROP_DESCRIPTION:
-		gtk_label_set_text (self->description, g_value_get_string (value));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -211,34 +196,6 @@ gs_context_dialog_row_class_init (GsContextDialogRowClass *klass)
 				   GS_TYPE_CONTEXT_DIALOG_ROW_IMPORTANCE, GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 				   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
-	/**
-	 * GsContextDialogRow:title: (not nullable)
-	 *
-	 * The human readable and translated title of the row.
-	 *
-	 * This may not be %NULL.
-	 *
-	 * Since: 41
-	 */
-	obj_props[PROP_TITLE] =
-		g_param_spec_string ("title", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
-	/**
-	 * GsContextDialogRow:description: (not nullable)
-	 *
-	 * The human readable and translated description of the row.
-	 *
-	 * This may not be %NULL.
-	 *
-	 * Since: 41
-	 */
-	obj_props[PROP_DESCRIPTION] =
-		g_param_spec_string ("description", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	/* This uses the same CSS name as a standard #GtkListBoxRow in order to
@@ -249,8 +206,6 @@ gs_context_dialog_row_class_init (GsContextDialogRowClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge_content_image);
 	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, lozenge_content_text);
-	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, title);
-	gtk_widget_class_bind_template_child (widget_class, GsContextDialogRow, description);
 }
 
 /**
@@ -279,7 +234,7 @@ gs_context_dialog_row_new (const gchar                  *icon_name,
 			     "icon-name", icon_name,
 			     "importance", importance,
 			     "title", title,
-			     "description", description,
+			     "subtitle", description,
 			     NULL);
 }
 
@@ -365,40 +320,6 @@ gs_context_dialog_row_get_importance (GsContextDialogRow *self)
 }
 
 /**
- * gs_context_dialog_row_get_title:
- * @self: a #GsContextDialogRow
- *
- * Get the value of #GsContextDialogRow:title.
- *
- * Returns: (not nullable): title for the row
- * Since: 41
- */
-const gchar *
-gs_context_dialog_row_get_title (GsContextDialogRow *self)
-{
-	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), NULL);
-
-	return gtk_label_get_text (self->title);
-}
-
-/**
- * gs_context_dialog_row_get_description:
- * @self: a #GsContextDialogRow
- *
- * Get the value of #GsContextDialogRow:description.
- *
- * Returns: (not nullable): description for the row
- * Since: 41
- */
-const gchar *
-gs_context_dialog_row_get_description (GsContextDialogRow *self)
-{
-	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), NULL);
-
-	return gtk_label_get_text (self->description);
-}
-
-/**
  * gs_context_dialog_row_set_size_groups:
  * @self: a #GsContextDialogRow
  * @lozenge: (nullable) (transfer none): a #GtkSizeGroup for the lozenge, or %NULL
@@ -423,8 +344,4 @@ gs_context_dialog_row_set_size_groups (GsContextDialogRow *self,
 
 	if (lozenge != NULL)
 		gtk_size_group_add_widget (lozenge, self->lozenge);
-	if (title != NULL)
-		gtk_size_group_add_widget (title, GTK_WIDGET (self->title));
-	if (description != NULL)
-		gtk_size_group_add_widget (description, GTK_WIDGET (self->description));
 }

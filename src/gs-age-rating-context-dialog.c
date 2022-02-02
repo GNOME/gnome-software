@@ -745,8 +745,8 @@ sort_cb (GtkListBoxRow *row1,
 	if (importance1 != importance2)
 		return importance2 - importance1;
 
-	title1 = gs_context_dialog_row_get_title (_row1);
-	title2 = gs_context_dialog_row_get_title (_row2);
+	title1 = adw_preferences_row_get_title (ADW_PREFERENCES_ROW (_row1));
+	title2 = adw_preferences_row_get_title (ADW_PREFERENCES_ROW (_row2));
 
 	return g_strcmp0 (title1, title2);
 }

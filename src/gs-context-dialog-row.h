@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <adwaita.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
@@ -40,7 +41,7 @@ typedef enum
 
 #define GS_TYPE_CONTEXT_DIALOG_ROW (gs_context_dialog_row_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsContextDialogRow, gs_context_dialog_row, GS, CONTEXT_DIALOG_ROW, GtkListBoxRow)
+G_DECLARE_FINAL_TYPE (GsContextDialogRow, gs_context_dialog_row, GS, CONTEXT_DIALOG_ROW, AdwActionRow)
 
 GtkListBoxRow	*gs_context_dialog_row_new	(const gchar			*icon_name,
 						 GsContextDialogRowImportance	 importance,
@@ -54,8 +55,6 @@ GtkListBoxRow	*gs_context_dialog_row_new_text	(const gchar			*content,
 const gchar			*gs_context_dialog_row_get_icon_name	(GsContextDialogRow	*self);
 const gchar			*gs_context_dialog_row_get_content	(GsContextDialogRow	*self);
 GsContextDialogRowImportance	 gs_context_dialog_row_get_importance	(GsContextDialogRow	*self);
-const gchar			*gs_context_dialog_row_get_title	(GsContextDialogRow	*self);
-const gchar			*gs_context_dialog_row_get_description	(GsContextDialogRow	*self);
 
 void				 gs_context_dialog_row_set_size_groups	(GsContextDialogRow	*self,
 									 GtkSizeGroup		*lozenge,
