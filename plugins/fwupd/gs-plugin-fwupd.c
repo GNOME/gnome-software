@@ -697,26 +697,16 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_refresh_remote (GsPluginFwupd  *self,
-                                FwupdRemote    *remote,
-                                guint           cache_age,
-                                GCancellable   *cancellable,
-                                GError        **error)
+remote_cache_is_expired (FwupdRemote *remote,
+                         guint64      cache_age_secs)
 {
 	/* check cache age */
-	if (cache_age > 0) {
+	if (cache_age_secs > 0) {
 		guint64 age = fwupd_remote_get_age (remote);
-		guint tmp = age < G_MAXUINT ? (guint) age : G_MAXUINT;
-		if (tmp < cache_age) {
-			g_debug ("fwupd remote is only %u seconds old, so ignoring refresh", tmp);
-			return TRUE;
+		if (age < cache_age_secs) {
+			g_debug ("fwupd remote is only %" G_GUINT64_FORMAT " seconds old, so ignoring refresh", age);
+			return FALSE;
 		}
-	}
-
-	/* download new content */
-	if (!fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
 	}
 
 	return TRUE;
@@ -750,9 +740,13 @@ gs_plugin_refresh (GsPlugin *plugin,
 			continue;
 		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
 			continue;
-		if (!gs_plugin_fwupd_refresh_remote (self, remote, cache_age,
-						     cancellable, error))
+		if (!remote_cache_is_expired (remote, cache_age))
+			continue;
+
+		if (!fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
+			gs_plugin_fwupd_error_convert (error);
 			return FALSE;
+		}
 	}
 	return TRUE;
 }
@@ -1138,8 +1132,11 @@ gs_plugin_fwupd_refresh_single_remote (GsPluginFwupd *self,
 		if (g_strcmp0 (remote_id, fwupd_remote_get_id (remote)) == 0) {
 			if (fwupd_remote_get_enabled (remote) &&
 			    fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_LOCAL &&
-			    !gs_plugin_fwupd_refresh_remote (self, remote, cache_age, cancellable, error))
+			    !remote_cache_is_expired (remote, cache_age) &&
+			    !fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
+				gs_plugin_fwupd_error_convert (error);
 				return FALSE;
+			}
 			break;
 		}
 	}
