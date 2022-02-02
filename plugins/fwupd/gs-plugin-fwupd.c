@@ -748,7 +748,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (!fwupd_remote_get_enabled (remote))
 			continue;
-		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
+		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
 			continue;
 		if (!gs_plugin_fwupd_refresh_remote (self, remote, cache_age,
 						     cancellable, error))
