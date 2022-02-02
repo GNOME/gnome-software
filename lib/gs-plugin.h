@@ -144,7 +144,6 @@ void		 gs_plugin_remove_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
-SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
 void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,

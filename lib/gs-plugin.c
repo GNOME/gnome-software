@@ -522,23 +522,6 @@ gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
 }
 
 /**
- * gs_plugin_get_soup_session:
- * @plugin: a #GsPlugin
- *
- * Gets the soup session that this plugin can use when downloading.
- *
- * Returns: the #SoupSession
- *
- * Since: 3.22
- **/
-SoupSession *
-gs_plugin_get_soup_session (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->soup_session;
-}
-
-/**
  * gs_plugin_set_soup_session:
  * @plugin: a #GsPlugin
  * @soup_session: a #SoupSession

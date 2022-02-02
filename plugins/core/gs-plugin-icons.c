@@ -9,6 +9,7 @@
 
 #include <config.h>
 
+#include <libsoup/soup.h>
 #include <string.h>
 
 #include <gnome-software.h>
@@ -31,6 +32,7 @@ struct _GsPluginIcons
 {
 	GsPlugin	parent;
 
+	SoupSession	*soup_session;  /* (owned) */
 	GsWorkerThread	*worker;  /* (owned) */
 };
 
@@ -51,6 +53,7 @@ gs_plugin_icons_dispose (GObject *object)
 {
 	GsPluginIcons *self = GS_PLUGIN_ICONS (object);
 
+	g_clear_object (&self->soup_session);
 	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_icons_parent_class)->dispose (object);
@@ -67,6 +70,8 @@ gs_plugin_icons_setup_async (GsPlugin            *plugin,
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_icons_setup_async);
+
+	self->soup_session = gs_build_soup_session ();
 
 	/* Start up a worker thread to process all the plugin’s function calls. */
 	self->worker = gs_worker_thread_new ("gs-plugin-icons");
@@ -112,6 +117,7 @@ shutdown_cb (GObject      *source_object,
 	g_autoptr(GsWorkerThread) worker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
+	g_clear_object (&self->soup_session);
 	worker = g_steal_pointer (&self->worker);
 
 	if (!gs_worker_thread_shutdown_finish (worker, result, &local_error)) {
@@ -137,7 +143,6 @@ refine_app (GsPluginIcons        *self,
             GCancellable         *cancellable,
             GError              **error)
 {
-	SoupSession *soup_session;
 	guint maximum_icon_size;
 
 	assert_in_worker (self);
@@ -146,12 +151,10 @@ refine_app (GsPluginIcons        *self,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
 		return TRUE;
 
-	soup_session = gs_plugin_get_soup_session (GS_PLUGIN (self));
-
 	/* Currently a 160px icon is needed for #GsFeatureTile, at most. */
 	maximum_icon_size = 160 * gs_plugin_get_scale (GS_PLUGIN (self));
 
-	gs_app_ensure_icons_downloaded (app, soup_session, maximum_icon_size, cancellable);
+	gs_app_ensure_icons_downloaded (app, self->soup_session, maximum_icon_size, cancellable);
 
 	return TRUE;
 }

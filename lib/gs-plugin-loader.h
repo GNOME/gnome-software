@@ -88,7 +88,6 @@ void		 gs_plugin_loader_get_system_app_async	(GsPluginLoader	*plugin_loader,
 GsApp		*gs_plugin_loader_get_system_app_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-SoupSession	*gs_plugin_loader_get_soup_session	(GsPluginLoader	*plugin_loader);
 GsOdrsProvider	*gs_plugin_loader_get_odrs_provider	(GsPluginLoader	*plugin_loader);
 
 /* only useful from the self tests */

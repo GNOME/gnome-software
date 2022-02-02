@@ -10,6 +10,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <libsoup/soup.h>
 
 #include "gs-external-appstream-utils.h"
 
@@ -88,12 +89,12 @@ static gboolean
 gs_external_appstream_refresh_sys (GsPlugin      *plugin,
                                    const gchar   *url,
                                    const gchar   *basename,
+                                   SoupSession   *soup_session,
                                    guint          cache_age,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
 	GOutputStream *outstream = NULL;
-	SoupSession *soup_session;
 	guint status_code;
 	gboolean file_written;
 	gconstpointer downloaded_data;
@@ -135,7 +136,6 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 	}
 
 	/* get the data */
-	soup_session = gs_plugin_get_soup_session (plugin);
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	bytes = soup_session_send_and_read (soup_session, msg, cancellable, error);
 	if (bytes != NULL) {
@@ -251,6 +251,7 @@ static gboolean
 gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GSettings     *settings,
                                    const gchar   *url,
+                                   SoupSession   *soup_session,
                                    guint          cache_age,
                                    GCancellable  *cancellable,
                                    GError       **error)
@@ -270,6 +271,7 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
 	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
 		return gs_external_appstream_refresh_sys (plugin, url,
 							  basename,
+							  soup_session,
 							  cache_age,
 							  cancellable,
 							  error);
@@ -300,8 +302,10 @@ gs_external_appstream_refresh (GsPlugin      *plugin,
 {
 	g_autoptr(GSettings) settings = NULL;
 	g_auto(GStrv) appstream_urls = NULL;
+	g_autoptr(SoupSession) soup_session = NULL;
 
 	settings = g_settings_new ("org.gnome.software");
+	soup_session = gs_build_soup_session ();
 	appstream_urls = g_settings_get_strv (settings,
 					      "external-appstream-urls");
 	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
@@ -315,6 +319,7 @@ gs_external_appstream_refresh (GsPlugin      *plugin,
 		if (!gs_external_appstream_refresh_url (plugin,
 							settings,
 							appstream_urls[i],
+							soup_session,
 							cache_age,
 							cancellable,
 							&error_local)) {
