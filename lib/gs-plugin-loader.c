@@ -2824,7 +2824,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 									     distro,
 									     odrs_review_max_cache_age_secs,
 									     odrs_review_n_results_max,
-									     gs_plugin_loader_get_soup_session (plugin_loader));
+									     plugin_loader->soup_session);
 		}
 	}
 
@@ -4076,23 +4076,6 @@ gs_plugin_loader_get_system_app_finish (GsPluginLoader *plugin_loader,
 					GError **error)
 {
 	return gs_plugin_loader_app_create_finish (plugin_loader, res, error);
-}
-
-/**
- * gs_plugin_loader_get_soup_session:
- * @plugin_loader: a #GsPluginLoader
- *
- * Get the internal #SoupSession which is used to download things.
- *
- * Returns: (transfer none) (not nullable): a #SoupSession
- * Since: 41
- */
-SoupSession *
-gs_plugin_loader_get_soup_session (GsPluginLoader *plugin_loader)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-
-	return plugin_loader->soup_session;
 }
 
 /**
