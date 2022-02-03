@@ -35,7 +35,8 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   explicitly shut down. It is not called if the plugin is disabled during
  *   construction.
  * @setup_finish: (nullable): Finish method for @setup_async. Must be
- *   implemented if @setup_async is implemented.
+ *   implemented if @setup_async is implemented. If this returns an error, the
+ *   plugin will be disabled.
  * @shutdown_async: (nullable): Shutdown method for the plugin. This is called
  *   by the #GsPluginLoader when the process is terminating or the
  *   #GsPluginLoader is being destroyed. It should be used to cancel or stop any
