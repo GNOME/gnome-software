@@ -1187,6 +1187,10 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
 	}
 
+	/* Wait for the flatpak changes to be delivered through the file
+	   monitor notifications, which will cleanup plugin cache. */
+	g_usleep (G_USEC_PER_SEC);
+
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
