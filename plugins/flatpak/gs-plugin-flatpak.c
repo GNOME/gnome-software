@@ -1684,8 +1684,16 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		if (app == NULL)
 			return FALSE;
 	}
-	if (app != NULL)
+	if (app != NULL) {
+		GsApp *runtime = gs_app_get_runtime (app);
+		/* Ensure the origin for the runtime is set */
+		if (runtime != NULL && gs_app_get_origin (runtime) == NULL) {
+			g_autoptr(GError) error_local = NULL;
+			if (!gs_plugin_flatpak_refine_app (self, runtime, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN, cancellable, &error_local))
+				g_debug ("Failed to refine runtime: %s", error_local->message);
+		}
 		gs_app_list_add (list, app);
+	}
 	return TRUE;
 }
 
