@@ -390,6 +390,24 @@ content_rating_attribute_get_unknown_description (const gchar *attribute)
 	g_assert_not_reached ();
 }
 
+static GsContextDialogRowImportance
+content_rating_value_get_importance (AsContentRatingValue value)
+{
+	switch (value) {
+	case AS_CONTENT_RATING_VALUE_NONE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
+	case AS_CONTENT_RATING_VALUE_UNKNOWN:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
+	case AS_CONTENT_RATING_VALUE_MILD:
+	case AS_CONTENT_RATING_VALUE_MODERATE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
+	case AS_CONTENT_RATING_VALUE_INTENSE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT;
+	default:
+		g_assert_not_reached ();
+	}
+}
+
 static void
 add_attribute_row (GtkListBox           *list_box,
                    const gchar          *attribute,
@@ -399,37 +417,13 @@ add_attribute_row (GtkListBox           *list_box,
 	GsContextDialogRowImportance rating;
 	const gchar *icon_name, *title, *description;
 
-	switch (value) {
-	case AS_CONTENT_RATING_VALUE_UNKNOWN:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = content_rating_attribute_get_unknown_description (attribute);
-		break;
-	case AS_CONTENT_RATING_VALUE_NONE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
-		icon_name = content_rating_attribute_get_icon_name (attribute, TRUE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_MILD:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_MODERATE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_INTENSE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	default:
-		g_assert_not_reached ();
-	}
-
+	rating = content_rating_value_get_importance (value);
+	icon_name = content_rating_attribute_get_icon_name (attribute, value == AS_CONTENT_RATING_VALUE_NONE);
 	title = content_rating_attribute_get_title (attribute);
+	if (value == AS_CONTENT_RATING_VALUE_UNKNOWN)
+		description = content_rating_attribute_get_unknown_description (attribute);
+	else
+		description = as_content_rating_attribute_get_description (attribute, value);
 
 	row = gs_context_dialog_row_new (icon_name, rating, title, description);
 	gtk_list_box_append (list_box, GTK_WIDGET (row));
