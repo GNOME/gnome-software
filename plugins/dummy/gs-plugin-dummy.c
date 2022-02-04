@@ -852,7 +852,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_version (app, "25");
+	gs_app_set_version (app, "34");
 	gs_app_set_size_installed (app, 256 * 1024 * 1024);
 	gs_app_set_size_download (app, 1024 * 1024 * 1024);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
