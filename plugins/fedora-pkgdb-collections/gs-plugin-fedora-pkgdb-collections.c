@@ -275,6 +275,8 @@ static gchar *
 _get_upgrade_css_background (guint version)
 {
 	g_autoptr(GSettings) settings = NULL;
+	g_autofree gchar *version_str = g_strdup_printf ("%u", version);
+	g_autofree gchar *filename0 = NULL;
 	g_autofree gchar *filename1 = NULL;
 	g_autofree gchar *filename2 = NULL;
 	g_autofree gchar *uri = NULL;
@@ -308,6 +310,12 @@ _get_upgrade_css_background (guint version)
 		}
 	}
 
+	/* Check the standard location. */
+	filename0 = gs_utils_get_upgrade_background (version_str);
+	if (filename0 != NULL)
+		return g_strdup_printf ("url('file://%s')", filename0);
+
+	/* Fedora-specific locations. Deprecated. */
 	filename1 = g_strdup_printf ("/usr/share/backgrounds/f%u/default/standard/f%u.png", version, version);
 	if (g_file_test (filename1, G_FILE_TEST_EXISTS))
 		return g_strdup_printf ("url('file://%s')", filename1);

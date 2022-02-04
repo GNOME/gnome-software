@@ -49,3 +49,23 @@ The principles which guide vendor customisation features in GNOME Software are:
      which is a burden.
    - It’s easier to allow distributions to put customisations specific to a new
      OS version into a separate package.
+
+Upgrade background image
+------------------------
+
+The background image which is shown when a new OS upgrade is available is
+customisable in several ways. It’s displayed by the `GsUpgradeBanner` widget,
+and shown on the updates page.
+
+If your distribution has a specific GNOME Software plugin providing its upgrade
+information, that plugin can provide CSS for rendering the background. See the
+`fedora-pkgdb-collections` plugin for an example of this.
+
+Otherwise, the background image is looked up from several well-known locations,
+in order:
+ * `${DATADIR}/gnome-software/backgrounds/${os_id}-${version}.png`
+ * `${DATADIR}/gnome-software/backgrounds/${os_id}.png`
+
+`${DATADIR}` is the configured data directory (typically `/usr/share`).
+`${os_id}` is the `ID=` value from `/etc/os-release`, and `${version}` is the
+version string being upgraded to.

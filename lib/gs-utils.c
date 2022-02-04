@@ -1591,3 +1591,43 @@ gs_utils_set_file_etag (const gchar *filename,
 
 	return g_file_set_attribute_string (file, METADATA_ETAG_ATTRIBUTE, etag, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
 }
+
+/**
+ * gs_utils_get_upgrade_background:
+ * @version: (nullable): version string of the upgrade (which must be non-empty
+ *   if provided), or %NULL if unknown
+ *
+ * Get the path to a background image to display as the background for a banner
+ * advertising an upgrade to the given @version.
+ *
+ * If a path is returned, it’s guaranteed to exist on the file system.
+ *
+ * Vendors can drop their customised backgrounds in this directory for them to
+ * be used by gnome-software. See `doc/vendor-customisation.md`.
+ *
+ * Returns: (transfer full) (type filename) (nullable): path to an upgrade
+ *   background image to use, or %NULL if a suitable one didn’t exist
+ * Since: 42
+*/
+gchar *
+gs_utils_get_upgrade_background (const gchar *version)
+{
+	g_autofree gchar *filename = NULL;
+	g_autofree gchar *os_id = g_get_os_info (G_OS_INFO_KEY_ID);
+
+	g_return_val_if_fail (version == NULL || *version != '\0', NULL);
+
+	if (version != NULL) {
+		filename = g_strdup_printf (DATADIR "/gnome-software/backgrounds/%s-%s.png", os_id, version);
+		if (g_file_test (filename, G_FILE_TEST_EXISTS))
+			return g_steal_pointer (&filename);
+		g_clear_pointer (&filename, g_free);
+	}
+
+	filename = g_strdup_printf (DATADIR "/gnome-software/backgrounds/%s.png", os_id);
+	if (g_file_test (filename, G_FILE_TEST_EXISTS))
+		return g_steal_pointer (&filename);
+	g_clear_pointer (&filename, g_free);
+
+	return NULL;
+}

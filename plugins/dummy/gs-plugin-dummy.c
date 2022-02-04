@@ -828,6 +828,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 {
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GIcon) ic = NULL;
+	g_autofree gchar *background_filename = NULL;
+	g_autofree gchar *css = NULL;
 
 	/* use stock icon */
 	ic = g_themed_icon_new ("system-component-addon");
@@ -857,10 +859,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_size_download (app, 1024 * 1024 * 1024);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
 	gs_app_set_management_plugin (app, plugin);
-	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
-			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
-			     "background-size: 100% 100%;"
-			     "border-width: 0;");
+
+	/* Check for a background image in the standard location. */
+	background_filename = gs_utils_get_upgrade_background ("34");
+
+	if (background_filename != NULL)
+		css = g_strconcat ("background: url('file://", background_filename, "');"
+				   "background-size: 100% 100%;", NULL);
+	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
+
 	gs_app_add_icon (app, ic);
 	gs_app_list_add (list, app);
 

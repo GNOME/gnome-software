@@ -140,4 +140,6 @@ gboolean	 gs_utils_set_file_etag		(const gchar		*filename,
 						 const gchar		*etag,
 						 GCancellable		*cancellable);
 
+gchar		*gs_utils_get_upgrade_background (const gchar		*version);
+
 G_END_DECLS
