@@ -377,7 +377,8 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 	}
 
 	/* set the app and origin IDs if we managed to scrape them from the error above */
-	event_app = g_object_ref (app);
+	if (app != NULL)
+		event_app = g_object_ref (app);
 	event_origin = NULL;
 
 	if (plugin != NULL && as_utils_data_id_valid (app_id)) {
