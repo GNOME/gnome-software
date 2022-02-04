@@ -1892,6 +1892,14 @@ gs_app_get_icon_for_size (GsApp       *app,
 		g_debug ("\tConsidering icon of type %s (%s), width %u×%u",
 			 G_OBJECT_TYPE_NAME (icon), icon_str, icon_width, icon_scale);
 
+		/* Ignore icons that aren't in the cache - Appstream doesn't require them to be present */
+		if (G_IS_FILE_ICON (icon)) {
+			GFile *file = g_file_icon_get_file (G_FILE_ICON (icon));
+			if (!g_file_query_exists (file, NULL)) {
+				continue;
+			}
+		}
+
 		/* Ignore icons with unknown width and skip over ones which
 		 * are too small. */
 		if (icon_width == 0 || icon_width * icon_scale < size * scale)
