@@ -41,6 +41,17 @@
 #include "gs-context-dialog-row.h"
 #include "gs-age-rating-context-dialog.h"
 
+typedef enum {
+	GS_AGE_RATING_GROUP_TYPE_DRUGS,
+	GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
+	GS_AGE_RATING_GROUP_TYPE_MONEY,
+	GS_AGE_RATING_GROUP_TYPE_SEX,
+	GS_AGE_RATING_GROUP_TYPE_SOCIAL,
+	GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
+} GsAgeRatingGroupType;
+
+#define GS_AGE_RATING_GROUP_TYPE_COUNT (GS_AGE_RATING_GROUP_TYPE_VIOLENCE+1)
+
 struct _GsAgeRatingContextDialog
 {
 	GsInfoWindow		 parent_instance;
@@ -67,6 +78,7 @@ static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
  * other per-attribute strings and data which it already stores. */
 static const struct {
 	const gchar *id;  /* (not nullable) */
+	GsAgeRatingGroupType group_type;
 	const gchar *title;  /* (not nullable) */
 	const gchar *unknown_description;  /* (not nullable) */
 	const gchar *icon_name;  /* (not nullable) */
@@ -75,6 +87,7 @@ static const struct {
 	/* v1.0 */
 	{
 		"violence-cartoon",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Cartoon Violence"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -84,6 +97,7 @@ static const struct {
 	},
 	{
 		"violence-fantasy",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Fantasy Violence"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -93,6 +107,7 @@ static const struct {
 	},
 	{
 		"violence-realistic",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Realistic Violence"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -102,6 +117,7 @@ static const struct {
 	},
 	{
 		"violence-bloodshed",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Violence Depicting Bloodshed"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -111,6 +127,7 @@ static const struct {
 	},
 	{
 		"violence-sexual",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Violence"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -120,6 +137,7 @@ static const struct {
 	},
 	{
 		"drugs-alcohol",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Alcohol"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -129,6 +147,7 @@ static const struct {
 	},
 	{
 		"drugs-narcotics",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Narcotics"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -138,6 +157,7 @@ static const struct {
 	},
 	{
 		"drugs-tobacco",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Tobacco"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -147,6 +167,7 @@ static const struct {
 	},
 	{
 		"sex-nudity",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Nudity"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -156,6 +177,7 @@ static const struct {
 	},
 	{
 		"sex-themes",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Themes"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -165,6 +187,7 @@ static const struct {
 	},
 	{
 		"language-profanity",
+		GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Profanity"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -174,6 +197,7 @@ static const struct {
 	},
 	{
 		"language-humor",
+		GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Inappropriate Humor"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -183,6 +207,7 @@ static const struct {
 	},
 	{
 		"language-discrimination",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Discrimination"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -192,6 +217,7 @@ static const struct {
 	},
 	{
 		"money-advertising",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Advertising"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -201,6 +227,7 @@ static const struct {
 	},
 	{
 		"money-gambling",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Gambling"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -210,6 +237,7 @@ static const struct {
 	},
 	{
 		"money-purchasing",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Purchasing"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -219,6 +247,7 @@ static const struct {
 	},
 	{
 		"social-chat",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Chat Between Users"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -228,6 +257,7 @@ static const struct {
 	},
 	{
 		"social-audio",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Audio Chat Between Users"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -237,6 +267,7 @@ static const struct {
 	},
 	{
 		"social-contacts",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Contact Details"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -246,6 +277,7 @@ static const struct {
 	},
 	{
 		"social-info",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Identifying Information"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -255,6 +287,7 @@ static const struct {
 	},
 	{
 		"social-location",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Location Sharing"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -280,6 +313,7 @@ static const struct {
 		 * The differences between countries are handled through handling #AsContentRatingSystem
 		 * values differently. */
 		"sex-homosexuality",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Homosexuality"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -289,6 +323,7 @@ static const struct {
 	},
 	{
 		"sex-prostitution",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Prostitution"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -298,6 +333,7 @@ static const struct {
 	},
 	{
 		"sex-adultery",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Adultery"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -307,6 +343,7 @@ static const struct {
 	},
 	{
 		"sex-appearance",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexualized Characters"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -316,6 +353,7 @@ static const struct {
 	},
 	{
 		"violence-worship",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Desecration"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -325,6 +363,7 @@ static const struct {
 	},
 	{
 		"violence-desecration",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Human Remains"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -334,6 +373,7 @@ static const struct {
 	},
 	{
 		"violence-slavery",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Slavery"),
 		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
@@ -388,6 +428,84 @@ content_rating_attribute_get_unknown_description (const gchar *attribute)
 
 	/* Attribute not handled */
 	g_assert_not_reached ();
+}
+
+/* Get the `title` from @attribute_details for the given @attribute. */
+static GsAgeRatingGroupType
+content_rating_attribute_get_group_type (const gchar *attribute)
+{
+	for (gsize i = 0; i < G_N_ELEMENTS (attribute_details); i++) {
+		if (g_str_equal (attribute, attribute_details[i].id)) {
+			return attribute_details[i].group_type;
+		}
+	}
+
+	/* Attribute not handled */
+	g_assert_not_reached ();
+}
+
+static const gchar *
+content_rating_group_get_description (GsAgeRatingGroupType group_type)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return N_("Does not include references to drugs");
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return N_("Does not include swearing, profanity, and other kinds of strong language");
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return N_("Does not include ads or monetary transactions");
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return N_("Does not include sex or nudity");
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return N_("Does not include uncontrolled chat functionality");
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return N_("Does not include violence");
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static const gchar *
+content_rating_group_get_icon_name (GsAgeRatingGroupType group_type,
+                                    gboolean             negative_version)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return negative_version ? "cigarette-none-symbolic" : "cigarette-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return negative_version ? "strong-language-none-symbolic" : "strong-language-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return negative_version ? "money-none-symbolic" : "money-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return negative_version ? "nudity-none-symbolic" : "nudity-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return negative_version ? "chat-none-symbolic" : "chat-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return negative_version ? "violence-none-symbolic" : "violence-symbolic";
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static const gchar *
+content_rating_group_get_title (GsAgeRatingGroupType group_type)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return N_("Drugs");
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return N_("Strong Language");
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return N_("Money");
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return N_("Nudity");
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return N_("Social");
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return N_("Violence");
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 static GsContextDialogRowImportance
