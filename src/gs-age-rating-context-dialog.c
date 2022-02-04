@@ -52,6 +52,14 @@ typedef enum {
 
 #define GS_AGE_RATING_GROUP_TYPE_COUNT (GS_AGE_RATING_GROUP_TYPE_VIOLENCE+1)
 
+typedef struct {
+	gchar *id;
+	gchar *icon_name;
+	GsContextDialogRowImportance importance;
+	gchar *title;
+	gchar *description;
+} GsAgeRatingAttribute;
+
 struct _GsAgeRatingContextDialog
 {
 	GsInfoWindow		 parent_instance;
@@ -59,6 +67,8 @@ struct _GsAgeRatingContextDialog
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_content_rating;
 	gulong			 app_notify_handler_name;
+	GtkWidget		*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];
+	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];
 
 	GtkLabel		*age;
 	GtkWidget		*lozenge;
@@ -73,6 +83,39 @@ typedef enum {
 } GsAgeRatingContextDialogProperty;
 
 static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
+
+static GsAgeRatingAttribute *
+gs_age_rating_attribute_new (const gchar                  *id,
+                             const gchar                  *icon_name,
+                             GsContextDialogRowImportance  importance,
+                             const gchar                  *title,
+                             const gchar                  *description)
+{
+	GsAgeRatingAttribute *attributes;
+
+	g_assert (icon_name != NULL);
+	g_assert (title != NULL);
+	g_assert (description != NULL);
+
+	attributes = g_new0 (GsAgeRatingAttribute, 1);
+	attributes->id = g_strdup (id);
+	attributes->icon_name = g_strdup (icon_name);
+	attributes->importance = importance;
+	attributes->title = g_strdup (title);
+	attributes->description = g_strdup (description);
+
+	return attributes;
+}
+
+static void
+gs_age_rating_attribute_free (GsAgeRatingAttribute *attributes)
+{
+	g_free (attributes->id);
+	g_free (attributes->icon_name);
+	g_free (attributes->title);
+	g_free (attributes->description);
+	g_free (attributes);
+}
 
 /* FIXME: Ideally this data would move into libappstream, to be next to the
  * other per-attribute strings and data which it already stores. */
@@ -526,15 +569,108 @@ content_rating_value_get_importance (AsContentRatingValue value)
 	}
 }
 
+static gint
+attributes_compare (GsAgeRatingAttribute *attributes1,
+                    GsAgeRatingAttribute *attributes2)
+{
+	if (attributes1->importance != attributes2->importance) {
+		/* Important attributes come first */
+		return attributes2->importance - attributes1->importance;
+	} else {
+		/* Sort by alphabetical ID order */
+		return g_strcmp0 (attributes1->id, attributes2->id);
+	}
+}
+
+static void
+update_attribute_row (GsAgeRatingContextDialog *self,
+                      GsAgeRatingGroupType      group_type)
+{
+	const GsAgeRatingAttribute *first;
+	const gchar *group_icon_name;
+	const gchar *group_title;
+	const gchar *group_description;
+	g_autofree char *new_description = NULL;
+
+	first = (GsAgeRatingAttribute *) self->attributes[group_type]->data;
+
+	if (g_list_length (self->attributes[group_type]) == 1) {
+		g_object_set (self->rows[group_type],
+			      "icon-name", first->icon_name,
+			      "importance", first->importance,
+			      "subtitle", first->description,
+			      "title", first->title,
+			      NULL);
+
+		return;
+	}
+
+	if (first->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT) {
+		gboolean only_unimportant = TRUE;
+
+		for (GList *l = self->attributes[group_type]->next; l; l = l->next) {
+			GsAgeRatingAttribute *attribute = (GsAgeRatingAttribute *) l->data;
+
+			if (attribute->importance != GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT) {
+				only_unimportant = FALSE;
+				break;
+			}
+		}
+
+		if (only_unimportant) {
+			group_icon_name = content_rating_group_get_icon_name (group_type, first->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT);
+			group_title = content_rating_group_get_title (group_type);
+			group_description = content_rating_group_get_description (group_type);
+
+			g_object_set (self->rows[group_type],
+				      "icon-name", group_icon_name,
+				      "importance", first->importance,
+				      "subtitle", group_description,
+				      "title", group_title,
+				      NULL);
+
+			return;
+		}
+
+	}
+
+	group_icon_name = content_rating_group_get_icon_name (group_type, FALSE);
+	group_title = content_rating_group_get_title (group_type);
+	new_description = g_strdup (first->description);
+
+	for (GList *l = self->attributes[group_type]->next; l; l = l->next) {
+		GsAgeRatingAttribute *attribute = (GsAgeRatingAttribute *) l->data;
+		char *s;
+
+		if (attribute->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT)
+			break;
+
+		s = g_strdup_printf ("%s • %s",
+				     new_description,
+				     ((GsAgeRatingAttribute *) l->data)->description);
+		g_free (new_description);
+		new_description = s;
+	}
+
+	g_object_set (self->rows[group_type],
+		      "icon-name", group_icon_name,
+		      "importance", first->importance,
+		      "subtitle", new_description,
+		      "title", group_title,
+		      NULL);
+}
+
 static void
 add_attribute_row (GsAgeRatingContextDialog *self,
                    const gchar              *attribute,
                    AsContentRatingValue      value)
 {
-	GtkListBoxRow *row;
+	GsAgeRatingGroupType group_type;
 	GsContextDialogRowImportance rating;
 	const gchar *icon_name, *title, *description;
+	GsAgeRatingAttribute *attributes;
 
+	group_type = content_rating_attribute_get_group_type (attribute);
 	rating = content_rating_value_get_importance (value);
 	icon_name = content_rating_attribute_get_icon_name (attribute, value == AS_CONTENT_RATING_VALUE_NONE);
 	title = content_rating_attribute_get_title (attribute);
@@ -543,8 +679,19 @@ add_attribute_row (GsAgeRatingContextDialog *self,
 	else
 		description = as_content_rating_attribute_get_description (attribute, value);
 
-	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_append (self->attributes_list, GTK_WIDGET (row));
+	attributes = gs_age_rating_attribute_new (attribute, icon_name, rating, title, description);
+
+	if (self->attributes[group_type] != NULL) {
+		self->attributes[group_type] = g_list_insert_sorted (self->attributes[group_type],
+								     attributes,
+								     (GCompareFunc) attributes_compare);
+
+		update_attribute_row (self, group_type);
+	} else {
+		self->attributes[group_type] = g_list_prepend (self->attributes[group_type], attributes);
+		self->rows[group_type] = GTK_WIDGET (gs_context_dialog_row_new (icon_name, rating, title, description));
+		gtk_list_box_append (self->attributes_list, self->rows[group_type]);
+	}
 }
 
 /**
@@ -987,6 +1134,19 @@ gs_age_rating_context_dialog_dispose (GObject *object)
 }
 
 static void
+gs_age_rating_context_dialog_finalize (GObject *object)
+{
+	GsAgeRatingContextDialog *self = GS_AGE_RATING_CONTEXT_DIALOG (object);
+
+	for (GsAgeRatingGroupType group_type = 0; group_type < GS_AGE_RATING_GROUP_TYPE_COUNT; group_type++) {
+		g_list_free_full (self->attributes[group_type],
+				  (GDestroyNotify) gs_age_rating_attribute_free);
+	}
+
+	G_OBJECT_CLASS (gs_age_rating_context_dialog_parent_class)->finalize (object);
+}
+
+static void
 gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -995,6 +1155,7 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 	object_class->get_property = gs_age_rating_context_dialog_get_property;
 	object_class->set_property = gs_age_rating_context_dialog_set_property;
 	object_class->dispose = gs_age_rating_context_dialog_dispose;
+	object_class->finalize = gs_age_rating_context_dialog_finalize;
 
 	/**
 	 * GsAgeRatingContextDialog:app: (nullable)
