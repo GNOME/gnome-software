@@ -68,6 +68,7 @@ static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
 static const struct {
 	const gchar *id;  /* (not nullable) */
 	const gchar *title;  /* (not nullable) */
+	const gchar *unknown_description;  /* (not nullable) */
 	const gchar *icon_name;  /* (not nullable) */
 	const gchar *icon_name_negative;  /* (nullable) */
 } attribute_details[] = {
@@ -76,6 +77,8 @@ static const struct {
 		"violence-cartoon",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Cartoon Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding cartoon violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -83,6 +86,8 @@ static const struct {
 		"violence-fantasy",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Fantasy Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding fantasy violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -90,6 +95,8 @@ static const struct {
 		"violence-realistic",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Realistic Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding realistic violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -97,6 +104,8 @@ static const struct {
 		"violence-bloodshed",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Violence Depicting Bloodshed"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding bloodshed"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -104,6 +113,8 @@ static const struct {
 		"violence-sexual",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sexual violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -111,6 +122,8 @@ static const struct {
 		"drugs-alcohol",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Alcohol"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to alcohol"),
 		"pub-symbolic",
 		NULL,
 	},
@@ -118,6 +131,8 @@ static const struct {
 		"drugs-narcotics",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Narcotics"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to illicit drugs"),
 		"cigarette-symbolic",
 		"cigarette-none-symbolic",
 	},
@@ -125,6 +140,8 @@ static const struct {
 		"drugs-tobacco",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Tobacco"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to tobacco products"),
 		"cigarette-symbolic",
 		"cigarette-none-symbolic",
 	},
@@ -132,6 +149,8 @@ static const struct {
 		"sex-nudity",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Nudity"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding nudity of any sort"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -139,6 +158,8 @@ static const struct {
 		"sex-themes",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Themes"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to or depictions of sexual nature"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -146,6 +167,8 @@ static const struct {
 		"language-profanity",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Profanity"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding profanity of any kind"),
 		"strong-language-symbolic",
 		"strong-language-none-symbolic",
 	},
@@ -153,6 +176,8 @@ static const struct {
 		"language-humor",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Inappropriate Humor"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding inappropriate humor"),
 		"strong-language-symbolic",
 		"strong-language-none-symbolic",
 	},
@@ -160,6 +185,8 @@ static const struct {
 		"language-discrimination",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Discrimination"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding discriminatory language of any kind"),
 		"chat-symbolic",
 		"chat-none-symbolic",
 	},
@@ -167,6 +194,8 @@ static const struct {
 		"money-advertising",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Advertising"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding advertising of any kind"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
@@ -174,6 +203,8 @@ static const struct {
 		"money-gambling",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Gambling"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding gambling of any kind"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
@@ -181,6 +212,8 @@ static const struct {
 		"money-purchasing",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Purchasing"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding the ability to spend money"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
@@ -188,6 +221,8 @@ static const struct {
 		"social-chat",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Chat Between Users"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding ways to chat with other users"),
 		"chat-symbolic",
 		"chat-none-symbolic",
 	},
@@ -195,6 +230,8 @@ static const struct {
 		"social-audio",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Audio Chat Between Users"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding ways to talk with other users"),
 		"audio-headset-symbolic",
 		NULL,
 	},
@@ -202,6 +239,8 @@ static const struct {
 		"social-contacts",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Contact Details"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of social network usernames or email addresses"),
 		"contact-new-symbolic",
 		NULL,
 	},
@@ -209,6 +248,8 @@ static const struct {
 		"social-info",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Identifying Information"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of user information with third parties"),
 		"x-office-address-book-symbolic",
 		NULL,
 	},
@@ -216,6 +257,8 @@ static const struct {
 		"social-location",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Location Sharing"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of physical location with other users"),
 		"location-services-active-symbolic",
 		"location-services-disabled-symbolic",
 	},
@@ -239,6 +282,8 @@ static const struct {
 		"sex-homosexuality",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Homosexuality"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to homosexuality"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -246,6 +291,8 @@ static const struct {
 		"sex-prostitution",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Prostitution"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to prostitution"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -253,6 +300,8 @@ static const struct {
 		"sex-adultery",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Adultery"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to adultery"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -260,6 +309,8 @@ static const struct {
 		"sex-appearance",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexualized Characters"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sexualized characters"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
@@ -267,6 +318,8 @@ static const struct {
 		"violence-worship",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Desecration"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to desecration"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -274,6 +327,8 @@ static const struct {
 		"violence-desecration",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Human Remains"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding visible dead human remains"),
 		"graveyard-symbolic",
 		NULL,
 	},
@@ -281,6 +336,8 @@ static const struct {
 		"violence-slavery",
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Slavery"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to slavery"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -319,6 +376,20 @@ content_rating_attribute_get_title (const gchar *attribute)
 	g_assert_not_reached ();
 }
 
+/* Get the `unknown_description` from @attribute_details for the given @attribute. */
+static const gchar *
+content_rating_attribute_get_unknown_description (const gchar *attribute)
+{
+	for (gsize i = 0; i < G_N_ELEMENTS (attribute_details); i++) {
+		if (g_str_equal (attribute, attribute_details[i].id)) {
+			return _(attribute_details[i].unknown_description);
+		}
+	}
+
+	/* Attribute not handled */
+	g_assert_not_reached ();
+}
+
 static void
 add_attribute_row (GtkListBox           *list_box,
                    const gchar          *attribute,
@@ -332,10 +403,7 @@ add_attribute_row (GtkListBox           *list_box,
 	case AS_CONTENT_RATING_VALUE_UNKNOWN:
 		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
 		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		/* Translators: This refers to a content rating attribute which
-		 * has an unknown value. For example, the amount of violence in
-		 * an app is ‘Unknown’. */
-		description = _("Unknown");
+		description = content_rating_attribute_get_unknown_description (attribute);
 		break;
 	case AS_CONTENT_RATING_VALUE_NONE:
 		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
