@@ -409,9 +409,9 @@ content_rating_value_get_importance (AsContentRatingValue value)
 }
 
 static void
-add_attribute_row (GtkListBox           *list_box,
-                   const gchar          *attribute,
-                   AsContentRatingValue  value)
+add_attribute_row (GsAgeRatingContextDialog *self,
+                   const gchar              *attribute,
+                   AsContentRatingValue      value)
 {
 	GtkListBoxRow *row;
 	GsContextDialogRowImportance rating;
@@ -426,7 +426,7 @@ add_attribute_row (GtkListBox           *list_box,
 		description = as_content_rating_attribute_get_description (attribute, value);
 
 	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_append (list_box, GTK_WIDGET (row));
+	gtk_list_box_append (self->attributes_list, GTK_WIDGET (row));
 }
 
 /**
@@ -570,7 +570,7 @@ add_attribute_rows_cb (const gchar          *attribute,
 {
 	GsAgeRatingContextDialog *self = GS_AGE_RATING_CONTEXT_DIALOG (user_data);
 
-	add_attribute_row (self->attributes_list, attribute, value);
+	add_attribute_row (self, attribute, value);
 }
 
 /* Wrapper around as_content_rating_system_format_age() which returns the short
