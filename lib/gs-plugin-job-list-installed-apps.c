@@ -46,6 +46,7 @@
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-list-installed-apps.h"
 #include "gs-plugin-job-refine.h"
+#include "gs-plugin-private.h"
 #include "gs-utils.h"
 
 struct _GsPluginJobListInstalledApps
