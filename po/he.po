@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-20 13:58+0000\n"
-"PO-Revision-Date: 2022-01-20 21:03+0200\n"
+"POT-Creation-Date: 2022-02-07 14:27+0000\n"
+"PO-Revision-Date: 2022-02-07 19:02+0200\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
@@ -20,9 +20,10 @@ msgstr ""
 "2 : 3)\n"
 "X-Generator: Gtranslator 40.0\n"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:7
-msgid "GNOME Software"
-msgstr "GNOME Software"
+#: data/appdata/org.gnome.Software.appdata.xml.in:7 src/gs-shell.ui:21
+#: src/org.gnome.Software.desktop.in:3
+msgid "Software"
+msgstr "תכנה"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:8
 msgid "Application manager for GNOME"
@@ -37,15 +38,20 @@ msgstr ""
 "מותקנים קיימים."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
+#| msgid ""
+#| "GNOME Software showcases featured and popular applications with useful "
+#| "descriptions and multiple screenshots per application. Applications can "
+#| "be found either through browsing the list of categories or by searching. "
+#| "It also allows you to update your system using an offline update."
 msgid ""
-"GNOME Software showcases featured and popular applications with useful "
+"Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"‏GNOME תכנה מציג יישומים מומלצים ופופולריים עם תיאור שימושי ומספר צילומי מסך "
-"לכל יישום. נתן למצוא יישומים דרך קטגוריות או דרך חיפוש.  כמו כן נתן אף לעדכן "
-"את המערכת שלך באמצעות עדכונים לא מקוונים."
+"תכנה מציג יישומים מומלצים ופופולריים עם תיאור שימושי ומספר צילומי מסך לכל "
+"יישום. נתן למצוא יישומים דרך קטגוריות או דרך חיפוש.  כמו כן נתן אף לעדכן את "
+"המערכת שלך באמצעות עדכונים לא מקוונים."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -294,10 +300,6 @@ msgstr ""
 "directory"
 
 #: data/org.gnome.software.gschema.xml:144
-#| msgid ""
-#| "Priority order of packaging formats to prefer, with more important "
-#| "formats listed first. An empty array means the default order. Omitted "
-#| "formats are assumed to be listed last."
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
@@ -577,9 +579,9 @@ msgstr "‫%s מתאים ל%s"
 msgid "Age Rating"
 msgstr "דירוג גיל מומלץ"
 
-#: src/gs-age-rating-context-dialog.ui:81
-#: src/gs-hardware-support-context-dialog.ui:81
-#: src/gs-safety-context-dialog.ui:231
+#: src/gs-age-rating-context-dialog.ui:79
+#: src/gs-hardware-support-context-dialog.ui:79
+#: src/gs-safety-context-dialog.ui:229
 msgid "How to add missing information"
 msgstr "איך להוסיף מידע חסר"
 
@@ -615,8 +617,8 @@ msgstr "בהמתנה להסרה"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:174 src/gs-app-tile.ui:50
-#: src/gs-feature-tile.c:402 src/gs-installed-page.c:712 src/gs-shell.ui:298
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:175 src/gs-app-tile.ui:50
+#: src/gs-feature-tile.c:402 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "מותקן"
 
@@ -718,18 +720,18 @@ msgstr "יכול לצאת מארגז החול ולעקוף הגבלות אחרו
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:139
+#: src/gs-app-details-page.c:137
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:158
+#: src/gs-app-details-page.c:156
 msgid "No update description available."
 msgstr "אין תיאור זמין לעדכון."
 
-#: src/gs-app-details-page.ui:25 src/gs-shell.ui:358 src/gs-shell.ui:449
+#: src/gs-app-details-page.ui:25 src/gs-shell.ui:365 src/gs-shell.ui:456
 msgid "Go back"
 msgstr "חזרה"
 
@@ -855,7 +857,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:328 src/gs-shell.c:2163
+#: src/gs-application.c:328 src/gs-shell.c:2168
 msgid "About Software"
 msgstr "על אודות תכנה"
 
@@ -1185,7 +1187,7 @@ msgstr "עדכון"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:179 src/gs-app-row.c:189 src/gs-details-page.ui:271
-#: src/gs-page.c:527
+#: src/gs-page.c:526
 msgid "Uninstall"
 msgstr "הסרת התקנה"
 
@@ -1240,7 +1242,7 @@ msgstr ""
 msgid "Translations"
 msgstr "תרגומים"
 
-#: src/gs-app-translation-dialog.ui:99
+#: src/gs-app-translation-dialog.ui:97
 msgid "_Translation Website"
 msgstr "אתר ה_תרגום"
 
@@ -1786,7 +1788,7 @@ msgstr "לאפשר ולהתקין"
 msgid "Detailed errors from the package manager follow:"
 msgstr "להלן שגיאות מפורטות ממנהל החבילות:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:82
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
 msgid "Details"
 msgstr "פרטים"
 
@@ -2158,12 +2160,6 @@ msgstr "ביקורות"
 #: src/gs-details-page.ui:813
 msgid "_Write a Review"
 msgstr "_כתיבת ביקורת"
-
-#. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
-#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-details-page.ui:911 src/gs-safety-context-dialog.ui:151
-msgid "Source"
-msgstr "מקור"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:245
@@ -2664,7 +2660,7 @@ msgstr "דף בטעינה"
 msgid "Starting up…"
 msgstr "מתחיל…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:247
+#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:254
 msgid "Automatic Updates Paused"
 msgstr "עדכונים אוטומטיים מושהים"
 
@@ -2758,7 +2754,7 @@ msgstr "הוסרו"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:259 src/gs-shell.ui:319 src/gs-updates-page.c:1344
+#: src/gs-os-update-page.c:259 src/gs-shell.ui:326 src/gs-updates-page.c:1344
 msgid "Updates"
 msgstr "עדכונים"
 
@@ -2791,7 +2787,7 @@ msgstr "לאפשר"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:697 src/gs-shell.ui:285
+#: src/gs-overview-page.c:697 src/gs-shell.ui:292
 msgid "Explore"
 msgstr "חשיפה"
 
@@ -2812,7 +2808,7 @@ msgstr "קטגוריות אחרות"
 msgid "No Application Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
-#: lib/gs-plugin-loader.c:2859
+#: lib/gs-plugin-loader.c:2823
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "לא ידועה"
@@ -2830,13 +2826,13 @@ msgstr "מכין את %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:496
+#: src/gs-page.c:495
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "להסיר את המקור %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:500
+#: src/gs-page.c:499
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2847,13 +2843,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:508
+#: src/gs-page.c:507
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "להסיר את %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:511
+#: src/gs-page.c:510
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -2972,7 +2968,7 @@ msgid "These repositories supplement the default software provided by %s."
 msgstr "מקור זה משלים את התכנה המסופקת על ידי %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:87
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:88
 msgid "Software Repositories"
 msgstr "מקורות תכנה"
 
@@ -3443,15 +3439,20 @@ msgstr "‫%s אינו בטוח"
 msgid "Safety"
 msgstr "בטיחות"
 
-#: src/gs-safety-context-dialog.ui:111
+#: src/gs-safety-context-dialog.ui:109
 msgid "License"
 msgstr "רישיון"
 
-#: src/gs-safety-context-dialog.ui:191
+#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
+#: src/gs-safety-context-dialog.ui:149
+msgid "Source"
+msgstr "מקור"
+
+#: src/gs-safety-context-dialog.ui:189
 msgid "SDK"
 msgstr "‫SDK (ערכת פיתוח)"
 
-#: src/gs-safety-context-dialog.ui:215
+#: src/gs-safety-context-dialog.ui:213
 msgid "Outdated SDK version"
 msgstr "גרסת SDK שפג תוקפה"
 
@@ -3538,88 +3539,88 @@ msgstr "לא נמצאו יישומים"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1170 src/gs-shell.c:1175 src/gs-shell.c:1190
-#: src/gs-shell.c:1194
+#: src/gs-shell.c:1175 src/gs-shell.c:1180 src/gs-shell.c:1195
+#: src/gs-shell.c:1199
 #, c-format
 msgid "“%s”"
 msgstr "‏„%s”"
 
 #. Translators: The '%s' is replaced with an error message, which had been shortened.
 #. The dots at the end are there to highlight that to the user.
-#: src/gs-shell.c:1211
+#: src/gs-shell.c:1216
 #, c-format
 msgid "%s…"
 msgstr "‫%s…"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1247
+#: src/gs-shell.c:1252
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "לא ניתן להוריד עדכוני קושחה מ־%s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1253
+#: src/gs-shell.c:1258
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "לא ניתן להוריד עדכונים מ־%s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1260 src/gs-shell.c:1305
+#: src/gs-shell.c:1265 src/gs-shell.c:1310
 msgid "Unable to download updates"
 msgstr "לא ניתן להוריד עדכונים"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1266
+#: src/gs-shell.c:1271
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr "לא ניתן להוריד עדכונים: צריכה להיות גישה לאינטרנט אבל אין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1275
+#: src/gs-shell.c:1280
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "לא ניתן להוריד עדכונים מ־%s: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1280
+#: src/gs-shell.c:1285
 msgid "Unable to download updates: not enough disk space"
 msgstr "לא ניתן להוריד עדכונים: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1287
+#: src/gs-shell.c:1292
 msgid "Unable to download updates: authentication was required"
 msgstr "לא ניתן להוריד עדכונים: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1292
+#: src/gs-shell.c:1297
 msgid "Unable to download updates: authentication was invalid"
 msgstr "לא ניתן להוריד עדכונים: האימות נכשל"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1297
+#: src/gs-shell.c:1302
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "לא ניתן להוריד עדכונים:  אין לך את ההרשאות להתקנה תכנה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1313
 msgid "Unable to get list of updates"
 msgstr "לא ניתן לקבל את רשימת העדכונים"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "לא ניתן להתקין את %s כיוון שההורדה מ־%s נכשלה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1356
+#: src/gs-shell.c:1361
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "לא ניתן להתקין את %s כיוון שההורדה נכשלה"
@@ -3628,72 +3629,72 @@ msgstr "לא ניתן להתקין את %s כיוון שההורדה נכשלה"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1369
+#: src/gs-shell.c:1374
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "לא ניתן להתקין את %s כיוון שספריית זמן הריצה %s אינה זמינה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1375
+#: src/gs-shell.c:1380
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "לא ניתן להתקין את %s כיוון שהוא אינו נתמך"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1382
+#: src/gs-shell.c:1387
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "לא ניתן להתקין: צריכה להיות גישה לאינטרנט אבל אין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1388
+#: src/gs-shell.c:1393
 msgid "Unable to install: the application has an invalid format"
 msgstr "לא ניתן להתקין: היישום נמצא בתבנית לא חוקית"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1393
+#: src/gs-shell.c:1398
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "לא ניתן להתקין את %s: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1400
+#: src/gs-shell.c:1405
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "לא ניתן להתקין את %s: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1407
+#: src/gs-shell.c:1412
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "לא ניתן להתקין את %s: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1414
+#: src/gs-shell.c:1419
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "לא ניתן להתקין את %s: אין לך את ההרשאות להתקנה תכנה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1422
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "לא ניתן להתקין את %s: יש לחבר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1429
+#: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "לא ניתן להתקין את %s: הסוללה כמעט ריקה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1438
+#: src/gs-shell.c:1443
 #, c-format
 msgid "Unable to install %s"
 msgstr "לא ניתן להקין את %s"
@@ -3702,14 +3703,14 @@ msgstr "לא ניתן להקין את %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1484
+#: src/gs-shell.c:1489
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "לא ניתן לעדכן את %s כיוון שההורדה מ־%s כשלה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1491
+#: src/gs-shell.c:1496
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "לא ניתן לעדכן את %s כיוון שההורדה נכשלה"
@@ -3717,70 +3718,70 @@ msgstr "לא ניתן לעדכן את %s כיוון שההורדה נכשלה"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1498
+#: src/gs-shell.c:1503
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "לא ניתן להתקין עדכונים מ־%s כיוון שההורדה כשלה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1502
+#: src/gs-shell.c:1507
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "לא ניתן להתקין עדכונים כיוון שההורדה כשלה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1508
+#: src/gs-shell.c:1513
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "לא ניתן לעדכן: נדרשת גישה לאינטרנט אך זו אינה זמינה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1518
+#: src/gs-shell.c:1523
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "לא ניתן לעדכן את %s: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1523
+#: src/gs-shell.c:1528
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "לא ניתן להתקין עדכונים: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1533
+#: src/gs-shell.c:1538
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "לא ניתן לעדכן את %s: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1538
+#: src/gs-shell.c:1543
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "לא ניתן להתקין עדכונים: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1547
+#: src/gs-shell.c:1552
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "לא ניתן לעדכן את %s: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1552
+#: src/gs-shell.c:1557
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "לא ניתן לעדכן עדכונים: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1561
+#: src/gs-shell.c:1566
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "לא ניתן לעדכן את %s: אין לך את ההרשאות לעדכון תכנה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1567
+#: src/gs-shell.c:1572
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3788,41 +3789,41 @@ msgstr "לא ניתן להתקין עדכונים: אין לך את ההרשאו
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1577
+#: src/gs-shell.c:1582
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "לא ניתן לעדכן את %s: יש לחבר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1583
+#: src/gs-shell.c:1588
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "לא ניתן להתקין עדכונים: יש לחבר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1592
+#: src/gs-shell.c:1597
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "לא ניתן לעדכן את %s: הסוללה כמעט ריקה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1598
+#: src/gs-shell.c:1603
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "לא ניתן להתקין עדכונים: הסוללה כמעט ריקה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1614
 #, c-format
 msgid "Unable to update %s"
 msgstr "לא ניתן לעדכן את %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1612
+#: src/gs-shell.c:1617
 #, c-format
 msgid "Unable to install updates"
 msgstr "לא ניתן להתקין עדכונים"
@@ -3830,21 +3831,21 @@ msgstr "לא ניתן להתקין עדכונים"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1654
+#: src/gs-shell.c:1659
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "לא ניתן לשדרג אל %s מ־%s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1659
+#: src/gs-shell.c:1664
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "לא ניתן לשדרג אל %s כיוון שההורדה כשלה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1668
+#: src/gs-shell.c:1673
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3852,91 +3853,91 @@ msgstr "לא ניתן לשדרג אל %s: נדרשת גישה לאינטרנט �
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1677
+#: src/gs-shell.c:1682
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "לא ניתן לשדרג אל %s: אין מספיק מקום בכונן"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1685
+#: src/gs-shell.c:1690
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "לא ניתן לשדרג אל %s: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1692
+#: src/gs-shell.c:1697
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "לא ניתן לשדרג אל %s: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1699
+#: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "לא ניתן לשדרג אל %s: אין לך את ההרשאות לעדכון תכנה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1706
+#: src/gs-shell.c:1711
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "לא ניתן לשדרג אל %s: יש לחבר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1713
+#: src/gs-shell.c:1718
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "לא ניתן לשדרג אל %s: הסוללה כמעט ריקה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1722
+#: src/gs-shell.c:1727
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "לא ניתן לשדרג אל %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1759
+#: src/gs-shell.c:1764
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "לא ניתן להסיר את %s: נדרש אימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1765
+#: src/gs-shell.c:1770
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "לא ניתן להסיר את %s: האימות לא היה תקין"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1771
+#: src/gs-shell.c:1776
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "לא ניתן להסיר את %s: אין לך את ההרשאות להסרת תכנה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1778
+#: src/gs-shell.c:1783
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "לא ניתן להסיר את %s: יש לחבר לחשמל"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1785
+#: src/gs-shell.c:1790
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "לא ניתן להסיר את %s: הסוללה כמעט ריקה"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1797
+#: src/gs-shell.c:1802
 #, c-format
 msgid "Unable to remove %s"
 msgstr "לא ניתן להסיר את %s"
@@ -3945,63 +3946,63 @@ msgstr "לא ניתן להסיר את %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1839
+#: src/gs-shell.c:1844
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "לא ניתן להפעיל את %s: ‏%s לא מותקן"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1846 src/gs-shell.c:1897 src/gs-shell.c:1938
-#: src/gs-shell.c:1983
+#: src/gs-shell.c:1851 src/gs-shell.c:1902 src/gs-shell.c:1943
+#: src/gs-shell.c:1988
 msgid "Not enough disk space — free up some space and try again"
 msgstr "אין מספיק מקום פנוי בכונן - יש לפנות קצת מקום ולנסות שוב"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1857 src/gs-shell.c:1908 src/gs-shell.c:1949
-#: src/gs-shell.c:2007
+#: src/gs-shell.c:1862 src/gs-shell.c:1913 src/gs-shell.c:1954
+#: src/gs-shell.c:2012
 msgid "Sorry, something went wrong"
 msgstr "משהו לא עבד, עמך הסליחה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1889
+#: src/gs-shell.c:1894
 msgid "Failed to install file: not supported"
 msgstr "התקנת הקובץ נכשלה: לא נתמך"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1893
+#: src/gs-shell.c:1898
 msgid "Failed to install file: authentication failed"
 msgstr "התקנת הקובץ נכשלה: כשל באימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1930
+#: src/gs-shell.c:1935
 msgid "Failed to install: not supported"
 msgstr "התקנה נכשלה: אין תמיכה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1934
+#: src/gs-shell.c:1939
 msgid "Failed to install: authentication failed"
 msgstr "ההתקנה נכשלה: כשל באימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1977
+#: src/gs-shell.c:1982
 #, c-format
 msgid "Unable to contact %s"
 msgstr "לא ניתן ליצור קשר עם %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1989
+#: src/gs-shell.c:1994
 msgid "Software needs to be restarted to use new plugins."
 msgstr "יש להפעיל מחדש את מרכז התכנה כדי להשתמש בתוספים חדשים."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1994
+#: src/gs-shell.c:1999
 msgid "AC power is required"
 msgstr "יש לחבר לחשמל"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1998
+#: src/gs-shell.c:2003
 msgid "The battery level is too low"
 msgstr "הסוללה כמעט ריקה"
 
@@ -4013,41 +4014,37 @@ msgstr "מ_קורות תכנה"
 msgid "_Update Preferences"
 msgstr "העדפות _עדכונים"
 
-#: src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
-msgid "Software"
-msgstr "תכנה"
-
 #. button in the info bar
-#: src/gs-shell.ui:96
+#: src/gs-shell.ui:98
 msgid "Examine Disk"
 msgstr "בחינת הכונן"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:105 src/gs-updates-page.c:899
+#: src/gs-shell.ui:108 src/gs-updates-page.c:899
 msgid "Network Settings"
 msgstr "הגדרות רשת"
 
 #. button in the info bar
-#: src/gs-shell.ui:114
+#: src/gs-shell.ui:118
 msgid "Restart Now"
 msgstr "הפעלה מחדש כעת"
 
 #. button in the info bar
-#: src/gs-shell.ui:123
+#: src/gs-shell.ui:128
 msgid "More Information"
 msgstr "מידע נוסף"
 
-#: src/gs-shell.ui:180
+#: src/gs-shell.ui:187
 msgid "Search"
 msgstr "חיפוש"
 
-#: src/gs-shell.ui:195
+#: src/gs-shell.ui:202
 msgid "Primary Menu"
 msgstr "תפריט עיקרי"
 
-#: src/gs-shell.ui:265
+#: src/gs-shell.ui:272
 msgid "Find Out _More"
 msgstr "פרטים _נוספים"
 
@@ -4101,7 +4098,7 @@ msgid "Storage"
 msgstr "אחסון"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:82
+#: src/gs-storage-context-dialog.ui:80
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4137,7 +4134,7 @@ msgstr "מותקן על %s"
 msgid "Installed Updates"
 msgstr "עדכונים מותקנים"
 
-#: src/gs-update-dialog.ui:87
+#: src/gs-update-dialog.ui:74
 msgid "No updates have been installed on this system."
 msgstr "לא הותקנו עדכונים על מערכת זו."
 
@@ -4514,7 +4511,7 @@ msgstr "עדכוני יישומים"
 msgid "Device Firmware"
 msgstr "קושחת התקן"
 
-#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:69
+#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
 #: plugins/packagekit/gs-packagekit-task.c:153
 msgid "_Download"
 msgstr "הו_רדה"
@@ -4557,15 +4554,15 @@ msgstr "התקבלו %s מתוך %s"
 msgid "%u%% downloaded"
 msgstr "‫%u%% התקבלו"
 
-#: src/gs-upgrade-banner.ui:39
+#: src/gs-upgrade-banner.ui:42
 msgid "A major upgrade, with new features and added polish."
 msgstr "עדכון גדול, עם תכונות חדשות וליטוש נוסף."
 
-#: src/gs-upgrade-banner.ui:184
+#: src/gs-upgrade-banner.ui:187
 msgid "_Restart & Upgrade"
 msgstr "הפעלה מחדש ו_שדרוג"
 
-#: src/gs-upgrade-banner.ui:198
+#: src/gs-upgrade-banner.ui:201
 msgid "Remember to back up data and files before upgrading."
 msgstr "עליך לזכור לגבות את הנתונים ואת הקבצים בטרם השדרוג."
 
@@ -4610,7 +4607,7 @@ msgstr "Endless OS"
 msgid "An Endless OS update with new features and fixes."
 msgstr "עדכון עבור Endless OS, עם תכונות חדשות ותיקונים נוספים."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:868
+#: plugins/eos-updater/gs-plugin-eos-updater.c:869
 msgid "EOS update service could not fetch and apply the update."
 msgstr "שירות העדכון של EOS לא הצליח לקבל ולהחיל את העדכון."
 
@@ -4635,12 +4632,12 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "‏Flatpak זוהי מסגרת עבור יישומים שולחניים על לינוקס"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1143
+#: plugins/flatpak/gs-flatpak.c:1154
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "מקבל מידע Flatpak עבור %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3194
+#: plugins/flatpak/gs-flatpak.c:3205
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "כוונון התוסף ‚%s’ נכשל: %s"
@@ -4653,12 +4650,12 @@ msgstr "התקנת משתמש"
 msgid "System Installation"
 msgstr "התקנת מערכת"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:976
+#: plugins/flatpak/gs-plugin-flatpak.c:1035
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "‫הוספה להתקנה של התוסף ‚%s’ נכשלה: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:990
+#: plugins/flatpak/gs-plugin-flatpak.c:1049
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‫הוספה להסרה של התוסף ‚%s’ נכשלה: %s"
@@ -4857,6 +4854,9 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "GNOME Software"
+#~ msgstr "GNOME Software"
 
 #~ msgid "Welcome"
 #~ msgstr "ברוך בואך"
