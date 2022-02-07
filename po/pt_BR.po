@@ -17,8 +17,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-01-20 15:32+0000\n"
-"PO-Revision-Date: 2022-01-11 09:06-0500\n"
+"POT-Creation-Date: 2022-02-07 14:27+0000\n"
+"PO-Revision-Date: 2022-02-07 15:02-0300\n"
 "Last-Translator: Leônidas Araújo <leorusvellt@hotmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -34,9 +34,10 @@ msgstr ""
 "X-DL-Domain: po\n"
 "X-DL-State: Translating\n"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:7
-msgid "GNOME Software"
-msgstr "GNOME Programas"
+#: data/appdata/org.gnome.Software.appdata.xml.in:7 src/gs-shell.ui:21
+#: src/org.gnome.Software.desktop.in:3
+msgid "Software"
+msgstr "Programas"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:8
 msgid "Application manager for GNOME"
@@ -51,17 +52,21 @@ msgstr ""
 "e extensões do sistema, além de remover aplicativos já instalados."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
+#| msgid ""
+#| "GNOME Software showcases featured and popular applications with useful "
+#| "descriptions and multiple screenshots per application. Applications can "
+#| "be found either through browsing the list of categories or by searching. "
+#| "It also allows you to update your system using an offline update."
 msgid ""
-"GNOME Software showcases featured and popular applications with useful "
+"Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"GNOME Programas mostra aplicativos populares em destaque com descrições "
-"úteis e múltiplas capturas de tela per aplicativo. Aplicativos podem ser "
-"encontradas tanto navegando a lista de categorias quanto pesquisando. Ele "
-"também permite que você atualize seu sistema usando uma atualização sem "
-"estar conectado a internet."
+"O Programas apresenta aplicativos populares e em destaque com descrições "
+"úteis e várias capturas de tela por aplicativo. Os aplicativos podem ser "
+"encontrados navegando na lista de categorias ou pesquisando. Ele também "
+"permite que você atualize seu sistema usando uma atualização offline."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -613,9 +618,9 @@ msgstr "%s é adequado para %s"
 msgid "Age Rating"
 msgstr "Classificação por idade"
 
-#: src/gs-age-rating-context-dialog.ui:81
-#: src/gs-hardware-support-context-dialog.ui:81
-#: src/gs-safety-context-dialog.ui:231
+#: src/gs-age-rating-context-dialog.ui:79
+#: src/gs-hardware-support-context-dialog.ui:79
+#: src/gs-safety-context-dialog.ui:229
 msgid "How to add missing information"
 msgstr "Como adicionar informações em falta"
 
@@ -651,8 +656,8 @@ msgstr "Remoção pendente"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:174 src/gs-app-tile.ui:50
-#: src/gs-feature-tile.c:402 src/gs-installed-page.c:712 src/gs-shell.ui:298
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:175 src/gs-app-tile.ui:50
+#: src/gs-feature-tile.c:402 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "Instalado"
 
@@ -754,18 +759,18 @@ msgstr "Pode escapar da sandbox e contornar quaisquer outras restrições"
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:139
+#: src/gs-app-details-page.c:137
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:158
+#: src/gs-app-details-page.c:156
 msgid "No update description available."
 msgstr "Não foi disponibilizada a descrição da atualização."
 
-#: src/gs-app-details-page.ui:25 src/gs-shell.ui:358 src/gs-shell.ui:449
+#: src/gs-app-details-page.ui:25 src/gs-shell.ui:365 src/gs-shell.ui:456
 msgid "Go back"
 msgstr "Voltar"
 
@@ -1227,7 +1232,7 @@ msgstr "Atualizar"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:179 src/gs-app-row.c:189 src/gs-details-page.ui:271
-#: src/gs-page.c:527
+#: src/gs-page.c:526
 msgid "Uninstall"
 msgstr "Desinstalar"
 
@@ -1281,7 +1286,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Traduções"
 
-#: src/gs-app-translation-dialog.ui:99
+#: src/gs-app-translation-dialog.ui:97
 msgid "_Translation Website"
 msgstr "Site de _tradução"
 
@@ -1831,7 +1836,7 @@ msgstr "Habilitar e instalar"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gerenciador de pacotes:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:82
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
 msgid "Details"
 msgstr "Detalhes"
 
@@ -2194,12 +2199,6 @@ msgstr "Avaliações"
 #: src/gs-details-page.ui:813
 msgid "_Write a Review"
 msgstr "_Escrever uma avaliação"
-
-#. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
-#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-details-page.ui:911 src/gs-safety-context-dialog.ui:151
-msgid "Source"
-msgstr "Fonte"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:245
@@ -2714,7 +2713,7 @@ msgstr "Carregando página"
 msgid "Starting up…"
 msgstr "Iniciando…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:247
+#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:254
 msgid "Automatic Updates Paused"
 msgstr "Atualizações automáticas pausadas"
 
@@ -2813,7 +2812,7 @@ msgstr "Remoções"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:259 src/gs-shell.ui:319 src/gs-updates-page.c:1344
+#: src/gs-os-update-page.c:259 src/gs-shell.ui:326 src/gs-updates-page.c:1344
 msgid "Updates"
 msgstr "Atualizações"
 
@@ -2848,7 +2847,7 @@ msgstr "Habilitar"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:697 src/gs-shell.ui:285
+#: src/gs-overview-page.c:697 src/gs-shell.ui:292
 msgid "Explore"
 msgstr "Explorar"
 
@@ -2869,7 +2868,7 @@ msgstr "Outras categorias"
 msgid "No Application Data Found"
 msgstr "Nenhum dado de aplicativo encontrado"
 
-#: lib/gs-plugin-loader.c:2859
+#: lib/gs-plugin-loader.c:2823
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconhecida"
@@ -2887,13 +2886,13 @@ msgstr "Preparar %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:496
+#: src/gs-page.c:495
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Você tem certeza de que deseja remover o repositório %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:500
+#: src/gs-page.c:499
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2904,13 +2903,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:508
+#: src/gs-page.c:507
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Você tem certeza de que deseja desinstalar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:511
+#: src/gs-page.c:510
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3033,7 +3032,7 @@ msgid "These repositories supplement the default software provided by %s."
 msgstr "Esses repositórios complementam o programa padrão fornecido por %s."
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:87
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:88
 msgid "Software Repositories"
 msgstr "Repositórios de programas"
 
@@ -3505,15 +3504,20 @@ msgstr "%s é inseguro"
 msgid "Safety"
 msgstr "Seguro"
 
-#: src/gs-safety-context-dialog.ui:111
+#: src/gs-safety-context-dialog.ui:109
 msgid "License"
 msgstr "Licença"
 
-#: src/gs-safety-context-dialog.ui:191
+#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
+#: src/gs-safety-context-dialog.ui:149
+msgid "Source"
+msgstr "Fonte"
+
+#: src/gs-safety-context-dialog.ui:189
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:215
+#: src/gs-safety-context-dialog.ui:213
 msgid "Outdated SDK version"
 msgstr "Versão de SDK desatualizada"
 
@@ -4099,41 +4103,37 @@ msgstr "Repositório_s de programas"
 msgid "_Update Preferences"
 msgstr "Preferências de _atualização"
 
-#: src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
-msgid "Software"
-msgstr "Programas"
-
 #. button in the info bar
-#: src/gs-shell.ui:96
+#: src/gs-shell.ui:98
 msgid "Examine Disk"
 msgstr "Examine o disco"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:105 src/gs-updates-page.c:899
+#: src/gs-shell.ui:108 src/gs-updates-page.c:899
 msgid "Network Settings"
 msgstr "Configurações de rede"
 
 #. button in the info bar
-#: src/gs-shell.ui:114
+#: src/gs-shell.ui:118
 msgid "Restart Now"
 msgstr "Reiniciar agora"
 
 #. button in the info bar
-#: src/gs-shell.ui:123
+#: src/gs-shell.ui:128
 msgid "More Information"
 msgstr "Mais informações"
 
-#: src/gs-shell.ui:180
+#: src/gs-shell.ui:187
 msgid "Search"
 msgstr "Pesquisar"
 
-#: src/gs-shell.ui:195
+#: src/gs-shell.ui:202
 msgid "Primary Menu"
 msgstr "Menu principal"
 
-#: src/gs-shell.ui:265
+#: src/gs-shell.ui:272
 msgid "Find Out _More"
 msgstr "Saiba _mais"
 
@@ -4187,7 +4187,7 @@ msgid "Storage"
 msgstr "Armazenamento"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:82
+#: src/gs-storage-context-dialog.ui:80
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4224,7 +4224,7 @@ msgstr "Instalado em %s"
 msgid "Installed Updates"
 msgstr "Atualizações instaladas"
 
-#: src/gs-update-dialog.ui:87
+#: src/gs-update-dialog.ui:74
 msgid "No updates have been installed on this system."
 msgstr "Nenhuma atualização foi instalada neste sistema."
 
@@ -4600,7 +4600,7 @@ msgstr "Atualizações de aplicativos"
 msgid "Device Firmware"
 msgstr "Firmware de dispositivo"
 
-#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:69
+#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
 #: plugins/packagekit/gs-packagekit-task.c:153
 msgid "_Download"
 msgstr "_Baixar"
@@ -4643,15 +4643,15 @@ msgstr "%s de %s baixado"
 msgid "%u%% downloaded"
 msgstr "%u%% baixado"
 
-#: src/gs-upgrade-banner.ui:39
+#: src/gs-upgrade-banner.ui:42
 msgid "A major upgrade, with new features and added polish."
 msgstr "Uma atualização importante, com novos recursos e polimento adicionado."
 
-#: src/gs-upgrade-banner.ui:184
+#: src/gs-upgrade-banner.ui:187
 msgid "_Restart & Upgrade"
 msgstr "_Reiniciar & atualizar"
 
-#: src/gs-upgrade-banner.ui:198
+#: src/gs-upgrade-banner.ui:201
 msgid "Remember to back up data and files before upgrading."
 msgstr "Lembre-se de fazer backup dos dados e arquivos antes de atualizar."
 
@@ -4699,7 +4699,7 @@ msgstr "Endless OS"
 msgid "An Endless OS update with new features and fixes."
 msgstr "Uma atualização do Endless OS com com novos recursos e correções."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:868
+#: plugins/eos-updater/gs-plugin-eos-updater.c:869
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
 "O serviço de atualização do EOS não conseguiu obter e aplicar a atualização."
@@ -4743,12 +4743,12 @@ msgstr "Instalação de usuário"
 msgid "System Installation"
 msgstr "Instalação de sistema"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:976
+#: plugins/flatpak/gs-plugin-flatpak.c:1035
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Falha ao adicionar para instalação para o complemento “%s”: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:990
+#: plugins/flatpak/gs-plugin-flatpak.c:1049
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Falha ao adicionar para desinstalação para o complemento “%s”: %s"
@@ -4949,6 +4949,9 @@ msgstr "Suporte a Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal de Linux"
+
+#~ msgid "GNOME Software"
+#~ msgstr "GNOME Programas"
 
 #~ msgid "Welcome"
 #~ msgstr "Bem-vindo"
