@@ -1218,6 +1218,12 @@ get_snaps_cb (GObject      *object,
 	g_autoptr(GPtrArray) local_snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
+	local_snaps = snapd_client_get_snaps_finish (client, result, &local_error);
+	if (local_snaps == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *snap_name, *name, *website, *contact, *version;
