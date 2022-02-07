@@ -41,6 +41,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-app.h"
+#include "gs-app-list-private.h"
 #include "gs-enums.h"
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-list-installed-apps.h"
