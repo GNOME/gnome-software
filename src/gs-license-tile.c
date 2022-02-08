@@ -93,7 +93,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		title = _("Community Built");
 		css_class = "green";
 		lozenge_icon_names[0] = "heart-filled-symbolic";
-		lozenge_icon_names[1] = "system-users-symbolic";
+		lozenge_icon_names[1] = "community-symbolic";
 		lozenge_icon_names[2] = "sign-language-symbolic";
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL);
 
