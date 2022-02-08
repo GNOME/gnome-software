@@ -492,17 +492,17 @@ content_rating_group_get_description (GsAgeRatingGroupType group_type)
 {
 	switch (group_type) {
 	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
-		return N_("Does not include references to drugs");
+		return _("Does not include references to drugs");
 	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
-		return N_("Does not include swearing, profanity, and other kinds of strong language");
+		return _("Does not include swearing, profanity, and other kinds of strong language");
 	case GS_AGE_RATING_GROUP_TYPE_MONEY:
-		return N_("Does not include ads or monetary transactions");
+		return _("Does not include ads or monetary transactions");
 	case GS_AGE_RATING_GROUP_TYPE_SEX:
-		return N_("Does not include sex or nudity");
+		return _("Does not include sex or nudity");
 	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
-		return N_("Does not include uncontrolled chat functionality");
+		return _("Does not include uncontrolled chat functionality");
 	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
-		return N_("Does not include violence");
+		return _("Does not include violence");
 	default:
 		g_assert_not_reached ();
 	}
@@ -535,17 +535,17 @@ content_rating_group_get_title (GsAgeRatingGroupType group_type)
 {
 	switch (group_type) {
 	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
-		return N_("Drugs");
+		return _("Drugs");
 	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
-		return N_("Strong Language");
+		return _("Strong Language");
 	case GS_AGE_RATING_GROUP_TYPE_MONEY:
-		return N_("Money");
+		return _("Money");
 	case GS_AGE_RATING_GROUP_TYPE_SEX:
-		return N_("Nudity");
+		return _("Nudity");
 	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
-		return N_("Social");
+		return _("Social");
 	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
-		return N_("Violence");
+		return _("Violence");
 	default:
 		g_assert_not_reached ();
 	}
@@ -645,7 +645,10 @@ update_attribute_row (GsAgeRatingContextDialog *self,
 		if (attribute->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT)
 			break;
 
-		s = g_strdup_printf ("%s • %s",
+		/* Translators: This is used to join two list items together in
+		 * a compressed way of displaying a list of descriptions of age
+		 * ratings for apps. The order of the items does not matter. */
+		s = g_strdup_printf (_("%s • %s"),
 				     new_description,
 				     ((GsAgeRatingAttribute *) l->data)->description);
 		g_free (new_description);
