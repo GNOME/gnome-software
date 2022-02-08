@@ -19,8 +19,8 @@ G_BEGIN_DECLS
 
 /**
  * GsContextDialogRowImportance:
- * @GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT: unimportant
  * @GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL: neutral or unknown importance
+ * @GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT: unimportant
  * @GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING: a bit important
  * @GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT: definitely important
  *
@@ -33,8 +33,8 @@ typedef enum
 {
 	/* The code in this file relies on the fact that these enum values
 	 * numerically increase as they get more important. */
-	GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 	GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
+	GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 	GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 	GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 } GsContextDialogRowImportance;
