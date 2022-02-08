@@ -41,6 +41,25 @@
 #include "gs-context-dialog-row.h"
 #include "gs-age-rating-context-dialog.h"
 
+typedef enum {
+	GS_AGE_RATING_GROUP_TYPE_DRUGS,
+	GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
+	GS_AGE_RATING_GROUP_TYPE_MONEY,
+	GS_AGE_RATING_GROUP_TYPE_SEX,
+	GS_AGE_RATING_GROUP_TYPE_SOCIAL,
+	GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
+} GsAgeRatingGroupType;
+
+#define GS_AGE_RATING_GROUP_TYPE_COUNT (GS_AGE_RATING_GROUP_TYPE_VIOLENCE+1)
+
+typedef struct {
+	gchar *id;
+	gchar *icon_name;
+	GsContextDialogRowImportance importance;
+	gchar *title;
+	gchar *description;
+} GsAgeRatingAttribute;
+
 struct _GsAgeRatingContextDialog
 {
 	GsInfoWindow		 parent_instance;
@@ -48,6 +67,8 @@ struct _GsAgeRatingContextDialog
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_content_rating;
 	gulong			 app_notify_handler_name;
+	GtkWidget		*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];
+	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];
 
 	GtkLabel		*age;
 	GtkWidget		*lozenge;
@@ -63,159 +84,257 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
 
+static GsAgeRatingAttribute *
+gs_age_rating_attribute_new (const gchar                  *id,
+                             const gchar                  *icon_name,
+                             GsContextDialogRowImportance  importance,
+                             const gchar                  *title,
+                             const gchar                  *description)
+{
+	GsAgeRatingAttribute *attributes;
+
+	g_assert (icon_name != NULL);
+	g_assert (title != NULL);
+	g_assert (description != NULL);
+
+	attributes = g_new0 (GsAgeRatingAttribute, 1);
+	attributes->id = g_strdup (id);
+	attributes->icon_name = g_strdup (icon_name);
+	attributes->importance = importance;
+	attributes->title = g_strdup (title);
+	attributes->description = g_strdup (description);
+
+	return attributes;
+}
+
+static void
+gs_age_rating_attribute_free (GsAgeRatingAttribute *attributes)
+{
+	g_free (attributes->id);
+	g_free (attributes->icon_name);
+	g_free (attributes->title);
+	g_free (attributes->description);
+	g_free (attributes);
+}
+
 /* FIXME: Ideally this data would move into libappstream, to be next to the
  * other per-attribute strings and data which it already stores. */
 static const struct {
 	const gchar *id;  /* (not nullable) */
+	GsAgeRatingGroupType group_type;
 	const gchar *title;  /* (not nullable) */
+	const gchar *unknown_description;  /* (not nullable) */
 	const gchar *icon_name;  /* (not nullable) */
 	const gchar *icon_name_negative;  /* (nullable) */
 } attribute_details[] = {
 	/* v1.0 */
 	{
 		"violence-cartoon",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Cartoon Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding cartoon violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"violence-fantasy",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Fantasy Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding fantasy violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"violence-realistic",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Realistic Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding realistic violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"violence-bloodshed",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Violence Depicting Bloodshed"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding bloodshed"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"violence-sexual",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Violence"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sexual violence"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"drugs-alcohol",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Alcohol"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to alcohol"),
 		"pub-symbolic",
 		NULL,
 	},
 	{
 		"drugs-narcotics",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Narcotics"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to illicit drugs"),
 		"cigarette-symbolic",
 		"cigarette-none-symbolic",
 	},
 	{
 		"drugs-tobacco",
+		GS_AGE_RATING_GROUP_TYPE_DRUGS,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Tobacco"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to tobacco products"),
 		"cigarette-symbolic",
 		"cigarette-none-symbolic",
 	},
 	{
 		"sex-nudity",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Nudity"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding nudity of any sort"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"sex-themes",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexual Themes"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to or depictions of sexual nature"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"language-profanity",
+		GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Profanity"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding profanity of any kind"),
 		"strong-language-symbolic",
 		"strong-language-none-symbolic",
 	},
 	{
 		"language-humor",
+		GS_AGE_RATING_GROUP_TYPE_LANGUAGE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Inappropriate Humor"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding inappropriate humor"),
 		"strong-language-symbolic",
 		"strong-language-none-symbolic",
 	},
 	{
 		"language-discrimination",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Discrimination"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding discriminatory language of any kind"),
 		"chat-symbolic",
 		"chat-none-symbolic",
 	},
 	{
 		"money-advertising",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Advertising"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding advertising of any kind"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
 	{
 		"money-gambling",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Gambling"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding gambling of any kind"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
 	{
 		"money-purchasing",
+		GS_AGE_RATING_GROUP_TYPE_MONEY,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Purchasing"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding the ability to spend money"),
 		"money-symbolic",
 		"money-none-symbolic",
 	},
 	{
 		"social-chat",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Chat Between Users"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding ways to chat with other users"),
 		"chat-symbolic",
 		"chat-none-symbolic",
 	},
 	{
 		"social-audio",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Audio Chat Between Users"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding ways to talk with other users"),
 		"audio-headset-symbolic",
 		NULL,
 	},
 	{
 		"social-contacts",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Contact Details"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of social network usernames or email addresses"),
 		"contact-new-symbolic",
 		NULL,
 	},
 	{
 		"social-info",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Identifying Information"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of user information with third parties"),
 		"x-office-address-book-symbolic",
 		NULL,
 	},
 	{
 		"social-location",
+		GS_AGE_RATING_GROUP_TYPE_SOCIAL,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Location Sharing"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sharing of physical location with other users"),
 		"location-services-active-symbolic",
 		"location-services-disabled-symbolic",
 	},
@@ -237,50 +356,71 @@ static const struct {
 		 * The differences between countries are handled through handling #AsContentRatingSystem
 		 * values differently. */
 		"sex-homosexuality",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Homosexuality"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to homosexuality"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"sex-prostitution",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Prostitution"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to prostitution"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"sex-adultery",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Adultery"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to adultery"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"sex-appearance",
+		GS_AGE_RATING_GROUP_TYPE_SEX,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Sexualized Characters"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding sexualized characters"),
 		"nudity-symbolic",
 		"nudity-none-symbolic",
 	},
 	{
 		"violence-worship",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Desecration"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to desecration"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
 	{
 		"violence-desecration",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Human Remains"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding visible dead human remains"),
 		"graveyard-symbolic",
 		NULL,
 	},
 	{
 		"violence-slavery",
+		GS_AGE_RATING_GROUP_TYPE_VIOLENCE,
 		/* TRANSLATORS: content rating title, see https://hughsie.github.io/oars/ */
 		N_("Slavery"),
+		/* TRANSLATORS: content rating description, see https://hughsie.github.io/oars/ */
+		N_("No information regarding references to slavery"),
 		"violence-symbolic",
 		"violence-none-symbolic",
 	},
@@ -319,52 +459,239 @@ content_rating_attribute_get_title (const gchar *attribute)
 	g_assert_not_reached ();
 }
 
-static void
-add_attribute_row (GtkListBox           *list_box,
-                   const gchar          *attribute,
-                   AsContentRatingValue  value)
+/* Get the `unknown_description` from @attribute_details for the given @attribute. */
+static const gchar *
+content_rating_attribute_get_unknown_description (const gchar *attribute)
 {
-	GtkListBoxRow *row;
-	GsContextDialogRowImportance rating;
-	const gchar *icon_name, *title, *description;
+	for (gsize i = 0; i < G_N_ELEMENTS (attribute_details); i++) {
+		if (g_str_equal (attribute, attribute_details[i].id)) {
+			return _(attribute_details[i].unknown_description);
+		}
+	}
 
-	switch (value) {
-	case AS_CONTENT_RATING_VALUE_UNKNOWN:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		/* Translators: This refers to a content rating attribute which
-		 * has an unknown value. For example, the amount of violence in
-		 * an app is ‘Unknown’. */
-		description = _("Unknown");
-		break;
-	case AS_CONTENT_RATING_VALUE_NONE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
-		icon_name = content_rating_attribute_get_icon_name (attribute, TRUE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_MILD:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_MODERATE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
-	case AS_CONTENT_RATING_VALUE_INTENSE:
-		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT;
-		icon_name = content_rating_attribute_get_icon_name (attribute, FALSE);
-		description = as_content_rating_attribute_get_description (attribute, value);
-		break;
+	/* Attribute not handled */
+	g_assert_not_reached ();
+}
+
+/* Get the `title` from @attribute_details for the given @attribute. */
+static GsAgeRatingGroupType
+content_rating_attribute_get_group_type (const gchar *attribute)
+{
+	for (gsize i = 0; i < G_N_ELEMENTS (attribute_details); i++) {
+		if (g_str_equal (attribute, attribute_details[i].id)) {
+			return attribute_details[i].group_type;
+		}
+	}
+
+	/* Attribute not handled */
+	g_assert_not_reached ();
+}
+
+static const gchar *
+content_rating_group_get_description (GsAgeRatingGroupType group_type)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return N_("Does not include references to drugs");
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return N_("Does not include swearing, profanity, and other kinds of strong language");
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return N_("Does not include ads or monetary transactions");
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return N_("Does not include sex or nudity");
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return N_("Does not include uncontrolled chat functionality");
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return N_("Does not include violence");
 	default:
 		g_assert_not_reached ();
 	}
+}
 
+static const gchar *
+content_rating_group_get_icon_name (GsAgeRatingGroupType group_type,
+                                    gboolean             negative_version)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return negative_version ? "cigarette-none-symbolic" : "cigarette-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return negative_version ? "strong-language-none-symbolic" : "strong-language-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return negative_version ? "money-none-symbolic" : "money-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return negative_version ? "nudity-none-symbolic" : "nudity-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return negative_version ? "chat-none-symbolic" : "chat-symbolic";
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return negative_version ? "violence-none-symbolic" : "violence-symbolic";
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static const gchar *
+content_rating_group_get_title (GsAgeRatingGroupType group_type)
+{
+	switch (group_type) {
+	case GS_AGE_RATING_GROUP_TYPE_DRUGS:
+		return N_("Drugs");
+	case GS_AGE_RATING_GROUP_TYPE_LANGUAGE:
+		return N_("Strong Language");
+	case GS_AGE_RATING_GROUP_TYPE_MONEY:
+		return N_("Money");
+	case GS_AGE_RATING_GROUP_TYPE_SEX:
+		return N_("Nudity");
+	case GS_AGE_RATING_GROUP_TYPE_SOCIAL:
+		return N_("Social");
+	case GS_AGE_RATING_GROUP_TYPE_VIOLENCE:
+		return N_("Violence");
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static GsContextDialogRowImportance
+content_rating_value_get_importance (AsContentRatingValue value)
+{
+	switch (value) {
+	case AS_CONTENT_RATING_VALUE_NONE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
+	case AS_CONTENT_RATING_VALUE_UNKNOWN:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL;
+	case AS_CONTENT_RATING_VALUE_MILD:
+	case AS_CONTENT_RATING_VALUE_MODERATE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING;
+	case AS_CONTENT_RATING_VALUE_INTENSE:
+		return GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT;
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static gint
+attributes_compare (GsAgeRatingAttribute *attributes1,
+                    GsAgeRatingAttribute *attributes2)
+{
+	if (attributes1->importance != attributes2->importance) {
+		/* Important attributes come first */
+		return attributes2->importance - attributes1->importance;
+	} else {
+		/* Sort by alphabetical ID order */
+		return g_strcmp0 (attributes1->id, attributes2->id);
+	}
+}
+
+static void
+update_attribute_row (GsAgeRatingContextDialog *self,
+                      GsAgeRatingGroupType      group_type)
+{
+	const GsAgeRatingAttribute *first;
+	const gchar *group_icon_name;
+	const gchar *group_title;
+	const gchar *group_description;
+	g_autofree char *new_description = NULL;
+
+	first = (GsAgeRatingAttribute *) self->attributes[group_type]->data;
+
+	if (g_list_length (self->attributes[group_type]) == 1) {
+		g_object_set (self->rows[group_type],
+			      "icon-name", first->icon_name,
+			      "importance", first->importance,
+			      "subtitle", first->description,
+			      "title", first->title,
+			      NULL);
+
+		return;
+	}
+
+	if (first->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT) {
+		gboolean only_unimportant = TRUE;
+
+		for (GList *l = self->attributes[group_type]->next; l; l = l->next) {
+			GsAgeRatingAttribute *attribute = (GsAgeRatingAttribute *) l->data;
+
+			if (attribute->importance != GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT) {
+				only_unimportant = FALSE;
+				break;
+			}
+		}
+
+		if (only_unimportant) {
+			group_icon_name = content_rating_group_get_icon_name (group_type, first->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT);
+			group_title = content_rating_group_get_title (group_type);
+			group_description = content_rating_group_get_description (group_type);
+
+			g_object_set (self->rows[group_type],
+				      "icon-name", group_icon_name,
+				      "importance", first->importance,
+				      "subtitle", group_description,
+				      "title", group_title,
+				      NULL);
+
+			return;
+		}
+
+	}
+
+	group_icon_name = content_rating_group_get_icon_name (group_type, FALSE);
+	group_title = content_rating_group_get_title (group_type);
+	new_description = g_strdup (first->description);
+
+	for (GList *l = self->attributes[group_type]->next; l; l = l->next) {
+		GsAgeRatingAttribute *attribute = (GsAgeRatingAttribute *) l->data;
+		char *s;
+
+		if (attribute->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT)
+			break;
+
+		s = g_strdup_printf ("%s • %s",
+				     new_description,
+				     ((GsAgeRatingAttribute *) l->data)->description);
+		g_free (new_description);
+		new_description = s;
+	}
+
+	g_object_set (self->rows[group_type],
+		      "icon-name", group_icon_name,
+		      "importance", first->importance,
+		      "subtitle", new_description,
+		      "title", group_title,
+		      NULL);
+}
+
+static void
+add_attribute_row (GsAgeRatingContextDialog *self,
+                   const gchar              *attribute,
+                   AsContentRatingValue      value)
+{
+	GsAgeRatingGroupType group_type;
+	GsContextDialogRowImportance rating;
+	const gchar *icon_name, *title, *description;
+	GsAgeRatingAttribute *attributes;
+
+	group_type = content_rating_attribute_get_group_type (attribute);
+	rating = content_rating_value_get_importance (value);
+	icon_name = content_rating_attribute_get_icon_name (attribute, value == AS_CONTENT_RATING_VALUE_NONE);
 	title = content_rating_attribute_get_title (attribute);
+	if (value == AS_CONTENT_RATING_VALUE_UNKNOWN)
+		description = content_rating_attribute_get_unknown_description (attribute);
+	else
+		description = as_content_rating_attribute_get_description (attribute, value);
 
-	row = gs_context_dialog_row_new (icon_name, rating, title, description);
-	gtk_list_box_append (list_box, GTK_WIDGET (row));
+	attributes = gs_age_rating_attribute_new (attribute, icon_name, rating, title, description);
+
+	if (self->attributes[group_type] != NULL) {
+		self->attributes[group_type] = g_list_insert_sorted (self->attributes[group_type],
+								     attributes,
+								     (GCompareFunc) attributes_compare);
+
+		update_attribute_row (self, group_type);
+	} else {
+		self->attributes[group_type] = g_list_prepend (self->attributes[group_type], attributes);
+		self->rows[group_type] = GTK_WIDGET (gs_context_dialog_row_new (icon_name, rating, title, description));
+		gtk_list_box_append (self->attributes_list, self->rows[group_type]);
+	}
 }
 
 /**
@@ -508,7 +835,7 @@ add_attribute_rows_cb (const gchar          *attribute,
 {
 	GsAgeRatingContextDialog *self = GS_AGE_RATING_CONTEXT_DIALOG (user_data);
 
-	add_attribute_row (self->attributes_list, attribute, value);
+	add_attribute_row (self, attribute, value);
 }
 
 /* Wrapper around as_content_rating_system_format_age() which returns the short
@@ -807,6 +1134,19 @@ gs_age_rating_context_dialog_dispose (GObject *object)
 }
 
 static void
+gs_age_rating_context_dialog_finalize (GObject *object)
+{
+	GsAgeRatingContextDialog *self = GS_AGE_RATING_CONTEXT_DIALOG (object);
+
+	for (GsAgeRatingGroupType group_type = 0; group_type < GS_AGE_RATING_GROUP_TYPE_COUNT; group_type++) {
+		g_list_free_full (self->attributes[group_type],
+				  (GDestroyNotify) gs_age_rating_attribute_free);
+	}
+
+	G_OBJECT_CLASS (gs_age_rating_context_dialog_parent_class)->finalize (object);
+}
+
+static void
 gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -815,6 +1155,7 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 	object_class->get_property = gs_age_rating_context_dialog_get_property;
 	object_class->set_property = gs_age_rating_context_dialog_set_property;
 	object_class->dispose = gs_age_rating_context_dialog_dispose;
+	object_class->finalize = gs_age_rating_context_dialog_finalize;
 
 	/**
 	 * GsAgeRatingContextDialog:app: (nullable)
