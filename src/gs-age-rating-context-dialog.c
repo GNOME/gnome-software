@@ -574,6 +574,14 @@ attributes_compare (GsAgeRatingAttribute *attributes1,
                     GsAgeRatingAttribute *attributes2)
 {
 	if (attributes1->importance != attributes2->importance) {
+		/* Sort neutral attributes before unimportant ones. */
+		if (attributes1->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL &&
+		    attributes2->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT)
+			return -1;
+		if (attributes1->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT &&
+		    attributes2->importance == GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL)
+			return 1;
+
 		/* Important attributes come first */
 		return attributes2->importance - attributes1->importance;
 	} else {
