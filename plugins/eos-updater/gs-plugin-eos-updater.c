@@ -545,6 +545,8 @@ proxy_new_cb (GObject      *source_object,
 	g_autofree gchar *name_owner = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GIcon) ic = NULL;
+	g_autofree gchar *background_filename = NULL;
+	g_autofree gchar *css = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -581,6 +583,13 @@ proxy_new_cb (GObject      *source_object,
 	/* use stock icon */
 	ic = g_themed_icon_new ("system-component-addon");
 
+	/* Check for a background image in the standard location. */
+	background_filename = gs_utils_get_upgrade_background (NULL);
+
+	if (background_filename != NULL)
+		css = g_strconcat ("background: url('file://", background_filename, "');"
+				   "background-size: 100% 100%;", NULL);
+
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");
 	gs_app_add_icon (app, ic);
@@ -598,9 +607,7 @@ proxy_new_cb (GObject      *source_object,
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_set_management_plugin (app, GS_PLUGIN (self));
-	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
-			     "background: url('file://" DATADIR "/gnome-software/upgrade-bg.png');"
-			     "background-size: 100% 100%;");
+	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 
 	self->os_upgrade = g_steal_pointer (&app);
 

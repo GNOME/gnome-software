@@ -1,3 +1,13 @@
+UNRELEASED
+~~~~~~~~~~
+
+ * The background image for upgrades is now looked for using several well-known
+   (and distribution-specific) names in `${DATADIR}/gnome-software/backgrounds`,
+   and the previous Fedora-specific default background image is no longer
+   distributed. Similarly, the `upgrade-background-uri` GSettings key has been
+   removed. Distributions may need to update how they ship background
+   images. See `doc/vendor-customisation.md`.
+
 Version 42.alpha
 ~~~~~~~~~~~~~~~~
 Released: 2022-01-07
