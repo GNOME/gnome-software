@@ -33,7 +33,6 @@ typedef enum {
 	GS_APP_LIST_FLAG_LAST  /*< skip >*/
 } GsAppListFlags;
 
-GsAppList	*gs_app_list_copy		(GsAppList	*list);
 guint		 gs_app_list_get_size_peak	(GsAppList	*list);
 void		 gs_app_list_filter_duplicates	(GsAppList	*list,
 						 GsAppListFilterFlags flags);

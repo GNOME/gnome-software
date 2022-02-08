@@ -65,6 +65,7 @@ typedef gboolean (*GsAppListFilterFunc)		(GsApp		*app,
 						 gpointer	 user_data);
 
 GsAppList	*gs_app_list_new		(void);
+GsAppList	*gs_app_list_copy		(GsAppList	*list);
 void		 gs_app_list_add		(GsAppList	*list,
 						 GsApp		*app);
 void		 gs_app_list_add_list		(GsAppList	*list,
