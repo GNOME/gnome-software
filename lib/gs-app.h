@@ -98,7 +98,6 @@ typedef enum {
  * @GS_APP_KUDO_USES_NOTIFICATIONS:	Registers notifications
  * @GS_APP_KUDO_HAS_KEYWORDS:		Has at least 1 keyword
  * @GS_APP_KUDO_HAS_SCREENSHOTS:	Supplies screenshots
- * @GS_APP_KUDO_POPULAR:		Is popular
  * @GS_APP_KUDO_HIGH_CONTRAST:		Installs a high contrast icon
  * @GS_APP_KUDO_HI_DPI_ICON:		Installs a HiDPI icon
  * @GS_APP_KUDO_SANDBOXED:		Application is sandboxed
@@ -116,7 +115,6 @@ typedef enum {
 	GS_APP_KUDO_USES_NOTIFICATIONS		= 1 << 6,
 	GS_APP_KUDO_HAS_KEYWORDS		= 1 << 7,
 	GS_APP_KUDO_HAS_SCREENSHOTS		= 1 << 9,
-	GS_APP_KUDO_POPULAR			= 1 << 10,
 	GS_APP_KUDO_HIGH_CONTRAST		= 1 << 13,
 	GS_APP_KUDO_HI_DPI_ICON			= 1 << 14,
 	GS_APP_KUDO_SANDBOXED			= 1 << 15,

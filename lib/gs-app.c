@@ -458,8 +458,6 @@ gs_app_kudos_to_string (guint64 kudos)
 		g_ptr_array_add (array, "has-keywords");
 	if ((kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
 		g_ptr_array_add (array, "has-screenshots");
-	if ((kudos & GS_APP_KUDO_POPULAR) > 0)
-		g_ptr_array_add (array, "popular");
 	if ((kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
 		g_ptr_array_add (array, "high-contrast");
 	if ((kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
@@ -4611,10 +4609,6 @@ gs_app_get_kudos_percentage (GsApp *app)
 		percentage += 20;
 	if ((priv->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
 		percentage += 20;
-
-	/* popular apps should be at *least* 50% */
-	if ((priv->kudos & GS_APP_KUDO_POPULAR) > 0)
-		percentage = MAX (percentage, 50);
 
 	return MIN (percentage, 100);
 }
