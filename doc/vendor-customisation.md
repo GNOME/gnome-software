@@ -69,3 +69,78 @@ in order:
 `${DATADIR}` is the configured data directory (typically `/usr/share`).
 `${os_id}` is the `ID=` value from `/etc/os-release`, and `${version}` is the
 version string being upgraded to.
+
+Featured apps and Editor’s Choice
+---------------------------------
+
+There are several ways to promote and highlight specific applications in GNOME
+Software. On the overview page, there’s a carousel of featured applications
+(`featured_carousel`), and an “Editor’s Choice” section (`box_popular`). Both of
+them highlight curated sets of applications. The same is true on each category
+page: a carousel (`top_carousel`) and an “Editor’s Choice” section
+(`featured_flow_box`) are present.
+
+Both pages also have a “New & Updated” section (`box_recent` or
+`recently_updated_flow_box`) presented below “Editor’s Choice”. The applications
+listed in the new and updated section are not curated: they are chosen as the
+applications which have had a recent release, according to the
+`component/releases/release[@timestamp]` attribute in their metainfo.
+Technically these are the results of the `gs_plugin_add_recent()` vfunc.
+
+Applications are included in any of the curated sets through having special
+metadata in their metainfo. The required metadata is different for the different
+sections:
+ * Carousel on the overview page: Applications are included if they have
+   `component/custom/value[@key='GnomeSoftware::FeatureTile]` or
+   `component/custom/value[@key='GnomeSoftware::FeatureTile-css]` set in their
+   metainfo. They are also required to have a high-resolution icon, and the set
+   of applications shown in the carousel is randomised and limited to (for
+   example) 5. Technically these are the results of the
+   `gs_plugin_add_featured()` vfunc.
+ * “Editor’s Choice” on the overview page: Applications are included if they
+   have `component/kudos/kudo[text()='GnomeSoftware::popular']` set in their
+   metainfo. Technically these are the results of the `gs_plugin_add_popular()`
+   vfunc.
+ * Carousel on the category page: Applications are included if they are in the
+   `Featured` subcategory of the displayed category. They are also required to
+   have a high-resolution icon, and the set of applications show in the carousel
+   is randomised and limited to (for example) 5.
+ * “Editor’s Choice” on the category page: Applications are included if they
+   meet the requirements for being in the carousel, but weren’t chosen as part
+   of the randomisation process.
+
+There are several ways to modify the metainfo for applications so that they are
+highlighted as required, all of which involve providing an additional appstream
+file which sets the additional metainfo for those applications.
+
+The main approach is to ship an additional distro-specific appstream file in
+`${DATADIR}/app-info/xmls`, providing and updating it via normal distribution
+channels. For example, by packaging it in its own package which is updated
+regularly.
+
+For distributions which can’t do regular updates of individual files – such as
+image-based distributions – GNOME Software can download distro-specific
+appstream files from the internet. List them in the `external-appstream-urls`
+GSetting in `/org/gnome/software`, typically via a distribution-provided
+GSettings override. Each URL must be HTTPS, and must point to a valid appstream
+file. GNOME Software must be configured with `-Dexternal_appstream=true` for
+this to work.
+
+GNOME Software will periodically check and download any updates to these
+files, and will cache them locally. Ensure the `If-Modified-Since` HTTP header
+functions correctly on your server, or GNOME Software’s caching will be
+ineffective.
+
+The `external-appstream-urls` mechanism may change in future.
+
+GNOME Software ships a default list of featured applications, chosen to match
+the [GNOME Circle](https://circle.gnome.org/). See
+`data/assets/org.gnome.Software.Featured.xml` for this list, and for an example
+of the metainfo XML needed to feature or highlight applications. See
+`data/assets/org.gnome.Software.Popular.xml` for a default hard-coded list of
+popular applications, which is displayed in the “Editor’s Choice” section of the
+overview page.
+
+Pass `-Ddefault_featured_apps=false` when configuring GNOME Software to disable
+the default list of featured applications. Pass `-Dhardcoded_popular=false` to
+disable the default list of “Editor’s Choice” applications.
