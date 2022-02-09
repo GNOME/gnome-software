@@ -22,6 +22,7 @@
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
 #include "gs-app-context-bar.h"
+#include "gs-app-reviews-dialog.h"
 #include "gs-app-translation-dialog.h"
 #include "gs-app-version-history-row.h"
 #include "gs-app-version-history-dialog.h"
@@ -86,6 +87,7 @@ struct _GsDetailsPage
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 	GAppInfoMonitor		*app_info_monitor; /* (owned) */
 	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
+	GtkWidget		*app_reviews_dialog;
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
@@ -113,7 +115,6 @@ struct _GsDetailsPage
 	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
 	GsProgressButton	*button_cancel;
-	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
@@ -126,10 +127,13 @@ struct _GsDetailsPage
 	GtkImage		*developer_verified_image;
 	GtkWidget		*label_failed;
 	GtkWidget		*list_box_addons;
+	GtkWidget		*list_box_featured_review;
+	GtkWidget		*list_box_reviews_summary;
 	GtkWidget		*list_box_version_history;
 	GtkWidget		*row_latest_version;
 	GtkWidget		*version_history_button;
 	GtkWidget		*box_reviews;
+	GtkWidget		*box_reviews_internal;
 	GtkWidget		*histogram;
 	GtkWidget		*button_review;
 	GtkWidget		*list_box_reviews;
@@ -156,6 +160,15 @@ typedef enum {
 } GsDetailsPageProperty;
 
 static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
+
+static void
+gs_details_page_cancel_cb (GsDetailsPage *self)
+{
+	if (self->app_reviews_dialog) {
+		gtk_window_destroy (GTK_WINDOW (self->app_reviews_dialog));
+		g_clear_object (&self->app_reviews_dialog);
+	}
+}
 
 static GsDetailsPageState
 gs_details_page_get_state (GsDetailsPage *self)
@@ -1143,6 +1156,44 @@ version_history_list_row_activated_cb (GtkListBox *list_box,
 	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 }
 
+static void gs_details_page_refresh_reviews (GsDetailsPage *self);
+
+static void
+app_reviews_dialog_destroy_cb (GsDetailsPage *self)
+{
+	self->app_reviews_dialog = NULL;
+}
+
+static void
+featured_review_list_row_activated_cb (GtkListBox *list_box,
+				       GtkListBoxRow *row,
+				       GsDetailsPage *self)
+{
+	/* Only the row with the arrow is clickable */
+	if (GS_IS_REVIEW_ROW (row))
+		return;
+
+	g_assert (GS_IS_ODRS_PROVIDER (self->odrs_provider));
+
+	if (self->app_reviews_dialog == NULL) {
+		GtkWindow *parent;
+
+		parent = GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (list_box), GTK_TYPE_WINDOW));
+
+		self->app_reviews_dialog =
+			gs_app_reviews_dialog_new (parent, self->app,
+						   self->odrs_provider, self->plugin_loader);
+		g_object_bind_property (self, "odrs-provider",
+					self->app_reviews_dialog, "odrs-provider", 0);
+		g_signal_connect_swapped (self->app_reviews_dialog, "reviews-updated",
+					  G_CALLBACK (gs_details_page_refresh_reviews), self);
+		g_signal_connect_swapped (self->app_reviews_dialog, "destroy",
+					  G_CALLBACK (app_reviews_dialog_destroy_cb), self);
+	}
+
+	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (self->app_reviews_dialog));
+}
+
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
 static void gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data);
 
@@ -1184,59 +1235,30 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 	gtk_widget_set_visible (self->box_addons, rows > 0);
 }
 
-static void gs_details_page_refresh_reviews (GsDetailsPage *self);
-
-static void
-gs_details_page_review_button_clicked_cb (GsReviewRow *row,
-                                          GsReviewAction action,
-                                          GsDetailsPage *self)
+static AsReview *
+get_featured_review (GPtrArray *reviews)
 {
-	AsReview *review = gs_review_row_get_review (row);
-	g_autoptr(GError) local_error = NULL;
+	AsReview *featured;
+	gint featured_priority;
 
-	g_assert (self->odrs_provider != NULL);
+	g_assert (reviews->len > 0);
 
-	/* FIXME: Make this async */
-	switch (action) {
-	case GS_REVIEW_ACTION_UPVOTE:
-		gs_odrs_provider_upvote_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
-		break;
-	case GS_REVIEW_ACTION_DOWNVOTE:
-		gs_odrs_provider_downvote_review (self->odrs_provider, self->app,
-						  review, self->cancellable,
-						  &local_error);
-		break;
-	case GS_REVIEW_ACTION_REPORT:
-		gs_odrs_provider_report_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
-		break;
-	case GS_REVIEW_ACTION_REMOVE:
-		gs_odrs_provider_remove_review (self->odrs_provider, self->app,
-						review, self->cancellable,
-						&local_error);
-		break;
-	case GS_REVIEW_ACTION_DISMISS:
-		/* The dismiss action is only used from the moderate page. */
-	default:
-		g_assert_not_reached ();
+	featured = g_ptr_array_index (reviews, 0);
+	featured_priority = as_review_get_priority (featured);
+
+	for (gsize i = 1; i < reviews->len; i++) {
+		AsReview *new = g_ptr_array_index (reviews, i);
+		gint new_priority = as_review_get_priority (new);
+
+		if (featured_priority > new_priority ||
+		    (featured_priority == new_priority &&
+		     g_date_time_compare (as_review_get_date (featured), as_review_get_date (new)) > 0)) {
+			featured = new;
+			featured_priority = new_priority;
+		}
 	}
 
-	if (local_error != NULL) {
-		g_warning ("failed to set review on %s: %s",
-			   gs_app_get_id (self->app), local_error->message);
-		return;
-	}
-
-	gs_details_page_refresh_reviews (self);
-}
-
-static gint
-sort_reviews (AsReview **a, AsReview **b)
-{
-	return -g_date_time_compare (as_review_get_date (*a), as_review_get_date (*b));
+	return featured;
 }
 
 static void
@@ -1247,14 +1269,8 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	gboolean show_review_button = TRUE;
 	gboolean show_reviews = FALSE;
 	guint n_reviews = 0;
-	guint64 possible_actions = 0;
 	guint i;
-	GsReviewAction all_actions[] = {
-		GS_REVIEW_ACTION_UPVOTE,
-		GS_REVIEW_ACTION_DOWNVOTE,
-		GS_REVIEW_ACTION_REPORT,
-		GS_REVIEW_ACTION_REMOVE,
-	};
+	GtkWidget *child;
 
 	/* nothing to show */
 	if (self->app == NULL)
@@ -1317,42 +1333,25 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		return;
 	}
 
-	/* find what the plugins support */
-	for (i = 0; i < G_N_ELEMENTS (all_actions); i++) {
-		if (self->odrs_provider != NULL) {
-			possible_actions |= (1u << all_actions[i]);
-		}
+	/* add all the reviews */
+	while ((child = gtk_widget_get_first_child (self->list_box_featured_review)) != NULL) {
+		if (GS_IS_REVIEW_ROW (child))
+			gtk_list_box_remove (GTK_LIST_BOX (self->list_box_featured_review), child);
+		else
+			break;
 	}
 
-	/* add all the reviews */
-	gs_widget_remove_all (self->list_box_reviews, (GsRemoveFunc) gtk_list_box_remove);
 	reviews = gs_app_get_reviews (self->app);
-	g_ptr_array_sort (reviews, (GCompareFunc) sort_reviews);
-	for (i = 0; i < reviews->len; i++) {
-		AsReview *review = g_ptr_array_index (reviews, i);
+	if (reviews->len > 0) {
+		AsReview *review = get_featured_review (reviews);
 		GtkWidget *row = gs_review_row_new (review);
-		guint64 actions;
 
-		g_signal_connect (row, "button-clicked",
-				  G_CALLBACK (gs_details_page_review_button_clicked_cb), self);
-		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & (1 << GS_REVIEW_ACTION_REMOVE);
-			show_review_button = FALSE;
-		} else {
-			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
-		}
-		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
-		gtk_list_box_append (GTK_LIST_BOX (self->list_box_reviews), row);
-		gtk_widget_set_visible (row, self->show_all_reviews ||
-					     i < SHOW_NR_REVIEWS_INITIAL);
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
+		gtk_list_box_prepend (GTK_LIST_BOX (self->list_box_featured_review), row);
+
 		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
 						     gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
-
-	/* only show the button if there are more to show */
-	gtk_widget_set_visible (self->button_more_reviews,
-				!self->show_all_reviews &&
-				reviews->len > SHOW_NR_REVIEWS_INITIAL);
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
@@ -1372,13 +1371,14 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 					     _("You need internet access to write a review"));
 	}
 
+	gtk_widget_set_visible (self->list_box_featured_review, reviews->len > 0);
+
 	/* Update the overall container. */
 	gtk_widget_set_visible (self->box_reviews,
 				show_reviews &&
 				(gtk_widget_get_visible (self->histogram) ||
 				 gtk_widget_get_visible (self->button_review) ||
-				 reviews->len > 0 ||
-				 gtk_widget_get_visible (self->button_more_reviews)));
+				 reviews->len > 0));
 }
 
 static void
@@ -1891,6 +1891,7 @@ gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 					     "installed");
 
 	g_set_object (&self->cancellable, cancellable);
+	g_cancellable_connect (cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
 	gs_page_launch_app (GS_PAGE (self), self->app, self->cancellable);
 }
 
@@ -1940,8 +1941,7 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 }
 
 static void
-gs_details_page_write_review_cb (GtkButton *button,
-                                 GsDetailsPage *self)
+gs_details_page_write_review (GsDetailsPage *self)
 {
 	GtkWidget *dialog;
 	dialog = gs_review_dialog_new ();
@@ -1976,22 +1976,6 @@ gs_details_page_app_removed (GsPage *page, GsApp *app)
 }
 
 static void
-gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
-{
-	GtkWidget *child;
-
-	self->show_all_reviews = TRUE;
-
-	for (child = gtk_widget_get_first_child (self->list_box_reviews);
-	     child != NULL;
-	     child = gtk_widget_get_next_sibling (child)) {
-		gtk_widget_show (child);
-	}
-
-	gtk_widget_set_visible (self->button_more_reviews, FALSE);
-}
-
-static void
 gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
                                              GParamSpec *pspec,
                                              GsDetailsPage *self)
@@ -2006,7 +1990,7 @@ gs_details_page_star_pressed_cb (GtkGestureClick *click,
                                  gdouble          y,
                                  GsDetailsPage   *self)
 {
-	gs_details_page_write_review_cb(GTK_BUTTON (self->button_review), self);
+	gs_details_page_write_review (self);
 }
 
 static gboolean
@@ -2024,6 +2008,7 @@ gs_details_page_setup (GsPage *page,
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
+	g_cancellable_connect (cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
 
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
@@ -2138,6 +2123,7 @@ gs_details_page_dispose (GObject *object)
 		self->packaging_format_preference = NULL;
 	}
 	g_clear_object (&self->app_local_file);
+	g_clear_object (&self->app_reviews_dialog);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
@@ -2225,7 +2211,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_more_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
@@ -2238,10 +2223,13 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_verified_image);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_featured_review);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews_summary);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_version_history);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews_internal);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
@@ -2260,13 +2248,11 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_write_review_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_star_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_install_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_update_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_remove_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_cancel_button_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_more_reviews_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_launch_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, origin_popover_row_activated_cb);
 }
@@ -2320,6 +2306,12 @@ gs_details_page_init (GsDetailsPage *self)
 	g_signal_connect (self->list_box_version_history, "row-activated",
 			  G_CALLBACK (version_history_list_row_activated_cb), self);
 
+	g_signal_connect_swapped (self->list_box_reviews_summary, "row-activated",
+				  G_CALLBACK (gs_details_page_write_review), self);
+
+	g_signal_connect (self->list_box_featured_review, "row-activated",
+			  G_CALLBACK (featured_review_list_row_activated_cb), self);
+
 	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
 
 	gs_details_page_read_packaging_format_preference (self);
@@ -2331,6 +2323,8 @@ gs_details_page_init (GsDetailsPage *self)
 	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->context_bar, "orientation", G_BINDING_SYNC_CREATE,
+				     narrow_to_orientation, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->box_reviews_internal, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
 }
 
