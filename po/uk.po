@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-08 17:46+0000\n"
-"PO-Revision-Date: 2022-02-08 22:37+0200\n"
+"POT-Creation-Date: 2022-02-09 16:50+0000\n"
+"PO-Revision-Date: 2022-02-09 20:36+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -695,8 +695,6 @@ msgstr "Насильство"
 #. * ratings for apps. The order of the items does not matter.
 #: src/gs-age-rating-context-dialog.c:659
 #, c-format
-#| msgctxt "repo-row"
-#| msgid "%s • %s"
 msgid "%s • %s"
 msgstr "%s • %s"
 
@@ -796,11 +794,11 @@ msgstr "Пакунок"
 msgid "Pending"
 msgstr "У черзі"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:327
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:340
 msgid "Pending install"
 msgstr "Очікуємо на встановлення"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:334
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:347
 msgid "Pending remove"
 msgstr "Очікуємо на вилучення"
 
@@ -813,7 +811,7 @@ msgstr "Встановлено"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:320
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:333
 msgid "Installing"
 msgstr "Встановлення"
 
@@ -927,6 +925,21 @@ msgstr "Повернутися"
 #: src/gs-app-details-page.ui:47 src/gs-app-row.c:502
 msgid "Requires additional permissions"
 msgstr "Потребує додаткових прав доступу"
+
+#. Translators: Header of the section with other users' opinions about the app.
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:795
+msgid "Reviews"
+msgstr "Огляди"
+
+#: src/gs-app-reviews-dialog.ui:25
+#| msgid "Sorry! There are no details for that application."
+msgid "No reviews were found for this application."
+msgstr "Для цієї програми не знайдено оглядів."
+
+#: src/gs-app-reviews-dialog.ui:27
+#| msgid "Reviews"
+msgid "No Reviews"
+msgstr "Немає оглядів"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:473
 msgid "Version History"
@@ -2143,9 +2156,7 @@ msgstr "Потрібно додаткові пакунки"
 msgid "Find in Software"
 msgstr "Знайти серед програм"
 
-#. Translators: Button to return more application-submitted reviews.
 #: src/gs-description-box.c:67 src/gs-description-box.c:252
-#: src/gs-details-page.ui:835
 msgid "_Show More"
 msgstr "_Показати більше"
 
@@ -2153,37 +2164,37 @@ msgstr "_Показати більше"
 msgid "_Show Less"
 msgstr "_Показати менше"
 
-#: src/gs-details-page.c:315
+#: src/gs-details-page.c:328
 msgid "Removing…"
 msgstr "Вилучення…"
 
-#: src/gs-details-page.c:325
+#: src/gs-details-page.c:338
 msgid "Requires restart to finish install"
 msgstr "Потребує перезапуску системи для завершення встановлення"
 
-#: src/gs-details-page.c:332
+#: src/gs-details-page.c:345
 msgid "Requires restart to finish remove"
 msgstr "Потребує перезапуску системи для завершення вилучення"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:349
+#: src/gs-details-page.c:362
 msgid "Pending installation…"
 msgstr "Очікуємо на встановлення…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:356
+#: src/gs-details-page.c:369
 msgid "Pending update…"
 msgstr "Оновлення у черзі…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:372
+#: src/gs-details-page.c:385
 msgid "Preparing…"
 msgstr "Приготування…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:388
 msgid "Uninstalling…"
 msgstr "Вилучаємо…"
 
@@ -2191,12 +2202,12 @@ msgstr "Вилучаємо…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:793 src/gs-details-page.c:819
+#: src/gs-details-page.c:806 src/gs-details-page.c:832
 #: src/gs-details-page.ui:218 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "_Встановити"
 
-#: src/gs-details-page.c:809
+#: src/gs-details-page.c:822
 msgid "_Restart"
 msgstr "_Перезапустити"
 
@@ -2204,12 +2215,12 @@ msgstr "_Перезапустити"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:833
+#: src/gs-details-page.c:846
 msgid "_Install…"
 msgstr "_Встановити…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1372
+#: src/gs-details-page.c:1371
 msgid "You need internet access to write a review"
 msgstr "Щоб написати відгук, потрібен інтернет"
 
@@ -2220,7 +2231,7 @@ msgstr "Неможливо знайти «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2077
+#: src/gs-details-page.c:2062
 msgid "Loading…"
 msgstr "Завантаження…"
 
@@ -2352,15 +2363,17 @@ msgstr "По_відомити про ваду"
 msgid "_Help"
 msgstr "_Довідка"
 
-#. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:795
-msgid "Reviews"
-msgstr "Огляди"
-
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:813
-msgid "_Write a Review"
+#: src/gs-details-page.ui:841
+#| msgid "_Write a Review"
+msgid "_Write Review"
 msgstr "_Написати огляд"
+
+#. Translators: Button opening a dialog showing all reviews for an app.
+#: src/gs-details-page.ui:878
+#| msgid "Reviews"
+msgid "All Reviews"
+msgstr "Усі огляди"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:245
