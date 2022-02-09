@@ -25,6 +25,20 @@
             </style>
           </object>
         </child>
+        <!-- As children are drawn above the parent's inset box-shadow and as
+             the carousel's children have opaque backgrounds, we can't an inset
+             box shadow set on the carousel (or any parent) and expect them to
+             be visible. To work around this (it isn't a bug) and have the
+             effect we want, we can overlay a widget above the carousel and give
+             it the wanted inset box shadow. -->
+        <child type="overlay">
+          <object class="GtkBox">
+            <property name="can-target">False</property>
+            <style>
+              <class name="inset-shadow"/>
+            </style>
+          </object>
+        </child>
         <child type="overlay">
           <object class="GtkButton" id="previous_button">
             <property name="use-underline">True</property>
