@@ -10,7 +10,7 @@
 
 #include <glib-object.h>
 
-#include "gs-app-list-private.h"
+#include "gs-app-list.h"
 #include "gs-category.h"
 #include "gs-plugin-types.h"
 

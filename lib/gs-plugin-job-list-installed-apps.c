@@ -41,10 +41,12 @@
 #include <glib/gi18n.h>
 
 #include "gs-app.h"
+#include "gs-app-list-private.h"
 #include "gs-enums.h"
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-list-installed-apps.h"
 #include "gs-plugin-job-refine.h"
+#include "gs-plugin-private.h"
 #include "gs-utils.h"
 
 struct _GsPluginJobListInstalledApps

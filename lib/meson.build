@@ -29,6 +29,7 @@ libgnomesoftware_public_headers = [
   'gs-plugin-types.h',
   'gs-plugin-vfuncs.h',
   'gs-remote-icon.h',
+  'gs-test.h',
   'gs-utils.h',
   'gs-worker-thread.h',
 ]

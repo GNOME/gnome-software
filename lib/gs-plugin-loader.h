@@ -16,7 +16,7 @@
 #include "gs-category-manager.h"
 #include "gs-odrs-provider.h"
 #include "gs-plugin-event.h"
-#include "gs-plugin-private.h"
+#include "gs-plugin.h"
 
 G_BEGIN_DECLS
 

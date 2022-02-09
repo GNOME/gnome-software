@@ -45,6 +45,7 @@
 #include "gs-app.h"
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
+#include "gs-app-list-private.h"
 #include "gs-enums.h"
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-refine.h"
