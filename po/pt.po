@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-08 09:19+0000\n"
-"PO-Revision-Date: 2022-02-08 12:26+0000\n"
+"POT-Creation-Date: 2022-02-09 16:50+0000\n"
+"PO-Revision-Date: 2022-02-10 13:14+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -722,11 +722,21 @@ msgstr "Social"
 msgid "Violence"
 msgstr "Violência"
 
+#. Translators: This is used to join two list items together in
+#. * a compressed way of displaying a list of descriptions of age
+#. * ratings for apps. The order of the items does not matter.
+#: src/gs-age-rating-context-dialog.c:659
+#, c-format
+#| msgctxt "repo-row"
+#| msgid "%s • %s"
+msgid "%s • %s"
+msgstr "%s • %s"
+
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: src/gs-age-rating-context-dialog.c:932 lib/gs-category.c:214
+#: src/gs-age-rating-context-dialog.c:943 lib/gs-category.c:214
 msgid "All"
 msgstr "Todas"
 
@@ -736,42 +746,42 @@ msgstr "Todas"
 #. Translators: This is shown in a bubble if the storage
 #. * size of an application is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:945 src/gs-app-context-bar.c:194
+#: src/gs-age-rating-context-dialog.c:956 src/gs-app-context-bar.c:194
 #: src/gs-storage-context-dialog.c:87
 msgid "?"
 msgstr "?"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1011
+#: src/gs-age-rating-context-dialog.c:1022
 #, c-format
 msgid "%s is suitable for everyone"
 msgstr "%s é adequado para todos"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1015
+#: src/gs-age-rating-context-dialog.c:1026
 #, c-format
 msgid "%s is suitable for toddlers"
 msgstr "%s é adequado para crianças"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1019
+#: src/gs-age-rating-context-dialog.c:1030
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "%s é adequado para crianças pequenas"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1027
+#: src/gs-age-rating-context-dialog.c:1038
 #, c-format
 msgid "%s is suitable for teenagers"
 msgstr "%s é adequado para adolescentes"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1031
+#: src/gs-age-rating-context-dialog.c:1042
 #, c-format
 msgid "%s is suitable for adults"
 msgstr "%s é adequado para adultos"
@@ -779,7 +789,7 @@ msgstr "%s é adequado para adultos"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:1036
+#: src/gs-age-rating-context-dialog.c:1047
 #, c-format
 msgid "%s is suitable for %s"
 msgstr "%s é adequado para %s"
@@ -796,7 +806,7 @@ msgstr "Classificação Etária"
 msgid "How to add missing information"
 msgstr "Como adicionar informação em falta"
 
-#: lib/gs-app.c:5712
+#: lib/gs-app.c:5715
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -805,12 +815,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5728 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5804
+#: lib/gs-app.c:5807
 msgid "Package"
 msgstr "Pacote"
 
@@ -818,11 +828,11 @@ msgstr "Pacote"
 msgid "Pending"
 msgstr "Pendente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:327
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:340
 msgid "Pending install"
 msgstr "Instalação pendente"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:334
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:347
 msgid "Pending remove"
 msgstr "Remoção pendente"
 
@@ -835,7 +845,7 @@ msgstr "Instalado"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:320
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:333
 msgid "Installing"
 msgstr "A instalar"
 
@@ -949,6 +959,19 @@ msgstr "Recuar"
 #: src/gs-app-details-page.ui:47 src/gs-app-row.c:502
 msgid "Requires additional permissions"
 msgstr "Requer permissões adicionais"
+
+#. Translators: Header of the section with other users' opinions about the app.
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:795
+msgid "Reviews"
+msgstr "Análises"
+
+#: src/gs-app-reviews-dialog.ui:25
+msgid "No reviews were found for this application."
+msgstr "Não foram encontradas análises sobre esta aplicação."
+
+#: src/gs-app-reviews-dialog.ui:27
+msgid "No Reviews"
+msgstr "Sem análises"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:473
 msgid "Version History"
@@ -2155,9 +2178,7 @@ msgstr "Pacotes adicionais requeridos"
 msgid "Find in Software"
 msgstr "Localizar em Software"
 
-#. Translators: Button to return more application-submitted reviews.
 #: src/gs-description-box.c:67 src/gs-description-box.c:252
-#: src/gs-details-page.ui:835
 msgid "_Show More"
 msgstr "Mostrar mai_s"
 
@@ -2165,37 +2186,37 @@ msgstr "Mostrar mai_s"
 msgid "_Show Less"
 msgstr "Mostrar menos"
 
-#: src/gs-details-page.c:315
+#: src/gs-details-page.c:328
 msgid "Removing…"
 msgstr "A remover…"
 
-#: src/gs-details-page.c:325
+#: src/gs-details-page.c:338
 msgid "Requires restart to finish install"
 msgstr "É necessário reiniciar para terminar a instalação"
 
-#: src/gs-details-page.c:332
+#: src/gs-details-page.c:345
 msgid "Requires restart to finish remove"
 msgstr "É necessário reiniciar para terminar a remoção"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:349
+#: src/gs-details-page.c:362
 msgid "Pending installation…"
 msgstr "Instalação pendente…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:356
+#: src/gs-details-page.c:369
 msgid "Pending update…"
 msgstr "Atualização pendente…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:372
+#: src/gs-details-page.c:385
 msgid "Preparing…"
 msgstr "A preparar…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:388
 msgid "Uninstalling…"
 msgstr "A desinstalar…"
 
@@ -2203,12 +2224,12 @@ msgstr "A desinstalar…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:793 src/gs-details-page.c:819
+#: src/gs-details-page.c:806 src/gs-details-page.c:832
 #: src/gs-details-page.ui:218 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:809
+#: src/gs-details-page.c:822
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -2216,12 +2237,12 @@ msgstr "_Reiniciar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:833
+#: src/gs-details-page.c:846
 msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1372
+#: src/gs-details-page.c:1371
 msgid "You need internet access to write a review"
 msgstr "É necessário conexão à Internet para escrever uma avaliação"
 
@@ -2232,7 +2253,7 @@ msgstr "Impossível encontrar «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2077
+#: src/gs-details-page.c:2062
 msgid "Loading…"
 msgstr "A carregar…"
 
@@ -2365,15 +2386,15 @@ msgstr "_Reportar um problema"
 msgid "_Help"
 msgstr "Ajuda"
 
-#. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:795
-msgid "Reviews"
-msgstr "Análises"
-
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:813
-msgid "_Write a Review"
-msgstr "_Escrever uma análise"
+#: src/gs-details-page.ui:841
+msgid "_Write Review"
+msgstr "_Escrever análise"
+
+#. Translators: Button opening a dialog showing all reviews for an app.
+#: src/gs-details-page.ui:878
+msgid "All Reviews"
+msgstr "Todas as análises"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:245
