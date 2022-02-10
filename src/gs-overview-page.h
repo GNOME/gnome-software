@@ -18,7 +18,8 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsOverviewPage, gs_overview_page, GS, OVERVIEW_PAGE, GsPage)
 
 GsOverviewPage	*gs_overview_page_new		(void);
-void		 gs_overview_page_set_category	(GsOverviewPage		*self,
-						 const gchar		*category);
+void		 gs_overview_page_override_featured
+						(GsOverviewPage	*self,
+						 GsApp		*app);
 
 G_END_DECLS

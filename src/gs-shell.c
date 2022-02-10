@@ -859,6 +859,20 @@ gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 	}
 }
 
+static void
+gs_shell_details_page_metainfo_loaded_cb (GtkWidget *details_page,
+					  GsApp *app,
+					  GsShell *self)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_SHELL (self));
+
+	/* If the user has manually loaded some metainfo to
+	 * preview, override the featured carousel with it too,
+	 * so they can see how it looks in the carousel. */
+	gs_overview_page_override_featured (GS_OVERVIEW_PAGE (self->pages[GS_SHELL_MODE_OVERVIEW]), app);
+}
+
 static gboolean
 change_mode_idle (gpointer user_data)
 {
@@ -2660,6 +2674,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_page_metainfo_loaded_cb);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_q, GDK_CONTROL_MASK, "window.close", NULL);
 }

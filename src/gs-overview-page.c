@@ -39,6 +39,7 @@ struct _GsOverviewPage
 	gboolean		 loading_recent;
 	gboolean		 loading_categories;
 	gboolean		 empty;
+	gboolean		 featured_overwritten;
 	GHashTable		*category_hash;		/* id : GsCategory */
 	GsFedoraThirdParty	*third_party;
 	gboolean		 third_party_needs_question;
@@ -254,6 +255,11 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 		goto out;
+
+	if (self->featured_overwritten) {
+		g_debug ("Skipping set of featured apps, because being overwritten");
+		goto out;
+	}
 
 	if (list == NULL || gs_app_list_length (list) == 0) {
 		g_warning ("failed to get featured apps: %s",
@@ -541,6 +547,7 @@ static void
 gs_overview_page_reload (GsPage *page)
 {
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
+	self->featured_overwritten = FALSE;
 	gs_overview_page_invalidate (self);
 	gs_overview_page_load (self);
 }
@@ -781,4 +788,20 @@ GsOverviewPage *
 gs_overview_page_new (void)
 {
 	return GS_OVERVIEW_PAGE (g_object_new (GS_TYPE_OVERVIEW_PAGE, NULL));
+}
+
+void
+gs_overview_page_override_featured (GsOverviewPage	*self,
+				    GsApp		*app)
+{
+	g_autoptr(GsAppList) list = NULL;
+
+	g_return_if_fail (GS_IS_OVERVIEW_PAGE (self));
+	g_return_if_fail (GS_IS_APP (app));
+
+	self->featured_overwritten = TRUE;
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->featured_carousel), list);
 }

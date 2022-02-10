@@ -152,6 +152,11 @@ struct _GsDetailsPage
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
+enum {
+	SIGNAL_METAINFO_LOADED,
+	SIGNAL_LAST
+};
+
 typedef enum {
 	PROP_ODRS_PROVIDER = 1,
 	PROP_IS_NARROW,
@@ -160,6 +165,7 @@ typedef enum {
 } GsDetailsPageProperty;
 
 static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
+static guint signals[SIGNAL_LAST] = { 0 };
 
 static void
 gs_details_page_cancel_cb (GsDetailsPage *self)
@@ -2186,6 +2192,21 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 
 	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
+	/**
+	 * GsDetailsPage::metainfo-loaded:
+	 * @app: a #GsApp
+	 *
+	 * Emitted after a custom metainfo @app is loaded in the page, but before
+	 * it's fully shown.
+	 *
+	 * Since: 42
+	 */
+	signals[SIGNAL_METAINFO_LOADED] =
+		g_signal_new ("metainfo-loaded",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_icon);
@@ -2433,6 +2454,8 @@ gs_details_page_metainfo_ready_cb (GObject *source_object,
 	g_set_object (&self->app_local_file, app);
 	_set_app (self, app);
 	gs_details_page_load_stage2 (self, FALSE);
+
+	g_signal_emit (self, signals[SIGNAL_METAINFO_LOADED], 0, app);
 }
 
 static void
@@ -2444,14 +2467,31 @@ gs_details_page_metainfo_thread (GTask *task,
 	const gchar *const *locales;
 	g_autofree gchar *xml = NULL;
 	g_autofree gchar *path = NULL;
+	g_autofree gchar *icon_path = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(XbBuilderSource) builder_source = NULL;
 	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GPtrArray) nodes = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GFile) tmp_file = NULL;
 	GFile *file = task_data;
 	XbNode *component;
+
+	path = g_file_get_path (file);
+	if (path && strstr (path, ",icon=")) {
+		gchar *pos = strstr (path, ",icon=");
+
+		*pos = '\0';
+
+		tmp_file = g_file_new_for_path (path);
+		file = tmp_file;
+
+		pos += 6;
+		if (*pos)
+			icon_path = g_strdup (pos);
+	}
+	g_clear_pointer (&path, g_free);
 
 	builder_source = xb_builder_source_new ();
 	if (!xb_builder_source_load_file (builder_source, file, XB_BUILDER_SOURCE_FLAG_NONE, cancellable, &error)) {
@@ -2505,6 +2545,13 @@ gs_details_page_metainfo_thread (GTask *task,
 
 	path = g_file_get_path (file);
 	gs_app_set_origin (app, path);
+
+	if (icon_path) {
+		g_autoptr(GFile) icon_file = g_file_new_for_path (icon_path);
+		g_autoptr(GIcon) icon = g_file_icon_new (icon_file);
+		gs_icon_set_width (icon, (guint) -1);
+		gs_app_add_icon (app, G_ICON (icon));
+	}
 
 	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 
