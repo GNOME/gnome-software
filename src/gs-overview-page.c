@@ -677,6 +677,8 @@ gs_overview_page_init (GsOverviewPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
+	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->featured_carousel), NULL);
+
 	g_signal_connect (self, "refreshed", G_CALLBACK (refreshed_cb), self);
 }
 
