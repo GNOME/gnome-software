@@ -84,21 +84,6 @@ shared_module(
   dependencies : plugin_libs,
 )
 
-if get_option('hardcoded_popular')
-  shared_module(
-    'gs_plugin_hardcoded-popular',
-    sources : 'gs-plugin-hardcoded-popular.c',
-    include_directories : [
-      include_directories('../..'),
-      include_directories('../../lib'),
-    ],
-    install : true,
-    install_dir: plugin_dir,
-    c_args : cargs,
-    dependencies : plugin_libs,
-  )
-endif
-
 shared_module(
   'gs_plugin_rewrite-resource',
   sources : 'gs-plugin-rewrite-resource.c',

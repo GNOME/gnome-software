@@ -148,9 +148,6 @@ gs_plugin_snap_init (GsPluginSnap *self)
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "icons");
 
-	/* Override hardcoded popular apps */
-	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_BEFORE, "hardcoded-popular");
-
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (GS_PLUGIN (self), "org.gnome.Software.Plugin.Snap");
 }
