@@ -118,7 +118,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
 		GtkStyleContext *context = gtk_widget_get_style_context (self->lozenges[i]);
 		gtk_style_context_remove_class (context, "green");
-		gtk_style_context_remove_class (context, "red");
+		gtk_style_context_remove_class (context, "grey");
 		gtk_style_context_add_class (context, css_class);
 	}
 
