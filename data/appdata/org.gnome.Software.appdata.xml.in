@@ -66,6 +66,47 @@
    Validate with `appstreamcli validate *.appdata.xml`
   -->
   <releases>
+    <release date="2022-02-10" version="42.beta" type="development">
+      <description>
+        <p>This is the second unstable release for GNOME 42.</p>
+        <ul>
+          <li>Allow <code>--verbose</code> to be enabled at runtime</li>
+          <li>Condense the rows in the age rating context dialog</li>
+          <li>Update the UI for ratings and reviews of apps</li>
+          <li>Improve the appearance of the category page loading screen</li>
+          <li>Drop the first run dialog</li>
+          <li>Improvements to dark theming</li>
+          <li>Support viewing a specific metainfo file using <code>--show-metainfo</code></li>
+          <li>Several more threading improvements</li>
+          <li>Icon updates</li>
+          <li>Drop the hardcoded-popular plugin in favour of an appstream file</li>
+          <li>The background image for upgrades is now looked for using several
+		  well-known (and distribution-specific) names in
+		  <code>${DATADIR}/gnome-software/backgrounds</code>,
+		  and the previous Fedora-specific default background image is
+		  no longer distributed. Similarly, the <code>upgrade-background-uri</code>
+		  GSettings key has been removed. Distributions may need to
+		  update how they ship background images.
+		  See <em>doc/vendor-customisation.md</em>.</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Chinese (China)</li>
+          <li>Galician</li>
+          <li>Hebrew</li>
+          <li>Icelandic</li>
+          <li>Indonesian</li>
+          <li>Japanese</li>
+          <li>Occitan (post 1500)</li>
+          <li>Portuguese</li>
+          <li>Portuguese (Brazil)</li>
+          <li>Russian</li>
+          <li>Slovenian</li>
+          <li>Spanish</li>
+          <li>Ukrainian</li>
+        </ul>
+      </description>
+    </release>
     <release date="2022-01-07" version="42.alpha" type="development">
       <description>
         <p>This is the first unstable release for GNOME 42.</p>
