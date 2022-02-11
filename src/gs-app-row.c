@@ -524,9 +524,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 				gtk_widget_get_visible (priv->box_tag) ||
 				gtk_widget_get_visible (priv->description_label));
 
-	gtk_widget_set_hexpand (priv->name_box,
-				!gtk_widget_get_visible (priv->description_box));
-
 	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
 				       gtk_widget_get_visible (priv->description_label) ? 20 : -1);
 }
