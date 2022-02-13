@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-07 14:27+0000\n"
-"PO-Revision-Date: 2022-02-07 17:32+0300\n"
+"POT-Creation-Date: 2022-02-09 16:50+0000\n"
+"PO-Revision-Date: 2022-02-09 21:11+0300\n"
 "Last-Translator: Aleksandr Melman <Alexmelman88@gmail.com>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -324,18 +324,7 @@ msgstr ""
 "Пропущенные форматы считаются перечисленными последними. Примеры форматов "
 "упаковки: deb, flatpak, rpm, snap."
 
-#: data/org.gnome.software.gschema.xml:149
-msgid "The URI that references the background for an upgrade banner."
-msgstr "URI, ссылающийся на фон для баннера обновления."
-
-#: data/org.gnome.software.gschema.xml:150
-msgid ""
-"The URI can contain up to three '%u', which will be replaced by the upgrade "
-"version."
-msgstr ""
-"URI может содержать до трех '%u', которые будут заменены версией обновления."
-
-#: data/org.gnome.software.gschema.xml:156
+#: data/org.gnome.software.gschema.xml:151
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Строка, в которой хранится идентификатор gnome-online-account, используемый "
@@ -381,157 +370,352 @@ msgid "Install selected software on the system"
 msgstr "Установить выбранное программное обеспечение"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:78
+#: src/gs-age-rating-context-dialog.c:135
 msgid "Cartoon Violence"
 msgstr "Мультяшное насилие"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:137
+msgid "No information regarding cartoon violence"
+msgstr "Нет информации о насилии в мультфильмах"
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:85
+#: src/gs-age-rating-context-dialog.c:145
 msgid "Fantasy Violence"
 msgstr "Насилие в стиле фэнтези"
 
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:92
-msgid "Realistic Violence"
-msgstr "Реалистичное насилие"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:99
-msgid "Violence Depicting Bloodshed"
-msgstr "Насилие, изображающее кровопролитие"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:106
-msgid "Sexual Violence"
-msgstr "Сексуальное насилие"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:113
-msgid "Alcohol"
-msgstr "Алкоголь"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:120
-msgid "Narcotics"
-msgstr "Наркотики"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:127
-msgid "Tobacco"
-msgstr "Табак"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:134
-msgid "Nudity"
-msgstr "Нагота"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:141
-msgid "Sexual Themes"
-msgstr "Сексуальная тематика"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:148
-msgid "Profanity"
-msgstr "Ругательства"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:147
+msgid "No information regarding fantasy violence"
+msgstr "Нет информации относительно фантазийного насилия"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:155
+msgid "Realistic Violence"
+msgstr "Реалистичное насилие"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:157
+msgid "No information regarding realistic violence"
+msgstr "Нет информации относительно реалистичного насилия"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:165
+msgid "Violence Depicting Bloodshed"
+msgstr "Насилие, изображающее кровопролитие"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:167
+msgid "No information regarding bloodshed"
+msgstr "Нет информации о кровопролитии"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:175
+msgid "Sexual Violence"
+msgstr "Сексуальное насилие"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:177
+msgid "No information regarding sexual violence"
+msgstr "Нет информации о сексуальном насилии"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:185
+msgid "Alcohol"
+msgstr "Алкоголь"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:187
+msgid "No information regarding references to alcohol"
+msgstr "Нет информации относительно упоминаний об алкоголе"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:195
+msgid "Narcotics"
+msgstr "Наркотики"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:197
+msgid "No information regarding references to illicit drugs"
+msgstr "Нет информации относительно упоминаний о запрещенных наркотиках"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:205
+msgid "Tobacco"
+msgstr "Табак"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:207
+msgid "No information regarding references to tobacco products"
+msgstr "Нет информации относительно упоминаний о табачных изделиях"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:215
+#: src/gs-age-rating-context-dialog.c:544
+msgid "Nudity"
+msgstr "Нагота"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:217
+msgid "No information regarding nudity of any sort"
+msgstr "Нет информации о наготе любого рода"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:225
+msgid "Sexual Themes"
+msgstr "Сексуальная тематика"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:227
+msgid "No information regarding references to or depictions of sexual nature"
+msgstr "Нет информации об упоминаниях или изображениях сексуального характера"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:235
+msgid "Profanity"
+msgstr "Ругательства"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:237
+msgid "No information regarding profanity of any kind"
+msgstr "Нет информации, касающейся ненормативной лексики любого рода"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:245
 msgid "Inappropriate Humor"
 msgstr "Неуместный юмор"
 
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:162
-msgid "Discrimination"
-msgstr "Дискриминация"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:169
-msgid "Advertising"
-msgstr "Реклама"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:176
-msgid "Gambling"
-msgstr "Азартные игры"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:183
-msgid "Purchasing"
-msgstr "Платное"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:190
-msgid "Chat Between Users"
-msgstr "Общение между пользователями"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:197
-msgid "Audio Chat Between Users"
-msgstr "Звуковое общение между пользователями"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:204
-msgid "Contact Details"
-msgstr "Контактные данные"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:211
-msgid "Identifying Information"
-msgstr "Идентификационная информация"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:218
-msgid "Location Sharing"
-msgstr "Совместное использование местоположения"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:241
-msgid "Homosexuality"
-msgstr "Гомосексуализм"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:248
-msgid "Prostitution"
-msgstr "Проституция"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:247
+msgid "No information regarding inappropriate humor"
+msgstr "Нет информации о неуместном юморе"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:255
+msgid "Discrimination"
+msgstr "Дискриминация"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:257
+msgid "No information regarding discriminatory language of any kind"
+msgstr "Нет информации о дискриминационных высказываниях любого рода"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:265
+msgid "Advertising"
+msgstr "Реклама"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:267
+msgid "No information regarding advertising of any kind"
+msgstr "Нет информации о рекламе любого рода"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:275
+msgid "Gambling"
+msgstr "Азартные игры"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:277
+msgid "No information regarding gambling of any kind"
+msgstr "Нет информации, касающейся азартных игр любого рода"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:285
+msgid "Purchasing"
+msgstr "Платное"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:287
+msgid "No information regarding the ability to spend money"
+msgstr "Нет информации относительно способности тратить деньги"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:295
+msgid "Chat Between Users"
+msgstr "Общение между пользователями"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:297
+msgid "No information regarding ways to chat with other users"
+msgstr "Нет информации о способах общения с другими пользователями"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:305
+msgid "Audio Chat Between Users"
+msgstr "Звуковое общение между пользователями"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:307
+msgid "No information regarding ways to talk with other users"
+msgstr "Нет информации о способах разговора с другими пользователями"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:315
+msgid "Contact Details"
+msgstr "Контактные данные"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:317
+msgid ""
+"No information regarding sharing of social network usernames or email "
+"addresses"
+msgstr ""
+"Нет информации о совместном использовании имен пользователей социальных "
+"сетей или адресов электронной почты"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:325
+msgid "Identifying Information"
+msgstr "Идентификационная информация"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:327
+msgid "No information regarding sharing of user information with third parties"
+msgstr "Нет информации о передаче информации о пользователе третьим лицам"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:335
+msgid "Location Sharing"
+msgstr "Совместное использование местоположения"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:337
+msgid "No information regarding sharing of physical location with other users"
+msgstr ""
+"Нет информации о совместном использовании физического местоположения с "
+"другими пользователями"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:361
+msgid "Homosexuality"
+msgstr "Гомосексуализм"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:363
+msgid "No information regarding references to homosexuality"
+msgstr "Нет информации относительно упоминаний о гомосексуализме"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:371
+msgid "Prostitution"
+msgstr "Проституция"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:373
+msgid "No information regarding references to prostitution"
+msgstr "Нет информации относительно упоминаний о проституции"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:381
 msgid "Adultery"
 msgstr "Прелюбодеяние"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:383
+msgid "No information regarding references to adultery"
+msgstr "Нет информации относительно упоминаний о прелюбодеянии"
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:262
+#: src/gs-age-rating-context-dialog.c:391
 msgid "Sexualized Characters"
 msgstr "Сексуализированные персонажи"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:393
+msgid "No information regarding sexualized characters"
+msgstr "Нет информации о сексуализированных персонажах"
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:269
+#: src/gs-age-rating-context-dialog.c:401
 msgid "Desecration"
 msgstr "Осквернение"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:403
+msgid "No information regarding references to desecration"
+msgstr "Нет информации относительно упоминаний об осквернении"
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:276
+#: src/gs-age-rating-context-dialog.c:411
 msgid "Human Remains"
 msgstr "Человеческие останки"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:413
+msgid "No information regarding visible dead human remains"
+msgstr "Нет информации относительно видимых мертвых человеческих останков"
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:283
+#: src/gs-age-rating-context-dialog.c:421
 msgid "Slavery"
 msgstr "Рабство"
 
-#. Translators: This refers to a content rating attribute which
-#. * has an unknown value. For example, the amount of violence in
-#. * an app is ‘Unknown’.
-#: src/gs-age-rating-context-dialog.c:338
-msgid "Unknown"
-msgstr "Неизвестно"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:423
+msgid "No information regarding references to slavery"
+msgstr "Нет информации относительно упоминаний о рабстве"
+
+#: src/gs-age-rating-context-dialog.c:495
+msgid "Does not include references to drugs"
+msgstr "Не включает в себя упоминаний о наркотиках"
+
+#: src/gs-age-rating-context-dialog.c:497
+msgid ""
+"Does not include swearing, profanity, and other kinds of strong language"
+msgstr ""
+"Не включает в себя ругательства, ненормативную лексику и другие виды крепких "
+"выражений"
+
+#: src/gs-age-rating-context-dialog.c:499
+msgid "Does not include ads or monetary transactions"
+msgstr "Не включает в себя рекламу или денежные операции"
+
+#: src/gs-age-rating-context-dialog.c:501
+msgid "Does not include sex or nudity"
+msgstr "Не включает в себя секс или наготу"
+
+#: src/gs-age-rating-context-dialog.c:503
+msgid "Does not include uncontrolled chat functionality"
+msgstr "Не включает в себя функцию неконтролируемого чата"
+
+#: src/gs-age-rating-context-dialog.c:505
+msgid "Does not include violence"
+msgstr "Не включает в себя насилие"
+
+#: src/gs-age-rating-context-dialog.c:538
+msgid "Drugs"
+msgstr "Наркотики"
+
+#: src/gs-age-rating-context-dialog.c:540
+msgid "Strong Language"
+msgstr "Крепкие выражения"
+
+#: src/gs-age-rating-context-dialog.c:542
+msgid "Money"
+msgstr "Деньги"
+
+#: src/gs-age-rating-context-dialog.c:546
+msgid "Social"
+msgstr "Социальное"
+
+#: src/gs-age-rating-context-dialog.c:548
+msgid "Violence"
+msgstr "Насилие"
+
+#. Translators: This is used to join two list items together in
+#. * a compressed way of displaying a list of descriptions of age
+#. * ratings for apps. The order of the items does not matter.
+#: src/gs-age-rating-context-dialog.c:659
+#, c-format
+msgid "%s • %s"
+msgstr "%s • %s"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: src/gs-age-rating-context-dialog.c:605 lib/gs-category.c:214
+#: src/gs-age-rating-context-dialog.c:943 lib/gs-category.c:214
 msgid "All"
 msgstr "Все"
 
@@ -541,42 +725,42 @@ msgstr "Все"
 #. Translators: This is shown in a bubble if the storage
 #. * size of an application is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:618 src/gs-app-context-bar.c:194
+#: src/gs-age-rating-context-dialog.c:956 src/gs-app-context-bar.c:194
 #: src/gs-storage-context-dialog.c:87
 msgid "?"
 msgstr "?"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:684
+#: src/gs-age-rating-context-dialog.c:1022
 #, c-format
 msgid "%s is suitable for everyone"
 msgstr "%s подходит для всех"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:688
+#: src/gs-age-rating-context-dialog.c:1026
 #, c-format
 msgid "%s is suitable for toddlers"
 msgstr "%s подходит для малышей"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:692
+#: src/gs-age-rating-context-dialog.c:1030
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "%s подходит для маленьких детей"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:700
+#: src/gs-age-rating-context-dialog.c:1038
 #, c-format
 msgid "%s is suitable for teenagers"
 msgstr "%s подходит для подростков"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:704
+#: src/gs-age-rating-context-dialog.c:1042
 #, c-format
 msgid "%s is suitable for adults"
 msgstr "%s подходит для взрослых"
@@ -584,7 +768,7 @@ msgstr "%s подходит для взрослых"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:709
+#: src/gs-age-rating-context-dialog.c:1047
 #, c-format
 msgid "%s is suitable for %s"
 msgstr "%s подходит для %s"
@@ -601,7 +785,7 @@ msgstr "Возрастной рейтинг"
 msgid "How to add missing information"
 msgstr "Как добавить недостающую информацию"
 
-#: lib/gs-app.c:5712
+#: lib/gs-app.c:5715
 msgid "Local file"
 msgstr "Локальный файл"
 
@@ -610,12 +794,12 @@ msgstr "Локальный файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5728 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5804
+#: lib/gs-app.c:5807
 msgid "Package"
 msgstr "Пакет"
 
@@ -623,11 +807,11 @@ msgstr "Пакет"
 msgid "Pending"
 msgstr "Ожидают"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:327
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:340
 msgid "Pending install"
 msgstr "Ожидают установки"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:334
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:347
 msgid "Pending remove"
 msgstr "Ожидают удаления"
 
@@ -640,7 +824,7 @@ msgstr "Установлено"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:320
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:333
 msgid "Installing"
 msgstr "Устанавливается"
 
@@ -754,6 +938,19 @@ msgstr "Назад"
 #: src/gs-app-details-page.ui:47 src/gs-app-row.c:502
 msgid "Requires additional permissions"
 msgstr "Требуются дополнительные разрешения"
+
+#. Translators: Header of the section with other users' opinions about the app.
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:795
+msgid "Reviews"
+msgstr "Отзывы"
+
+#: src/gs-app-reviews-dialog.ui:25
+msgid "No reviews were found for this application."
+msgstr "Для этого приложения не найдено отзывов."
+
+#: src/gs-app-reviews-dialog.ui:27
+msgid "No Reviews"
+msgstr "Нет отзывов"
 
 #: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:473
 msgid "Version History"
@@ -1977,9 +2174,7 @@ msgstr "Требуются дополнительные пакеты"
 msgid "Find in Software"
 msgstr "Найти в приложениях"
 
-#. Translators: Button to return more application-submitted reviews.
 #: src/gs-description-box.c:67 src/gs-description-box.c:252
-#: src/gs-details-page.ui:835
 msgid "_Show More"
 msgstr "_Показать больше"
 
@@ -1987,37 +2182,37 @@ msgstr "_Показать больше"
 msgid "_Show Less"
 msgstr "_Показать меньше"
 
-#: src/gs-details-page.c:315
+#: src/gs-details-page.c:328
 msgid "Removing…"
 msgstr "Удаление…"
 
-#: src/gs-details-page.c:325
+#: src/gs-details-page.c:338
 msgid "Requires restart to finish install"
 msgstr "Для завершения установки требуется перезапуск"
 
-#: src/gs-details-page.c:332
+#: src/gs-details-page.c:345
 msgid "Requires restart to finish remove"
 msgstr "Для завершения удаления требуется перезапуск"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:349
+#: src/gs-details-page.c:362
 msgid "Pending installation…"
 msgstr "В ожидании установки…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:356
+#: src/gs-details-page.c:369
 msgid "Pending update…"
 msgstr "В ожидании обновления…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:372
+#: src/gs-details-page.c:385
 msgid "Preparing…"
 msgstr "Подготавливается…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:388
 msgid "Uninstalling…"
 msgstr "Удаляется…"
 
@@ -2025,12 +2220,12 @@ msgstr "Удаляется…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:793 src/gs-details-page.c:819
+#: src/gs-details-page.c:806 src/gs-details-page.c:832
 #: src/gs-details-page.ui:218 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "_Установить"
 
-#: src/gs-details-page.c:809
+#: src/gs-details-page.c:822
 msgid "_Restart"
 msgstr "_Перезапустить"
 
@@ -2038,12 +2233,12 @@ msgstr "_Перезапустить"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:833
+#: src/gs-details-page.c:846
 msgid "_Install…"
 msgstr "_Установить…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1372
+#: src/gs-details-page.c:1371
 msgid "You need internet access to write a review"
 msgstr "Для написания отзыва необходимо подключение к Интернету"
 
@@ -2054,7 +2249,7 @@ msgstr "Не удалось найти «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2077
+#: src/gs-details-page.c:2062
 msgid "Loading…"
 msgstr "Загружаю…"
 
@@ -2191,15 +2386,15 @@ msgstr "_Сообщить о проблеме"
 msgid "_Help"
 msgstr "_Справка"
 
-#. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:795
-msgid "Reviews"
-msgstr "Отзывы"
-
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:813
-msgid "_Write a Review"
+#: src/gs-details-page.ui:841
+msgid "_Write Review"
 msgstr "_Написать отзыв"
+
+#. Translators: Button opening a dialog showing all reviews for an app.
+#: src/gs-details-page.ui:878
+msgid "All Reviews"
+msgstr "Все отзывы"
 
 #. TRANSLATORS: status text when downloading
 #: lib/gs-external-appstream-utils.c:245
@@ -2873,7 +3068,7 @@ msgstr "Другие категории"
 msgid "No Application Data Found"
 msgstr "Файлы приложения не найдены"
 
-#: lib/gs-plugin-loader.c:2823
+#: lib/gs-plugin-loader.c:2824
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Неизвестный"
@@ -4698,17 +4893,17 @@ msgid "Downloading featured images…"
 msgstr "Загрузка изображений рекомендуемых приложений…"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:590
+#: plugins/eos-updater/gs-plugin-eos-updater.c:599
 msgid "Endless OS"
 msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:593
+#: plugins/eos-updater/gs-plugin-eos-updater.c:602
 msgid "An Endless OS update with new features and fixes."
 msgstr ""
 "Обновление Endless OS, с новыми возможностями и исправленными ошибками."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:869
+#: plugins/eos-updater/gs-plugin-eos-updater.c:876
 msgid "EOS update service could not fetch and apply the update."
 msgstr "Сервис обновлений EOS не смог получить и применить обновления."
 
@@ -4718,7 +4913,7 @@ msgid "Downloading upgrade information…"
 msgstr "Загрузка сведений об обновлениях…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:370
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:347
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4960,26 +5155,3 @@ msgstr "Поддержка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — универсальный формат пакетов для Linux"
-
-#  перевод по аналогии с ubuntu software - центр приложений ubuntu
-#~ msgid "GNOME Software"
-#~ msgstr "Центр приложений GNOME"
-
-#~ msgid "Welcome"
-#~ msgstr "Добро пожаловать"
-
-#~ msgid "Welcome to Software"
-#~ msgstr "Добро пожаловать в менеджер приложений"
-
-#~ msgid ""
-#~ "Software lets you install all the software you need, all from one place. "
-#~ "See our recommendations, browse the categories, or search for the "
-#~ "applications you want."
-#~ msgstr ""
-#~ "Менеджер приложений — это программа для централизованного управления "
-#~ "программным обеспечением. Смотрите категории и рекомендации или найдите "
-#~ "интересующие вас приложения."
-
-#  перевод по аналогии с ubuntu software - центр приложений ubuntu
-#~ msgid "_Browse Software"
-#~ msgstr "_Обзор Приложений"
