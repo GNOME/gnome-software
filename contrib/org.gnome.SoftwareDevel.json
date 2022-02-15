@@ -115,11 +115,13 @@
         {
             "name": "polkit",
             "buildsystem": "meson",
+            "config-opts": [
+                "-Djs_engine=mozjs"
+            ],
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://gitlab.freedesktop.org/polkit/polkit.git",
-                    "commit": "6ac355e7073c6b7581ea6dac291edc2e15f13d39"
+                    "url": "https://gitlab.freedesktop.org/polkit/polkit.git"
                 }
             ]
         },
