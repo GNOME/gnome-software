@@ -23,6 +23,8 @@
 
 #include "gs-star-image.h"
 
+#include <adwaita.h>
+
 struct _GsStarImage
 {
 	GtkWidget parent_instance;
@@ -159,22 +161,23 @@ gs_star_image_snapshot (GtkWidget   *widget,
 
 	if (radius > 0) {
 		GtkStyleContext *style_context;
-		GdkRGBA *star_bg = NULL;
+		GdkRGBA star_bg = { 1, 1, 1, 1 };
 		GdkRGBA star_fg;
 		gint min_x = -radius, max_x = radius;
-
-		/* TODO: read star_bg from CSS, somehow */
 
 		style_context = gtk_widget_get_style_context (widget);
 		gtk_style_context_get_color (style_context, &star_fg);
 
+		gtk_style_context_lookup_color (style_context, "card_fg_color", &star_bg);
+		if (adw_style_manager_get_high_contrast (adw_style_manager_get_default ()))
+			star_bg.alpha *= 0.4;
+		else
+			star_bg.alpha *= 0.2;
+
 		cairo_save (cr);
 		gs_star_image_outline_star (cr, allocation.x, allocation.y, radius, &min_x, &max_x);
 		cairo_clip (cr);
-		if (star_bg)
-			gdk_cairo_set_source_rgba (cr, star_bg);
-		else
-			cairo_set_source_rgb (cr, 0xde / 255.0, 0xdd / 255.0, 0xda / 255.0);
+		gdk_cairo_set_source_rgba (cr, &star_bg);
 		cairo_rectangle (cr, -radius, -radius, 2 * radius, 2 * radius);
 		cairo_fill (cr);
 
@@ -185,8 +188,6 @@ gs_star_image_snapshot (GtkWidget   *widget,
 			cairo_rectangle (cr, min_x, -radius, (max_x - min_x) * fraction, 2 * radius);
 		cairo_fill (cr);
 		cairo_restore (cr);
-
-		g_clear_pointer (&star_bg, gdk_rgba_free);
 	}
 
 	cairo_destroy (cr);

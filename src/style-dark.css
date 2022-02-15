@@ -103,3 +103,12 @@
 	background-image: linear-gradient(shade(#C2C1BE, .97) 1px, transparent 1px),
 	                  linear-gradient(90deg, shade(#C2C1BE, .97) 1px, transparent 1px);
 }
+
+star-image {
+	color: @yellow_1;
+}
+
+.review-histogram star-image {
+	/* Specificity bump */
+	color: alpha(@theme_fg_color, .4);
+}
