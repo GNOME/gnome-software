@@ -465,7 +465,7 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 		}
 		self->last_update = g_get_real_time () / G_USEC_PER_SEC;
 	}
-	success = self->repos != NULL && g_hash_table_size (self->repos) != 0;
+	success = self->repos != NULL;
 	if (success && out_repos)
 		*out_repos = g_hash_table_ref (self->repos);
 	g_mutex_unlock (&self->lock);
