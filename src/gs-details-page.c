@@ -1245,9 +1245,14 @@ static AsReview *
 get_featured_review (GPtrArray *reviews)
 {
 	AsReview *featured;
+	g_autoptr(GDateTime) now_utc = NULL;
+	g_autoptr(GDateTime) min_date = NULL;
 	gint featured_priority;
 
 	g_assert (reviews->len > 0);
+
+	now_utc = g_date_time_new_now_utc ();
+	min_date = g_date_time_add_months (now_utc, -6);
 
 	featured = g_ptr_array_index (reviews, 0);
 	featured_priority = as_review_get_priority (featured);
@@ -1255,6 +1260,10 @@ get_featured_review (GPtrArray *reviews)
 	for (gsize i = 1; i < reviews->len; i++) {
 		AsReview *new = g_ptr_array_index (reviews, i);
 		gint new_priority = as_review_get_priority (new);
+
+		/* Skip reviews older than 6 months for the featured pick */
+		if (g_date_time_compare (as_review_get_date (new), min_date) < 0)
+			continue;
 
 		if (featured_priority > new_priority ||
 		    (featured_priority == new_priority &&
