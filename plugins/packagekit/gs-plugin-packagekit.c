@@ -612,6 +612,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 			return FALSE;
 		}
 
+		g_ptr_array_add (array_package_ids, NULL);
+
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 		for (i = 0; i < gs_app_list_length (addons); i++) {
