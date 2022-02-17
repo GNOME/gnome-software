@@ -30,7 +30,7 @@
             </style>
             <child>
               <object class="GtkLabel" id="name_label">
-                <property name="wrap">True</property>
+                <property name="wrap">False</property>
                 <property name="xalign">0.0</property>
                 <property name="yalign">0.5</property>
                 <property name="ellipsize">end</property>
@@ -88,7 +88,7 @@
                     <property name="visible" bind-source="GsAppRow" bind-property="show-description" bind-flags="sync-create"/>
                     <property name="valign">start</property>
                     <property name="vexpand">True</property>
-                    <property name="wrap">True</property>
+                    <property name="wrap">False</property>
                     <property name="wrap-mode">word-char</property>
                     <property name="ellipsize">end</property>
                     <property name="lines">2</property>
@@ -157,7 +157,7 @@
                         <property name="visible">False</property>
                         <property name="label">warning-text</property>
                         <property name="halign">start</property>
-                        <property name="wrap">True</property>
+                        <property name="wrap">False</property>
                         <property name="xalign">0</property>
                         <style>
                           <class name="title"/>
@@ -181,7 +181,7 @@
                     <property name="visible">False</property>
                     <property name="xalign">0.0</property>
                     <property name="yalign">0.5</property>
-                    <property name="wrap">True</property>
+                    <property name="wrap">False</property>
                     <property name="wrap-mode">word-char</property>
                     <property name="ellipsize">end</property>
                     <property name="lines">2</property>
