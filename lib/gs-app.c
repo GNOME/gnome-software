@@ -54,8 +54,6 @@
 
 typedef struct
 {
-	GObject			 parent_instance;
-
 	GMutex			 mutex;
 	gchar			*id;
 	gchar			*unique_id;

@@ -15,8 +15,6 @@
 
 typedef struct
 {
-	GtkListBoxRow	 parent_instance;
-
 	AsReview	*review;
 	gboolean	 network_available;
 	guint64		 actions;
