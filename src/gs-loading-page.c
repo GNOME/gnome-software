@@ -15,8 +15,6 @@
 #include "gs-loading-page.h"
 
 typedef struct {
-	GsPage			 parent_instance;
-
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
 	GsShell			*shell;
