@@ -280,7 +280,7 @@ typedef gboolean (*GsAppFilterFunc) (GsApp *app);
 
 /* The elements in the returned #GPtrArray reference memory from within the
  * @apps list, so the array is only valid as long as @apps is not modified or
- * freed. */
+ * freed. The array is not NULL-terminated. */
 static GPtrArray *
 app_list_get_package_ids (GsAppList       *apps,
                           GsAppFilterFunc  app_filter,
@@ -306,9 +306,6 @@ app_list_get_package_ids (GsAppList       *apps,
 			g_ptr_array_add (list_package_ids, (gchar *) package_id);
 		}
 	}
-
-	if (list_package_ids->len > 0)
-		g_ptr_array_add (list_package_ids, NULL);
 
 	return g_steal_pointer (&list_package_ids);
 }
@@ -611,6 +608,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "no packages to install");
 			return FALSE;
 		}
+
+		/* NULL-terminate the array */
+		g_ptr_array_add (array_package_ids, NULL);
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
@@ -1671,6 +1671,9 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		package_ids = app_list_get_package_ids (details_list, NULL, FALSE);
 
 		if (package_ids->len > 0) {
+			/* NULL-terminate the array */
+			g_ptr_array_add (package_ids, NULL);
+
 			/* get any details */
 			g_mutex_lock (&self->client_mutex_refine);
 			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
@@ -1940,7 +1943,10 @@ get_details_cb (GObject      *source_object,
 
 	if (!gs_plugin_packagekit_results_valid (results, &local_error)) {
 		g_autoptr(GPtrArray) package_ids = app_list_get_package_ids (data->details_list, NULL, FALSE);
-		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
+		g_autofree gchar *package_ids_str = NULL;
+		/* NULL-terminate the array */
+		g_ptr_array_add (package_ids, NULL);
+		package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
 		g_prefix_error (&local_error, "failed to get details for %s: ",
 				package_ids_str);
 		refine_task_complete_operation_with_error (refine_task, g_steal_pointer (&local_error));
