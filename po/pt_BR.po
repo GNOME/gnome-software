@@ -12,21 +12,21 @@
 # Enrico Nicoletto <liverig@gmail.com>, 2013-2016, 2018, 2021.
 # Rafael Fontenelle <rafaelff@gnome.org>, 2013-2022.
 # Leônidas Araújo <leorusvellt@hotmail.com>, 2022.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-11 14:00+0000\n"
-"PO-Revision-Date: 2022-02-08 \n"
-"Last-Translator: Leônidas Araújo <leorusvellt@hotmail.com>\n"
+"POT-Creation-Date: 2022-02-17 10:50+0000\n"
+"PO-Revision-Date: 2022-02-17 21:14-0300\n"
+"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 3.36.0\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-Project-Style: gnome\n"
 "X-DL-Team: pt_BR\n"
 "X-DL-Module: gnome-software\n"
@@ -793,7 +793,7 @@ msgstr "%s é adequado para %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:241
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
 msgid "Age Rating"
 msgstr "Classificação por idade"
 
@@ -2240,18 +2240,18 @@ msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1377
+#: src/gs-details-page.c:1386
 msgid "You need internet access to write a review"
 msgstr "Você precisa de acesso à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1525 src/gs-details-page.c:1541
+#: src/gs-details-page.c:1534 src/gs-details-page.c:1550
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Não foi possível localizar “%s”"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2068
+#: src/gs-details-page.c:2077
 msgid "Loading…"
 msgstr "Carregando…"
 
@@ -2612,15 +2612,15 @@ msgstr "Não foi possível localizar o programa requisitado"
 msgid "Codecs page"
 msgstr "Página de codecs"
 
-#: src/gs-featured-carousel.ui:56
+#: src/gs-featured-carousel.ui:42
 msgid "Previous"
 msgstr "Anterior"
 
-#: src/gs-featured-carousel.ui:79
+#: src/gs-featured-carousel.ui:65
 msgid "Next"
 msgstr "Próxima"
 
-#: src/gs-featured-carousel.ui:96
+#: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "Lista de aplicativos em destaque"
 
@@ -5065,6 +5065,20 @@ msgstr "Atualização do controlador de armazenamento %s"
 #, c-format
 msgid "%s Network Interface Update"
 msgstr "Atualização da interface de rede %s"
+
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+msgid "%s Display Update"
+msgstr "Atualização da tela %s"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+msgid "%s BMC Update"
+msgstr "Atualização do BMC %s"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1105
 msgid "Firmware"
