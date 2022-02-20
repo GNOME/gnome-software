@@ -3605,7 +3605,7 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 
 	g_mutex_lock (&self->task_mutex_refresh);
 	pk_client_set_background (PK_CLIENT (self->task_refresh), !interactive);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_REFRESH, interactive);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
 	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age_secs);
 
 	/* refresh the metadata */
