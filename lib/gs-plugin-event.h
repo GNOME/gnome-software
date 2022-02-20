@@ -19,6 +19,8 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsPluginEvent, gs_plugin_event, GS, PLUGIN_EVENT, GObject)
 
+typedef struct _GsPluginJob GsPluginJob;
+
 /**
  * GsPluginEventFlag:
  * @GS_PLUGIN_EVENT_FLAG_NONE:		No special flags set
@@ -46,6 +48,7 @@ const gchar		*gs_plugin_event_get_unique_id	(GsPluginEvent		*event);
 GsApp			*gs_plugin_event_get_app	(GsPluginEvent		*event);
 GsApp			*gs_plugin_event_get_origin	(GsPluginEvent		*event);
 GsPluginAction		 gs_plugin_event_get_action	(GsPluginEvent		*event);
+GsPluginJob		*gs_plugin_event_get_job	(GsPluginEvent		*event);
 const GError		*gs_plugin_event_get_error	(GsPluginEvent		*event);
 
 void			 gs_plugin_event_add_flag	(GsPluginEvent		*event,
