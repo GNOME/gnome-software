@@ -980,13 +980,10 @@ gs_plugin_download_file (GsPlugin *plugin,
 {
 	g_autoptr(SoupSession) soup_session = NULL;
 	g_autoptr(GFile) output_file = NULL;
-	g_autoptr(GFileOutputStream) output_stream = NULL;
-	g_autofree gchar *last_etag = NULL;
 	g_autoptr(GAsyncResult) result = NULL;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) context_pusher = g_main_context_pusher_new (context);
 	GsPluginDownloadHelper helper;
-	g_autofree gchar *new_etag = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	helper.plugin = plugin;
@@ -994,45 +991,23 @@ gs_plugin_download_file (GsPlugin *plugin,
 
 	soup_session = gs_build_soup_session ();
 
-	/* Create the destination file’s directory. */
-	if (!gs_mkdir_parent (filename, error))
-		return FALSE;
-
-	/* Query the old ETag if the file already exists. */
-	last_etag = gs_utils_get_file_etag (output_file, cancellable);
-
-	/* Create the output file. */
-	output_stream = g_file_replace (output_file, last_etag, FALSE,
-					G_FILE_CREATE_PRIVATE | G_FILE_CREATE_REPLACE_DESTINATION,
-					cancellable, &local_error);
-
-	if (output_stream == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-				     local_error->message);
-		return FALSE;
-	}
-
 	/* Do the download. */
-	gs_download_stream_async (soup_session, uri, G_OUTPUT_STREAM (output_stream),
-				  last_etag, G_PRIORITY_LOW,
-				  download_file_progress_cb, &helper,
-				  cancellable, async_result_cb, &result);
+	output_file = g_file_new_for_path (filename);
+	gs_download_file_async (soup_session, uri, output_file,
+				G_PRIORITY_LOW,
+				download_file_progress_cb, &helper,
+				cancellable, async_result_cb, &result);
 
 	while (result == NULL)
 		g_main_context_iteration (context, TRUE);
 
-	if (!gs_download_stream_finish (soup_session, result, &new_etag, &local_error)) {
+	if (!gs_download_file_finish (soup_session, result, &local_error)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     local_error->message);
 		return FALSE;
 	}
-
-	/* Update the ETag. */
-	gs_utils_set_file_etag (output_file, new_etag, cancellable);
 
 	return TRUE;
 }
