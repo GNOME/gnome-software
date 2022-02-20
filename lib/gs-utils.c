@@ -1544,6 +1544,7 @@ gs_utils_get_file_etag (const gchar *filename,
 	g_autoptr(GFileInfo) info = NULL;
 
 	g_return_val_if_fail (filename != NULL, NULL);
+	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
 
 	file = g_file_new_for_path (filename);
 	info = g_file_query_info (file, METADATA_ETAG_ATTRIBUTE, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
@@ -1578,6 +1579,7 @@ gs_utils_set_file_etag (const gchar *filename,
 	g_autoptr(GFile) file = NULL;
 
 	g_return_val_if_fail (filename != NULL, FALSE);
+	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
 
 	file = g_file_new_for_path (filename);
 
