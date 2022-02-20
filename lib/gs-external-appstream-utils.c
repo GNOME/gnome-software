@@ -32,11 +32,11 @@ gs_external_appstream_utils_get_system_dir (void)
 
 static gboolean
 gs_external_appstream_check (const gchar *appstream_path,
-                             guint        cache_age)
+                             guint64      cache_age_secs)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (appstream_path);
 	guint appstream_file_age = gs_utils_get_file_age (file);
-	return appstream_file_age >= cache_age;
+	return appstream_file_age >= cache_age_secs;
 }
 
 static gboolean
@@ -90,7 +90,7 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
                                    const gchar   *url,
                                    const gchar   *basename,
                                    SoupSession   *soup_session,
-                                   guint          cache_age,
+                                   guint64        cache_age_secs,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
@@ -111,7 +111,7 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 
 	/* check age */
 	target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
-	if (!gs_external_appstream_check (target_file_path, cache_age)) {
+	if (!gs_external_appstream_check (target_file_path, cache_age_secs)) {
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",
 			 target_file_path);
@@ -217,7 +217,7 @@ static gboolean
 gs_external_appstream_refresh_user (GsPlugin      *plugin,
                                     const gchar   *url,
                                     const gchar   *basename,
-                                    guint          cache_age,
+                                    guint64        cache_age_secs,
                                     GCancellable  *cancellable,
                                     GError       **error)
 {
@@ -234,7 +234,7 @@ gs_external_appstream_refresh_user (GsPlugin      *plugin,
 				     NULL);
 	file = g_file_new_for_path (fullpath);
 	file_age = gs_utils_get_file_age (file);
-	if (file_age < cache_age) {
+	if (file_age < cache_age_secs) {
 		g_debug ("skipping %s: cache age is older than file", fullpath);
 		return TRUE;
 	}
@@ -252,7 +252,7 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GSettings     *settings,
                                    const gchar   *url,
                                    SoupSession   *soup_session,
-                                   guint          cache_age,
+                                   guint64        cache_age_secs,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
@@ -272,19 +272,19 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
 		return gs_external_appstream_refresh_sys (plugin, url,
 							  basename,
 							  soup_session,
-							  cache_age,
+							  cache_age_secs,
 							  cancellable,
 							  error);
 	}
 	return gs_external_appstream_refresh_user (plugin, url, basename,
-						   cache_age,
+						   cache_age_secs,
 						   cancellable, error);
 }
 
 /**
  * gs_external_appstream_refresh:
  * @plugin: the #GsPlugin calling this refresh operation
- * @cache_age: as passed to gs_plugin_refresh()
+ * @cache_age_secs: as passed to gs_plugin_refresh()
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError
  *
@@ -296,7 +296,7 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
  */
 gboolean
 gs_external_appstream_refresh (GsPlugin      *plugin,
-                               guint          cache_age,
+                               guint64        cache_age_secs,
                                GCancellable  *cancellable,
                                GError       **error)
 {
@@ -320,7 +320,7 @@ gs_external_appstream_refresh (GsPlugin      *plugin,
 							settings,
 							appstream_urls[i],
 							soup_session,
-							cache_age,
+							cache_age_secs,
 							cancellable,
 							&error_local)) {
 			g_warning ("Failed to update external appstream file: %s",
