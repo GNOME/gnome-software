@@ -54,7 +54,6 @@ typedef struct
 	GMutex			 cache_mutex;
 	GModule			*module;
 	GsPluginFlags		 flags;
-	SoupSession		*soup_session;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
@@ -222,8 +221,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->appstream_id);
 	g_free (priv->language);
-	if (priv->soup_session != NULL)
-		g_object_unref (priv->soup_session);
 	if (priv->network_monitor != NULL)
 		g_object_unref (priv->network_monitor);
 	g_hash_table_unref (priv->cache);
@@ -520,22 +517,6 @@ gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->language);
 	priv->language = g_strdup (language);
-}
-
-/**
- * gs_plugin_set_soup_session:
- * @plugin: a #GsPlugin
- * @soup_session: a #SoupSession
- *
- * Sets the soup session that this plugin will use when downloading.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_set_object (&priv->soup_session, soup_session);
 }
 
 /**

@@ -12,7 +12,6 @@
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
-#include <libsoup/soup.h>
 
 #include "gs-app.h"
 #include "gs-app-list.h"
@@ -159,8 +158,6 @@ void		 gs_plugin_remove_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
-void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
-							 SoupSession	*soup_session);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);
