@@ -44,7 +44,6 @@ struct _GsPluginLoader
 	GPtrArray		*locations;
 	gchar			*language;
 	gboolean		 plugin_dir_dirty;
-	SoupSession		*soup_session;
 	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
 	AsPool			*as_pool;
@@ -1931,7 +1930,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_signal_connect (plugin, "ask-untrusted",
 			  G_CALLBACK (gs_plugin_loader_ask_untrusted_cb),
 			  plugin_loader);
-	gs_plugin_set_soup_session (plugin, plugin_loader->soup_session);
 	gs_plugin_set_language (plugin, plugin_loader->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
 	gs_plugin_set_network_monitor (plugin, plugin_loader->network_monitor);
@@ -2646,7 +2644,6 @@ gs_plugin_loader_dispose (GObject *object)
 		plugin_loader->queued_ops_pool = NULL;
 	}
 	g_clear_object (&plugin_loader->network_monitor);
-	g_clear_object (&plugin_loader->soup_session);
 	g_clear_object (&plugin_loader->settings);
 	g_clear_pointer (&plugin_loader->pending_apps, g_ptr_array_unref);
 	g_clear_object (&plugin_loader->category_manager);
@@ -2808,9 +2805,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     g_free,
 							     (GDestroyNotify) g_object_unref);
 
-	/* share a soup session (also disable the double-compression) */
-	plugin_loader->soup_session = gs_build_soup_session ();
-
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
 
@@ -2827,6 +2821,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		if (review_server != NULL && *review_server != '\0') {
 			const gchar *distro = NULL;
 			g_autoptr(GsOsRelease) os_release = NULL;
+			g_autoptr(SoupSession) odrs_soup_session = NULL;
 
 			/* get the distro name (e.g. 'Fedora') but allow a fallback */
 			os_release = gs_os_release_new (&local_error);
@@ -2842,12 +2837,13 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 			if (distro == NULL)
 				distro = C_("Distribution name", "Unknown");
 
+			odrs_soup_session = gs_build_soup_session ();
 			plugin_loader->odrs_provider = gs_odrs_provider_new (review_server,
 									     user_hash,
 									     distro,
 									     odrs_review_max_cache_age_secs,
 									     odrs_review_n_results_max,
-									     plugin_loader->soup_session);
+									     odrs_soup_session);
 		}
 	}
 
