@@ -365,7 +365,7 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
           allows the plugin to download new metadata or payload files from remote
           servers.
           The <code>gs_utils_get_file_age()</code> utility helper can help you
-          work out the cache age of file, or the plugin can handle it some other
+          work out the cache age of a file, or the plugin can handle it some other
           way.
         </para>
         <para>
@@ -385,18 +385,8 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
           in the details panel without having to wait for the download to complete.
           In a similar way, the fwupd plugin downloads the tiny LVFS metadata with
           <code>refresh_metadata_async()</code> and then downloads the large firmware
-          files themselves when <code>gs_plugin_download_app()</code> or
+          files themselves when <code>gs_plugin_download()</code> or
           <code>gs_plugin_download_app()</code> is called.
-        </para>
-        <para>
-          If the <code>app</code> parameter is set for
-          <code>gs_plugin_download_file()</code> then the progress of the download
-          is automatically proxied to the UI elements associated with the
-          application, for instance the install button would show a progress bar
-          in the various different places in the UI.
-          For a refresh there's no relevant GsApp to use, so we'll leave it
-          <code>NULL</code> which means something is happening globally which the
-          UI can handle how it wants, for instance showing a loading page at startup.
         </para>
         <para>
           Note, if the downloading fails it's okay to return <code>FALSE</code>;
@@ -411,6 +401,9 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
         <example>
           <title>Refresh example</title>
           <programlisting>
+static void progress_cb (gsize bytes_downloaded,
+                         gsize total_download_size,
+                         gpointer user_data);
 static void download_file_cb (GObject *source_object,
                               GAsyncResult *result,
                               gpointer user_data);
@@ -426,23 +419,36 @@ gs_plugin_example_refresh_metadata_async (GsPlugin *plugin,
   const gchar *metadata_url = "https://www.example.com/new.xml";
   g_autoptr(GFile) file = g_file_new_for_path (metadata_filename);
   g_autoptr(GTask) task = NULL;
+  g_autoptr(SoupSession) soup_session = NULL;
 
   task = g_task_new (plugin, cancellable, callback, user_data);
   g_task_set_source_tag (task, gs_plugin_example_refresh_metadata_async);
 
+  soup_session = gs_build_soup_session ();
+
   /* is the metadata missing or too old? */
   if (gs_utils_get_file_age (file) &gt; cache_age_secs) {
-    gs_plugin_download_file_async (plugin,
-                                   NULL,
-                                   metadata_url,
-                                   metadata_filename,
-                                   cancellable,
-                                   download_file_cb,
-                                   g_steal_pointer (&amp;task));
+    gs_download_file_async (soup_session,
+                            metadata_url,
+                            file,
+                            G_PRIORITY_LOW,
+                            progress_cb,
+                            plugin,
+                            cancellable,
+                            download_file_cb,
+                            g_steal_pointer (&amp;task));
     return;
   }
 
   g_task_return_boolean (task, TRUE);
+}
+
+static void
+progress_cb (gsize bytes_downloaded,
+             gsize total_download_size,
+             gpointer user_data)
+{
+  g_debug ("Downloaded %zu of %zu bytes", bytes_downloaded, total_download_size);
 }
 
 static void
@@ -453,7 +459,7 @@ download_file_cb (GObject *source_object,
   GsPlugin *plugin = GS_PLUGIN (source_object);
   g_autoptr(GTask) task = g_steal_pointer (&amp;user_data);
 
-  if (!gs_plugin_download_file_finish (plugin, result, &amp;local_error)) {
+  if (!gs_download_file_finish (result, &amp;local_error)) {
     g_task_return_error (task, g_steal_pointer (&amp;local_error));
   } else {
     g_debug ("successfully downloaded new metadata");
