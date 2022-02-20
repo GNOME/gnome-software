@@ -264,7 +264,7 @@ gs_context_dialog_row_new_text (const gchar                  *content,
 			     "content", content,
 			     "importance", importance,
 			     "title", title,
-			     "description", description,
+			     "subtitle", description,
 			     NULL);
 }
 
