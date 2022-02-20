@@ -273,7 +273,6 @@ setup_features_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginFwupd *self = g_task_get_source_object (task);
 	GsPlugin *plugin = GS_PLUGIN (self);
-	g_autoptr(SoupSession) soup_session = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	if (!fwupd_client_set_feature_flags_finish (self->client, result, &local_error))
@@ -288,11 +287,6 @@ setup_features_cb (GObject      *source_object,
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
-	g_object_get (self->client, "soup-session", &soup_session, NULL);
-
-	/* use for gnome-software downloads */
-	if (soup_session != NULL)
-		gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* add source */
 	self->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
