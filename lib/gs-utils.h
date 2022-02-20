@@ -134,9 +134,9 @@ guint64		 gs_utils_get_file_size		(const gchar		*filename,
 						 GsFileSizeIncludeFunc	 include_func,
 						 gpointer		 user_data,
 						 GCancellable		*cancellable);
-gchar *		 gs_utils_get_file_etag		(const gchar		*filename,
+gchar *		 gs_utils_get_file_etag		(GFile			*file,
 						 GCancellable		*cancellable);
-gboolean	 gs_utils_set_file_etag		(const gchar		*filename,
+gboolean	 gs_utils_set_file_etag		(GFile			*file,
 						 const gchar		*etag,
 						 GCancellable		*cancellable);
 
