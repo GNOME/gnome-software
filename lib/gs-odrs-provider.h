@@ -31,7 +31,7 @@ GsOdrsProvider	*gs_odrs_provider_new			(const gchar		 *review_server,
 
 gboolean	 gs_odrs_provider_refresh		(GsOdrsProvider		 *self,
 							 GsPlugin		 *plugin,
-							 guint			  cache_age,
+							 guint64		  cache_age_secs,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 
