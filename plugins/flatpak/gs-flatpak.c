@@ -4136,3 +4136,12 @@ gs_flatpak_get_busy (GsFlatpak *self)
 	g_return_val_if_fail (GS_IS_FLATPAK (self), FALSE);
 	return g_atomic_int_get (&self->busy) > 0;
 }
+
+void
+gs_flatpak_set_interactive (GsFlatpak *self,
+			    gboolean interactive)
+{
+	g_return_if_fail (GS_IS_FLATPAK (self));
+
+	flatpak_installation_set_no_interaction (self->installation, !interactive);
+}

@@ -140,5 +140,7 @@ gboolean	gs_flatpak_url_to_app		(GsFlatpak		*self,
 void		gs_flatpak_set_busy		(GsFlatpak		*self,
 						 gboolean		 busy);
 gboolean	gs_flatpak_get_busy		(GsFlatpak		*self);
+void		gs_flatpak_set_interactive	(GsFlatpak		*self,
+						 gboolean		 interactive);
 
 G_END_DECLS
