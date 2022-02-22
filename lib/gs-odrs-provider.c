@@ -41,6 +41,8 @@
 #include <math.h>
 #include <string.h>
 
+G_DEFINE_QUARK (gs-odrs-provider-error-quark, gs_odrs_provider_error)
+
 /* Element in self->ratings, all allocated in one big block and sorted
  * alphabetically to reduce the number of allocations and fragmentation. */
 typedef struct {
@@ -121,29 +123,33 @@ gs_odrs_provider_load_ratings (GsOdrsProvider  *self,
 	JsonObjectIter iter;
 	g_autoptr(GArray) new_ratings = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new_immutable ();
 #if JSON_CHECK_VERSION(1, 6, 0)
-	if (!json_parser_load_from_mapped_file (json_parser, filename, error)) {
+	if (!json_parser_load_from_mapped_file (json_parser, filename, &local_error)) {
 #else
-	if (!json_parser_load_from_file (json_parser, filename, error)) {
+	if (!json_parser_load_from_file (json_parser, filename, &local_error)) {
 #endif
-		gs_utils_error_convert_json_glib (error);
+		g_set_error (error,
+			     GS_ODRS_PROVIDER_ERROR,
+			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+			     "Error parsing ODRS data: %s", local_error->message);
 		return FALSE;
 	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no ratings root");
 		return FALSE;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no ratings array");
 		return FALSE;
 	}
@@ -261,40 +267,44 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GHashTable) reviewer_ids = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* nothing */
 	if (data == NULL) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NO_NETWORK,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
 					     "server couldn't be reached");
 		else
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 					     "server returned no data");
 		return NULL;
 	}
 
 	/* parse the data and find the array or ratings */
 	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
-		gs_utils_error_convert_json_glib (error);
+	if (!json_parser_load_from_data (json_parser, data, data_len, &local_error)) {
+		g_set_error (error,
+			     GS_ODRS_PROVIDER_ERROR,
+			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+			     "Error parsing ODRS data: %s", local_error->message);
 		return NULL;
 	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no root");
 		return NULL;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_ARRAY) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no array");
 		return NULL;
 	}
@@ -313,16 +323,16 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 		json_review = json_array_get_element (json_reviews, i);
 		if (json_node_get_node_type (json_review) != JSON_NODE_OBJECT) {
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 					     "no object type");
 			return NULL;
 		}
 		json_item = json_node_get_object (json_review);
 		if (json_item == NULL) {
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 					     "no object");
 			return NULL;
 		}
@@ -354,48 +364,52 @@ gs_odrs_provider_parse_success (const gchar  *data,
 	JsonObject *json_item;
 	const gchar *msg = NULL;
 	g_autoptr(JsonParser) json_parser = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* nothing */
 	if (data == NULL) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NO_NETWORK,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
 					     "server couldn't be reached");
 		else
 			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 					     "server returned no data");
 		return FALSE;
 	}
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
-		gs_utils_error_convert_json_glib (error);
+	if (!json_parser_load_from_data (json_parser, data, data_len, &local_error)) {
+		g_set_error (error,
+			     GS_ODRS_PROVIDER_ERROR,
+			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+			     "Error parsing ODRS data: %s", local_error->message);
 		return FALSE;
 	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no error root");
 		return FALSE;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no error object");
 		return FALSE;
 	}
 	json_item = json_node_get_object (json_root);
 	if (json_item == NULL) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     "no error object");
 		return FALSE;
 	}
@@ -405,8 +419,8 @@ gs_odrs_provider_parse_success (const gchar  *data,
 		msg = json_object_get_string_member (json_item, "msg");
 	if (!json_object_get_boolean_member (json_item, "success")) {
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 				     msg != NULL ? msg : "unknown failure");
 		return FALSE;
 	}
@@ -528,8 +542,8 @@ gs_odrs_provider_json_post (SoupSession  *session,
 		g_warning ("Failed to set rating on ODRS: %s",
 			   soup_status_get_phrase (status_code));
 		g_set_error (error,
-                             GS_PLUGIN_ERROR,
-                             GS_PLUGIN_ERROR_FAILED,
+                             GS_ODRS_PROVIDER_ERROR,
+                             GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
                              "Failed to submit review to ODRS: %s", soup_status_get_phrase (status_code));
 		return FALSE;
 	}
@@ -790,8 +804,8 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 			return NULL;
 		/* not sure what to do here */
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
 				     "status code invalid");
 		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return NULL;
@@ -1358,7 +1372,7 @@ gs_odrs_provider_refine (GsOdrsProvider       *self,
 		GsApp *app = gs_app_list_index (list, i);
 		g_autoptr(GError) local_error = NULL;
 		if (!refine_app (self, app, flags, cancellable, &local_error)) {
-			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
+			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR, GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
 				g_debug ("failed to refine app %s: %s",
 					 gs_app_get_unique_id (app), local_error->message);
 			} else {
@@ -1642,8 +1656,8 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 			return FALSE;
 		/* not sure what to do here */
 		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     GS_ODRS_PROVIDER_ERROR,
+				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
 				     "status code invalid");
 		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;

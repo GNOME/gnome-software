@@ -18,6 +18,27 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsOdrsProviderError:
+ * @GS_ODRS_PROVIDER_ERROR_DOWNLOADING: Error while downloading ODRS data.
+ * @GS_ODRS_PROVIDER_ERROR_PARSING_DATA: Problem parsing downloaded ODRS data.
+ * @GS_ODRS_PROVIDER_ERROR_NO_NETWORK: Offline or network unavailable.
+ * @GS_ODRS_PROVIDER_ERROR_SERVER_ERROR: Server rejected ODRS submission or returned an error.
+ *
+ * Error codes for #GsOdrsProvider.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
+	GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+	GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
+	GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+} GsOdrsProviderError;
+
+#define GS_ODRS_PROVIDER_ERROR gs_odrs_provider_error_quark ()
+GQuark		 gs_odrs_provider_error_quark		(void);
+
 #define GS_TYPE_ODRS_PROVIDER (gs_odrs_provider_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsOdrsProvider, gs_odrs_provider, GS, ODRS_PROVIDER, GObject)

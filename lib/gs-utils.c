@@ -977,38 +977,6 @@ gs_utils_error_convert_gdk_pixbuf (GError **perror)
 }
 
 /**
- * gs_utils_error_convert_json_glib:
- * @perror: a pointer to a #GError, or %NULL
- *
- * Converts the #JsonParserError to an error with a GsPluginError domain.
- *
- * Returns: %TRUE if the error was converted, or already correct
- **/
-gboolean
-gs_utils_error_convert_json_glib (GError **perror)
-{
-	GError *error = perror != NULL ? *perror : NULL;
-
-	/* not set */
-	if (error == NULL)
-		return FALSE;
-	if (error->domain == GS_PLUGIN_ERROR)
-		return TRUE;
-	if (error->domain != JSON_PARSER_ERROR)
-		return FALSE;
-	switch (error->code) {
-	case JSON_PARSER_ERROR_UNKNOWN:
-		error->code = GS_PLUGIN_ERROR_FAILED;
-		break;
-	default:
-		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
-		break;
-	}
-	error->domain = GS_PLUGIN_ERROR;
-	return TRUE;
-}
-
-/**
  * gs_utils_error_convert_appstream:
  * @perror: a pointer to a #GError, or %NULL
  *
