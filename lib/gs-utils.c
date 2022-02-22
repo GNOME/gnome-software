@@ -76,9 +76,9 @@ gs_mkdir_parent (const gchar *path, GError **error)
  *
  * Gets a file age.
  *
- * Returns: The time in seconds since the file was modified, or %G_MAXUINT for error
+ * Returns: The time in seconds since the file was modified, or %G_MAXUINT64 for error
  */
-guint
+guint64
 gs_utils_get_file_age (GFile *file)
 {
 	guint64 now;
@@ -91,13 +91,13 @@ gs_utils_get_file_age (GFile *file)
 				  NULL,
 				  NULL);
 	if (info == NULL)
-		return G_MAXUINT;
+		return G_MAXUINT64;
 	mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 	now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
 	if (mtime > now)
-		return G_MAXUINT;
-	if (now - mtime > G_MAXUINT)
-		return G_MAXUINT;
+		return G_MAXUINT64;
+	if (now - mtime > G_MAXUINT64)
+		return G_MAXUINT64;
 	return (guint) (now - mtime);
 }
 
@@ -110,7 +110,7 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
 	for (i = 0; i < array->len; i++) {
 		const gchar *fn = g_ptr_array_index (array, i);
 		g_autoptr(GFile) file = g_file_new_for_path (fn);
-		guint age_tmp = gs_utils_get_file_age (file);
+		guint64 age_tmp = gs_utils_get_file_age (file);
 		if (age_tmp < age_lowest) {
 			age_lowest = age_tmp;
 			filename_best = fn;
