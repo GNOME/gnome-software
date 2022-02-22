@@ -71,7 +71,6 @@ struct _GsOdrsProvider
 	gchar		*review_server;  /* (not nullable) (owned) */
 	GArray		*ratings;  /* (element-type GsOdrsRating) (mutex ratings_mutex) (owned) (nullable) */
 	GMutex		 ratings_mutex;
-	GsApp		*cached_origin;
 	guint64		 max_cache_age_secs;
 	guint		 n_results_max;
 	SoupSession	*session;  /* (owned) (not nullable) */
@@ -807,7 +806,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 				     GS_ODRS_PROVIDER_ERROR,
 				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
 				     "status code invalid");
-		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return NULL;
 	}
 	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, error);
@@ -1019,11 +1017,6 @@ static void
 gs_odrs_provider_init (GsOdrsProvider *self)
 {
 	g_mutex_init (&self->ratings_mutex);
-
-	/* add source */
-	self->cached_origin = gs_app_new ("odrs");
-	gs_app_set_kind (self->cached_origin, AS_COMPONENT_KIND_REPOSITORY);
-	gs_app_set_origin_hostname (self->cached_origin, self->review_server);
 }
 
 static void
@@ -1122,7 +1115,6 @@ gs_odrs_provider_dispose (GObject *object)
 {
 	GsOdrsProvider *self = GS_ODRS_PROVIDER (object);
 
-	g_clear_object (&self->cached_origin);
 	g_clear_object (&self->session);
 
 	G_OBJECT_CLASS (gs_odrs_provider_parent_class)->dispose (object);
@@ -1712,7 +1704,6 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 				     GS_ODRS_PROVIDER_ERROR,
 				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
 				     "status code invalid");
-		gs_utils_error_add_origin_id (error, self->cached_origin);
 		return FALSE;
 	}
 	g_debug ("odrs returned: %.*s", (gint) downloaded_data_length, (const gchar *) downloaded_data);
