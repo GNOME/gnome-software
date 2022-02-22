@@ -49,7 +49,7 @@ gboolean	gs_flatpak_add_updates		(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refresh		(GsFlatpak		*self,
-						 guint			 cache_age,
+						 guint64		 cache_age_secs,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,

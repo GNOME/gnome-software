@@ -289,7 +289,7 @@ main (int argc, char **argv)
 	gboolean show_results = FALSE;
 	gboolean verbose = FALSE;
 	gint i;
-	guint cache_age = 0;
+	guint64 cache_age_secs = 0;
 	gint repeat = 1;
 	g_auto(GStrv) plugin_blocklist = NULL;
 	g_auto(GStrv) plugin_allowlist = NULL;
@@ -310,7 +310,7 @@ main (int argc, char **argv)
 		  "Set any refine flags required for the action", NULL },
 		{ "repeat", '\0', 0, G_OPTION_ARG_INT, &repeat,
 		  "Repeat the action this number of times", NULL },
-		{ "cache-age", '\0', 0, G_OPTION_ARG_INT, &cache_age,
+		{ "cache-age", '\0', 0, G_OPTION_ARG_INT64, &cache_age_secs,
 		  "Use this maximum cache age in seconds", NULL },
 		{ "max-results", '\0', 0, G_OPTION_ARG_INT, &self->max_results,
 		  "Return a maximum number of results", NULL },
@@ -589,14 +589,14 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "recent") == 0) {
-		if (cache_age == 0)
-			cache_age = 60 * 60 * 24 * 60;
+		if (cache_age_secs == 0)
+			cache_age_secs = 60 * 60 * 24 * 60;
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-							 "age", (guint64) cache_age,
+							 "age", cache_age_secs,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
 							 NULL);
@@ -663,7 +663,7 @@ main (int argc, char **argv)
 	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", (guint64) cache_age,
+						 "age", cache_age_secs,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);

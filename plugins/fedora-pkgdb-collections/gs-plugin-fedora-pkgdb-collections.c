@@ -403,9 +403,8 @@ _is_valid_upgrade (GsPluginFedoraPkgdbCollections *self,
 }
 
 static gboolean
-_ensure_cache (GsPluginFedoraPkgdbCollections  *self,
-               GCancellable                    *cancellable,
-               GError                         **error)
+load_json (GsPluginFedoraPkgdbCollections  *self,
+           GError                         **error)
 {
 	JsonArray *collections;
 	JsonObject *root;
@@ -414,15 +413,6 @@ _ensure_cache (GsPluginFedoraPkgdbCollections  *self,
 	g_autofree gchar *data = NULL;
 #endif  /* json-glib < 1.6.0 */
 	g_autoptr(JsonParser) parser = NULL;
-
-	/* already done */
-	if (self->is_valid)
-		return TRUE;
-
-	/* just ensure there is any data, no matter how old */
-	/* FIXME: This can download from the network, so needs to be made async */
-	if (!_refresh_cache (self, G_MAXUINT, cancellable, error))
-		return FALSE;
 
 #if JSON_CHECK_VERSION(1, 6, 0)
 	parser = json_parser_new_immutable ();
@@ -513,6 +503,23 @@ _ensure_cache (GsPluginFedoraPkgdbCollections  *self,
 	/* success */
 	self->is_valid = TRUE;
 	return TRUE;
+}
+
+static gboolean
+_ensure_cache (GsPluginFedoraPkgdbCollections  *self,
+               GCancellable                    *cancellable,
+               GError                         **error)
+{
+	/* already done */
+	if (self->is_valid)
+		return TRUE;
+
+	/* just ensure there is any data, no matter how old */
+	/* FIXME: This can download from the network, so needs to be made async */
+	if (!_refresh_cache (self, G_MAXUINT, cancellable, error))
+		return FALSE;
+
+	return load_json (self, error);
 }
 
 static PkgdbItem *

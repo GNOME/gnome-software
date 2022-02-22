@@ -1184,8 +1184,10 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 }
 
 static gboolean
-gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
-			      GCancellable *cancellable, GError **error)
+gs_flatpak_refresh_appstream (GsFlatpak     *self,
+                              guint64        cache_age_secs,
+                              GCancellable  *cancellable,
+                              GError       **error)
 {
 	gboolean ret;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -1226,7 +1228,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		/* is the timestamp new enough */
 		file_timestamp = flatpak_remote_get_appstream_timestamp (xremote, NULL);
 		tmp = gs_utils_get_file_age (file_timestamp);
-		if (tmp < cache_age) {
+		if (tmp < cache_age_secs) {
 			g_autofree gchar *fn = g_file_get_path (file_timestamp);
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 fn, tmp);
@@ -1893,7 +1895,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 
 gboolean
 gs_flatpak_refresh (GsFlatpak *self,
-		    guint cache_age,
+		    guint64 cache_age_secs,
 		    GCancellable *cancellable,
 		    GError **error)
 {
@@ -1922,7 +1924,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
 	/* update AppStream metadata */
-	if (!gs_flatpak_refresh_appstream (self, cache_age, cancellable, error))
+	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, cancellable, error))
 		return FALSE;
 
 	/* ensure valid */

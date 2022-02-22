@@ -1163,11 +1163,14 @@ gs_plugin_download_file (GsPlugin *plugin,
 	gsize downloaded_data_length = 0;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+	g_autoptr(GFile) file = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
 	g_return_val_if_fail (uri != NULL, FALSE);
 	g_return_val_if_fail (filename != NULL, FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	file = g_file_new_for_path (filename);
 
 	/* local */
 	if (g_str_has_prefix (uri, "file://")) {
@@ -1204,7 +1207,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 		return FALSE;
 	}
 	if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
-		g_autofree gchar *last_etag = gs_utils_get_file_etag (filename, cancellable);
+		g_autofree gchar *last_etag = gs_utils_get_file_etag (file, cancellable);
 		if (last_etag != NULL && *last_etag != '\0') {
 #if SOUP_CHECK_VERSION(3, 0, 0)
 			soup_message_headers_append (soup_message_get_request_headers (msg), "If-None-Match", last_etag);
@@ -1274,7 +1277,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 #endif
 	if (new_etag != NULL && *new_etag == '\0')
 		new_etag = NULL;
-	gs_utils_set_file_etag (filename, new_etag, cancellable);
+	gs_utils_set_file_etag (file, new_etag, cancellable);
 	return TRUE;
 }
 

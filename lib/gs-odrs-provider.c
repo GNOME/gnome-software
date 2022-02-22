@@ -1258,7 +1258,7 @@ gs_odrs_provider_new (const gchar *review_server,
  * gs_odrs_provider_refresh:
  * @self: a #GsOdrsProvider
  * @plugin: the #GsPlugin running this operation
- * @cache_age: cache age, in seconds, as passed to gs_plugin_refresh()
+ * @cache_age_secs: cache age, in seconds, as passed to gs_plugin_refresh()
  * @cancellable: (nullable): a #GCancellable, or %NULL
  * @error: return location for a #GError
  *
@@ -1270,7 +1270,7 @@ gs_odrs_provider_new (const gchar *review_server,
 gboolean
 gs_odrs_provider_refresh (GsOdrsProvider  *self,
                           GsPlugin        *plugin,
-                          guint            cache_age,
+                          guint64          cache_age_secs,
                           GCancellable    *cancellable,
                           GError         **error)
 {
@@ -1287,12 +1287,12 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 						      error);
 	if (cache_filename == NULL)
 		return FALSE;
-	if (cache_age > 0) {
+	if (cache_age_secs > 0) {
 		guint tmp;
 		g_autoptr(GFile) file = NULL;
 		file = g_file_new_for_path (cache_filename);
 		tmp = gs_utils_get_file_age (file);
-		if (tmp < cache_age) {
+		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 cache_filename, tmp);
 			return gs_odrs_provider_load_ratings (self, cache_filename, error);
