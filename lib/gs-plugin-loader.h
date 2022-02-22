@@ -116,4 +116,6 @@ gboolean	 gs_plugin_loader_app_is_valid		(GsApp *app,
 void		 gs_plugin_loader_run_adopt		(GsPluginLoader *plugin_loader,
 							 GsAppList *list);
 
+void		 gs_plugin_loader_hint_job_finished	(GsPluginLoader *plugin_loader);
+
 G_END_DECLS

@@ -3407,9 +3407,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper);
 
-	/* if the plugin used updates-changed actually schedule it now */
-	if (plugin_loader->updates_changed_cnt > 0)
-		gs_plugin_loader_updates_changed (plugin_loader);
+	/* Hint that the job has finished. */
+	gs_plugin_loader_hint_job_finished (plugin_loader);
 
 #ifdef HAVE_SYSPROF
 	if (plugin_loader->sysprof_writer != NULL) {
@@ -3576,9 +3575,8 @@ run_job_cb (GObject      *source_object,
 	}
 #endif  /* HAVE_SYSPROF */
 
-	/* if the plugin used updates-changed actually schedule it now */
-	if (plugin_loader->updates_changed_cnt > 0)
-		gs_plugin_loader_updates_changed (plugin_loader);
+	/* Hint that the job has finished. */
+	gs_plugin_loader_hint_job_finished (plugin_loader);
 
 	/* FIXME: This will eventually go away when
 	 * gs_plugin_loader_job_process_finish() is removed. */
@@ -4135,4 +4133,26 @@ gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader)
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 
 	return plugin_loader->category_manager;
+}
+
+/**
+ * gs_plugin_loader_hint_job_finished:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Hint to the @plugin_loader that the set of changes caused by the current
+ * #GsPluginJob is likely to be finished.
+ *
+ * The @plugin_loader may emit queued-up signals as a result.
+ *
+ * Since: 42
+ */
+void
+gs_plugin_loader_hint_job_finished (GsPluginLoader *plugin_loader)
+{
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+
+	/* if the plugin used updates-changed during its job, actually schedule
+	 * the signal emission now */
+	if (plugin_loader->updates_changed_cnt > 0)
+		gs_plugin_loader_updates_changed (plugin_loader);
 }
