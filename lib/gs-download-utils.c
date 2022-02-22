@@ -539,3 +539,192 @@ gs_download_stream_finish (SoupSession   *soup_session,
 
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
+
+typedef struct {
+	/* Input data. */
+	gchar *uri;  /* (not nullable) (owned) */
+	GFile *output_file;  /* (not nullable) (owned) */
+	int io_priority;
+	GsDownloadProgressCallback progress_callback;
+	gpointer progress_user_data;
+
+	/* In-progress data. */
+	gchar *last_etag;  /* (nullable) (owned) */
+} DownloadFileData;
+
+static void
+download_file_data_free (DownloadFileData *data)
+{
+	g_free (data->uri);
+	g_clear_object (&data->output_file);
+	g_free (data->last_etag);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DownloadFileData, download_file_data_free)
+
+static void download_replace_file_cb (GObject      *source_object,
+                                      GAsyncResult *result,
+                                      gpointer      user_data);
+static void download_file_cb (GObject      *source_object,
+                              GAsyncResult *result,
+                              gpointer      user_data);
+
+/**
+ * gs_download_file_async:
+ * @soup_session: a #SoupSession
+ * @uri: (not nullable): the URI to download
+ * @output_file: (not nullable): an output file to write the download to
+ * @io_priority: I/O priority to download and write at
+ * @progress_callback: (nullable): callback to call with progress information
+ * @progress_user_data: (nullable) (closure progress_callback): data to pass
+ *   to @progress_callback
+ * @cancellable: (nullable): a #GCancellable, or %NULL
+ * @callback: callback to call once the operation is complete
+ * @user_data: (closure callback): data to pass to @callback
+ *
+ * Download @uri and write it to @output_file asynchronously, overwriting the
+ * existing content of @output_file.
+ *
+ * The ETag of @output_file will be queried and, if known, used to skip the
+ * download if @output_file is already up to date.
+ *
+ * If specified, @progress_callback will be called zero or more times until
+ * @callback is called, providing progress updates on the download.
+ *
+ * Since: 42
+ */
+void
+gs_download_file_async (SoupSession                *soup_session,
+                        const gchar                *uri,
+                        GFile                      *output_file,
+                        int                         io_priority,
+                        GsDownloadProgressCallback  progress_callback,
+                        gpointer                    progress_user_data,
+                        GCancellable               *cancellable,
+                        GAsyncReadyCallback         callback,
+                        gpointer                    user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	DownloadFileData *data;
+	g_autoptr(DownloadFileData) data_owned = NULL;
+	g_autoptr(GFile) output_file_parent = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	g_return_if_fail (SOUP_IS_SESSION (soup_session));
+	g_return_if_fail (uri != NULL);
+	g_return_if_fail (G_IS_FILE (output_file));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	task = g_task_new (soup_session, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_download_file_async);
+
+	data = data_owned = g_new0 (DownloadFileData, 1);
+	data->uri = g_strdup (uri);
+	data->output_file = g_object_ref (output_file);
+	data->io_priority = io_priority;
+	data->progress_callback = progress_callback;
+	data->progress_user_data = progress_user_data;
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) download_file_data_free);
+
+	/* Create the destination file’s directory.
+	 * FIXME: This should be made async; it hasn’t done for now as it’s
+	 * likely to be fast. */
+	output_file_parent = g_file_get_parent (output_file);
+
+	if (output_file_parent != NULL &&
+	    !g_file_make_directory_with_parents (output_file_parent, cancellable, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_clear_error (&local_error);
+
+	/* Query the old ETag if the file already exists. */
+	data->last_etag = gs_utils_get_file_etag (output_file, cancellable);
+
+	/* Create the output file. */
+	g_file_replace_async (output_file,
+			      data->last_etag,
+			      FALSE,  /* make_backup */
+			      G_FILE_CREATE_PRIVATE | G_FILE_CREATE_REPLACE_DESTINATION,
+			      io_priority,
+			      cancellable,
+			      download_replace_file_cb,
+			      g_steal_pointer (&task));
+}
+
+static void
+download_replace_file_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data)
+{
+	GFile *output_file = G_FILE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	SoupSession *soup_session = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	DownloadFileData *data = g_task_get_task_data (task);
+	g_autoptr(GFileOutputStream) output_stream = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	output_stream = g_file_replace_finish (output_file, result, &local_error);
+
+	if (output_stream == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Do the download. */
+	gs_download_stream_async (soup_session, data->uri, G_OUTPUT_STREAM (output_stream),
+				  data->last_etag, data->io_priority,
+				  data->progress_callback, data->progress_user_data,
+				  cancellable, download_file_cb, g_steal_pointer (&task));
+}
+
+static void
+download_file_cb (GObject      *source_object,
+                  GAsyncResult *result,
+                  gpointer      user_data)
+{
+	SoupSession *soup_session = SOUP_SESSION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	DownloadFileData *data = g_task_get_task_data (task);
+	g_autofree gchar *new_etag = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_download_stream_finish (soup_session, result, &new_etag, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Update the ETag. */
+	gs_utils_set_file_etag (data->output_file, new_etag, cancellable);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+/**
+ * gs_download_file_finish:
+ * @soup_session: a #SoupSession
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError
+ *
+ * Finish an asynchronous download operation started with
+ * gs_download_file_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 42
+ */
+gboolean
+gs_download_file_finish (SoupSession   *soup_session,
+                         GAsyncResult  *result,
+                         GError       **error)
+{
+	g_return_val_if_fail (g_task_is_valid (result, soup_session), FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_download_file_async, FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
+}

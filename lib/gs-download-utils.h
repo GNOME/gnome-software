@@ -55,4 +55,17 @@ gboolean	gs_download_stream_finish	(SoupSession   *soup_session,
 						 gchar        **new_etag_out,
 						 GError       **error);
 
+void		gs_download_file_async		(SoupSession                *soup_session,
+						 const gchar                *uri,
+						 GFile                      *output_file,
+						 int                         io_priority,
+						 GsDownloadProgressCallback  progress_callback,
+						 gpointer                    progress_user_data,
+						 GCancellable               *cancellable,
+						 GAsyncReadyCallback         callback,
+						 gpointer                    user_data);
+gboolean	gs_download_file_finish		(SoupSession   *soup_session,
+						 GAsyncResult  *result,
+						 GError       **error);
+
 G_END_DECLS
