@@ -1288,12 +1288,12 @@ gs_odrs_provider_refresh (GsOdrsProvider  *self,
 	if (cache_filename == NULL)
 		return FALSE;
 	if (cache_age_secs > 0) {
-		guint tmp;
+		guint64 tmp;
 		g_autoptr(GFile) file = NULL;
 		file = g_file_new_for_path (cache_filename);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age_secs) {
-			g_debug ("%s is only %u seconds old, so ignoring refresh",
+			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old, so ignoring refresh",
 				 cache_filename, tmp);
 			return gs_odrs_provider_load_ratings (self, cache_filename, error);
 		}

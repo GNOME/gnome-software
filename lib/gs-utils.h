@@ -35,7 +35,7 @@ typedef enum {
 	GS_UTILS_CACHE_FLAG_LAST  /*< skip >*/
 } GsUtilsCacheFlags;
 
-guint		 gs_utils_get_file_age		(GFile		*file);
+guint64		 gs_utils_get_file_age		(GFile		*file);
 gchar		*gs_utils_get_content_type	(GFile		*file,
 						 GCancellable	*cancellable,
 						 GError		**error);

@@ -234,9 +234,9 @@ _refresh_cache (GsPluginFedoraPkgdbCollections *self,
 	/* check cache age */
 	if (cache_age > 0) {
 		g_autoptr(GFile) file = g_file_new_for_path (self->cachefn);
-		guint tmp = gs_utils_get_file_age (file);
+		guint64 tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
-			g_debug ("%s is only %u seconds old",
+			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old",
 				 self->cachefn, tmp);
 			return TRUE;
 		}

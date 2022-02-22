@@ -35,7 +35,7 @@ gs_external_appstream_check (const gchar *appstream_path,
                              guint64      cache_age_secs)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (appstream_path);
-	guint appstream_file_age = gs_utils_get_file_age (file);
+	guint64 appstream_file_age = gs_utils_get_file_age (file);
 	return appstream_file_age >= cache_age_secs;
 }
 
@@ -221,7 +221,7 @@ gs_external_appstream_refresh_user (GsPlugin      *plugin,
                                     GCancellable  *cancellable,
                                     GError       **error)
 {
-	guint file_age;
+	guint64 file_age;
 	g_autofree gchar *fullpath = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
