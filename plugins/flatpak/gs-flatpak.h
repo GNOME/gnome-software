@@ -27,9 +27,14 @@ typedef enum {
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
 						 FlatpakInstallation	*installation,
 						 GsFlatpakFlags		 flags);
-FlatpakInstallation *gs_flatpak_get_installation (GsFlatpak		*self);
+FlatpakInstallation *gs_flatpak_get_installation (GsFlatpak		*self,
+						  gboolean		 interactive);
 
-GsApp	*gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref, GCancellable *cancellable, GError **error);
+GsApp		*gs_flatpak_ref_to_app		(GsFlatpak		*self,
+						 const gchar		*ref,
+						 gboolean		 interactive,
+						 GCancellable		*cancellable,
+						 GError			**error);
 
 AsComponentScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
@@ -38,103 +43,125 @@ gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GError			**error);
 gboolean	gs_flatpak_add_installed	(GsFlatpak		*self,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_sources		(GsFlatpak		*self,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_updates		(GsFlatpak		*self,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refresh		(GsFlatpak		*self,
 						 guint64		 cache_age_secs,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsPluginRefineFlags	flags,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 void		gs_flatpak_refine_addons	(GsFlatpak *self,
 						 GsApp *parent_app,
 						 GsPluginRefineFlags flags,
 						 GsAppState state,
+						 gboolean interactive,
 						 GCancellable *cancellable);
 gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
 						 GsApp			*app,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsAppList		*list,
 						 GsPluginRefineFlags	 flags,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GsApp			*app,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_app_remove_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 gboolean		 is_remove,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_app_install_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 gboolean		 is_install,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_file_to_app_ref	(GsFlatpak		*self,
 						 GFile			*file,
 						 gboolean		 unrefined,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_file_to_app_bundle	(GsFlatpak		*self,
 						 GFile			*file,
 						 gboolean		 unrefined,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 GsApp		*gs_flatpak_find_source_by_url	(GsFlatpak		*self,
 						 const gchar		*name,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_search		(GsFlatpak		*self,
 						 const gchar * const	*values,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_categories	(GsFlatpak		*self,
 						 GPtrArray		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_category_apps	(GsFlatpak		*self,
 						 GsCategory		*category,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_popular		(GsFlatpak		*self,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_alternates	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsAppList		*list,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 guint64		 age,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_url_to_app		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 const gchar		*url,
+						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
 void		gs_flatpak_set_busy		(GsFlatpak		*self,
