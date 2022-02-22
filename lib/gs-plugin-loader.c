@@ -83,6 +83,13 @@ struct _GsPluginLoader
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 static void add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
 static void gs_plugin_loader_process_in_thread_pool_cb (gpointer data, gpointer user_data);
+static void gs_plugin_loader_status_changed_cb (GsPlugin       *plugin,
+                                                GsApp          *app,
+                                                GsPluginStatus  status,
+                                                GsPluginLoader *plugin_loader);
+static void async_result_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data);
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
@@ -863,6 +870,32 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 	gs_app_list_truncate (list, max_results);
 }
 
+typedef struct {
+	GsPluginLoader *plugin_loader;  /* (not nullable) (unowned) */
+	GsApp *app;  /* (not nullable) (unowned) */
+} OdrsRefreshProgressData;
+
+static void
+odrs_refresh_progress_cb (gsize    bytes_downloaded,
+                          gsize    total_download_size,
+                          gpointer user_data)
+{
+	OdrsRefreshProgressData *data = user_data;
+	guint percentage;
+
+	if (total_download_size > 0)
+		percentage = (guint) ((100 * bytes_downloaded) / total_download_size);
+	else
+		percentage = 0;
+
+	g_debug ("%s progress: %u%%", gs_app_get_id (data->app), percentage);
+	gs_app_set_progress (data->app, percentage);
+
+	gs_plugin_loader_status_changed_cb (NULL, data->app,
+					    GS_PLUGIN_STATUS_DOWNLOADING,
+					    data->plugin_loader);
+}
+
 static gboolean
 gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GCancellable *cancellable,
@@ -906,17 +939,59 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 
 	if (action == GS_PLUGIN_ACTION_REFRESH &&
 	    plugin_loader->odrs_provider != NULL) {
-		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; the
-		 * GsOdrsProvider needs access to a GsPlugin to access global
-		 * state for gs_plugin_download_file(), but it doesn’t really
-		 * matter which plugin it’s accessed through. In lieu of
-		 * refactoring gs_plugin_download_file(), use the first plugin
-		 * in the list for now. */
-		if (!gs_odrs_provider_refresh (plugin_loader->odrs_provider,
-					       plugin_loader->plugins->pdata[0],
-					       gs_plugin_job_get_age (helper->plugin_job),
-					       cancellable, error))
+		g_autoptr(GsApp) app_dl = NULL;
+		OdrsRefreshProgressData progress_data;
+		g_autoptr(GAsyncResult) odrs_result = NULL;
+		g_autoptr(GError) local_error = NULL;
+
+		app_dl = gs_app_new ("odrs");
+		gs_app_set_summary_missing (app_dl,
+					    /* TRANSLATORS: status text when downloading */
+					    _("Downloading application ratings…"));
+
+		progress_data.plugin_loader = plugin_loader;
+		progress_data.app = app_dl;
+
+		gs_odrs_provider_refresh_ratings_async (plugin_loader->odrs_provider,
+							gs_plugin_job_get_age (helper->plugin_job),
+							odrs_refresh_progress_cb,
+							&progress_data,
+							cancellable,
+							async_result_cb,
+							&odrs_result);
+
+		/* FIXME: Make this sync until the enclosing function is
+		 * refactored to be async. */
+		while (odrs_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!gs_odrs_provider_refresh_ratings_finish (plugin_loader->odrs_provider,
+							      odrs_result,
+							      &local_error)) {
+			/* Don’t fail updates if the ratings server is unavailable */
+			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_DOWNLOADING) ||
+			    g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     "action", GS_PLUGIN_ACTION_DOWNLOAD,
+							     NULL);
+
+				if (gs_plugin_job_get_interactive (helper->plugin_job))
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				else
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_loader_add_event (plugin_loader, event);
+
+				return TRUE;
+			}
+
+			g_propagate_error (error, g_steal_pointer (&local_error));
+
 			return FALSE;
+		}
 	}
 
 #ifdef HAVE_SYSPROF

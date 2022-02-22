@@ -1268,77 +1268,130 @@ gs_odrs_provider_new (const gchar *review_server,
 			     NULL);
 }
 
+static void download_ratings_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
 /**
- * gs_odrs_provider_refresh:
+ * gs_odrs_provider_refresh_ratings_async:
  * @self: a #GsOdrsProvider
- * @plugin: the #GsPlugin running this operation
  * @cache_age_secs: cache age, in seconds, as passed to gs_plugin_refresh()
+ * @progress_callback: (nullable): callback to call with progress information
+ * @progress_user_data: (nullable) (closure progress_callback): data to pass
+ *   to @progress_callback
  * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
+ * @callback: function to call when the asynchronous operation is complete
+ * @user_data: data to pass to @callback
  *
- * Refresh the cached ODRS ratings and re-load them.
+ * Refresh the cached ODRS ratings and re-load them asynchronously.
  *
- * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
+ * Since: 42
  */
-gboolean
-gs_odrs_provider_refresh (GsOdrsProvider  *self,
-                          GsPlugin        *plugin,
-                          guint64          cache_age_secs,
-                          GCancellable    *cancellable,
-                          GError         **error)
+void
+gs_odrs_provider_refresh_ratings_async (GsOdrsProvider             *self,
+                                        guint64                     cache_age_secs,
+                                        GsDownloadProgressCallback  progress_callback,
+                                        gpointer                    progress_user_data,
+                                        GCancellable               *cancellable,
+                                        GAsyncReadyCallback         callback,
+                                        gpointer                    user_data)
 {
 	g_autofree gchar *cache_filename = NULL;
+	g_autoptr(GFile) cache_file = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GsApp) app_dl = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_odrs_provider_refresh_ratings_async);
 
 	/* check cache age */
 	cache_filename = gs_utils_get_cache_filename ("odrs",
 						      "ratings.json",
 						      GS_UTILS_CACHE_FLAG_WRITEABLE |
 						      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-						      error);
-	if (cache_filename == NULL)
-		return FALSE;
+						      &error_local);
+	if (cache_filename == NULL) {
+		g_task_return_error (task, g_steal_pointer (&error_local));
+		return;
+	}
+
+	cache_file = g_file_new_for_path (cache_filename);
+	g_task_set_task_data (task, g_object_ref (cache_file), g_object_unref);
+
 	if (cache_age_secs > 0) {
 		guint64 tmp;
-		g_autoptr(GFile) file = NULL;
-		file = g_file_new_for_path (cache_filename);
-		tmp = gs_utils_get_file_age (file);
+
+		tmp = gs_utils_get_file_age (cache_file);
 		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old, so ignoring refresh",
 				 cache_filename, tmp);
-			return gs_odrs_provider_load_ratings (self, cache_filename, error);
+			if (!gs_odrs_provider_load_ratings (self, cache_filename, &error_local))
+				g_task_return_error (task, g_steal_pointer (&error_local));
+			else
+				g_task_return_boolean (task, TRUE);
+			return;
 		}
 	}
-
-	app_dl = gs_app_new ("odrs");
 
 	/* download the complete file */
 	uri = g_strdup_printf ("%s/ratings", self->review_server);
 	g_debug ("Updating ODRS cache from %s to %s", uri, cache_filename);
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading application ratings…"));
-	if (!gs_plugin_download_file (plugin, app_dl, uri, cache_filename, cancellable, &error_local)) {
-		g_autoptr(GsPluginEvent) event = NULL;
 
-		event = gs_plugin_event_new ("error", error_local,
-					     "action", GS_PLUGIN_ACTION_DOWNLOAD,
-					     "origin", self->cached_origin,
-					     NULL);
+	gs_download_file_async (self->session, uri, cache_file, G_PRIORITY_LOW,
+				progress_callback, progress_user_data,
+				cancellable, download_ratings_cb, g_steal_pointer (&task));
+}
 
-		if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
-		else
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-		gs_plugin_report_event (plugin, event);
+static void
+download_ratings_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	SoupSession *soup_session = SOUP_SESSION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsOdrsProvider *self = g_task_get_source_object (task);
+	GFile *cache_file = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
 
-		/* don't fail updates if the ratings server is unavailable */
-		return TRUE;
+	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+		g_task_return_new_error (task, GS_ODRS_PROVIDER_ERROR,
+					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
+					 "%s", local_error->message);
+		return;
 	}
-	return gs_odrs_provider_load_ratings (self, cache_filename, error);
+
+	if (!gs_odrs_provider_load_ratings (self, g_file_peek_path (cache_file), &local_error))
+		g_task_return_new_error (task, GS_ODRS_PROVIDER_ERROR,
+					 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+					 "%s", local_error->message);
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+/**
+ * gs_odrs_provider_refresh_ratings_finish:
+ * @self: a #GsOdrsProvider
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous refresh operation started with
+ * gs_odrs_provider_refresh_ratings_async().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 42
+ */
+gboolean
+gs_odrs_provider_refresh_ratings_finish (GsOdrsProvider  *self,
+                                         GAsyncResult    *result,
+                                         GError         **error)
+{
+	g_return_val_if_fail (GS_IS_ODRS_PROVIDER (self), FALSE);
+	g_return_val_if_fail (g_task_is_valid (result, self), FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_odrs_provider_refresh_ratings_async, FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /**

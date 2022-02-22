@@ -14,7 +14,9 @@
 #include <glib-object.h>
 #include <libsoup/soup.h>
 
-#include <gs-plugin.h>
+#include "gs-app-list.h"
+#include "gs-download-utils.h"
+#include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
 
@@ -50,10 +52,15 @@ GsOdrsProvider	*gs_odrs_provider_new			(const gchar		 *review_server,
 							 guint			  n_results_max,
 							 SoupSession		 *session);
 
-gboolean	 gs_odrs_provider_refresh		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
+void		 gs_odrs_provider_refresh_ratings_async	(GsOdrsProvider		 *self,
 							 guint64		  cache_age_secs,
+							 GsDownloadProgressCallback progress_callback,
+							 gpointer		  progress_user_data,
 							 GCancellable		 *cancellable,
+							 GAsyncReadyCallback	  callback,
+							 gpointer		  user_data);
+gboolean	 gs_odrs_provider_refresh_ratings_finish(GsOdrsProvider		 *self,
+							 GAsyncResult		 *result,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_refine		(GsOdrsProvider		 *self,
