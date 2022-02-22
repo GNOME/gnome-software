@@ -41,7 +41,6 @@ struct _GsUpdatesSection
 	GsPage			*page;
 	GsPluginLoader		*plugin_loader;
 	GtkSizeGroup		*sizegroup_name;
-	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
 	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
@@ -146,7 +145,6 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_name,
-				    self->sizegroup_desc,
 				    self->sizegroup_button_label,
 				    self->sizegroup_button_image);
 	g_signal_connect_object (app, "notify::state",
@@ -562,7 +560,6 @@ gs_updates_section_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->page);
 	g_clear_object (&self->sizegroup_name);
-	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
 	g_clear_object (&self->sizegroup_button_image);
 	g_clear_object (&self->sizegroup_header);
@@ -624,7 +621,6 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 void
 gs_updates_section_set_size_groups (GsUpdatesSection *self,
 				    GtkSizeGroup *name,
-				    GtkSizeGroup *desc,
 				    GtkSizeGroup *button_label,
 				    GtkSizeGroup *button_image,
 				    GtkSizeGroup *header)
@@ -632,7 +628,6 @@ gs_updates_section_set_size_groups (GsUpdatesSection *self,
 	g_return_if_fail (GS_IS_UPDATES_SECTION (self));
 
 	g_set_object (&self->sizegroup_name, name);
-	g_set_object (&self->sizegroup_desc, desc);
 	g_set_object (&self->sizegroup_button_label, button_label);
 	g_set_object (&self->sizegroup_button_image, button_image);
 	g_set_object (&self->sizegroup_header, header);
