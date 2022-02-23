@@ -819,65 +819,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	return g_steal_pointer (&reviews);
 }
 
-static gboolean
-refine_app (GsOdrsProvider             *self,
-            GsApp                      *app,
-            GsOdrsProviderRefineFlags   flags,
-            GCancellable               *cancellable,
-            GError                    **error)
-{
-	/* not valid */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
-		return TRUE;
-	if (gs_app_get_id (app) == NULL)
-		return TRUE;
-
-	/* add reviews if possible */
-	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) {
-		AsReview *review;
-		g_autoptr(GPtrArray) reviews = NULL;
-
-		if (gs_app_get_reviews (app)->len > 0)
-			return TRUE;
-
-		/* get from server */
-		reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
-		if (reviews == NULL)
-			return FALSE;
-		for (guint i = 0; i < reviews->len; i++) {
-			review = g_ptr_array_index (reviews, i);
-
-			/* save this on the application object so we can use it for
-			 * submitting a new review */
-			if (i == 0) {
-				gs_app_set_metadata (app, "ODRS::user_skey",
-						     as_review_get_metadata_item (review, "user_skey"));
-			}
-
-			/* ignore invalid reviews */
-			if (as_review_get_rating (review) == 0)
-				continue;
-
-			/* the user_hash matches, so mark this as our own review */
-			if (g_strcmp0 (as_review_get_reviewer_id (review),
-				       self->user_hash) == 0) {
-				as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
-			}
-			gs_app_add_review (app, review);
-		}
-	}
-
-	/* add ratings if possible */
-	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) {
-		if (gs_app_get_review_ratings (app) != NULL)
-			return TRUE;
-		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, error))
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
 static gchar *
 gs_odrs_provider_trim_version (const gchar *version)
 {
@@ -1373,6 +1314,12 @@ gs_odrs_provider_refresh_ratings_finish (GsOdrsProvider  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static gboolean refine_app (GsOdrsProvider             *self,
+                            GsApp                      *app,
+                            GsOdrsProviderRefineFlags   flags,
+                            GCancellable               *cancellable,
+                            GError                    **error);
+
 /**
  * gs_odrs_provider_refine:
  * @self: a #GsOdrsProvider
@@ -1411,6 +1358,65 @@ gs_odrs_provider_refine (GsOdrsProvider             *self,
 				return FALSE;
 			}
 		}
+	}
+
+	return TRUE;
+}
+
+static gboolean
+refine_app (GsOdrsProvider             *self,
+            GsApp                      *app,
+            GsOdrsProviderRefineFlags   flags,
+            GCancellable               *cancellable,
+            GError                    **error)
+{
+	/* not valid */
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
+		return TRUE;
+	if (gs_app_get_id (app) == NULL)
+		return TRUE;
+
+	/* add reviews if possible */
+	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) {
+		AsReview *review;
+		g_autoptr(GPtrArray) reviews = NULL;
+
+		if (gs_app_get_reviews (app)->len > 0)
+			return TRUE;
+
+		/* get from server */
+		reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
+		if (reviews == NULL)
+			return FALSE;
+		for (guint i = 0; i < reviews->len; i++) {
+			review = g_ptr_array_index (reviews, i);
+
+			/* save this on the application object so we can use it for
+			 * submitting a new review */
+			if (i == 0) {
+				gs_app_set_metadata (app, "ODRS::user_skey",
+						     as_review_get_metadata_item (review, "user_skey"));
+			}
+
+			/* ignore invalid reviews */
+			if (as_review_get_rating (review) == 0)
+				continue;
+
+			/* the user_hash matches, so mark this as our own review */
+			if (g_strcmp0 (as_review_get_reviewer_id (review),
+				       self->user_hash) == 0) {
+				as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
+			}
+			gs_app_add_review (app, review);
+		}
+	}
+
+	/* add ratings if possible */
+	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) {
+		if (gs_app_get_review_ratings (app) != NULL)
+			return TRUE;
+		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, error))
+			return FALSE;
 	}
 
 	return TRUE;
