@@ -434,7 +434,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
-	g_task_set_name (task, G_STRFUNC);
+	g_task_set_source_tag (task, gs_plugin_job_refine_run_async);
 
 	/* Operate on a copy of the input list so we don’t modify it when
 	 * resolving wildcards. */
