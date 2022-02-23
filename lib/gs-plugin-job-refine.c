@@ -358,74 +358,6 @@ app_thaw_notify_idle (gpointer data)
 	return G_SOURCE_REMOVE;
 }
 
-static gboolean
-run_refine (GsPluginJobRefine  *self,
-            GsPluginLoader     *plugin_loader,
-            GsAppList          *list,
-            GCancellable       *cancellable,
-            GError            **error)
-{
-	gboolean ret;
-	g_autoptr(GsAppList) freeze_list = NULL;
-
-	/* nothing to do */
-	if (self->flags == 0) {
-		g_debug ("no refine flags set for transaction");
-		return TRUE;
-	}
-	if (gs_app_list_length (list) == 0)
-		return TRUE;
-
-	/* freeze all apps */
-	freeze_list = gs_app_list_copy (list);
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
-		g_object_freeze_notify (G_OBJECT (app));
-	}
-
-	/* first pass */
-	ret = run_refine_internal (self, plugin_loader, list, self->flags, cancellable, error);
-	if (!ret)
-		goto out;
-
-	/* remove any addons that have the same source as the parent app */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
-		GsApp *app = gs_app_list_index (list, i);
-		GsAppList *addons = gs_app_get_addons (app);
-
-		/* find any apps with the same source */
-		const gchar *pkgname_parent = gs_app_get_source_default (app);
-		if (pkgname_parent == NULL)
-			continue;
-		for (guint j = 0; j < gs_app_list_length (addons); j++) {
-			GsApp *addon = gs_app_list_index (addons, j);
-			if (g_strcmp0 (gs_app_get_source_default (addon),
-				       pkgname_parent) == 0) {
-				g_debug ("%s has the same pkgname of %s as %s",
-					 gs_app_get_unique_id (app),
-					 pkgname_parent,
-					 gs_app_get_unique_id (addon));
-				g_ptr_array_add (to_remove, addon);
-			}
-		}
-
-		/* remove any addons with the same source */
-		for (guint j = 0; j < to_remove->len; j++) {
-			GsApp *addon = g_ptr_array_index (to_remove, j);
-			gs_app_remove_addon (app, addon);
-		}
-	}
-
-out:
-	/* now emit all the changed signals */
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
-		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
-	}
-	return ret;
-}
-
 static void
 gs_plugin_job_refine_run_async (GsPluginJob         *job,
                                 GsPluginLoader      *plugin_loader,
@@ -438,6 +370,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	g_autoptr(GError) local_error = NULL;
 	g_autofree gchar *job_debug = NULL;
 	g_autoptr(GsAppList) result_list = NULL;
+	g_autoptr(GsAppList) freeze_list = NULL;
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
@@ -447,13 +380,67 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	 * resolving wildcards. */
 	result_list = gs_app_list_copy (self->app_list);
 
-	/* run refine() on each one if required */
-	if (!run_refine (self, plugin_loader, result_list, cancellable, &local_error)) {
+	/* nothing to do */
+	if (self->flags == 0) {
+		g_debug ("no refine flags set for transaction");
+		goto results;
+	}
+	if (gs_app_list_length (result_list) == 0)
+		goto results;
+
+	/* freeze all apps */
+	freeze_list = gs_app_list_copy (result_list);
+	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
+		GsApp *app = gs_app_list_index (freeze_list, i);
+		g_object_freeze_notify (G_OBJECT (app));
+	}
+
+	/* first pass */
+	if (run_refine_internal (self, plugin_loader, result_list, self->flags, cancellable, &local_error)) {
+		/* remove any addons that have the same source as the parent app */
+		for (guint i = 0; i < gs_app_list_length (result_list); i++) {
+			g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
+			GsApp *app = gs_app_list_index (result_list, i);
+			GsAppList *addons = gs_app_get_addons (app);
+
+			/* find any apps with the same source */
+			const gchar *pkgname_parent = gs_app_get_source_default (app);
+			if (pkgname_parent == NULL)
+				continue;
+			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+				GsApp *addon = gs_app_list_index (addons, j);
+				if (g_strcmp0 (gs_app_get_source_default (addon),
+					       pkgname_parent) == 0) {
+					g_debug ("%s has the same pkgname of %s as %s",
+						 gs_app_get_unique_id (app),
+						 pkgname_parent,
+						 gs_app_get_unique_id (addon));
+					g_ptr_array_add (to_remove, addon);
+				}
+			}
+
+			/* remove any addons with the same source */
+			for (guint j = 0; j < to_remove->len; j++) {
+				GsApp *addon = g_ptr_array_index (to_remove, j);
+				gs_app_remove_addon (app, addon);
+			}
+		}
+	}
+
+	/* now emit all the changed signals */
+	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
+		GsApp *app = gs_app_list_index (freeze_list, i);
+		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
+	}
+
+	/* Delayed error handling. */
+	if (local_error != NULL) {
 		gs_utils_error_convert_gio (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
+results:
 	/* Internal calls to #GsPluginJobRefine may want to do their own
 	 * filtering, typically if the refine is being done as part of another
 	 * plugin job. If so, only filter to remove wildcards. Wildcards should
