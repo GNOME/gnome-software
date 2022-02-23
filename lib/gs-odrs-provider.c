@@ -820,43 +820,6 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 }
 
 static gboolean
-gs_odrs_provider_refine_reviews (GsOdrsProvider  *self,
-                                 GsApp           *app,
-                                 GCancellable    *cancellable,
-                                 GError         **error)
-{
-	AsReview *review;
-	g_autoptr(GPtrArray) reviews = NULL;
-
-	/* get from server */
-	reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
-	if (reviews == NULL)
-		return FALSE;
-	for (guint i = 0; i < reviews->len; i++) {
-		review = g_ptr_array_index (reviews, i);
-
-		/* save this on the application object so we can use it for
-		 * submitting a new review */
-		if (i == 0) {
-			gs_app_set_metadata (app, "ODRS::user_skey",
-					     as_review_get_metadata_item (review, "user_skey"));
-		}
-
-		/* ignore invalid reviews */
-		if (as_review_get_rating (review) == 0)
-			continue;
-
-		/* the user_hash matches, so mark this as our own review */
-		if (g_strcmp0 (as_review_get_reviewer_id (review),
-			       self->user_hash) == 0) {
-			as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
-		}
-		gs_app_add_review (app, review);
-	}
-	return TRUE;
-}
-
-static gboolean
 refine_app (GsOdrsProvider       *self,
             GsApp                *app,
             GsPluginRefineFlags   flags,
@@ -871,11 +834,37 @@ refine_app (GsOdrsProvider       *self,
 
 	/* add reviews if possible */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
-		if (gs_app_get_reviews(app)->len > 0)
+		AsReview *review;
+		g_autoptr(GPtrArray) reviews = NULL;
+
+		if (gs_app_get_reviews (app)->len > 0)
 			return TRUE;
-		if (!gs_odrs_provider_refine_reviews (self, app,
-						      cancellable, error))
+
+		/* get from server */
+		reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
+		if (reviews == NULL)
 			return FALSE;
+		for (guint i = 0; i < reviews->len; i++) {
+			review = g_ptr_array_index (reviews, i);
+
+			/* save this on the application object so we can use it for
+			 * submitting a new review */
+			if (i == 0) {
+				gs_app_set_metadata (app, "ODRS::user_skey",
+						     as_review_get_metadata_item (review, "user_skey"));
+			}
+
+			/* ignore invalid reviews */
+			if (as_review_get_rating (review) == 0)
+				continue;
+
+			/* the user_hash matches, so mark this as our own review */
+			if (g_strcmp0 (as_review_get_reviewer_id (review),
+				       self->user_hash) == 0) {
+				as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
+			}
+			gs_app_add_review (app, review);
+		}
 	}
 
 	/* add ratings if possible */
