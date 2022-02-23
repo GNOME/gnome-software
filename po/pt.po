@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-17 10:50+0000\n"
-"PO-Revision-Date: 2022-02-17 21:50+0000\n"
+"POT-Creation-Date: 2022-02-23 10:35+0000\n"
+"PO-Revision-Date: 2022-02-23 11:19+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -798,13 +798,13 @@ msgstr "%s é adequado para %s"
 msgid "Age Rating"
 msgstr "Classificação Etária"
 
-#: src/gs-age-rating-context-dialog.ui:79
-#: src/gs-hardware-support-context-dialog.ui:79
-#: src/gs-safety-context-dialog.ui:229
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Como adicionar informação em falta"
 
-#: lib/gs-app.c:5715
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -813,12 +813,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5807
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Pacote"
 
@@ -991,7 +991,7 @@ msgstr "Sem detalhes para este lançamento"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1080,8 +1080,8 @@ msgid "Show version number"
 msgstr "Mostrar número da versão"
 
 #: src/gs-application.c:312
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "Direitos de autor © 2016-2021 Colaboradores do Software GNOME"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "Direitos de autor © 2016-2022 Colaboradores do GNOME Software"
 
 #: src/gs-application.c:315
 msgid "translator-credits"
@@ -1479,7 +1479,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Traduções"
 
-#: src/gs-app-translation-dialog.ui:97
+#: src/gs-app-translation-dialog.ui:96
 msgid "_Translation Website"
 msgstr "Website de tradução"
 
@@ -2027,7 +2027,7 @@ msgstr "Ativar e instalar"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gestor de pacotes:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Detalhes"
 
@@ -2894,7 +2894,7 @@ msgid "_Get Involved"
 msgstr "_Participe"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:60 src/gs-loading-page.c:64
 msgid "Software catalog is being downloaded"
 msgstr "O catálogo de software está a ser transferido"
 
@@ -3409,19 +3409,19 @@ msgid "out of 5 stars"
 msgstr "de 5 estrelas"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Pode denunciar análises por comportamento abusivo, rude ou discriminatório."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3432,13 +3432,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Denunciar Análise?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Denunciar"
 
@@ -3700,20 +3700,20 @@ msgstr "%s é inseguro"
 msgid "Safety"
 msgstr "Segurança"
 
-#: src/gs-safety-context-dialog.ui:109
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Licença"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:149
+#: src/gs-safety-context-dialog.ui:148
 msgid "Source"
 msgstr "Fonte"
 
-#: src/gs-safety-context-dialog.ui:189
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:213
+#: src/gs-safety-context-dialog.ui:212
 msgid "Outdated SDK version"
 msgstr "Versão SDK desatualizada"
 
@@ -4382,7 +4382,7 @@ msgid "Storage"
 msgstr "Armazenamento"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:80
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4924,7 +4924,7 @@ msgstr ""
 msgid "Getting flatpak metadata for %s…"
 msgstr "A obter metadados flatpak para %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3205
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Falha ao refinar o complemento ‘%s’: %s"
@@ -5137,7 +5137,7 @@ msgstr ""
 "atualizações de software serão desativadas até que as atualizações não "
 "assinadas sejam removidas ou atualizadas."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:433
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Pacotes"
 
