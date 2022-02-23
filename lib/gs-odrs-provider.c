@@ -1377,12 +1377,10 @@ refine_app (GsOdrsProvider             *self,
 		return TRUE;
 
 	/* add reviews if possible */
-	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) {
+	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) &&
+	    gs_app_get_reviews (app)->len == 0) {
 		AsReview *review;
 		g_autoptr(GPtrArray) reviews = NULL;
-
-		if (gs_app_get_reviews (app)->len > 0)
-			return TRUE;
 
 		/* get from server */
 		reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
@@ -1412,9 +1410,8 @@ refine_app (GsOdrsProvider             *self,
 	}
 
 	/* add ratings if possible */
-	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) {
-		if (gs_app_get_review_ratings (app) != NULL)
-			return TRUE;
+	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) &&
+	    gs_app_get_review_ratings (app) == NULL) {
 		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, error))
 			return FALSE;
 	}
