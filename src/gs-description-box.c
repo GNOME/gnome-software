@@ -153,6 +153,17 @@ gs_description_box_read_button_clicked_cb (GtkButton *button,
 	gs_description_box_update_content (box);
 }
 
+static gboolean
+update_description_in_idle_cb (gpointer data)
+{
+	GsDescriptionBox *box = GS_DESCRIPTION_BOX (data);
+
+	gs_description_box_update_content (box);
+	box->idle_update_id = 0;
+
+	return G_SOURCE_REMOVE;
+}
+
 static void
 gs_description_box_measure (GtkWidget      *widget,
                             GtkOrientation  orientation,
@@ -169,17 +180,9 @@ gs_description_box_measure (GtkWidget      *widget,
 			    minimum, natural,
 			    minimum_baseline,
 			    natural_baseline);
-}
 
-static gboolean
-update_description_in_idle_cb (gpointer data)
-{
-	GsDescriptionBox *box = GS_DESCRIPTION_BOX (data);
-
-	gs_description_box_update_content (box);
-	box->idle_update_id = 0;
-
-	return G_SOURCE_REMOVE;
+	if (!box->idle_update_id)
+		box->idle_update_id = g_idle_add (update_description_in_idle_cb, box);
 }
 
 static void
@@ -189,9 +192,23 @@ gs_description_box_size_allocate (GtkWidget *widget,
                                   int        baseline)
 {
 	GsDescriptionBox *box = GS_DESCRIPTION_BOX (widget);
+	GtkAllocation allocation;
 
-	gtk_widget_allocate (box->box, width, height, baseline, NULL);
-	box->idle_update_id = g_idle_add (update_description_in_idle_cb, box);
+	allocation.x = 0;
+	allocation.y = 0;
+	allocation.width = width;
+	allocation.height = height;
+
+	gtk_widget_size_allocate (box->box, &allocation, baseline);
+
+	if (!box->idle_update_id)
+		box->idle_update_id = g_idle_add (update_description_in_idle_cb, box);
+}
+
+static GtkSizeRequestMode
+gs_description_box_get_request_mode (GtkWidget *widget)
+{
+	return gtk_widget_get_request_mode (GS_DESCRIPTION_BOX (widget)->box);
 }
 
 static void
@@ -282,6 +299,7 @@ gs_description_box_class_init (GsDescriptionBoxClass *klass)
 	object_class->finalize = gs_description_box_finalize;
 
 	widget_class = GTK_WIDGET_CLASS (klass);
+	widget_class->get_request_mode = gs_description_box_get_request_mode;
 	widget_class->measure = gs_description_box_measure;
 	widget_class->size_allocate = gs_description_box_size_allocate;
 }
