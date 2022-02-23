@@ -1348,6 +1348,13 @@ gs_odrs_provider_refine (GsOdrsProvider             *self,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		g_autoptr(GError) local_error = NULL;
+
+		/* not valid */
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
+			continue;
+		if (gs_app_get_id (app) == NULL)
+			continue;
+
 		if (!refine_app (self, app, flags, cancellable, &local_error)) {
 			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR, GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
 				g_debug ("failed to refine app %s: %s",
@@ -1370,12 +1377,6 @@ refine_app (GsOdrsProvider             *self,
             GCancellable               *cancellable,
             GError                    **error)
 {
-	/* not valid */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
-		return TRUE;
-	if (gs_app_get_id (app) == NULL)
-		return TRUE;
-
 	/* add reviews if possible */
 	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) &&
 	    gs_app_get_reviews (app)->len == 0) {
