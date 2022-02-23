@@ -16,7 +16,6 @@
 
 #include "gs-app-list.h"
 #include "gs-download-utils.h"
-#include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
 
@@ -40,6 +39,20 @@ typedef enum {
 
 #define GS_ODRS_PROVIDER_ERROR gs_odrs_provider_error_quark ()
 GQuark		 gs_odrs_provider_error_quark		(void);
+
+/**
+ * GsOdrsProviderRefineFlags:
+ * @GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS: Get the numerical ratings for the app.
+ * @GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS: Get the written reviews for the app.
+ *
+ * The flags for refining apps to get their reviews or ratings.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS = (1 << 0),
+	GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS = (1 << 1),
+} GsOdrsProviderRefineFlags;
 
 #define GS_TYPE_ODRS_PROVIDER (gs_odrs_provider_get_type ())
 
@@ -65,7 +78,7 @@ gboolean	 gs_odrs_provider_refresh_ratings_finish(GsOdrsProvider		 *self,
 
 gboolean	 gs_odrs_provider_refine		(GsOdrsProvider		 *self,
 							 GsAppList		 *list,
-							 GsPluginRefineFlags	  flags,
+							 GsOdrsProviderRefineFlags flags,
 							 GCancellable		 *cancellable,
 							 GError			**error);
 

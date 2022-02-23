@@ -820,11 +820,11 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 }
 
 static gboolean
-refine_app (GsOdrsProvider       *self,
-            GsApp                *app,
-            GsPluginRefineFlags   flags,
-            GCancellable         *cancellable,
-            GError              **error)
+refine_app (GsOdrsProvider             *self,
+            GsApp                      *app,
+            GsOdrsProviderRefineFlags   flags,
+            GCancellable               *cancellable,
+            GError                    **error)
 {
 	/* not valid */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
@@ -833,7 +833,7 @@ refine_app (GsOdrsProvider       *self,
 		return TRUE;
 
 	/* add reviews if possible */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
+	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) {
 		AsReview *review;
 		g_autoptr(GPtrArray) reviews = NULL;
 
@@ -868,8 +868,7 @@ refine_app (GsOdrsProvider       *self,
 	}
 
 	/* add ratings if possible */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS ||
-	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
+	if (flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) {
 		if (gs_app_get_review_ratings (app) != NULL)
 			return TRUE;
 		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, error))
@@ -1386,19 +1385,17 @@ gs_odrs_provider_refresh_ratings_finish (GsOdrsProvider  *self,
  * specified in @flags.
  *
  * Returns: %TRUE on success, %FALSE otherwise
- * Since: 41
+ * Since: 42
  */
 gboolean
-gs_odrs_provider_refine (GsOdrsProvider       *self,
-                         GsAppList            *list,
-                         GsPluginRefineFlags   flags,
-                         GCancellable         *cancellable,
-                         GError              **error)
+gs_odrs_provider_refine (GsOdrsProvider             *self,
+                         GsAppList                  *list,
+                         GsOdrsProviderRefineFlags   flags,
+                         GCancellable               *cancellable,
+                         GError                    **error)
 {
-	/* nothing to do here */
-	if ((flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-		      GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-		      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)) == 0)
+	if ((flags & (GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS |
+		      GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS)) == 0)
 		return TRUE;
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {

@@ -182,6 +182,7 @@ run_refine_filter (GsPluginJobRefine    *self,
                    GError              **error)
 {
 	GsOdrsProvider *odrs_provider;
+	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 
 	/* run each plugin */
@@ -215,9 +216,15 @@ run_refine_filter (GsPluginJobRefine    *self,
 	/* Add ODRS data if needed */
 	odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
 
-	if (odrs_provider != NULL) {
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
+	if (refine_flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+			    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
+		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
+
+	if (odrs_provider != NULL && odrs_refine_flags != 0) {
 		if (!gs_odrs_provider_refine (odrs_provider,
-					      list, refine_flags, cancellable, error))
+					      list, odrs_refine_flags, cancellable, error))
 			return FALSE;
 	}
 
