@@ -76,10 +76,14 @@ gboolean	 gs_odrs_provider_refresh_ratings_finish(GsOdrsProvider		 *self,
 							 GAsyncResult		 *result,
 							 GError			**error);
 
-gboolean	 gs_odrs_provider_refine		(GsOdrsProvider		 *self,
+void		 gs_odrs_provider_refine_async		(GsOdrsProvider		 *self,
 							 GsAppList		 *list,
 							 GsOdrsProviderRefineFlags flags,
 							 GCancellable		 *cancellable,
+							 GAsyncReadyCallback	  callback,
+							 gpointer		  user_data);
+gboolean	 gs_odrs_provider_refine_finish		(GsOdrsProvider		 *self,
+							 GAsyncResult		 *result,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_submit_review		(GsOdrsProvider		 *self,

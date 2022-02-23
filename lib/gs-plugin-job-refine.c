@@ -223,8 +223,17 @@ run_refine_filter (GsPluginJobRefine    *self,
 		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
 
 	if (odrs_provider != NULL && odrs_refine_flags != 0) {
-		if (!gs_odrs_provider_refine (odrs_provider,
-					      list, odrs_refine_flags, cancellable, error))
+		g_autoptr(GAsyncResult) odrs_refine_result = NULL;
+
+		gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
+					       cancellable, plugin_refine_cb, &odrs_refine_result);
+
+		/* FIXME: Make this sync until the calling function is rearranged
+		 * to be async. */
+		while (odrs_refine_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!gs_odrs_provider_refine_finish (odrs_provider, odrs_refine_result, error))
 			return FALSE;
 	}
 

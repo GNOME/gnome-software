@@ -693,11 +693,16 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 	return g_steal_pointer (&json_node);
 }
 
-static GPtrArray *
-gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
-                                GsApp           *app,
-				GCancellable	*cancellable,
-                                GError         **error)
+static void set_reviews_on_app (GsOdrsProvider *self,
+                                GsApp          *app,
+                                GPtrArray      *reviews);
+
+static void
+gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
+                                              GsApp               *app,
+                                              GCancellable        *cancellable,
+                                              GAsyncReadyCallback  callback,
+                                              gpointer             user_data)
 {
 	JsonNode *json_compat_ids;
 	const gchar *version;
@@ -717,6 +722,11 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	g_autoptr(GBytes) bytes = NULL;
 #endif
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_odrs_provider_fetch_reviews_for_app_async);
 
 	/* look in the cache */
 	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
@@ -724,23 +734,36 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 					       cachefn_basename,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE |
 					       GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-					       error);
-	if (cachefn == NULL)
-		return NULL;
+					       &local_error);
+	if (cachefn == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < self->max_cache_age_secs) {
 		g_autoptr(GMappedFile) mapped_file = NULL;
 
-		mapped_file = g_mapped_file_new (cachefn, FALSE, error);
-		if (mapped_file == NULL)
-			return NULL;
+		mapped_file = g_mapped_file_new (cachefn, FALSE, &local_error);
+		if (mapped_file == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id (app), cachefn);
-		return gs_odrs_provider_parse_reviews (self,
-						       g_mapped_file_get_contents (mapped_file),
-						       g_mapped_file_get_length (mapped_file),
-						       error);
+		reviews = gs_odrs_provider_parse_reviews (self,
+							  g_mapped_file_get_contents (mapped_file),
+							  g_mapped_file_get_length (mapped_file),
+							  &local_error);
+		if (reviews == NULL) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+		} else {
+			set_reviews_on_app (self, app, reviews);
+			g_task_return_pointer (task, g_steal_pointer (&reviews), (GDestroyNotify) g_ptr_array_unref);
+		}
+
+		return;
 	}
 
 	/* not always available */
@@ -784,9 +807,11 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
 						  data, strlen (data));
-	bytes = soup_session_send_and_read (self->session, msg, cancellable, error);
-	if (bytes == NULL)
-		return NULL;
+	bytes = soup_session_send_and_read (self->session, msg, cancellable, &local_error);
+	if (bytes == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
 	status_code = soup_message_get_status (msg);
@@ -798,25 +823,71 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
 #endif
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error))
-			return NULL;
+		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
 		/* not sure what to do here */
-		g_set_error_literal (error,
-				     GS_ODRS_PROVIDER_ERROR,
-				     GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
-				     "status code invalid");
-		return NULL;
+		g_task_return_new_error (task,
+					 GS_ODRS_PROVIDER_ERROR,
+					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
+					 "status code invalid");
+		return;
 	}
-	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, error);
-	if (reviews == NULL)
-		return NULL;
+
+	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, &local_error);
+	if (reviews == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* save to the cache */
-	if (!g_file_set_contents (cachefn, downloaded_data, downloaded_data_length, error))
-		return NULL;
+	if (!g_file_set_contents (cachefn, downloaded_data, downloaded_data_length, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	set_reviews_on_app (self, app, reviews);
 
 	/* success */
-	return g_steal_pointer (&reviews);
+	g_task_return_pointer (task, g_steal_pointer (&reviews), (GDestroyNotify) g_ptr_array_unref);
+}
+
+static void
+set_reviews_on_app (GsOdrsProvider *self,
+                    GsApp          *app,
+                    GPtrArray      *reviews)
+{
+	for (guint i = 0; i < reviews->len; i++) {
+		AsReview *review = g_ptr_array_index (reviews, i);
+
+		/* save this on the application object so we can use it for
+		 * submitting a new review */
+		if (i == 0) {
+			gs_app_set_metadata (app, "ODRS::user_skey",
+					     as_review_get_metadata_item (review, "user_skey"));
+		}
+
+		/* ignore invalid reviews */
+		if (as_review_get_rating (review) == 0)
+			continue;
+
+		/* the user_hash matches, so mark this as our own review */
+		if (g_strcmp0 (as_review_get_reviewer_id (review),
+			       self->user_hash) == 0) {
+			as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
+		}
+		gs_app_add_review (app, review);
+	}
+}
+
+static GPtrArray *
+gs_odrs_provider_fetch_reviews_for_app_finish (GsOdrsProvider  *self,
+                                               GAsyncResult    *result,
+                                               GError         **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static gchar *
@@ -1314,40 +1385,87 @@ gs_odrs_provider_refresh_ratings_finish (GsOdrsProvider  *self,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean refine_app (GsOdrsProvider             *self,
-                            GsApp                      *app,
-                            GsOdrsProviderRefineFlags   flags,
-                            GCancellable               *cancellable,
-                            GError                    **error);
+static void refine_app_op (GsOdrsProvider            *self,
+                           GTask                     *task,
+                           GsApp                     *app,
+                           GsOdrsProviderRefineFlags  flags,
+                           GCancellable              *cancellable);
+static void refine_reviews_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void finish_refine_op (GTask  *task,
+                              GError *error);
+
+typedef struct {
+	/* Input data. */
+	GsAppList *list;  /* (owned) (not nullable) */
+	GsOdrsProviderRefineFlags flags;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *error;  /* (nullable) (owned) */
+} RefineData;
+
+static void
+refine_data_free (RefineData *data)
+{
+	g_assert (data->n_pending_ops == 0);
+
+	g_clear_object (&data->list);
+	g_clear_error (&data->error);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineData, refine_data_free)
 
 /**
- * gs_odrs_provider_refine:
+ * gs_odrs_provider_refine_async:
  * @self: a #GsOdrsProvider
  * @list: list of apps to refine
  * @flags: refine flags
  * @cancellable: (nullable): a #GCancellable, or %NULL
- * @error: return location for a #GError
+ * @callback: callback for asynchronous completion
+ * @user_data: data to pass to @callback
  *
- * Refine the given @list of apps to add ratings and review data to them, as
- * specified in @flags.
+ * Asynchronously refine the given @list of apps to add ratings and review data
+ * to them, as specified in @flags.
  *
- * Returns: %TRUE on success, %FALSE otherwise
  * Since: 42
  */
-gboolean
-gs_odrs_provider_refine (GsOdrsProvider             *self,
-                         GsAppList                  *list,
-                         GsOdrsProviderRefineFlags   flags,
-                         GCancellable               *cancellable,
-                         GError                    **error)
+void
+gs_odrs_provider_refine_async (GsOdrsProvider            *self,
+                               GsAppList                 *list,
+                               GsOdrsProviderRefineFlags  flags,
+                               GCancellable              *cancellable,
+                               GAsyncReadyCallback        callback,
+                               gpointer                   user_data)
 {
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(RefineData) data = NULL;
+	RefineData *data_unowned = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_odrs_provider_refine_async);
+
+	data_unowned = data = g_new0 (RefineData, 1);
+	data->list = g_object_ref (list);
+	data->flags = flags;
+	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refine_data_free);
+
 	if ((flags & (GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS |
-		      GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS)) == 0)
-		return TRUE;
+		      GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS)) == 0) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* Mark one operation as pending while all the operations are started,
+	 * so the overall operation can’t complete while things are still being
+	 * started. */
+	data_unowned->n_pending_ops++;
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_autoptr(GError) local_error = NULL;
 
 		/* not valid */
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON)
@@ -1355,69 +1473,116 @@ gs_odrs_provider_refine (GsOdrsProvider             *self,
 		if (gs_app_get_id (app) == NULL)
 			continue;
 
-		if (!refine_app (self, app, flags, cancellable, &local_error)) {
+		data_unowned->n_pending_ops++;
+		refine_app_op (self, task, app, flags, cancellable);
+	}
+
+	finish_refine_op (task, NULL);
+}
+
+static void
+refine_app_op (GsOdrsProvider            *self,
+               GTask                     *task,
+               GsApp                     *app,
+               GsOdrsProviderRefineFlags  flags,
+               GCancellable              *cancellable)
+{
+	g_autoptr(GError) local_error = NULL;
+
+	/* add ratings if possible */
+	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) &&
+	    gs_app_get_review_ratings (app) == NULL) {
+		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, &local_error)) {
 			if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR, GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
 				g_debug ("failed to refine app %s: %s",
 					 gs_app_get_unique_id (app), local_error->message);
 			} else {
 				g_prefix_error (&local_error, "failed to refine app: ");
-				g_propagate_error (error, g_steal_pointer (&local_error));
-				return FALSE;
+				finish_refine_op (task, g_steal_pointer (&local_error));
+				return;
 			}
 		}
 	}
 
-	return TRUE;
-}
-
-static gboolean
-refine_app (GsOdrsProvider             *self,
-            GsApp                      *app,
-            GsOdrsProviderRefineFlags   flags,
-            GCancellable               *cancellable,
-            GError                    **error)
-{
 	/* add reviews if possible */
 	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS) &&
 	    gs_app_get_reviews (app)->len == 0) {
-		AsReview *review;
-		g_autoptr(GPtrArray) reviews = NULL;
+		/* get from server asynchronously */
+		gs_odrs_provider_fetch_reviews_for_app_async (self, app, cancellable, refine_reviews_cb, g_object_ref (task));
+	} else {
+		finish_refine_op (task, NULL);
+	}
+}
 
-		/* get from server */
-		reviews = gs_odrs_provider_fetch_for_app (self, app, cancellable, error);
-		if (reviews == NULL)
-			return FALSE;
-		for (guint i = 0; i < reviews->len; i++) {
-			review = g_ptr_array_index (reviews, i);
+static void
+refine_reviews_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	GsOdrsProvider *self = GS_ODRS_PROVIDER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
 
-			/* save this on the application object so we can use it for
-			 * submitting a new review */
-			if (i == 0) {
-				gs_app_set_metadata (app, "ODRS::user_skey",
-						     as_review_get_metadata_item (review, "user_skey"));
-			}
-
-			/* ignore invalid reviews */
-			if (as_review_get_rating (review) == 0)
-				continue;
-
-			/* the user_hash matches, so mark this as our own review */
-			if (g_strcmp0 (as_review_get_reviewer_id (review),
-				       self->user_hash) == 0) {
-				as_review_set_flags (review, AS_REVIEW_FLAG_SELF);
-			}
-			gs_app_add_review (app, review);
+	if (!gs_odrs_provider_fetch_reviews_for_app_finish (self, result, &local_error)) {
+		if (g_error_matches (local_error, GS_ODRS_PROVIDER_ERROR, GS_ODRS_PROVIDER_ERROR_NO_NETWORK)) {
+			g_debug ("failed to refine app: %s", local_error->message);
+		} else {
+			g_prefix_error (&local_error, "failed to refine app: ");
+			finish_refine_op (task, g_steal_pointer (&local_error));
+			return;
 		}
 	}
 
-	/* add ratings if possible */
-	if ((flags & GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS) &&
-	    gs_app_get_review_ratings (app) == NULL) {
-		if (!gs_odrs_provider_refine_ratings (self, app, cancellable, error))
-			return FALSE;
-	}
+	finish_refine_op (task, NULL);
+}
 
-	return TRUE;
+/* @error is (transfer full) if non-NULL. */
+static void
+finish_refine_op (GTask  *task,
+                  GError *error)
+{
+	RefineData *data = g_task_get_task_data (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (data->error == NULL && error_owned != NULL)
+		data->error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while refining ODRS data: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops == 0) {
+		if (data->error != NULL)
+			g_task_return_error (task, g_steal_pointer (&data->error));
+		else
+			g_task_return_boolean (task, TRUE);
+	}
+}
+
+/**
+ * gs_odrs_provider_refine_finish:
+ * @self: a #GsOdrsProvider
+ * @result: result of the asynchronous operation
+ * @error: return location for a #GError, or %NULL
+ *
+ * Finish an asynchronous refine operation started with
+ * gs_odrs_provider_refine_finish().
+ *
+ * Returns: %TRUE on success, %FALSE otherwise
+ * Since: 42
+ */
+gboolean
+gs_odrs_provider_refine_finish (GsOdrsProvider  *self,
+                                GAsyncResult    *result,
+                                GError         **error)
+{
+	g_return_val_if_fail (GS_IS_ODRS_PROVIDER (self), FALSE);
+	g_return_val_if_fail (g_task_is_valid (result, self), FALSE);
+	g_return_val_if_fail (g_async_result_is_tagged (result, gs_odrs_provider_refine_async), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /**
