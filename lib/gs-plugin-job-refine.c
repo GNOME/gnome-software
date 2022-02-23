@@ -173,75 +173,6 @@ static void plugin_refine_cb (GObject      *source_object,
                               GAsyncResult *result,
                               gpointer      user_data);
 
-static gboolean
-run_refine_filter (GsPluginJobRefine    *self,
-                   GsPluginLoader       *plugin_loader,
-                   GsAppList            *list,
-                   GsPluginRefineFlags   refine_flags,
-                   GCancellable         *cancellable,
-                   GError              **error)
-{
-	GsOdrsProvider *odrs_provider;
-	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
-	GPtrArray *plugins;  /* (element-type GsPlugin) */
-
-	/* run each plugin */
-	plugins = gs_plugin_loader_get_plugins (plugin_loader);
-
-	for (guint i = 0; i < plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (plugins, i);
-		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
-		g_autoptr(GAsyncResult) refine_result = NULL;
-
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
-		if (plugin_class->refine_async == NULL)
-			continue;
-
-		/* run the batched plugin symbol */
-		plugin_class->refine_async (plugin, list, refine_flags,
-					    cancellable, plugin_refine_cb, &refine_result);
-
-		/* FIXME: Make this sync until the calling function is rearranged
-		 * to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		if (!plugin_class->refine_finish (plugin, refine_result, error))
-			return FALSE;
-
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
-
-	/* Add ODRS data if needed */
-	odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
-
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
-		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
-	if (refine_flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-			    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
-		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
-
-	if (odrs_provider != NULL && odrs_refine_flags != 0) {
-		g_autoptr(GAsyncResult) odrs_refine_result = NULL;
-
-		gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
-					       cancellable, plugin_refine_cb, &odrs_refine_result);
-
-		/* FIXME: Make this sync until the calling function is rearranged
-		 * to be async. */
-		while (odrs_refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		if (!gs_odrs_provider_refine_finish (odrs_provider, odrs_refine_result, error))
-			return FALSE;
-	}
-
-	/* filter any wildcard apps left in the list */
-	gs_app_list_filter (list, app_is_non_wildcard, NULL);
-	return TRUE;
-}
-
 static void
 plugin_refine_cb (GObject      *source_object,
                   GAsyncResult *result,
@@ -262,14 +193,67 @@ run_refine_internal (GsPluginJobRefine    *self,
                      GCancellable         *cancellable,
                      GError              **error)
 {
+	GsOdrsProvider *odrs_provider;
+	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
+	GPtrArray *plugins;  /* (element-type GsPlugin) */
+
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
 	/* run each plugin */
-	if (!run_refine_filter (self, plugin_loader, list, flags,
-				cancellable, error)) {
-		return FALSE;
+	plugins = gs_plugin_loader_get_plugins (plugin_loader);
+
+	for (guint i = 0; i < plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugins, i);
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		g_autoptr(GAsyncResult) refine_result = NULL;
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+		if (plugin_class->refine_async == NULL)
+			continue;
+
+		/* run the batched plugin symbol */
+		plugin_class->refine_async (plugin, list, flags,
+					    cancellable, plugin_refine_cb, &refine_result);
+
+		/* FIXME: Make this sync until the calling function is rearranged
+		 * to be async. */
+		while (refine_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!plugin_class->refine_finish (plugin, refine_result, error))
+			return FALSE;
+
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
+
+	/* Add ODRS data if needed */
+	odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
+
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
+	if (flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+		     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
+		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
+
+	if (odrs_provider != NULL && odrs_refine_flags != 0) {
+		g_autoptr(GAsyncResult) odrs_refine_result = NULL;
+
+		gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
+					       cancellable, plugin_refine_cb, &odrs_refine_result);
+
+		/* FIXME: Make this sync until the calling function is rearranged
+		 * to be async. */
+		while (odrs_refine_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!gs_odrs_provider_refine_finish (odrs_provider, odrs_refine_result, error))
+			return FALSE;
+	}
+
+	/* filter any wildcard apps left in the list */
+	gs_app_list_filter (list, app_is_non_wildcard, NULL);
 
 	/* ensure these are sorted by score */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
