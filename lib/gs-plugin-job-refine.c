@@ -366,6 +366,10 @@ run_refine (GsPluginJobRefine  *self,
 	g_autoptr(GsAppList) freeze_list = NULL;
 
 	/* nothing to do */
+	if (self->flags == 0) {
+		g_debug ("no refine flags set for transaction");
+		return TRUE;
+	}
 	if (gs_app_list_length (list) == 0)
 		return TRUE;
 
@@ -441,14 +445,10 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	result_list = gs_app_list_copy (self->app_list);
 
 	/* run refine() on each one if required */
-	if (self->flags != 0) {
-		if (!run_refine (self, plugin_loader, result_list, cancellable, &local_error)) {
-			gs_utils_error_convert_gio (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-	} else {
-		g_debug ("no refine flags set for transaction");
+	if (!run_refine (self, plugin_loader, result_list, cancellable, &local_error)) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* Internal calls to #GsPluginJobRefine may want to do their own
