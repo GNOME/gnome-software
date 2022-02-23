@@ -776,8 +776,7 @@ gs_odrs_provider_fetch_for_app (GsOdrsProvider  *self,
 	json_generator_set_pretty (json_generator, TRUE);
 	json_generator_set_root (json_generator, json_root);
 	data = json_generator_to_data (json_generator, NULL);
-	if (data == NULL)
-		return NULL;
+
 	uri = g_strdup_printf ("%s/fetch", self->review_server);
 	g_debug ("Updating ODRS cache for %s from %s to %s; request %s", gs_app_get_id (app),
 		 uri, cachefn, data);
