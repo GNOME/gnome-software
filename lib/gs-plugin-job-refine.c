@@ -55,9 +55,12 @@ struct _GsPluginJobRefine
 {
 	GsPluginJob parent;
 
+	/* Input data. */
 	GsAppList *app_list;  /* (owned) */
-	GsAppList *result_list;  /* (owned) (nullable) */
 	GsPluginRefineFlags flags;
+
+	/* Output data. */
+	GsAppList *result_list;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsPluginJobRefine, gs_plugin_job_refine, GS_TYPE_PLUGIN_JOB)
