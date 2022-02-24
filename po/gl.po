@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-10 15:57+0000\n"
-"PO-Revision-Date: 2022-02-12 21:59+0100\n"
+"POT-Creation-Date: 2022-02-23 10:35+0000\n"
+"PO-Revision-Date: 2022-02-24 13:48+0100\n"
 "Last-Translator: Fran Diéguez <frandieguez@gnome.org>\n"
 "Language-Team: Galician <proxecto@trasno.gal>\n"
 "Language: gl\n"
@@ -77,7 +77,7 @@ msgstr "Panel de actualizacións"
 msgid "The update details"
 msgstr "Os detalles da actualización"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1766
+#: data/appdata/org.gnome.Software.appdata.xml.in:1807
 msgid "The GNOME Project"
 msgstr "O Proxecto GNOME"
 
@@ -783,17 +783,17 @@ msgstr "%s é axeitado para %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:241
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
 msgid "Age Rating"
 msgstr "Cualificación por idade"
 
-#: src/gs-age-rating-context-dialog.ui:79
-#: src/gs-hardware-support-context-dialog.ui:79
-#: src/gs-safety-context-dialog.ui:229
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Como engadir información que falta"
 
-#: lib/gs-app.c:5715
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -802,12 +802,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5807
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Paquete"
 
@@ -825,7 +825,7 @@ msgstr "Retirado pendente"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:175 src/gs-app-tile.ui:50
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:144 src/gs-app-tile.ui:50
 #: src/gs-feature-tile.c:402 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "Instalado"
@@ -953,12 +953,10 @@ msgid "Reviews"
 msgstr "Revisións"
 
 #: src/gs-app-reviews-dialog.ui:25
-#| msgid "Sorry! There are no details for that application."
 msgid "No reviews were found for this application."
 msgstr "Non se atoparon revisións para esta aplicación."
 
 #: src/gs-app-reviews-dialog.ui:27
-#| msgid "Reviews"
 msgid "No Reviews"
 msgstr "Non hai revisións"
 
@@ -982,7 +980,7 @@ msgstr "Non hai detalles para esta publicación"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e de %B de %Y"
 
@@ -1069,8 +1067,9 @@ msgid "Show version number"
 msgstr "Mostrar o número de versión"
 
 #: src/gs-application.c:312
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "Copyright © 2016–2021 Contribuíntes de GNOME Software"
+#| msgid "Copyright © 2016–2021 GNOME Software contributors"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "Copyright © 2016–2022 Contribuíntes de GNOME Software"
 
 #: src/gs-application.c:315
 msgid "translator-credits"
@@ -1462,7 +1461,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Traducións"
 
-#: src/gs-app-translation-dialog.ui:97
+#: src/gs-app-translation-dialog.ui:96
 msgid "_Translation Website"
 msgstr "Sitio web de _tradución"
 
@@ -2012,7 +2011,7 @@ msgstr "Activar e instalar"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Lista detallada dos erros do xestor de paquetes:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Detalles"
 
@@ -2223,18 +2222,18 @@ msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1377
+#: src/gs-details-page.c:1386
 msgid "You need internet access to write a review"
 msgstr "Precisa acceso a Internet para escribir unha reseña"
 
-#: src/gs-details-page.c:1525 src/gs-details-page.c:1541
+#: src/gs-details-page.c:1534 src/gs-details-page.c:1550
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Non foi posíbel atopar «%s»"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2068
+#: src/gs-details-page.c:2077
 msgid "Loading…"
 msgstr "Cargando…"
 
@@ -2369,13 +2368,11 @@ msgstr "_Axuda"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
 #: src/gs-details-page.ui:841
-#| msgid "_Write a Review"
 msgid "_Write Review"
 msgstr "_Escribir unha revisión"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
 #: src/gs-details-page.ui:878
-#| msgid "Reviews"
 msgid "All Reviews"
 msgstr "Todas as revisións"
 
@@ -2598,15 +2595,15 @@ msgstr "Non foi posíbel atopar o software requirido"
 msgid "Codecs page"
 msgstr "Páxina dos códecs"
 
-#: src/gs-featured-carousel.ui:56
+#: src/gs-featured-carousel.ui:42
 msgid "Previous"
 msgstr "Anterior"
 
-#: src/gs-featured-carousel.ui:79
+#: src/gs-featured-carousel.ui:65
 msgid "Next"
 msgstr "Seguinte"
 
-#: src/gs-featured-carousel.ui:96
+#: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "Listado de aplicacións destacadas"
 
@@ -2877,7 +2874,7 @@ msgid "_Get Involved"
 msgstr "Involu_crarse"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:60 src/gs-loading-page.c:64
 msgid "Software catalog is being downloaded"
 msgstr "Estase descargando o catálogo de software"
 
@@ -3390,20 +3387,20 @@ msgid "out of 5 stars"
 msgstr "de 5 estrellas"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Descoñecido"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Pode informar de opinións por ser abusivas, groseiras ou conduta "
 "discriminatoria."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3414,13 +3411,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Reportar opinión?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Informar"
 
@@ -3680,20 +3677,20 @@ msgstr "%s é insegura"
 msgid "Safety"
 msgstr "Seguranza"
 
-#: src/gs-safety-context-dialog.ui:109
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Licenza"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:149
+#: src/gs-safety-context-dialog.ui:148
 msgid "Source"
 msgstr "Orixe"
 
-#: src/gs-safety-context-dialog.ui:189
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:213
+#: src/gs-safety-context-dialog.ui:212
 msgid "Outdated SDK version"
 msgstr "Versión do SDK desfasada"
 
@@ -4361,7 +4358,7 @@ msgid "Storage"
 msgstr "Almacenamento"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:80
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4911,7 +4908,7 @@ msgstr ""
 msgid "Getting flatpak metadata for %s…"
 msgstr "Obtendo os metadatos de flatpak para %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3205
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Non foi posíbel refinar o engadido «%s»: %s"
@@ -5056,6 +5053,22 @@ msgstr "Actualización de controlador do almacenamento %s"
 msgid "%s Network Interface Update"
 msgstr "Actualización de controlador da rede %s"
 
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+#| msgid "%s Device Update"
+msgid "%s Display Update"
+msgstr "Actualización de pantalla %s"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+#| msgid "%s ME Update"
+msgid "%s BMC Update"
+msgstr "Actualización de BMC %s"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1105
 msgid "Firmware"
 msgstr "Firmware"
@@ -5112,7 +5125,7 @@ msgstr ""
 "desactivaranse ate que as actualizacións non asinadas se eliminen ou se "
 "actualicen."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:433
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Paquetes"
 
