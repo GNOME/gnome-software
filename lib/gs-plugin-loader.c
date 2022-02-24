@@ -1122,6 +1122,12 @@ gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
 }
 
 static gboolean
+gs_plugin_loader_app_is_desktop (GsApp *app, gpointer user_data)
+{
+	return gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP;
+}
+
+static gboolean
 gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
@@ -3364,6 +3370,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
