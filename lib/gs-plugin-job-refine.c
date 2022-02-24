@@ -370,7 +370,6 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	g_autoptr(GError) local_error = NULL;
 	g_autofree gchar *job_debug = NULL;
 	g_autoptr(GsAppList) result_list = NULL;
-	g_autoptr(GsAppList) freeze_list = NULL;
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
@@ -389,9 +388,8 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 		goto results;
 
 	/* freeze all apps */
-	freeze_list = gs_app_list_copy (result_list);
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
+	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
+		GsApp *app = gs_app_list_index (self->app_list, i);
 		g_object_freeze_notify (G_OBJECT (app));
 	}
 
@@ -428,8 +426,8 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 	}
 
 	/* now emit all the changed signals */
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
+	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
+		GsApp *app = gs_app_list_index (self->app_list, i);
 		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
 	}
 
