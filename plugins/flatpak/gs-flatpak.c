@@ -4053,6 +4053,8 @@ gs_flatpak_finalize (GObject *object)
 	}
 	if (self->silo != NULL)
 		g_object_unref (self->silo);
+	if (self->monitor != NULL)
+		g_object_unref (self->monitor);
 
 	g_free (self->id);
 	g_object_unref (self->installation);
