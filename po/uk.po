@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-17 10:50+0000\n"
-"PO-Revision-Date: 2022-02-17 17:42+0200\n"
+"POT-Creation-Date: 2022-02-23 10:35+0000\n"
+"PO-Revision-Date: 2022-02-24 19:13+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -766,13 +766,13 @@ msgstr "%s можуть користуватися особи віком %s"
 msgid "Age Rating"
 msgstr "Віковий рейтинг"
 
-#: src/gs-age-rating-context-dialog.ui:79
-#: src/gs-hardware-support-context-dialog.ui:79
-#: src/gs-safety-context-dialog.ui:229
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Як додати відомості, яких не вистачає"
 
-#: lib/gs-app.c:5715
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Локальний файл"
 
@@ -781,12 +781,12 @@ msgstr "Локальний файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5807
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Пакунок"
 
@@ -959,7 +959,7 @@ msgstr "Немає подробиць щодо цього випуску"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1046,8 +1046,9 @@ msgid "Show version number"
 msgstr "Показати номер версії"
 
 #: src/gs-application.c:312
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "© Учасники розробки «Програм GNOME», 2016–2021"
+#| msgid "Copyright © 2016–2021 GNOME Software contributors"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "© Учасники розробки «Програм GNOME», 2016–2022"
 
 #: src/gs-application.c:315
 msgid "translator-credits"
@@ -1439,7 +1440,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Переклади"
 
-#: src/gs-app-translation-dialog.ui:97
+#: src/gs-app-translation-dialog.ui:96
 msgid "_Translation Website"
 msgstr "С_айт перекладу"
 
@@ -1989,7 +1990,7 @@ msgstr "Увімкнути та встановити"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Докладні помилки з керування пакунками:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Подробиці"
 
@@ -2886,7 +2887,7 @@ msgid "_Get Involved"
 msgstr "Вз_яти участь"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:60 src/gs-loading-page.c:64
 msgid "Software catalog is being downloaded"
 msgstr "Каталог програм звантажується"
 
@@ -3412,18 +3413,18 @@ msgid "out of 5 stars"
 msgstr "з 5 зірок"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Невідоме"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "Можете звітувати про образливу, грубу або дискримінаційну поведінку."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3433,13 +3434,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Зазвітувати про огляд?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Зазвітувати"
 
@@ -3704,20 +3705,20 @@ msgstr "%s не є безпечною"
 msgid "Safety"
 msgstr "Безпека"
 
-#: src/gs-safety-context-dialog.ui:109
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Ліцензія"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:149
+#: src/gs-safety-context-dialog.ui:148
 msgid "Source"
 msgstr "Джерело"
 
-#: src/gs-safety-context-dialog.ui:189
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:213
+#: src/gs-safety-context-dialog.ui:212
 msgid "Outdated SDK version"
 msgstr "Застаріла версія SDK"
 
@@ -4371,7 +4372,7 @@ msgid "Storage"
 msgstr "Сховище даних"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:80
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4926,7 +4927,7 @@ msgstr ""
 msgid "Getting flatpak metadata for %s…"
 msgstr "Отримуємо метадані flatpak для %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3205
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Не вдалося очистити додаток «%s»: %s"
@@ -5075,7 +5076,6 @@ msgstr "Оновлення для інтерфейсу мережі %s"
 #. * external monitor
 #: plugins/fwupd/gs-fwupd-app.c:220
 #, c-format
-#| msgid "%s Device Update"
 msgid "%s Display Update"
 msgstr "Оновлення для дисплея %s"
 
@@ -5083,7 +5083,6 @@ msgstr "Оновлення для дисплея %s"
 #. * is the device that updates all the other firmware on the system
 #: plugins/fwupd/gs-fwupd-app.c:225
 #, c-format
-#| msgid "%s ME Update"
 msgid "%s BMC Update"
 msgstr "Оновлення BMC для %s"
 
@@ -5142,7 +5141,7 @@ msgstr ""
 "особи. Оновлення програм буде вимкнено, аж доки непідписані оновлення не "
 "буде вилучено або оновлено до підписаних."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:433
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Пакунки"
 
