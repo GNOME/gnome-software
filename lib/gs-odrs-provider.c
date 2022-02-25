@@ -652,9 +652,33 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 	return g_steal_pointer (&json_node);
 }
 
+static void open_input_stream_cb (GObject      *source_object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+static void parse_reviews_cb (GObject      *source_object,
+                              GAsyncResult *result,
+                              gpointer      user_data);
 static void set_reviews_on_app (GsOdrsProvider *self,
                                 GsApp          *app,
                                 GPtrArray      *reviews);
+
+typedef struct {
+	GsApp *app;  /* (not nullable) (owned) */
+	gchar *cache_filename;  /* (not nullable) (owned) */
+	SoupMessage *message;  /* (nullable) (owned) */
+} FetchReviewsForAppData;
+
+static void
+fetch_reviews_for_app_data_free (FetchReviewsForAppData *data)
+{
+	g_clear_object (&data->app);
+	g_free (data->cache_filename);
+	g_clear_object (&data->message);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (FetchReviewsForAppData, fetch_reviews_for_app_data_free)
 
 static void
 gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
@@ -665,12 +689,9 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 {
 	JsonNode *json_compat_ids;
 	const gchar *version;
-	guint status_code;
-	gconstpointer downloaded_data;
-	gsize downloaded_data_length;
 	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
-	g_autofree gchar *data = NULL;
+	g_autofree gchar *request_body = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
@@ -683,10 +704,16 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	g_autoptr(GBytes) bytes = NULL;
 #endif
 	g_autoptr(GTask) task = NULL;
+	FetchReviewsForAppData *data;
+	g_autoptr(FetchReviewsForAppData) data_owned = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_odrs_provider_fetch_reviews_for_app_async);
+
+	data = data_owned = g_new0 (FetchReviewsForAppData, 1);
+	data->app = g_object_ref (app);
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) fetch_reviews_for_app_data_free);
 
 	/* look in the cache */
 	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
@@ -700,6 +727,7 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 		return;
 	}
 
+	data->cache_filename = g_strdup (cachefn);
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < self->max_cache_age_secs) {
 		g_debug ("got review data for %s from %s",
@@ -758,47 +786,50 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	json_generator = json_generator_new ();
 	json_generator_set_pretty (json_generator, TRUE);
 	json_generator_set_root (json_generator, json_root);
-	data = json_generator_to_data (json_generator, NULL);
+	request_body = json_generator_to_data (json_generator, NULL);
 
 	uri = g_strdup_printf ("%s/fetch", self->review_server);
 	g_debug ("Updating ODRS cache for %s from %s to %s; request %s", gs_app_get_id (app),
-		 uri, cachefn, data);
+		 uri, cachefn, request_body);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
+	data->message = g_object_ref (msg);
+
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	g_odrs_provider_set_message_request_body (msg, "application/json; charset=utf-8",
-						  data, strlen (data));
-	bytes = soup_session_send_and_read (self->session, msg, cancellable, &local_error);
-	if (bytes == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
-	status_code = soup_message_get_status (msg);
+						  request_body, strlen (request_body));
+	soup_session_send_async (self->session, msg, G_PRIORITY_DEFAULT,
+				 cancellable, open_input_stream_cb, g_steal_pointer (&task));
 #else
 	soup_message_set_request (msg, "application/json; charset=utf-8",
-				  SOUP_MEMORY_COPY, data, strlen (data));
-	status_code = soup_session_send_message (self->session, msg);
-	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
-	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
+				  SOUP_MEMORY_COPY, request_body, strlen (request_body));
+	soup_session_send_async (self->session, msg, cancellable,
+				 open_input_stream_cb, g_steal_pointer (&task));
 #endif
-	if (status_code != SOUP_STATUS_OK) {
-		g_autoptr(GInputStream) input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
-		if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+}
 
-		/* not sure what to do here */
-		g_task_return_new_error (task,
-					 GS_ODRS_PROVIDER_ERROR,
-					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
-					 "status code invalid");
-		return;
-	}
+static void
+open_input_stream_cb (GObject      *source_object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	SoupSession *soup_session = SOUP_SESSION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	FetchReviewsForAppData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GInputStream) input_stream = NULL;
+	guint status_code;
+	g_autoptr(JsonParser) json_parser = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* nothing */
-	if (downloaded_data == NULL) {
+#if SOUP_CHECK_VERSION(3, 0, 0)
+	input_stream = soup_session_send_finish (soup_session, result, &local_error);
+	status_code = soup_message_get_status (data->message);
+#else
+	input_stream = soup_session_send_finish (soup_session, result, &local_error);
+	status_code = data->message->status_code;
+#endif
+
+	if (input_stream == NULL) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_task_return_new_error (task,
 						 GS_ODRS_PROVIDER_ERROR,
@@ -812,9 +843,39 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 		return;
 	}
 
+	if (status_code != SOUP_STATUS_OK) {
+		if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		/* not sure what to do here */
+		g_task_return_new_error (task,
+					 GS_ODRS_PROVIDER_ERROR,
+					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
+					 "status code invalid");
+		return;
+	}
+
 	/* parse the data and find the array of ratings */
 	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, downloaded_data, downloaded_data_length, &local_error)) {
+	json_parser_load_from_stream_async (json_parser, input_stream, cancellable, parse_reviews_cb, g_steal_pointer (&task));
+}
+
+static void
+parse_reviews_cb (GObject      *source_object,
+                  GAsyncResult *result,
+                  gpointer      user_data)
+{
+	JsonParser *json_parser = JSON_PARSER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsOdrsProvider *self = g_task_get_source_object (task);
+	FetchReviewsForAppData *data = g_task_get_task_data (task);
+	g_autoptr(GPtrArray) reviews = NULL;
+	g_autoptr(JsonGenerator) cache_generator = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!json_parser_load_from_stream_finish (json_parser, result, &local_error)) {
 		g_task_return_new_error (task,
 					 GS_ODRS_PROVIDER_ERROR,
 					 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
@@ -829,12 +890,16 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	}
 
 	/* save to the cache */
-	if (!g_file_set_contents (cachefn, downloaded_data, downloaded_data_length, &local_error)) {
+	cache_generator = json_generator_new ();
+	json_generator_set_pretty (cache_generator, FALSE);
+	json_generator_set_root (cache_generator, json_parser_get_root (json_parser));
+
+	if (!json_generator_to_file (cache_generator, data->cache_filename, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	set_reviews_on_app (self, app, reviews);
+	set_reviews_on_app (self, data->app, reviews);
 
 	/* success */
 	g_task_return_pointer (task, g_steal_pointer (&reviews), (GDestroyNotify) g_ptr_array_unref);
