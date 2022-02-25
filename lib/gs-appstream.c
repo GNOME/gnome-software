@@ -1606,7 +1606,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	/* use predicate conditions to the max */
 	xpath = g_strdup_printf ("components/component/releases/"
 				 "release[@timestamp>%" G_GUINT64_FORMAT "]/../..",
-				 now - (30 * 24 * 60 * 60));
+				 now - age);
 	array = xb_silo_query (silo, xpath, 0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
