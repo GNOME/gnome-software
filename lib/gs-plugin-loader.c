@@ -3229,6 +3229,13 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
+	if (action == GS_PLUGIN_ACTION_GET_RECENT) {
+		/* Preliminary filter recent apps, to have truncated a meaningful list */
+		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
+	}
+
 	/* filter to reduce to a sane set */
 	gs_plugin_loader_job_sorted_truncation (helper);
 
