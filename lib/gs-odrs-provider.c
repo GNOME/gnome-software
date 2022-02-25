@@ -126,11 +126,7 @@ gs_odrs_provider_load_ratings (GsOdrsProvider  *self,
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new_immutable ();
-#if JSON_CHECK_VERSION(1, 6, 0)
 	if (!json_parser_load_from_mapped_file (json_parser, filename, &local_error)) {
-#else
-	if (!json_parser_load_from_file (json_parser, filename, &local_error)) {
-#endif
 		g_set_error (error,
 			     GS_ODRS_PROVIDER_ERROR,
 			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,

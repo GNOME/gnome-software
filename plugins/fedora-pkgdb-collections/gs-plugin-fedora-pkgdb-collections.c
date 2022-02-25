@@ -408,28 +408,11 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 {
 	JsonArray *collections;
 	JsonObject *root;
-#if !JSON_CHECK_VERSION(1, 6, 0)
-	gsize len;
-	g_autofree gchar *data = NULL;
-#endif  /* json-glib < 1.6.0 */
 	g_autoptr(JsonParser) parser = NULL;
 
-#if JSON_CHECK_VERSION(1, 6, 0)
 	parser = json_parser_new_immutable ();
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
 		return FALSE;
-#else  /* if json-glib < 1.6.0 */
-	/* get cached file */
-	if (!g_file_get_contents (self->cachefn, &data, &len, error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
-	}
-
-	/* parse data */
-	parser = json_parser_new ();
-	if (!json_parser_load_from_data (parser, data, len, error))
-		return FALSE;
-#endif  /* json-glib < 1.6.0 */
 
 	root = json_node_get_object (json_parser_get_root (parser));
 	if (root == NULL) {
