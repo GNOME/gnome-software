@@ -254,44 +254,20 @@ gs_odrs_provider_parse_review_object (JsonObject *item)
 	return rev;
 }
 
+/* json_parser_load*() must have been called on @json_parser before calling
+ * this function. */
 static GPtrArray *
 gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
-                                const gchar     *data,
-                                gssize           data_len,
+                                JsonParser      *json_parser,
                                 GError         **error)
 {
 	JsonArray *json_reviews;
 	JsonNode *json_root;
 	guint i;
-	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GHashTable) reviewer_ids = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	/* nothing */
-	if (data == NULL) {
-		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
-					     "server couldn't be reached");
-		else
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-					     "server returned no data");
-		return NULL;
-	}
-
-	/* parse the data and find the array or ratings */
-	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, &local_error)) {
-		g_set_error (error,
-			     GS_ODRS_PROVIDER_ERROR,
-			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-			     "Error parsing ODRS data: %s", local_error->message);
-		return NULL;
-	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
@@ -716,6 +692,7 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
+	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
@@ -752,10 +729,30 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id (app), cachefn);
-		reviews = gs_odrs_provider_parse_reviews (self,
-							  g_mapped_file_get_contents (mapped_file),
-							  g_mapped_file_get_length (mapped_file),
-							  &local_error);
+
+		/* nothing */
+		if (g_mapped_file_get_contents (mapped_file) == NULL) {
+			g_task_return_new_error (task,
+						 GS_ODRS_PROVIDER_ERROR,
+						 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+						 "server returned no data");
+			return;
+		}
+
+		/* parse the data and find the array of ratings */
+		json_parser = json_parser_new_immutable ();
+		if (!json_parser_load_from_data (json_parser,
+						 g_mapped_file_get_contents (mapped_file),
+						 g_mapped_file_get_length (mapped_file),
+						 &local_error)) {
+			g_task_return_new_error (task,
+						 GS_ODRS_PROVIDER_ERROR,
+						 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+						 "Error parsing ODRS data: %s", local_error->message);
+			return;
+		}
+
+		reviews = gs_odrs_provider_parse_reviews (self, json_parser, &local_error);
 		if (reviews == NULL) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 		} else {
@@ -836,7 +833,32 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 		return;
 	}
 
-	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, &local_error);
+	/* nothing */
+	if (downloaded_data == NULL) {
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
+			g_task_return_new_error (task,
+						 GS_ODRS_PROVIDER_ERROR,
+						 GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
+						 "server couldn't be reached");
+		else
+			g_task_return_new_error (task,
+						 GS_ODRS_PROVIDER_ERROR,
+						 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+						 "server returned no data");
+		return;
+	}
+
+	/* parse the data and find the array of ratings */
+	json_parser = json_parser_new_immutable ();
+	if (!json_parser_load_from_data (json_parser, downloaded_data, downloaded_data_length, &local_error)) {
+		g_task_return_new_error (task,
+					 GS_ODRS_PROVIDER_ERROR,
+					 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+					 "Error parsing ODRS data: %s", local_error->message);
+		return;
+	}
+
+	reviews = gs_odrs_provider_parse_reviews (self, json_parser, &local_error);
 	if (reviews == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -1825,11 +1847,13 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	gsize downloaded_data_length;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GHashTable) hash = NULL;
+	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	g_autoptr(GBytes) bytes = NULL;
 #endif
+	g_autoptr(GError) local_error = NULL;
 
 	/* create the GET data *with* the machine hash so we can later
 	 * review the application ourselves */
@@ -1861,7 +1885,33 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 		return FALSE;
 	}
 	g_debug ("odrs returned: %.*s", (gint) downloaded_data_length, (const gchar *) downloaded_data);
-	reviews = gs_odrs_provider_parse_reviews (self, downloaded_data, downloaded_data_length, error);
+
+	/* nothing */
+	if (downloaded_data == NULL) {
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
+			g_set_error_literal (error,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
+					     "server couldn't be reached");
+		else
+			g_set_error_literal (error,
+					     GS_ODRS_PROVIDER_ERROR,
+					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+					     "server returned no data");
+		return FALSE;
+	}
+
+	/* parse the data and find the array of ratings */
+	json_parser = json_parser_new_immutable ();
+	if (!json_parser_load_from_data (json_parser, downloaded_data, downloaded_data_length, &local_error)) {
+		g_set_error (error,
+			     GS_ODRS_PROVIDER_ERROR,
+			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+			     "Error parsing ODRS data: %s", local_error->message);
+		return FALSE;
+	}
+
+	reviews = gs_odrs_provider_parse_reviews (self, json_parser, error);
 	if (reviews == NULL)
 		return FALSE;
 
