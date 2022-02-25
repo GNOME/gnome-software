@@ -224,7 +224,7 @@ gs_plugin_fedora_pkgdb_collections_setup_finish (GsPlugin      *plugin,
 
 static gboolean
 _refresh_cache (GsPluginFedoraPkgdbCollections *self,
-		guint cache_age,
+		guint64 cache_age_secs,
 		GCancellable *cancellable,
 		GError **error)
 {
@@ -232,10 +232,10 @@ _refresh_cache (GsPluginFedoraPkgdbCollections *self,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
-	if (cache_age > 0) {
+	if (cache_age_secs > 0) {
 		g_autoptr(GFile) file = g_file_new_for_path (self->cachefn);
 		guint64 tmp = gs_utils_get_file_age (file);
-		if (tmp < cache_age) {
+		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old",
 				 self->cachefn, tmp);
 			return TRUE;
