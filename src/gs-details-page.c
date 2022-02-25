@@ -1601,6 +1601,7 @@ gs_details_page_url_to_app_cb (GObject *source,
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
+		g_set_object (&self->app_local_file, app);
 		_set_app (self, app);
 		gs_details_page_load_stage2 (self, TRUE);
 	}
