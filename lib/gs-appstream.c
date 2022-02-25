@@ -1619,8 +1619,13 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	for (guint i = 0; i < array->len; i++) {
 		XbNode *component = g_ptr_array_index (array, i);
 		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
+		guint64 timestamp;
 		if (app == NULL)
 			return FALSE;
+		/* set the release date */
+		timestamp = component_get_release_timestamp (component);
+		if (timestamp != G_MAXUINT64)
+			gs_app_set_release_date (app, timestamp);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
