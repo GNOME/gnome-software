@@ -31,11 +31,10 @@ gs_external_appstream_utils_get_system_dir (void)
 }
 
 static gboolean
-gs_external_appstream_check (const gchar *appstream_path,
-                             guint64      cache_age_secs)
+gs_external_appstream_check (GFile   *appstream_file,
+                             guint64  cache_age_secs)
 {
-	g_autoptr(GFile) file = g_file_new_for_path (appstream_path);
-	guint64 appstream_file_age = gs_utils_get_file_age (file);
+	guint64 appstream_file_age = gs_utils_get_file_age (appstream_file);
 	return appstream_file_age >= cache_age_secs;
 }
 
@@ -59,98 +58,6 @@ gs_external_appstream_install (const gchar   *appstream_file,
 }
 
 static gboolean
-gs_external_appstream_refresh_sys (GsPlugin      *plugin,
-                                   const gchar   *url,
-                                   const gchar   *basename,
-                                   guint64        cache_age_secs,
-                                   GCancellable  *cancellable,
-                                   GError       **error)
-{
-	g_autofree gchar *tmp_file_path = NULL;
-	g_autofree gchar *target_file_path = NULL;
-	g_autoptr(GFile) tmp_file = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-	g_autoptr(GError) local_error = NULL;
-
-	/* check age */
-	target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
-	if (!gs_external_appstream_check (target_file_path, cache_age_secs)) {
-		g_debug ("skipping updating external appstream file %s: "
-			 "cache age is older than file",
-			 target_file_path);
-		return TRUE;
-	}
-
-	/* write the download contents into a file that will be copied into
-	 * the system */
-	tmp_file_path = gs_utils_get_cache_filename ("external-appstream",
-						     basename,
-						     GS_UTILS_CACHE_FLAG_WRITEABLE |
-						     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
-						     error);
-	if (tmp_file_path == NULL)
-		return FALSE;
-
-	tmp_file = g_file_new_for_path (tmp_file_path);
-
-	/* Do the download. */
-	if (!gs_plugin_download_file (plugin, app_dl, url, g_file_peek_path (tmp_file),
-				      cancellable, error)) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-				     local_error->message);
-		return FALSE;
-	}
-
-	g_debug ("Downloaded appstream file %s", tmp_file_path);
-
-	/* install file systemwide */
-	if (gs_external_appstream_install (tmp_file_path,
-					   cancellable,
-					   error)) {
-		g_debug ("Installed appstream file %s", tmp_file_path);
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-}
-
-static gboolean
-gs_external_appstream_refresh_user (GsPlugin      *plugin,
-                                    const gchar   *url,
-                                    const gchar   *basename,
-                                    guint64        cache_age_secs,
-                                    GCancellable  *cancellable,
-                                    GError       **error)
-{
-	guint64 file_age;
-	g_autofree gchar *fullpath = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-
-	/* check age */
-	fullpath = g_build_filename (g_get_user_data_dir (),
-				     "app-info",
-				     "xmls",
-				     basename,
-				     NULL);
-	file = g_file_new_for_path (fullpath);
-	file_age = gs_utils_get_file_age (file);
-	if (file_age < cache_age_secs) {
-		g_debug ("skipping %s: cache age is older than file", fullpath);
-		return TRUE;
-	}
-
-	/* download file */
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading extra metadata files…"));
-	return gs_plugin_download_file (plugin, app_dl, url, fullpath,
-					cancellable, error);
-}
-
-static gboolean
 gs_external_appstream_refresh_url (GsPlugin      *plugin,
                                    GSettings     *settings,
                                    const gchar   *url,
@@ -162,8 +69,17 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *basename_url = g_path_get_basename (url);
 	/* make sure different uris with same basenames differ */
-	g_autofree gchar *hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
-								url, -1);
+	g_autofree gchar *hash = NULL;
+	g_autofree gchar *target_file_path = NULL;
+	g_autoptr(GFile) target_file = NULL;
+	g_autoptr(GFile) tmp_file = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GError) local_error = NULL;
+
+	gboolean system_wide;
+
+	/* Calculate the basename of the target file. */
+	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, url, -1);
 	if (hash == NULL) {
 		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 			     "Failed to hash url %s", url);
@@ -171,16 +87,75 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
 	}
 	basename = g_strdup_printf ("%s-%s", hash, basename_url);
 
-	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
-		return gs_external_appstream_refresh_sys (plugin, url,
-							  basename,
-							  cache_age_secs,
-							  cancellable,
-							  error);
+	/* Are we downloading for the user, or the system? */
+	system_wide = g_settings_get_boolean (settings, "external-appstream-system-wide");
+
+	/* Check cache file age. */
+	if (system_wide)
+		target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
+	else
+		target_file_path = g_build_filename (g_get_user_data_dir (),
+						     "app-info",
+						     "xmls",
+						     basename,
+						     NULL);
+
+	target_file = g_file_new_for_path (target_file_path);
+
+	if (!gs_external_appstream_check (target_file, cache_age_secs)) {
+		g_debug ("skipping updating external appstream file %s: "
+			 "cache age is older than file",
+			 target_file_path);
+		return TRUE;
 	}
-	return gs_external_appstream_refresh_user (plugin, url, basename,
-						   cache_age_secs,
-						   cancellable, error);
+
+	/* If downloading system wide, write the download contents into a
+	 * temporary file that will be copied into the system location later. */
+	if (system_wide) {
+		g_autofree gchar *tmp_file_path = NULL;
+
+		tmp_file_path = gs_utils_get_cache_filename ("external-appstream",
+							     basename,
+							     GS_UTILS_CACHE_FLAG_WRITEABLE |
+							     GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
+							     error);
+		if (tmp_file_path == NULL)
+			return FALSE;
+
+		tmp_file = g_file_new_for_path (tmp_file_path);
+	} else {
+		tmp_file = g_object_ref (target_file);
+	}
+
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading extra metadata files…"));
+
+	/* Do the download. */
+	if (!gs_plugin_download_file (plugin, app_dl, url, g_file_peek_path (tmp_file),
+				      cancellable, error)) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     local_error->message);
+		return FALSE;
+	}
+
+	g_debug ("Downloaded appstream file %s", g_file_peek_path (tmp_file));
+
+	if (system_wide) {
+		/* install file systemwide */
+		if (gs_external_appstream_install (g_file_peek_path (tmp_file),
+						   cancellable,
+						   error)) {
+			g_debug ("Installed appstream file %s", g_file_peek_path (tmp_file));
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	return TRUE;
 }
 
 /**
