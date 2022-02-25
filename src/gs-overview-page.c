@@ -526,7 +526,7 @@ gs_overview_page_load (GsOverviewPage *self)
 
 		self->loading_recent = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-						 "age", (guint64) (60 * 60 * 24 * 60),
+						 "age", (guint64) (60 * 60 * 24 * 30),
 						 /* To have large-enough set, in case filtering removes some non-applicable apps */
 						 "max-results", 3 * N_TILES,
 						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
