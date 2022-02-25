@@ -270,14 +270,13 @@ run_refine_internal (GsPluginJobRefine    *self,
 
 	/* refine addons one layer deep */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
-		g_autoptr(GsAppList) addons_list = NULL;
+		g_autoptr(GsAppList) addons_list = gs_app_list_new ();
 		GsPluginRefineFlags addons_flags = flags;
 
 		addons_flags &= ~(GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
 				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS);
 
-		addons_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			GsAppList *addons = gs_app_get_addons (app);
@@ -300,18 +299,20 @@ run_refine_internal (GsPluginJobRefine    *self,
 
 	/* also do runtime */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
-		g_autoptr(GsAppList) list2 = gs_app_list_new ();
+		g_autoptr(GsAppList) runtimes_list = gs_app_list_new ();
+		GsPluginRefineFlags runtimes_flags = flags;
+
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
-			GsApp *runtime;
 			GsApp *app = gs_app_list_index (list, i);
-			runtime = gs_app_get_runtime (app);
+			GsApp *runtime = gs_app_get_runtime (app);
+
 			if (runtime != NULL)
-				gs_app_list_add (list2, runtime);
+				gs_app_list_add (runtimes_list, runtime);
 		}
-		if (gs_app_list_length (list2) > 0) {
+		if (gs_app_list_length (runtimes_list) > 0) {
 			if (!run_refine_internal (self, plugin_loader,
-						  list2, flags, cancellable,
-						  error)) {
+						  runtimes_list, runtimes_flags,
+						  cancellable, error)) {
 				return FALSE;
 			}
 		}
@@ -319,12 +320,11 @@ run_refine_internal (GsPluginJobRefine    *self,
 
 	/* also do related packages one layer deep */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) {
-		g_autoptr(GsAppList) related_list = NULL;
+		g_autoptr(GsAppList) related_list = gs_app_list_new ();
 		GsPluginRefineFlags related_flags = flags;
 
 		related_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 
-		related_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			GsAppList *related = gs_app_get_related (app);
