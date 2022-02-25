@@ -58,56 +58,19 @@ gs_external_appstream_install (const gchar   *appstream_file,
 	return g_subprocess_wait_check (subprocess, cancellable, error);
 }
 
-static gchar *
-gs_external_appstream_get_modification_date (const gchar *file_path)
-{
-#ifndef GLIB_VERSION_2_62
-	GTimeVal time_val;
-#endif
-	g_autoptr(GDateTime) date_time = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GFileInfo) info = NULL;
-
-	file = g_file_new_for_path (file_path);
-	info = g_file_query_info (file,
-				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
-				  G_FILE_QUERY_INFO_NONE,
-				  NULL,
-				  NULL);
-	if (info == NULL)
-		return NULL;
-#ifdef GLIB_VERSION_2_62
-	date_time = g_file_info_get_modification_date_time (info);
-#else
-	g_file_info_get_modification_time (info, &time_val);
-	date_time = g_date_time_new_from_timeval_local (&time_val);
-#endif
-	return g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
-}
-
 static gboolean
 gs_external_appstream_refresh_sys (GsPlugin      *plugin,
                                    const gchar   *url,
                                    const gchar   *basename,
-                                   SoupSession   *soup_session,
                                    guint64        cache_age_secs,
                                    GCancellable  *cancellable,
                                    GError       **error)
 {
-	GOutputStream *outstream = NULL;
-	guint status_code;
-	gboolean file_written;
-	gconstpointer downloaded_data;
-	gsize downloaded_data_length;
 	g_autofree gchar *tmp_file_path = NULL;
-	g_autofree gchar *local_mod_date = NULL;
 	g_autofree gchar *target_file_path = NULL;
-	g_autoptr(GFileIOStream) iostream = NULL;
 	g_autoptr(GFile) tmp_file = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-#if SOUP_CHECK_VERSION(3, 0, 0)
-	g_autoptr(GBytes) bytes = NULL;
-#endif
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GError) local_error = NULL;
 
 	/* check age */
 	target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
@@ -116,52 +79,6 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 			 "cache age is older than file",
 			 target_file_path);
 		return TRUE;
-	}
-
-	msg = soup_message_new (SOUP_METHOD_GET, url);
-
-	/* Set the If-Modified-Since header if the target file exists */
-	local_mod_date = gs_external_appstream_get_modification_date (target_file_path);
-	if (local_mod_date != NULL) {
-		g_debug ("Requesting contents of %s if modified since %s",
-			 url, local_mod_date);
-		soup_message_headers_append (
-#if SOUP_CHECK_VERSION(3, 0, 0)
-					     soup_message_get_request_headers (msg),
-#else
-					     msg->request_headers,
-#endif
-					     "If-Modified-Since",
-					     local_mod_date);
-	}
-
-	/* get the data */
-#if SOUP_CHECK_VERSION(3, 0, 0)
-	bytes = soup_session_send_and_read (soup_session, msg, cancellable, error);
-	if (bytes != NULL) {
-		downloaded_data = g_bytes_get_data (bytes, &downloaded_data_length);
-	} else {
-		downloaded_data = NULL;
-		downloaded_data_length = 0;
-	}
-	status_code = soup_message_get_status (msg);
-#else
-	status_code = soup_session_send_message (soup_session, msg);
-	downloaded_data = msg->response_body ? msg->response_body->data : NULL;
-	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
-#endif
-	if (status_code != SOUP_STATUS_OK) {
-		if (status_code == SOUP_STATUS_NOT_MODIFIED) {
-			g_debug ("Not updating %s has not modified since %s",
-				 target_file_path, local_mod_date);
-			return TRUE;
-		}
-
-		g_set_error (error, GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-			     "Failed to download appstream file %s: %s",
-			     url, soup_status_get_phrase (status_code));
-		return FALSE;
 	}
 
 	/* write the download contents into a file that will be copied into
@@ -176,41 +93,27 @@ gs_external_appstream_refresh_sys (GsPlugin      *plugin,
 
 	tmp_file = g_file_new_for_path (tmp_file_path);
 
-	/* ensure the file doesn't exist */
-	if (g_file_query_exists (tmp_file, cancellable) &&
-	    !g_file_delete (tmp_file, cancellable, error))
+	/* Do the download. */
+	if (!gs_plugin_download_file (plugin, app_dl, url, g_file_peek_path (tmp_file),
+				      cancellable, error)) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     local_error->message);
 		return FALSE;
-
-	iostream = g_file_create_readwrite (tmp_file, G_FILE_CREATE_NONE,
-					    cancellable, error);
-
-	if (iostream == NULL)
-		return FALSE;
+	}
 
 	g_debug ("Downloaded appstream file %s", tmp_file_path);
 
-	/* write to file */
-	outstream = g_io_stream_get_output_stream (G_IO_STREAM (iostream));
-	file_written = g_output_stream_write_all (outstream, downloaded_data, downloaded_data_length,
-						  NULL, cancellable, error);
-
-	/* close the file */
-	g_output_stream_close (outstream, cancellable, NULL);
-
 	/* install file systemwide */
-	if (file_written) {
-		if (gs_external_appstream_install (tmp_file_path,
-						   cancellable,
-						   error)) {
-			g_debug ("Installed appstream file %s", tmp_file_path);
-		} else {
-			file_written = FALSE;
-		}
+	if (gs_external_appstream_install (tmp_file_path,
+					   cancellable,
+					   error)) {
+		g_debug ("Installed appstream file %s", tmp_file_path);
+		return TRUE;
+	} else {
+		return FALSE;
 	}
-
-	/* clean up the temporary file */
-	g_file_delete (tmp_file, cancellable, NULL);
-	return file_written;
 }
 
 static gboolean
@@ -271,7 +174,6 @@ gs_external_appstream_refresh_url (GsPlugin      *plugin,
 	if (g_settings_get_boolean (settings, "external-appstream-system-wide")) {
 		return gs_external_appstream_refresh_sys (plugin, url,
 							  basename,
-							  soup_session,
 							  cache_age_secs,
 							  cancellable,
 							  error);
