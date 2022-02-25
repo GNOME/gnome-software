@@ -288,7 +288,8 @@ run_refine_internal (GsPluginJobRefine    *self,
 				gs_app_list_add (addons_list, addon);
 			}
 		}
-		if (gs_app_list_length (addons_list) > 0) {
+
+		if (gs_app_list_length (addons_list) > 0 && addons_flags != 0) {
 			if (!run_refine_internal (self, plugin_loader,
 						  addons_list, addons_flags,
 						  cancellable, error)) {
@@ -302,6 +303,8 @@ run_refine_internal (GsPluginJobRefine    *self,
 		g_autoptr(GsAppList) runtimes_list = gs_app_list_new ();
 		GsPluginRefineFlags runtimes_flags = flags;
 
+		runtimes_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			GsApp *runtime = gs_app_get_runtime (app);
@@ -309,7 +312,8 @@ run_refine_internal (GsPluginJobRefine    *self,
 			if (runtime != NULL)
 				gs_app_list_add (runtimes_list, runtime);
 		}
-		if (gs_app_list_length (runtimes_list) > 0) {
+
+		if (gs_app_list_length (runtimes_list) > 0 && runtimes_flags != 0) {
 			if (!run_refine_internal (self, plugin_loader,
 						  runtimes_list, runtimes_flags,
 						  cancellable, error)) {
@@ -336,7 +340,8 @@ run_refine_internal (GsPluginJobRefine    *self,
 				gs_app_list_add (related_list, app2);
 			}
 		}
-		if (gs_app_list_length (related_list) > 0) {
+
+		if (gs_app_list_length (related_list) > 0 && related_flags != 0) {
 			if (!run_refine_internal (self, plugin_loader,
 						  related_list, related_flags,
 						  cancellable, error)) {
