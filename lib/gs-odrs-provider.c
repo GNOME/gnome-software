@@ -327,9 +327,8 @@ gs_odrs_provider_parse_reviews (GsOdrsProvider  *self,
 }
 
 static gboolean
-gs_odrs_provider_parse_success (const gchar  *data,
-                                gssize        data_len,
-                                GError      **error)
+gs_odrs_provider_parse_success (GInputStream  *input_stream,
+                                GError       **error)
 {
 	JsonNode *json_root;
 	JsonObject *json_item;
@@ -337,24 +336,10 @@ gs_odrs_provider_parse_success (const gchar  *data,
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	/* nothing */
-	if (data == NULL) {
-		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
-					     "server couldn't be reached");
-		else
-			g_set_error_literal (error,
-					     GS_ODRS_PROVIDER_ERROR,
-					     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-					     "server returned no data");
-		return FALSE;
-	}
-
-	/* parse the data and find the success */
+	/* parse the data and find the success
+	 * FIXME: This should probably eventually be refactored and made async */
 	json_parser = json_parser_new_immutable ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, &local_error)) {
+	if (!json_parser_load_from_stream (json_parser, input_stream, NULL, &local_error)) {
 		g_set_error (error,
 			     GS_ODRS_PROVIDER_ERROR,
 			     GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
@@ -484,6 +469,7 @@ gs_odrs_provider_json_post (SoupSession  *session,
 	g_autoptr(SoupMessage) msg = NULL;
 	gconstpointer downloaded_data;
 	gsize downloaded_data_length;
+	g_autoptr(GInputStream) input_stream = NULL;
 #if SOUP_CHECK_VERSION(3, 0, 0)
 	g_autoptr(GBytes) bytes = NULL;
 #endif
@@ -520,7 +506,8 @@ gs_odrs_provider_json_post (SoupSession  *session,
 	}
 
 	/* process returned JSON */
-	return gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error);
+	input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
+	return gs_odrs_provider_parse_success (input_stream, error);
 }
 
 static GPtrArray *
@@ -796,7 +783,8 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
 #endif
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, &local_error)) {
+		g_autoptr(GInputStream) input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
+		if (!gs_odrs_provider_parse_success (input_stream, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -1851,7 +1839,8 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	downloaded_data_length = msg->response_body ? msg->response_body->length : 0;
 #endif
 	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_odrs_provider_parse_success (downloaded_data, downloaded_data_length, error))
+		g_autoptr(GInputStream) input_stream = g_memory_input_stream_new_from_data (downloaded_data, downloaded_data_length, NULL);
+		if (!gs_odrs_provider_parse_success (input_stream, error))
 			return FALSE;
 		/* not sure what to do here */
 		g_set_error_literal (error,
