@@ -10,6 +10,8 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
+#include <errno.h>
 #include <gnome-software.h>
 #include <xmlb.h>
 
@@ -714,8 +716,40 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 		/* check for the corresponding setting */
-		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide"))
-			gs_add_appstream_catalog_location (parent_appstream, g_get_user_data_dir ());
+		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide")) {
+			g_autofree gchar *user_catalog_path = NULL;
+			g_autofree gchar *user_catalog_old_path = NULL;
+
+			/* migrate data paths */
+			user_catalog_path = g_build_filename (g_get_user_data_dir (), "swcatalog", NULL);
+			user_catalog_old_path = g_build_filename (g_get_user_data_dir (), "app-info", NULL);
+			if (g_file_test (user_catalog_old_path, G_FILE_TEST_IS_DIR) &&
+			    !g_file_test (user_catalog_path, G_FILE_TEST_IS_DIR)) {
+				g_debug ("Migrating external AppStream user location.");
+				if (g_rename (user_catalog_old_path, user_catalog_path) == 0) {
+					g_autofree gchar *user_catalog_xml_path = NULL;
+					g_autofree gchar *user_catalog_xml_old_path = NULL;
+
+					user_catalog_xml_path = g_build_filename (user_catalog_path, "xml", NULL);
+					user_catalog_xml_old_path = g_build_filename (user_catalog_path, "xmls", NULL);
+					if (g_file_test (user_catalog_xml_old_path, G_FILE_TEST_IS_DIR)) {
+						if (g_rename (user_catalog_xml_old_path, user_catalog_xml_path) != 0)
+							g_warning ("Unable to migrate external XML data location from '%s' to '%s': %s",
+								user_catalog_xml_old_path, user_catalog_xml_path, g_strerror (errno));
+					}
+				} else {
+					g_warning ("Unable to migrate external data location from '%s' to '%s': %s",
+						   user_catalog_old_path, user_catalog_path, g_strerror (errno));
+				}
+
+			}
+
+			/* add modern locations only */
+			g_ptr_array_add (parent_appstream,
+					g_build_filename (user_catalog_path, "xml", NULL));
+			g_ptr_array_add (parent_appstream,
+					g_build_filename (user_catalog_path, "yaml", NULL));
+		}
 #endif
 
 		/* Add the normal system directories if the installation prefix
