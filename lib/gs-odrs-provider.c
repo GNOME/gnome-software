@@ -715,32 +715,12 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < self->max_cache_age_secs) {
-		g_autoptr(GMappedFile) mapped_file = NULL;
-
-		mapped_file = g_mapped_file_new (cachefn, FALSE, &local_error);
-		if (mapped_file == NULL) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id (app), cachefn);
 
-		/* nothing */
-		if (g_mapped_file_get_contents (mapped_file) == NULL) {
-			g_task_return_new_error (task,
-						 GS_ODRS_PROVIDER_ERROR,
-						 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
-						 "server returned no data");
-			return;
-		}
-
 		/* parse the data and find the array of ratings */
 		json_parser = json_parser_new_immutable ();
-		if (!json_parser_load_from_data (json_parser,
-						 g_mapped_file_get_contents (mapped_file),
-						 g_mapped_file_get_length (mapped_file),
-						 &local_error)) {
+		if (!json_parser_load_from_mapped_file (json_parser, cachefn, &local_error)) {
 			g_task_return_new_error (task,
 						 GS_ODRS_PROVIDER_ERROR,
 						 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
