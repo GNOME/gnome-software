@@ -14,9 +14,32 @@
 #include <glib-object.h>
 #include <libsoup/soup.h>
 
-#include <gs-plugin.h>
+#include "gs-app-list.h"
+#include "gs-download-utils.h"
+#include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
+
+/**
+ * GsOdrsProviderError:
+ * @GS_ODRS_PROVIDER_ERROR_DOWNLOADING: Error while downloading ODRS data.
+ * @GS_ODRS_PROVIDER_ERROR_PARSING_DATA: Problem parsing downloaded ODRS data.
+ * @GS_ODRS_PROVIDER_ERROR_NO_NETWORK: Offline or network unavailable.
+ * @GS_ODRS_PROVIDER_ERROR_SERVER_ERROR: Server rejected ODRS submission or returned an error.
+ *
+ * Error codes for #GsOdrsProvider.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
+	GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
+	GS_ODRS_PROVIDER_ERROR_NO_NETWORK,
+	GS_ODRS_PROVIDER_ERROR_SERVER_ERROR,
+} GsOdrsProviderError;
+
+#define GS_ODRS_PROVIDER_ERROR gs_odrs_provider_error_quark ()
+GQuark		 gs_odrs_provider_error_quark		(void);
 
 #define GS_TYPE_ODRS_PROVIDER (gs_odrs_provider_get_type ())
 
@@ -29,10 +52,15 @@ GsOdrsProvider	*gs_odrs_provider_new			(const gchar		 *review_server,
 							 guint			  n_results_max,
 							 SoupSession		 *session);
 
-gboolean	 gs_odrs_provider_refresh		(GsOdrsProvider		 *self,
-							 GsPlugin		 *plugin,
+void		 gs_odrs_provider_refresh_ratings_async	(GsOdrsProvider		 *self,
 							 guint64		  cache_age_secs,
+							 GsDownloadProgressCallback progress_callback,
+							 gpointer		  progress_user_data,
 							 GCancellable		 *cancellable,
+							 GAsyncReadyCallback	  callback,
+							 gpointer		  user_data);
+gboolean	 gs_odrs_provider_refresh_ratings_finish(GsOdrsProvider		 *self,
+							 GAsyncResult		 *result,
 							 GError			**error);
 
 gboolean	 gs_odrs_provider_refine		(GsOdrsProvider		 *self,

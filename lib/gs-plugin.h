@@ -152,11 +152,6 @@ void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 const gchar	*name);
 
 /* helpers */
-GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 const gchar	*uri,
-							 GCancellable	*cancellable,
-							 GError		**error);
 gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 const gchar	*uri,
