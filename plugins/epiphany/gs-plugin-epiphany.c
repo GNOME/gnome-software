@@ -15,6 +15,7 @@
 
 #include "gs-epiphany-generated.h"
 #include "gs-plugin-epiphany.h"
+#include "gs-plugin-private.h"
 
 /*
  * SECTION:
@@ -157,19 +158,23 @@ setup_thread_cb (GTask        *task,
 	g_autofree gchar *name_owner = NULL;
 	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GVariant) version = NULL;
+	GDBusConnection *connection;
 
 	assert_in_worker (self);
+
+	connection = gs_plugin_get_session_bus_connection (GS_PLUGIN (self));
+	g_assert (connection != NULL);
 
 	/* Check that the proxy exists (and is owned; it should auto-start) so
 	 * we can disable the plugin for systems which don’t have new enough
 	 * Epiphany.
 	 */
-	self->epiphany_proxy = gs_ephy_web_app_provider_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
-										G_DBUS_PROXY_FLAGS_NONE,
-										"org.gnome.Epiphany.WebAppProvider",
-										"/org/gnome/Epiphany/WebAppProvider",
-										g_task_get_cancellable (task),
-										&local_error);
+	self->epiphany_proxy = gs_ephy_web_app_provider_proxy_new_sync (connection,
+									G_DBUS_PROXY_FLAGS_NONE,
+									"org.gnome.Epiphany.WebAppProvider",
+									"/org/gnome/Epiphany/WebAppProvider",
+									g_task_get_cancellable (task),
+									&local_error);
 	if (self->epiphany_proxy == NULL) {
 		gs_epiphany_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -184,14 +189,14 @@ setup_thread_cb (GTask        *task,
 	}
 
 	/* Check if the dynamic launcher portal is available and disable otherwise */
-	self->launcher_portal_proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
-								     G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-								     NULL,
-								     "org.freedesktop.portal.Desktop",
-								     "/org/freedesktop/portal/desktop",
-								     "org.freedesktop.portal.DynamicLauncher",
-								     g_task_get_cancellable (task),
-								     &local_error);
+	self->launcher_portal_proxy = g_dbus_proxy_new_sync (connection,
+							     G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+							     NULL,
+							     "org.freedesktop.portal.Desktop",
+							     "/org/freedesktop/portal/desktop",
+							     "org.freedesktop.portal.DynamicLauncher",
+							     g_task_get_cancellable (task),
+							     &local_error);
 	if (self->launcher_portal_proxy == NULL) {
 		gs_epiphany_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -456,8 +461,9 @@ list_installed_apps_thread_cb (GTask        *task,
 		g_debug ("%s: Working on installed web app %s", G_STRFUNC, desktop_file_id);
 
 		desktop_info = g_desktop_app_info_new (desktop_file_id);
+
 		if (desktop_info == NULL) {
-			g_warning ("Epiphany returned a non-existent desktop ID %s", desktop_file_id);
+			g_warning ("Epiphany returned a non-existent or invalid desktop ID %s", desktop_file_id);
 			continue;
 		}
 
@@ -513,6 +519,8 @@ list_installed_apps_thread_cb (GTask        *task,
 			g_autofree char *icon_dir_basename = g_path_get_basename (icon_dir);
 			const char *x;
 			guint64 size = 0;
+
+			g_debug ("%s: finding size for icon %s", G_STRFUNC, icon_path);
 
 			g_clear_object (&file_info);
 			file_info = g_file_query_info (icon_file,

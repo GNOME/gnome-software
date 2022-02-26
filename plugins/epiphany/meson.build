@@ -37,6 +37,27 @@ i18n.merge_file(
 )
 
 if get_option('tests')
+  # The DynamicLauncher interface xml comes from:
+  # https://github.com/flatpak/xdg-desktop-portal/blob/main/data/org.freedesktop.portal.DynamicLauncher.xml
+  gdbus_codegen = find_program('gdbus-codegen')
+  dynamic_launcher_portal_iface_h = custom_target(
+    'gs-dynamic-launcher-portal-iface.h',
+    input: ['org.freedesktop.portal.DynamicLauncher.xml'],
+    output: ['gs-dynamic-launcher-portal-iface.h'],
+    command: [gdbus_codegen,
+              '--interface-info-header',
+              '--output', '@OUTPUT@',
+              '@INPUT@'],
+  )
+  dynamic_launcher_portal_iface_c = custom_target(
+    'gs-dynamic-launcher-portal-iface.c',
+    input: ['org.freedesktop.portal.DynamicLauncher.xml'],
+    output: ['gs-dynamic-launcher-portal-iface.c'],
+    command: [gdbus_codegen,
+              '--interface-info-body',
+              '--output', '@OUTPUT@',
+              '@INPUT@'],
+  )
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', '..', 'data') + '"']
@@ -45,6 +66,9 @@ if get_option('tests')
     compiled_schemas,
     sources : [
       'gs-self-test.c',
+      dynamic_launcher_portal_iface_c,
+      dynamic_launcher_portal_iface_h,
+      epiphany_generated,
     ],
     include_directories : [
       include_directories('../..'),
@@ -52,6 +76,7 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
+      dependency('glib-testing-0', fallback: ['libglib-testing', 'libglib_testing_dep']),
     ],
     link_with : [
       libgnomesoftware,
