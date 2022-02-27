@@ -9,8 +9,8 @@
 msgid ""
 msgstr "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-12 07:11+0000\n"
-"PO-Revision-Date: 2022-02-13 16:00+0100\n"
+"POT-Creation-Date: 2022-02-23 10:35+0000\n"
+"PO-Revision-Date: 2022-02-27 16:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asiersarasua@ni.eus>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -714,17 +714,17 @@ msgstr "%s %s talderako da egokia"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:241
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
 msgid "Age Rating"
 msgstr "Balorazioa adinaren arabera"
 
-#: src/gs-age-rating-context-dialog.ui:79
-#: src/gs-hardware-support-context-dialog.ui:79
-#: src/gs-safety-context-dialog.ui:229
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Nola gehitu falta den informazioa"
 
-#: lib/gs-app.c:5715
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Fitxategi lokala"
 
@@ -733,12 +733,12 @@ msgstr "Fitxategi lokala"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5807
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Paketea"
 
@@ -911,7 +911,7 @@ msgstr "Ez dago xehetasunik argitalpen honetarako"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%Y.eko %Bren %e"
 
@@ -995,8 +995,8 @@ msgid "Show version number"
 msgstr "Erakutsi bertsio-zenbakia"
 
 #: src/gs-application.c:312
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "Copyright © 2016–2021 GNOME Software laguntzaileak"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "Copyright © 2016–2022 GNOME Software laguntzaileak"
 
 #: src/gs-application.c:315
 msgid "translator-credits"
@@ -1385,7 +1385,7 @@ msgstr "%s nazioarteko boluntarioen komunitate batek diseinatu, garatu eta itzul
 msgid "Translations"
 msgstr "Itzulpenak"
 
-#: src/gs-app-translation-dialog.ui:97
+#: src/gs-app-translation-dialog.ui:96
 msgid "_Translation Website"
 msgstr "_Itzulpenen webgunea"
 
@@ -1929,7 +1929,7 @@ msgstr "Gaitu eta instalatu"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Pakete-kudeatzaileak emandako erroreen xehetasunak:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Xehetasunak"
 
@@ -2140,18 +2140,18 @@ msgid "_Install…"
 msgstr "_Instalatu…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1377
+#: src/gs-details-page.c:1386
 msgid "You need internet access to write a review"
 msgstr "Interneterako sarbidea behar duzu iritzia idazteko"
 
-#: src/gs-details-page.c:1525 src/gs-details-page.c:1541
+#: src/gs-details-page.c:1534 src/gs-details-page.c:1550
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Ezin da \"%s” aurkitu"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2068
+#: src/gs-details-page.c:2077
 msgid "Loading…"
 msgstr "Kargatzen…"
 
@@ -2482,15 +2482,15 @@ msgstr "Ezin da eskatutako softwarea aurkitu"
 msgid "Codecs page"
 msgstr "Kodeken orria"
 
-#: src/gs-featured-carousel.ui:56
+#: src/gs-featured-carousel.ui:42
 msgid "Previous"
 msgstr "Aurrekoa"
 
-#: src/gs-featured-carousel.ui:79
+#: src/gs-featured-carousel.ui:65
 msgid "Next"
 msgstr "Hurrengoa"
 
-#: src/gs-featured-carousel.ui:96
+#: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "Nabarmendutako aplikazioen zerrenda"
 
@@ -2751,7 +2751,7 @@ msgid "_Get Involved"
 msgstr "Hartu _parte"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:60 src/gs-loading-page.c:64
 msgid "Software catalog is being downloaded"
 msgstr "Software-katalogoa deskargatzen ari da"
 
@@ -3241,18 +3241,18 @@ msgid "out of 5 stars"
 msgstr "5 izarretik"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Ezezaguna"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr "Portaera takarra, gehiegizkoa edo diskriminatzaileari buruzko iritziak eman ditzakezu."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3261,13 +3261,13 @@ msgstr "Behin emandakoan, iritzia ezkutatu egingo da administratzaile batek egia
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Bidali iritzia?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Eman berri"
 
@@ -3517,20 +3517,20 @@ msgstr "%s ez da segurua"
 msgid "Safety"
 msgstr "Segurtasuna"
 
-#: src/gs-safety-context-dialog.ui:109
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Lizentzia"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:149
+#: src/gs-safety-context-dialog.ui:148
 msgid "Source"
 msgstr "Iturburua"
 
-#: src/gs-safety-context-dialog.ui:189
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:213
+#: src/gs-safety-context-dialog.ui:212
 msgid "Outdated SDK version"
 msgstr "Zaharkitutako SDK bertsioa"
 
@@ -4174,7 +4174,7 @@ msgid "Storage"
 msgstr "Biltegiratzea"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:80
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4695,7 +4695,7 @@ msgstr "Flatpak Linuxeko mahaigaineko aplikazioen lan-marko bat da"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-eko %s(r)en metadatuak eskuratzen…"
 
-#: plugins/flatpak/gs-flatpak.c:3205
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Huts egin du ‘%s’ gehigarria fintzeak: %s"
@@ -4840,6 +4840,20 @@ msgstr "%s biltegiratze-kontrolagailuaren eguneratzea"
 msgid "%s Network Interface Update"
 msgstr "%s sareko interfazearen eguneratzea"
 
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+msgid "%s Display Update"
+msgstr "%s pantailaren eguneratzea"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+msgid "%s BMC Update"
+msgstr "%s BMC eguneratzea"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1105
 msgid "Firmware"
 msgstr "Firmwarea"
@@ -4885,7 +4899,7 @@ msgid ""
 "or updated."
 msgstr "Sinatu gabeko eguneratzeak daude. Sinadurarik gabe, ezin da egiaztatu eguneratzearen jatorria edo hura faltsutu den. Software-eguneratzeak desgaitu egingo dira sinatu gabeko eguneratzeak kendu edo eguneratu arte."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:433
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Paketeak"
 
