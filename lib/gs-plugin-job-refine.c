@@ -33,12 +33,17 @@
  * into the job will not be modified.
  *
  * Internally, the #GsPluginClass.refine_async() functions are called on all
- * the plugins in parallel, and in parallel with a call to
+ * the plugins in series, and in series with a call to
  * gs_odrs_provider_refine_async(). Once all of those calls are finished,
  * zero or more recursive calls to run_refine_internal_async() are made in
  * parallel to do a similar refine process on the addons, runtime and related
  * components for all the components in the input #GsAppList. The refine job is
  * complete once all these recursive calls complete.
+ *
+ * FIXME: Ideally, the #GsPluginClass.refine_async() calls would happen in
+ * parallel, but this cannot be the case until the results of the refine_async()
+ * call in one plugin don’t depend on the results of refine_async() in another.
+ * This still happens with several pairs of plugins.
  *
  * ```
  *                                    run_async()
@@ -46,9 +51,12 @@
  *                                         v
  *           /-----------------------+-------------+----------------\
  *           |                       |             |                |
- * plugin->refine_async()  plugin->refine_async()  …  gs_odrs_provider_refine_async()
+ * plugin->refine_async()            |             |                |
+ *           v             plugin->refine_async()  |                |
+ *           |                       v             …                |
+ *           |                       |             v  gs_odrs_provider_refine_async()
+ *           |                       |             |                v
  *           |                       |             |                |
- *           v                       v             v                v
  *           \-----------------------+-------------+----------------/
  *                                         |
  *                            finish_refine_internal_op()
@@ -230,6 +238,7 @@ typedef struct {
 	/* In-progress data. */
 	guint n_pending_ops;
 	guint n_pending_recursions;
+	guint next_plugin_index;
 
 	/* Output data. */
 	GError *error;  /* (nullable) (owned) */
@@ -262,8 +271,6 @@ run_refine_internal_async (GsPluginJobRefine   *self,
                            GAsyncReadyCallback  callback,
                            gpointer             user_data)
 {
-	GsOdrsProvider *odrs_provider;
-	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	g_autoptr(GTask) task = NULL;
 	RefineInternalData *data;
@@ -281,9 +288,18 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
-	data->n_pending_ops = 1;
+	data->n_pending_ops = 0;
 
-	/* run each plugin */
+	/* run each plugin
+	 *
+	 * FIXME: For now, we have to run these vfuncs sequentially rather than
+	 * all in parallel. This is because there are still dependencies between
+	 * some of the plugins, where the code to refine an app in one plugin
+	 * depends on the results of refining it in another plugin first.
+	 *
+	 * Eventually, the plugins should all be changed/removed so that they
+	 * can operate independently. At that point, this code can be reverted
+	 * so that the refine_async() vfuncs are called in parallel. */
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
 	for (guint i = 0; i < plugins->len; i++) {
@@ -295,27 +311,21 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 		if (plugin_class->refine_async == NULL)
 			continue;
 
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		data->next_plugin_index = i + 1;
+
 		/* run the batched plugin symbol */
 		data->n_pending_ops++;
 		plugin_class->refine_async (plugin, list, flags,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
 	}
 
-	/* Add ODRS data if needed */
-	odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
-
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
-		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
-	if (flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-		     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
-		odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
-
-	if (odrs_provider != NULL && odrs_refine_flags != 0) {
-		data->n_pending_ops++;
-		gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
-					       cancellable, odrs_provider_refine_cb, g_object_ref (task));
-	}
-
+	data->n_pending_ops++;
 	finish_refine_internal_op (task, NULL);
 }
 
@@ -364,6 +374,9 @@ finish_refine_internal_op (GTask  *task,
 	GsPluginLoader *plugin_loader = data->plugin_loader;
 	GsAppList *list = data->list;
 	GsPluginRefineFlags flags = data->flags;
+	GsOdrsProvider *odrs_provider;
+	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
+	GPtrArray *plugins;  /* (element-type GsPlugin) */
 
 	if (data->error == NULL && error_owned != NULL) {
 		data->error = g_steal_pointer (&error_owned);
@@ -373,6 +386,51 @@ finish_refine_internal_op (GTask  *task,
 
 	g_assert (data->n_pending_ops > 0);
 	data->n_pending_ops--;
+
+	plugins = gs_plugin_loader_get_plugins (plugin_loader);
+
+	for (guint i = data->next_plugin_index; i < plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugins, i);
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+		if (plugin_class->refine_async == NULL)
+			continue;
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		data->next_plugin_index = i + 1;
+
+		/* run the batched plugin symbol */
+		data->n_pending_ops++;
+		plugin_class->refine_async (plugin, list, flags,
+					    cancellable, plugin_refine_cb, g_object_ref (task));
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
+	}
+
+	if (data->next_plugin_index == plugins->len) {
+		/* Avoid the ODRS refine being run multiple times. */
+		data->next_plugin_index++;
+
+		/* Add ODRS data if needed */
+		odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
+
+		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
+		if (flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+			     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
+			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
+
+		if (odrs_provider != NULL && odrs_refine_flags != 0) {
+			data->n_pending_ops++;
+			gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
+						       cancellable, odrs_provider_refine_cb, g_object_ref (task));
+		}
+	}
 
 	if (data->n_pending_ops > 0)
 		return;
