@@ -916,6 +916,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		g_autoptr(GsApp) app_dl = NULL;
 		RefreshProgressData progress_data;
 		g_autoptr(GAsyncResult) external_appstream_result = NULL;
+		g_autoptr(GError) local_error = NULL;
 
 		app_dl = gs_app_new ("external-appstream");
 		gs_app_set_summary_missing (app_dl,
@@ -937,8 +938,31 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		while (external_appstream_result == NULL)
 			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
 
-		if (!gs_external_appstream_refresh_finish (external_appstream_result, error))
+		if (!gs_external_appstream_refresh_finish (external_appstream_result, &local_error)) {
+			/* Don’t fail updates if the external AppStream server is unavailable */
+			if (g_error_matches (local_error, GS_EXTERNAL_APPSTREAM_ERROR,
+					     GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING) ||
+			    g_error_matches (local_error, GS_EXTERNAL_APPSTREAM_ERROR,
+					     GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK)) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				event = gs_plugin_event_new ("error", local_error,
+							     "action", GS_PLUGIN_ACTION_DOWNLOAD,
+							     NULL);
+
+				if (gs_plugin_job_get_interactive (helper->plugin_job))
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				else
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_loader_add_event (plugin_loader, event);
+
+				return TRUE;
+			}
+
+			g_propagate_error (error, g_steal_pointer (&local_error));
+
 			return FALSE;
+		}
 	}
 #endif
 

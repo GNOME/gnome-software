@@ -56,6 +56,8 @@
 
 #define APPSTREAM_SYSTEM_DIR LOCALSTATEDIR "/cache/app-info/xmls"
 
+G_DEFINE_QUARK (gs-external-appstream-error-quark, gs_external_appstream_error)
+
 gchar *
 gs_external_appstream_utils_get_file_cache_path (const gchar *file_name)
 {
@@ -157,9 +159,9 @@ refresh_url_async (GSettings           *settings,
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, url, -1);
 	if (hash == NULL) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_FAILED,
-					 "Failed to hash url %s", url);
+					 GS_EXTERNAL_APPSTREAM_ERROR,
+					 GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING,
+					 "Failed to hash URI ‘%s’", url);
 		return;
 	}
 	basename = g_strdup_printf ("%s-%s", hash, basename_url);
@@ -234,10 +236,17 @@ download_system_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	if (!gs_download_file_finish (soup_session, result, &local_error)) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-					 "%s", local_error->message);
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
+			g_task_return_new_error (task,
+						 GS_EXTERNAL_APPSTREAM_ERROR,
+						 GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK,
+						 "External AppStream could not be downloaded due to being offline");
+		else
+			g_task_return_new_error (task,
+						 GS_EXTERNAL_APPSTREAM_ERROR,
+						 GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING,
+						 "Server returned no data for external AppStream file: %s",
+						 local_error->message);
 		return;
 	}
 
@@ -250,7 +259,10 @@ download_system_cb (GObject      *source_object,
 		g_debug ("Installed appstream file %s", g_file_peek_path (tmp_file));
 		g_task_return_boolean (task, TRUE);
 	} else {
-		g_task_return_error (task, g_steal_pointer (&local_error));
+		g_task_return_new_error (task,
+					 GS_EXTERNAL_APPSTREAM_ERROR,
+					 GS_EXTERNAL_APPSTREAM_ERROR_INSTALLING_ON_SYSTEM,
+					 "Error installing external AppStream file on system: %s", local_error->message);
 	}
 }
 
@@ -265,10 +277,17 @@ download_user_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	if (!gs_download_file_finish (soup_session, result, &local_error)) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-					 "%s", local_error->message);
+		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
+			g_task_return_new_error (task,
+						 GS_EXTERNAL_APPSTREAM_ERROR,
+						 GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK,
+						 "External AppStream could not be downloaded due to being offline");
+		else
+			g_task_return_new_error (task,
+						 GS_EXTERNAL_APPSTREAM_ERROR,
+						 GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING,
+						 "Server returned no data for external AppStream file: %s",
+						 local_error->message);
 		return;
 	}
 
