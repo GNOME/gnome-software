@@ -873,14 +873,14 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 typedef struct {
 	GsPluginLoader *plugin_loader;  /* (not nullable) (unowned) */
 	GsApp *app;  /* (not nullable) (unowned) */
-} OdrsRefreshProgressData;
+} RefreshProgressData;
 
 static void
-odrs_refresh_progress_cb (gsize    bytes_downloaded,
-                          gsize    total_download_size,
-                          gpointer user_data)
+refresh_progress_cb (gsize    bytes_downloaded,
+                     gsize    total_download_size,
+                     gpointer user_data)
 {
-	OdrsRefreshProgressData *data = user_data;
+	RefreshProgressData *data = user_data;
 	guint percentage;
 
 	if (total_download_size > 0)
@@ -913,11 +913,31 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 	/* Download updated external appstream before anything else */
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 	if (action == GS_PLUGIN_ACTION_REFRESH) {
-		/* FIXME: Using plugin_loader->plugins->pdata[0] is a hack; see
-		 * comment below for details. */
-		if (!gs_external_appstream_refresh (plugin_loader->plugins->pdata[0],
-						    gs_plugin_job_get_age (helper->plugin_job),
-						    cancellable, error))
+		g_autoptr(GsApp) app_dl = NULL;
+		RefreshProgressData progress_data;
+		g_autoptr(GAsyncResult) external_appstream_result = NULL;
+
+		app_dl = gs_app_new ("external-appstream");
+		gs_app_set_summary_missing (app_dl,
+					    /* TRANSLATORS: status text when downloading */
+					    _("Downloading extra metadata files…"));
+
+		progress_data.plugin_loader = plugin_loader;
+		progress_data.app = app_dl;
+
+		gs_external_appstream_refresh_async (gs_plugin_job_get_age (helper->plugin_job),
+						     refresh_progress_cb,
+						     &progress_data,
+						     cancellable,
+						     async_result_cb,
+						     &external_appstream_result);
+
+		/* FIXME: Make this sync until the enclosing function is
+		 * refactored to be async. */
+		while (external_appstream_result == NULL)
+			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+		if (!gs_external_appstream_refresh_finish (external_appstream_result, error))
 			return FALSE;
 	}
 #endif
@@ -940,7 +960,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 	if (action == GS_PLUGIN_ACTION_REFRESH &&
 	    plugin_loader->odrs_provider != NULL) {
 		g_autoptr(GsApp) app_dl = NULL;
-		OdrsRefreshProgressData progress_data;
+		RefreshProgressData progress_data;
 		g_autoptr(GAsyncResult) odrs_result = NULL;
 		g_autoptr(GError) local_error = NULL;
 
@@ -954,7 +974,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 
 		gs_odrs_provider_refresh_ratings_async (plugin_loader->odrs_provider,
 							gs_plugin_job_get_age (helper->plugin_job),
-							odrs_refresh_progress_cb,
+							refresh_progress_cb,
 							&progress_data,
 							cancellable,
 							async_result_cb,

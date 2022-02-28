@@ -19,7 +19,11 @@
 
 const gchar	*gs_external_appstream_utils_get_system_dir (void);
 gchar		*gs_external_appstream_utils_get_file_cache_path (const gchar	*file_name);
-gboolean	 gs_external_appstream_refresh (GsPlugin	 *plugin,
-						guint64		  cache_age_secs,
-						GCancellable	 *cancellable,
-						GError		**error);
+void		 gs_external_appstream_refresh_async (guint64                     cache_age_secs,
+						      GsDownloadProgressCallback  progress_callback,
+						      gpointer                    progress_user_data,
+						      GCancellable               *cancellable,
+						      GAsyncReadyCallback         callback,
+						      gpointer                    user_data);
+gboolean	 gs_external_appstream_refresh_finish (GAsyncResult  *result,
+						       GError       **error);
