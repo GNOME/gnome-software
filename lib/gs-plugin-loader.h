@@ -50,6 +50,10 @@ gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 gchar		**blocklist,
 							 GCancellable	*cancellable,
 							 GError		**error);
+
+void		 gs_plugin_loader_shutdown		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable);
+
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);

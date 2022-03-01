@@ -2237,9 +2237,21 @@ static void plugin_shutdown_cb (GObject      *source_object,
                                 GAsyncResult *result,
                                 gpointer      user_data);
 
-static void
-gs_plugin_loader_call_shutdown (GsPluginLoader *plugin_loader,
-                                GCancellable   *cancellable)
+/**
+ * gs_plugin_loader_shutdown:
+ * @plugin_loader: a #GsPluginLoader
+ * @cancellable: a #GCancellable, or %NULL
+ *
+ * Shut down the plugins.
+ *
+ * This blocks until the operation is complete. It may be refactored in future
+ * to be asynchronous.
+ *
+ * Since: 42
+ */
+void
+gs_plugin_loader_shutdown (GsPluginLoader *plugin_loader,
+                           GCancellable   *cancellable)
 {
 	ShutdownData shutdown_data;
 
@@ -2310,7 +2322,7 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 #endif
 
 	/* Shut down */
-	gs_plugin_loader_call_shutdown (plugin_loader, NULL);
+	gs_plugin_loader_shutdown (plugin_loader, NULL);
 
 	/* clear global cache */
 	gs_plugin_loader_clear_caches (plugin_loader);
@@ -2672,7 +2684,7 @@ gs_plugin_loader_dispose (GObject *object)
 
 	if (plugin_loader->plugins != NULL) {
 		/* Shut down all the plugins first. */
-		gs_plugin_loader_call_shutdown (plugin_loader, NULL);
+		gs_plugin_loader_shutdown (plugin_loader, NULL);
 
 		g_clear_pointer (&plugin_loader->plugins, g_ptr_array_unref);
 	}
