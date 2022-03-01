@@ -29,7 +29,112 @@ struct _GsFeatureTile
 	GtkCssProvider	*subtitle_provider;  /* (owned) (nullable) */
 	GArray		*key_colors_cache;  /* (unowned) (nullable) */
 	gboolean	 narrow_mode;
+	guint		 refresh_id;
 };
+
+#define GS_TYPE_FEATURE_TILE_LAYOUT (gs_feature_tile_layout_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsFeatureTileLayout, gs_feature_tile_layout, GS, FEATURE_TILE_LAYOUT, GtkLayoutManager)
+
+/* This is a copy of GtkBinLayout, because cannot derive from it */
+struct _GsFeatureTileLayout
+{
+	GtkLayoutManager parent_instance;
+};
+
+G_DEFINE_TYPE (GsFeatureTileLayout, gs_feature_tile_layout, GTK_TYPE_LAYOUT_MANAGER)
+
+static void
+gs_feature_tile_layout_measure (GtkLayoutManager *layout_manager,
+				GtkWidget        *widget,
+				GtkOrientation    orientation,
+				int               for_size,
+				int              *minimum,
+				int              *natural,
+				int              *minimum_baseline,
+				int              *natural_baseline)
+{
+	GtkWidget *child;
+
+	for (child = gtk_widget_get_first_child (widget);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		if (gtk_widget_should_layout (child)) {
+			int child_min = 0;
+			int child_nat = 0;
+			int child_min_baseline = -1;
+			int child_nat_baseline = -1;
+
+			gtk_widget_measure (child, orientation, for_size,
+					    &child_min, &child_nat,
+					    &child_min_baseline, &child_nat_baseline);
+
+			*minimum = MAX (*minimum, child_min);
+			*natural = MAX (*natural, child_nat);
+
+			if (child_min_baseline > -1)
+				*minimum_baseline = MAX (*minimum_baseline, child_min_baseline);
+			if (child_nat_baseline > -1)
+				*natural_baseline = MAX (*natural_baseline, child_nat_baseline);
+		}
+	}
+}
+
+static void gs_feature_tile_refresh (GsAppTile *self);
+
+static gboolean
+gs_feature_tile_refresh_idle_cb (gpointer user_data)
+{
+	GsFeatureTile *tile = user_data;
+
+	tile->refresh_id = 0;
+
+	gs_feature_tile_refresh (GS_APP_TILE (tile));
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_feature_tile_layout_allocate (GtkLayoutManager *layout_manager,
+				 GtkWidget        *widget,
+				 int               width,
+				 int               height,
+				 int               baseline)
+{
+	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
+	GtkWidget *child;
+	gboolean narrow_mode;
+
+	for (child = gtk_widget_get_first_child (widget);
+	     child != NULL;
+	     child = gtk_widget_get_next_sibling (child)) {
+		if (child && gtk_widget_should_layout (child))
+			gtk_widget_allocate (child, width, height, baseline, NULL);
+	}
+
+	/* Engage ‘narrow mode’ if the allocation becomes too narrow. The exact
+	 * choice of width is arbitrary here. */
+	narrow_mode = (width < 600);
+	if (tile->narrow_mode != narrow_mode) {
+		tile->narrow_mode = narrow_mode;
+		if (!tile->refresh_id)
+			tile->refresh_id = g_idle_add (gs_feature_tile_refresh_idle_cb, tile);
+	}
+}
+
+static void
+gs_feature_tile_layout_class_init (GsFeatureTileLayoutClass *klass)
+{
+	GtkLayoutManagerClass *layout_manager_class = GTK_LAYOUT_MANAGER_CLASS (klass);
+
+	layout_manager_class->measure = gs_feature_tile_layout_measure;
+	layout_manager_class->allocate = gs_feature_tile_layout_allocate;
+}
+
+static void
+gs_feature_tile_layout_init (GsFeatureTileLayout *layout)
+{
+}
 
 /* A colour represented in hue, saturation, brightness form; with an additional
  * field for its contrast calculated with respect to some external colour.
@@ -49,6 +154,11 @@ static void
 gs_feature_tile_dispose (GObject *object)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (object);
+
+	if (tile->refresh_id) {
+		g_source_remove (tile->refresh_id);
+		tile->refresh_id = 0;
+	}
 
 	g_clear_object (&tile->tile_provider);
 	g_clear_object (&tile->title_provider);
@@ -441,30 +551,6 @@ gs_feature_tile_css_changed (GtkWidget         *widget,
 }
 
 static void
-gs_feature_tile_size_allocate (GtkWidget *widget,
-                               gint       width,
-                               gint       height,
-                               gint       baseline)
-{
-	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
-	gboolean narrow_mode;
-
-	/* Chain up. */
-	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->size_allocate (widget,
-									width,
-									height,
-									baseline);
-
-	/* Engage ‘narrow mode’ if the allocation becomes too narrow. The exact
-	 * choice of width is arbitrary here. */
-	narrow_mode = (width < 600);
-	if (tile->narrow_mode != narrow_mode) {
-		tile->narrow_mode = narrow_mode;
-		gs_feature_tile_refresh (GS_APP_TILE (tile));
-	}
-}
-
-static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
 	gtk_widget_init_template (GTK_WIDGET (tile));
@@ -481,7 +567,6 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	widget_class->css_changed = gs_feature_tile_css_changed;
 	widget_class->direction_changed = gs_feature_tile_direction_changed;
-	widget_class->size_allocate = gs_feature_tile_size_allocate;
 
 	app_tile_class->refresh = gs_feature_tile_refresh;
 
@@ -493,6 +578,7 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, subtitle);
 
 	gtk_widget_class_set_css_name (widget_class, "feature-tile");
+	gtk_widget_class_set_layout_manager_type (widget_class, GS_TYPE_FEATURE_TILE_LAYOUT);
 }
 
 GtkWidget *
