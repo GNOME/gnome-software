@@ -1000,6 +1000,17 @@ search_bar_search_mode_enabled_changed_cb (GtkSearchBar *search_bar,
 		gs_shell_go_back (shell);
 }
 
+static void
+go_back (GsShell *shell)
+{
+	if (adw_leaflet_get_adjacent_child (shell->details_leaflet,
+					    ADW_NAVIGATION_DIRECTION_BACK)) {
+		gtk_widget_activate (shell->button_back2);
+	} else {
+		gtk_widget_activate (shell->button_back);
+	}
+}
+
 static gboolean
 window_key_pressed_cb (GtkEventControllerKey *key_controller,
                        guint                  keyval,
@@ -1012,9 +1023,7 @@ window_key_pressed_cb (GtkEventControllerKey *key_controller,
 	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
 	    keyval == GDK_KEY_Back) {
-		/* GTK will only actually activate the one which is visible */
-		gtk_widget_activate (shell->button_back);
-		gtk_widget_activate (shell->button_back2);
+		go_back (shell);
 		return GDK_EVENT_STOP;
 	}
 
@@ -1028,9 +1037,7 @@ window_button_pressed_cb (GtkGestureClick *click_gesture,
                           gdouble          y,
                           GsShell         *shell)
 {
-	/* GTK will only actually activate the one which is visible */
-	gtk_widget_activate (shell->button_back);
-	gtk_widget_activate (shell->button_back2);
+	go_back (shell);
 
 	gtk_gesture_set_state (GTK_GESTURE (click_gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
