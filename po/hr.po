@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-02-10 15:57+0000\n"
-"PO-Revision-Date: 2022-02-19 14:55+0100\n"
+"POT-Creation-Date: 2022-02-23 10:35+0000\n"
+"PO-Revision-Date: 2022-03-01 12:06+0100\n"
 "Last-Translator: gogo <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "Language: hr\n"
@@ -71,7 +71,7 @@ msgstr "Panel nadopuna"
 msgid "The update details"
 msgstr "Pojedinosti nadopune"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1766
+#: data/appdata/org.gnome.Software.appdata.xml.in:1807
 msgid "The GNOME Project"
 msgstr "GNOME projekt"
 
@@ -755,17 +755,17 @@ msgstr "%s je prikladno za %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:241
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
 msgid "Age Rating"
 msgstr "Dobna ocjena"
 
-#: src/gs-age-rating-context-dialog.ui:79
-#: src/gs-hardware-support-context-dialog.ui:79
-#: src/gs-safety-context-dialog.ui:229
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Kako dodati informacije koje nedostaju"
 
-#: lib/gs-app.c:5715
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Lokalna datoteka"
 
@@ -774,12 +774,12 @@ msgstr "Lokalna datoteka"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5731 src/gs-safety-context-dialog.c:406
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5807
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Paket"
 
@@ -797,7 +797,7 @@ msgstr "Čekanje na uklanjanje"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:175 src/gs-app-tile.ui:50
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:144 src/gs-app-tile.ui:50
 #: src/gs-feature-tile.c:402 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "Instalirano"
@@ -952,7 +952,7 @@ msgstr "Nema pojedinosti za ovo izdanje"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -1038,8 +1038,8 @@ msgid "Show version number"
 msgstr "Prikaži broj inačice"
 
 #: src/gs-application.c:312
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "Autorsko pravo © 2016–2021 GNOME Softver doprinositelji"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "Autorsko pravo © 2016–2022 GNOME Softver doprinositelji"
 
 #: src/gs-application.c:315
 msgid "translator-credits"
@@ -1433,7 +1433,7 @@ msgstr ""
 msgid "Translations"
 msgstr "Prijevodi"
 
-#: src/gs-app-translation-dialog.ui:97
+#: src/gs-app-translation-dialog.ui:96
 msgid "_Translation Website"
 msgstr "_Web stranica prijevoda"
 
@@ -1983,7 +1983,7 @@ msgstr "Omogući i instaliraj"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Opširne greške iz upravitelja paketa slijede:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:80
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Pojedinosti"
 
@@ -2203,18 +2203,18 @@ msgid "_Install…"
 msgstr "_Instaliraj…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1377
+#: src/gs-details-page.c:1386
 msgid "You need internet access to write a review"
 msgstr "Potreban vam je pristup internetu za pisanje recenzije"
 
-#: src/gs-details-page.c:1525 src/gs-details-page.c:1541
+#: src/gs-details-page.c:1534 src/gs-details-page.c:1550
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nemoguće je pronaći “%s”"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2068
+#: src/gs-details-page.c:2077
 msgid "Loading…"
 msgstr "Učitavanje…"
 
@@ -2585,15 +2585,15 @@ msgstr "Nemoguć pronalazak zatraženog softvera"
 msgid "Codecs page"
 msgstr "Stranica kôdeka"
 
-#: src/gs-featured-carousel.ui:56
+#: src/gs-featured-carousel.ui:42
 msgid "Previous"
 msgstr "Prijašnje"
 
-#: src/gs-featured-carousel.ui:79
+#: src/gs-featured-carousel.ui:65
 msgid "Next"
 msgstr "Sljedeće"
 
-#: src/gs-featured-carousel.ui:96
+#: src/gs-featured-carousel.ui:82
 msgid "Featured Apps List"
 msgstr "Popis popularnih aplikacija"
 
@@ -2859,7 +2859,7 @@ msgid "_Get Involved"
 msgstr "_Pridružite se"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:60 src/gs-loading-page.c:64
 msgid "Software catalog is being downloaded"
 msgstr "Katalog softvera se preuzima"
 
@@ -3377,19 +3377,19 @@ msgid "out of 5 stars"
 msgstr "od 5 zvjezdica"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Nepoznato"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Možete prijaviti uvredljive, nepristojne ili diskriminirajuće recenzije."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3400,13 +3400,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Prijavi recenziju?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Prijavi"
 
@@ -3663,20 +3663,20 @@ msgstr "%s je nepouzdan"
 msgid "Safety"
 msgstr "Pouzdanost"
 
-#: src/gs-safety-context-dialog.ui:109
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Licenca"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:149
+#: src/gs-safety-context-dialog.ui:148
 msgid "Source"
 msgstr "Repozitorij"
 
-#: src/gs-safety-context-dialog.ui:189
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:213
+#: src/gs-safety-context-dialog.ui:212
 msgid "Outdated SDK version"
 msgstr "Zastarjela SDK inačica"
 
@@ -4331,7 +4331,7 @@ msgid "Storage"
 msgstr "Pohrana"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:80
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4881,7 +4881,7 @@ msgstr "Flatpak je radni okvir za aplikacije radne površine na Linuxu"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Dobivanje flatpak metapodataka za %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3205
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Neuspjelo čišćenje dodatka ‘%s’: %s"
@@ -5026,6 +5026,20 @@ msgstr "%s nadopuna upravljačkog uređaja pohrane"
 msgid "%s Network Interface Update"
 msgstr "%s nadopuna mrežnog sučelja"
 
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+msgid "%s Display Update"
+msgstr "%s nadopuna zaslona"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+msgid "%s BMC Update"
+msgstr "%s BMC nadopuna"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1105
 msgid "Firmware"
 msgstr "Firmver"
@@ -5079,7 +5093,7 @@ msgstr ""
 "nadopune će biti onemogućene sve dok se nepotpisane nadopune ne uklone ili "
 "nadopune."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:433
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Paketi"
 
