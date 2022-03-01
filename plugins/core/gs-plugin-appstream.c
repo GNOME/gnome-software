@@ -1090,6 +1090,12 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
+	/* if an installed desktop or appdata file exists set to installed */
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+		if (!gs_plugin_appstream_refine_state (self, app, error))
+			return FALSE;
+	}
+
 	/* success */
 	return TRUE;
 }
@@ -1245,6 +1251,14 @@ refine_wildcard (GsPluginAppstream    *self,
 		if (!gs_appstream_refine_app (GS_PLUGIN (self), new, self->silo, component,
 					      refine_flags, error))
 			return FALSE;
+		gs_plugin_appstream_set_compulsory_quirk (new, component);
+
+		/* if an installed desktop or appdata file exists set to installed */
+		if (gs_app_get_state (new) == GS_APP_STATE_UNKNOWN) {
+			if (!gs_plugin_appstream_refine_state (self, new, error))
+				return FALSE;
+		}
+
 		gs_app_list_add (list, new);
 	}
 

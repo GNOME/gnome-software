@@ -136,7 +136,7 @@ gtk = dependency('gtk4',
     ]
   )
 glib = dependency('glib-2.0', version : '>= 2.66.0')
-json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
+json_glib = dependency('json-glib-1.0', version : '>= 1.6.0')
 libm = cc.find_library('m', required: false)
 if get_option('soup2')
   libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')

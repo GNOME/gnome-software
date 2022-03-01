@@ -32,6 +32,46 @@
  * gs_plugin_job_refine_get_result_list(). The #GsAppList which was passed
  * into the job will not be modified.
  *
+ * Internally, the #GsPluginClass.refine_async() functions are called on all
+ * the plugins in series, and in series with a call to
+ * gs_odrs_provider_refine_async(). Once all of those calls are finished,
+ * zero or more recursive calls to run_refine_internal_async() are made in
+ * parallel to do a similar refine process on the addons, runtime and related
+ * components for all the components in the input #GsAppList. The refine job is
+ * complete once all these recursive calls complete.
+ *
+ * FIXME: Ideally, the #GsPluginClass.refine_async() calls would happen in
+ * parallel, but this cannot be the case until the results of the refine_async()
+ * call in one plugin don’t depend on the results of refine_async() in another.
+ * This still happens with several pairs of plugins.
+ *
+ * ```
+ *                                    run_async()
+ *                                         |
+ *                                         v
+ *           /-----------------------+-------------+----------------\
+ *           |                       |             |                |
+ * plugin->refine_async()            |             |                |
+ *           v             plugin->refine_async()  |                |
+ *           |                       v             …                |
+ *           |                       |             v  gs_odrs_provider_refine_async()
+ *           |                       |             |                v
+ *           |                       |             |                |
+ *           \-----------------------+-------------+----------------/
+ *                                         |
+ *                            finish_refine_internal_op()
+ *                                         |
+ *                                         v
+ *            /----------------------------+-----------------\
+ *            |                            |                 |
+ * run_refine_internal_async()  run_refine_internal_async()  …
+ *            |                            |                 |
+ *            v                            v                 v
+ *            \----------------------------+-----------------/
+ *                                         |
+ *                         finish_refine_internal_recursion()
+ * ```
+ *
  * See also: #GsPluginClass.refine_async
  * Since: 42
  */
@@ -55,9 +95,12 @@ struct _GsPluginJobRefine
 {
 	GsPluginJob parent;
 
+	/* Input data. */
 	GsAppList *app_list;  /* (owned) */
-	GsAppList *result_list;  /* (owned) (nullable) */
 	GsPluginRefineFlags flags;
+
+	/* Output data. */
+	GsAppList *result_list;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsPluginJobRefine, gs_plugin_job_refine, GS_TYPE_PLUGIN_JOB)
@@ -172,58 +215,118 @@ app_is_non_wildcard (GsApp *app, gpointer user_data)
 static void plugin_refine_cb (GObject      *source_object,
                               GAsyncResult *result,
                               gpointer      user_data);
+static void odrs_provider_refine_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
+static void finish_refine_internal_op (GTask  *task,
+                                       GError *error);
+static void recursive_internal_refine_cb (GObject      *source_object,
+                                          GAsyncResult *result,
+                                          gpointer      user_data);
+static void finish_refine_internal_recursion (GTask  *task,
+                                              GError *error);
+static gboolean run_refine_internal_finish (GsPluginJobRefine  *self,
+                                            GAsyncResult       *result,
+                                            GError            **error);
 
-static gboolean
-run_refine_filter (GsPluginJobRefine    *self,
-                   GsPluginLoader       *plugin_loader,
-                   GsAppList            *list,
-                   GsPluginRefineFlags   refine_flags,
-                   GCancellable         *cancellable,
-                   GError              **error)
+typedef struct {
+	/* Input data. */
+	GsPluginLoader *plugin_loader;  /* (not nullable) (owned) */
+	GsAppList *list;  /* (not nullable) (owned) */
+	GsPluginRefineFlags flags;
+
+	/* In-progress data. */
+	guint n_pending_ops;
+	guint n_pending_recursions;
+	guint next_plugin_index;
+
+	/* Output data. */
+	GError *error;  /* (nullable) (owned) */
+} RefineInternalData;
+
+static void
+refine_internal_data_free (RefineInternalData *data)
 {
-	GsOdrsProvider *odrs_provider;
-	GPtrArray *plugins;  /* (element-type GsPlugin) */
+	g_clear_object (&data->plugin_loader);
+	g_clear_object (&data->list);
 
-	/* run each plugin */
+	g_assert (data->n_pending_ops == 0);
+	g_assert (data->n_pending_recursions == 0);
+
+	/* If an error occurred, it should have been stolen to pass to
+	 * g_task_return_error() by now. */
+	g_assert (data->error == NULL);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (RefineInternalData, refine_internal_data_free)
+
+static void
+run_refine_internal_async (GsPluginJobRefine   *self,
+                           GsPluginLoader      *plugin_loader,
+                           GsAppList           *list,
+                           GsPluginRefineFlags  flags,
+                           GCancellable        *cancellable,
+                           GAsyncReadyCallback  callback,
+                           gpointer             user_data)
+{
+	GPtrArray *plugins;  /* (element-type GsPlugin) */
+	g_autoptr(GTask) task = NULL;
+	RefineInternalData *data;
+	g_autoptr(RefineInternalData) data_owned = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, run_refine_internal_async);
+
+	data = data_owned = g_new0 (RefineInternalData, 1);
+	data->plugin_loader = g_object_ref (plugin_loader);
+	data->list = g_object_ref (list);
+	data->flags = flags;
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) refine_internal_data_free);
+
+	/* try to adopt each application with a plugin */
+	gs_plugin_loader_run_adopt (plugin_loader, list);
+
+	data->n_pending_ops = 0;
+
+	/* run each plugin
+	 *
+	 * FIXME: For now, we have to run these vfuncs sequentially rather than
+	 * all in parallel. This is because there are still dependencies between
+	 * some of the plugins, where the code to refine an app in one plugin
+	 * depends on the results of refining it in another plugin first.
+	 *
+	 * Eventually, the plugins should all be changed/removed so that they
+	 * can operate independently. At that point, this code can be reverted
+	 * so that the refine_async() vfuncs are called in parallel. */
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
-		g_autoptr(GAsyncResult) refine_result = NULL;
 
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		if (plugin_class->refine_async == NULL)
 			continue;
 
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		data->next_plugin_index = i + 1;
+
 		/* run the batched plugin symbol */
-		plugin_class->refine_async (plugin, list, refine_flags,
-					    cancellable, plugin_refine_cb, &refine_result);
+		data->n_pending_ops++;
+		plugin_class->refine_async (plugin, list, flags,
+					    cancellable, plugin_refine_cb, g_object_ref (task));
 
-		/* FIXME: Make this sync until the calling function is rearranged
-		 * to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		if (!plugin_class->refine_finish (plugin, refine_result, error))
-			return FALSE;
-
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
 	}
 
-	/* Add ODRS data if needed */
-	odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
-
-	if (odrs_provider != NULL) {
-		if (!gs_odrs_provider_refine (odrs_provider,
-					      list, refine_flags, cancellable, error))
-			return FALSE;
-	}
-
-	/* filter any wildcard apps left in the list */
-	gs_app_list_filter (list, app_is_non_wildcard, NULL);
-	return TRUE;
+	data->n_pending_ops++;
+	finish_refine_internal_op (task, NULL);
 }
 
 static void
@@ -231,29 +334,118 @@ plugin_refine_cb (GObject      *source_object,
                   GAsyncResult *result,
                   gpointer      user_data)
 {
-	GAsyncResult **result_out = user_data;
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+	g_autoptr(GError) local_error = NULL;
 
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
+	if (!plugin_class->refine_finish (plugin, result, &local_error)) {
+		finish_refine_internal_op (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+
+	finish_refine_internal_op (task, NULL);
 }
 
-static gboolean
-run_refine_internal (GsPluginJobRefine    *self,
-                     GsPluginLoader       *plugin_loader,
-                     GsAppList            *list,
-                     GsPluginRefineFlags   flags,
-                     GCancellable         *cancellable,
-                     GError              **error)
+static void
+odrs_provider_refine_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
 {
-	/* try to adopt each application with a plugin */
-	gs_plugin_loader_run_adopt (plugin_loader, list);
+	GsOdrsProvider *odrs_provider = GS_ODRS_PROVIDER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
 
-	/* run each plugin */
-	if (!run_refine_filter (self, plugin_loader, list, flags,
-				cancellable, error)) {
-		return FALSE;
+	gs_odrs_provider_refine_finish (odrs_provider, result, &local_error);
+	finish_refine_internal_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-NULL */
+static void
+finish_refine_internal_op (GTask  *task,
+                           GError *error)
+{
+	GsPluginJobRefine *self = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	RefineInternalData *data = g_task_get_task_data (task);
+	GsPluginLoader *plugin_loader = data->plugin_loader;
+	GsAppList *list = data->list;
+	GsPluginRefineFlags flags = data->flags;
+	GsOdrsProvider *odrs_provider;
+	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
+	GPtrArray *plugins;  /* (element-type GsPlugin) */
+
+	if (data->error == NULL && error_owned != NULL) {
+		data->error = g_steal_pointer (&error_owned);
+	} else if (error_owned != NULL) {
+		g_debug ("Additional error while refining: %s", error_owned->message);
 	}
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	plugins = gs_plugin_loader_get_plugins (plugin_loader);
+
+	for (guint i = data->next_plugin_index; i < plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugins, i);
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+		if (plugin_class->refine_async == NULL)
+			continue;
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		data->next_plugin_index = i + 1;
+
+		/* run the batched plugin symbol */
+		data->n_pending_ops++;
+		plugin_class->refine_async (plugin, list, flags,
+					    cancellable, plugin_refine_cb, g_object_ref (task));
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
+	}
+
+	if (data->next_plugin_index == plugins->len) {
+		/* Avoid the ODRS refine being run multiple times. */
+		data->next_plugin_index++;
+
+		/* Add ODRS data if needed */
+		odrs_provider = gs_plugin_loader_get_odrs_provider (plugin_loader);
+
+		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_REVIEWS;
+		if (flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+			     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING))
+			odrs_refine_flags |= GS_ODRS_PROVIDER_REFINE_FLAGS_GET_RATINGS;
+
+		if (odrs_provider != NULL && odrs_refine_flags != 0) {
+			data->n_pending_ops++;
+			gs_odrs_provider_refine_async (odrs_provider, list, odrs_refine_flags,
+						       cancellable, odrs_provider_refine_cb, g_object_ref (task));
+		}
+	}
+
+	if (data->n_pending_ops > 0)
+		return;
+
+	/* At this point, all the plugin->refine() calls are complete and the
+	 * gs_odrs_provider_refine_async() call is also complete. If an error
+	 * occurred during those calls, return with it now rather than
+	 * proceeding to the recursive calls below. */
+	if (data->error != NULL) {
+		g_task_return_error (task, g_steal_pointer (&data->error));
+		return;
+	}
+
+	/* filter any wildcard apps left in the list */
+	gs_app_list_filter (list, app_is_non_wildcard, NULL);
 
 	/* ensure these are sorted by score */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
@@ -265,16 +457,19 @@ run_refine_internal (GsPluginJobRefine    *self,
 		}
 	}
 
+	/* Now run several recursive calls to run_refine_internal_async() in
+	 * parallel, to refine related components. */
+	data->n_pending_recursions = 1;
+
 	/* refine addons one layer deep */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
-		g_autoptr(GsAppList) addons_list = NULL;
+		g_autoptr(GsAppList) addons_list = gs_app_list_new ();
 		GsPluginRefineFlags addons_flags = flags;
 
 		addons_flags &= ~(GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
 				  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS);
 
-		addons_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			GsAppList *addons = gs_app_get_addons (app);
@@ -286,42 +481,47 @@ run_refine_internal (GsPluginJobRefine    *self,
 				gs_app_list_add (addons_list, addon);
 			}
 		}
-		if (gs_app_list_length (addons_list) > 0) {
-			if (!run_refine_internal (self, plugin_loader,
-						  addons_list, addons_flags,
-						  cancellable, error)) {
-				return FALSE;
-			}
+
+		if (gs_app_list_length (addons_list) > 0 && addons_flags != 0) {
+			data->n_pending_recursions++;
+			run_refine_internal_async (self, plugin_loader,
+						   addons_list, addons_flags,
+						   cancellable, recursive_internal_refine_cb,
+						   g_object_ref (task));
 		}
 	}
 
 	/* also do runtime */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
-		g_autoptr(GsAppList) list2 = gs_app_list_new ();
+		g_autoptr(GsAppList) runtimes_list = gs_app_list_new ();
+		GsPluginRefineFlags runtimes_flags = flags;
+
+		runtimes_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
-			GsApp *runtime;
 			GsApp *app = gs_app_list_index (list, i);
-			runtime = gs_app_get_runtime (app);
+			GsApp *runtime = gs_app_get_runtime (app);
+
 			if (runtime != NULL)
-				gs_app_list_add (list2, runtime);
+				gs_app_list_add (runtimes_list, runtime);
 		}
-		if (gs_app_list_length (list2) > 0) {
-			if (!run_refine_internal (self, plugin_loader,
-						  list2, flags, cancellable,
-						  error)) {
-				return FALSE;
-			}
+
+		if (gs_app_list_length (runtimes_list) > 0 && runtimes_flags != 0) {
+			data->n_pending_recursions++;
+			run_refine_internal_async (self, plugin_loader,
+						   runtimes_list, runtimes_flags,
+						   cancellable, recursive_internal_refine_cb,
+						   g_object_ref (task));
 		}
 	}
 
 	/* also do related packages one layer deep */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) {
-		g_autoptr(GsAppList) related_list = NULL;
+		g_autoptr(GsAppList) related_list = gs_app_list_new ();
 		GsPluginRefineFlags related_flags = flags;
 
 		related_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 
-		related_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
 			GsAppList *related = gs_app_get_related (app);
@@ -333,17 +533,66 @@ run_refine_internal (GsPluginJobRefine    *self,
 				gs_app_list_add (related_list, app2);
 			}
 		}
-		if (gs_app_list_length (related_list) > 0) {
-			if (!run_refine_internal (self, plugin_loader,
-						  related_list, related_flags,
-						  cancellable, error)) {
-				return FALSE;
-			}
+
+		if (gs_app_list_length (related_list) > 0 && related_flags != 0) {
+			data->n_pending_recursions++;
+			run_refine_internal_async (self, plugin_loader,
+						   related_list, related_flags,
+						   cancellable, recursive_internal_refine_cb,
+						   g_object_ref (task));
 		}
 	}
 
-	/* success */
-	return TRUE;
+	finish_refine_internal_recursion (task, NULL);
+}
+
+static void
+recursive_internal_refine_cb (GObject      *source_object,
+                              GAsyncResult *result,
+                              gpointer      user_data)
+{
+	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	run_refine_internal_finish (self, result, &local_error);
+	finish_refine_internal_recursion (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-NULL */
+static void
+finish_refine_internal_recursion (GTask  *task,
+                                  GError *error)
+{
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	RefineInternalData *data = g_task_get_task_data (task);
+
+	if (data->error == NULL && error_owned != NULL) {
+		data->error = g_steal_pointer (&error_owned);
+	} else if (error_owned != NULL) {
+		g_debug ("Additional error while refining: %s", error_owned->message);
+	}
+
+	g_assert (data->n_pending_recursions > 0);
+	data->n_pending_recursions--;
+
+	if (data->n_pending_recursions > 0)
+		return;
+
+	/* The entire refine operation (and all its sub-operations and
+	 * recursions) is complete. */
+	if (data->error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+run_refine_internal_finish (GsPluginJobRefine  *self,
+                            GAsyncResult       *result,
+                            GError            **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -355,69 +604,11 @@ app_thaw_notify_idle (gpointer data)
 	return G_SOURCE_REMOVE;
 }
 
-static gboolean
-run_refine (GsPluginJobRefine  *self,
-            GsPluginLoader     *plugin_loader,
-            GsAppList          *list,
-            GCancellable       *cancellable,
-            GError            **error)
-{
-	gboolean ret;
-	g_autoptr(GsAppList) freeze_list = NULL;
-
-	/* nothing to do */
-	if (gs_app_list_length (list) == 0)
-		return TRUE;
-
-	/* freeze all apps */
-	freeze_list = gs_app_list_copy (list);
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
-		g_object_freeze_notify (G_OBJECT (app));
-	}
-
-	/* first pass */
-	ret = run_refine_internal (self, plugin_loader, list, self->flags, cancellable, error);
-	if (!ret)
-		goto out;
-
-	/* remove any addons that have the same source as the parent app */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
-		GsApp *app = gs_app_list_index (list, i);
-		GsAppList *addons = gs_app_get_addons (app);
-
-		/* find any apps with the same source */
-		const gchar *pkgname_parent = gs_app_get_source_default (app);
-		if (pkgname_parent == NULL)
-			continue;
-		for (guint j = 0; j < gs_app_list_length (addons); j++) {
-			GsApp *addon = gs_app_list_index (addons, j);
-			if (g_strcmp0 (gs_app_get_source_default (addon),
-				       pkgname_parent) == 0) {
-				g_debug ("%s has the same pkgname of %s as %s",
-					 gs_app_get_unique_id (app),
-					 pkgname_parent,
-					 gs_app_get_unique_id (addon));
-				g_ptr_array_add (to_remove, addon);
-			}
-		}
-
-		/* remove any addons with the same source */
-		for (guint j = 0; j < to_remove->len; j++) {
-			GsApp *addon = g_ptr_array_index (to_remove, j);
-			gs_app_remove_addon (app, addon);
-		}
-	}
-
-out:
-	/* now emit all the changed signals */
-	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
-		GsApp *app = gs_app_list_index (freeze_list, i);
-		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
-	}
-	return ret;
-}
+static void run_cb (GObject      *source_object,
+                    GAsyncResult *result,
+                    gpointer      user_data);
+static void finish_run (GTask     *task,
+                        GsAppList *result_list);
 
 static void
 gs_plugin_job_refine_run_async (GsPluginJob         *job,
@@ -428,28 +619,100 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 {
 	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (job);
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GError) local_error = NULL;
-	g_autofree gchar *job_debug = NULL;
 	g_autoptr(GsAppList) result_list = NULL;
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
-	g_task_set_name (task, G_STRFUNC);
+	g_task_set_source_tag (task, gs_plugin_job_refine_run_async);
 
 	/* Operate on a copy of the input list so we don’t modify it when
 	 * resolving wildcards. */
 	result_list = gs_app_list_copy (self->app_list);
+	g_task_set_task_data (task, g_object_ref (result_list), (GDestroyNotify) g_object_unref);
 
-	/* run refine() on each one if required */
-	if (self->flags != 0) {
-		if (!run_refine (self, plugin_loader, result_list, cancellable, &local_error)) {
-			gs_utils_error_convert_gio (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-	} else {
-		g_debug ("no refine flags set for transaction");
+	/* nothing to do */
+	if (self->flags == 0 ||
+	    gs_app_list_length (result_list) == 0) {
+		g_debug ("no refine flags set for transaction or app list is empty");
+		finish_run (task, result_list);
+		return;
 	}
+
+	/* freeze all apps */
+	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
+		GsApp *app = gs_app_list_index (self->app_list, i);
+		g_object_freeze_notify (G_OBJECT (app));
+	}
+
+	/* Start refining the apps. */
+	run_refine_internal_async (self, plugin_loader, result_list,
+				   self->flags, cancellable,
+				   run_cb, g_steal_pointer (&task));
+}
+
+static void
+run_cb (GObject      *source_object,
+        GAsyncResult *result,
+        gpointer      user_data)
+{
+	GsPluginJobRefine *self = GS_PLUGIN_JOB_REFINE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsAppList *result_list = g_task_get_task_data (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (run_refine_internal_finish (self, result, &local_error)) {
+		/* remove any addons that have the same source as the parent app */
+		for (guint i = 0; i < gs_app_list_length (result_list); i++) {
+			g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
+			GsApp *app = gs_app_list_index (result_list, i);
+			GsAppList *addons = gs_app_get_addons (app);
+
+			/* find any apps with the same source */
+			const gchar *pkgname_parent = gs_app_get_source_default (app);
+			if (pkgname_parent == NULL)
+				continue;
+			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+				GsApp *addon = gs_app_list_index (addons, j);
+				if (g_strcmp0 (gs_app_get_source_default (addon),
+					       pkgname_parent) == 0) {
+					g_debug ("%s has the same pkgname of %s as %s",
+						 gs_app_get_unique_id (app),
+						 pkgname_parent,
+						 gs_app_get_unique_id (addon));
+					g_ptr_array_add (to_remove, addon);
+				}
+			}
+
+			/* remove any addons with the same source */
+			for (guint j = 0; j < to_remove->len; j++) {
+				GsApp *addon = g_ptr_array_index (to_remove, j);
+				gs_app_remove_addon (app, addon);
+			}
+		}
+	}
+
+	/* now emit all the changed signals */
+	for (guint i = 0; i < gs_app_list_length (self->app_list); i++) {
+		GsApp *app = gs_app_list_index (self->app_list, i);
+		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
+	}
+
+	/* Delayed error handling. */
+	if (local_error != NULL) {
+		gs_utils_error_convert_gio (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	finish_run (task, result_list);
+}
+
+static void
+finish_run (GTask     *task,
+            GsAppList *result_list)
+{
+	GsPluginJobRefine *self = g_task_get_source_object (task);
+	g_autofree gchar *job_debug = NULL;
 
 	/* Internal calls to #GsPluginJobRefine may want to do their own
 	 * filtering, typically if the refine is being done as part of another
@@ -465,7 +728,7 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 		gs_app_list_filter (result_list, app_is_valid_filter, self);
 
 	/* show elapsed time */
-	job_debug = gs_plugin_job_to_string (job);
+	job_debug = gs_plugin_job_to_string (GS_PLUGIN_JOB (self));
 	g_debug ("%s", job_debug);
 
 	/* success */
