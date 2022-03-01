@@ -3555,6 +3555,9 @@ gs_plugin_download (GsPlugin *plugin,
 	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
 		g_warning ("Failed to remove schedule entry: %s", error_local->message);
 
+	if (retval)
+		gs_plugin_updates_changed (plugin);
+
 	return retval;
 }
 
@@ -3587,6 +3590,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		return FALSE;
 	}
+
+	gs_plugin_updates_changed (plugin);
 
 	return TRUE;
 }
