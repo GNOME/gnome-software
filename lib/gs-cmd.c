@@ -363,8 +363,8 @@ main (int argc, char **argv)
 	if (plugin_blocklist_str != NULL)
 		plugin_blocklist = g_strsplit (plugin_blocklist_str, ",", -1);
 	ret = gs_plugin_loader_setup (self->plugin_loader,
-				      plugin_allowlist,
-				      plugin_blocklist,
+				      (const gchar * const *) plugin_allowlist,
+				      (const gchar * const *) plugin_blocklist,
 				      NULL,
 				      &error);
 	if (!ret) {
