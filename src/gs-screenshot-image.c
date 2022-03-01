@@ -330,6 +330,8 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	if (stream == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("Failed to download screenshot: %s", error->message);
+			/* Reset the width request, thus the image shrinks when the window width is small */
+			gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
 			gs_screenshot_image_stop_spinner (ssimg);
 			gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
 		}
@@ -353,6 +355,9 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	if (status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
 #endif
 		return;
+
+	/* Reset the width request, thus the image shrinks when the window width is small */
+	gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
 
 	if (status_code == SOUP_STATUS_NOT_MODIFIED) {
 		g_debug ("screenshot has not been modified");
@@ -459,6 +464,7 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 
 	ssimg->width = width;
 	ssimg->height = height;
+	/* Reset the width request, thus the image shrinks when the window width is small */
 	gtk_widget_set_size_request (ssimg->stack, -1, (gint) height);
 }
 
@@ -534,6 +540,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_return_if_fail (AS_IS_SCREENSHOT (ssimg->screenshot));
 	g_return_if_fail (ssimg->width != 0);
 	g_return_if_fail (ssimg->height != 0);
+
+	/* Reset the width request, thus the image shrinks when the window width is small */
+	gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
 
 	/* load an image according to the scale factor */
 	ssimg->scale = (guint) gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
@@ -688,6 +697,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		g_autoptr(GFile) file = g_file_new_for_path (ssimg->filename);
 		gs_screenshot_soup_msg_set_modified_request (ssimg->message, file);
 	}
+
+	/* Make sure the spinner takes approximately the size the screenshot will use */
+	gtk_widget_set_size_request (ssimg->stack, (gint) ssimg->width, (gint) ssimg->height);
 
 	ssimg->load_timeout_id = g_timeout_add_seconds (SPINNER_TIMEOUT_SECS,
 		gs_screenshot_show_spinner_cb, ssimg);
