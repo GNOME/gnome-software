@@ -831,31 +831,6 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 }
 
 static gboolean
-load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *cancellable)
-{
-	const gchar *icon_url;
-	g_autoptr(SnapdIcon) icon = NULL;
-	g_autoptr(GIcon) gicon = NULL;
-	g_autoptr(GError) error = NULL;
-
-	icon_url = snapd_snap_get_icon (snap);
-	if (icon_url == NULL || strcmp (icon_url, "") == 0)
-		return FALSE;
-
-	icon = snapd_client_get_icon_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, &error);
-	if (icon == NULL) {
-		if (!g_error_matches (error, SNAPD_ERROR, SNAPD_ERROR_NOT_FOUND))
-			g_warning ("Failed to load snap icon: %s", error->message);
-		return FALSE;
-	}
-
-	gicon = g_bytes_icon_new (snapd_icon_get_data (icon));
-	gs_app_add_icon (app, gicon);
-
-	return TRUE;
-}
-
-static gboolean
 app_name_matches_snap_name (SnapdSnap *snap, SnapdApp *app)
 {
 	return g_strcmp0 (snapd_snap_get_name (snap), snapd_app_get_name (app)) == 0;
@@ -891,91 +866,39 @@ get_primary_app (SnapdSnap *snap)
 	return primary_app;
 }
 
-static gboolean
-load_desktop_icon (GsApp *app, SnapdSnap *snap)
+static void
+refine_icons (GsPluginSnap *self,
+              SnapdClient  *client,
+              GsApp        *app,
+              const gchar  *id,
+              SnapdSnap    *snap,
+              GCancellable *cancellable)
 {
-	GPtrArray *apps;
+	g_autoptr(SnapdIcon) snap_icon = NULL;
+	GPtrArray *media;
 	guint i;
 
-	apps = snapd_snap_get_apps (snap);
-	for (i = 0; i < apps->len; i++) {
-		SnapdApp *snap_app = apps->pdata[i];
-		const gchar *desktop_file_path;
-		g_autoptr(GKeyFile) desktop_file = NULL;
-		g_autoptr(GError) error = NULL;
-		g_autofree gchar *icon_value = NULL;
+	/* Snap may have an icon file inside it */
+	snap_icon = snapd_client_get_icon_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, NULL);
+	if (snap_icon != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (snapd_icon_get_data (snap_icon));
+		gs_app_add_icon (app, icon);
+	}
+
+	/* Remote icons */
+	media = snapd_snap_get_media (snap);
+	for (i = 0; i < media->len; i++) {
+		SnapdMedia *m = media->pdata[i];
 		g_autoptr(GIcon) icon = NULL;
 
-		desktop_file_path = snapd_app_get_desktop_file (snap_app);
-		if (desktop_file_path == NULL)
+		if (g_strcmp0 (snapd_media_get_media_type (m), "icon") != 0)
 			continue;
 
-		desktop_file = g_key_file_new ();
-		if (!g_key_file_load_from_file (desktop_file, desktop_file_path, G_KEY_FILE_NONE, &error)) {
-			g_warning ("Failed to load desktop file %s: %s", desktop_file_path, error->message);
-			continue;
-		}
-
-		icon_value = g_key_file_get_string (desktop_file, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_ICON, &error);
-		if (icon_value == NULL) {
-			g_warning ("Failed to get desktop file icon %s: %s", desktop_file_path, error->message);
-			continue;
-		}
-
-		if (g_str_has_prefix (icon_value, "/")) {
-			g_autoptr(GFile) icon_file = g_file_new_for_path (icon_value);
-			icon = g_file_icon_new (icon_file);
-		} else {
-			icon = g_themed_icon_new (icon_value);
-		}
+		icon = gs_remote_icon_new (snapd_media_get_url (m));
+		gs_icon_set_width (icon, snapd_media_get_width (m));
+		gs_icon_set_height (icon, snapd_media_get_height (m));
 		gs_app_add_icon (app, icon);
-
-		return TRUE;
 	}
-
-	return FALSE;
-}
-
-static gboolean
-load_store_icon (GsApp *app, SnapdSnap *snap)
-{
-	const gchar *icon_url;
-
-	icon_url = snapd_snap_get_icon (snap);
-	if (icon_url == NULL)
-		return FALSE;
-
-	if (g_str_has_prefix (icon_url, "http://") || g_str_has_prefix (icon_url, "https://")) {
-		g_autoptr(GIcon) icon = gs_remote_icon_new (icon_url);
-		gs_app_add_icon (app, icon);
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-static gboolean
-load_icon (GsPluginSnap *self,
-           SnapdClient  *client,
-           GsApp        *app,
-           const gchar  *id,
-           SnapdSnap    *local_snap,
-           SnapdSnap    *store_snap,
-           GCancellable *cancellable)
-{
-	if (local_snap != NULL) {
-		if (load_snap_icon (app, client, local_snap, cancellable))
-			return TRUE;
-		if (load_desktop_icon (app, local_snap))
-			return TRUE;
-	}
-
-	if (store_snap == NULL)
-		store_snap = get_store_snap (self, gs_app_get_metadata_item (app, "snap::name"), FALSE, cancellable, NULL);
-	if (store_snap != NULL)
-		return load_store_icon (app, store_snap);
-
-	return FALSE;
 }
 
 static void serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation);
@@ -1381,7 +1304,7 @@ get_snaps_cb (GObject      *object,
 
 		/* load icon if requested */
 		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
-			load_icon (self, client, app, snap_name, local_snap, store_snap, cancellable);
+			refine_icons (self, client, app, snap_name, snap, cancellable);
 
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
 		    gs_app_is_installed (app) &&
