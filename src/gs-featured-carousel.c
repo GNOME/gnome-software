@@ -133,16 +133,20 @@ stop_rotation_timer (GsFeaturedCarousel *self)
 }
 
 static void
+carousel_notify_position_cb (GsFeaturedCarousel *self)
+{
+	/* Reset the rotation timer in case it’s about to fire. */
+	stop_rotation_timer (self);
+	start_rotation_timer (self);
+}
+
+static void
 next_button_clicked_cb (GtkButton *button,
                         gpointer   user_data)
 {
 	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (user_data);
 
 	show_relative_page (self, +1);
-
-	/* Reset the rotation timer in case it’s about to fire. */
-	stop_rotation_timer (self);
-	start_rotation_timer (self);
 }
 
 static void
@@ -152,10 +156,6 @@ previous_button_clicked_cb (GtkButton *button,
 	GsFeaturedCarousel *self = GS_FEATURED_CAROUSEL (user_data);
 
 	show_relative_page (self, -1);
-
-	/* Reset the rotation timer in case it’s about to fire. */
-	stop_rotation_timer (self);
-	start_rotation_timer (self);
 }
 
 static void
@@ -303,6 +303,7 @@ gs_featured_carousel_class_init (GsFeaturedCarouselClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, next_button);
 	gtk_widget_class_bind_template_child (widget_class, GsFeaturedCarousel, previous_button);
+	gtk_widget_class_bind_template_callback (widget_class, carousel_notify_position_cb);
 	gtk_widget_class_bind_template_callback (widget_class, next_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, previous_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, key_pressed_cb);

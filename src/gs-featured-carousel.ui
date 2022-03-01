@@ -20,6 +20,7 @@
         <property name="valign">fill</property>
         <child>
           <object class="AdwCarousel" id="carousel">
+            <signal name="notify::position" handler="carousel_notify_position_cb" swapped="yes"/>
             <style>
               <class name="card"/>
             </style>
