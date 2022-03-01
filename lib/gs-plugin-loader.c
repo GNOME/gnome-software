@@ -2323,6 +2323,7 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	g_autoptr(SetupData) setup_data_owned = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GPtrArray) locations = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GError) local_error = NULL;
 #ifdef HAVE_SYSPROF
@@ -2336,12 +2337,15 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	if (plugin_loader->locations->len == 0) {
 		g_autofree gchar *filename = NULL;
 		filename = g_strdup_printf ("plugins-%s", GS_PLUGIN_API_VERSION);
-		g_ptr_array_add (plugin_loader->locations, g_build_filename (LIBDIR, "gnome-software", filename, NULL));
+		locations = g_ptr_array_new_with_free_func (g_free);
+		g_ptr_array_add (locations, g_build_filename (LIBDIR, "gnome-software", filename, NULL));
+	} else {
+		locations = g_ptr_array_ref (plugin_loader->locations);
 	}
 
-	for (i = 0; i < plugin_loader->locations->len; i++) {
+	for (i = 0; i < locations->len; i++) {
 		GFileMonitor *monitor;
-		const gchar *location = g_ptr_array_index (plugin_loader->locations, i);
+		const gchar *location = g_ptr_array_index (locations, i);
 		g_autoptr(GFile) plugin_dir = g_file_new_for_path (location);
 		g_debug ("monitoring plugin location %s", location);
 		monitor = g_file_monitor_directory (plugin_dir,
@@ -2359,8 +2363,8 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	}
 
 	/* search for plugins */
-	for (i = 0; i < plugin_loader->locations->len; i++) {
-		const gchar *location = g_ptr_array_index (plugin_loader->locations, i);
+	for (i = 0; i < locations->len; i++) {
+		const gchar *location = g_ptr_array_index (locations, i);
 		g_autoptr(GPtrArray) fns = NULL;
 
 		/* search in the plugin directory for plugins */
