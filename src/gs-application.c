@@ -160,6 +160,19 @@ gs_application_init (GsApplication *application)
 }
 
 static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (*result_out == NULL);
+	*result_out = g_object_ref (result);
+
+	g_main_context_wakeup (g_main_context_get_thread_default ());
+}
+
+static void
 gs_application_initialize_plugins (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
@@ -167,6 +180,7 @@ gs_application_initialize_plugins (GsApplication *app)
 	g_auto(GStrv) plugin_allowlist = NULL;
 	g_autoptr(GError) error = NULL;
 	const gchar *tmp;
+	g_autoptr(GAsyncResult) setup_result = NULL;
 
 	if (initialized)
 		return;
@@ -184,11 +198,28 @@ gs_application_initialize_plugins (GsApplication *app)
 	app->plugin_loader = gs_plugin_loader_new ();
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (app->plugin_loader, LOCALPLUGINDIR);
-	if (!gs_plugin_loader_setup (app->plugin_loader,
-				     plugin_allowlist,
-				     plugin_blocklist,
-				     NULL,
-				     &error)) {
+
+	/* Set up the plugins. Manually iterate the thread-default #GMainContext
+	 * at this point to save refactoring all this code to be async (FIXME:
+	 * we should do that in future).
+	 *
+	 * We can’t use gs_plugin_loader_setup() from gs-plugin-loader-sync.c
+	 * here because that uses a custom #GMainContext, which means that a lot
+	 * of objects in plugins are initialised with the wrong #GMainContext
+	 * for subsequent callbacks. */
+	gs_plugin_loader_setup_async (app->plugin_loader,
+				      (const gchar * const *) plugin_allowlist,
+				      (const gchar * const *) plugin_blocklist,
+				      NULL,
+				      async_result_cb,
+				      &setup_result);
+
+	while (setup_result == NULL)
+		g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
+
+	if (!gs_plugin_loader_setup_finish (app->plugin_loader,
+					    setup_result,
+					    &error)) {
 		g_warning ("Failed to setup plugins: %s", error->message);
 		exit (1);
 	}
