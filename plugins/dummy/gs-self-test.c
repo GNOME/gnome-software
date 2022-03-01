@@ -15,6 +15,17 @@
 
 #include "gs-test.h"
 
+const gchar * const allowlist[] = {
+	"appstream",
+	"dummy",
+	"generic-updates",
+	"hardcoded-blocklist",
+	"icons",
+	"provenance",
+	"provenance-license",
+	NULL
+};
+
 static guint _status_changed_cnt = 0;
 
 typedef struct {
@@ -98,7 +109,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
 
 	/* update, which should cause an error to be emitted */
 	app = gs_app_new ("chiron.desktop");
@@ -471,7 +482,7 @@ gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
 
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
@@ -624,7 +635,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
 
 	/* get the updates list */
 	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
@@ -722,16 +733,6 @@ main (int argc, char **argv)
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
-	const gchar *allowlist[] = {
-		"appstream",
-		"dummy",
-		"generic-updates",
-		"hardcoded-blocklist",
-		"icons",
-		"provenance",
-		"provenance-license",
-		NULL
-	};
 
 	/* While we use %G_TEST_OPTION_ISOLATE_DIRS to create temporary directories
 	 * for each of the tests, we want to use the system MIME registry, assuming

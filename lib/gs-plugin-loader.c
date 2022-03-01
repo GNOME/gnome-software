@@ -2315,8 +2315,11 @@ plugin_shutdown_cb (GObject      *source_object,
  * and in a controlled way.
  */
 void
-gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
+gs_plugin_loader_setup_again (GsPluginLoader      *plugin_loader,
+                              const gchar * const *allowlist,
+                              const gchar * const *blocklist)
 {
+	g_autoptr(GError) local_error = NULL;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -2331,7 +2334,8 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_remove_events (plugin_loader);
 
 	/* Start all the plugins setting up again in parallel. */
-	gs_plugin_loader_call_setup (plugin_loader, NULL);
+	gs_plugin_loader_setup (plugin_loader, allowlist, blocklist, NULL, &local_error);
+	g_assert_no_error (local_error);
 
 #ifdef HAVE_SYSPROF
 	if (plugin_loader->sysprof_writer != NULL) {
