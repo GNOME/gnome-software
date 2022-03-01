@@ -2147,97 +2147,6 @@ gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
 	}
 }
 
-typedef struct {
-	GsPluginLoader *plugin_loader;  /* (unowned) */
-	GMainContext *context;  /* (owned) */
-	guint n_pending;
-#ifdef HAVE_SYSPROF
-	gint64 setup_begin_time_nsec;
-#endif
-} SetupData;
-
-static void plugin_setup_cb (GObject      *source_object,
-                             GAsyncResult *result,
-                             gpointer      user_data);
-
-static void
-gs_plugin_loader_call_setup (GsPluginLoader *plugin_loader,
-                             GCancellable   *cancellable)
-{
-	SetupData setup_data;
-
-	setup_data.plugin_loader = plugin_loader;
-	setup_data.n_pending = 1;  /* incremented until all operations have been started */
-	setup_data.context = g_main_context_new ();
-#ifdef HAVE_SYSPROF
-	setup_data.setup_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
-
-	g_main_context_push_thread_default (setup_data.context);
-
-	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
-		GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
-
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
-
-		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async != NULL) {
-			GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
-								   plugin_setup_cb, &setup_data);
-			setup_data.n_pending++;
-		}
-	}
-
-	/* Wait for setup to complete in all plugins.
-	 * Nested iteration of the main context is not generally good practice,
-	 * but we expect gs_plugin_loader_setup() to only ever be executed early
-	 * in the process’ lifetime, so it’s probably OK. This could be
-	 * refactored in future. */
-	setup_data.n_pending--;
-
-	while (setup_data.n_pending > 0)
-		g_main_context_iteration (setup_data.context, TRUE);
-
-	g_main_context_pop_thread_default (setup_data.context);
-	g_clear_pointer (&setup_data.context, g_main_context_unref);
-}
-
-static void
-plugin_setup_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GsPlugin *plugin = GS_PLUGIN (source_object);
-	SetupData *data = user_data;
-	g_autoptr(GError) local_error = NULL;
-
-	g_assert (GS_PLUGIN_GET_CLASS (plugin)->setup_finish != NULL);
-
-	if (!GS_PLUGIN_GET_CLASS (plugin)->setup_finish (plugin, result, &local_error)) {
-		g_debug ("disabling %s as setup failed: %s",
-			 gs_plugin_get_name (plugin),
-			 local_error->message);
-		gs_plugin_set_enabled (plugin, FALSE);
-	}
-
-#ifdef HAVE_SYSPROF
-	if (data->plugin_loader->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (data->plugin_loader->sysprof_writer,
-						 data->setup_begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - data->setup_begin_time_nsec,
-						 "gnome-software",
-						 "setup-plugin",
-						 NULL);
-	}
-#endif  /* HAVE_SYSPROF */
-
-	/* Indicate this plugin has finished setting up. */
-	data->n_pending--;
-	g_main_context_wakeup (data->context);
-}
-
 static void
 gs_plugin_loader_remove_all_file_monitors (GsPluginLoader *plugin_loader)
 {
@@ -2360,6 +2269,19 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
 	return g_steal_pointer (&fns);
 }
 
+typedef struct {
+	GsPluginLoader *plugin_loader;  /* (unowned) */
+	GMainContext *context;  /* (owned) */
+	guint n_pending;
+#ifdef HAVE_SYSPROF
+	gint64 setup_begin_time_nsec;
+#endif
+} SetupData;
+
+static void plugin_setup_cb (GObject      *source_object,
+                             GAsyncResult *result,
+                             gpointer      user_data);
+
 /**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
@@ -2387,6 +2309,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
+	SetupData setup_data;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 #ifdef HAVE_SYSPROF
@@ -2583,7 +2506,40 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	} while (changes);
 
 	/* run setup */
-	gs_plugin_loader_call_setup (plugin_loader, cancellable);
+	setup_data.plugin_loader = plugin_loader;
+	setup_data.n_pending = 1;  /* incremented until all operations have been started */
+	setup_data.context = g_main_context_new ();
+#ifdef HAVE_SYSPROF
+	setup_data.setup_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
+	g_main_context_push_thread_default (setup_data.context);
+
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+
+		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async != NULL) {
+			GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
+								   plugin_setup_cb, &setup_data);
+			setup_data.n_pending++;
+		}
+	}
+
+	/* Wait for setup to complete in all plugins.
+	 * Nested iteration of the main context is not generally good practice,
+	 * but we expect gs_plugin_loader_setup() to only ever be executed early
+	 * in the process’ lifetime, so it’s probably OK. This could be
+	 * refactored in future. */
+	setup_data.n_pending--;
+
+	while (setup_data.n_pending > 0)
+		g_main_context_iteration (setup_data.context, TRUE);
+
+	g_main_context_pop_thread_default (setup_data.context);
+	g_clear_pointer (&setup_data.context, g_main_context_unref);
 
 	/* now we can load the install-queue */
 	if (!load_install_queue (plugin_loader, error))
@@ -2603,6 +2559,42 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 #endif  /* HAVE_SYSPROF */
 
 	return TRUE;
+}
+
+static void
+plugin_setup_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	SetupData *data = user_data;
+	g_autoptr(GError) local_error = NULL;
+
+	g_assert (GS_PLUGIN_GET_CLASS (plugin)->setup_finish != NULL);
+
+	if (!GS_PLUGIN_GET_CLASS (plugin)->setup_finish (plugin, result, &local_error)) {
+		g_debug ("disabling %s as setup failed: %s",
+			 gs_plugin_get_name (plugin),
+			 local_error->message);
+		gs_plugin_set_enabled (plugin, FALSE);
+	}
+
+#ifdef HAVE_SYSPROF
+	if (data->plugin_loader->sysprof_writer != NULL) {
+		sysprof_capture_writer_add_mark (data->plugin_loader->sysprof_writer,
+						 data->setup_begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - data->setup_begin_time_nsec,
+						 "gnome-software",
+						 "setup-plugin",
+						 NULL);
+	}
+#endif  /* HAVE_SYSPROF */
+
+	/* Indicate this plugin has finished setting up. */
+	data->n_pending--;
+	g_main_context_wakeup (data->context);
 }
 
 void
