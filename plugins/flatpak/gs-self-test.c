@@ -281,7 +281,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -561,7 +561,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -710,7 +710,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* write a flatpakrepo file */
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
@@ -845,7 +845,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* write a flatpakrepo file */
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
@@ -1001,7 +1001,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -1097,7 +1097,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -1397,7 +1397,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -1652,7 +1652,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* no flatpak, abort */
 	g_assert_true (gs_plugin_loader_get_enabled (plugin_loader, "flatpak"));

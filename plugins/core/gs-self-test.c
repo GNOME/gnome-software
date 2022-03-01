@@ -34,7 +34,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* force this app to be installed */
 	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/arachne.desktop/*", NULL, &error);
@@ -70,7 +70,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* refine system application */
 	app = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
@@ -124,7 +124,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* create a list with generic apps */
 	list = gs_app_list_new ();

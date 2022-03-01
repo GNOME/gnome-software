@@ -2307,50 +2307,6 @@ plugin_shutdown_cb (GObject      *source_object,
 	g_main_context_wakeup (data->context);
 }
 
-/**
- * gs_plugin_loader_setup_again:
- * @plugin_loader: a #GsPluginLoader
- *
- * Calls setup on each plugin. This should only be used from the self tests
- * and in a controlled way.
- */
-void
-gs_plugin_loader_setup_again (GsPluginLoader      *plugin_loader,
-                              const gchar * const *allowlist,
-                              const gchar * const *blocklist)
-{
-	g_autoptr(GError) local_error = NULL;
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
-
-	/* Shut down */
-	gs_plugin_loader_shutdown (plugin_loader, NULL);
-
-	/* clear global cache */
-	gs_plugin_loader_clear_caches (plugin_loader);
-
-	/* remove any events */
-	gs_plugin_loader_remove_events (plugin_loader);
-
-	/* Start all the plugins setting up again in parallel. */
-	gs_plugin_loader_setup (plugin_loader, allowlist, blocklist, NULL, &local_error);
-	g_assert_no_error (local_error);
-
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
-						 "gnome-software",
-						 "setup-again",
-						 NULL);
-	}
-#endif  /* HAVE_SYSPROF */
-}
-
 static gint
 gs_plugin_loader_path_sort_fn (gconstpointer a, gconstpointer b)
 {

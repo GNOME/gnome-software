@@ -109,7 +109,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* update, which should cause an error to be emitted */
 	app = gs_app_new ("chiron.desktop");
@@ -482,7 +482,7 @@ gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
@@ -635,7 +635,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader, allowlist, NULL);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* get the updates list */
 	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
