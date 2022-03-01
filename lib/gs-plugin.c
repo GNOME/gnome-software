@@ -726,7 +726,7 @@ gs_plugin_status_update_cb (gpointer user_data)
 		       helper->app,
 		       helper->status);
 
-	return FALSE;
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -827,7 +827,7 @@ gs_plugin_app_launch_cb (gpointer user_data)
 	if (!g_app_info_launch (appinfo, NULL, context, &error))
 		g_warning ("Failed to launch: %s", error->message);
 
-	return FALSE;
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -880,7 +880,8 @@ gs_plugin_updates_changed_cb (gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
-	return FALSE;
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -903,7 +904,8 @@ gs_plugin_reload_cb (gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
-	return FALSE;
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -1843,7 +1845,7 @@ gs_plugin_repository_changed_cb (gpointer user_data)
 		       signals[SIGNAL_REPOSITORY_CHANGED], 0,
 		       helper->repository);
 
-	return FALSE;
+	return G_SOURCE_REMOVE;
 }
 
 /**
