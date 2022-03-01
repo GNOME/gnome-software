@@ -250,3 +250,42 @@ gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader,
 
 	return app;
 }
+
+gboolean
+gs_plugin_loader_setup (GsPluginLoader       *plugin_loader,
+                        const gchar * const  *allowlist,
+                        const gchar * const  *blocklist,
+                        GCancellable         *cancellable,
+                        GError              **error)
+{
+	GsPluginLoaderHelper helper;
+	gboolean retval;
+
+	/* create temp object */
+	helper.res = NULL;
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_setup_async (plugin_loader,
+				      allowlist,
+				      blocklist,
+				      cancellable,
+				      _helper_finish_sync,
+				      &helper);
+	g_main_loop_run (helper.loop);
+	retval = gs_plugin_loader_setup_finish (plugin_loader,
+						helper.res,
+						error);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
+
+	return retval;
+}

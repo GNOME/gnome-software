@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 
+#include "gs-plugin-loader-sync.h"
 #include "gs-test.h"
 
 /**
@@ -126,7 +127,8 @@ gs_test_reinitialise_plugin_loader (GsPluginLoader      *plugin_loader,
 	/* remove any events */
 	gs_plugin_loader_remove_events (plugin_loader);
 
-	/* Start all the plugins setting up again in parallel. */
+	/* Start all the plugins setting up again in parallel. Use the blocking
+	 * sync version of the function, just for the tests. */
 	gs_plugin_loader_setup (plugin_loader, allowlist, blocklist, NULL, &local_error);
 	g_assert_no_error (local_error);
 

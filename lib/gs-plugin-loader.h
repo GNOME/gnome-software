@@ -45,10 +45,14 @@ void		 gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
-							 gchar		**allowlist,
-							 gchar		**blocklist,
+void		 gs_plugin_loader_setup_async		(GsPluginLoader	*plugin_loader,
+							 const gchar * const *allowlist,
+							 const gchar * const *blocklist,
 							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_setup_finish		(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*result,
 							 GError		**error);
 
 void		 gs_plugin_loader_shutdown		(GsPluginLoader	*plugin_loader,

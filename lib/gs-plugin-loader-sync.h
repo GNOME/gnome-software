@@ -37,5 +37,10 @@ GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
 GsApp		*gs_plugin_loader_get_system_app	(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
+							 const gchar * const *allowlist,
+							 const gchar * const *blocklist,
+							 GCancellable	 *cancellable,
+							 GError		**error);
 
 G_END_DECLS
