@@ -218,12 +218,21 @@ gs_odrs_provider_parse_review_object (JsonObject *item)
 	}
 	if (json_object_has_member (item, "user_hash"))
 		as_review_set_reviewer_id (rev, json_object_get_string_member (item, "user_hash"));
-	if (json_object_has_member (item, "user_display"))
-		as_review_set_reviewer_name (rev, json_object_get_string_member (item, "user_display"));
-	if (json_object_has_member (item, "summary"))
-		as_review_set_summary (rev, json_object_get_string_member (item, "summary"));
-	if (json_object_has_member (item, "description"))
-		as_review_set_description (rev, json_object_get_string_member (item, "description"));
+	if (json_object_has_member (item, "user_display")) {
+		g_autofree gchar *user_display = g_strdup (json_object_get_string_member (item, "user_display"));
+		g_strstrip (user_display);
+		as_review_set_reviewer_name (rev, user_display);
+	}
+	if (json_object_has_member (item, "summary")) {
+		g_autofree gchar *summary = g_strdup (json_object_get_string_member (item, "summary"));
+		g_strstrip (summary);
+		as_review_set_summary (rev, summary);
+	}
+	if (json_object_has_member (item, "description")) {
+		g_autofree gchar *description = g_strdup (json_object_get_string_member (item, "description"));
+		g_strstrip (description);
+		as_review_set_description (rev, description);
+	}
 	if (json_object_has_member (item, "version"))
 		as_review_set_version (rev, json_object_get_string_member (item, "version"));
 
