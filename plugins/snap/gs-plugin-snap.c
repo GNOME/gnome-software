@@ -20,11 +20,11 @@
  * SECTION:
  * Lists and allows installation/uninstallation of snaps from the snap store.
  *
- * Since snapd is a daemon accessible over D-Bus, this plugin basically
- * translates every job into one or more D-Bus calls, and all the real work is
- * done in the snapd daemon. FIXME: This means the plugin can therefore execute
- * entirely in the main thread, making asynchronous D-Bus calls, once all the
- * vfuncs have been ported.
+ * Since snapd is a daemon accessible via HTTP calls on a Unix socket, this
+ * plugin basically translates every job into one or more HTTP request, and all
+ * the real work is done in the snapd daemon. FIXME: This means the plugin can
+ * therefore execute entirely in the main thread, making asynchronous calls,
+ * once all the vfuncs have been ported.
  */
 
 struct _GsPluginSnap {
