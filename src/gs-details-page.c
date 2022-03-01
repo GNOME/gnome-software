@@ -136,7 +136,6 @@ struct _GsDetailsPage
 	GtkWidget		*box_reviews_internal;
 	GtkWidget		*histogram;
 	GtkWidget		*button_review;
-	GtkWidget		*list_box_reviews;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
@@ -2263,7 +2262,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews_internal);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
