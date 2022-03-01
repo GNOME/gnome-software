@@ -2847,14 +2847,14 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 #endif  /* HAVE_SYSPROF */
 
 	plugin_loader->scale = 1;
-	plugin_loader->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	plugin_loader->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->plugins = g_ptr_array_new_with_free_func (g_object_unref);
+	plugin_loader->pending_apps = g_ptr_array_new_with_free_func (g_object_unref);
 	plugin_loader->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
 						   NULL,
 						   get_max_parallel_ops (),
 						   FALSE,
 						   NULL);
-	plugin_loader->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->file_monitors = g_ptr_array_new_with_free_func (g_object_unref);
 	plugin_loader->locations = g_ptr_array_new_with_free_func (g_free);
 	plugin_loader->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (plugin_loader->settings, "changed",
