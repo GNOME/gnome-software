@@ -702,11 +702,20 @@ gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 }
 
 typedef struct {
-	GsPlugin	*plugin;
-	GsApp		*app;
+	GsPlugin	*plugin;  /* (unowned) */
+	GsApp		*app;  /* (owned) */
 	GsPluginStatus	 status;
 	guint		 percentage;
 } GsPluginStatusHelper;
+
+static void
+gs_plugin_status_helper_free (GsPluginStatusHelper *helper)
+{
+	g_clear_object (&helper->app);
+	g_slice_free (GsPluginStatusHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginStatusHelper, gs_plugin_status_helper_free)
 
 static gboolean
 gs_plugin_status_update_cb (gpointer user_data)
@@ -716,9 +725,7 @@ gs_plugin_status_update_cb (gpointer user_data)
 		       signals[SIGNAL_STATUS_CHANGED], 0,
 		       helper->app,
 		       helper->status);
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
-	g_slice_free (GsPluginStatusHelper, helper);
+
 	return FALSE;
 }
 
@@ -735,7 +742,7 @@ gs_plugin_status_update_cb (gpointer user_data)
 void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
-	GsPluginStatusHelper *helper;
+	g_autoptr(GsPluginStatusHelper) helper = NULL;
 	g_autoptr(GSource) idle_source = NULL;
 
 	helper = g_slice_new0 (GsPluginStatusHelper);
@@ -743,8 +750,9 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 	helper->status = status;
 	if (app != NULL)
 		helper->app = g_object_ref (app);
+
 	idle_source = g_idle_source_new ();
-	g_source_set_callback (idle_source, gs_plugin_status_update_cb, helper, NULL);
+	g_source_set_callback (idle_source, gs_plugin_status_update_cb, g_steal_pointer (&helper), (GDestroyNotify) gs_plugin_status_helper_free);
 	g_source_attach (idle_source, NULL);
 }
 
@@ -1813,9 +1821,19 @@ gs_plugin_new (void)
 }
 
 typedef struct {
-	GsPlugin *plugin;
-	GsApp	 *repository;
+	GsPlugin *plugin;  /* (owned) */
+	GsApp	 *repository;  /* (owned) */
 } GsPluginRepositoryChangedHelper;
+
+static void
+gs_plugin_repository_changed_helper_free (GsPluginRepositoryChangedHelper *helper)
+{
+	g_clear_object (&helper->repository);
+	g_clear_object (&helper->plugin);
+	g_slice_free (GsPluginRepositoryChangedHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRepositoryChangedHelper, gs_plugin_repository_changed_helper_free)
 
 static gboolean
 gs_plugin_repository_changed_cb (gpointer user_data)
@@ -1824,9 +1842,7 @@ gs_plugin_repository_changed_cb (gpointer user_data)
 	g_signal_emit (helper->plugin,
 		       signals[SIGNAL_REPOSITORY_CHANGED], 0,
 		       helper->repository);
-	g_clear_object (&helper->repository);
-	g_clear_object (&helper->plugin);
-	g_slice_free (GsPluginRepositoryChangedHelper, helper);
+
 	return FALSE;
 }
 
@@ -1843,7 +1859,7 @@ void
 gs_plugin_repository_changed (GsPlugin *plugin,
 			      GsApp *repository)
 {
-	GsPluginRepositoryChangedHelper *helper;
+	g_autoptr(GsPluginRepositoryChangedHelper) helper = NULL;
 	g_autoptr(GSource) idle_source = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
@@ -1854,7 +1870,7 @@ gs_plugin_repository_changed (GsPlugin *plugin,
 	helper->repository = g_object_ref (repository);
 
 	idle_source = g_idle_source_new ();
-	g_source_set_callback (idle_source, gs_plugin_repository_changed_cb, helper, NULL);
+	g_source_set_callback (idle_source, gs_plugin_repository_changed_cb, g_steal_pointer (&helper), (GDestroyNotify) gs_plugin_repository_changed_helper_free);
 	g_source_attach (idle_source, NULL);
 }
 
