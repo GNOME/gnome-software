@@ -2045,6 +2045,17 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_ptr_array_add (plugin_loader->plugins, plugin);
 }
 
+static void
+gs_plugin_loader_remove_all_plugins (GsPluginLoader *plugin_loader)
+{
+	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
+		GsPlugin *plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
+		g_signal_handlers_disconnect_by_data (plugin, plugin_loader);
+	}
+
+	g_ptr_array_set_size (plugin_loader->plugins, 0);
+}
+
 void
 gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, guint scale)
 {
@@ -2227,6 +2238,19 @@ plugin_setup_cb (GObject      *source_object,
 	g_main_context_wakeup (data->context);
 }
 
+static void
+gs_plugin_loader_remove_all_file_monitors (GsPluginLoader *plugin_loader)
+{
+	for (guint i = 0; i < plugin_loader->file_monitors->len; i++) {
+		GFileMonitor *file_monitor = G_FILE_MONITOR (plugin_loader->file_monitors->pdata[i]);
+
+		g_signal_handlers_disconnect_by_data (file_monitor, plugin_loader);
+		g_file_monitor_cancel (file_monitor);
+	}
+
+	g_ptr_array_set_size (plugin_loader->file_monitors, 0);
+}
+
 typedef struct {
 	GsPluginLoader *plugin_loader;  /* (unowned) */
 	GMainContext *context;  /* (owned) */
@@ -2282,6 +2306,10 @@ gs_plugin_loader_shutdown (GsPluginLoader *plugin_loader,
 
 	g_main_context_pop_thread_default (shutdown_data.context);
 	g_clear_pointer (&shutdown_data.context, g_main_context_unref);
+
+	/* Clear some internal data structures. */
+	gs_plugin_loader_remove_all_plugins (plugin_loader);
+	gs_plugin_loader_remove_all_file_monitors (plugin_loader);
 }
 
 static void
