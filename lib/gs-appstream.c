@@ -1403,7 +1403,12 @@ gs_appstream_search (GsPlugin *plugin,
 				continue;
 			}
 			g_debug ("add %s", gs_app_get_unique_id (app));
-			gs_app_set_match_value (app, match_value);
+
+			/* The match value is used for prioritising results.
+			 * Drop the ID token from it as it’s the highest
+			 * numeric value but isn’t visible to the user in the
+			 * UI, which leads to confusing results ordering. */
+			gs_app_set_match_value (app, match_value & (~AS_SEARCH_TOKEN_MATCH_ID));
 			gs_app_list_add (list, app);
 
 			if (gs_app_get_kind (app) == AS_COMPONENT_KIND_ADDON) {
