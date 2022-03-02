@@ -666,10 +666,8 @@ gs_updates_page_load (GsUpdatesPage *self)
 	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 		g_object_unref (plugin_job);
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
-						 "interactive", TRUE,
-						 "refine-flags", refine_flags,
-						 NULL);
+		plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE,
+								     refine_flags);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
