@@ -30,14 +30,18 @@
 struct _GsPluginFedoraPkgdbCollections {
 	GsPlugin	 parent;
 
-	gchar		*cachefn;
-	GFileMonitor	*cachefn_monitor;
-	gchar		*os_name;
+	/* Only set at setup time, then read only: */
+	gchar		*cachefn;  /* (owned) (not nullable) */
+	GFileMonitor	*cachefn_monitor;  /* (owned) (not nullable) */
+	gchar		*os_name;  /* (owned) (not nullable) */
 	guint64		 os_version;
-	GsApp		*cached_origin;
-	GSettings	*settings;
-	gboolean	 is_valid;
-	GPtrArray	*distros;
+	GsApp		*cached_origin;  /* (owned) (not nullable) */
+	GSettings	*settings;  /* (owned) (not nullable) */
+
+	/* Contents may vary throughout the plugin’s lifetime, and hence must
+	 * be accessed with @mutex held: */
+	gboolean	 is_valid;  /* (mutex mutex) */
+	GPtrArray	*distros;  /* (owned) (not nullable) (element-type PkgdbItem) (mutex mutex) */
 	GMutex		 mutex;
 };
 
