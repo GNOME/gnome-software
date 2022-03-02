@@ -141,7 +141,6 @@ gs_plugin_fedora_pkgdb_collections_setup_async (GsPlugin            *plugin,
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
