@@ -1152,9 +1152,8 @@ get_snaps_cb (GObject      *object,
 		g_autofree gchar *tracking_channel = NULL;
 		gboolean need_details = FALSE;
 		SnapdConfinement confinement = SNAPD_CONFINEMENT_UNKNOWN;
-		g_autoptr(SnapdSnap) local_snap = NULL;
+		SnapdSnap *local_snap, *snap;
 		g_autoptr(SnapdSnap) store_snap = NULL;
-		SnapdSnap *snap;
 		const gchar *developer_name;
 		g_autofree gchar *description = NULL;
 		guint64 release_date = 0;
