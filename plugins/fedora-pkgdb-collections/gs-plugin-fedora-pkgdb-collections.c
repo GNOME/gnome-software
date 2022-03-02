@@ -235,7 +235,6 @@ static void download_cb (GObject      *source_object,
 static void
 _refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
                       guint64                         cache_age_secs,
-                      GsPluginRefreshMetadataFlags    flags,
                       GCancellable                   *cancellable,
                       GAsyncReadyCallback             callback,
                       gpointer                        user_data)
@@ -326,7 +325,7 @@ gs_plugin_fedora_pkgdb_collections_refresh_metadata_async (GsPlugin             
                                                            gpointer                      user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	_refresh_cache_async (self, cache_age_secs, flags, cancellable, callback, user_data);
+	_refresh_cache_async (self, cache_age_secs, cancellable, callback, user_data);
 }
 
 static gboolean
@@ -572,7 +571,6 @@ static void ensure_refresh_cb (GObject      *source_object,
  * #GPtrArray. The caller should use this in their computation. */
 static void
 _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
-		     GsPluginRefreshMetadataFlags    flags,
                      GCancellable                   *cancellable,
                      GAsyncReadyCallback             callback,
                      gpointer                        user_data)
@@ -594,7 +592,7 @@ _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
 
 	/* Ensure there is any data, no matter how old. This can download from
 	 * the network if needed. */
-	_refresh_cache_async (self, G_MAXUINT, flags, cancellable,
+	_refresh_cache_async (self, G_MAXUINT, cancellable,
 			      ensure_refresh_cb, g_steal_pointer (&task));
 }
 
@@ -683,7 +681,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 	/* ensure valid data is loaded; FIXME this can be made properly async
 	 * when the add_distro_upgrades() vfunc is made async */
-	_ensure_cache_async (self, GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE, cancellable, async_result_cb, &result);
+	_ensure_cache_async (self, cancellable, async_result_cb, &result);
 
 	while (result == NULL)
 		g_main_context_iteration (NULL, TRUE);
@@ -767,7 +765,7 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
 
 	/* ensure valid data is loaded */
-	_ensure_cache_async (self, GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE, cancellable, refine_cb, g_steal_pointer (&task));
+	_ensure_cache_async (self, cancellable, refine_cb, g_steal_pointer (&task));
 }
 
 static void
