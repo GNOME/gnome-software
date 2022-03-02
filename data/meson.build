@@ -2,6 +2,20 @@ subdir('appdata')
 subdir('icons')
 subdir('assets')
 
+cdata = configuration_data()
+cdata.set('bindir', join_paths(get_option('prefix'),
+                               get_option('bindir')))
+
+# note: the main .desktop file is in src/
+# this one is for the background service
+# replace @bindir@
+configure_file(
+  input : 'autostart/org.gnome.Software.desktop.in',
+  output : 'org.gnome.Software.desktop',
+  install_dir: join_paths(get_option('sysconfdir'), 'xdg/autostart'),
+  configuration : cdata
+)
+
 compiled_schemas = gnome.compile_schemas(
   depend_files: 'org.gnome.software.gschema.xml')
 install_data('org.gnome.software.gschema.xml',
