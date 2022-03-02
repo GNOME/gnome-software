@@ -46,6 +46,9 @@
 
 #define GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT	5000 /* ms */
 
+/* Timeout to trigger auto-prepare update after the prepared update had been invalidated */
+#define PREPARE_UPDATE_TIMEOUT_SECS 30
+
 struct _GsPluginPackagekit {
 	GsPlugin		 parent;
 
@@ -86,6 +89,7 @@ struct _GsPluginPackagekit {
 	gboolean		 is_triggered;
 	GHashTable		*prepared_updates;  /* (element-type utf8); set of package IDs for updates which are already prepared */
 	GMutex			 prepared_updates_mutex;
+	guint			 prepare_update_timeout_id;
 
 	GCancellable		*proxy_settings_cancellable;  /* (nullable) (owned) */
 };
@@ -214,6 +218,11 @@ static void
 gs_plugin_packagekit_dispose (GObject *object)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
+
+	if (self->prepare_update_timeout_id) {
+		g_source_remove (self->prepare_update_timeout_id);
+		self->prepare_update_timeout_id = 0;
+	}
 
 	g_cancellable_cancel (self->proxy_settings_cancellable);
 	g_clear_object (&self->proxy_settings_cancellable);
@@ -806,11 +815,11 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 	return app;
 }
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
+static gboolean
+gs_plugin_packagekit_add_updates (GsPlugin *plugin,
+				  GsAppList *list,
+				  GCancellable *cancellable,
+				  GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
@@ -857,6 +866,15 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	return gs_plugin_packagekit_add_updates (plugin, list, cancellable, error);
 }
 
 gboolean
@@ -2140,15 +2158,117 @@ gs_plugin_packagekit_permission_cb (GPermission *permission,
 	gs_plugin_set_allow_updates (plugin, ret);
 }
 
+static gboolean
+gs_plugin_packagekit_download (GsPlugin *plugin,
+			       GsAppList *list,
+			       GCancellable *cancellable,
+			       GError **error);
+
+static void
+gs_plugin_packagekit_auto_prepare_update_thread (GTask *task,
+						 gpointer source_object,
+						 gpointer task_data,
+						 GCancellable *cancellable)
+{
+	GsPlugin *plugin = source_object;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_PACKAGEKIT (plugin));
+
+	list = gs_app_list_new ();
+	if (!gs_plugin_packagekit_add_updates (plugin, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (gs_app_list_length (list) > 0 &&
+	    !gs_plugin_packagekit_download (plugin, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* Ignore errors here */
+	gs_plugin_systemd_update_cache (GS_PLUGIN_PACKAGEKIT (source_object), NULL);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_auto_prepare_update_cb (GObject *source_object,
+					     GAsyncResult *result,
+					     gpointer user_data)
+{
+	g_autoptr(GError) local_error = NULL;
+
+	if (g_task_propagate_boolean (G_TASK (result), &local_error)) {
+		g_debug ("Successfully auto-prepared update");
+		gs_plugin_updates_changed (GS_PLUGIN (source_object));
+	} else {
+		g_debug ("Failed to auto-prepare update: %s", local_error->message);
+	}
+}
+
+static gboolean
+gs_plugin_packagekit_run_prepare_update_cb (gpointer user_data)
+{
+	GsPluginPackagekit *self = user_data;
+	g_autoptr(GTask) task = NULL;
+
+	self->prepare_update_timeout_id = 0;
+
+	g_debug ("Going to auto-prepare update");
+	task = g_task_new (self, self->proxy_settings_cancellable, gs_plugin_packagekit_auto_prepare_update_cb, NULL);
+	g_task_set_source_tag (task, gs_plugin_packagekit_run_prepare_update_cb);
+	g_task_run_in_thread (task, gs_plugin_packagekit_auto_prepare_update_thread);
+	return G_SOURCE_REMOVE;
+}
+
 /* Run in the main thread. */
 static void
-gs_plugin_packagekit_changed_cb (GFileMonitor      *monitor,
-                                 GFile             *file,
-                                 GFile             *other_file,
-                                 GFileMonitorEvent  event_type,
-                                 gpointer           user_data)
+gs_plugin_packagekit_prepared_update_changed_cb (GFileMonitor      *monitor,
+						 GFile             *file,
+						 GFile             *other_file,
+						 GFileMonitorEvent  event_type,
+						 gpointer           user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (user_data);
+
+	/* Interested only in these events. */
+	if (event_type != G_FILE_MONITOR_EVENT_CHANGED &&
+	    event_type != G_FILE_MONITOR_EVENT_DELETED &&
+	    event_type != G_FILE_MONITOR_EVENT_CREATED)
+		return;
+
+	/* This is going to break, if PackageKit renames the file, but it's unlikely to happen;
+	   there is no API to get the file name from, sadly. */
+	if (g_file_peek_path (file) == NULL ||
+	    !g_str_has_suffix (g_file_peek_path (file), "prepared-update"))
+		return;
+
+	if (event_type == G_FILE_MONITOR_EVENT_DELETED) {
+		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+		if (g_settings_get_boolean (settings, "download-updates")) {
+			/* The prepared-update file had been removed, but the user has set
+			   to have the updates downloaded, thus prepared, thus prepare
+			   the update again. */
+			if (self->prepare_update_timeout_id)
+				g_source_remove (self->prepare_update_timeout_id);
+			g_debug ("Scheduled to auto-prepare update in %d s", PREPARE_UPDATE_TIMEOUT_SECS);
+			self->prepare_update_timeout_id = g_timeout_add_seconds (PREPARE_UPDATE_TIMEOUT_SECS,
+				gs_plugin_packagekit_run_prepare_update_cb, self);
+		} else {
+			if (self->prepare_update_timeout_id) {
+				g_source_remove (self->prepare_update_timeout_id);
+				self->prepare_update_timeout_id = 0;
+				g_debug ("Cancelled auto-prepare update");
+			}
+		}
+	} else if (self->prepare_update_timeout_id) {
+		g_source_remove (self->prepare_update_timeout_id);
+		self->prepare_update_timeout_id = 0;
+		g_debug ("Cancelled auto-prepare update");
+	}
 
 	/* update UI */
 	gs_plugin_systemd_update_cache (self, NULL);
@@ -2240,13 +2360,14 @@ setup_proxy_settings_cb (GObject      *source_object,
 	/* watch the prepared file */
 	self->monitor = pk_offline_get_prepared_monitor (cancellable, &local_error);
 	if (self->monitor == NULL) {
+		g_debug ("Failed to get prepared update file monitor: %s", local_error->message);
 		gs_utils_error_convert_gio (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	g_signal_connect (self->monitor, "changed",
-			  G_CALLBACK (gs_plugin_packagekit_changed_cb),
+			  G_CALLBACK (gs_plugin_packagekit_prepared_update_changed_cb),
 			  self);
 
 	/* watch the trigger file */
@@ -3524,11 +3645,11 @@ _download_only (GsPluginPackagekit  *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_download (GsPlugin *plugin,
-                    GsAppList *list,
-                    GCancellable *cancellable,
-                    GError **error)
+static gboolean
+gs_plugin_packagekit_download (GsPlugin *plugin,
+			       GsAppList *list,
+			       GCancellable *cancellable,
+			       GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
@@ -3576,6 +3697,15 @@ gs_plugin_download (GsPlugin *plugin,
 		gs_plugin_updates_changed (plugin);
 
 	return retval;
+}
+
+gboolean
+gs_plugin_download (GsPlugin *plugin,
+                    GsAppList *list,
+                    GCancellable *cancellable,
+                    GError **error)
+{
+	return gs_plugin_packagekit_download (plugin, list, cancellable, error);
 }
 
 static void refresh_metadata_cb (GObject      *source_object,
