@@ -19,10 +19,9 @@
  * SECTION:
  * Queries the list of Fedora package collections.
  *
- * FIXME: Once all its vfuncs are ported to be asynchronous, this plugin could
- * run entirely in the main thread. It downloads a file and then performs some
- * basic parsing on it. If moved to the main thread, its locking could be
- * dropped.
+ * This plugin downloads a file and performs some basic parsing on it. It
+ * executes entirely in the main thread, and therefore does not require any
+ * locking.
  */
 
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
@@ -38,11 +37,9 @@ struct _GsPluginFedoraPkgdbCollections {
 	GsApp		*cached_origin;  /* (owned) (not nullable) */
 	GSettings	*settings;  /* (owned) (not nullable) */
 
-	/* Contents may vary throughout the plugin’s lifetime, and hence must
-	 * be accessed with @mutex held: */
-	gboolean	 is_valid;  /* (mutex mutex) */
-	GPtrArray	*distros;  /* (owned) (not nullable) (element-type PkgdbItem) (mutex mutex) */
-	GMutex		 mutex;
+	/* Contents may vary throughout the plugin’s lifetime: */
+	gboolean	 is_valid;
+	GPtrArray	*distros;  /* (owned) (not nullable) (element-type PkgdbItem) */
 };
 
 G_DEFINE_TYPE (GsPluginFedoraPkgdbCollections, gs_plugin_fedora_pkgdb_collections, GS_TYPE_PLUGIN)
@@ -71,8 +68,6 @@ static void
 gs_plugin_fedora_pkgdb_collections_init (GsPluginFedoraPkgdbCollections *self)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
-
-	g_mutex_init (&self->mutex);
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
@@ -110,7 +105,6 @@ gs_plugin_fedora_pkgdb_collections_finalize (GObject *object)
 	g_clear_pointer (&self->distros, g_ptr_array_unref);
 	g_clear_pointer (&self->os_name, g_free);
 	g_clear_pointer (&self->cachefn, g_free);
-	g_mutex_clear (&self->mutex);
 
 	G_OBJECT_CLASS (gs_plugin_fedora_pkgdb_collections_parent_class)->finalize (object);
 }
@@ -127,9 +121,7 @@ _file_changed_cb (GFileMonitor *monitor,
 	g_debug ("cache file changed, so reloading upgrades list");
 	gs_plugin_updates_changed (GS_PLUGIN (self));
 
-	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
-	g_mutex_unlock (&self->mutex);
 }
 
 static void
@@ -301,9 +293,7 @@ download_cb (GObject      *source_object,
 	}
 
 	/* success */
-	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
-	g_mutex_unlock (&self->mutex);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -553,11 +543,9 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	g_ptr_array_sort (new_distros, _sort_items_cb);
 
 	/* success */
-	g_mutex_lock (&self->mutex);
 	g_clear_pointer (&self->distros, g_ptr_array_unref);
 	self->distros = g_ptr_array_ref (new_distros);
 	self->is_valid = TRUE;
-	g_mutex_unlock (&self->mutex);
 
 	return g_steal_pointer (&new_distros);
 }
@@ -566,8 +554,7 @@ static void ensure_refresh_cb (GObject      *source_object,
                                GAsyncResult *result,
                                gpointer      user_data);
 
-/* Should be called without the lock held. It will internally take the lock for
- * a short period, and return a strong reference to the latest distros
+/* This will return a strong reference to the latest distros
  * #GPtrArray. The caller should use this in their computation. */
 static void
 _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
@@ -581,14 +568,10 @@ _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
 	g_task_set_source_tag (task, _ensure_cache_async);
 
 	/* already done */
-	g_mutex_lock (&self->mutex);
 	if (self->is_valid) {
-		g_autoptr(GPtrArray) distros = g_ptr_array_ref (self->distros);
-		g_mutex_unlock (&self->mutex);
-		g_task_return_pointer (task, g_steal_pointer (&distros), (GDestroyNotify) g_ptr_array_unref);
+		g_task_return_pointer (task, g_ptr_array_ref (self->distros), (GDestroyNotify) g_ptr_array_unref);
 		return;
 	}
-	g_mutex_unlock (&self->mutex);
 
 	/* Ensure there is any data, no matter how old. This can download from
 	 * the network if needed. */
@@ -719,11 +702,11 @@ gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_finish (GsPlugin      *p
 }
 
 static gboolean
-refine_app_locked (GPtrArray            *distros,
-                   GsApp                *app,
-                   GsPluginRefineFlags   flags,
-                   GCancellable         *cancellable,
-                   GError              **error)
+refine_app (GPtrArray            *distros,
+            GsApp                *app,
+            GsPluginRefineFlags   flags,
+            GCancellable         *cancellable,
+            GError              **error)
 {
 	PkgdbItem *item;
 	const gchar *cpe_name;
@@ -803,7 +786,7 @@ refine_cb (GObject      *source_object,
 
 	for (guint i = 0; i < gs_app_list_length (data->list); i++) {
 		GsApp *app = gs_app_list_index (data->list, i);
-		if (!refine_app_locked (distros, app, data->flags, cancellable, &local_error)) {
+		if (!refine_app (distros, app, data->flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
