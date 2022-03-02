@@ -1019,9 +1019,10 @@ window_key_pressed_cb (GtkEventControllerKey *key_controller,
                        GsShell               *shell)
 {
 	gboolean is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
+	gboolean is_alt = (state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_ALT_MASK)) == GDK_ALT_MASK;
 
-	if ((!is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Left) ||
-	    (is_rtl && state == GDK_ALT_MASK && keyval == GDK_KEY_Right) ||
+	if ((!is_rtl && is_alt && keyval == GDK_KEY_Left) ||
+	    (is_rtl && is_alt && keyval == GDK_KEY_Right) ||
 	    keyval == GDK_KEY_Back) {
 		go_back (shell);
 		return GDK_EVENT_STOP;
