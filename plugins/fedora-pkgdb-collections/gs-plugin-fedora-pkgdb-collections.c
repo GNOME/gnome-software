@@ -126,7 +126,10 @@ _file_changed_cb (GFileMonitor *monitor,
 
 	g_debug ("cache file changed, so reloading upgrades list");
 	gs_plugin_updates_changed (GS_PLUGIN (self));
+
+	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
+	g_mutex_unlock (&self->mutex);
 }
 
 static void
@@ -299,7 +302,9 @@ download_cb (GObject      *source_object,
 	}
 
 	/* success */
+	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
+	g_mutex_unlock (&self->mutex);
 
 	g_task_return_boolean (task, TRUE);
 }
@@ -321,7 +326,6 @@ gs_plugin_fedora_pkgdb_collections_refresh_metadata_async (GsPlugin             
                                                            gpointer                      user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	_refresh_cache_async (self, cache_age_secs, flags, cancellable, callback, user_data);
 }
 
@@ -466,7 +470,7 @@ _is_valid_upgrade (GsPluginFedoraPkgdbCollections *self,
 	return TRUE;
 }
 
-static gboolean
+static GPtrArray *
 load_json (GsPluginFedoraPkgdbCollections  *self,
            GError                         **error)
 {
@@ -550,17 +554,22 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	g_ptr_array_sort (new_distros, _sort_items_cb);
 
 	/* success */
+	g_mutex_lock (&self->mutex);
 	g_clear_pointer (&self->distros, g_ptr_array_unref);
-	self->distros = g_steal_pointer (&new_distros);
+	self->distros = g_ptr_array_ref (new_distros);
 	self->is_valid = TRUE;
+	g_mutex_unlock (&self->mutex);
 
-	return TRUE;
+	return g_steal_pointer (&new_distros);
 }
 
 static void ensure_refresh_cb (GObject      *source_object,
                                GAsyncResult *result,
                                gpointer      user_data);
 
+/* Should be called without the lock held. It will internally take the lock for
+ * a short period, and return a strong reference to the latest distros
+ * #GPtrArray. The caller should use this in their computation. */
 static void
 _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
 		     GsPluginRefreshMetadataFlags    flags,
@@ -574,10 +583,14 @@ _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
 	g_task_set_source_tag (task, _ensure_cache_async);
 
 	/* already done */
+	g_mutex_lock (&self->mutex);
 	if (self->is_valid) {
-		g_task_return_pointer (task, g_ptr_array_ref (self->distros), (GDestroyNotify) g_ptr_array_unref);
+		g_autoptr(GPtrArray) distros = g_ptr_array_ref (self->distros);
+		g_mutex_unlock (&self->mutex);
+		g_task_return_pointer (task, g_steal_pointer (&distros), (GDestroyNotify) g_ptr_array_unref);
 		return;
 	}
+	g_mutex_unlock (&self->mutex);
 
 	/* Ensure there is any data, no matter how old. This can download from
 	 * the network if needed. */
@@ -592,15 +605,21 @@ ensure_refresh_cb (GObject      *source_object,
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GPtrArray) distros = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	if (!_refresh_cache_finish (self, result, &local_error) ||
-	    !load_json (self, &local_error)) {
+	if (!_refresh_cache_finish (self, result, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	g_task_return_pointer (task, g_ptr_array_ref (self->distros), (GDestroyNotify) g_ptr_array_unref);
+	distros = load_json (self, &local_error);
+	if (distros == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&distros), (GDestroyNotify) g_ptr_array_unref);
 }
 
 static GPtrArray *
@@ -659,7 +678,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GAsyncResult) result = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
 
@@ -742,7 +760,6 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
                                                  gpointer             user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GError) local_error = NULL;
 
