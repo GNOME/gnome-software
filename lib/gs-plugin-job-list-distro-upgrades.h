@@ -18,7 +18,13 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_PLUGIN_JOB_LIST_DISTRO_UPGRADES (gs_plugin_job_list_distro_upgrades_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsPluginJobListDistroUpgrades, gs_plugin_job_list_distro_upgrades, GS, PLUGIN_JOB_LIST_DISTRO_UPGRADES, GsPluginJob)
+
 GsPluginJob	*gs_plugin_job_list_distro_upgrades_new	(GsPluginListDistroUpgradesFlags flags,
 							 GsPluginRefineFlags             refine_flags);
+
+GsAppList	*gs_plugin_job_list_distro_upgrades_get_result_list	(GsPluginJobListDistroUpgrades *self);
 
 G_END_DECLS
