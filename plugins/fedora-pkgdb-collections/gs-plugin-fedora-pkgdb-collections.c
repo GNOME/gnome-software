@@ -657,40 +657,47 @@ _get_item_by_cpe_name (GPtrArray   *distros,
 	return NULL;
 }
 
+static void list_distro_upgrades_cb (GObject      *source_object,
+                                     GAsyncResult *result,
+                                     gpointer      user_data);
+
 static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (result_out == NULL);
-	*result_out = g_object_ref (result);
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-gboolean
-gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_async (GsPlugin                        *plugin,
+                                                               GsPluginListDistroUpgradesFlags  flags,
+                                                               GCancellable                    *cancellable,
+                                                               GAsyncReadyCallback              callback,
+                                                               gpointer                         user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_async);
+
+	/* Ensure valid data is loaded. */
+	_ensure_cache_async (self, cancellable, list_distro_upgrades_cb, g_steal_pointer (&task));
+}
+
+static void
+list_distro_upgrades_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
+{
+	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GPtrArray) distros = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	/* ensure valid data is loaded; FIXME this can be made properly async
-	 * when the add_distro_upgrades() vfunc is made async */
-	_ensure_cache_async (self, cancellable, async_result_cb, &result);
-
-	while (result == NULL)
-		g_main_context_iteration (NULL, TRUE);
-
-	distros = _ensure_cache_finish (self, result, error);
-	if (distros == NULL)
-		return FALSE;
+	distros = _ensure_cache_finish (self, result, &local_error);
+	if (distros == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* are any distros upgradable */
+	list = gs_app_list_new ();
+
 	for (guint i = 0; i < distros->len; i++) {
 		PkgdbItem *item = g_ptr_array_index (distros, i);
 		if (_is_valid_upgrade (self, item)) {
@@ -700,7 +707,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		}
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_finish (GsPlugin      *plugin,
+                                                                GAsyncResult  *result,
+                                                                GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static gboolean
@@ -820,6 +835,8 @@ gs_plugin_fedora_pkgdb_collections_class_init (GsPluginFedoraPkgdbCollectionsCla
 	plugin_class->refine_finish = gs_plugin_fedora_pkgdb_collections_refine_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_fedora_pkgdb_collections_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_fedora_pkgdb_collections_refresh_metadata_finish;
+	plugin_class->list_distro_upgrades_async = gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_async;
+	plugin_class->list_distro_upgrades_finish = gs_plugin_fedora_pkgdb_collections_list_distro_upgrades_finish;
 }
 
 GType
