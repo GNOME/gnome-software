@@ -903,16 +903,22 @@ gs_plugin_add_recent (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+static void
+gs_plugin_dummy_list_distro_upgrades_async (GsPlugin                        *plugin,
+                                            GsPluginListDistroUpgradesFlags  flags,
+                                            GCancellable                    *cancellable,
+                                            GAsyncReadyCallback              callback,
+                                            gpointer                         user_data)
 {
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GIcon) ic = NULL;
 	g_autofree gchar *background_filename = NULL;
 	g_autofree gchar *css = NULL;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_list_distro_upgrades_async);
 
 	/* use stock icon */
 	ic = g_themed_icon_new ("system-component-addon");
@@ -921,7 +927,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	app = gs_plugin_cache_lookup (plugin, "user/*/os-upgrade/org.fedoraproject.release-rawhide.upgrade/*");
 	if (app != NULL) {
 		gs_app_list_add (list, app);
-		return TRUE;
+
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+		return;
 	}
 
 	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
@@ -956,7 +964,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 	gs_plugin_cache_add (plugin, NULL, app);
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_dummy_list_distro_upgrades_finish (GsPlugin      *plugin,
+                                             GAsyncResult  *result,
+                                             GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -1066,6 +1082,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->list_installed_apps_finish = gs_plugin_dummy_list_installed_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_dummy_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
+	plugin_class->list_distro_upgrades_async = gs_plugin_dummy_list_distro_upgrades_async;
+	plugin_class->list_distro_upgrades_finish = gs_plugin_dummy_list_distro_upgrades_finish;
 }
 
 GType
