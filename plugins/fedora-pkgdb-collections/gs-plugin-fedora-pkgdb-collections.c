@@ -570,7 +570,7 @@ _ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
 
 	/* already done */
 	if (self->is_valid) {
-		g_task_return_boolean (task, TRUE);
+		g_task_return_pointer (task, g_ptr_array_ref (self->distros), (GDestroyNotify) g_ptr_array_unref);
 		return;
 	}
 
@@ -595,20 +595,20 @@ ensure_refresh_cb (GObject      *source_object,
 		return;
 	}
 
-	g_task_return_boolean (task, TRUE);
+	g_task_return_pointer (task, g_ptr_array_ref (self->distros), (GDestroyNotify) g_ptr_array_unref);
 }
 
-static gboolean
+static GPtrArray *
 _ensure_cache_finish (GsPluginFedoraPkgdbCollections  *self,
                       GAsyncResult                    *result,
                       GError                         **error)
 {
-	return g_task_propagate_boolean (G_TASK (result), error);
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static PkgdbItem *
-_get_item_by_cpe_name (GsPluginFedoraPkgdbCollections *self,
-                       const gchar                    *cpe_name)
+_get_item_by_cpe_name (GPtrArray   *distros,
+                       const gchar *cpe_name)
 {
 	guint64 version;
 	g_auto(GStrv) split = NULL;
@@ -626,8 +626,8 @@ _get_item_by_cpe_name (GsPluginFedoraPkgdbCollections *self,
 		g_warning ("failed to parse CPE version: %s", split[4]);
 		return NULL;
 	}
-	for (guint i = 0; i < self->distros->len; i++) {
-		PkgdbItem *item = g_ptr_array_index (self->distros, i);
+	for (guint i = 0; i < distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (distros, i);
 		if (g_ascii_strcasecmp (item->name, split[3]) == 0 &&
 		    item->version == version)
 			return item;
@@ -656,6 +656,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GPtrArray) distros = NULL;
 
 	/* ensure valid data is loaded; FIXME this can be made properly async
 	 * when the add_distro_upgrades() vfunc is made async */
@@ -664,12 +665,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	while (result == NULL)
 		g_main_context_iteration (NULL, TRUE);
 
-	if (!_ensure_cache_finish (self, result, error))
+	distros = _ensure_cache_finish (self, result, error);
+	if (distros == NULL)
 		return FALSE;
 
 	/* are any distros upgradable */
-	for (guint i = 0; i < self->distros->len; i++) {
-		PkgdbItem *item = g_ptr_array_index (self->distros, i);
+	for (guint i = 0; i < distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (distros, i);
 		if (_is_valid_upgrade (self, item)) {
 			g_autoptr(GsApp) app = NULL;
 			app = _create_upgrade_from_info (self, item);
@@ -681,11 +683,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 }
 
 static gboolean
-refine_app_locked (GsPluginFedoraPkgdbCollections  *self,
-                   GsApp                           *app,
-                   GsPluginRefineFlags              flags,
-                   GCancellable                    *cancellable,
-                   GError                         **error)
+refine_app_locked (GPtrArray            *distros,
+                   GsApp                *app,
+                   GsPluginRefineFlags   flags,
+                   GCancellable         *cancellable,
+                   GError              **error)
 {
 	PkgdbItem *item;
 	const gchar *cpe_name;
@@ -700,7 +702,7 @@ refine_app_locked (GsPluginFedoraPkgdbCollections  *self,
 		return TRUE;
 
 	/* find item */
-	item = _get_item_by_cpe_name (self, cpe_name);
+	item = _get_item_by_cpe_name (distros, cpe_name);
 	if (item == NULL) {
 		g_warning ("did not find %s", cpe_name);
 		return TRUE;
@@ -755,16 +757,18 @@ refine_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginRefineData *data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GPtrArray) distros = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	if (!_ensure_cache_finish (self, result, &local_error)) {
+	distros = _ensure_cache_finish (self, result, &local_error);
+	if (distros == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	for (guint i = 0; i < gs_app_list_length (data->list); i++) {
 		GsApp *app = gs_app_list_index (data->list, i);
-		if (!refine_app_locked (self, app, data->flags, cancellable, &local_error)) {
+		if (!refine_app_locked (distros, app, data->flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
