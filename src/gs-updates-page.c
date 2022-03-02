@@ -53,7 +53,6 @@ struct _GsUpdatesPage
 	gboolean		 cache_valid;
 	guint			 action_cnt;
 	GsShell			*shell;
-	GsPluginStatus		 last_status;
 	GsUpdatesPageState	 state;
 	GsUpdatesPageFlags	 result_flags;
 	GtkWidget		*button_refresh;
@@ -1188,7 +1187,6 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
 		break;
 	}
 
-	self->last_status = status;
 	gs_updates_page_update_ui_state (self);
 }
 
