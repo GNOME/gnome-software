@@ -3624,25 +3624,6 @@ run_job_cb (GObject      *source_object,
 	g_assert_not_reached ();
 }
 
-static void
-plugin_progress_cb (GsPluginJob *plugin_job,
-                    guint        progress_percent,
-                    gpointer     user_data)
-{
-	GsPluginLoader *self = GS_PLUGIN_LOADER (user_data);
-	g_autoptr(GsApp) app_dl = NULL;
-
-	app_dl = gs_app_new ("refresh-metadata");
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading metadata files…"));
-	gs_app_set_progress (app_dl, progress_percent);
-
-	gs_plugin_loader_status_changed_cb (NULL, app_dl,
-					    GS_PLUGIN_STATUS_DOWNLOADING,
-					    self);
-}
-
 /**
  * gs_plugin_loader_job_process_async:
  * @plugin_loader: A #GsPluginLoader
@@ -3688,12 +3669,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 #ifdef HAVE_SYSPROF
 		g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
 #endif
-
-		/* FIXME: Hook up to progress notification signals for backwards
-		 * compatibility. */
-		if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (plugin_job)) {
-			g_signal_connect (plugin_job, "progress", G_CALLBACK (plugin_progress_cb), plugin_loader);
-		}
 
 		job_class->run_async (plugin_job, plugin_loader, cancellable,
 				      run_job_cb, g_steal_pointer (&task));
