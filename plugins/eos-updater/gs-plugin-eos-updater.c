@@ -764,15 +764,20 @@ gs_plugin_eos_updater_refresh_metadata_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-/* Called in a #GTask worker thread, but it can run without holding
- * `self->mutex` since it doesn’t need to synchronise on state. */
-gboolean
-gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+/* Called in the main thread. */
+static void
+gs_plugin_eos_updater_list_distro_upgrades_async (GsPlugin                        *plugin,
+                                                  GsPluginListDistroUpgradesFlags  flags,
+                                                  GCancellable                    *cancellable,
+                                                  GAsyncReadyCallback              callback,
+                                                  gpointer                         user_data)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_list_distro_upgrades_async);
 
 	g_debug ("%s", G_STRFUNC);
 
@@ -780,13 +785,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	if (g_getenv ("GS_PLUGIN_EOS_TEST") != NULL) {
 		gs_app_set_state (self->os_upgrade, GS_APP_STATE_AVAILABLE);
 		gs_app_list_add (list, self->os_upgrade);
-		return TRUE;
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+		return;
 	}
 
 	/* check if the OS upgrade has been disabled */
 	if (self->updater_proxy == NULL) {
 		g_debug ("%s: Updater disabled", G_STRFUNC);
-		return TRUE;
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+		return;
 	}
 
 	if (should_add_os_upgrade (gs_app_get_state (self->os_upgrade))) {
@@ -797,7 +804,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_debug ("Not adding EOS upgrade");
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_eos_updater_list_distro_upgrades_finish (GsPlugin      *plugin,
+                                                   GAsyncResult  *result,
+                                                   GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 /* Must be called with self->mutex already locked. */
@@ -1072,6 +1087,8 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 	plugin_class->setup_finish = gs_plugin_eos_updater_setup_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_eos_updater_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_eos_updater_refresh_metadata_finish;
+	plugin_class->list_distro_upgrades_async = gs_plugin_eos_updater_list_distro_upgrades_async;
+	plugin_class->list_distro_upgrades_finish = gs_plugin_eos_updater_list_distro_upgrades_finish;
 }
 
 GType
