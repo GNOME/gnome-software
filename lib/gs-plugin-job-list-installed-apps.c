@@ -362,8 +362,6 @@ finish_op (GTask  *task,
 	    merged_list != NULL &&
 	    gs_app_list_length (merged_list) > 0) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
-		g_autoptr(GAsyncResult) refine_result = NULL;
-		g_autoptr(GsAppList) new_list = NULL;
 
 		refine_job = gs_plugin_job_refine_new (merged_list, self->refine_flags | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
