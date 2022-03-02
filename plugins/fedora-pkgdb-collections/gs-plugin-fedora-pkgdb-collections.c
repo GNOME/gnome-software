@@ -473,8 +473,11 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	JsonArray *collections;
 	JsonObject *root;
 	g_autoptr(JsonParser) parser = NULL;
+	g_autoptr(GPtrArray) new_distros = NULL;
 
+	new_distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);
 	parser = json_parser_new_immutable ();
+
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
 		return FALSE;
 
@@ -496,7 +499,6 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 		return FALSE;
 	}
 
-	g_ptr_array_set_size (self->distros, 0);
 	for (guint i = 0; i < json_array_get_length (collections); i++) {
 		PkgdbItem *item;
 		JsonObject *collection;
@@ -541,14 +543,17 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 		item->name = g_strdup (name);
 		item->status = status;
 		item->version = (guint) version;
-		g_ptr_array_add (self->distros, item);
+		g_ptr_array_add (new_distros, item);
 	}
 
 	/* ensure in correct order */
-	g_ptr_array_sort (self->distros, _sort_items_cb);
+	g_ptr_array_sort (new_distros, _sort_items_cb);
 
 	/* success */
+	g_clear_pointer (&self->distros, g_ptr_array_unref);
+	self->distros = g_steal_pointer (&new_distros);
 	self->is_valid = TRUE;
+
 	return TRUE;
 }
 
