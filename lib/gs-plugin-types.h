@@ -228,7 +228,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an application
  * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
- * @GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:	Get the list of distro updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
  * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
  * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
@@ -261,7 +260,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_LAUNCH,
 	GS_PLUGIN_ACTION_UPDATE_CANCEL,
 	GS_PLUGIN_ACTION_GET_UPDATES,
-	GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 	GS_PLUGIN_ACTION_GET_SOURCES,
 	GS_PLUGIN_ACTION_GET_POPULAR,
 	GS_PLUGIN_ACTION_GET_FEATURED,

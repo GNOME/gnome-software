@@ -662,7 +662,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
-	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
@@ -1147,13 +1146,6 @@ static gint
 gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	return gs_app_compare_priority (app1, app2);
-}
-
-static gint
-gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return as_vercmp_simple (gs_app_get_version (app1),
-				 gs_app_get_version (app2));
 }
 
 /******************************************************************************/
@@ -3752,8 +3744,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* FIXME: this is probably a bug */
-	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES ||
-	    action == GS_PLUGIN_ACTION_GET_SOURCES) {
+	if (action == GS_PLUGIN_ACTION_GET_SOURCES) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
@@ -3810,12 +3801,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_prio_cb, NULL);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_version_cb, NULL);
 		}
 		break;
 	default:

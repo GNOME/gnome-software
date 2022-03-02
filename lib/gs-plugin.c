@@ -1426,8 +1426,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_file_to_app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "gs_plugin_url_to_app";
-	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
-		return "gs_plugin_add_distro_upgrades";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
 	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
@@ -1496,8 +1494,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "update-cancel";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "get-updates";
-	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
-		return "get-distro-updates";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "get-sources";
 	if (action == GS_PLUGIN_ACTION_GET_POPULAR)
@@ -1568,8 +1564,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_UPDATE_CANCEL;
 	if (g_strcmp0 (action, "get-updates") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
-	if (g_strcmp0 (action, "get-distro-updates") == 0)
-		return GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
 	if (g_strcmp0 (action, "get-sources") == 0)
 		return GS_PLUGIN_ACTION_GET_SOURCES;
 	if (g_strcmp0 (action, "get-popular") == 0)
