@@ -45,11 +45,19 @@ void		 gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
-							 gchar		**allowlist,
-							 gchar		**blocklist,
+void		 gs_plugin_loader_setup_async		(GsPluginLoader	*plugin_loader,
+							 const gchar * const *allowlist,
+							 const gchar * const *blocklist,
 							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_setup_finish		(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*result,
 							 GError		**error);
+
+void		 gs_plugin_loader_shutdown		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable);
+
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
@@ -91,7 +99,6 @@ GsApp		*gs_plugin_loader_get_system_app_finish	(GsPluginLoader	*plugin_loader,
 GsOdrsProvider	*gs_plugin_loader_get_odrs_provider	(GsPluginLoader	*plugin_loader);
 
 /* only useful from the self tests */
-void		 gs_plugin_loader_setup_again		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_clear_caches		(GsPluginLoader	*plugin_loader);
 GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);

@@ -702,24 +702,38 @@ gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 }
 
 typedef struct {
-	GsPlugin	*plugin;
-	GsApp		*app;
+	GWeakRef	 plugin_weak;  /* (element-type GsPlugin) */
+	GsApp		*app;  /* (owned) */
 	GsPluginStatus	 status;
 	guint		 percentage;
 } GsPluginStatusHelper;
+
+static void
+gs_plugin_status_helper_free (GsPluginStatusHelper *helper)
+{
+	g_weak_ref_clear (&helper->plugin_weak);
+	g_clear_object (&helper->app);
+	g_slice_free (GsPluginStatusHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginStatusHelper, gs_plugin_status_helper_free)
 
 static gboolean
 gs_plugin_status_update_cb (gpointer user_data)
 {
 	GsPluginStatusHelper *helper = (GsPluginStatusHelper *) user_data;
-	g_signal_emit (helper->plugin,
-		       signals[SIGNAL_STATUS_CHANGED], 0,
-		       helper->app,
-		       helper->status);
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
-	g_slice_free (GsPluginStatusHelper, helper);
-	return FALSE;
+	g_autoptr(GsPlugin) plugin = NULL;
+
+	/* Does the plugin still exist? */
+	plugin = g_weak_ref_get (&helper->plugin_weak);
+
+	if (plugin != NULL)
+		g_signal_emit (plugin,
+			       signals[SIGNAL_STATUS_CHANGED], 0,
+			       helper->app,
+			       helper->status);
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -735,16 +749,17 @@ gs_plugin_status_update_cb (gpointer user_data)
 void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
-	GsPluginStatusHelper *helper;
+	g_autoptr(GsPluginStatusHelper) helper = NULL;
 	g_autoptr(GSource) idle_source = NULL;
 
 	helper = g_slice_new0 (GsPluginStatusHelper);
-	helper->plugin = plugin;
+	g_weak_ref_init (&helper->plugin_weak, plugin);
 	helper->status = status;
 	if (app != NULL)
 		helper->app = g_object_ref (app);
+
 	idle_source = g_idle_source_new ();
-	g_source_set_callback (idle_source, gs_plugin_status_update_cb, helper, NULL);
+	g_source_set_callback (idle_source, gs_plugin_status_update_cb, g_steal_pointer (&helper), (GDestroyNotify) gs_plugin_status_helper_free);
 	g_source_attach (idle_source, NULL);
 }
 
@@ -819,7 +834,7 @@ gs_plugin_app_launch_cb (gpointer user_data)
 	if (!g_app_info_launch (appinfo, NULL, context, &error))
 		g_warning ("Failed to launch: %s", error->message);
 
-	return FALSE;
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -867,12 +882,35 @@ gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
 	return TRUE;
 }
 
+static void
+weak_ref_free (GWeakRef *weak)
+{
+	g_weak_ref_clear (weak);
+	g_free (weak);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GWeakRef, weak_ref_free)
+
+/* @obj is a gpointer rather than a GObject* to avoid the need for casts */
+static GWeakRef *
+weak_ref_new (gpointer obj)
+{
+	g_autoptr(GWeakRef) weak = g_new0 (GWeakRef, 1);
+	g_weak_ref_init (weak, obj);
+	return g_steal_pointer (&weak);
+}
+
 static gboolean
 gs_plugin_updates_changed_cb (gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
-	g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
-	return FALSE;
+	GWeakRef *plugin_weak = user_data;
+	g_autoptr(GsPlugin) plugin = NULL;
+
+	plugin = g_weak_ref_get (plugin_weak);
+	if (plugin != NULL)
+		g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -887,15 +925,21 @@ gs_plugin_updates_changed_cb (gpointer user_data)
 void
 gs_plugin_updates_changed (GsPlugin *plugin)
 {
-	g_idle_add (gs_plugin_updates_changed_cb, plugin);
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_updates_changed_cb,
+			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
 }
 
 static gboolean
 gs_plugin_reload_cb (gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
-	g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
-	return FALSE;
+	GWeakRef *plugin_weak = user_data;
+	g_autoptr(GsPlugin) plugin = NULL;
+
+	plugin = g_weak_ref_get (plugin_weak);
+	if (plugin != NULL)
+		g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -914,7 +958,8 @@ void
 gs_plugin_reload (GsPlugin *plugin)
 {
 	g_debug ("emitting ::reload in idle");
-	g_idle_add (gs_plugin_reload_cb, plugin);
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_reload_cb,
+			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
 }
 
 typedef struct {
@@ -1813,21 +1858,33 @@ gs_plugin_new (void)
 }
 
 typedef struct {
-	GsPlugin *plugin;
-	GsApp	 *repository;
+	GWeakRef  plugin_weak;  /* (owned) (element-type GsPlugin) */
+	GsApp	 *repository;  /* (owned) */
 } GsPluginRepositoryChangedHelper;
+
+static void
+gs_plugin_repository_changed_helper_free (GsPluginRepositoryChangedHelper *helper)
+{
+	g_clear_object (&helper->repository);
+	g_weak_ref_clear (&helper->plugin_weak);
+	g_slice_free (GsPluginRepositoryChangedHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRepositoryChangedHelper, gs_plugin_repository_changed_helper_free)
 
 static gboolean
 gs_plugin_repository_changed_cb (gpointer user_data)
 {
 	GsPluginRepositoryChangedHelper *helper = user_data;
-	g_signal_emit (helper->plugin,
-		       signals[SIGNAL_REPOSITORY_CHANGED], 0,
-		       helper->repository);
-	g_clear_object (&helper->repository);
-	g_clear_object (&helper->plugin);
-	g_slice_free (GsPluginRepositoryChangedHelper, helper);
-	return FALSE;
+	g_autoptr(GsPlugin) plugin = NULL;
+
+	plugin = g_weak_ref_get (&helper->plugin_weak);
+	if (plugin != NULL)
+		g_signal_emit (plugin,
+			       signals[SIGNAL_REPOSITORY_CHANGED], 0,
+			       helper->repository);
+
+	return G_SOURCE_REMOVE;
 }
 
 /**
@@ -1843,18 +1900,18 @@ void
 gs_plugin_repository_changed (GsPlugin *plugin,
 			      GsApp *repository)
 {
-	GsPluginRepositoryChangedHelper *helper;
+	g_autoptr(GsPluginRepositoryChangedHelper) helper = NULL;
 	g_autoptr(GSource) idle_source = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (GS_IS_APP (repository));
 
 	helper = g_slice_new0 (GsPluginRepositoryChangedHelper);
-	helper->plugin = g_object_ref (plugin);
+	g_weak_ref_init (&helper->plugin_weak, plugin);
 	helper->repository = g_object_ref (repository);
 
 	idle_source = g_idle_source_new ();
-	g_source_set_callback (idle_source, gs_plugin_repository_changed_cb, helper, NULL);
+	g_source_set_callback (idle_source, gs_plugin_repository_changed_cb, g_steal_pointer (&helper), (GDestroyNotify) gs_plugin_repository_changed_helper_free);
 	g_source_attach (idle_source, NULL);
 }
 

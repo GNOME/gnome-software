@@ -239,7 +239,7 @@ main (int argc, char **argv)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
-	const gchar *allowlist[] = {
+	const gchar * const allowlist[] = {
 		"packagekit",
 		NULL
 	};
@@ -257,7 +257,7 @@ main (int argc, char **argv)
 	plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	ret = gs_plugin_loader_setup (plugin_loader,
-				      (gchar**) allowlist,
+				      allowlist,
 				      NULL,
 				      NULL,
 				      &error);

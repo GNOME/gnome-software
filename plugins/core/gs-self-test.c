@@ -15,6 +15,14 @@
 #include "gs-appstream.h"
 #include "gs-test.h"
 
+const gchar * const allowlist[] = {
+	"appstream",
+	"generic-updates",
+	"icons",
+	"os-release",
+	NULL
+};
+
 static void
 gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 {
@@ -26,7 +34,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* force this app to be installed */
 	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/arachne.desktop/*", NULL, &error);
@@ -62,7 +70,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* refine system application */
 	app = gs_plugin_loader_get_system_app (plugin_loader, NULL, &error);
@@ -116,7 +124,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_plugin_loader_setup_again (plugin_loader);
+	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* create a list with generic apps */
 	list = gs_app_list_new ();
@@ -189,13 +197,6 @@ main (int argc, char **argv)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *xml;
-	const gchar *allowlist[] = {
-		"appstream",
-		"generic-updates",
-		"icons",
-		"os-release",
-		NULL
-	};
 
 	/* While we use %G_TEST_OPTION_ISOLATE_DIRS to create temporary directories
 	 * for each of the tests, we want to use the system MIME registry, assuming
@@ -244,7 +245,7 @@ main (int argc, char **argv)
 	plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	ret = gs_plugin_loader_setup (plugin_loader,
-				      (gchar**) allowlist,
+				      allowlist,
 				      NULL,
 				      NULL,
 				      &error);
