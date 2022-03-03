@@ -1317,7 +1317,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to download updates: you do not have"
 				        " permission to install software"));
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
@@ -1440,7 +1441,8 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "The battery level is too low"),
 					str_app);
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1600,7 +1602,8 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			g_string_append_printf (str, _("Unable to install updates: "
 						       "The battery level is too low"));
 		}
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		if (app != NULL) {
@@ -1707,7 +1710,8 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
 					       "The battery level is too low"),
 					str_app);
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1774,7 +1778,8 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		g_string_append_printf (str, _("Unable to remove %s: "
 					       "The battery level is too low"),
 					str_app);
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* non-interactive generic */
@@ -1832,7 +1837,8 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Not enough disk space — free up some space "
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* non-interactive generic */
@@ -1879,7 +1885,8 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Not enough disk space — free up some space "
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* non-interactive generic */
@@ -1916,7 +1923,8 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Not enough disk space — free up some space "
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* non-interactive generic */
@@ -1968,7 +1976,8 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: not enough juice to do this safely */
 		g_string_append (str, _("The battery level is too low"));
-	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
 		/* non-interactive generic */

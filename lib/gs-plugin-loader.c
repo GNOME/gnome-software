@@ -763,7 +763,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		/* we returned cancelled, but this was because of a timeout,
 		 * so re-create error, throwing the plugin under the bus */
 		if (helper->timeout_triggered &&
-		    g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		    (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		     g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED))) {
 			g_debug ("converting cancelled to timeout");
 			g_clear_error (&error_local);
 			g_set_error (&error_local,

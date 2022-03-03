@@ -135,7 +135,8 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 	/* get popular apps */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get popular apps: %s", error->message);
 		goto out;
 	}
@@ -184,7 +185,8 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	/* get recent apps */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get recent apps: %s", error->message);
 		goto out;
 	}
@@ -253,7 +255,8 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 		goto out;
 
 	if (self->featured_overwritten) {
@@ -317,7 +320,8 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 
 	list = gs_plugin_loader_job_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
 		goto out;
 	}
@@ -580,7 +584,8 @@ gs_overview_page_refresh_cb (GsPluginLoader *plugin_loader,
 
 	success = gs_plugin_loader_job_action_finish (plugin_loader, result, &error);
 	if (!success &&
-	    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+	    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+	    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 		g_warning ("failed to refresh: %s", error->message);
 
 	if (success)

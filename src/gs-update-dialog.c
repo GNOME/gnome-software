@@ -89,6 +89,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	/* if we're in teardown, short-circuit and return immediately without
 	 * dereferencing priv variables */
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+	    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) ||
 	    dialog->spinner == NULL) {
 		g_debug ("get installed updates cancelled");
 		return;
