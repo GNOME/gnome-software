@@ -850,7 +850,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 
 		snap = get_store_snap (self, client, snap_name, TRUE, cancellable, NULL);
 		if (snap == NULL) {
-			g_warning ("Failed to get store snap %s\n", snap_name);
+			g_warning ("Failed to get store snap %s", snap_name);
 			return TRUE;
 		}
 
