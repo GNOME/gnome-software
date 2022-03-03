@@ -109,6 +109,7 @@ get_auth_data (GsPluginSnap *self)
 
 static SnapdClient *
 get_client (GsPluginSnap  *self,
+            gboolean       interactive,
             GError       **error)
 {
 	g_autoptr(SnapdClient) client = NULL;
@@ -117,7 +118,7 @@ get_client (GsPluginSnap  *self,
 	g_autoptr(SnapdAuthData) auth_data = NULL;
 
 	client = snapd_client_new ();
-	snapd_client_set_allow_interaction (client, TRUE);
+	snapd_client_set_allow_interaction (client, interactive);
 	old_user_agent = snapd_client_get_user_agent (client);
 	user_agent = g_strdup_printf ("%s %s", gs_user_agent (), old_user_agent);
 	snapd_client_set_user_agent (client, user_agent);
@@ -136,7 +137,7 @@ gs_plugin_snap_init (GsPluginSnap *self)
 
 	g_mutex_init (&self->store_snaps_lock);
 
-	client = get_client (self, &error);
+	client = get_client (self, FALSE, &error);
 	if (client == NULL) {
 		gs_plugin_set_enabled (GS_PLUGIN (self), FALSE);
 		return;
@@ -246,12 +247,13 @@ gs_plugin_snap_setup_async (GsPlugin            *plugin,
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_snap_setup_async);
 
-	client = get_client (self, &local_error);
+	client = get_client (self, interactive, &local_error);
 	if (client == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -425,6 +427,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *path = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GsApp) app = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
@@ -433,7 +436,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* Create client. */
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -512,9 +515,10 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* Create client. */
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -543,9 +547,10 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GsCategory *c;
 	g_autoptr(GString) id = NULL;
 	const gchar *sections = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* Create client. */
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -615,11 +620,12 @@ gs_plugin_snap_list_installed_apps_async (GsPlugin            *plugin,
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 
-	client = get_client (self, &local_error);
+	client = get_client (self, interactive, &local_error);
 	if (client == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -679,9 +685,10 @@ gs_plugin_add_search (GsPlugin *plugin,
 	g_autofree gchar *query = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* Create client. */
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -828,8 +835,9 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -1120,6 +1128,7 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsAppList) snap_apps = NULL;
 	g_autoptr(GsPluginRefineData) data = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
@@ -1139,7 +1148,7 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 	data = gs_plugin_refine_data_new (snap_apps, flags);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) gs_plugin_refine_data_free);
 
-	client = get_client (self, &local_error);
+	client = get_client (self, interactive, &local_error);
 	if (client == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
@@ -1430,13 +1439,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *name, *channel;
 	SnapdInstallFlags flags = SNAPD_INSTALL_FLAGS_NONE;
 	gboolean result;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) error_local = NULL;
 
 	/* We can only install apps we know of */
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -1517,6 +1527,7 @@ gs_plugin_launch (GsPlugin *plugin,
 	const gchar *launch_name;
 	const gchar *launch_desktop;
 	g_autoptr(GAppInfo) info = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* We can only launch apps we know of */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1539,7 +1550,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		else
 			commandline = g_strdup_printf ("snap run %s.%s", gs_app_get_metadata_item (app, "snap::name"), launch_name);
 
-		client = get_client (self, error);
+		client = get_client (self, interactive, error);
 		if (client == NULL)
 			return FALSE;
 
@@ -1562,12 +1573,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* We can only remove apps we know of */
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -1590,9 +1602,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) error_local = NULL;
 
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
@@ -1630,8 +1643,9 @@ gs_plugin_update (GsPlugin *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
-	client = get_client (self, error);
+	client = get_client (self, interactive, error);
 	if (client == NULL)
 		return FALSE;
 
