@@ -264,7 +264,7 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
-	g_task_set_name (task, G_STRFUNC);
+	g_task_set_source_tag (task, gs_plugin_job_list_installed_apps_run_async);
 	g_task_set_task_data (task, g_object_ref (plugin_loader), (GDestroyNotify) g_object_unref);
 
 	/* run each plugin, keeping a counter of pending operations which is
