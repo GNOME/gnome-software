@@ -53,7 +53,6 @@ struct _GsUpdatesPage
 	gboolean		 cache_valid;
 	guint			 action_cnt;
 	GsShell			*shell;
-	GsPluginStatus		 last_status;
 	GsUpdatesPageState	 state;
 	GsUpdatesPageFlags	 result_flags;
 	GtkWidget		*button_refresh;
@@ -773,10 +772,8 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	g_clear_object (&self->cancellable_refresh);
 	self->cancellable_refresh = g_cancellable_new ();
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "interactive", TRUE,
-					 "age", (guint64) 1,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (1,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_refresh,
 					    (GAsyncReadyCallback) gs_updates_page_refresh_cb,
@@ -1190,7 +1187,6 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
 		break;
 	}
 
-	self->last_status = status;
 	gs_updates_page_update_ui_state (self);
 }
 

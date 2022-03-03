@@ -171,6 +171,20 @@ typedef enum {
 } GsPluginRefineFlags;
 
 /**
+ * GsPluginRefreshMetadataFlags:
+ * @GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to refresh metadata.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE = 0,
+	GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginRefreshMetadataFlags;
+
+/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
@@ -209,7 +223,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_SEARCH_PROVIDES:		Get the search results for a provide query
  * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
  * @GS_PLUGIN_ACTION_GET_CATEGORY_APPS:		Get the apps for a specific category
- * @GS_PLUGIN_ACTION_REFRESH:			Refresh all the sources
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
@@ -243,7 +256,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	GS_PLUGIN_ACTION_GET_CATEGORIES,
 	GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-	GS_PLUGIN_ACTION_REFRESH,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_RECENT,

@@ -242,7 +242,8 @@ sorted_truncation_again (GsPluginJobListInstalledApps *self,
 static void plugin_list_installed_apps_cb (GObject      *source_object,
                                            GAsyncResult *result,
                                            gpointer      user_data);
-static void finish_op (GTask *task);
+static void finish_op (GTask  *task,
+                       GError *error);
 static void refine_cb (GObject      *source_object,
                        GAsyncResult *result,
                        gpointer      user_data);
@@ -263,7 +264,7 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 
 	/* check required args */
 	task = g_task_new (job, cancellable, callback, user_data);
-	g_task_set_name (task, G_STRFUNC);
+	g_task_set_source_tag (task, gs_plugin_job_list_installed_apps_run_async);
 	g_task_set_task_data (task, g_object_ref (plugin_loader), (GDestroyNotify) g_object_unref);
 
 	/* run each plugin, keeping a counter of pending operations which is
@@ -291,13 +292,15 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 
 	/* some functions are really required for proper operation */
 	if (!anything_ran) {
-		g_set_error_literal (&self->saved_error,
+		g_autoptr(GError) local_error = NULL;
+		g_set_error_literal (&local_error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no plugin could handle listing installed apps");
+		finish_op (task, g_steal_pointer (&local_error));
+	} else {
+		finish_op (task, NULL);
 	}
-
-	finish_op (task);
 }
 
 static void
@@ -315,26 +318,27 @@ plugin_list_installed_apps_cb (GObject      *source_object,
 	plugin_apps = plugin_class->list_installed_apps_finish (plugin, result, &local_error);
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
-	if (plugin_apps != NULL) {
+	if (plugin_apps != NULL)
 		gs_app_list_add_list (self->merged_list, plugin_apps);
-	} else {
-		gs_utils_error_convert_gio (&local_error);
 
-		if (self->saved_error == NULL)
-			self->saved_error = g_steal_pointer (&local_error);
-	}
-
-	finish_op (task);
+	finish_op (task, g_steal_pointer (&local_error));
 }
 
+/* @error is (transfer full) if non-%NULL */
 static void
-finish_op (GTask *task)
+finish_op (GTask  *task,
+           GError *error)
 {
 	GsPluginJobListInstalledApps *self = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
 	g_autoptr(GsAppList) merged_list = NULL;
-	g_autoptr(GError) saved_error = NULL;
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && self->saved_error == NULL)
+		self->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while listing installed apps: %s", error_owned->message);
 
 	g_assert (self->n_pending_ops > 0);
 	self->n_pending_ops--;
@@ -344,10 +348,9 @@ finish_op (GTask *task)
 
 	/* Get the results of the parallel ops. */
 	merged_list = g_steal_pointer (&self->merged_list);
-	saved_error = g_steal_pointer (&self->saved_error);
 
-	if (saved_error != NULL) {
-		g_task_return_error (task, g_steal_pointer (&saved_error));
+	if (self->saved_error != NULL) {
+		g_task_return_error (task, g_steal_pointer (&self->saved_error));
 		return;
 	}
 

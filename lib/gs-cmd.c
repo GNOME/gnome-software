@@ -21,6 +21,7 @@ typedef struct {
 	GsPluginLoader	*plugin_loader;
 	guint64		 refine_flags;
 	guint		 max_results;
+	gboolean	 interactive;
 } GsCmdSelf;
 
 static void
@@ -214,6 +215,7 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 					 "search", name,
 					 "refine-flags", self->refine_flags,
 					 "max-results", self->max_results,
+					 "interactive", self->interactive,
 					 NULL);
 	list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, error);
 	if (list == NULL)
@@ -265,7 +267,10 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 	}
 
 	/* install */
-	plugin_job2 = gs_plugin_job_newv (action, "app", app, NULL);
+	plugin_job2 = gs_plugin_job_newv (action,
+					  "app", app,
+					  "interactive", self->interactive,
+					  NULL);
 	return gs_plugin_loader_job_action (self->plugin_loader, plugin_job2,
 					    NULL, error);
 }
@@ -322,6 +327,8 @@ main (int argc, char **argv)
 		  "Only load specific plugins", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
+		{ "interactive", 'i', 0, G_OPTION_ARG_NONE, &self->interactive,
+		  "Allow interactive authentication", NULL },
 		{ NULL}
 	};
 
@@ -377,9 +384,12 @@ main (int argc, char **argv)
 	 * spin up the plugins enough as to prime caches */
 	if (g_getenv ("GS_CMD_NO_INITIAL_REFRESH") == NULL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", (guint64) G_MAXUINT,
-						 NULL);
+		GsPluginRefreshMetadataFlags refresh_metadata_flags = GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
+
+		if (self->interactive)
+			refresh_metadata_flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
+
+		plugin_job = gs_plugin_job_refresh_metadata_new (G_MAXUINT64, refresh_metadata_flags);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (!ret) {
@@ -411,6 +421,7 @@ main (int argc, char **argv)
 							 "search", argv[2],
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
@@ -429,6 +440,7 @@ main (int argc, char **argv)
 							 "app", app,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
@@ -453,6 +465,7 @@ main (int argc, char **argv)
 		gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 						 "app", app,
+						 "interactive", self->interactive,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
@@ -476,6 +489,7 @@ main (int argc, char **argv)
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
 							 "app", app,
+							 "interactive", self->interactive,
 							 NULL);
 			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
@@ -489,6 +503,7 @@ main (int argc, char **argv)
 						 "file", file,
 						 "refine-flags", self->refine_flags,
 						 "max-results", self->max_results,
+						 "interactive", self->interactive,
 						 NULL);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job, NULL, &error);
 		if (app == NULL) {
@@ -503,6 +518,7 @@ main (int argc, char **argv)
 						 "search", argv[2],
 						 "refine-flags", self->refine_flags,
 						 "max-results", self->max_results,
+						 "interactive", self->interactive,
 						 NULL);
 		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job,
 						    NULL, &error);
@@ -520,6 +536,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
@@ -536,6 +553,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
@@ -549,6 +567,7 @@ main (int argc, char **argv)
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
 						 "refine-flags", self->refine_flags,
 						 "max-results", self->max_results,
+						 "interactive", self->interactive,
 						 NULL);
 		list = gs_plugin_loader_job_process (self->plugin_loader,
 						     plugin_job,
@@ -564,6 +583,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
@@ -580,6 +600,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							      NULL, &error);
@@ -599,6 +620,7 @@ main (int argc, char **argv)
 							 "age", cache_age_secs,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
@@ -615,6 +637,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			categories = gs_plugin_loader_job_get_categories (self->plugin_loader,
 									 plugin_job,
@@ -653,6 +676,7 @@ main (int argc, char **argv)
 							 "category", category,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
+							 "interactive", self->interactive,
 							 NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
@@ -662,9 +686,12 @@ main (int argc, char **argv)
 		}
 	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", cache_age_secs,
-						 NULL);
+		GsPluginRefreshMetadataFlags refresh_metadata_flags = GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
+
+		if (self->interactive)
+			refresh_metadata_flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
+
+		plugin_job = gs_plugin_job_refresh_metadata_new (cache_age_secs, refresh_metadata_flags);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 	} else if (argc >= 1 && g_strcmp0 (argv[1], "user-hash") == 0) {

@@ -1473,14 +1473,55 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 					    cancellable, error);
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static void refresh_metadata_thread_cb (GTask        *task,
+                                        gpointer      source_object,
+                                        gpointer      task_data,
+                                        GCancellable *cancellable);
+
+static void
+gs_plugin_appstream_refresh_metadata_async (GsPlugin                     *plugin,
+                                            guint64                       cache_age_secs,
+                                            GsPluginRefreshMetadataFlags  flags,
+                                            GCancellable                 *cancellable,
+                                            GAsyncReadyCallback           callback,
+                                            gpointer                      user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	return gs_plugin_appstream_check_silo (self, cancellable, error);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_appstream_refresh_metadata_async);
+
+	/* Queue a job to check the silo, which will cause it to be refreshed if needed. */
+	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+				refresh_metadata_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+refresh_metadata_thread_cb (GTask        *task,
+                            gpointer      source_object,
+                            gpointer      task_data,
+                            GCancellable *cancellable)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	/* Checking the silo will refresh it if needed. */
+	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_appstream_refresh_metadata_finish (GsPlugin      *plugin,
+                                             GAsyncResult  *result,
+                                             GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1499,6 +1540,8 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->refine_finish = gs_plugin_appstream_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_appstream_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_appstream_list_installed_apps_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_appstream_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_appstream_refresh_metadata_finish;
 }
 
 GType

@@ -27,6 +27,7 @@
 #include "gs-enums.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-event.h"
+#include "gs-plugin-job.h"
 #include "gs-utils.h"
 
 struct _GsPluginEvent
@@ -35,6 +36,7 @@ struct _GsPluginEvent
 	GsApp			*app;
 	GsApp			*origin;
 	GsPluginAction		 action;
+	GsPluginJob		*job;  /* (owned) (nullable) */
 	GError			*error;
 	GsPluginEventFlag	 flags;
 	gchar			*unique_id;
@@ -46,6 +48,7 @@ typedef enum {
 	PROP_APP = 1,
 	PROP_ORIGIN,
 	PROP_ACTION,
+	PROP_JOB,
 	PROP_ERROR,
 } GsPluginEventProperty;
 
@@ -100,6 +103,23 @@ gs_plugin_event_get_action (GsPluginEvent *event)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), 0);
 	return event->action;
+}
+
+/**
+ * gs_plugin_event_get_job:
+ * @event: A #GsPluginEvent
+ *
+ * Gets the job that created the event.
+ *
+ * Returns: (transfer none) (nullable): a #GsPluginJob
+ *
+ * Since: 42
+ **/
+GsPluginJob *
+gs_plugin_event_get_job (GsPluginEvent *event)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), NULL);
+	return event->job;
 }
 
 /**
@@ -230,6 +250,9 @@ gs_plugin_event_get_property (GObject    *object,
 	case PROP_ACTION:
 		g_value_set_enum (value, self->action);
 		break;
+	case PROP_JOB:
+		g_value_set_object (value, self->job);
+		break;
 	case PROP_ERROR:
 		g_value_set_boxed (value, self->error);
 		break;
@@ -266,6 +289,12 @@ gs_plugin_event_set_property (GObject      *object,
 		self->action = g_value_get_enum (value);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
+	case PROP_JOB:
+		/* Construct only. */
+		g_assert (self->job == NULL);
+		self->job = g_value_dup_object (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
 	case PROP_ERROR:
 		/* Construct only. */
 		g_assert (self->error == NULL);
@@ -289,6 +318,7 @@ gs_plugin_event_dispose (GObject *object)
 
 	g_clear_object (&event->app);
 	g_clear_object (&event->origin);
+	g_clear_object (&event->job);
 
 	G_OBJECT_CLASS (gs_plugin_event_parent_class)->dispose (object);
 }
@@ -356,6 +386,20 @@ gs_plugin_event_class_init (GsPluginEventClass *klass)
 				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginEvent:job: (nullable)
+	 *
+	 * The job that caused the event to be created.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_JOB] =
+		g_param_spec_object ("job", "Job",
+				     "The job that caused the event to be created.",
+				     GS_TYPE_PLUGIN_JOB,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginEvent:error: (nullable)

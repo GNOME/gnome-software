@@ -556,28 +556,6 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_refresh:
- * @plugin: a #GsPlugin
- * @cache_age: the acceptable cache age in seconds, or MAXUINT for "any"
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Refreshes the state of all the plugins. Plugins should make sure
- * there's enough metadata to start the application, for example lists of
- * available applications.
- *
- * All functions can block, but should send progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
-							 guint		 cache_age,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_file_to_app:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList

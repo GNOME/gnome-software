@@ -95,3 +95,38 @@ gs_plugin_refine_data_free (GsPluginRefineData *data)
 	g_clear_object (&data->list);
 	g_free (data);
 }
+
+/**
+ * gs_plugin_refresh_metadata_data_new:
+ * @cache_age_secs: maximum allowed age of the cache in order for it to remain valid, in seconds
+ * @flags: refresh metadata flags
+ *
+ * Context data for a call to #GsPluginClass.refresh_metadata_async.
+ *
+ * Returns: (transfer full): context data structure
+ * Since: 42
+ */
+GsPluginRefreshMetadataData *
+gs_plugin_refresh_metadata_data_new (guint64                      cache_age_secs,
+                                     GsPluginRefreshMetadataFlags flags)
+{
+	g_autoptr(GsPluginRefreshMetadataData) data = g_new0 (GsPluginRefreshMetadataData, 1);
+	data->cache_age_secs = cache_age_secs;
+	data->flags = flags;
+
+	return g_steal_pointer (&data);
+}
+
+/**
+ * gs_plugin_refresh_metadata_data_free:
+ * @data: (transfer full): a #GsPluginRefreshMetadataData
+ *
+ * Free the given @data.
+ *
+ * Since: 42
+ */
+void
+gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data)
+{
+	g_free (data);
+}

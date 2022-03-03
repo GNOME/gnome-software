@@ -352,7 +352,7 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
         <title>Downloading Metadata and Updates</title>
 
         <para>
-          The plugin loader supports a <code>gs_plugin_refresh()</code> vfunc that
+          The plugin loader supports a <code>refresh_metadata_async()</code> vfunc that
           is called in various situations.
           To ensure plugins have the minimum required metadata on disk it is
           called at startup, but with a cache age of <emphasis>infinite</emphasis>.
@@ -360,12 +360,12 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
           <emphasis role="strong">any</emphasis> data exists no matter what the age.
         </para>
         <para>
-          Usually once per hour, we'll call <code>gs_plugin_refresh()</code> but
+          Usually once per hour, we'll call <code>refresh_metadata_async()</code> but
           with the correct cache age set (typically a little over 24 hours) which
           allows the plugin to download new metadata or payload files from remote
           servers.
           The <code>gs_utils_get_file_age()</code> utility helper can help you
-          work out the cache age of file, or the plugin can handle it some other
+          work out the cache age of a file, or the plugin can handle it some other
           way.
         </para>
         <para>
@@ -384,24 +384,14 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
           not doing the deploy step) so that the applications can be updated live
           in the details panel without having to wait for the download to complete.
           In a similar way, the fwupd plugin downloads the tiny LVFS metadata with
-          <code>gs_plugin_refresh()</code> and then downloads the large firmware
-          files themselves when <code>gs_plugin_download_app()</code> or
+          <code>refresh_metadata_async()</code> and then downloads the large firmware
+          files themselves when <code>gs_plugin_download()</code> or
           <code>gs_plugin_download_app()</code> is called.
-        </para>
-        <para>
-          If the <code>app</code> parameter is set for
-          <code>gs_plugin_download_file()</code> then the progress of the download
-          is automatically proxied to the UI elements associated with the
-          application, for instance the install button would show a progress bar
-          in the various different places in the UI.
-          For a refresh there's no relevant GsApp to use, so we'll leave it
-          <code>NULL</code> which means something is happening globally which the
-          UI can handle how it wants, for instance showing a loading page at startup.
         </para>
         <para>
           Note, if the downloading fails it's okay to return <code>FALSE</code>;
           the plugin loader continues to run all plugins and just logs an error
-          to the console. We'll be calling into <code>gs_plugin_refresh()</code>
+          to the console. We'll be calling into <code>refresh_metadata_async()</code>
           again in only another hour, so there's no need to bother the user.
           For actions like <code>gs_plugin_app_install</code> we also do the same
           thing, but we also save the error on the GsApp itself so that the UI is
@@ -411,30 +401,78 @@ gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
         <example>
           <title>Refresh example</title>
           <programlisting>
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-                   guint cache_age,
-                   GCancellable *cancellable,
-                   GError **error)
-{
-  const gchar *metadata_fn = "/var/cache/example/metadata.xml";
-  const gchar *metadata_url = "http://www.example.com/new.xml";
-  g_autoptr(GFile) file = g_file_new_for_path (metadata_fn);
+static void progress_cb (gsize bytes_downloaded,
+                         gsize total_download_size,
+                         gpointer user_data);
+static void download_file_cb (GObject *source_object,
+                              GAsyncResult *result,
+                              gpointer user_data);
 
-  /* is the metadata missing or too old */
-  if (gs_utils_get_file_age (file) &gt; cache_age) {
-    if (!gs_plugin_download_file (plugin,
-                                  NULL,
-                                  metadata_url,
-                                  metadata_fn,
-                                  cancellable,
-                                  error)) {
-      /* it's okay to fail here */
-      return FALSE;
-    }
-    g_debug ("successfully downloaded new metadata");
+static void
+gs_plugin_example_refresh_metadata_async (GsPlugin *plugin,
+                                          guint64 cache_age_secs,
+                                          GsPluginRefreshMetadataFlags flags,
+                                          GCancellable *cancellable,
+                                          GError **error)
+{
+  const gchar *metadata_filename = "/var/cache/example/metadata.xml";
+  const gchar *metadata_url = "https://www.example.com/new.xml";
+  g_autoptr(GFile) file = g_file_new_for_path (metadata_filename);
+  g_autoptr(GTask) task = NULL;
+  g_autoptr(SoupSession) soup_session = NULL;
+
+  task = g_task_new (plugin, cancellable, callback, user_data);
+  g_task_set_source_tag (task, gs_plugin_example_refresh_metadata_async);
+
+  soup_session = gs_build_soup_session ();
+
+  /* is the metadata missing or too old? */
+  if (gs_utils_get_file_age (file) &gt; cache_age_secs) {
+    gs_download_file_async (soup_session,
+                            metadata_url,
+                            file,
+                            G_PRIORITY_LOW,
+                            progress_cb,
+                            plugin,
+                            cancellable,
+                            download_file_cb,
+                            g_steal_pointer (&amp;task));
+    return;
   }
-  return TRUE;
+
+  g_task_return_boolean (task, TRUE);
+}
+
+static void
+progress_cb (gsize bytes_downloaded,
+             gsize total_download_size,
+             gpointer user_data)
+{
+  g_debug ("Downloaded %zu of %zu bytes", bytes_downloaded, total_download_size);
+}
+
+static void
+download_file_cb (GObject *source_object,
+                  GAsyncResult *result,
+                  gpointer user_data)
+{
+  GsPlugin *plugin = GS_PLUGIN (source_object);
+  g_autoptr(GTask) task = g_steal_pointer (&amp;user_data);
+
+  if (!gs_download_file_finish (result, &amp;local_error)) {
+    g_task_return_error (task, g_steal_pointer (&amp;local_error));
+  } else {
+    g_debug ("successfully downloaded new metadata");
+    g_task_return_boolean (task, TRUE);
+  }
+}
+
+static gboolean
+gs_plugin_example_refresh_metadata_finish (GsPlugin *plugin,
+                                           GAsyncResult *result,
+                                           GError **error)
+{
+  return g_task_propagate_boolean (G_TASK (result), error);
 }
           </programlisting>
         </example>
@@ -560,7 +598,7 @@ gs_plugin_example_refine_finish (GsPlugin *plugin,
           going to be shown.
           For example, the <code>steam</code> plugin downloads and parses the
           descriptions from a remote service during
-          <code>gs_plugin_refresh()</code>, and also finds the best icon types
+          <code>refresh_metadata_async()</code>, and also finds the best icon types
           and downloads them too.
           Then it exports the data to an AppStream XML file, saving it to your
           home directory.

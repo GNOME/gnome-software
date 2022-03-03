@@ -2058,6 +2058,7 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 {
 	const GError *error;
 	GsPluginAction action;
+	GsPluginJob *job;
 
 	/* get error */
 	error = gs_plugin_event_get_error (event);
@@ -2071,10 +2072,13 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return TRUE;
 	}
 
+	job = gs_plugin_event_get_job (event);
+	if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (job))
+		return gs_shell_show_event_refresh (shell, event);
+
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);
 	switch (action) {
-	case GS_PLUGIN_ACTION_REFRESH:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_refresh (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:

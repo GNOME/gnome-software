@@ -12,7 +12,6 @@
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
-#include <libsoup/soup.h>
 
 #include "gs-app.h"
 #include "gs-app-list.h"
@@ -57,6 +56,10 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @list_installed_apps_finish: (nullable): Finish method for
  *   @list_installed_apps_async. Must be implemented if
  *   @list_installed_apps_async is implemented.
+ * @refresh_metadata_async: (nullable): Refresh plugin metadata.
+ * @refresh_metadata_finish: (nullable): Finish method for
+ *   @refresh_metadata_async. Must be implemented if @refresh_metadata_async is
+ *   implemented.
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -121,6 +124,16 @@ struct _GsPluginClass
 								 GAsyncResult		*result,
 								 GError			**error);
 
+	void			(*refresh_metadata_async)	(GsPlugin		*plugin,
+								 guint64		 cache_age_secs,
+								 GsPluginRefreshMetadataFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*refresh_metadata_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+
 	gpointer		 padding[23];
 };
 
@@ -145,8 +158,6 @@ void		 gs_plugin_remove_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
-void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
-							 SoupSession	*soup_session);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);

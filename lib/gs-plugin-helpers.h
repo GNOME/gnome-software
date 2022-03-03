@@ -34,4 +34,14 @@ GTask *gs_plugin_refine_data_new_task (gpointer             source_object,
 void gs_plugin_refine_data_free (GsPluginRefineData *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefineData, gs_plugin_refine_data_free)
 
+typedef struct {
+	guint64 cache_age_secs;
+	GsPluginRefreshMetadataFlags flags;
+} GsPluginRefreshMetadataData;
+
+GsPluginRefreshMetadataData *gs_plugin_refresh_metadata_data_new (guint64                      cache_age_secs,
+                                                                  GsPluginRefreshMetadataFlags flags);
+void gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefreshMetadataData, gs_plugin_refresh_metadata_data_free)
+
 G_END_DECLS

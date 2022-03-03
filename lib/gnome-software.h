@@ -29,6 +29,7 @@
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-list-installed-apps.h>
 #include <gs-plugin-job-refine.h>
+#include <gs-plugin-job-refresh-metadata.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-remote-icon.h>
 #include <gs-utils.h>

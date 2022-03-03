@@ -30,14 +30,18 @@
 struct _GsPluginFedoraPkgdbCollections {
 	GsPlugin	 parent;
 
-	gchar		*cachefn;
-	GFileMonitor	*cachefn_monitor;
-	gchar		*os_name;
+	/* Only set at setup time, then read only: */
+	gchar		*cachefn;  /* (owned) (not nullable) */
+	GFileMonitor	*cachefn_monitor;  /* (owned) (not nullable) */
+	gchar		*os_name;  /* (owned) (not nullable) */
 	guint64		 os_version;
-	GsApp		*cached_origin;
-	GSettings	*settings;
-	gboolean	 is_valid;
-	GPtrArray	*distros;
+	GsApp		*cached_origin;  /* (owned) (not nullable) */
+	GSettings	*settings;  /* (owned) (not nullable) */
+
+	/* Contents may vary throughout the plugin’s lifetime, and hence must
+	 * be accessed with @mutex held: */
+	gboolean	 is_valid;  /* (mutex mutex) */
+	GPtrArray	*distros;  /* (owned) (not nullable) (element-type PkgdbItem) (mutex mutex) */
 	GMutex		 mutex;
 };
 
@@ -122,7 +126,10 @@ _file_changed_cb (GFileMonitor *monitor,
 
 	g_debug ("cache file changed, so reloading upgrades list");
 	gs_plugin_updates_changed (GS_PLUGIN (self));
+
+	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
+	g_mutex_unlock (&self->mutex);
 }
 
 static void
@@ -137,7 +144,6 @@ gs_plugin_fedora_pkgdb_collections_setup_async (GsPlugin            *plugin,
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
@@ -222,23 +228,35 @@ gs_plugin_fedora_pkgdb_collections_setup_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static gboolean
-_refresh_cache (GsPluginFedoraPkgdbCollections *self,
-		guint cache_age,
-		GCancellable *cancellable,
-		GError **error)
+static void download_cb (GObject      *source_object,
+                         GAsyncResult *result,
+                         gpointer      user_data);
+
+static void
+_refresh_cache_async (GsPluginFedoraPkgdbCollections *self,
+                      guint64                         cache_age_secs,
+                      GsPluginRefreshMetadataFlags    flags,
+                      GCancellable                   *cancellable,
+                      GAsyncReadyCallback             callback,
+                      gpointer                        user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GFile) output_file = g_file_new_for_path (self->cachefn);
+	g_autoptr(SoupSession) soup_session = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, _refresh_cache_async);
 
 	/* check cache age */
-	if (cache_age > 0) {
-		g_autoptr(GFile) file = g_file_new_for_path (self->cachefn);
-		guint64 tmp = gs_utils_get_file_age (file);
-		if (tmp < cache_age) {
+	if (cache_age_secs > 0) {
+		guint64 tmp = gs_utils_get_file_age (output_file);
+		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old",
 				 self->cachefn, tmp);
-			return TRUE;
+			g_task_return_boolean (task, TRUE);
+			return;
 		}
 	}
 
@@ -246,29 +264,79 @@ _refresh_cache (GsPluginFedoraPkgdbCollections *self,
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading upgrade information…"));
-	if (!gs_plugin_download_file (plugin, app_dl,
-				      FEDORA_PKGDB_COLLECTIONS_API_URI,
-				      self->cachefn,
-				      cancellable,
-				      error)) {
-		gs_utils_error_add_origin_id (error, self->cached_origin);
-		return FALSE;
+
+	soup_session = gs_build_soup_session ();
+
+	gs_download_file_async (soup_session,
+				FEDORA_PKGDB_COLLECTIONS_API_URI,
+				output_file,
+				G_PRIORITY_LOW,
+				NULL, NULL,  /* FIXME: progress reporting */
+				cancellable,
+				download_cb,
+				g_steal_pointer (&task));
+}
+
+static void
+download_cb (GObject      *source_object,
+             GAsyncResult *result,
+             gpointer      user_data)
+{
+	SoupSession *soup_session = SOUP_SESSION (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginFedoraPkgdbCollections *self = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+		g_autoptr(GError) wrapped_error = NULL;
+
+		/* Wrap in a GsPluginError. */
+		g_set_error_literal (&wrapped_error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     local_error->message);
+
+		gs_utils_error_add_origin_id (&wrapped_error, self->cached_origin);
+		g_task_return_error (task, g_steal_pointer (&wrapped_error));
+		return;
 	}
 
 	/* success */
+	g_mutex_lock (&self->mutex);
 	self->is_valid = FALSE;
-	return TRUE;
+	g_mutex_unlock (&self->mutex);
+
+	g_task_return_boolean (task, TRUE);
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
+static gboolean
+_refresh_cache_finish (GsPluginFedoraPkgdbCollections  *self,
+                       GAsyncResult                    *result,
+                       GError                         **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_fedora_pkgdb_collections_refresh_metadata_async (GsPlugin                     *plugin,
+                                                           guint64                       cache_age_secs,
+                                                           GsPluginRefreshMetadataFlags  flags,
+                                                           GCancellable                 *cancellable,
+                                                           GAsyncReadyCallback           callback,
+                                                           gpointer                      user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-	return _refresh_cache (self, cache_age, cancellable, error);
+	_refresh_cache_async (self, cache_age_secs, flags, cancellable, callback, user_data);
+}
+
+static gboolean
+gs_plugin_fedora_pkgdb_collections_refresh_metadata_finish (GsPlugin      *plugin,
+                                                            GAsyncResult  *result,
+                                                            GError       **error)
+{
+	return _refresh_cache_finish (GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin),
+				      result,
+				      error);
 }
 
 static gchar *
@@ -402,15 +470,18 @@ _is_valid_upgrade (GsPluginFedoraPkgdbCollections *self,
 	return TRUE;
 }
 
-static gboolean
+static GPtrArray *
 load_json (GsPluginFedoraPkgdbCollections  *self,
            GError                         **error)
 {
 	JsonArray *collections;
 	JsonObject *root;
 	g_autoptr(JsonParser) parser = NULL;
+	g_autoptr(GPtrArray) new_distros = NULL;
 
+	new_distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);
 	parser = json_parser_new_immutable ();
+
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
 		return FALSE;
 
@@ -432,7 +503,6 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 		return FALSE;
 	}
 
-	g_ptr_array_set_size (self->distros, 0);
 	for (guint i = 0; i < json_array_get_length (collections); i++) {
 		PkgdbItem *item;
 		JsonObject *collection;
@@ -477,37 +547,92 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 		item->name = g_strdup (name);
 		item->status = status;
 		item->version = (guint) version;
-		g_ptr_array_add (self->distros, item);
+		g_ptr_array_add (new_distros, item);
 	}
 
 	/* ensure in correct order */
-	g_ptr_array_sort (self->distros, _sort_items_cb);
+	g_ptr_array_sort (new_distros, _sort_items_cb);
 
 	/* success */
+	g_mutex_lock (&self->mutex);
+	g_clear_pointer (&self->distros, g_ptr_array_unref);
+	self->distros = g_ptr_array_ref (new_distros);
 	self->is_valid = TRUE;
-	return TRUE;
+	g_mutex_unlock (&self->mutex);
+
+	return g_steal_pointer (&new_distros);
 }
 
-static gboolean
-_ensure_cache (GsPluginFedoraPkgdbCollections  *self,
-               GCancellable                    *cancellable,
-               GError                         **error)
+static void ensure_refresh_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+
+/* Should be called without the lock held. It will internally take the lock for
+ * a short period, and return a strong reference to the latest distros
+ * #GPtrArray. The caller should use this in their computation. */
+static void
+_ensure_cache_async (GsPluginFedoraPkgdbCollections *self,
+		     GsPluginRefreshMetadataFlags    flags,
+                     GCancellable                   *cancellable,
+                     GAsyncReadyCallback             callback,
+                     gpointer                        user_data)
 {
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, _ensure_cache_async);
+
 	/* already done */
-	if (self->is_valid)
-		return TRUE;
+	g_mutex_lock (&self->mutex);
+	if (self->is_valid) {
+		g_autoptr(GPtrArray) distros = g_ptr_array_ref (self->distros);
+		g_mutex_unlock (&self->mutex);
+		g_task_return_pointer (task, g_steal_pointer (&distros), (GDestroyNotify) g_ptr_array_unref);
+		return;
+	}
+	g_mutex_unlock (&self->mutex);
 
-	/* just ensure there is any data, no matter how old */
-	/* FIXME: This can download from the network, so needs to be made async */
-	if (!_refresh_cache (self, G_MAXUINT, cancellable, error))
-		return FALSE;
+	/* Ensure there is any data, no matter how old. This can download from
+	 * the network if needed. */
+	_refresh_cache_async (self, G_MAXUINT, flags, cancellable,
+			      ensure_refresh_cb, g_steal_pointer (&task));
+}
 
-	return load_json (self, error);
+static void
+ensure_refresh_cb (GObject      *source_object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GPtrArray) distros = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!_refresh_cache_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	distros = load_json (self, &local_error);
+	if (distros == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&distros), (GDestroyNotify) g_ptr_array_unref);
+}
+
+static GPtrArray *
+_ensure_cache_finish (GsPluginFedoraPkgdbCollections  *self,
+                      GAsyncResult                    *result,
+                      GError                         **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static PkgdbItem *
-_get_item_by_cpe_name (GsPluginFedoraPkgdbCollections *self,
-                       const gchar                    *cpe_name)
+_get_item_by_cpe_name (GPtrArray   *distros,
+                       const gchar *cpe_name)
 {
 	guint64 version;
 	g_auto(GStrv) split = NULL;
@@ -525,13 +650,25 @@ _get_item_by_cpe_name (GsPluginFedoraPkgdbCollections *self,
 		g_warning ("failed to parse CPE version: %s", split[4]);
 		return NULL;
 	}
-	for (guint i = 0; i < self->distros->len; i++) {
-		PkgdbItem *item = g_ptr_array_index (self->distros, i);
+	for (guint i = 0; i < distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (distros, i);
 		if (g_ascii_strcasecmp (item->name, split[3]) == 0 &&
 		    item->version == version)
 			return item;
 	}
 	return NULL;
+}
+
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
 gboolean
@@ -541,15 +678,23 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GPtrArray) distros = NULL;
 
-	/* ensure valid data is loaded */
-	if (!_ensure_cache (self, cancellable, error))
+	/* ensure valid data is loaded; FIXME this can be made properly async
+	 * when the add_distro_upgrades() vfunc is made async */
+	_ensure_cache_async (self, GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE, cancellable, async_result_cb, &result);
+
+	while (result == NULL)
+		g_main_context_iteration (NULL, TRUE);
+
+	distros = _ensure_cache_finish (self, result, error);
+	if (distros == NULL)
 		return FALSE;
 
 	/* are any distros upgradable */
-	for (guint i = 0; i < self->distros->len; i++) {
-		PkgdbItem *item = g_ptr_array_index (self->distros, i);
+	for (guint i = 0; i < distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (distros, i);
 		if (_is_valid_upgrade (self, item)) {
 			g_autoptr(GsApp) app = NULL;
 			app = _create_upgrade_from_info (self, item);
@@ -561,11 +706,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 }
 
 static gboolean
-refine_app_locked (GsPluginFedoraPkgdbCollections  *self,
-                   GsApp                           *app,
-                   GsPluginRefineFlags              flags,
-                   GCancellable                    *cancellable,
-                   GError                         **error)
+refine_app_locked (GPtrArray            *distros,
+                   GsApp                *app,
+                   GsPluginRefineFlags   flags,
+                   GCancellable         *cancellable,
+                   GError              **error)
 {
 	PkgdbItem *item;
 	const gchar *cpe_name;
@@ -580,7 +725,7 @@ refine_app_locked (GsPluginFedoraPkgdbCollections  *self,
 		return TRUE;
 
 	/* find item */
-	item = _get_item_by_cpe_name (self, cpe_name);
+	item = _get_item_by_cpe_name (distros, cpe_name);
 	if (item == NULL) {
 		g_warning ("did not find %s", cpe_name);
 		return TRUE;
@@ -602,6 +747,10 @@ refine_app_locked (GsPluginFedoraPkgdbCollections  *self,
 	return TRUE;
 }
 
+static void refine_cb (GObject      *source_object,
+                       GAsyncResult *result,
+                       gpointer      user_data);
+
 static void
 gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
                                                  GsAppList           *list,
@@ -611,22 +760,37 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
                                                  gpointer             user_data)
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	task = g_task_new (plugin, cancellable, callback, user_data);
+	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
 
 	/* ensure valid data is loaded */
-	if (!_ensure_cache (self, cancellable, &local_error)) {
+	_ensure_cache_async (self, GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE, cancellable, refine_cb, g_steal_pointer (&task));
+}
+
+static void
+refine_cb (GObject      *source_object,
+           GAsyncResult *result,
+           gpointer      user_data)
+{
+	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginRefineData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GPtrArray) distros = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	distros = _ensure_cache_finish (self, result, &local_error);
+	if (distros == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (!refine_app_locked (self, app, flags, cancellable, &local_error)) {
+	for (guint i = 0; i < gs_app_list_length (data->list); i++) {
+		GsApp *app = gs_app_list_index (data->list, i);
+		if (!refine_app_locked (distros, app, data->flags, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -656,6 +820,8 @@ gs_plugin_fedora_pkgdb_collections_class_init (GsPluginFedoraPkgdbCollectionsCla
 	plugin_class->setup_finish = gs_plugin_fedora_pkgdb_collections_setup_finish;
 	plugin_class->refine_async = gs_plugin_fedora_pkgdb_collections_refine_async;
 	plugin_class->refine_finish = gs_plugin_fedora_pkgdb_collections_refine_finish;
+	plugin_class->refresh_metadata_async = gs_plugin_fedora_pkgdb_collections_refresh_metadata_async;
+	plugin_class->refresh_metadata_finish = gs_plugin_fedora_pkgdb_collections_refresh_metadata_finish;
 }
 
 GType

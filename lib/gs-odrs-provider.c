@@ -1329,7 +1329,7 @@ static void download_ratings_cb (GObject      *source_object,
 /**
  * gs_odrs_provider_refresh_ratings_async:
  * @self: a #GsOdrsProvider
- * @cache_age_secs: cache age, in seconds, as passed to gs_plugin_refresh()
+ * @cache_age_secs: cache age, in seconds, as passed to #GsPluginClass.refresh_metadata_async()
  * @progress_callback: (nullable): callback to call with progress information
  * @progress_user_data: (nullable) (closure progress_callback): data to pass
  *   to @progress_callback

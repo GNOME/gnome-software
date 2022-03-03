@@ -43,43 +43,29 @@ _pulse_cb (gpointer user_data)
 }
 
 static void
-gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
-                                   GsApp *app,
-                                   GsPluginStatus status,
-                                   GsLoadingPage *self)
+gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
+                                 guint                       progress_percent,
+                                 gpointer                    user_data)
 {
+	GsLoadingPage *self = GS_LOADING_PAGE (user_data);
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
-	const gchar *str = NULL;
 
 	/* update title */
-	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
-		if (app != NULL)
-			str = gs_app_get_summary_missing (app);
-		if (str == NULL) {
-			/* TRANSLATORS: initial start */
-			str = _("Software catalog is being downloaded");
-		}
-	} else {
-		/* TRANSLATORS: initial start */
-		str = _("Software catalog is being downloaded");
+	adw_status_page_set_title (ADW_STATUS_PAGE (priv->status_page),
+				   /* TRANSLATORS: initial start */
+				   _("Software catalog is being downloaded"));
+
+	/* update progressbar */
+	if (priv->progress_pulse_id != 0) {
+		g_source_remove (priv->progress_pulse_id);
+		priv->progress_pulse_id = 0;
 	}
 
-	/* update title */
-	adw_status_page_set_title (ADW_STATUS_PAGE (priv->status_page), str);
-
-	/* update progresbar */
-	if (app != NULL) {
-		if (priv->progress_pulse_id != 0) {
-			g_source_remove (priv->progress_pulse_id);
-			priv->progress_pulse_id = 0;
-		}
-
-		if (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN) {
-			priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
-		} else {
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
-						       (gdouble) gs_app_get_progress (app) / 100.0f);
-		}
+	if (progress_percent == G_MAXUINT) {
+		priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
+	} else {
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
+					       (gdouble) progress_percent / 100.0f);
 	}
 }
 
@@ -132,16 +118,13 @@ gs_loading_page_load (GsLoadingPage *self)
 	} else
 		cache_age_secs = G_MAXUINT64;
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", cache_age_secs,
-					 NULL);
+	plugin_job = gs_plugin_job_refresh_metadata_new (cache_age_secs,
+							 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE);
+	g_signal_connect (plugin_job, "progress", G_CALLBACK (gs_loading_page_job_progress_cb), self);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					priv->cancellable,
 					gs_loading_page_refresh_cb,
 					self);
-	g_signal_connect (priv->plugin_loader, "status-changed",
-			  G_CALLBACK (gs_loading_page_status_changed_cb),
-			  self);
 }
 
 static void

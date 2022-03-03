@@ -54,7 +54,6 @@ typedef struct
 	GMutex			 cache_mutex;
 	GModule			*module;
 	GsPluginFlags		 flags;
-	SoupSession		*soup_session;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
@@ -222,8 +221,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->appstream_id);
 	g_free (priv->language);
-	if (priv->soup_session != NULL)
-		g_object_unref (priv->soup_session);
 	if (priv->network_monitor != NULL)
 		g_object_unref (priv->network_monitor);
 	g_hash_table_unref (priv->cache);
@@ -520,22 +517,6 @@ gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->language);
 	priv->language = g_strdup (language);
-}
-
-/**
- * gs_plugin_set_soup_session:
- * @plugin: a #GsPlugin
- * @soup_session: a #SoupSession
- *
- * Sets the soup session that this plugin will use when downloading.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_set_object (&priv->soup_session, soup_session);
 }
 
 /**
@@ -1425,8 +1406,6 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_function_name (GsPluginAction action)
 {
-	if (action == GS_PLUGIN_ACTION_REFRESH)
-		return "gs_plugin_refresh";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "gs_plugin_app_install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
@@ -1535,8 +1514,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-categories";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
 		return "get-category-apps";
-	if (action == GS_PLUGIN_ACTION_REFRESH)
-		return "refresh";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1609,8 +1586,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_CATEGORIES;
 	if (g_strcmp0 (action, "get-category-apps") == 0)
 		return GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
-	if (g_strcmp0 (action, "refresh") == 0)
-		return GS_PLUGIN_ACTION_REFRESH;
 	if (g_strcmp0 (action, "file-to-app") == 0)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
