@@ -1877,8 +1877,8 @@ search_files_cb (GObject      *source_object,
 		package = g_ptr_array_index (packages, 0);
 		gs_plugin_packagekit_set_metadata_from_package (GS_PLUGIN (self), search_files_data->app, package);
 	} else {
-		g_warning ("Failed to find one package for %s, %s, [%u]",
-			   gs_app_get_id (search_files_data->app), search_files_data->filename, packages->len);
+		g_debug ("Failed to find one package for %s, %s, [%u]",
+			 gs_app_get_id (search_files_data->app), search_files_data->filename, packages->len);
 	}
 
 	refine_task_complete_operation (refine_task);
