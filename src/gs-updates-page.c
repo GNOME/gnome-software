@@ -76,7 +76,6 @@ struct _GsUpdatesPage
 	GtkWidget		*infobar_end_of_life;
 	GtkWidget		*label_end_of_life;
 
-	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -1225,7 +1224,6 @@ gs_updates_page_setup (GsPage *page,
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		self->sections[i] = gs_updates_section_new (i, plugin_loader, page);
 		gs_updates_section_set_size_groups (self->sections[i],
-						    self->sizegroup_image,
 						    self->sizegroup_name,
 						    self->sizegroup_desc,
 						    self->sizegroup_button_label,
@@ -1306,14 +1304,6 @@ gs_updates_page_setup (GsPage *page,
 	g_signal_connect (self->button_updates_offline, "clicked",
 			  G_CALLBACK (gs_updates_page_button_network_settings_cb),
 			  self);
-
-	/* visually aligned */
-	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
 	/* set initial state */
 	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
@@ -1396,7 +1386,6 @@ gs_updates_page_dispose (GObject *object)
 	g_clear_object (&self->settings);
 	g_clear_object (&self->desktop_settings);
 
-	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
@@ -1468,7 +1457,6 @@ gs_updates_page_init (GsUpdatesPage *self)
 	self->settings = g_settings_new ("org.gnome.software");
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
 
-	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
