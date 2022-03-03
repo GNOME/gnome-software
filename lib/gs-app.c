@@ -78,6 +78,7 @@ typedef struct
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GArray			*key_colors;  /* (nullable) (element-type GdkRGBA) */
+	gboolean		 user_key_colors;
 	GHashTable		*urls;  /* (element-type AsUrlKind utf8) (owned) (nullable) */
 	GHashTable		*launchables;
 	gchar			*url_missing;
@@ -708,6 +709,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		tmp = g_ptr_array_index (priv->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
 	}
+	if (priv->user_key_colors)
+		gs_app_kv_lpad (str, "user-key-colors", "yes");
 	for (i = 0; priv->key_colors != NULL && i < priv->key_colors->len; i++) {
 		GdkRGBA *color = &g_array_index (priv->key_colors, GdkRGBA, i);
 		g_autofree gchar *key = NULL;
@@ -4299,6 +4302,7 @@ calculate_key_colors (GsApp *app)
 	/* Lazily create the array */
 	if (priv->key_colors == NULL)
 		priv->key_colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
+	priv->user_key_colors = FALSE;
 
 	/* Look for an override first. Parse and use it if possible. This is
 	 * typically specified in the appdata for an app as:
@@ -4334,6 +4338,8 @@ calculate_key_colors (GsApp *app)
 				rgba.alpha = 1.0;
 				g_array_append_val (priv->key_colors, rgba);
 			}
+
+			priv->user_key_colors = TRUE;
 
 			return;
 		} else {
@@ -4471,6 +4477,7 @@ gs_app_set_key_colors (GsApp *app, GArray *key_colors)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_colors != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
+	priv->user_key_colors = FALSE;
 	if (_g_set_array (&priv->key_colors, key_colors))
 		gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
@@ -4495,8 +4502,29 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 	if (priv->key_colors == NULL)
 		priv->key_colors = g_array_new (FALSE, FALSE, sizeof (GdkRGBA));
 
+	priv->user_key_colors = FALSE;
 	g_array_append_val (priv->key_colors, *key_color);
 	gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
+}
+
+/**
+ * gs_app_get_user_key_colors:
+ * @app: a #GsApp
+ *
+ * Returns whether the key colors provided by gs_app_get_key_colors()
+ * are set by the user (using `GnomeSoftware::key-colors`). %FALSE
+ * means the colors have been calculated from the @app icon.
+ *
+ * Returns: whether the key colors have been provided by the user.
+ *
+ * Since: 42
+ **/
+gboolean
+gs_app_get_user_key_colors (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->user_key_colors;
 }
 
 /**
