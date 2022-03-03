@@ -186,14 +186,6 @@ configure_file(
   configuration : cdata
 )
 
-# replace @bindir@
-configure_file(
-  input : 'gnome-software-service.desktop.in',
-  output : 'gnome-software-service.desktop',
-  install_dir: join_paths(get_option('sysconfdir'), 'xdg/autostart'),
-  configuration : cdata
-)
-
 i18n.merge_file(
   input:
     # replace mime-type handlers
