@@ -867,25 +867,12 @@ get_primary_app (SnapdSnap *snap)
 }
 
 static void
-refine_icons (GsPluginSnap *self,
-              SnapdClient  *client,
-              GsApp        *app,
-              const gchar  *id,
-              SnapdSnap    *snap,
-              GCancellable *cancellable)
+refine_icons (GsApp        *app,
+              SnapdSnap    *snap)
 {
-	g_autoptr(SnapdIcon) snap_icon = NULL;
 	GPtrArray *media;
 	guint i;
 
-	/* Snap may have an icon file inside it */
-	snap_icon = snapd_client_get_icon_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, NULL);
-	if (snap_icon != NULL) {
-		g_autoptr(GIcon) icon = g_bytes_icon_new (snapd_icon_get_data (snap_icon));
-		gs_app_add_icon (app, icon);
-	}
-
-	/* Remote icons */
 	media = snapd_snap_get_media (snap);
 	for (i = 0; i < media->len; i++) {
 		SnapdMedia *m = media->pdata[i];
@@ -1093,13 +1080,25 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(GPtrArray) snap_names = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) snap_apps = NULL;
 	g_autoptr(GsPluginRefineData) data = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_snap_refine_async);
 
-	data = gs_plugin_refine_data_new (list, flags);
+	/* Filter out apps that aren't managed by us */
+	snap_apps = gs_app_list_new ();
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (!gs_app_has_management_plugin (app, plugin))
+			continue;
+
+		gs_app_list_add (snap_apps, app);
+	}
+
+	data = gs_plugin_refine_data_new (snap_apps, flags);
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) gs_plugin_refine_data_free);
 
 	client = get_client (self, &local_error);
@@ -1109,12 +1108,8 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 	}
 
 	/* Get information from locally installed snaps */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-
-		if (!gs_app_has_management_plugin (app, plugin))
-			continue;
-
+	for (guint i = 0; i < gs_app_list_length (snap_apps); i++) {
+		GsApp *app = gs_app_list_index (snap_apps, i);
 		g_ptr_array_add (snap_names, (gpointer) gs_app_get_metadata_item (app, "snap::name"));
 	}
 
@@ -1122,6 +1117,10 @@ gs_plugin_snap_refine_async (GsPlugin            *plugin,
 
 	snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, (gchar **) snap_names->pdata, cancellable, get_snaps_cb, g_steal_pointer (&task));
 }
+
+static void get_icon_cb (GObject      *object,
+                         GAsyncResult *result,
+                         gpointer      user_data);
 
 static void
 get_snaps_cb (GObject      *object,
@@ -1157,10 +1156,6 @@ get_snaps_cb (GObject      *object,
 		const gchar *developer_name;
 		g_autofree gchar *description = NULL;
 		guint64 release_date = 0;
-
-		/* not us */
-		if (!gs_app_has_management_plugin (app, GS_PLUGIN (self)))
-			continue;
 
 		snap_name = gs_app_get_metadata_item (app, "snap::name");
 		channel = g_strdup (gs_app_get_branch (app));
@@ -1303,7 +1298,7 @@ get_snaps_cb (GObject      *object,
 
 		/* load icon if requested */
 		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
-			refine_icons (self, client, app, snap_name, snap, cancellable);
+			refine_icons (app, snap);
 
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
 		    gs_app_is_installed (app) &&
@@ -1320,7 +1315,43 @@ get_snaps_cb (GObject      *object,
 		}
 	}
 
-	g_task_return_boolean (task, TRUE);
+	/* Icons require async calls to get */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_list_length (list) > 0) {
+		GsApp *app = gs_app_list_index (list, 0);
+		snapd_client_get_icon_async (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, get_icon_cb, g_steal_pointer (&task));
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static void
+get_icon_cb (GObject      *object,
+             GAsyncResult *result,
+             gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginRefineData *data = g_task_get_task_data (task);
+	GsApp *app;
+	g_autoptr(SnapdIcon) snap_icon = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	app = gs_app_list_index (data->list, 0);
+	snap_icon = snapd_client_get_icon_finish (client, result, &local_error);
+	if (snap_icon != NULL) {
+		g_autoptr(GIcon) icon = g_bytes_icon_new (snapd_icon_get_data (snap_icon));
+		gs_app_add_icon (app, icon);
+	}
+
+	/* Get next icon in the list or done */
+	gs_app_list_remove (data->list, app);
+	if (gs_app_list_length (data->list) > 0) {
+		app = gs_app_list_index (data->list, 0);
+		snapd_client_get_icon_async (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, get_icon_cb, g_steal_pointer (&task));
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
 }
 
 static gboolean
