@@ -391,7 +391,8 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 						    res,
 						    &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get installed apps: %s", error->message);
 		goto out;
 	}

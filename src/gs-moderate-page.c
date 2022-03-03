@@ -205,7 +205,8 @@ gs_moderate_page_refine_unvoted_reviews_cb (GObject      *source_object,
 							    res,
 							    &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get moderate apps: %s", error->message);
 		return;
 	}
@@ -236,7 +237,8 @@ gs_moderate_page_load (GsModeratePage *self)
 	/* get unvoted reviews as apps */
 	if (!gs_odrs_provider_add_unvoted_reviews (self->odrs_provider, list,
 						   self->cancellable, &local_error)) {
-		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get moderate apps: %s", local_error->message);
 		return;
 	}

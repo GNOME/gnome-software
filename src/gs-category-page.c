@@ -136,7 +136,8 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 						    res,
 						    &local_error);
 	if (list == NULL) {
-		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get featured apps for category apps: %s", local_error->message);
 		data->get_featured_apps_finished = TRUE;
 		load_category_finish (data);
@@ -170,7 +171,8 @@ gs_category_page_get_apps_cb (GObject *source_object,
 						    res,
 						    &local_error);
 	if (list == NULL) {
-		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category apps: %s", local_error->message);
 		data->get_main_apps_finished = TRUE;
 		load_category_finish (data);

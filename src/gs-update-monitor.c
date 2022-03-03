@@ -518,7 +518,8 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get updates: %s", error->message);
 		return;
 	}
@@ -636,7 +637,8 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* get result */
 	app = gs_plugin_loader_get_system_app_finish (plugin_loader, res, &error);
 	if (app == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get system: %s", error->message);
 		return;
 	}
@@ -676,7 +678,8 @@ get_upgrades_finished_cb (GObject *object,
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("failed to get upgrades: %s",
 				   error->message);
 		}
@@ -798,7 +801,8 @@ refresh_cache_finished_cb (GObject *object,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
@@ -828,7 +832,8 @@ install_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(WithAppData) with_app_data = data;
 
 	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_debug ("failed to install language pack: %s", error->message);
 		return;
 	} else {
@@ -847,7 +852,8 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	app_list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (app_list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_debug ("failed to find language pack: %s", error->message);
 		return;
 	}
@@ -1213,43 +1219,37 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GtkWindow *window)
 	/* TRANSLATORS: this is when the offline update failed */
 	title = _("Failed To Update");
 
-	switch (monitor->last_offline_error->code) {
-	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+	if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		/* TRANSLATORS: the user must have updated manually after
 		 * the updates were prepared */
 		msg = _("The system was already up to date.");
 		show_detailed_error = TRUE;
-		break;
-	case GS_PLUGIN_ERROR_CANCELLED:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		   g_error_matches (monitor->last_offline_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* TRANSLATORS: the user aborted the update manually */
 		msg = _("The update was cancelled.");
 		show_detailed_error = FALSE;
-		break;
-	case GS_PLUGIN_ERROR_NO_NETWORK:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: the package manager needed to download
 		 * something with no network available */
 		msg = _("Internet access was required but wasn’t available. "
 			"Please make sure that you have internet access and try again.");
 		show_detailed_error = FALSE;
-		break;
-	case GS_PLUGIN_ERROR_NO_SECURITY:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: if the package is not signed correctly */
 		msg = _("There were security issues with the update. "
 			"Please consult your software provider for more details.");
 		show_detailed_error = TRUE;
-		break;
-	case GS_PLUGIN_ERROR_NO_SPACE:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: we ran out of disk space */
 		msg = _("There wasn’t enough disk space. Please free up some space and try again.");
 		show_detailed_error = FALSE;
-		break;
-	default:
+	} else {
 		/* TRANSLATORS: We didn't handle the error type */
 		msg = _("We’re sorry: the update failed to install. "
 			"Please wait for another update and try again. "
 			"If the problem persists, contact your software provider.");
 		show_detailed_error = TRUE;
-		break;
 	}
 
 	gs_utils_show_error_dialog (window,
