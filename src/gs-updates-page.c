@@ -1311,14 +1311,6 @@ gs_updates_page_setup (GsPage *page,
 			  G_CALLBACK (gs_updates_page_button_network_settings_cb),
 			  self);
 
-	/* visually aligned */
-	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
-
 	/* set initial state */
 	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
 		self->state = GS_UPDATES_PAGE_STATE_MANAGED;
