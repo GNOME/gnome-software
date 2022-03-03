@@ -2072,9 +2072,8 @@ gs_details_page_get_property (GObject    *object,
 	case PROP_TITLE:
 		switch (gs_details_page_get_state (self)) {
 		case GS_DETAILS_PAGE_STATE_LOADING:
-			/* TRANSLATORS: This is a title for the app details page,
-			 * shown when it’s loading the details of an app. */
-			g_value_set_string (value, _("Loading…"));
+			/* 'Loading' is shown in the page already, no need to repeat it in the title */
+			g_value_set_string (value, NULL);
 			break;
 		case GS_DETAILS_PAGE_STATE_READY:
 			g_value_set_string (value, gs_app_get_name (self->app));
