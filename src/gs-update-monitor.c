@@ -1214,43 +1214,36 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GtkWindow *window)
 	/* TRANSLATORS: this is when the offline update failed */
 	title = _("Failed To Update");
 
-	switch (monitor->last_offline_error->code) {
-	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+	if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		/* TRANSLATORS: the user must have updated manually after
 		 * the updates were prepared */
 		msg = _("The system was already up to date.");
 		show_detailed_error = TRUE;
-		break;
-	case GS_PLUGIN_ERROR_CANCELLED:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 		/* TRANSLATORS: the user aborted the update manually */
 		msg = _("The update was cancelled.");
 		show_detailed_error = FALSE;
-		break;
-	case GS_PLUGIN_ERROR_NO_NETWORK:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK)) {
 		/* TRANSLATORS: the package manager needed to download
 		 * something with no network available */
 		msg = _("Internet access was required but wasn’t available. "
 			"Please make sure that you have internet access and try again.");
 		show_detailed_error = FALSE;
-		break;
-	case GS_PLUGIN_ERROR_NO_SECURITY:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: if the package is not signed correctly */
 		msg = _("There were security issues with the update. "
 			"Please consult your software provider for more details.");
 		show_detailed_error = TRUE;
-		break;
-	case GS_PLUGIN_ERROR_NO_SPACE:
+	} else if (g_error_matches (monitor->last_offline_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: we ran out of disk space */
 		msg = _("There wasn’t enough disk space. Please free up some space and try again.");
 		show_detailed_error = FALSE;
-		break;
-	default:
+	} else {
 		/* TRANSLATORS: We didn't handle the error type */
 		msg = _("We’re sorry: the update failed to install. "
 			"Please wait for another update and try again. "
 			"If the problem persists, contact your software provider.");
 		show_detailed_error = TRUE;
-		break;
 	}
 
 	gs_utils_show_error_dialog (window,
