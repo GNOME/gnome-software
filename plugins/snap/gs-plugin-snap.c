@@ -612,15 +612,16 @@ static void list_installed_apps_cb (GObject      *source_object,
                                     gpointer      user_data);
 
 static void
-gs_plugin_snap_list_installed_apps_async (GsPlugin            *plugin,
-                                          GCancellable        *cancellable,
-                                          GAsyncReadyCallback  callback,
-                                          gpointer             user_data)
+gs_plugin_snap_list_installed_apps_async (GsPlugin                       *plugin,
+                                          GsPluginListInstalledAppsFlags  flags,
+                                          GCancellable                   *cancellable,
+                                          GAsyncReadyCallback             callback,
+                                          gpointer                        user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(SnapdClient) client = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);

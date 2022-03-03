@@ -57,6 +57,7 @@ struct _GsPluginJobListInstalledApps
 	GsPluginRefineFlags refine_flags;
 	guint max_results;
 	GsAppListFilterFlags dedupe_flags;
+	GsPluginListInstalledAppsFlags flags;
 
 	/* In-progress data. */
 	GsAppList *merged_list;  /* (owned) (nullable) */
@@ -73,9 +74,10 @@ typedef enum {
 	PROP_REFINE_FLAGS = 1,
 	PROP_MAX_RESULTS,
 	PROP_DEDUPE_FLAGS,
+	PROP_FLAGS,
 } GsPluginJobListInstalledAppsProperty;
 
-static GParamSpec *props[PROP_DEDUPE_FLAGS + 1] = { NULL, };
+static GParamSpec *props[PROP_FLAGS + 1] = { NULL, };
 
 static void
 gs_plugin_job_list_installed_apps_dispose (GObject *object)
@@ -109,6 +111,9 @@ gs_plugin_job_list_installed_apps_get_property (GObject    *object,
 	case PROP_DEDUPE_FLAGS:
 		g_value_set_flags (value, self->dedupe_flags);
 		break;
+	case PROP_FLAGS:
+		g_value_set_flags (value, self->flags);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -140,6 +145,12 @@ gs_plugin_job_list_installed_apps_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->dedupe_flags == 0);
 		self->dedupe_flags = g_value_get_flags (value);
+		g_object_notify_by_pspec (object, props[prop_id]);
+		break;
+	case PROP_FLAGS:
+		/* Construct only. */
+		g_assert (self->flags == 0);
+		self->flags = g_value_get_flags (value);
 		g_object_notify_by_pspec (object, props[prop_id]);
 		break;
 	default:
@@ -287,7 +298,10 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 
 		/* run the plugin */
 		self->n_pending_ops++;
-		plugin_class->list_installed_apps_async (plugin, cancellable, plugin_list_installed_apps_cb, g_object_ref (task));
+		plugin_class->list_installed_apps_async (plugin, self->flags,
+							 cancellable,
+							 plugin_list_installed_apps_cb,
+							 g_object_ref (task));
 	}
 
 	/* some functions are really required for proper operation */
@@ -491,6 +505,20 @@ gs_plugin_job_list_installed_apps_class_init (GsPluginJobListInstalledAppsClass 
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsPluginJobListInstalledApps:flags:
+	 *
+	 * Flags to specify how the list job should behave.
+	 *
+	 * Since: 42
+	 */
+	props[PROP_FLAGS] =
+		g_param_spec_flags ("flags", "Flags",
+				    "Flags to specify how the list job should behave.",
+				    GS_TYPE_PLUGIN_LIST_INSTALLED_APPS_FLAGS, GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_NONE,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -506,6 +534,7 @@ gs_plugin_job_list_installed_apps_init (GsPluginJobListInstalledApps *self)
  * @max_results: maximum number of results to return, or `0` to not limit the
  *   results
  * @dedupe_flags: flags to control deduplicating the results
+ * @flags: flags to affect the list operation
  *
  * Create a new #GsPluginJobListInstalledApps for listing the installed apps.
  *
@@ -513,14 +542,16 @@ gs_plugin_job_list_installed_apps_init (GsPluginJobListInstalledApps *self)
  * Since: 42
  */
 GsPluginJob *
-gs_plugin_job_list_installed_apps_new (GsPluginRefineFlags  refine_flags,
-                                       guint                max_results,
-                                       GsAppListFilterFlags dedupe_flags)
+gs_plugin_job_list_installed_apps_new (GsPluginRefineFlags            refine_flags,
+                                       guint                          max_results,
+                                       GsAppListFilterFlags           dedupe_flags,
+                                       GsPluginListInstalledAppsFlags flags)
 {
 	return g_object_new (GS_TYPE_PLUGIN_JOB_LIST_INSTALLED_APPS,
 			     "refine-flags", refine_flags,
 			     "max-results", max_results,
 			     "dedupe-flags", dedupe_flags,
+			     "flags", flags,
 			     NULL);
 }
 

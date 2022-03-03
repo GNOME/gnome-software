@@ -1315,10 +1315,11 @@ static void list_installed_apps_thread_cb (GTask        *task,
                                            GCancellable *cancellable);
 
 static void
-gs_plugin_appstream_list_installed_apps_async (GsPlugin            *plugin,
-                                               GCancellable        *cancellable,
-                                               GAsyncReadyCallback  callback,
-                                               gpointer             user_data)
+gs_plugin_appstream_list_installed_apps_async (GsPlugin                       *plugin,
+                                               GsPluginListInstalledAppsFlags  flags,
+                                               GCancellable                   *cancellable,
+                                               GAsyncReadyCallback             callback,
+                                               gpointer                        user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
 	g_autoptr(GTask) task = NULL;

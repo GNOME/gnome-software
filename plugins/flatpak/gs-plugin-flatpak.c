@@ -357,16 +357,18 @@ static void list_installed_apps_thread_cb (GTask        *task,
                                            GCancellable *cancellable);
 
 static void
-gs_plugin_flatpak_list_installed_apps_async (GsPlugin            *plugin,
-                                             GCancellable        *cancellable,
-                                             GAsyncReadyCallback  callback,
-                                             gpointer             user_data)
+gs_plugin_flatpak_list_installed_apps_async (GsPlugin                       *plugin,
+                                             GsPluginListInstalledAppsFlags  flags,
+                                             GCancellable                   *cancellable,
+                                             GAsyncReadyCallback             callback,
+                                             gpointer                        user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_list_installed_apps_async);
+	g_task_set_task_data (task, GINT_TO_POINTER (flags), NULL);
 
 	/* Queue a job to get the installed apps. */
 	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
@@ -382,6 +384,7 @@ list_installed_apps_thread_cb (GTask        *task,
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
+	GsPluginListInstalledAppsFlags flags = GPOINTER_TO_INT (task_data);
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
