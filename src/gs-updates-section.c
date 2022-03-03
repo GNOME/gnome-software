@@ -622,7 +622,6 @@ gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 
 void
 gs_updates_section_set_size_groups (GsUpdatesSection *self,
-				    GtkSizeGroup *image,
 				    GtkSizeGroup *name,
 				    GtkSizeGroup *desc,
 				    GtkSizeGroup *button_label,
