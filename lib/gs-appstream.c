@@ -245,7 +245,8 @@ app_add_icon (GsApp  *app,
               AsIcon *as_icon)
 {
 	g_autoptr(GIcon) icon = gs_icon_new_for_appstream_icon (as_icon);
-	gs_app_add_icon (app, icon);
+	if (icon != NULL)
+		gs_app_add_icon (app, icon);
 }
 
 static void

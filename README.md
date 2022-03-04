@@ -31,14 +31,13 @@ Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.
 
 For development discussion, join us on `#gnome-software` on [irc.gnome.org](https://wiki.gnome.org/Community/GettingInTouch/IRC).
 
-# Testing a metainfo/appdata file of an application
+# Documentation for app developers and vendors
 
-If you are developing an application, and want to see how your under-development
-metainfo file will appear when it’s eventually published into GNOME Software,
-run:
-```
-$ gnome-software --show-metainfo=./path/to/your/org.example.App.appdata.xml.in
-```
+Specific documentation is available for application developers who wish to test
+how their applications appear in GNOME Software; and for distribution vendors
+who wish to customise how GNOME Software appears in their distribution:
+ * [Tools in GNOME Software for application developers](./doc/app-developers.md)
+ * [Vendor customisation of GNOME Software](./doc/vendor-customisation.md)
 
 # Running a nightly build
 
