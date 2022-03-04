@@ -569,7 +569,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		g_debug ("Getting updates");
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
-						    monitor->cancellable,
+						    monitor->refresh_cancellable,
 						    download_finished_cb,
 						    monitor);
 	} else {
@@ -605,7 +605,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 			g_debug ("Getting %u online updates", gs_app_list_length (update_online));
 			gs_plugin_loader_job_process_async (monitor->plugin_loader,
 							    plugin_job,
-							    monitor->cancellable,
+							    monitor->refresh_cancellable,
 							    download_finished_cb,
 							    monitor);
 		}
