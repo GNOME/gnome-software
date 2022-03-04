@@ -77,7 +77,6 @@ struct _GsUpdatesPage
 	GtkWidget		*label_end_of_life;
 
 	GtkSizeGroup		*sizegroup_name;
-	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button_label;
 	GtkSizeGroup		*sizegroup_button_image;
 	GtkSizeGroup		*sizegroup_header;
@@ -1227,7 +1226,6 @@ gs_updates_page_setup (GsPage *page,
 		self->sections[i] = gs_updates_section_new (i, plugin_loader, page);
 		gs_updates_section_set_size_groups (self->sections[i],
 						    self->sizegroup_name,
-						    self->sizegroup_desc,
 						    self->sizegroup_button_label,
 						    self->sizegroup_button_image,
 						    self->sizegroup_header);
@@ -1389,7 +1387,6 @@ gs_updates_page_dispose (GObject *object)
 	g_clear_object (&self->desktop_settings);
 
 	g_clear_object (&self->sizegroup_name);
-	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button_label);
 	g_clear_object (&self->sizegroup_button_image);
 	g_clear_object (&self->sizegroup_header);
@@ -1460,7 +1457,6 @@ gs_updates_page_init (GsUpdatesPage *self)
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
 
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_label = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);

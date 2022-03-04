@@ -38,7 +38,6 @@ void			 gs_updates_section_add_app		(GsUpdatesSection	*self,
 void			 gs_updates_section_remove_all		(GsUpdatesSection	*self);
 void			 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
 								 GtkSizeGroup		*name,
-								 GtkSizeGroup		*desc,
 								 GtkSizeGroup		*button_label,
 								 GtkSizeGroup		*button_image,
 								 GtkSizeGroup		*header);

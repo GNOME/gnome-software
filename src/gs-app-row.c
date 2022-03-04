@@ -30,7 +30,6 @@ typedef struct
 	GtkWidget	*version_update_label;
 	GtkWidget	*system_updates_label; /* Only for "System Updates" app */
 	GtkWidget	*star;
-	GtkWidget	*description_box;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
 	GtkWidget	*button_revealer;
@@ -520,10 +519,6 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 				gtk_widget_get_visible (priv->label_installed) ||
 				gtk_widget_get_visible (priv->label_warning));
 
-	gtk_widget_set_visible (priv->description_box,
-				gtk_widget_get_visible (priv->box_tag) ||
-				gtk_widget_get_visible (priv->description_label));
-
 	gtk_label_set_max_width_chars (GTK_LABEL (priv->name_label),
 				       gtk_widget_get_visible (priv->description_label) ? 20 : -1);
 }
@@ -823,7 +818,6 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_update_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, system_updates_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_revealer);
@@ -859,7 +853,6 @@ gs_app_row_init (GsAppRow *app_row)
 void
 gs_app_row_set_size_groups (GsAppRow *app_row,
 			    GtkSizeGroup *name,
-			    GtkSizeGroup *desc,
 			    GtkSizeGroup *button_label,
 			    GtkSizeGroup *button_image)
 {
@@ -867,8 +860,6 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 
 	if (name != NULL)
 		gtk_size_group_add_widget (name, priv->name_box);
-	if (desc != NULL)
-		gtk_size_group_add_widget (desc, priv->description_box);
 	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (priv->button), button_label, button_image);
 }
 
