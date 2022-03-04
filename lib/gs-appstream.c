@@ -1611,7 +1611,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	/* use predicate conditions to the max */
 	xpath = g_strdup_printf ("components/component/releases/"
 				 "release[@timestamp>%" G_GUINT64_FORMAT "]/../..",
-				 now - (30 * 24 * 60 * 60));
+				 now - age);
 	array = xb_silo_query (silo, xpath, 0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
@@ -1624,8 +1624,13 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	for (guint i = 0; i < array->len; i++) {
 		XbNode *component = g_ptr_array_index (array, i);
 		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
+		guint64 timestamp;
 		if (app == NULL)
 			return FALSE;
+		/* set the release date */
+		timestamp = component_get_release_timestamp (component);
+		if (timestamp != G_MAXUINT64)
+			gs_app_set_release_date (app, timestamp);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

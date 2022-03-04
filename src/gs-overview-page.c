@@ -170,6 +170,18 @@ out:
 	gs_overview_page_decrement_action_cnt (self);
 }
 
+static gint
+gs_overview_page_sort_recent_cb (GsApp *app1,
+				 GsApp *app2,
+				 gpointer user_data)
+{
+	if (gs_app_get_release_date (app1) < gs_app_get_release_date (app2))
+		return 1;
+	if (gs_app_get_release_date (app1) == gs_app_get_release_date (app2))
+		return g_strcmp0 (gs_app_get_name (app1), gs_app_get_name (app2));
+	return -1;
+}
+
 static void
 gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -200,7 +212,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		goto out;
 	}
 
-	gs_app_list_randomize (list);
+	gs_app_list_sort (list, gs_overview_page_sort_recent_cb, NULL);
 
 	gs_widget_remove_all (self->box_recent, (GsRemoveFunc) gtk_flow_box_remove);
 
@@ -518,13 +530,15 @@ gs_overview_page_load (GsOverviewPage *self)
 
 		self->loading_recent = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-						 "age", (guint64) (60 * 60 * 24 * 60),
-						 "max-results", 20,
+						 "age", (guint64) (60 * 60 * 24 * 30),
+						 /* To have large-enough set, in case filtering removes some non-applicable apps */
+						 "max-results", 3 * N_TILES,
 						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						 NULL);
+		gs_plugin_job_set_sort_func (plugin_job, gs_overview_page_sort_recent_cb, NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
