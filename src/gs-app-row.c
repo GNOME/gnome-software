@@ -16,7 +16,6 @@
 #include "gs-star-widget.h"
 #include "gs-progress-button.h"
 #include "gs-common.h"
-#include "gs-folders.h"
 
 typedef struct
 {

@@ -27,7 +27,6 @@
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
-#include "gs-folders.h"
 
 #define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
@@ -1049,7 +1048,6 @@ gs_application_startup (GApplication *application)
 
 	GS_APPLICATION (application)->update_monitor =
 		gs_update_monitor_new (GS_APPLICATION (application));
-	gs_folders_convert ();
 
 	gs_application_update_software_sources_presence (application);
 }
