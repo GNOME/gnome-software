@@ -3529,6 +3529,7 @@ gs_plugin_loader_job_timeout_cb (gpointer user_data)
 			 "than %u seconds, as running under gdb",
 			 helper->function_name,
 			 gs_plugin_job_get_timeout (helper->plugin_job));
+		helper->timeout_id = 0;
 		return G_SOURCE_REMOVE;
 	}
 
