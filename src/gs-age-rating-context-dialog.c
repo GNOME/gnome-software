@@ -821,7 +821,6 @@ gs_age_rating_context_dialog_process_attributes (AsContentRating                
 			continue;
 
 		callback (violence_group[i], rating_value, user_data);
-		break;
 	}
 
 	for (gsize i = 0; social_group[i] != NULL; i++) {
@@ -835,7 +834,6 @@ gs_age_rating_context_dialog_process_attributes (AsContentRating                
 			continue;
 
 		callback (social_group[i], rating_value, user_data);
-		break;
 	}
 }
 
