@@ -221,6 +221,16 @@ colors_sort_cb (gconstpointer a,
 		return ABS (hsbc_b->contrast) - ABS (hsbc_a->contrast);
 }
 
+static gint
+colors_sort_contrast_cb (gconstpointer a,
+                         gconstpointer b)
+{
+	const GsHSBC *hsbc_a = a;
+	const GsHSBC *hsbc_b = b;
+
+	return hsbc_b->contrast - hsbc_a->contrast;
+}
+
 /* Calculate the relative luminance of @colour. This is [0.0, 1.0], where 0.0 is
  * the darkest black, and 1.0 is the lightest white.
  *
@@ -403,6 +413,9 @@ gs_feature_tile_refresh (GsAppTile *self)
 			GdkRGBA fg_rgba;
 			gboolean fg_rgba_valid;
 			GsHSBC fg_hsbc;
+			const GsHSBC *chosen_hsbc;
+			GsHSBC chosen_hsbc_modified;
+			gboolean use_chosen_hsbc = FALSE;
 
 			/* Look up the foreground colour for the feature tile,
 			 * which is the colour of the text. This should always
@@ -460,14 +473,30 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * most appropriate one. */
 			g_array_sort (colors, colors_sort_cb);
 
-			/* Take the top colour. If it’s not good enough, modify
+			/* If the developer/distro has provided override colours,
+			 * use them. If there’s more than one override colour,
+			 * use the one with the highest contrast with the
+			 * foreground colour, unmodified. If there’s only one,
+			 * modify it as below.
+			 *
+			 * If there are no override colours, take the top colour
+			 * after sorting above. If it’s not good enough, modify
 			 * its brightness to improve the contrast, and clamp its
-			 * saturation to the valid range. */
-			if (colors != NULL && colors->len > 0) {
-				const GsHSBC *chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
-				GsHSBC chosen_hsbc_modified;
-				GdkRGBA chosen_rgba;
+			 * saturation to the valid range.
+			 *
+			 * If there are no colours, fall through and leave @css
+			 * as %NULL. */
+			if (gs_app_get_user_key_colors (app) &&
+			    colors != NULL &&
+			    colors->len > 1) {
+				g_array_sort (colors, colors_sort_contrast_cb);
 
+				chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
+				chosen_hsbc_modified = *chosen_hsbc;
+
+				use_chosen_hsbc = TRUE;
+			} else if (colors != NULL && colors->len > 0) {
+				chosen_hsbc = &g_array_index (colors, GsHSBC, 0);
 				chosen_hsbc_modified = *chosen_hsbc;
 
 				chosen_hsbc_modified.saturation = CLAMP (chosen_hsbc->saturation, min_valid_saturation, max_valid_saturation);
@@ -475,6 +504,12 @@ gs_feature_tile_refresh (GsAppTile *self)
 				if (chosen_hsbc->contrast >= -min_abs_contrast &&
 				    chosen_hsbc->contrast <= min_abs_contrast)
 					chosen_hsbc_modified.brightness = wcag_contrast_find_brightness (&fg_hsbc, &chosen_hsbc_modified, min_abs_contrast);
+
+				use_chosen_hsbc = TRUE;
+			}
+
+			if (use_chosen_hsbc) {
+				GdkRGBA chosen_rgba;
 
 				gtk_hsv_to_rgb (chosen_hsbc_modified.hue,
 						chosen_hsbc_modified.saturation,
