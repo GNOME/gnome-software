@@ -889,6 +889,16 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
+	/* set id kind */
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
+	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
+		AsComponentKind kind;
+		tmp = xb_node_get_attr (component, "type");
+		kind = as_component_kind_from_string (tmp);
+		if (kind != AS_COMPONENT_KIND_UNKNOWN)
+			gs_app_set_kind (app, kind);
+	}
+
 	/* types we can never launch */
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_ADDON:
@@ -1069,16 +1079,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		tmp = xb_node_query_text (component, "developer_name", NULL);
 		if (tmp != NULL)
 			gs_app_set_developer_name (app, tmp);
-	}
-
-	/* set id kind */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_UNKNOWN ||
-	    gs_app_get_kind (app) == AS_COMPONENT_KIND_GENERIC) {
-		AsComponentKind kind;
-		tmp = xb_node_get_attr (component, "type");
-		kind = as_component_kind_from_string (tmp);
-		if (kind != AS_COMPONENT_KIND_UNKNOWN)
-			gs_app_set_kind (app, kind);
 	}
 
 	/* set the release date */
