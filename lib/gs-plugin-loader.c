@@ -662,7 +662,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
-	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
@@ -1147,13 +1146,6 @@ static gint
 gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	return gs_app_compare_priority (app1, app2);
-}
-
-static gint
-gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return as_vercmp_simple (gs_app_get_version (app1),
-				 gs_app_get_version (app2));
 }
 
 /******************************************************************************/
@@ -3612,6 +3604,10 @@ run_job_cb (GObject      *source_object,
 		GsAppList *list = gs_plugin_job_list_installed_apps_get_result_list (GS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
+	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {
+		GsAppList *list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
 	} else if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (plugin_job)) {
 		/* FIXME: For some reason, existing callers of refresh jobs
 		 * expect a #GsAppList instance back, even though it’s empty and
@@ -3748,8 +3744,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* FIXME: this is probably a bug */
-	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES ||
-	    action == GS_PLUGIN_ACTION_GET_SOURCES) {
+	if (action == GS_PLUGIN_ACTION_GET_SOURCES) {
 		gs_plugin_job_add_refine_flags (plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
@@ -3806,12 +3801,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_prio_cb, NULL);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_version_cb, NULL);
 		}
 		break;
 	default:

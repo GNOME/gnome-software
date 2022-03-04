@@ -548,13 +548,15 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "upgrades") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsPluginListDistroUpgradesFlags upgrades_flags = GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE;
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
+
+			if (self->interactive)
+				upgrades_flags |= GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_distro_upgrades_new (upgrades_flags, self->refine_flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {

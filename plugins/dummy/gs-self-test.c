@@ -307,7 +307,8 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the updates list */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+							     GS_PLUGIN_REFINE_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -542,7 +543,8 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* ensure we get the same results back from calling the methods twice */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+							     GS_PLUGIN_REFINE_FLAGS_NONE);
 	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -551,7 +553,8 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 	app1 = gs_app_list_index (list1, 0);
 
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+							     GS_PLUGIN_REFINE_FLAGS_NONE);
 	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -638,7 +641,8 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
 
 	/* get the updates list */
-	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	plugin_job1 = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+							      GS_PLUGIN_REFINE_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job1, NULL, &helper3->error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (helper3->error);

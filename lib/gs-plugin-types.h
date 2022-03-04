@@ -185,6 +185,20 @@ typedef enum {
 } GsPluginRefreshMetadataFlags;
 
 /**
+ * GsPluginListDistroUpgradesFlags:
+ * @GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to list available distro upgrades.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE = 0,
+	GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginListDistroUpgradesFlags;
+
+/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
@@ -214,7 +228,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_LAUNCH:			Launch an application
  * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
- * @GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:	Get the list of distro updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
  * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
  * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
@@ -247,7 +260,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_LAUNCH,
 	GS_PLUGIN_ACTION_UPDATE_CANCEL,
 	GS_PLUGIN_ACTION_GET_UPDATES,
-	GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 	GS_PLUGIN_ACTION_GET_SOURCES,
 	GS_PLUGIN_ACTION_GET_POPULAR,
 	GS_PLUGIN_ACTION_GET_FEATURED,

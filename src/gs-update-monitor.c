@@ -772,8 +772,8 @@ get_upgrades (GsUpdateMonitor *monitor)
 	 * AppStream data being up to date, either by the appstream-data
 	 * package being up-to-date, or the metadata being auto-downloaded */
 	g_debug ("Getting upgrades");
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
-					 NULL);
+	plugin_job = gs_plugin_job_list_distro_upgrades_new (GS_PLUGIN_LIST_DISTRO_UPGRADES_FLAGS_NONE,
+							     GS_PLUGIN_REFINE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
 					    monitor->cancellable,
