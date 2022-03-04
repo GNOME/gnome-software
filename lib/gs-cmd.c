@@ -402,9 +402,15 @@ main (int argc, char **argv)
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsPluginListInstalledAppsFlags installed_flags = GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_NONE;
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_list_installed_apps_new (self->refine_flags, self->max_results, GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT);
+
+			if (self->interactive)
+				installed_flags |= GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_installed_apps_new (self->refine_flags, self->max_results, GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT, installed_flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {

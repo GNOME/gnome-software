@@ -121,6 +121,7 @@ struct _GsPluginClass
 							 GError			**error);
 
 	void			(*list_installed_apps_async)	(GsPlugin		*plugin,
+								 GsPluginListInstalledAppsFlags flags,
 								 GCancellable		*cancellable,
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);

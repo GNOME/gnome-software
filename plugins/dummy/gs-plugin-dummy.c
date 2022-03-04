@@ -542,10 +542,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 static void
-gs_plugin_dummy_list_installed_apps_async (GsPlugin            *plugin,
-                                           GCancellable        *cancellable,
-                                           GAsyncReadyCallback  callback,
-                                           gpointer             user_data)
+gs_plugin_dummy_list_installed_apps_async (GsPlugin                       *plugin,
+                                           GsPluginListInstalledAppsFlags  flags,
+                                           GCancellable                   *cancellable,
+                                           GAsyncReadyCallback             callback,
+                                           gpointer                        user_data)
 {
 	const gchar *packages[] = { "zeus", "zeus-common", NULL };
 	const gchar *app_ids[] = { "Uninstall Zeus.desktop", NULL };

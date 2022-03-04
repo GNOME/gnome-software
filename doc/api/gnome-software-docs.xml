@@ -212,10 +212,11 @@ gs_plugin_sample_init (GsPluginSample *self)
 }
 
 static void
-gs_plugin_custom_list_installed_apps_async (GsPlugin            *plugin,
-                                            GCancellable        *cancellable,
-                                            GAsyncReadyCallback  callback,
-                                            gpointer             user_data)
+gs_plugin_custom_list_installed_apps_async (GsPlugin                       *plugin,
+                                            GsPluginListInstalledAppsFlags  flags,
+                                            GCancellable                   *cancellable,
+                                            GAsyncReadyCallback             callback,
+                                            gpointer                        user_data)
 {
   g_autofree gchar *fn = NULL;
   g_autoptr(GsApp) app = NULL;
