@@ -1284,6 +1284,9 @@ gs_update_monitor_network_changed_cb (GNetworkMonitor *network_monitor,
 		g_cancellable_cancel (monitor->refresh_cancellable);
 		g_object_unref (monitor->refresh_cancellable);
 		monitor->refresh_cancellable = g_cancellable_new ();
+	} else {
+		/* Else, it might be time to check for updates */
+		check_updates (monitor);
 	}
 }
 
