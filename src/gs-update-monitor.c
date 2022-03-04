@@ -1296,10 +1296,14 @@ gs_update_monitor_power_profile_changed_cb (GObject    *object,
 	GsUpdateMonitor *self = GS_UPDATE_MONITOR (user_data);
 
 	if (g_power_profile_monitor_get_power_saver_enabled (self->power_profile_monitor)) {
-		/* Cancel an ongoing refresh if we’re now in power saving mode. */
+		/* Cancel ongoing jobs, if we’re now in power saving mode. */
 		g_cancellable_cancel (self->refresh_cancellable);
 		g_object_unref (self->refresh_cancellable);
 		self->refresh_cancellable = g_cancellable_new ();
+
+		g_cancellable_cancel (self->cancellable);
+		g_object_unref (self->cancellable);
+		self->cancellable = g_cancellable_new ();
 	} else {
 		/* Else, it might be time to check for updates */
 		check_updates (self);
