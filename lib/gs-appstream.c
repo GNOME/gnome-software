@@ -1000,7 +1000,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_id (app, tmp);
 
 	/* set source */
-	tmp = xb_node_query_text (component, "../info/filename", NULL);
+	tmp = xb_node_query_text (component, "info/filename", NULL);
+	if (tmp == NULL)
+		tmp = xb_node_query_text (component, "../info/filename", NULL);
 	if (tmp != NULL && gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
 		gs_app_set_metadata (app, "appstream::source-file", tmp);
 	}
