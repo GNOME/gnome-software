@@ -25,9 +25,13 @@
         "--filesystem=/var/lib/flatpak",
         "--env=FLATPAK_SYSTEM_DIR=/var/lib/flatpak",
         "--filesystem=xdg-data/flatpak",
+        "--filesystem=/usr/share/metainfo:ro",
+        "--filesystem=/usr/share/swcatalog:ro",
         "--filesystem=/usr/share/appdata:ro",
         "--filesystem=/usr/share/app-info:ro",
+        "--filesystem=/var/lib/swcatalog:ro",
         "--filesystem=/var/lib/app-info:ro",
+        "--filesystem=/var/cache/swcatalog:ro",
         "--filesystem=/var/cache/app-info:ro"
     ],
     "modules": [

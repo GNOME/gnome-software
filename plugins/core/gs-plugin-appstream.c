@@ -584,6 +584,51 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	return TRUE;
 }
 
+static void
+gs_add_appstream_catalog_location (GPtrArray *locations, const gchar *root)
+{
+	g_autofree gchar *catalog_path = NULL;
+	g_autofree gchar *catalog_legacy_path = NULL;
+	gboolean ignore_legacy_path = FALSE;
+
+	catalog_path = g_build_filename (root, "swcatalog", NULL);
+	catalog_legacy_path = g_build_filename (root, "app-info", NULL);
+
+	/* ignore compatibility symlink if one exists, so we don't scan the same location twice */
+	if (g_file_test (catalog_legacy_path, G_FILE_TEST_IS_SYMLINK)) {
+		g_autofree gchar *link_target = g_file_read_link (catalog_legacy_path, NULL);
+		if (link_target != NULL) {
+			if (g_strcmp0 (link_target, catalog_path) == 0) {
+				ignore_legacy_path = TRUE;
+				g_debug ("Ignoring legacy AppStream catalog location '%s'.", catalog_legacy_path);
+			}
+		}
+	}
+
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "xml", NULL));
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "yaml", NULL));
+
+	if (!ignore_legacy_path) {
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "xml", NULL));
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "xmls", NULL));
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "yaml", NULL));
+	}
+}
+
+static void
+gs_add_appstream_metainfo_location (GPtrArray *locations, const gchar *root)
+{
+	g_ptr_array_add (locations,
+			 g_build_filename (root, "metainfo", NULL));
+	g_ptr_array_add (locations,
+			 g_build_filename (root, "appdata", NULL));
+}
+
 static gboolean
 gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
                                 GCancellable       *cancellable,
@@ -655,31 +700,22 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		xb_builder_source_add_fixup (source, fixup2);
 		xb_builder_import_source (builder, source);
 	} else {
+		g_autofree gchar *state_cache_dir = NULL;
+		g_autofree gchar *state_lib_dir = NULL;
+
 		/* add search paths */
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (DATADIR, "app-info", "xmls", NULL));
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (DATADIR, "app-info", "yaml", NULL));
-		g_ptr_array_add (parent_appdata,
-				 g_build_filename (DATADIR, "appdata", NULL));
-		g_ptr_array_add (parent_appdata,
-				 g_build_filename (DATADIR, "metainfo", NULL));
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL));
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (LOCALSTATEDIR, "cache", "app-info", "yaml", NULL));
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "xmls", NULL));
-		g_ptr_array_add (parent_appstream,
-				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "yaml", NULL));
+		gs_add_appstream_catalog_location (parent_appstream, DATADIR);
+		gs_add_appstream_metainfo_location (parent_appdata, DATADIR);
+
+		state_cache_dir = g_build_filename (LOCALSTATEDIR, "cache", NULL);
+		gs_add_appstream_catalog_location (parent_appstream, state_cache_dir);
+		state_lib_dir = g_build_filename (LOCALSTATEDIR, "lib", NULL);
+		gs_add_appstream_catalog_location (parent_appstream, state_lib_dir);
+
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 		/* check for the corresponding setting */
-		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide")) {
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL));
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename (g_get_user_data_dir (), "app-info", "yaml", NULL));
-		}
+		if (!g_settings_get_boolean (self->settings, "external-appstream-system-wide"))
+			gs_add_appstream_catalog_location (parent_appstream, g_get_user_data_dir ());
 #endif
 
 		/* Add the normal system directories if the installation prefix
@@ -687,24 +723,12 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		 * development builds. It’s useful to still list the system apps
 		 * during development. */
 		if (g_strcmp0 (DATADIR, "/usr/share") != 0) {
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/usr/share", "app-info", "xmls", NULL));
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/usr/share", "app-info", "yaml", NULL));
-			g_ptr_array_add (parent_appdata,
-					 g_build_filename ("/usr/share", "appdata", NULL));
-			g_ptr_array_add (parent_appdata,
-					 g_build_filename ("/usr/share", "metainfo", NULL));
+			gs_add_appstream_catalog_location (parent_appstream, "/usr/share");
+			gs_add_appstream_metainfo_location (parent_appdata, "/usr/share");
 		}
 		if (g_strcmp0 (LOCALSTATEDIR, "/var") != 0) {
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/var", "cache", "app-info", "xmls", NULL));
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/var", "cache", "app-info", "yaml", NULL));
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/var", "lib", "app-info", "xmls", NULL));
-			g_ptr_array_add (parent_appstream,
-					 g_build_filename ("/var", "lib", "app-info", "yaml", NULL));
+			gs_add_appstream_catalog_location (parent_appstream, "/var/cache");
+			gs_add_appstream_catalog_location (parent_appstream, "/var/lib");
 		}
 
 		/* import all files */

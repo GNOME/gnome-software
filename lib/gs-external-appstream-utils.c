@@ -54,7 +54,7 @@
 
 #include "gs-external-appstream-utils.h"
 
-#define APPSTREAM_SYSTEM_DIR LOCALSTATEDIR "/cache/app-info/xmls"
+#define APPSTREAM_SYSTEM_DIR LOCALSTATEDIR "/cache/swcatalog/xml"
 
 G_DEFINE_QUARK (gs-external-appstream-error-quark, gs_external_appstream_error)
 
@@ -174,8 +174,8 @@ refresh_url_async (GSettings           *settings,
 		target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
 	else
 		target_file_path = g_build_filename (g_get_user_data_dir (),
-						     "app-info",
-						     "xmls",
+						     "swcatalog",
+						     "xml",
 						     basename,
 						     NULL);
 
