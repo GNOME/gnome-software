@@ -935,14 +935,6 @@ gs_application_settings_changed_cb (GApplication *self,
 }
 
 static void
-gs_application_setup_search_provider (GsApplication *app)
-{
-	gs_application_initialize_plugins (app);
-	if (app->search_provider)
-		gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
-}
-
-static void
 wrapper_action_activated_cb (GSimpleAction *action,
 			     GVariant	   *parameter,
 			     gpointer	    data)
@@ -1012,7 +1004,10 @@ gs_application_startup (GApplication *application)
 					 actions, G_N_ELEMENTS (actions),
 					 application);
 
-	gs_application_setup_search_provider (GS_APPLICATION (application));
+	gs_application_initialize_plugins (app);
+
+	if (app->search_provider)
+		gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
 #ifdef HAVE_PACKAGEKIT
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
