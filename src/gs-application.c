@@ -260,31 +260,6 @@ gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 }
 
 static void
-gs_application_initialize_ui (GsApplication *app)
-{
-	static gboolean initialized = FALSE;
-
-	if (initialized)
-		return;
-
-	initialized = TRUE;
-
-	gs_application_initialize_plugins (app);
-
-	/* setup UI */
-	app->shell = gs_shell_new ();
-	app->cancellable = g_cancellable_new ();
-
-	app->shell_loaded_handler_id = g_signal_connect (app->shell, "loaded",
-							 G_CALLBACK (gs_application_shell_loaded_cb),
-							 app);
-
-	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
-	app->main_window = GTK_WINDOW (app->shell);
-	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
-}
-
-static void
 gs_application_present_window (GsApplication *app, const gchar *startup_id)
 {
 	GList *windows;
@@ -1048,7 +1023,19 @@ gs_application_startup (GApplication *application)
 				  G_CALLBACK (gs_application_settings_changed_cb),
 				  application);
 
-	gs_application_initialize_ui (app);
+	gs_application_initialize_plugins (app);
+
+	/* setup UI */
+	app->shell = gs_shell_new ();
+	app->cancellable = g_cancellable_new ();
+
+	app->shell_loaded_handler_id = g_signal_connect (app->shell, "loaded",
+							 G_CALLBACK (gs_application_shell_loaded_cb),
+							 app);
+
+	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
+	app->main_window = GTK_WINDOW (app->shell);
+	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
 
 	GS_APPLICATION (application)->update_monitor =
 		gs_update_monitor_new (GS_APPLICATION (application));
