@@ -99,12 +99,6 @@ gs_activation_helper_free (GsActivationHelper *helper)
 	g_slice_free (GsActivationHelper, helper);
 }
 
-GsPluginLoader *
-gs_application_get_plugin_loader (GsApplication *application)
-{
-	return application->plugin_loader;
-}
-
 gboolean
 gs_application_has_active_window (GsApplication *application)
 {
@@ -1016,8 +1010,7 @@ gs_application_startup (GApplication *application)
 	app->main_window = GTK_WINDOW (app->shell);
 	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
 
-	GS_APPLICATION (application)->update_monitor =
-		gs_update_monitor_new (GS_APPLICATION (application));
+	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 
 	gs_application_update_software_sources_presence (application);
 }
