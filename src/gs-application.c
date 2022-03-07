@@ -404,7 +404,7 @@ reboot_and_install (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	gs_application_initialize_plugins (app);
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE, NULL);
 	gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 					    app->cancellable,
