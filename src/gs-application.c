@@ -1006,8 +1006,7 @@ gs_application_startup (GApplication *application)
 
 	gs_application_initialize_plugins (app);
 
-	if (app->search_provider)
-		gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
+	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
 #ifdef HAVE_PACKAGEKIT
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
