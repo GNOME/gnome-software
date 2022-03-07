@@ -3658,28 +3658,36 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	GsPluginAction action;
 	GsPluginLoaderHelper *helper;
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GCancellable) cancellable_job = g_cancellable_new ();
+	g_autoptr(GCancellable) cancellable_job = NULL;
 	g_autofree gchar *task_name = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
+	action = gs_plugin_job_get_action (plugin_job);
+
+	if (job_class->run_async != NULL) {
+		task_name = g_strdup_printf ("%s %s", G_STRFUNC, G_OBJECT_TYPE_NAME (plugin_job));
+		cancellable_job = (cancellable != NULL) ? g_object_ref (cancellable) : NULL;
+	} else {
+		task_name = g_strdup_printf ("%s %s", G_STRFUNC, gs_plugin_action_to_string (action));
+		cancellable_job = g_cancellable_new ();
+	}
+
+	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
+	g_task_set_name (task, task_name);
+
 	/* If the job provides a more specific async run function, use that.
 	 *
 	 * FIXME: This will eventually go away when
 	 * gs_plugin_loader_job_process_async() is removed. */
-	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
 
 	if (job_class->run_async != NULL) {
 #ifdef HAVE_SYSPROF
 		gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
 
-		task = g_task_new (plugin_loader, cancellable, callback, user_data);
-		task_name = g_strdup_printf ("%s %s", G_STRFUNC, G_OBJECT_TYPE_NAME (plugin_job));
-		g_task_set_name (task, task_name);
-#ifdef HAVE_SYSPROF
 		g_task_set_task_data (task, GSIZE_TO_POINTER (begin_time_nsec), NULL);
 #endif
 
@@ -3688,14 +3696,9 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	action = gs_plugin_job_get_action (plugin_job);
-	task_name = g_strdup_printf ("%s %s", G_STRFUNC, gs_plugin_action_to_string (action));
-
 	/* check job has valid action */
 	if (action == GS_PLUGIN_ACTION_UNKNOWN) {
 		g_autofree gchar *job_str = gs_plugin_job_to_string (plugin_job);
-		task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
-		g_task_set_name (task, task_name);
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
 					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -3707,8 +3710,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	if (action == GS_PLUGIN_ACTION_REMOVE || action == GS_PLUGIN_ACTION_REMOVE_REPO) {
 		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
-			task = g_task_new (plugin_loader, cancellable, callback, user_data);
-			g_task_set_name (task, task_name);
 			g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 			return;
 		}
@@ -3773,9 +3774,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* check required args */
-	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
-	g_task_set_name (task, task_name);
-
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
