@@ -1018,8 +1018,6 @@ gs_application_startup (GApplication *application)
 				  G_CALLBACK (gs_application_settings_changed_cb),
 				  application);
 
-	gs_application_initialize_plugins (app);
-
 	/* setup UI */
 	app->shell = gs_shell_new ();
 	app->cancellable = g_cancellable_new ();
