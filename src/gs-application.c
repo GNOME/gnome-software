@@ -152,19 +152,6 @@ gs_application_init (GsApplication *application)
 	g_application_add_main_option_entries (G_APPLICATION (application), options);
 }
 
-static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
-
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
 static gboolean
 gs_application_dbus_register (GApplication    *application,
                               GDBusConnection *connection,
@@ -928,6 +915,10 @@ gs_application_add_wrapper_actions (GApplication *application)
 	}
 }
 
+static void startup_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data);
+
 static void
 gs_application_startup (GApplication *application)
 {
@@ -935,7 +926,6 @@ gs_application_startup (GApplication *application)
 	GsApplication *app = GS_APPLICATION (application);
 	g_auto(GStrv) plugin_blocklist = NULL;
 	g_auto(GStrv) plugin_allowlist = NULL;
-	g_autoptr(GError) error = NULL;
 	const gchar *tmp;
 	g_autoptr(GAsyncResult) setup_result = NULL;
 
@@ -958,34 +948,6 @@ gs_application_startup (GApplication *application)
 	app->plugin_loader = gs_plugin_loader_new ();
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (app->plugin_loader, LOCALPLUGINDIR);
-
-	/* Set up the plugins. Manually iterate the thread-default #GMainContext
-	 * at this point to save refactoring all this code to be async (FIXME:
-	 * we should do that in future).
-	 *
-	 * We can’t use gs_plugin_loader_setup() from gs-plugin-loader-sync.c
-	 * here because that uses a custom #GMainContext, which means that a lot
-	 * of objects in plugins are initialised with the wrong #GMainContext
-	 * for subsequent callbacks. */
-	gs_plugin_loader_setup_async (app->plugin_loader,
-				      (const gchar * const *) plugin_allowlist,
-				      (const gchar * const *) plugin_blocklist,
-				      NULL,
-				      async_result_cb,
-				      &setup_result);
-
-	while (setup_result == NULL)
-		g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-	if (!gs_plugin_loader_setup_finish (app->plugin_loader,
-					    setup_result,
-					    &error)) {
-		g_warning ("Failed to setup plugins: %s", error->message);
-		exit (1);
-	}
-
-	/* show the priority of each plugin */
-	gs_plugin_loader_dump_state (app->plugin_loader);
 
 	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
@@ -1013,6 +975,33 @@ gs_application_startup (GApplication *application)
 	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 
 	gs_application_update_software_sources_presence (application);
+
+	/* Set up the plugins. */
+	gs_plugin_loader_setup_async (app->plugin_loader,
+				      (const gchar * const *) plugin_allowlist,
+				      (const gchar * const *) plugin_blocklist,
+				      NULL,
+				      startup_cb,
+				      app);
+}
+
+static void
+startup_cb (GObject      *source_object,
+            GAsyncResult *result,
+            gpointer      user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_loader_setup_finish (plugin_loader,
+					    result,
+					    &local_error)) {
+		g_warning ("Failed to setup plugins: %s", local_error->message);
+		exit (1);
+	}
+
+	/* show the priority of each plugin */
+	gs_plugin_loader_dump_state (plugin_loader);
 }
 
 static void
