@@ -402,20 +402,6 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 }
 
 static void
-offline_update_cb (GsPluginLoader *plugin_loader,
-		   GAsyncResult *res,
-		   GsApplication *app)
-{
-	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("Failed to trigger offline update: %s", error->message);
-		return;
-	}
-
-	gs_utils_invoke_reboot_async (NULL, reboot_failed_cb, app);
-}
-
-static void
 reboot_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -432,6 +418,10 @@ shutdown_activated (GSimpleAction *action,
 	g_application_quit (G_APPLICATION (app));
 }
 
+static void offline_update_cb (GsPluginLoader *plugin_loader,
+                               GAsyncResult   *res,
+                               GsApplication  *app);
+
 static void
 reboot_and_install (GSimpleAction *action,
 		    GVariant      *parameter,
@@ -445,6 +435,20 @@ reboot_and_install (GSimpleAction *action,
 					    app->cancellable,
 					    (GAsyncReadyCallback) offline_update_cb,
 					    app);
+}
+
+static void
+offline_update_cb (GsPluginLoader *plugin_loader,
+		   GAsyncResult *res,
+		   GsApplication *app)
+{
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		g_warning ("Failed to trigger offline update: %s", error->message);
+		return;
+	}
+
+	gs_utils_invoke_reboot_async (NULL, reboot_failed_cb, app);
 }
 
 static void
