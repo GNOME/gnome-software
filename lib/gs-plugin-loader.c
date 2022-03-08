@@ -2092,7 +2092,7 @@ gs_plugin_loader_shutdown (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* Wait for setup to complete in all plugins. */
+	/* Wait for shutdown to complete in all plugins. */
 	shutdown_data.n_pending--;
 
 	while (shutdown_data.n_pending > 0)
