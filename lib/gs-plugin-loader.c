@@ -1427,8 +1427,11 @@ async_result_cb (GObject      *source_object,
 	g_main_context_wakeup (g_main_context_get_thread_default ());
 }
 
-static gboolean
-load_install_queue (GsPluginLoader *plugin_loader, GError **error)
+/* This will load the install queue and add it to #GsPluginLoader.pending_apps,
+ * but it won’t refine the loaded apps. */
+static GsAppList *
+load_install_queue (GsPluginLoader  *plugin_loader,
+                    GError         **error)
 {
 	g_autofree gchar *contents = NULL;
 	g_autofree gchar *file = NULL;
@@ -1441,10 +1444,11 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 				 "install-queue",
 				 NULL);
 	if (!g_file_test (file, G_FILE_TEST_EXISTS))
-		return TRUE;
+		return gs_app_list_new ();
+
 	g_debug ("loading install queue from %s", file);
 	if (!g_file_get_contents (file, &contents, NULL, error))
-		return FALSE;
+		return NULL;
 
 	/* add to GsAppList, deduplicating if required */
 	list = gs_app_list_new ();
@@ -1467,28 +1471,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	}
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
-	/* refine */
-	if (gs_app_list_length (list) > 0) {
-		g_autoptr(GsPluginJob) refine_job = NULL;
-		g_autoptr(GAsyncResult) refine_result = NULL;
-		g_autoptr(GsAppList) new_list = NULL;
-
-		refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
-		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
-						    NULL,
-						    async_result_cb,
-						    &refine_result);
-
-		/* FIXME: Make this sync until the enclosing function is
-		 * refactored to be async. */
-		while (refine_result == NULL)
-			g_main_context_iteration (g_main_context_get_thread_default (), TRUE);
-
-		new_list = gs_plugin_loader_job_process_finish (plugin_loader, refine_result, error);
-		if (new_list == NULL)
-			return FALSE;
-	}
-	return TRUE;
+	return g_steal_pointer (&list);
 }
 
 static void
@@ -2177,6 +2160,9 @@ static void plugin_setup_cb (GObject      *source_object,
                              GAsyncResult *result,
                              gpointer      user_data);
 static void finish_setup_op (GTask *task);
+static void finish_setup_install_queue_cb (GObject      *source_object,
+                                           GAsyncResult *result,
+                                           gpointer      user_data);
 
 /* Mark the asynchronous setup operation as complete. This will notify any
  * waiting tasks by cancelling the #GCancellable. It’s safe to clear the
@@ -2508,6 +2494,8 @@ finish_setup_op (GTask *task)
 {
 	SetupData *data = g_task_get_task_data (task);
 	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	g_autoptr(GsAppList) install_queue = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	g_assert (data->n_pending > 0);
@@ -2517,11 +2505,17 @@ finish_setup_op (GTask *task)
 		return;
 
 	/* now we can load the install-queue */
-	if (!load_install_queue (plugin_loader, &local_error)) {
+	install_queue = load_install_queue (plugin_loader, &local_error);
+	if (install_queue == NULL) {
 		notify_setup_complete (plugin_loader);
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
+
+	/* Mark setup as complete as it’s now safe for other jobs to be
+	 * processed. Indeed, the final step in setup is to refine the install
+	 * queue apps, which requires @setup_complete to be %TRUE. */
+	notify_setup_complete (plugin_loader);
 
 #ifdef HAVE_SYSPROF
 	if (plugin_loader->sysprof_writer != NULL) {
@@ -2536,8 +2530,35 @@ finish_setup_op (GTask *task)
 	}
 #endif  /* HAVE_SYSPROF */
 
-	notify_setup_complete (plugin_loader);
-	g_task_return_boolean (task, TRUE);
+	/* Refine the install queue. */
+	if (gs_app_list_length (install_queue) > 0) {
+		g_autoptr(GsPluginJob) refine_job = NULL;
+
+		refine_job = gs_plugin_job_refine_new (install_queue, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
+						    cancellable,
+						    finish_setup_install_queue_cb,
+						    g_object_ref (task));
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static void
+finish_setup_install_queue_cb (GObject      *source_object,
+                               GAsyncResult *result,
+                               gpointer      user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GsAppList) new_list = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	new_list = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
+	if (new_list == NULL)
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
 }
 
 /**
