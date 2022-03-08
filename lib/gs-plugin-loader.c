@@ -809,36 +809,37 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 }
 
 static void
-gs_plugin_loader_job_sorted_truncation_again (GsPluginLoaderHelper *helper)
+gs_plugin_loader_job_sorted_truncation_again (GsPluginJob *plugin_job,
+					      GsAppList *list)
 {
 	GsAppListSortFunc sort_func;
 	gpointer sort_func_data;
-
-	/* not valid */
-	if (gs_plugin_job_get_list (helper->plugin_job) == NULL)
-		return;
-
-	/* unset */
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, &sort_func_data);
-	if (sort_func == NULL)
-		return;
-	gs_app_list_sort (gs_plugin_job_get_list (helper->plugin_job), sort_func, sort_func_data);
-}
-
-static void
-gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
-{
-	GsAppListSortFunc sort_func;
-	gpointer sort_func_data;
-	guint max_results;
-	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 
 	/* not valid */
 	if (list == NULL)
 		return;
 
 	/* unset */
-	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
+	sort_func = gs_plugin_job_get_sort_func (plugin_job, &sort_func_data);
+	if (sort_func == NULL)
+		return;
+	gs_app_list_sort (list, sort_func, sort_func_data);
+}
+
+static void
+gs_plugin_loader_job_sorted_truncation (GsPluginJob *plugin_job,
+					GsAppList *list)
+{
+	GsAppListSortFunc sort_func;
+	gpointer sort_func_data;
+	guint max_results;
+
+	/* not valid */
+	if (list == NULL)
+		return;
+
+	/* unset */
+	max_results = gs_plugin_job_get_max_results (plugin_job);
 	if (max_results == 0)
 		return;
 
@@ -849,9 +850,9 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 	/* nothing set */
 	g_debug ("truncating results to %u from %u",
 		 max_results, gs_app_list_length (list));
-	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job, &sort_func_data);
+	sort_func = gs_plugin_job_get_sort_func (plugin_job, &sort_func_data);
 	if (sort_func == NULL) {
-		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
+		GsPluginAction action = gs_plugin_job_get_action (plugin_job);
 		g_debug ("no ->sort_func() set for %s, using random!",
 			 gs_plugin_action_to_string (action));
 		gs_app_list_randomize (list);
@@ -3244,7 +3245,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	}
 
 	/* filter to reduce to a sane set */
-	gs_plugin_loader_job_sorted_truncation (helper);
+	gs_plugin_loader_job_sorted_truncation (helper->plugin_job, list);
 
 	/* set the local file on any of the returned results */
 	switch (action) {
@@ -3426,7 +3427,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter_duplicates (list, dedupe_flags);
 
 	/* sort these again as the refine may have added useful metadata */
-	gs_plugin_loader_job_sorted_truncation_again (helper);
+	gs_plugin_loader_job_sorted_truncation_again (helper->plugin_job, list);
 
 	/* Hint that the job has finished. */
 	gs_plugin_loader_hint_job_finished (plugin_loader);
