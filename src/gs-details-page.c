@@ -937,8 +937,10 @@ update_action_row_from_link (AdwActionRow *row,
                              AsUrlKind     url_kind)
 {
 	const gchar *url = gs_app_get_url (app, url_kind);
-	if (url != NULL)
-		adw_action_row_set_subtitle (row, url);
+	if (url != NULL) {
+		g_autofree gchar *escaped_url = g_markup_escape_text (url, -1);
+		adw_action_row_set_subtitle (row, escaped_url);
+	}
 	gtk_widget_set_visible (GTK_WIDGET (row), url != NULL);
 
 	return (url != NULL);
