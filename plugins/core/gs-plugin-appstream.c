@@ -84,6 +84,8 @@ gs_plugin_appstream_convert_component_kind (const gchar *kind)
 {
 	if (g_strcmp0 (kind, "webapp") == 0)
 		return "web-application";
+	if (g_strcmp0 (kind, "desktop") == 0)
+		return "desktop-application";
 	return kind;
 }
 
@@ -1015,10 +1017,10 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 	/* look in AppStream then fall back to AppData */
 	if (origin && *origin) {
 		xb_string_append_union (xpath, "components[@origin='%s']/component/id[text()='%s']/../pkgname/..", origin, id);
-		xb_string_append_union (xpath, "components[@origin='%s']/component[@type='webapp']/id[text()='%s']/..", origin, id);
+		xb_string_append_union (xpath, "components[@origin='%s']/component[@type='web-application']/id[text()='%s']/..", origin, id);
 	} else {
 		xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
-		xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
+		xb_string_append_union (xpath, "components/component[@type='web-application']/id[text()='%s']/..", id);
 	}
 	xb_string_append_union (xpath, "component/id[text()='%s']/..", id);
 	components = xb_silo_query (self->silo, xpath->str, 0, &error_local);
@@ -1072,9 +1074,9 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 		locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 		/* prefer actual apps and then fallback to anything else */
-		xb_string_append_union (xpath, "components/component[@type='desktop']/pkgname[text()='%s']/..", pkgname);
-		xb_string_append_union (xpath, "components/component[@type='console']/pkgname[text()='%s']/..", pkgname);
-		xb_string_append_union (xpath, "components/component[@type='webapp']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='desktop-application']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='console-application']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='web-application']/pkgname[text()='%s']/..", pkgname);
 		xb_string_append_union (xpath, "components/component/pkgname[text()='%s']/..", pkgname);
 		component = xb_silo_query_first (self->silo, xpath->str, &error_local);
 		if (component == NULL) {
