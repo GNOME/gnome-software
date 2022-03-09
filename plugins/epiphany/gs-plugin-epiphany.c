@@ -872,6 +872,7 @@ get_serialized_icon (GsApp *app,
 	g_autoptr(GBytes) bytes = NULL;
 	g_autoptr(GIcon) bytes_icon = NULL;
 	g_autoptr(GVariant) icon_v = NULL;
+	guint icon_width;
 
 	/* Note: GsRemoteIcon will work on this GFileIcon code path.
 	 * The icons plugin should have called
@@ -890,10 +891,15 @@ get_serialized_icon (GsApp *app,
 		return NULL;
 	}
 
+	/* Scale down to the portal's size limit if needed */
+	icon_width = gs_icon_get_width (icon);
+	if (icon_width > 512)
+		icon_width = 512;
+
 	/* Serialize the icon as a #GBytesIcon since that's
 	 * what the dynamic launcher portal requires.
 	 */
-	stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), 0, NULL, NULL, NULL);
+	stream = g_loadable_icon_load (G_LOADABLE_ICON (icon), icon_width, NULL, NULL, NULL);
 
 	/* Icons are usually smaller than 1 MiB. Set a 10 MiB
 	 * limit so we can't use a huge amount of memory or hit
