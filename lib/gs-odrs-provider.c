@@ -760,7 +760,7 @@ gs_odrs_provider_fetch_reviews_for_app_async (GsOdrsProvider      *self,
 			g_task_return_error (task, g_steal_pointer (&local_error));
 		} else {
 			set_reviews_on_app (self, app, reviews);
-			g_task_return_pointer (task, g_steal_pointer (&reviews), (GDestroyNotify) g_ptr_array_unref);
+			g_task_return_boolean (task, TRUE);
 		}
 
 		return;
@@ -914,7 +914,7 @@ parse_reviews_cb (GObject      *source_object,
 	set_reviews_on_app (self, data->app, reviews);
 
 	/* success */
-	g_task_return_pointer (task, g_steal_pointer (&reviews), (GDestroyNotify) g_ptr_array_unref);
+	g_task_return_boolean (task, TRUE);
 }
 
 static void
@@ -945,12 +945,12 @@ set_reviews_on_app (GsOdrsProvider *self,
 	}
 }
 
-static GPtrArray *
+static gboolean
 gs_odrs_provider_fetch_reviews_for_app_finish (GsOdrsProvider  *self,
                                                GAsyncResult    *result,
                                                GError         **error)
 {
-	return g_task_propagate_pointer (G_TASK (result), error);
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gchar *
