@@ -67,13 +67,13 @@ struct _GsAgeRatingContextDialog
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_content_rating;
 	gulong			 app_notify_handler_name;
-	GtkWidget		*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];
-	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];
+	GsContextDialogRow	*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (unowned) */
+	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (element-type GsAgeRatingAttribute) */
 
 	GtkLabel		*age;
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
-	GtkListBox		*attributes_list;
+	GtkListBox		*attributes_list;  /* (element-type GsContextDialogRow) */
 };
 
 G_DEFINE_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, GS_TYPE_INFO_WINDOW)
@@ -700,8 +700,8 @@ add_attribute_row (GsAgeRatingContextDialog *self,
 		update_attribute_row (self, group_type);
 	} else {
 		self->attributes[group_type] = g_list_prepend (self->attributes[group_type], attributes);
-		self->rows[group_type] = GTK_WIDGET (gs_context_dialog_row_new (icon_name, rating, title, description));
-		gtk_list_box_append (self->attributes_list, self->rows[group_type]);
+		self->rows[group_type] = GS_CONTEXT_DIALOG_ROW (gs_context_dialog_row_new (icon_name, rating, title, description));
+		gtk_list_box_append (self->attributes_list, GTK_WIDGET (self->rows[group_type]));
 	}
 }
 
