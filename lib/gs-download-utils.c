@@ -470,7 +470,13 @@ close_stream_cb (GObject      *source_object,
 		 * overwrite errors set earlier in the operation. */
 		if (!g_output_stream_close_finish (G_OUTPUT_STREAM (source_object),
 						   result, &local_error)) {
-			if (data->error == NULL)
+			/* If we are aborting writing the output stream (perhaps
+			 * because of a cache hit), don’t report the error at
+			 * all. */
+			if (data->discard_output_stream &&
+			    g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+				g_clear_error (&local_error);
+			else if (data->error == NULL)
 				data->error = g_steal_pointer (&local_error);
 			else if (!g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 				g_debug ("Error closing output stream: %s", local_error->message);
