@@ -205,6 +205,7 @@ gs_appstream_build_icon_prefix (XbNode *component)
 	return g_strjoinv ("/", path);
 }
 
+/* This function is designed to do no disk or network I/O. */
 static AsIcon *
 gs_appstream_new_icon (XbNode *component, XbNode *n, AsIconKind icon_kind, guint sz)
 {
@@ -259,6 +260,11 @@ gs_appstream_refine_icon (GsApp *app, XbNode *component)
 	if (icons == NULL)
 		return;
 
+	/* This code deliberately does *not* check that the icon files or theme
+	 * icons exist, as that would mean doing disk I/O for all the apps in
+	 * the appstream file, regardless of whether the calling code is
+	 * actually going to use the icons. Better to add all the possible icons
+	 * and let the calling code check which ones exist, if it needs to. */
 	for (guint i = 0; i < icons->len; i++) {
 		XbNode *icon_node = g_ptr_array_index (icons, i);
 		g_autoptr(AsIcon) icon = NULL;
