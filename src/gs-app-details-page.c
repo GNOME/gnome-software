@@ -97,6 +97,9 @@ add_permissions_row (GsAppDetailsPage *page,
 	if (!is_warning_row)
 		gtk_widget_set_opacity (image, 0);
 
+#if ADW_CHECK_VERSION(1,2,0)
+	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
+#endif
 	adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
 	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title);
 	adw_action_row_set_subtitle (ADW_ACTION_ROW (row), subtitle);

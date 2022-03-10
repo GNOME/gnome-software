@@ -502,6 +502,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_show (widget);
 
 		row = adw_action_row_new ();
+#if ADW_CHECK_VERSION(1,2,0)
+		adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
+#endif
 		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _("Enable New Repositories"));
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added."));
 		adw_action_row_set_activatable_widget (ADW_ACTION_ROW (row), widget);

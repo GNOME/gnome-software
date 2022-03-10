@@ -25,6 +25,8 @@ struct _GsPrefsDialog
 	GsPluginLoader		*plugin_loader;
 	GtkWidget		*switch_updates;
 	GtkWidget		*switch_updates_notify;
+	AdwActionRow		*automatic_updates_row;
+	AdwActionRow		*automatic_update_notifications_row;
 };
 
 G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, ADW_TYPE_PREFERENCES_WINDOW)
@@ -58,6 +60,11 @@ gs_prefs_dialog_init (GsPrefsDialog *dialog)
 			 dialog->switch_updates,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
+
+#if ADW_CHECK_VERSION(1,2,0)
+	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_updates_row), FALSE);
+	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (dialog->automatic_update_notifications_row), FALSE);
+#endif
 }
 
 static void
@@ -71,6 +78,8 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-prefs-dialog.ui");
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates_notify);
+	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_updates_row);
+	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, automatic_update_notifications_row);
 }
 
 GtkWidget *
