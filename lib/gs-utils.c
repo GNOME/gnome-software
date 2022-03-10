@@ -1488,7 +1488,7 @@ gs_utils_get_file_size (const gchar *filename,
 	return size;
 }
 
-#define METADATA_ETAG_ATTRIBUTE "metadata::etag"
+#define METADATA_ETAG_ATTRIBUTE "xattr::gnome-software::etag"
 
 /**
  * gs_utils_get_file_etag:
