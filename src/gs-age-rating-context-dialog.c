@@ -67,13 +67,13 @@ struct _GsAgeRatingContextDialog
 	GsApp			*app;  /* (nullable) (owned) */
 	gulong			 app_notify_handler_content_rating;
 	gulong			 app_notify_handler_name;
-	GtkWidget		*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];
-	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];
+	GsContextDialogRow	*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (unowned) */
+	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (element-type GsAgeRatingAttribute) */
 
 	GtkLabel		*age;
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
-	GtkListBox		*attributes_list;
+	GtkListBox		*attributes_list;  /* (element-type GsContextDialogRow) */
 };
 
 G_DEFINE_TYPE (GsAgeRatingContextDialog, gs_age_rating_context_dialog, GS_TYPE_INFO_WINDOW)
@@ -700,8 +700,8 @@ add_attribute_row (GsAgeRatingContextDialog *self,
 		update_attribute_row (self, group_type);
 	} else {
 		self->attributes[group_type] = g_list_prepend (self->attributes[group_type], attributes);
-		self->rows[group_type] = GTK_WIDGET (gs_context_dialog_row_new (icon_name, rating, title, description));
-		gtk_list_box_append (self->attributes_list, self->rows[group_type]);
+		self->rows[group_type] = GS_CONTEXT_DIALOG_ROW (gs_context_dialog_row_new (icon_name, rating, title, description));
+		gtk_list_box_append (self->attributes_list, GTK_WIDGET (self->rows[group_type]));
 	}
 }
 
@@ -989,7 +989,16 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	gboolean is_unknown;
 	g_autofree gchar *title = NULL;
 
+	/* Clear existing state. */
 	gs_widget_remove_all (GTK_WIDGET (self->attributes_list), (GsRemoveFunc) gtk_list_box_remove);
+
+	for (GsAgeRatingGroupType group_type = 0; group_type < GS_AGE_RATING_GROUP_TYPE_COUNT; group_type++) {
+		g_list_free_full (self->attributes[group_type],
+				  (GDestroyNotify) gs_age_rating_attribute_free);
+		self->attributes[group_type] = NULL;
+
+		self->rows[group_type] = NULL;
+	}
 
 	/* UI state is undefined if app is not set. */
 	if (self->app == NULL)
@@ -1143,19 +1152,6 @@ gs_age_rating_context_dialog_dispose (GObject *object)
 }
 
 static void
-gs_age_rating_context_dialog_finalize (GObject *object)
-{
-	GsAgeRatingContextDialog *self = GS_AGE_RATING_CONTEXT_DIALOG (object);
-
-	for (GsAgeRatingGroupType group_type = 0; group_type < GS_AGE_RATING_GROUP_TYPE_COUNT; group_type++) {
-		g_list_free_full (self->attributes[group_type],
-				  (GDestroyNotify) gs_age_rating_attribute_free);
-	}
-
-	G_OBJECT_CLASS (gs_age_rating_context_dialog_parent_class)->finalize (object);
-}
-
-static void
 gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -1164,7 +1160,6 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 	object_class->get_property = gs_age_rating_context_dialog_get_property;
 	object_class->set_property = gs_age_rating_context_dialog_set_property;
 	object_class->dispose = gs_age_rating_context_dialog_dispose;
-	object_class->finalize = gs_age_rating_context_dialog_finalize;
 
 	/**
 	 * GsAgeRatingContextDialog:app: (nullable)
