@@ -201,13 +201,11 @@ gs_details_page_set_state (GsDetailsPage *self,
 	/* spinner */
 	switch (state) {
 	case GS_DETAILS_PAGE_STATE_LOADING:
-		gs_start_spinner (GTK_SPINNER (self->spinner_details));
-		gtk_widget_show (self->spinner_details);
+		gtk_spinner_start (GTK_SPINNER (self->spinner_details));
 		break;
 	case GS_DETAILS_PAGE_STATE_READY:
 	case GS_DETAILS_PAGE_STATE_FAILED:
-		gs_stop_spinner (GTK_SPINNER (self->spinner_details));
-		gtk_widget_hide (self->spinner_details);
+		gtk_spinner_stop (GTK_SPINNER (self->spinner_details));
 		break;
 	default:
 		g_assert_not_reached ();

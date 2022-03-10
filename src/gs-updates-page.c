@@ -279,10 +279,10 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	case GS_UPDATES_PAGE_STATE_STARTUP:
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
-		gs_start_spinner (GTK_SPINNER (self->spinner_updates));
+		gtk_spinner_start (GTK_SPINNER (self->spinner_updates));
 		break;
 	default:
-		gs_stop_spinner (GTK_SPINNER (self->spinner_updates));
+		gtk_spinner_stop (GTK_SPINNER (self->spinner_updates));
 		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
 		gtk_widget_hide (self->header_spinner_start);
 		break;

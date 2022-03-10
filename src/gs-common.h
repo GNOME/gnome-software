@@ -19,8 +19,6 @@ G_BEGIN_DECLS
 typedef void (*GsRemoveFunc) (GtkWidget *container,
 			      GtkWidget *child);
 
-void	 gs_start_spinner		(GtkSpinner	*spinner);
-void	 gs_stop_spinner		(GtkSpinner	*spinner);
 void	 gs_widget_remove_all		(GtkWidget	*container,
 					 GsRemoveFunc    remove_func);
 void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
