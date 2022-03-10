@@ -1488,7 +1488,7 @@ gs_utils_get_file_size (const gchar *filename,
 	return size;
 }
 
-#define METADATA_ETAG_ATTRIBUTE "metadata::etag"
+#define METADATA_ETAG_ATTRIBUTE "xattr::gnome-software::etag"
 
 /**
  * gs_utils_get_file_etag:
@@ -1509,14 +1509,18 @@ gs_utils_get_file_etag (GFile        *file,
                         GCancellable *cancellable)
 {
 	g_autoptr(GFileInfo) info = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	g_return_val_if_fail (G_IS_FILE (file), NULL);
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
 
-	info = g_file_query_info (file, METADATA_ETAG_ATTRIBUTE, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+	info = g_file_query_info (file, METADATA_ETAG_ATTRIBUTE, G_FILE_QUERY_INFO_NONE, cancellable, &local_error);
 
-	if (info == NULL)
+	if (info == NULL) {
+		g_debug ("Error getting attribute ‘%s’ for file ‘%s’: %s",
+			 METADATA_ETAG_ATTRIBUTE, g_file_peek_path (file), local_error->message);
 		return NULL;
+	}
 
 	return g_strdup (g_file_info_get_attribute_string (info, METADATA_ETAG_ATTRIBUTE));
 }
@@ -1542,15 +1546,29 @@ gs_utils_set_file_etag (GFile        *file,
                         const gchar  *etag,
                         GCancellable *cancellable)
 {
+	g_autoptr(GError) local_error = NULL;
+
 	g_return_val_if_fail (G_IS_FILE (file), FALSE);
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), FALSE);
 
 	if (etag == NULL || *etag == '\0') {
-		return g_file_set_attribute (file, METADATA_ETAG_ATTRIBUTE, G_FILE_ATTRIBUTE_TYPE_INVALID,
-					     NULL, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+		if (!g_file_set_attribute (file, METADATA_ETAG_ATTRIBUTE, G_FILE_ATTRIBUTE_TYPE_INVALID,
+					   NULL, G_FILE_QUERY_INFO_NONE, cancellable, &local_error)) {
+			g_debug ("Error clearing attribute ‘%s’ on file ‘%s’: %s",
+				 METADATA_ETAG_ATTRIBUTE, g_file_peek_path (file), local_error->message);
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
-	return g_file_set_attribute_string (file, METADATA_ETAG_ATTRIBUTE, etag, G_FILE_QUERY_INFO_NONE, cancellable, NULL);
+	if (!g_file_set_attribute_string (file, METADATA_ETAG_ATTRIBUTE, etag, G_FILE_QUERY_INFO_NONE, cancellable, &local_error)) {
+		g_debug ("Error setting attribute ‘%s’ to ‘%s’ on file ‘%s’: %s",
+			 METADATA_ETAG_ATTRIBUTE, etag, g_file_peek_path (file), local_error->message);
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 /**
