@@ -760,10 +760,27 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean refine_needed = FALSE;
 	g_autoptr(GError) local_error = NULL;
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
+
+	/* Check if any of the apps actually need to be refined by this plugin,
+	 * before potentially updating the collections file from the internet. */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+			refine_needed = TRUE;
+			break;
+		}
+	}
+
+	if (!refine_needed) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* ensure valid data is loaded */
 	_ensure_cache_async (self, cancellable, refine_cb, g_steal_pointer (&task));
