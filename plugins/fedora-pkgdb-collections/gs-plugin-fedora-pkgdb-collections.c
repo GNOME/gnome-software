@@ -464,7 +464,8 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
            GError                         **error)
 {
 	JsonArray *collections;
-	JsonObject *root;
+	JsonNode *root_node;
+	JsonObject *root = NULL;
 	g_autoptr(JsonParser) parser = NULL;
 	g_autoptr(GPtrArray) new_distros = NULL;
 
@@ -474,7 +475,9 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
 		return NULL;
 
-	root = json_node_get_object (json_parser_get_root (parser));
+	root_node = json_parser_get_root (parser);
+	if (root_node != NULL && JSON_NODE_HOLDS_OBJECT (root_node))
+		root = json_node_get_object (root_node);
 	if (root == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
