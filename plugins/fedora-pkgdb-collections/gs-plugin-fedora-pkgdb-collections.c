@@ -472,7 +472,7 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	parser = json_parser_new_immutable ();
 
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
-		return FALSE;
+		return NULL;
 
 	root = json_node_get_object (json_parser_get_root (parser));
 	if (root == NULL) {
@@ -480,7 +480,7 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no root object");
-		return FALSE;
+		return NULL;
 	}
 
 	collections = json_object_get_array_member (root, "collections");
@@ -489,7 +489,7 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no collections object");
-		return FALSE;
+		return NULL;
 	}
 
 	for (guint i = 0; i < json_array_get_length (collections); i++) {
