@@ -281,6 +281,23 @@ gs_app_list_get_size_peak (GsAppList *list)
 	return list->size_peak;
 }
 
+/**
+ * gs_app_list_set_size_peak:
+ * @list: A #GsAppList
+ * @size_peak: A value to set
+ *
+ * Sets the largest size the list has ever been.
+ *
+ * Since: 43
+ **/
+void
+gs_app_list_set_size_peak (GsAppList *list,
+			   guint size_peak)
+{
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	list->size_peak = size_peak;
+}
+
 static GsApp *
 gs_app_list_lookup_safe (GsAppList *list, const gchar *unique_id)
 {
