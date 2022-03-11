@@ -599,6 +599,11 @@ ensure_refresh_cb (GObject      *source_object,
 
 	distros = load_json (self, &local_error);
 	if (distros == NULL) {
+		g_autoptr(GFile) cache_file = g_file_new_for_path (self->cachefn);
+
+		g_debug ("Failed to load cache file ‘%s’, deleting it", self->cachefn);
+		g_file_delete (cache_file, NULL, NULL);
+
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
