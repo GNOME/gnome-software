@@ -55,6 +55,7 @@ typedef struct {
 	GInputStream *input_stream;  /* (nullable) (owned) */
 	GOutputStream *output_stream;  /* (nullable) (owned) */
 	gsize buffer_size_bytes;
+	gchar *last_etag;  /* (nullable) (owned) */
 	int io_priority;
 	GsDownloadProgressCallback progress_callback;  /* (nullable) */
 	gpointer progress_user_data;
@@ -85,6 +86,7 @@ download_data_free (DownloadData *data)
 	g_clear_object (&data->input_stream);
 	g_clear_object (&data->output_stream);
 
+	g_clear_pointer (&data->last_etag, g_free);
 	g_clear_object (&data->message);
 	g_clear_pointer (&data->uri, g_free);
 	g_clear_pointer (&data->new_etag, g_free);
@@ -199,7 +201,11 @@ gs_download_stream_async (SoupSession                *soup_session,
 
 	data->message = g_object_ref (msg);
 
-	if (last_etag != NULL && *last_etag != '\0') {
+	if (last_etag != NULL && *last_etag == '\0')
+		last_etag = NULL;
+	data->last_etag = g_strdup (last_etag);
+
+	if (last_etag != NULL) {
 #if SOUP_CHECK_VERSION(3, 0, 0)
 		soup_message_headers_append (soup_message_get_request_headers (msg), "If-None-Match", last_etag);
 #else
@@ -267,8 +273,11 @@ open_input_stream_cb (GObject      *source_object,
 			/* If the file has not been modified from the ETag we
 			 * have, finish the download early. Ensure to close the
 			 * output stream so that its existing content is *not*
-			 * overwritten. */
+			 * overwritten.
+			 *
+			 * Preserve the existing ETag. */
 			data->discard_output_stream = TRUE;
+			data->new_etag = g_strdup (data->last_etag);
 			finish_download (task, NULL);
 			return;
 		} else if (status_code != SOUP_STATUS_OK) {
