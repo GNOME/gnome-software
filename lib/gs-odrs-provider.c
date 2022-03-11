@@ -658,10 +658,8 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 			if (value == NULL)
 				continue;
 
-			if (g_hash_table_lookup (ids, value) != NULL)
-				continue;
-			g_hash_table_add (ids, (gpointer) value);
-			json_array_add_string_element (json_array, value);
+			if (g_hash_table_add (ids, (gpointer) value))
+				json_array_add_string_element (json_array, value);
 		}
 	}
 	if (json_array_get_length (json_array) == 0)
