@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-08-30 07:05+0000\n"
-"PO-Revision-Date: 2021-08-30 13:19+0500\n"
+"POT-Creation-Date: 2022-03-03 16:40+0000\n"
+"PO-Revision-Date: 2022-03-12 19:18+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -16,11 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 3.0.1\n"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:7
-msgid "GNOME Software"
-msgstr "GNOME Software"
+#: data/appdata/org.gnome.Software.appdata.xml.in:7 src/gs-shell.ui:21
+#: src/org.gnome.Software.desktop.in:3
+msgid "Software"
+msgstr "Бағд. қамтама"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:8
 msgid "Application manager for GNOME"
@@ -36,16 +37,16 @@ msgstr ""
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
 msgid ""
-"GNOME Software showcases featured and popular applications with useful "
+"Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"GNOME Software қолданбасы ұсынылатын және әйгілі қолданбаларды көрсетіп "
-"отырады, олардың пайдалы сипаттамасы және әрбіреуінің бірнеше скриншоты бар "
-"болады. Қолданбаларды санаттар тізімдерін шолу арқылы немесе тікелеі іздеу "
-"арқылы табуға болады. Сонымен қатар, бұл қолданба арқылы жүйеңізді желіден "
-"тыс жаңартуларымен жаңартуға болады."
+"БҚ қолданбасы ұсынылатын және әйгілі қолданбаларды көрсетіп отырады, олардың "
+"пайдалы сипаттамасы және әрбіреуінің бірнеше скриншоты бар болады. "
+"Қолданбаларды санаттар тізімдерін шолу арқылы немесе тікелеі іздеу арқылы "
+"табуға болады. Сонымен қатар, бұл қолданба арқылы жүйеңізді желіден тыс "
+"жаңартуларымен жаңартуға болады."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -69,7 +70,7 @@ msgstr "Жаңартулар панелі"
 msgid "The update details"
 msgstr "Жаңарту ақпараты"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1782
+#: data/appdata/org.gnome.Software.appdata.xml.in:1807
 msgid "The GNOME Project"
 msgstr "GNOME жобасы"
 
@@ -232,109 +233,109 @@ msgstr ""
 "3-ші жақты тарап ретінде қарастырылмауы тиіс ресми репозиторийлер тізімі"
 
 #: data/org.gnome.software.gschema.xml:99
+msgid "A list of required repositories that cannot be disabled or removed"
+msgstr "Сөндіруге немесе өшіруге болмайтын міндетті репозиторийлер тізімі"
+
+#: data/org.gnome.software.gschema.xml:103
 msgid "A list of official repositories that should be considered free software"
 msgstr ""
 "Еркін бағдарламалық қамтама ретінде қарастырылуы тиіс ресми репозиторийлер "
 "тізімі"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:107
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:107
+#: data/org.gnome.software.gschema.xml:111
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:115
 msgid "Allow access to the Software Repositories dialog"
 msgstr "БҚ көздерін баптау сұхбатына қатынауды рұқсат ету"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:119
 msgid "Offer upgrades for pre-releases"
 msgstr "Шығарылымға дейінгі нұсқаларға дейін жаңартуды ұсынып отыру"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "Орнатылған бағдарламалар тізімінде бағдарламалардың орнатылған өлшемін "
 "көрсету"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:131
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
-#: data/org.gnome.software.gschema.xml:128
+#: data/org.gnome.software.gschema.xml:132
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "Тегін емес және меншігі бар бағдарламалық қамтаманы түсіндіретін URI"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:136
-msgid "Install the AppStream files to a system-wide location for all users"
-msgstr ""
-"AppStream файлдарын барлық пайдаланушылар үшін жүйелік орналасуға орнату"
-
 #: data/org.gnome.software.gschema.xml:140
+msgid ""
+"Install the AppStream files to a system-wide location for all users. If "
+"false, files are installed in non-standard $XDG_DATA_HOME/app-info/xmls "
+"directory"
+msgstr ""
+"AppStream файлдарын барлық пайдаланушылар үшін жүйелік орналасуға орнату. "
+"Жалған болса, файлдар стандартты емес $XDG_DATA_HOME/app-info/xmls бумасына "
+"орнатылатын болады"
+
+#: data/org.gnome.software.gschema.xml:144
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
-"assumed to be listed last."
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:145
-msgid "The URI that references the background for an upgrade banner."
-msgstr ""
-
-#: data/org.gnome.software.gschema.xml:146
-msgid ""
-"The URI can contain up to three '%u', which will be replaced by the upgrade "
-"version."
-msgstr ""
-
-#: data/org.gnome.software.gschema.xml:152
+#: data/org.gnome.software.gschema.xml:151
 msgid "A string storing the gnome-online-account id used to login"
 msgstr "Кіру үшін қолданылған gnome-online-account id сақтайтын мәтіндік жол"
 
-#. TRANSLATORS: tool that is used when copying profiles system-wide
-#: gs-install-appstream/gs-install-appstream.c:141
+#. TRANSLATORS: tool that is used when moving profiles system-wide
+#: gs-install-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "GNOME Software AppStream жүйелік орынға орнатқышы"
 
-#: gs-install-appstream/gs-install-appstream.c:143
+#: gs-install-appstream/gs-install-appstream.c:145
 msgid "Failed to parse command line arguments"
 msgstr "Командалық жол аргументтерін талдау сәтсіз аяқталды"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: gs-install-appstream/gs-install-appstream.c:150
+#: gs-install-appstream/gs-install-appstream.c:152
 msgid "You need to specify exactly one filename"
 msgstr "Тек бір файл атын көрсету керек"
 
 #. TRANSLATORS: only able to install files as root
-#: gs-install-appstream/gs-install-appstream.c:157
+#: gs-install-appstream/gs-install-appstream.c:159
 msgid "This program can only be used by the root user"
 msgstr "Бұл бағдарламаны тек әкімші (root) пайдалана алады"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:165
+#: gs-install-appstream/gs-install-appstream.c:167
 #, c-format
 msgid "Failed to validate content type: %s"
 msgstr "Құрама түрін растау сәтсіз аяқталды: %s"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:176
+#: gs-install-appstream/gs-install-appstream.c:178
 #, c-format
-msgid "Failed to copy: %s"
-msgstr "Көшіру сәтсіз: %s"
+msgid "Failed to move: %s"
+msgstr "Жылжыту сәтсіз: %s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -345,157 +346,352 @@ msgid "Install selected software on the system"
 msgstr "Таңдалған БҚ-ны жүйеге орнату"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:78
+#: src/gs-age-rating-context-dialog.c:135
 msgid "Cartoon Violence"
 msgstr "Мультфильмдегі зорлық-зомбылық"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:137
+msgid "No information regarding cartoon violence"
+msgstr ""
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:85
+#: src/gs-age-rating-context-dialog.c:145
 msgid "Fantasy Violence"
 msgstr "Фэнтези зорлық-зомбылық"
 
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:92
-msgid "Realistic Violence"
-msgstr "Реалистік зорлық-зомбылық"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:99
-msgid "Violence Depicting Bloodshed"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:147
+msgid "No information regarding fantasy violence"
 msgstr ""
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:106
-msgid "Sexual Violence"
-msgstr "Жыныстық зорлық-зомбылық"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:113
-msgid "Alcohol"
-msgstr "Алкоголь"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:120
-msgid "Narcotics"
-msgstr "Есірткі"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:127
-msgid "Tobacco"
-msgstr "Темекі"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:134
-msgid "Nudity"
-msgstr "Жалаңаштық"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:141
-msgid "Sexual Themes"
-msgstr "Жыныстық тақырыптар"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:148
-msgid "Profanity"
-msgstr "Қарғыс"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:155
+msgid "Realistic Violence"
+msgstr "Реалистік зорлық-зомбылық"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:157
+msgid "No information regarding realistic violence"
+msgstr ""
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:165
+msgid "Violence Depicting Bloodshed"
+msgstr ""
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:167
+msgid "No information regarding bloodshed"
+msgstr ""
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:175
+msgid "Sexual Violence"
+msgstr "Жыныстық зорлық-зомбылық"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:177
+msgid "No information regarding sexual violence"
+msgstr ""
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:185
+msgid "Alcohol"
+msgstr "Алкоголь"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:187
+msgid "No information regarding references to alcohol"
+msgstr "Алкогольге сілтемелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:195
+msgid "Narcotics"
+msgstr "Есірткі"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:197
+msgid "No information regarding references to illicit drugs"
+msgstr "Заңсыз есірткіге сілтемелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:205
+msgid "Tobacco"
+msgstr "Темекі"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:207
+msgid "No information regarding references to tobacco products"
+msgstr "Темекі өнімдеріне сілтемелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:215
+#: src/gs-age-rating-context-dialog.c:544
+msgid "Nudity"
+msgstr "Жалаңаштық"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:217
+msgid "No information regarding nudity of any sort"
+msgstr "Қандай да бір жалаңаштық туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:225
+msgid "Sexual Themes"
+msgstr "Жыныстық тақырыптар"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:227
+msgid "No information regarding references to or depictions of sexual nature"
+msgstr "Сексуалдық сипаттағы сілтемелер немесе бейнелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:235
+msgid "Profanity"
+msgstr "Қарғыс"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:237
+#| msgid "No discriminatory language of any kind"
+msgid "No information regarding profanity of any kind"
+msgstr ""
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:245
 msgid "Inappropriate Humor"
 msgstr "Орынсыз әзіл"
 
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:162
-msgid "Discrimination"
-msgstr "Кемсітушілік"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:169
-msgid "Advertising"
-msgstr "Жарнама"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:176
-msgid "Gambling"
-msgstr "Құмар ойындар"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:183
-msgid "Purchasing"
-msgstr "Сатып алу"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:190
-msgid "Chat Between Users"
-msgstr "Пайдаланушылар арасында чат"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:197
-msgid "Audio Chat Between Users"
-msgstr "Пайдаланушылар арасындағы дыбыстық чат"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:204
-msgid "Contact Details"
-msgstr "Контакт ақпараты"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:211
-msgid "Identifying Information"
-msgstr "Анықтайтын ақпарат"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:218
-msgid "Location Sharing"
-msgstr "Орналасумен бөлісу"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:241
-msgid "Homosexuality"
-msgstr "Гомосексуалдылық"
-
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:248
-msgid "Prostitution"
-msgstr "Жезөкшелік"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:247
+msgid "No information regarding inappropriate humor"
+msgstr ""
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:255
+msgid "Discrimination"
+msgstr "Кемсітушілік"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:257
+msgid "No information regarding discriminatory language of any kind"
+msgstr "Ешқандай дискриминациялық тіл туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:265
+msgid "Advertising"
+msgstr "Жарнама"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:267
+msgid "No information regarding advertising of any kind"
+msgstr "Қандай да бір жарнама туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:275
+msgid "Gambling"
+msgstr "Құмар ойындар"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:277
+msgid "No information regarding gambling of any kind"
+msgstr "Ешқандай құмар ойын туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:285
+msgid "Purchasing"
+msgstr "Сатып алу"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:287
+msgid "No information regarding the ability to spend money"
+msgstr "Ақшаны жарату мүмкіндігі туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:295
+msgid "Chat Between Users"
+msgstr "Пайдаланушылар арасында чат"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:297
+msgid "No information regarding ways to chat with other users"
+msgstr "Басқа ойыншылармен чат мүмкіндігі туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:305
+msgid "Audio Chat Between Users"
+msgstr "Пайдаланушылар арасындағы дыбыстық чат"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:307
+msgid "No information regarding ways to talk with other users"
+msgstr "Басқа ойыншылармен сөйлесу мүмкіндігі туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:315
+msgid "Contact Details"
+msgstr "Контакт ақпараты"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:317
+msgid ""
+"No information regarding sharing of social network usernames or email "
+"addresses"
+msgstr ""
+"Әлеуметтік желілердегі аттар немесе эл. пошта адрестермен бөлісу туралы "
+"ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:325
+msgid "Identifying Information"
+msgstr "Анықтайтын ақпарат"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:327
+msgid "No information regarding sharing of user information with third parties"
+msgstr "Пайдаланушы ақпаратын үшінші тараппен бөлісу туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:335
+msgid "Location Sharing"
+msgstr "Орналасумен бөлісу"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:337
+msgid "No information regarding sharing of physical location with other users"
+msgstr ""
+"Басқа пайдаланушылармен физикалық орналасумен бөлісу туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:361
+msgid "Homosexuality"
+msgstr "Гомосексуалдылық"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:363
+msgid "No information regarding references to homosexuality"
+msgstr "Гомосексуализмге сілтемелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:371
+msgid "Prostitution"
+msgstr "Жезөкшелік"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:373
+msgid "No information regarding references to prostitution"
+msgstr "Жезөкшелікке сілтемелер туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:381
 msgid "Adultery"
 msgstr ""
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:383
+msgid "No information regarding references to adultery"
+msgstr ""
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:262
+#: src/gs-age-rating-context-dialog.c:391
 msgid "Sexualized Characters"
 msgstr "Сексуалды кейіпкерлер"
 
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:393
+msgid "No information regarding sexualized characters"
+msgstr ""
+
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:269
+#: src/gs-age-rating-context-dialog.c:401
 msgid "Desecration"
 msgstr ""
 
-#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:276
-msgid "Human Remains"
-msgstr ""
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:403
+msgid "No information regarding references to desecration"
+msgstr "Арандатушылық сілтемелер немесе бейнелер туралы ақпарат жоқ"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:283
+#: src/gs-age-rating-context-dialog.c:411
+msgid "Human Remains"
+msgstr "Адам қалдықтары"
+
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:413
+msgid "No information regarding visible dead human remains"
+msgstr "Көзге көрінетін өлі адам туралы ақпарат жоқ"
+
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:421
 msgid "Slavery"
 msgstr "Құлдық"
 
-#. Translators: This refers to a content rating attribute which
-#. * has an unknown value. For example, the amount of violence in
-#. * an app is ‘Unknown’.
-#: src/gs-age-rating-context-dialog.c:338
-msgid "Unknown"
-msgstr "Белгісіз"
+#. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
+#: src/gs-age-rating-context-dialog.c:423
+msgid "No information regarding references to slavery"
+msgstr "Құлдыққа сілтемелерге қатысты ақпарат жоқ"
+
+#: src/gs-age-rating-context-dialog.c:495
+msgid "Does not include references to drugs"
+msgstr "Есірткіге сілтемелер жоқ"
+
+#: src/gs-age-rating-context-dialog.c:497
+msgid ""
+"Does not include swearing, profanity, and other kinds of strong language"
+msgstr ""
+
+#: src/gs-age-rating-context-dialog.c:499
+msgid "Does not include ads or monetary transactions"
+msgstr ""
+
+#: src/gs-age-rating-context-dialog.c:501
+msgid "Does not include sex or nudity"
+msgstr "Жыныс қатынас немесе жалаңаштық жоқ"
+
+#: src/gs-age-rating-context-dialog.c:503
+msgid "Does not include uncontrolled chat functionality"
+msgstr "Басқарылмайтын чат мүмкіндігі жоқ"
+
+#: src/gs-age-rating-context-dialog.c:505
+msgid "Does not include violence"
+msgstr "Зорлық-зомбылығы жоқ"
+
+#: src/gs-age-rating-context-dialog.c:538
+msgid "Drugs"
+msgstr "Есірткі"
+
+#: src/gs-age-rating-context-dialog.c:540
+msgid "Strong Language"
+msgstr "Қатаң тіл"
+
+#: src/gs-age-rating-context-dialog.c:542
+msgid "Money"
+msgstr "Ақша"
+
+#: src/gs-age-rating-context-dialog.c:546
+msgid "Social"
+msgstr "Әлеуметтік"
+
+#: src/gs-age-rating-context-dialog.c:548
+msgid "Violence"
+msgstr "Зорлық-зомбылық"
+
+#. Translators: This is used to join two list items together in
+#. * a compressed way of displaying a list of descriptions of age
+#. * ratings for apps. The order of the items does not matter.
+#: src/gs-age-rating-context-dialog.c:659
+#, c-format
+#| msgctxt "repo-row"
+#| msgid "%s • %s"
+msgid "%s • %s"
+msgstr "%s • %s"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: src/gs-age-rating-context-dialog.c:605 lib/gs-category.c:214
+#: src/gs-age-rating-context-dialog.c:943 lib/gs-category.c:214
 msgid "All"
 msgstr "Барлығы"
 
@@ -505,42 +701,42 @@ msgstr "Барлығы"
 #. Translators: This is shown in a bubble if the storage
 #. * size of an application is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:618 src/gs-app-context-bar.c:187
+#: src/gs-age-rating-context-dialog.c:956 src/gs-app-context-bar.c:194
 #: src/gs-storage-context-dialog.c:87
 msgid "?"
 msgstr "?"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:684
+#: src/gs-age-rating-context-dialog.c:1022
 #, c-format
 msgid "%s is suitable for everyone"
 msgstr "%s барлығына жарамды"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:688
+#: src/gs-age-rating-context-dialog.c:1026
 #, c-format
 msgid "%s is suitable for toddlers"
 msgstr "%s сәбилерге жарамды"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:692
+#: src/gs-age-rating-context-dialog.c:1030
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "%s кішкентай балаларға жарамды"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:700
+#: src/gs-age-rating-context-dialog.c:1038
 #, c-format
 msgid "%s is suitable for teenagers"
 msgstr "%s жасөспiрiмдерге жарамды"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:704
+#: src/gs-age-rating-context-dialog.c:1042
 #, c-format
 msgid "%s is suitable for adults"
 msgstr "%s ересектерге жарамды"
@@ -548,24 +744,24 @@ msgstr "%s ересектерге жарамды"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:709
+#: src/gs-age-rating-context-dialog.c:1047
 #, c-format
 msgid "%s is suitable for %s"
 msgstr "%s %s үшін жарамды"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
 msgid "Age Rating"
 msgstr "Жас бойынша рейтингі"
 
-#: src/gs-age-rating-context-dialog.ui:116
-#: src/gs-hardware-support-context-dialog.ui:115
-#: src/gs-safety-context-dialog.ui:264
+#: src/gs-age-rating-context-dialog.ui:78
+#: src/gs-hardware-support-context-dialog.ui:78
+#: src/gs-safety-context-dialog.ui:228
 msgid "How to add missing information"
 msgstr "Жоқ ақпаратты қосу әдісі"
 
-#: lib/gs-app.c:5607
+#: lib/gs-app.c:5713
 msgid "Local file"
 msgstr "Жергілікті файл"
 
@@ -574,37 +770,37 @@ msgstr "Жергілікті файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:396
+#: lib/gs-app.c:5729 src/gs-safety-context-dialog.c:406
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5699
+#: lib/gs-app.c:5805
 msgid "Package"
 msgstr "Десте"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:435
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:443
 msgid "Pending"
 msgstr "Кезекте"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:359
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:447 src/gs-details-page.c:345
 msgid "Pending install"
 msgstr "Орнату кезекте тұр"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:366
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:451 src/gs-details-page.c:352
 msgid "Pending remove"
 msgstr "Өшіріруде кезекте"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:321
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:144 src/gs-app-tile.ui:50
+#: src/gs-feature-tile.c:512 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "Орнатылған"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:352
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:196 src/gs-details-page.c:338
 msgid "Installing"
 msgstr "Орнатылуда"
 
@@ -612,85 +808,85 @@ msgstr "Орнатылуда"
 msgid "Removing"
 msgstr "Өшірілуде"
 
-#: src/gs-app-addon-row.ui:70
+#: src/gs-app-addon-row.ui:64
 msgid "_Uninstall"
 msgstr "Ө_шіру"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:68
 msgid "Network"
 msgstr "Желі"
 
-#: src/gs-app-details-page.c:70
+#: src/gs-app-details-page.c:68
 msgid "Can communicate over the network"
 msgstr "Желік арқылы байланыса алады"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:69
 msgid "System Services"
 msgstr "Жүйелік қызметтер"
 
-#: src/gs-app-details-page.c:71
+#: src/gs-app-details-page.c:69
 msgid "Can access D-Bus services on the system bus"
 msgstr "Жүйелік шинада D-Bus қызметтеріне қатынай алады"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:70
 msgid "Session Services"
 msgstr "Сессия қызметтері"
 
-#: src/gs-app-details-page.c:72
+#: src/gs-app-details-page.c:70
 msgid "Can access D-Bus services on the session bus"
 msgstr "Сессиялық шинада D-Bus қызметтеріне қатынай алады"
 
-#: src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:71
 msgid "Devices"
 msgstr "Құрылғылар"
 
-#: src/gs-app-details-page.c:73
+#: src/gs-app-details-page.c:71
 msgid "Can access system device files"
 msgstr "Жүйелік құрылғылар файлдарына қатынай алады"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
 msgid "Home folder"
 msgstr "Үй бумасы"
 
-#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:76
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
+#: src/gs-app-details-page.c:76
 msgid "Can view, edit and create files"
 msgstr "Файлдарды қарау, түзету және жасау құқығы бар"
 
-#: src/gs-app-details-page.c:75 src/gs-app-details-page.c:77
-#: src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
+#: src/gs-app-details-page.c:77
 msgid "Can view files"
 msgstr "Файлдарды қарай алады"
 
-#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
 msgid "File system"
 msgstr "Файлдық жүйе"
 
-#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:79
+#: src/gs-app-details-page.c:76 src/gs-app-details-page.c:77
 msgid "Downloads folder"
 msgstr "Жүктемелер бумасы"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:78
 msgid "Settings"
 msgstr "Баптаулар"
 
-#: src/gs-app-details-page.c:80
+#: src/gs-app-details-page.c:78
 msgid "Can view and change any settings"
 msgstr "Кез келген параметрлерді көре және өзгерте алады"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:79
 msgid "Legacy display system"
 msgstr "Баяғы дисплей жүйесі"
 
-#: src/gs-app-details-page.c:81
+#: src/gs-app-details-page.c:79
 msgid "Uses an old, insecure display system"
 msgstr "Ескі, қауіпсіз емес дисплей жүйесін пайдаланады"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:80
 msgid "Sandbox escape"
 msgstr "Құмсалғыштан шығып кету"
 
-#: src/gs-app-details-page.c:82
+#: src/gs-app-details-page.c:80
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Құмсалғыштан қашып, кез келген басқа шектеулерді айналып өте алады"
 
@@ -700,98 +896,110 @@ msgstr "Құмсалғыштан қашып, кез келген басқа ше
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:159
+#: src/gs-app-details-page.c:137
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:177
+#: src/gs-app-details-page.c:156
 msgid "No update description available."
 msgstr "Жаңартудың сипаттамасы жоқ."
 
-#: src/gs-app-details-page.ui:22 src/gs-os-update-page.ui:22
-#: src/gs-shell.ui:376 src/gs-shell.ui:464
+#: src/gs-app-details-page.ui:25 src/gs-shell.ui:365 src/gs-shell.ui:456
 msgid "Go back"
 msgstr "Артқа"
 
-#: src/gs-app-details-page.ui:109 src/gs-app-row.c:504
+#: src/gs-app-details-page.ui:47 src/gs-app-row.c:502
 msgid "Requires additional permissions"
 msgstr "Қосымша рұқсаттарды талап етеді"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:552
+#. Translators: Header of the section with other users' opinions about the app.
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:797
+msgid "Reviews"
+msgstr "Пікірлер"
+
+#: src/gs-app-reviews-dialog.ui:25
+msgid "No reviews were found for this application."
+msgstr "Бұл қолданба үшін пікірлер табылмады."
+
+#: src/gs-app-reviews-dialog.ui:27
+msgid "No Reviews"
+msgstr "Пікірлер жоқ"
+
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:475
 msgid "Version History"
 msgstr "Нұсқа тарихы"
 
-#: src/gs-app-version-history-row.c:61
+#: src/gs-app-version-history-row.c:71
 #, c-format
 msgid "New in Version %s"
 msgstr "Нұсқа %s жаңалықтары"
 
-#: src/gs-app-version-history-row.c:68
+#: src/gs-app-version-history-row.c:78
 #, c-format
 msgid "Version %s"
 msgstr "Нұсқа %s"
 
-#: src/gs-app-version-history-row.c:70
+#: src/gs-app-version-history-row.c:80
 msgid "No details for this release"
 msgstr "Бұл шығарылым үшін ақпараты жоқ"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:84 src/gs-review-row.c:65
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:139
+#: src/gs-application.c:128
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Іске қосылу режимі келесіден біреу: ‘updates’, ‘updated’, ‘installed’ не "
 "‘overview’"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:128
 msgid "MODE"
 msgstr "РЕЖИМІ"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:130
 msgid "Search for applications"
 msgstr "Қолданбаларды іздеу"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:130
 msgid "SEARCH"
 msgstr "ІЗДЕУ"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:132
 msgid "Show application details (using application ID)"
 msgstr "Қолданба ақпаратын көрсету (қолданба ID-ін қолданып)"
 
-#: src/gs-application.c:143 src/gs-application.c:147
+#: src/gs-application.c:132 src/gs-application.c:136
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:134
 msgid "Show application details (using package name)"
 msgstr "Қолданба ақпаратын көрсету (десте атын қолданып)"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:134
 msgid "PKGNAME"
 msgstr "ДЕСТЕ_АТЫ"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:136
 msgid "Install the application (using application ID)"
 msgstr "Қолданбаны орнату (қолданба ID-ін қолданып)"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:138
 msgid "Open a local package file"
 msgstr "Жергілікті десте файлын ашу"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:138 src/gs-application.c:143
 msgid "FILENAME"
 msgstr "ФАЙЛ_АТЫ"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:140
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -799,96 +1007,100 @@ msgstr ""
 "Бұл әрекет үшін күтілетін өзара іс-қимыл түрі: \"none\", \"notify\" немесе "
 "\"full\""
 
-#: src/gs-application.c:154
+#: src/gs-application.c:143
+msgid "Show a local metainfo or appdata file"
+msgstr ""
+
+#: src/gs-application.c:145
 msgid "Show verbose debugging information"
 msgstr "Кеңейтілген жөндеу ақпаратын көрсету"
 
-#: src/gs-application.c:156
+#: src/gs-application.c:147
 msgid "Installs any pending updates in the background"
 msgstr "Кезекте тұрған әрбір жаңартуды фонда орнату"
 
-#: src/gs-application.c:158
+#: src/gs-application.c:149
 msgid "Show update preferences"
 msgstr "Жаңарту баптауларын көрсету"
 
-#: src/gs-application.c:160
+#: src/gs-application.c:151
 msgid "Quit the running instance"
 msgstr "Орындалып тұрған нұсқаның жұмысын аяқтау"
 
-#: src/gs-application.c:162
+#: src/gs-application.c:153
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream орнына жергілікті файлдағы қайнар көздерін қалау"
 
-#: src/gs-application.c:164
+#: src/gs-application.c:155
 msgid "Show version number"
 msgstr "Нұсқа ақпаратын шығару"
 
-#: src/gs-application.c:358
-msgid "Copyright © 2016–2021 GNOME Software contributors"
+#: src/gs-application.c:343
+msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr ""
 
-#: src/gs-application.c:361
+#: src/gs-application.c:346
 msgid "translator-credits"
 msgstr "Baurzhan Muftakhidinov <baurthefirst@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:374 src/gs-shell.c:2137
+#: src/gs-application.c:359 src/gs-shell.c:2194
 msgid "About Software"
 msgstr "Осы туралы"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:377
+#: src/gs-application.c:362
 msgid "A nice way to manage the software on your system."
 msgstr "Жүйеңізде БҚ-ны басқарудың ыңғайлы жолы."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:566
+#: src/gs-application.c:547
 msgid "Sorry! There are no details for that application."
 msgstr "Кешіріңіз! Бұл қолданба үшін ақпараты жоқ."
 
 #. Translators: The disk usage of an application when installed.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:148 src/gs-storage-context-dialog.c:128
+#: src/gs-app-context-bar.c:155 src/gs-storage-context-dialog.c:128
 msgid "Installed Size"
 msgstr "Орнатылған өлшемі"
 
-#: src/gs-app-context-bar.c:151
+#: src/gs-app-context-bar.c:158
 #, c-format
 msgid "Includes %s of data and %s of cache"
 msgstr "Соның ішінде деректер %s және кэш %s"
 
-#: src/gs-app-context-bar.c:154
+#: src/gs-app-context-bar.c:161
 #, c-format
 msgid "Includes %s of data"
 msgstr "Соның ішінде деректер %s"
 
-#: src/gs-app-context-bar.c:157
+#: src/gs-app-context-bar.c:164
 #, c-format
 msgid "Includes %s of cache"
 msgstr "Соның ішінде кэш %s"
 
-#: src/gs-app-context-bar.c:160
+#: src/gs-app-context-bar.c:167
 msgid "Cache and data usage unknown"
 msgstr "Кэш және деректерді пайдалану белгісіз"
 
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:169 src/gs-storage-context-dialog.c:156
+#: src/gs-app-context-bar.c:176 src/gs-storage-context-dialog.c:156
 msgid "Download Size"
 msgstr "Жүктеп алынатын өлшемі"
 
-#: src/gs-app-context-bar.c:172
+#: src/gs-app-context-bar.c:179
 msgid "Needs no additional system downloads"
 msgstr "Қосымша жүйе жүктеулері қажет емес"
 
-#: src/gs-app-context-bar.c:174
+#: src/gs-app-context-bar.c:181
 msgid "Needs an unknown size of additional system downloads"
 msgstr "Қосымша жүйе жүктеулерінің белгісіз өлшемі қажет"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
-#: src/gs-app-context-bar.c:179
+#: src/gs-app-context-bar.c:186
 #, c-format
 msgid "Needs %s of additional system downloads"
 msgstr "Қосымша жүйе жүктеулерінің %s қажет"
@@ -896,111 +1108,119 @@ msgstr "Қосымша жүйе жүктеулерінің %s қажет"
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:193
+#: src/gs-app-context-bar.c:200
 msgid "Size is unknown"
 msgstr "Өлшемі белгісіз"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:257
+#: src/gs-app-context-bar.c:264
 msgid "No permissions"
 msgstr "Рұқсаттар жоқ"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:268
+#: src/gs-app-context-bar.c:275
 msgid "Has network access"
 msgstr "Желіге қатынау құқығы бар"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:275
+#: src/gs-app-context-bar.c:282
 msgid "Uses system services"
 msgstr "Жүйелік қызметтерді пайдаланады"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:282
+#: src/gs-app-context-bar.c:289
 msgid "Uses session services"
 msgstr "Пайдаланушы сессия қызметтері"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:289
+#: src/gs-app-context-bar.c:296
 msgid "Can access hardware devices"
 msgstr "Аппараттық құрылғыларға қатынай алады"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:308
 msgid "Can read/write all your data"
 msgstr "Барлық деректеріңізді оқи/жаза алады"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:305
+#: src/gs-app-context-bar.c:320
 msgid "Can read all your data"
 msgstr "Барлық деректеріңізді оқи алады"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:312
+#: src/gs-app-context-bar.c:327
 msgid "Can read/write your downloads"
 msgstr "Жүктемелеріңізді оқи/жаза алады"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:319
+#: src/gs-app-context-bar.c:334
 msgid "Can read your downloads"
 msgstr "Жүктемелеріңізді оқи алады"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:326 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:341 src/gs-safety-context-dialog.c:218
 msgid "Can access and change user settings"
 msgstr "Пайдаланушы баптауларына қатынай және өзгерте алады"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:333 src/gs-safety-context-dialog.c:194
+#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:202
 msgid "Uses a legacy windowing system"
 msgstr "Ескі терезелер жүйесін пайдаланады"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:340 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:355 src/gs-safety-context-dialog.c:210
 msgid "Can acquire arbitrary permissions"
 msgstr "Еркін рұқсаттарды ала алады"
 
-#. Translators: This indicates that we don’t know what permissions an app requires to run.
+#. Translators: This indicates that an application has been packaged
+#. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:352
-msgid "Software has unknown permissions"
-msgstr "Бағдарламалық қамтаманың белгісіз рұқсаттары бар"
+#: src/gs-app-context-bar.c:381 src/gs-safety-context-dialog.c:143
+msgid "Reviewed by your distribution"
+msgstr ""
+
+#. Translators: This indicates that an application has been packaged
+#. * by someone other than the user’s distribution, so might not be safe.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:388 src/gs-safety-context-dialog.c:140
+msgid "Provided by a third party"
+msgstr "Үшінші тарап ұсынған"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:364
+#: src/gs-app-context-bar.c:400
 msgid "Proprietary code"
 msgstr "Проприетарлы код"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370
+#: src/gs-app-context-bar.c:406
 msgid "Auditable code"
 msgstr "Тексерілетін код"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:379
-msgid "Software comes from a trusted source"
-msgstr "Бағдарламалық қамтама сенімді дереккөзден келіп тұр"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:386
+#: src/gs-app-context-bar.c:413
 msgid "Software developer is verified"
 msgstr "Бағдарламалық қамтама әзірлеуші тексерілді"
+
+#. Translators: This indicates an app or its runtime reached its end of life.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:422
+msgid "Software no longer supported"
+msgstr "Бағдарламалық қамтамаға енді қолдау жоқ"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1016,123 +1236,123 @@ msgstr "Бағдарламалық қамтама әзірлеуші тексе�
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:398 src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:434 src/gs-app-context-bar.c:695
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:406
+#: src/gs-app-context-bar.c:442
 msgid "Safe"
 msgstr "Қауіпсіз"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:413
+#: src/gs-app-context-bar.c:449
 msgid "Potentially Unsafe"
 msgstr "Ықтимал қауіпсіз"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:420
+#: src/gs-app-context-bar.c:456
 msgid "Unsafe"
 msgstr "Қауіпсіз емес"
 
-#: src/gs-app-context-bar.c:499 src/gs-app-context-bar.c:531
-#: src/gs-hardware-support-context-dialog.c:587
+#: src/gs-app-context-bar.c:535 src/gs-app-context-bar.c:567
+#: src/gs-hardware-support-context-dialog.c:588
 msgid "Mobile Only"
 msgstr "Тек мобильді"
 
-#: src/gs-app-context-bar.c:500
+#: src/gs-app-context-bar.c:536
 msgid "Only works on a small screen"
 msgstr "Тек кішкентай экранда жұмыс істейді"
 
-#: src/gs-app-context-bar.c:505 src/gs-app-context-bar.c:538
-#: src/gs-app-context-bar.c:545 src/gs-app-context-bar.c:585
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:567
+#: src/gs-app-context-bar.c:541 src/gs-app-context-bar.c:574
+#: src/gs-app-context-bar.c:581 src/gs-app-context-bar.c:621
+#: src/gs-app-context-bar.c:626 src/gs-hardware-support-context-dialog.c:568
 msgid "Desktop Only"
 msgstr "Тек жұмыс үстелі"
 
-#: src/gs-app-context-bar.c:506
+#: src/gs-app-context-bar.c:542
 msgid "Only works on a large screen"
 msgstr "Тек үлкен экранда жұмыс істейді"
 
-#: src/gs-app-context-bar.c:510 src/gs-hardware-support-context-dialog.c:605
+#: src/gs-app-context-bar.c:546 src/gs-hardware-support-context-dialog.c:606
 msgid "Screen Size Mismatch"
 msgstr "Экран өлшемінің сәйкес келмеуі"
 
-#: src/gs-app-context-bar.c:511 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:547 src/gs-hardware-support-context-dialog.c:607
 msgid "Doesn’t support your current screen size"
 msgstr "Ағымдағы экран өлшеміңізді қолдамайды"
 
-#: src/gs-app-context-bar.c:532 src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:659
+#: src/gs-hardware-support-context-dialog.c:665
 msgid "Requires a touchscreen"
 msgstr "Сенсорлы экран қажет"
 
-#: src/gs-app-context-bar.c:539 src/gs-hardware-support-context-dialog.c:618
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-app-context-bar.c:575 src/gs-hardware-support-context-dialog.c:619
+#: src/gs-hardware-support-context-dialog.c:625
 msgid "Requires a keyboard"
 msgstr "Пернетақтаны қажет етеді"
 
-#: src/gs-app-context-bar.c:546
+#: src/gs-app-context-bar.c:582
 msgid "Requires a mouse"
 msgstr "Тышқанды қажет етеді"
 
-#: src/gs-app-context-bar.c:557
+#: src/gs-app-context-bar.c:593
 msgid "Gamepad Needed"
 msgstr "Джойстик керек"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:594
 msgid "Requires a gamepad to play"
 msgstr "Ойнау үшін джойстик керек"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:572
+#: src/gs-app-context-bar.c:608
 msgid "Adaptive"
 msgstr "Адаптивті"
 
-#: src/gs-app-context-bar.c:573
+#: src/gs-app-context-bar.c:609
 msgid "Works on phones, tablets and desktops"
 msgstr "Телефондар, планшеттер және жұмыс үстелдерінде жұмыс істейді"
 
-#: src/gs-app-context-bar.c:586
+#: src/gs-app-context-bar.c:622
 msgid "Probably requires a keyboard or mouse"
 msgstr "Пернетақта немесе тышқанды қажет етуі мүмкін"
 
-#: src/gs-app-context-bar.c:591
+#: src/gs-app-context-bar.c:627
 msgid "Works on desktops and laptops"
 msgstr "Жұмыс үстелдер мен ноутбуктерде жұмыс істейді"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:634
+#: src/gs-app-context-bar.c:670
 msgid "Contains no age-inappropriate content"
 msgstr "Жасына сәйкес келмейтін мазмұн жоқ"
 
-#: src/gs-app-context-bar.c:683
+#: src/gs-app-context-bar.c:719
 msgid "No age rating information available"
 msgstr "Жас рейтингі туралы ақпарат жоқ"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:143
+#: src/gs-app-row.c:144
 msgid "Visit Website"
 msgstr "Веб-сайтын шолу"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:149
+#: src/gs-app-row.c:150
 msgid "Install…"
 msgstr "Орнату…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:157 src/gs-updates-section.ui:60
+#: src/gs-app-row.c:158 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "Бас тарту"
 
@@ -1140,13 +1360,13 @@ msgstr "Бас тарту"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:165 src/gs-common.c:297 src/gs-page.c:365
+#: src/gs-app-row.c:166 src/gs-common.c:341 src/gs-page.c:367
 msgid "Install"
 msgstr "Орнату"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:173
+#: src/gs-app-row.c:174
 msgid "Update"
 msgstr "Жаңарту"
 
@@ -1154,31 +1374,31 @@ msgstr "Жаңарту"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:178 src/gs-app-row.c:188 src/gs-details-page.ui:296
-#: src/gs-page.c:523
+#: src/gs-app-row.c:179 src/gs-app-row.c:189 src/gs-details-page.ui:273
+#: src/gs-page.c:526
 msgid "Uninstall"
 msgstr "Өшіру"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:202
+#: src/gs-app-row.c:203
 msgid "Uninstalling"
 msgstr "Өшірілуде"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:312
+#: src/gs-app-row.c:313
 msgid "Device cannot be used during update."
 msgstr "Құрылғыны жаңарту кезінде қолдану мүмкін емес."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:322 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:323 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "Қайнар көзі: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:511
+#: src/gs-app-row.c:509
 #, c-format
 msgid "Renamed from %s"
 msgstr "Бұрынғы %s атынан аты ауыстырылды"
@@ -1204,11 +1424,11 @@ msgstr ""
 "Демек, ол сіздің тіліңізде әлі қолжетімсіз болғанымен, жобаға қатысып, "
 "аударуға көмектесе аласыз."
 
-#: src/gs-app-translation-dialog.ui:9
+#: src/gs-app-translation-dialog.ui:5
 msgid "Translations"
 msgstr "Аудармалар"
 
-#: src/gs-app-translation-dialog.ui:133
+#: src/gs-app-translation-dialog.ui:99
 msgid "_Translation Website"
 msgstr "_Аудармалар веб-сайты"
 
@@ -1218,24 +1438,25 @@ msgstr "_Аудармалар веб-сайты"
 msgid "Login required remote %s (realm %s)"
 msgstr ""
 
-#: src/gs-basic-auth-dialog.ui:10
+#: src/gs-basic-auth-dialog.ui:13
 msgid "Login Required"
 msgstr "Жүйеге кіру қажет"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:311
-#: src/gs-removal-dialog.ui:29 src/gs-review-dialog.ui:22
+#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:667
+#: src/gs-details-page.ui:286 src/gs-removal-dialog.ui:17
+#: src/gs-review-dialog.ui:18
 msgid "_Cancel"
 msgstr "Ба_с тарту"
 
-#: src/gs-basic-auth-dialog.ui:39
+#: src/gs-basic-auth-dialog.ui:35
 msgid "_Login"
 msgstr "_Логин"
 
-#: src/gs-basic-auth-dialog.ui:99
+#: src/gs-basic-auth-dialog.ui:88
 msgid "_User"
 msgstr "Па_йдаланушы"
 
-#: src/gs-basic-auth-dialog.ui:119
+#: src/gs-basic-auth-dialog.ui:107
 msgid "_Password"
 msgstr "_Пароль"
 
@@ -1252,29 +1473,29 @@ msgstr "Ұсынылатын"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:46 src/gs-overview-page.ui:118
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:110
 msgid "Editor’s Choice"
 msgstr "Редактор таңдауы"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:74 src/gs-overview-page.ui:146
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:133
 msgid "New & Updated"
 msgstr "Жаңа және жаңартылған"
 
 #. Heading for the rest of the apps on a category page
-#: src/gs-category-page.ui:102
+#: src/gs-category-page.ui:97
 msgid "Other Software"
 msgstr "Басқа бағд. қамтама"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:193
+#: lib/gs-cmd.c:194
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "1 және %u арасындағы санды енгізіңіз: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:256
+#: lib/gs-cmd.c:258
 msgid "Choose an application:"
 msgstr "Қолданбаны таңдаңыз:"
 
@@ -1672,8 +1893,8 @@ msgstr "Қолданба қолданылуға дайын."
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
 #: src/gs-common.c:146
-msgid "OS updates are now installed"
-msgstr "ОЖ жаңартулары орнатылды"
+msgid "System updates are now installed"
+msgstr "Жүйе жаңартулары орнатылды"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
@@ -1682,22 +1903,21 @@ msgid "Recently installed updates are available to review"
 msgstr "Жуырда орнатылған жаңартулар бағалау үшін қолжетімді"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:168 src/gs-common.c:720
+#: src/gs-common.c:168 src/gs-common.c:830
 msgid "Restart"
 msgstr "Қайта қосу"
 
-#. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:172
+#: src/gs-common.c:174
 msgid "Launch"
 msgstr "Жөнелту"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:231
+#: src/gs-common.c:275
 msgid "Install Third-Party Software?"
 msgstr "Үшінші жақты БҚ орнату керек пе?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:235 src/gs-repos-dialog.c:193
+#: src/gs-common.c:279 src/gs-repos-dialog.c:164
 msgid "Enable Third-Party Software Repository?"
 msgstr "Үшінші жақты БҚ көзін іске қосу керек пе?"
 
@@ -1705,7 +1925,7 @@ msgstr "Үшінші жақты БҚ көзін іске қосу керек п�
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:251
+#: src/gs-common.c:295
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1717,106 +1937,111 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:261
+#: src/gs-common.c:305
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s дестесін “%s” ұсынады."
 
-#: src/gs-common.c:270
+#: src/gs-common.c:314
 msgid "This software repository must be enabled to continue installation."
 msgstr "Орнатуды жалғастыру үшін бұл БҚ көзі іске қосылған болуы тиіс."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:280
+#: src/gs-common.c:324
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "%s кейбір елдерде орнату немесе қолдану заңсыз болуы мүмкін."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:286
+#: src/gs-common.c:330
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Бұл кодекті кейбір елдерде орнату немесе қолдану заңсыз болуы мүмкін."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:293
+#: src/gs-common.c:337
 msgid "Don’t Warn Again"
 msgstr "Келесіде ескертпеу"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:302
+#: src/gs-common.c:346
 msgid "Enable and Install"
 msgstr "Іске қосу және орнату"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:494
+#: src/gs-common.c:548
 msgid "Detailed errors from the package manager follow:"
 msgstr "Дестелер басқарушысы ұсынған толығырақ ақпараты бар қателер:"
 
-#: src/gs-common.c:513 src/gs-safety-context-dialog.ui:116
+#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Ақпараты"
 
+#. Translators: an accept button label, in a Cancel/Accept dialog
+#: src/gs-common.c:655
+msgid "_Accept"
+msgstr "Қ_абылдау"
+
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:695
+#: src/gs-common.c:805
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Жаңартулар орнатылды"
 
 #. TRANSLATORS: we've just removed some apps
-#: src/gs-common.c:705
+#: src/gs-common.c:815
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
 msgstr[0] "Қолданба(лар) өшірілді"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:711
+#: src/gs-common.c:821
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Олар іске асуы үшін жүйені қайта қосу керек."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:718
+#: src/gs-common.c:828
 msgid "Not Now"
 msgstr "Қазір емес"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:810
+#: src/gs-common.c:920
 msgid "Just now"
 msgstr "Жаңа ғана"
 
-#: src/gs-common.c:812
+#: src/gs-common.c:922
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d минут бұрын"
 
-#: src/gs-common.c:816
+#: src/gs-common.c:926
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d сағат бұрын"
 
-#: src/gs-common.c:820
+#: src/gs-common.c:930
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d күн бұрын"
 
-#: src/gs-common.c:824
+#: src/gs-common.c:934
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d апта бұрын"
 
-#: src/gs-common.c:828
+#: src/gs-common.c:938
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d ай бұрын"
 
-#: src/gs-common.c:832
+#: src/gs-common.c:942
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -1887,47 +2112,45 @@ msgstr "Қосымша дестелер керек"
 msgid "Find in Software"
 msgstr "Software ішінен табу"
 
-#. Translators: Button to return more application-submitted reviews.
-#: src/gs-description-box.c:64 src/gs-description-box.c:166
-#: src/gs-details-page.ui:966
+#: src/gs-description-box.c:67 src/gs-description-box.c:269
 msgid "_Show More"
 msgstr "_Көбірек көрсету"
 
-#: src/gs-description-box.c:64
+#: src/gs-description-box.c:67
 msgid "_Show Less"
 msgstr "Азырақ көр_сету"
 
-#: src/gs-details-page.c:347
+#: src/gs-details-page.c:333
 msgid "Removing…"
 msgstr "Өшірілуде…"
 
-#: src/gs-details-page.c:357
+#: src/gs-details-page.c:343
 msgid "Requires restart to finish install"
 msgstr "Орнатуды аяқтау үшін қайта іске қосу қажет"
 
-#: src/gs-details-page.c:364
+#: src/gs-details-page.c:350
 msgid "Requires restart to finish remove"
 msgstr "Өшіруді аяқтау үшін қайта іске қосу қажет"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:381
+#: src/gs-details-page.c:367
 msgid "Pending installation…"
 msgstr "Орнату кезекте тұр…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:388
+#: src/gs-details-page.c:374
 msgid "Pending update…"
 msgstr "Жаңарту кезекте…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:404
+#: src/gs-details-page.c:390
 msgid "Preparing…"
 msgstr "Дайындау…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:407
+#: src/gs-details-page.c:393
 msgid "Uninstalling…"
 msgstr "Өшірілуде…"
 
@@ -1935,12 +2158,12 @@ msgstr "Өшірілуде…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:825 src/gs-details-page.c:851
-#: src/gs-details-page.ui:240
+#: src/gs-details-page.c:811 src/gs-details-page.c:837
+#: src/gs-details-page.ui:220 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "Ор_нату"
 
-#: src/gs-details-page.c:841
+#: src/gs-details-page.c:827
 msgid "_Restart"
 msgstr "Қа_йта қосу"
 
@@ -1948,35 +2171,29 @@ msgstr "Қа_йта қосу"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:865
+#: src/gs-details-page.c:851
 msgid "_Install…"
 msgstr "Ор_нату…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1396
+#: src/gs-details-page.c:1385
 msgid "You need internet access to write a review"
 msgstr "Пікірді қалдыру үшін интернетпен байланыс керек"
 
-#: src/gs-details-page.c:1541 src/gs-details-page.c:1557
+#: src/gs-details-page.c:1533 src/gs-details-page.c:1549
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "\"%s\" табу мүмкін емес"
 
-#. TRANSLATORS: This is a title for the app details page,
-#. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2113
-msgid "Loading…"
-msgstr "Жүктелуде…"
-
-#: src/gs-details-page.ui:8
+#: src/gs-details-page.ui:7
 msgid "Details page"
 msgstr "Көбірек ақпарат парағы"
 
-#: src/gs-details-page.ui:40
+#: src/gs-details-page.ui:39
 msgid "Loading application details…"
 msgstr "Қолданба ақпараты жүктелуде…"
 
-#: src/gs-details-page.ui:79
+#: src/gs-details-page.ui:77
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
@@ -1984,42 +2201,32 @@ msgstr ""
 "Бұл бағдарламалық қамтама сіздің тіліңізде қолжетімсіз және АҚШ ағылшын "
 "тілінде болады."
 
-#: src/gs-details-page.ui:87
+#: src/gs-details-page.ui:83
 msgid "Help _Translate"
 msgstr "_Аударуға көмектесу"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:257
+#: src/gs-details-page.ui:236
 msgid "_Open"
 msgstr "_Ашу"
 
-#: src/gs-details-page.ui:270
+#: src/gs-details-page.ui:249 plugins/packagekit/gs-packagekit-task.c:158
 msgid "_Update"
 msgstr "Жаңар_ту"
 
-#: src/gs-details-page.ui:336
+#: src/gs-details-page.ui:311
 msgid "Downloading"
 msgstr "Жүктеп алуда"
 
-#. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:358
-msgid "_Add shortcut"
-msgstr "Жарлықты қо_су"
-
-#. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:374
-msgid "Re_move shortcut"
-msgstr "Жарлықты ө_шіру"
-
-#: src/gs-details-page.ui:466 src/gs-installed-page.ui:120
+#: src/gs-details-page.ui:398 src/gs-installed-page.ui:112
 msgid "Add-ons"
 msgstr "Қосымшалар"
 
-#: src/gs-details-page.ui:478
+#: src/gs-details-page.ui:409
 msgid "Selected add-ons will be installed with the application."
 msgstr "Таңдалған кеңейтулер қолданбамен бірге орнатылады."
 
-#: src/gs-details-page.ui:586
+#: src/gs-details-page.ui:509
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -2027,11 +2234,11 @@ msgstr ""
 "Бұл қолданбаны тек Интернетпен белсенді байланыс болған кезде ғана қолдануға "
 "болады."
 
-#: src/gs-details-page.ui:607
+#: src/gs-details-page.ui:529
 msgid "Software Repository Included"
 msgstr "БҚ қайнар көзі қоса берілді"
 
-#: src/gs-details-page.ui:608
+#: src/gs-details-page.ui:530
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -2039,44 +2246,44 @@ msgstr ""
 "Бұл қолданбада жаңартуларды және басқа да БҚ-қа қатынауды ұсынатын БҚ "
 "репозиторийі бар."
 
-#: src/gs-details-page.ui:626
+#: src/gs-details-page.ui:547
 msgid "No Software Repository Included"
 msgstr "Ешбір БҚ қайнар көзі қоса берілмеді"
 
-#: src/gs-details-page.ui:627
+#: src/gs-details-page.ui:548
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr ""
 "Бұл қолданбада БҚ репозиторийі жоқ. Ол жаңа нұсқаларға жаңартылмайтын болады."
 
-#: src/gs-details-page.ui:646
+#: src/gs-details-page.ui:566
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr "Бұл БҚ сіздің дистрибутивіңізбен ұсынылып тұр, оны алмастырмау керек."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:664
+#: src/gs-details-page.ui:583
 msgid "Software Repository Identified"
 msgstr "БҚ қайнар көзі анықталды"
 
-#: src/gs-details-page.ui:665
+#: src/gs-details-page.ui:584
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr ""
 "Бұл БҚ репозиторийін қосу сізге қосымша БҚ және жаңартуларға қол жеткізеді."
 
-#: src/gs-details-page.ui:666
+#: src/gs-details-page.ui:585
 msgid "Only use software repositories that you trust."
 msgstr "Тек сенімді БҚ қайнар көздерін қолданыңыз."
 
-#: src/gs-details-page.ui:731
+#: src/gs-details-page.ui:650
 msgid "No Metadata"
 msgstr "Метадеректер жоқ"
 
-#: src/gs-details-page.ui:741
+#: src/gs-details-page.ui:659
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2084,60 +2291,54 @@ msgstr ""
 "Бұл бағдарламалық қамтама веб-сайтқа, код қоймасына немесе шығарылым "
 "трекеріне ешқандай сілтемені ұсынбайды."
 
-#: src/gs-details-page.ui:769
+#: src/gs-details-page.ui:687
 msgid "Project _Website"
 msgstr "Жобаның _веб-сайты"
 
-#: src/gs-details-page.ui:795
+#: src/gs-details-page.ui:704
 msgid "_Donate"
 msgstr "Ақ_шалай көмектесу"
 
-#: src/gs-details-page.ui:821
+#: src/gs-details-page.ui:721
 msgid "Contribute _Translations"
 msgstr "_Аудармалармен үлес қосу"
 
-#: src/gs-details-page.ui:847
+#: src/gs-details-page.ui:738
 msgid "_Report an Issue"
 msgstr "Мәселені хаба_рлау"
 
-#: src/gs-details-page.ui:873
+#: src/gs-details-page.ui:755
 msgid "_Help"
 msgstr "_Көмек"
 
-#. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:926
-msgid "Reviews"
-msgstr "Пікірлер"
-
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:944
-msgid "_Write a Review"
+#: src/gs-details-page.ui:844
+msgid "_Write Review"
 msgstr "Пікірді _жазу"
 
-#. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
-#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-details-page.ui:1043 src/gs-safety-context-dialog.ui:189
-msgid "Source"
-msgstr "Қайнар көзі"
+#. Translators: Button opening a dialog showing all reviews for an app.
+#: src/gs-details-page.ui:881
+msgid "All Reviews"
+msgstr "Барлық пікірлер"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:226
+#: lib/gs-external-appstream-utils.c:216
 msgid "Downloading extra metadata files…"
 msgstr "Қосымша метадеректер файлдарын жүктеп алу…"
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:143
+#: src/gs-extras-page.c:142
 msgid " and "
 msgstr " және "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:146
+#: src/gs-extras-page.c:145
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:172
+#: src/gs-extras-page.c:171
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -2145,41 +2346,41 @@ msgstr[0] "%s жазуы үшін қолжетерлік қаріптер"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:180
+#: src/gs-extras-page.c:179
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "%s үшін қолжетерлік БҚ"
 
-#: src/gs-extras-page.c:243
+#: src/gs-extras-page.c:242
 msgid "Requested software not found"
 msgstr "Сұралған БҚ табылмады"
 
-#: src/gs-extras-page.c:245
+#: src/gs-extras-page.c:244
 msgid "Failed to find requested software"
 msgstr "Сұралған БҚ табу сәтсіз аяқталды"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:341
+#: src/gs-extras-page.c:344
 #, c-format
 msgid "%s not found"
 msgstr "%s табылмады"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:345
+#: src/gs-extras-page.c:348
 msgid "on the website"
 msgstr "вебсайттан"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:352
+#: src/gs-extras-page.c:355
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "%s файлын ұсынатын бірде-бір қолданба жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:356 src/gs-extras-page.c:367 src/gs-extras-page.c:378
+#: src/gs-extras-page.c:359 src/gs-extras-page.c:370 src/gs-extras-page.c:381
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -2190,21 +2391,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:363 src/gs-extras-page.c:385
+#: src/gs-extras-page.c:366 src/gs-extras-page.c:388
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "%s қолдауы үшін бірде-бір қолданба жоқ."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:374
+#: src/gs-extras-page.c:377
 #, c-format
 msgid "%s is not available."
 msgstr "%s қолжетерсіз."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:389
+#: src/gs-extras-page.c:392
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -2215,14 +2416,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:396
+#: src/gs-extras-page.c:399
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s жазудың қолдауы үшін бірде-бір қаріп жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:400
+#: src/gs-extras-page.c:403
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2233,14 +2434,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:407
+#: src/gs-extras-page.c:410
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s пішімі үшін бірде-бір аддон кодектері жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:411
+#: src/gs-extras-page.c:414
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2251,14 +2452,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:418
+#: src/gs-extras-page.c:421
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s қолдауы үшін бірде-бір Plasma ресурсы жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:422
+#: src/gs-extras-page.c:425
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2269,14 +2470,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:429
+#: src/gs-extras-page.c:432
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s үшін принтер драйверлері жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:433
+#: src/gs-extras-page.c:436
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2286,13 +2487,13 @@ msgstr ""
 "жөнінде %s білуге болады."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:477
+#: src/gs-extras-page.c:482
 msgid "the documentation"
 msgstr "құжаттама"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:483
+#: src/gs-extras-page.c:488
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2301,7 +2502,7 @@ msgid_plural ""
 msgstr[0] "%s сұраған %s табу мүмкін емес. Көбірек білу үшін, %s қараңыз."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:492
+#: src/gs-extras-page.c:497
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2311,21 +2512,21 @@ msgid_plural ""
 "information."
 msgstr[0] "Сіз іздеген %s табу мүмкін емес. Көбірек білу үшін, %s қараңыз."
 
-#: src/gs-extras-page.c:562 src/gs-extras-page.c:618 src/gs-extras-page.c:657
+#: src/gs-extras-page.c:574 src/gs-extras-page.c:630 src/gs-extras-page.c:669
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "Іздеу нәтижелері табылмады: %s"
 
-#: src/gs-extras-page.c:848
+#: src/gs-extras-page.c:860
 #, c-format
 msgid "%s file format"
 msgstr "%s файл пішімі"
 
-#: src/gs-extras-page.c:1223
+#: src/gs-extras-page.c:1235
 msgid "Unable to Find Requested Software"
 msgstr "Сұралған БҚ табу мүмкін емес"
 
-#: src/gs-extras-page.ui:7
+#: src/gs-extras-page.ui:6
 msgid "Codecs page"
 msgstr "Кодектер беті"
 
@@ -2333,257 +2534,235 @@ msgstr "Кодектер беті"
 msgid "Previous"
 msgstr "Алдыңғы"
 
-#: src/gs-featured-carousel.ui:73
+#: src/gs-featured-carousel.ui:66
 msgid "Next"
 msgstr "Келесі"
 
-#: src/gs-featured-carousel.ui:100
+#: src/gs-featured-carousel.ui:83
 msgid "Featured Apps List"
 msgstr "Ұсынылатын қолданбалар тізімі"
 
-#: src/gs-first-run-dialog.ui:10
-msgid "Welcome"
-msgstr "Қош келдіңіз"
-
-#: src/gs-first-run-dialog.ui:27
-msgid "Welcome to Software"
-msgstr "Software қолданбасына қош келдіңіз"
-
-#: src/gs-first-run-dialog.ui:28
-msgid ""
-"Software lets you install all the software you need, all from one place. See "
-"our recommendations, browse the categories, or search for the applications "
-"you want."
-msgstr ""
-"Software қолданбасы өзіңізге керек барлық БҚ-ны бір жерден орнатуға мүмкін "
-"қылады. Біздің ұсыныстарымызды қарап, санаттарды шолыңыз, немесе керек "
-"қолданбаны іздеп көріңіз."
-
-#: src/gs-first-run-dialog.ui:31
-msgid "_Browse Software"
-msgstr "БҚ _шолу"
-
-#: src/gs-hardware-support-context-dialog.c:561
-#: src/gs-hardware-support-context-dialog.c:570
+#: src/gs-hardware-support-context-dialog.c:562
+#: src/gs-hardware-support-context-dialog.c:571
 msgid "Desktop Support"
 msgstr "Жұмыс үстел қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:562
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:563
+#: src/gs-hardware-support-context-dialog.c:572
 msgid "Supports being used on a large screen"
 msgstr "Үлкен экранда қолданылатынын қолдайды"
 
-#: src/gs-hardware-support-context-dialog.c:564
+#: src/gs-hardware-support-context-dialog.c:565
 msgid "Desktop Support Unknown"
 msgstr "Жұмыс үстеліне қолдау көрсету белгісіз"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:566
 msgid "Not enough information to know if large screens are supported"
 msgstr ""
 "Үлкен экрандарға қолдау көрсетіліп жатқанын білу үшін ақпарат жеткіліксіз"
 
-#: src/gs-hardware-support-context-dialog.c:568
+#: src/gs-hardware-support-context-dialog.c:569
 msgid "Requires a large screen"
 msgstr "Үлкен экранды қажет етеді"
 
-#: src/gs-hardware-support-context-dialog.c:573
+#: src/gs-hardware-support-context-dialog.c:574
 msgid "Desktop Not Supported"
 msgstr "Жұмыс үстеліне қолдау әлі көрсетілмейді"
 
-#: src/gs-hardware-support-context-dialog.c:574
+#: src/gs-hardware-support-context-dialog.c:575
 msgid "Cannot be used on a large screen"
 msgstr "Үлкен экранда пайдалану мүмкін емес"
 
-#: src/gs-hardware-support-context-dialog.c:581
-#: src/gs-hardware-support-context-dialog.c:590
+#: src/gs-hardware-support-context-dialog.c:582
+#: src/gs-hardware-support-context-dialog.c:591
 msgid "Mobile Support"
 msgstr "Мобильді қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:583
+#: src/gs-hardware-support-context-dialog.c:592
 msgid "Supports being used on a small screen"
 msgstr "Кішкентай экранда қолданылатынын қолдайды"
 
-#: src/gs-hardware-support-context-dialog.c:584
+#: src/gs-hardware-support-context-dialog.c:585
 msgid "Mobile Support Unknown"
 msgstr "Мобильді қолдау белгісіз"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:586
 msgid "Not enough information to know if small screens are supported"
 msgstr ""
 "Кішкентай экрандарға қолдау көрсетіліп жатқанын білу үшін ақпарат жеткіліксіз"
 
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-hardware-support-context-dialog.c:589
 msgid "Requires a small screen"
 msgstr "Кішкентай экранды қажет етеді"
 
-#: src/gs-hardware-support-context-dialog.c:593
+#: src/gs-hardware-support-context-dialog.c:594
 msgid "Mobile Not Supported"
 msgstr "Мобильді қолдау жоқ"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:595
 msgid "Cannot be used on a small screen"
 msgstr "Кішкентай экранда пайдалану мүмкін емес"
 
-#: src/gs-hardware-support-context-dialog.c:617
-#: src/gs-hardware-support-context-dialog.c:626
+#: src/gs-hardware-support-context-dialog.c:618
+#: src/gs-hardware-support-context-dialog.c:627
 msgid "Keyboard Support"
 msgstr "Пернетақта қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:620
+#: src/gs-hardware-support-context-dialog.c:621
 msgid "Keyboard Support Unknown"
 msgstr "Пернетақтаны қолдау белгісіз"
 
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-hardware-support-context-dialog.c:622
 msgid "Not enough information to know if keyboards are supported"
 msgstr "Пернетақталарға қолдау көрсетілгенін білу үшін ақпарат жеткіліксіз"
 
-#: src/gs-hardware-support-context-dialog.c:623
+#: src/gs-hardware-support-context-dialog.c:624
 msgid "Keyboard Required"
 msgstr "Пернетақта керек"
 
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:628
 msgid "Supports keyboards"
 msgstr "Пернетақталарды қолдайды"
 
-#: src/gs-hardware-support-context-dialog.c:629
+#: src/gs-hardware-support-context-dialog.c:630
 msgid "Keyboard Not Supported"
 msgstr "Пернетақтаға қолдау жоқ"
 
-#: src/gs-hardware-support-context-dialog.c:630
+#: src/gs-hardware-support-context-dialog.c:631
 msgid "Cannot be used with a keyboard"
 msgstr "Пернетақтамен пайдалану мүмкін емес"
 
-#: src/gs-hardware-support-context-dialog.c:637
-#: src/gs-hardware-support-context-dialog.c:646
+#: src/gs-hardware-support-context-dialog.c:638
+#: src/gs-hardware-support-context-dialog.c:647
 msgid "Mouse Support"
 msgstr "Тышқан қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:639
+#: src/gs-hardware-support-context-dialog.c:645
 msgid "Requires a mouse or pointing device"
 msgstr "Тышқан немесе нұсқағыш құрылғыны қажет етеді"
 
-#: src/gs-hardware-support-context-dialog.c:640
+#: src/gs-hardware-support-context-dialog.c:641
 msgid "Mouse Support Unknown"
 msgstr "Тышқанды қолдау белгісіз"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:642
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr ""
 "Тышқан немесе көрсету құрылғыларының қолдауы бар-жоқ екенін білу үшін "
 "ақпарат жеткіліксіз"
 
-#: src/gs-hardware-support-context-dialog.c:643
+#: src/gs-hardware-support-context-dialog.c:644
 msgid "Mouse Required"
 msgstr "Тышқан керек"
 
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:648
 msgid "Supports mice and pointing devices"
 msgstr "Тышқандар мен көрсету құрылғыларын қолдайды"
 
-#: src/gs-hardware-support-context-dialog.c:649
+#: src/gs-hardware-support-context-dialog.c:650
 msgid "Mouse Not Supported"
 msgstr "Тышқанға қолдау жоқ"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:651
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "Тышқан немесе нұсқағыш құрылғыны пайдалану мүмкін емес"
 
-#: src/gs-hardware-support-context-dialog.c:657
-#: src/gs-hardware-support-context-dialog.c:666
+#: src/gs-hardware-support-context-dialog.c:658
+#: src/gs-hardware-support-context-dialog.c:667
 msgid "Touchscreen Support"
 msgstr "Сенсорлы экран қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:660
+#: src/gs-hardware-support-context-dialog.c:661
 msgid "Touchscreen Support Unknown"
 msgstr "Сенсорлы экран қолдауы белгісіз"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:662
 msgid "Not enough information to know if touchscreens are supported"
 msgstr "Сенсорлы экрандардың қолдауы бар-жоғын білу үшін ақпарат жеткіліксіз"
 
-#: src/gs-hardware-support-context-dialog.c:663
+#: src/gs-hardware-support-context-dialog.c:664
 msgid "Touchscreen Required"
 msgstr "Сенсорлы экран керек"
 
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:668
 msgid "Supports touchscreens"
 msgstr "Сенсорлы экрандарды қолдайды"
 
-#: src/gs-hardware-support-context-dialog.c:669
+#: src/gs-hardware-support-context-dialog.c:670
 msgid "Touchscreen Not Supported"
 msgstr "Сенсорлы экрандарға қолдау жоқ"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:671
 msgid "Cannot be used with a touchscreen"
 msgstr "Сенсорлы экранмен пайдалану мүмкін емес"
 
-#: src/gs-hardware-support-context-dialog.c:683
+#: src/gs-hardware-support-context-dialog.c:684
 msgid "Gamepad Required"
 msgstr "Джойстик керек"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:685
 msgid "Requires a gamepad"
 msgstr "Ойнау үшін джойстик керек"
 
-#: src/gs-hardware-support-context-dialog.c:686
+#: src/gs-hardware-support-context-dialog.c:687
 msgid "Gamepad Support"
 msgstr "Джойстик қолдауы"
 
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:688
 msgid "Supports gamepads"
 msgstr "Джойстиктерді қолдайды"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:696
+#: src/gs-hardware-support-context-dialog.c:697
 #, c-format
 msgid "%s probably works on this device"
 msgstr "%s осы құрылғыда жұмыс істейтін сияқты"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:703
+#: src/gs-hardware-support-context-dialog.c:704
 #, c-format
 msgid "%s works on this device"
 msgstr "%s осы құрылғыда жұмыс істейді"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:710
+#: src/gs-hardware-support-context-dialog.c:711
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s бұл құрылғыда дұрыс жұмыс істемейді"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:717
+#: src/gs-hardware-support-context-dialog.c:718
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s бұл құрылғыда жұмыс істемейді"
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
-#: src/gs-hardware-support-context-dialog.ui:9
+#: src/gs-hardware-support-context-dialog.ui:5
 msgid "Hardware Support"
 msgstr "Құрылғылық қолдау"
 
-#: src/gs-installed-page.ui:7
+#: src/gs-installed-page.ui:6
 msgid "Installed page"
 msgstr "Орнатылған парағы"
 
-#: src/gs-installed-page.ui:54
+#: src/gs-installed-page.ui:52
 msgid "In Progress"
 msgstr "Орындалуда"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:76 plugins/flatpak/gs-flatpak-utils.c:100
+#: src/gs-installed-page.ui:72 plugins/flatpak/gs-flatpak-utils.c:107
 msgid "Applications"
 msgstr "Қолданбалар"
 
-#: src/gs-installed-page.ui:98
+#: src/gs-installed-page.ui:92
 msgid "System Applications"
 msgstr "Жүйелік қолданбалар"
 
@@ -2615,29 +2794,28 @@ msgid ""
 "development."
 msgstr ""
 
-#: src/gs-license-tile.ui:132
+#: src/gs-license-tile.ui:117
 msgid "_Get Involved"
 msgstr "Қа_тысу"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
+#: src/gs-loading-page.c:56
 msgid "Software catalog is being downloaded"
 msgstr "БҚ каталогы жүктеліп алынуда"
 
-#: src/gs-loading-page.ui:7
+#: src/gs-loading-page.ui:6
 msgid "Loading page"
 msgstr "Бетті жүктеу"
 
-#: src/gs-loading-page.ui:14
+#: src/gs-loading-page.ui:11
 msgid "Starting up…"
 msgstr "Іске қосылу…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-metered-data-dialog.ui:17
-#: src/gs-shell.ui:267
+#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:254
 msgid "Automatic Updates Paused"
 msgstr "Автоматты жаңартулар аялдатылған"
 
-#: src/gs-metered-data-dialog.ui:38
+#: src/gs-metered-data-dialog.ui:9
 msgid ""
 "The current network is metered. Metered connections have data limits or "
 "charges associated with them. To save data, automatic updates have therefore "
@@ -2650,22 +2828,17 @@ msgid ""
 "being metered, this setting can be changed."
 msgstr ""
 
-#: src/gs-metered-data-dialog.ui:53
+#: src/gs-metered-data-dialog.ui:17
 msgid "Open Network _Settings"
 msgstr "Желі ба_птауларын ашу"
 
-#: src/gs-moderate-page.ui:7
+#: src/gs-moderate-page.ui:6
 msgid "Moderate page"
 msgstr "Бетті модерациялау"
 
-#: src/gs-moderate-page.ui:87
+#: src/gs-moderate-page.ui:68
 msgid "There are no reviews to moderate"
 msgstr "Модерациялау үшін пікірлер жоқ"
-
-#. TRANSLATORS: status text when downloading
-#: lib/gs-odrs-provider.c:1266
-msgid "Downloading application ratings…"
-msgstr "Қолданбалар рейтингтерін жүктеп алу…"
 
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
 #: src/gs-origin-popover-row.c:55
@@ -2689,58 +2862,58 @@ msgstr "Арна"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:93
+#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:82
 msgid "Branch"
 msgstr "Бұтақ"
 
-#: src/gs-origin-popover-row.ui:35
+#: src/gs-origin-popover-row.ui:30
 msgid "URL"
 msgstr "URL"
 
 #. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
-#: src/gs-origin-popover-row.ui:64
+#: src/gs-origin-popover-row.ui:56
 msgid "Installation"
 msgstr "Орнату"
 
 #. Translators: The available version of an app
-#: src/gs-origin-popover-row.ui:122
+#: src/gs-origin-popover-row.ui:108
 msgid "Version"
 msgstr "Нұсқасы"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-os-update-page.c:272
+#: src/gs-os-update-page.c:251
 msgid "Additions"
 msgstr "Қосылатындар"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-os-update-page.c:276
+#: src/gs-os-update-page.c:255
 msgid "Removals"
 msgstr "Өшірілетіндер"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:280 src/gs-shell.ui:341 src/gs-updates-page.c:1361
+#: src/gs-os-update-page.c:259 src/gs-shell.ui:326 src/gs-updates-page.c:1340
 msgid "Updates"
 msgstr "Жаңартулар"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-os-update-page.c:284
+#: src/gs-os-update-page.c:263
 msgid "Downgrades"
 msgstr "Нұсқасы төмендетілетіндер"
 
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:706
+#: src/gs-overview-page.c:639
 msgid "selected external sources"
 msgstr "таңдалған сыртқы дереккөздер"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:708
+#: src/gs-overview-page.c:641
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2749,58 +2922,58 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:717 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:650 src/gs-repos-dialog.c:169
 msgid "Enable"
 msgstr "Іске қосу"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:772 src/gs-shell.ui:308
+#: src/gs-overview-page.c:704 src/gs-shell.ui:292
 msgid "Explore"
 msgstr "Шолу"
 
-#: src/gs-overview-page.ui:8
+#: src/gs-overview-page.ui:7
 msgid "Overview page"
 msgstr "Шолу парағы"
 
-#: src/gs-overview-page.ui:40
+#: src/gs-overview-page.ui:39
 msgid "Enable Third Party Software Repositories?"
 msgstr "Үшінші жақты БҚ көздерін іске қосу керек пе?"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:175
+#: src/gs-overview-page.ui:157
 msgid "Other Categories"
 msgstr "Басқа санаттар"
 
-#: src/gs-overview-page.ui:239
+#: src/gs-overview-page.ui:198
 msgid "No Application Data Found"
 msgstr "Қолданба деректері табылмады"
 
-#: lib/gs-plugin-loader.c:3023
+#: lib/gs-plugin-loader.c:2838
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Белгісіз"
 
-#: src/gs-page.c:276
+#: src/gs-page.c:275
 msgid "User declined installation"
 msgstr "Пайдаланушы орнатудан бас тартты"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:356
+#: src/gs-page.c:358
 #, c-format
 msgid "Prepare %s"
 msgstr "%s дайындау"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:492
+#: src/gs-page.c:495
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "%s репозиторийін өшіруді шынымен қалайсыз ба?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:496
+#: src/gs-page.c:499
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -2811,13 +2984,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:504
+#: src/gs-page.c:507
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "%s өшіруді шынымен қалайсыз ба?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:507
+#: src/gs-page.c:510
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -2825,16 +2998,11 @@ msgstr ""
 "%s өшіріледі, және оны қолданғыңыз келсе, сізге оны қайтадан орнату керек "
 "болады."
 
-#. Translators: This is the accessibility label for a screenshot.
-#: src/gs-picture.c:391
-msgid "Picture"
-msgstr "Сурет"
-
 #: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
 msgstr "Жаңарту баптаулары"
 
-#: src/gs-prefs-dialog.ui:18
+#: src/gs-prefs-dialog.ui:16
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
@@ -2842,115 +3010,116 @@ msgstr ""
 "Шығындар және желі тежелуін болдырмау үшін, автожаңартулар мобильді немесе "
 "өлшенетін байланыста сөндірілген болады."
 
-#: src/gs-prefs-dialog.ui:22
+#: src/gs-prefs-dialog.ui:19
 msgid "Automatic Updates"
 msgstr "Автоматты жаңартулар"
 
-#: src/gs-prefs-dialog.ui:23
+#: src/gs-prefs-dialog.ui:20
 msgid ""
 "Downloads and installs software updates in the background, when possible."
 msgstr ""
 
-#: src/gs-prefs-dialog.ui:37
+#: src/gs-prefs-dialog.ui:32
 msgid "Automatic Update Notifications"
 msgstr "Автожаңарту ескертулері"
 
-#: src/gs-prefs-dialog.ui:38
+#: src/gs-prefs-dialog.ui:33
 msgid "Show notifications when updates have been automatically installed."
 msgstr "Жаңартулар автоорнатылған кезде ескертулерді көрсету."
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:110
+#: src/gs-removal-dialog.c:89
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
 
-#: src/gs-removal-dialog.ui:23
+#: src/gs-removal-dialog.ui:4
 msgid "Incompatible Software"
 msgstr "Үйлесімсіз БҚ"
 
-#: src/gs-removal-dialog.ui:36
+#: src/gs-removal-dialog.ui:23
 msgid "_Continue"
 msgstr "Жалға_стыру"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:265
+#: src/gs-repos-dialog.c:236
 #, c-format
-msgid "Software that has been installed from “%s” will cease receive updates."
+msgid ""
+"Software that has been installed from “%s” will cease to receive updates."
 msgstr ""
 
-#: src/gs-repos-dialog.c:274
+#: src/gs-repos-dialog.c:245
 msgid "Disable Repository?"
 msgstr "Репозиторийді сөндіру керек пе?"
 
-#: src/gs-repos-dialog.c:274
+#: src/gs-repos-dialog.c:245
 msgid "Remove Repository?"
 msgstr "Репозиторийді өшіру керек пе?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:280
+#: src/gs-repos-dialog.c:251
 msgid "_Disable"
 msgstr "Сөн_діру"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:283
+#: src/gs-repos-dialog.c:254
 msgid "_Remove"
 msgstr "Ө_шіру"
 
-#: src/gs-repos-dialog.c:597
+#: src/gs-repos-dialog.c:503
 msgid "Enable New Repositories"
 msgstr "Жаңа репозиторийлерді іске қосу"
 
-#: src/gs-repos-dialog.c:598
+#: src/gs-repos-dialog.c:504
 msgid "Turn on new repositories when they are added."
 msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:607
+#: src/gs-repos-dialog.c:513
 msgid "more information"
 msgstr "қосымша ақпарат"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:612
+#: src/gs-repos-dialog.c:518
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Таңдалған үшінші жақты ұсынушыларынан қосымша БҚ репозиторийлер — %s."
 
-#: src/gs-repos-dialog.c:617
+#: src/gs-repos-dialog.c:523
 msgid "Fedora Third Party Repositories"
 msgstr "Үшінші жақты Fedora репозиторийлері"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:823
+#: src/gs-repos-dialog.c:665
 msgid "the operating system"
 msgstr "операциялық жүйе"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:880
+#: src/gs-repos-dialog.c:723
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
 
 #. button in the info bar
-#: src/gs-repos-dialog.ui:10 src/gs-shell.ui:77 src/gs-update-dialog.ui:10
+#: src/gs-repos-dialog.ui:8 src/gs-shell.ui:88
 msgid "Software Repositories"
 msgstr "БҚ қайнар көздері"
 
-#: src/gs-repos-dialog.ui:50
+#: src/gs-repos-dialog.ui:53
 msgid "No Repositories"
 msgstr "Репозиторийлер жоқ"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repo-row.c:155
+#: src/gs-repo-row.c:160
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2958,7 +3127,7 @@ msgstr[0] "%u қолданба орнатылды"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repo-row.c:162
+#: src/gs-repo-row.c:167
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2967,7 +3136,7 @@ msgstr[0] "%u қосымша орнатылды"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repo-row.c:170
+#: src/gs-repo-row.c:175
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2976,7 +3145,7 @@ msgstr[0] "%u қолданба"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repo-row.c:176
+#: src/gs-repo-row.c:181
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2986,7 +3155,7 @@ msgstr[0] "%u қосымша"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repo-row.c:183
+#: src/gs-repo-row.c:188
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2994,7 +3163,7 @@ msgstr[0] "%s және %s орнатылды"
 
 #. Translators: The first '%s' is replaced with a text like '10 applications installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:232
+#: src/gs-repo-row.c:237
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
@@ -3002,61 +3171,61 @@ msgstr "%s • %s"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: src/gs-review-dialog.c:82
+#: src/gs-review-dialog.c:78
 msgid "Hate it"
 msgstr "Жек көремін"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: src/gs-review-dialog.c:86
+#: src/gs-review-dialog.c:82
 msgid "Don’t like it"
 msgstr "Ұнатпаймын"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: src/gs-review-dialog.c:90
+#: src/gs-review-dialog.c:86
 msgid "It’s OK"
 msgstr "Жарайды"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: src/gs-review-dialog.c:94
+#: src/gs-review-dialog.c:90
 msgid "Like it"
 msgstr "Ұнатамын"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: src/gs-review-dialog.c:98
+#: src/gs-review-dialog.c:94
 msgid "Love it"
 msgstr "Тамаша"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:120
+#: src/gs-review-dialog.c:118
 msgid "Please take more time writing the review"
 msgstr "Пікірді жазу үшін көбірек уақыт жұмсаңыз"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:124
+#: src/gs-review-dialog.c:122
 msgid "Please choose a star rating"
 msgstr "Жұлдызшалы рейтингті таңдаңыз"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:128
+#: src/gs-review-dialog.c:126
 msgid "The summary is too short"
 msgstr "Қорытындысы тым қысқа"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:132
+#: src/gs-review-dialog.c:130
 msgid "The summary is too long"
 msgstr "Қорытындысы тым ұзын"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:136
+#: src/gs-review-dialog.c:134
 msgid "The description is too short"
 msgstr "Сипаттамасы тым қысқа"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:140
+#: src/gs-review-dialog.c:138
 msgid "The description is too long"
 msgstr "Сипаттамасы тым ұзын"
 
@@ -3066,58 +3235,65 @@ msgid "Post Review"
 msgstr "Пікірді жариялау"
 
 #. Translators: A button to publish the user's opinion about the app.
-#: src/gs-review-dialog.ui:34
+#: src/gs-review-dialog.ui:26
 msgid "_Post"
 msgstr "_Жариялау"
 
-#: src/gs-review-dialog.ui:74
+#: src/gs-review-dialog.ui:56
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: src/gs-review-dialog.ui:110
+#: src/gs-review-dialog.ui:88
 msgid "Summary"
 msgstr "Қорытынды"
 
-#: src/gs-review-dialog.ui:120
+#: src/gs-review-dialog.ui:97
 msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:145
+#: src/gs-review-dialog.ui:119
 msgctxt "app review"
 msgid "Review"
 msgstr "Пікір"
 
-#: src/gs-review-dialog.ui:155
+#: src/gs-review-dialog.ui:128
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr ""
 
-#: src/gs-review-dialog.ui:187
+#: src/gs-review-dialog.ui:156
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>."
+"\">privacy policy</a>. The full name attached to your account will be shown "
+"publicly."
 msgstr ""
 
-#: src/gs-review-histogram.ui:100
+#: src/gs-review-histogram.c:73
+#, c-format
+msgid "%u review total"
+msgid_plural "%u reviews total"
+msgstr[0] "%u пікір"
+
+#: src/gs-review-histogram.ui:92
 msgid "out of 5 stars"
 msgstr "5 жұлдыздың ішінен"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:58
+#: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:223
+#: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Әдепсіз, дөрекілік немесе кемсітушілік пікірлер туралы хабарлауға болады."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:228
+#: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3126,197 +3302,199 @@ msgstr "Хабарланғаннан кейін пікір әкімші текс
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:242
+#: src/gs-review-row.c:239
 msgid "Report Review?"
 msgstr "Пікірге шағым жазу керек пе?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:246
+#: src/gs-review-row.c:243
 msgid "Report"
 msgstr "Шағым жіберу"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:89
+#: src/gs-review-row.ui:80
 msgid "Was this review useful to you?"
 msgstr "Бұл пікір сізге пайдалы болды ма?"
 
-#: src/gs-review-row.ui:106
+#: src/gs-review-row.ui:96
 msgid "Yes"
 msgstr "Иә"
 
-#: src/gs-review-row.ui:115
+#: src/gs-review-row.ui:104
 msgid "No"
 msgstr "Жоқ"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:124
+#: src/gs-review-row.ui:112
 msgid "Meh"
 msgstr ""
 
-#: src/gs-review-row.ui:135
+#: src/gs-review-row.ui:122
 msgid "Report…"
 msgstr "Шағым жіберу…"
 
-#: src/gs-review-row.ui:148
+#: src/gs-review-row.ui:131
 msgid "Remove…"
 msgstr "Өшіру…"
 
-#: src/gs-safety-context-dialog.c:133
-msgid "Unknown Permissions"
-msgstr "Рұқсаттар белгісіз"
+#: src/gs-safety-context-dialog.c:141
+msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+msgstr ""
 
-#: src/gs-safety-context-dialog.c:134
-msgid "The permissions needed by this app aren’t known"
-msgstr "Бұл бағдарламаға қажетті рұқсаттар белгісіз"
+#: src/gs-safety-context-dialog.c:144
+msgid ""
+"Application isn’t sandboxed but the distribution has checked that it is not "
+"malicious"
+msgstr ""
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:143
+#: src/gs-safety-context-dialog.c:151
 msgid "No Permissions"
 msgstr "Рұқсаттар жоқ"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:152
 msgid "App is fully sandboxed"
 msgstr "Қолданба толығымен құмсалғышта жасайды"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:155
+#: src/gs-safety-context-dialog.c:163
 msgid "Network Access"
 msgstr "Желіге қатынау"
 
-#: src/gs-safety-context-dialog.c:156
+#: src/gs-safety-context-dialog.c:164
 msgid "Can access the internet"
 msgstr "Интернетке қатынай алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:159
+#: src/gs-safety-context-dialog.c:167
 msgid "No Network Access"
 msgstr "Желіге қатынау жоқ"
 
-#: src/gs-safety-context-dialog.c:160
+#: src/gs-safety-context-dialog.c:168
 msgid "Cannot access the internet"
 msgstr "Интернетке қатынай алмайды"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:166
+#: src/gs-safety-context-dialog.c:174
 msgid "Uses System Services"
 msgstr "Жүйелік қызметтерді пайдаланады"
 
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:175
 msgid "Can request data from system services"
 msgstr "Жүйелік қызметтерден деректерді сұрай алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:182
 msgid "Uses Session Services"
 msgstr "Пайдаланушы сессия қызметтері"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:183
 msgid "Can request data from session services"
 msgstr "Сеанс қызметтерінен деректерді сұрай алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:190
 msgid "Device Access"
 msgstr "Құрылғыларға қатынау"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:191
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Веб-камера немесе ойын контроллері сияқты құрылғыларға қатынай алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:186
+#: src/gs-safety-context-dialog.c:194
 msgid "No Device Access"
 msgstr "Құрылғыларға қатынау мүмкіндігі жоқ"
 
-#: src/gs-safety-context-dialog.c:187
+#: src/gs-safety-context-dialog.c:195
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "Веб-камера немесе ойын контроллері сияқты құрылғыларға қатынай алмайды"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:193
+#: src/gs-safety-context-dialog.c:201
 msgid "Legacy Windowing System"
 msgstr "Бұрыңғы терезелер жүйесі"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:209
 msgid "Arbitrary Permissions"
 msgstr "Еркін рұқсаттар"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:217
 msgid "User Settings"
 msgstr "Пайдаланушы баптаулары"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:221
+#: src/gs-safety-context-dialog.c:229
 msgid "Full File System Read/Write Access"
 msgstr "Файлдық жүйесіне толық оқу/жазу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:222
+#: src/gs-safety-context-dialog.c:230
 msgid "Can read and write all data on the file system"
 msgstr "Файл жүйесінде барлық деректерді оқи және жаза алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:238
 msgid "Home Folder Read/Write Access"
 msgstr "Үй бумасына оқу/жазу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:231
+#: src/gs-safety-context-dialog.c:239
 msgid "Can read and write all data in your home directory"
 msgstr "Үй бумаңызда барлық деректерді оқи және жаза алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:247
 msgid "Full File System Read Access"
 msgstr "Файлдық жүйесіне толық оқу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:240
+#: src/gs-safety-context-dialog.c:248
 msgid "Can read all data on the file system"
 msgstr "Файл жүйесінде барлық деректерді оқи алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:249
+#: src/gs-safety-context-dialog.c:257
 msgid "Home Folder Read Access"
 msgstr "Үй бумасына оқу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:250
+#: src/gs-safety-context-dialog.c:258
 msgid "Can read all data in your home directory"
 msgstr "Үй бумаңызда барлық деректерді оқи алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:259
+#: src/gs-safety-context-dialog.c:267
 msgid "Download Folder Read/Write Access"
 msgstr "Жүктемелер бумасына оқу/жазу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:260
+#: src/gs-safety-context-dialog.c:268
 msgid "Can read and write all data in your downloads directory"
 msgstr "Жүктемелер бумаңызда барлық деректерді оқи және жаза алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:271
+#: src/gs-safety-context-dialog.c:279
 msgid "Download Folder Read Access"
 msgstr "Жүктемелер бумасына оқу рұқсаты"
 
-#: src/gs-safety-context-dialog.c:272
+#: src/gs-safety-context-dialog.c:280
 msgid "Can read all data in your downloads directory"
 msgstr "Жүктемелер бумаңызда барлық деректерді оқи алады"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:285
+#: src/gs-safety-context-dialog.c:293
 msgid "No File System Access"
 msgstr "Файл жүйесіне қатынау жоқ"
 
-#: src/gs-safety-context-dialog.c:286
+#: src/gs-safety-context-dialog.c:294
 msgid "Cannot access the file system at all"
 msgstr "Файл жүйесіне мүлдем қатынай алмайды"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:300
+#: src/gs-safety-context-dialog.c:308
 msgid "Proprietary Code"
 msgstr "Проприетарлы код"
 
-#: src/gs-safety-context-dialog.c:301
+#: src/gs-safety-context-dialog.c:309
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3325,11 +3503,11 @@ msgstr ""
 "қауіпсіз емес болуы мүмкін"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:304
+#: src/gs-safety-context-dialog.c:312
 msgid "Auditable Code"
 msgstr "Тексерілетін код"
 
-#: src/gs-safety-context-dialog.c:305
+#: src/gs-safety-context-dialog.c:313
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3337,121 +3515,131 @@ msgstr ""
 "Бастапқы код ашық болып табылады және тәуелсіз аудиттен өтуі мүмкін, бұл "
 "қолданбаның қауіпсіз болуына көбірек мүмкін етеді"
 
-#. Translators: This indicates an app comes from the distribution’s main repositories, so can be trusted.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:315
-msgid "App comes from a trusted source"
-msgstr "Бағдарлама сенімді көзден келеді"
-
-#: src/gs-safety-context-dialog.c:316
-msgid "Your distribution has verified that this app can be trusted"
-msgstr "Дистрибутивіңіз осы бағдарламаға сенуге болатынын тексерді"
-
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:321
 msgid "App developer is verified"
 msgstr "Бағдарламаны әзірлеуші тексерілді"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:322
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Осы бағдарламаны әзірлеуші олардың кім екеніне тексерілді"
 
+#. Translators: This indicates an app uses an outdated SDK.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-safety-context-dialog.c:333
+msgid "Insecure Dependencies"
+msgstr "Қауіпсіз емес тәуелділіктер"
+
+#: src/gs-safety-context-dialog.c:334
+msgid ""
+"Software or its dependencies are no longer supported and may be insecure"
+msgstr ""
+
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:343
 #, c-format
 msgid "%s is safe"
 msgstr "%s қауіпсіз"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:342
+#: src/gs-safety-context-dialog.c:350
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s қауiпсiз емес болуы мүмкін"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:349
+#: src/gs-safety-context-dialog.c:357
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s қауiпсiз еме"
 
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
-#: src/gs-safety-context-dialog.ui:9
+#: src/gs-safety-context-dialog.ui:5
 msgid "Safety"
 msgstr "Қауіпсіздік"
 
-#: src/gs-safety-context-dialog.ui:146
+#: src/gs-safety-context-dialog.ui:108
 msgid "License"
 msgstr "Лицензиясы"
 
-#: src/gs-safety-context-dialog.ui:232
+#. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
+#: src/gs-safety-context-dialog.ui:148
+msgid "Source"
+msgstr "Қайнар көзі"
+
+#: src/gs-safety-context-dialog.ui:188
 msgid "SDK"
 msgstr "SDK"
 
+#: src/gs-safety-context-dialog.ui:212
+msgid "Outdated SDK version"
+msgstr "Ескірген SDK нұсқасы"
+
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
-#: src/gs-screenshot-carousel.ui:38
+#: src/gs-screenshot-carousel.ui:46
 msgid "Previous Screenshot"
 msgstr "Алдыңғы скриншот"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
-#: src/gs-screenshot-carousel.ui:75
+#: src/gs-screenshot-carousel.ui:74
 msgid "Next Screenshot"
 msgstr "Келесі скриншот"
 
-#: src/gs-screenshot-carousel.ui:142
+#: src/gs-screenshot-carousel.ui:127
 msgid "No screenshot provided"
 msgstr "Скриншот жоқ"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:345
+#: src/gs-screenshot-image.c:336 src/gs-screenshot-image.c:393
 msgid "Screenshot not found"
 msgstr "Скриншот табылмады"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:362
+#: src/gs-screenshot-image.c:412
 msgid "Failed to load image"
 msgstr "Бейнені жүктеу сәтсіз аяқталды"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:504
+#: src/gs-screenshot-image.c:563
 msgid "Screenshot size not found"
 msgstr "Скриншот өлшемі табылмады"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:585
+#: src/gs-screenshot-image.c:644
 msgid "Could not create cache"
 msgstr "Кэшті жасау мүмкін емес"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:595
+#: src/gs-screenshot-image.c:658
 msgid "Screenshot not valid"
 msgstr "Скриншот жарамсыз"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:615
+#: src/gs-screenshot-image.c:690
 msgid "Screenshot not available"
 msgstr "Скриншот қолжетерсіз"
 
-#: src/gs-screenshot-image.c:694
+#: src/gs-screenshot-image.ui:6
 msgid "Screenshot"
 msgstr "Скриншот"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:172
+#: src/gs-search-page.c:170
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
 msgstr[0] "тағы %u сәйкестік"
 
-#: src/gs-search-page.ui:7
+#: src/gs-search-page.ui:6
 msgid "Search page"
 msgstr "Іздеу парағы"
 
@@ -3459,7 +3647,7 @@ msgstr "Іздеу парағы"
 msgid "Search for Apps"
 msgstr "Қолданбаларды іздеу"
 
-#: src/gs-search-page.ui:39
+#: src/gs-search-page.ui:43
 msgid "No Application Found"
 msgstr "Қолданбалар табылмады"
 
@@ -3471,33 +3659,41 @@ msgstr "Қолданбалар табылмады"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1151 src/gs-shell.c:1156 src/gs-shell.c:1171
-#: src/gs-shell.c:1175
+#: src/gs-shell.c:1197 src/gs-shell.c:1202 src/gs-shell.c:1217
+#: src/gs-shell.c:1221
 #, c-format
 msgid "“%s”"
 msgstr "\"%s\""
 
+#. Translators: The '%s' is replaced with an error message, which had been shortened.
+#. The dots at the end are there to highlight that to the user.
+#: src/gs-shell.c:1238
+#, c-format
+#| msgid "“%s”"
+msgid "%s…"
+msgstr "%s…"
+
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1221
+#: src/gs-shell.c:1274
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "%s адресінен бинарлық кодтар жаңартуларын жүктеп алу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1227
+#: src/gs-shell.c:1280
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "%s адресінен жаңартуларды жүктеп алу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1234 src/gs-shell.c:1279
+#: src/gs-shell.c:1287 src/gs-shell.c:1332
 msgid "Unable to download updates"
 msgstr "Жаңартуларды жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1240
+#: src/gs-shell.c:1293
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -3506,48 +3702,48 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1249
+#: src/gs-shell.c:1302
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "%s адресінен жаңартуларды жүктеп алу мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1254
+#: src/gs-shell.c:1307
 msgid "Unable to download updates: not enough disk space"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1261
+#: src/gs-shell.c:1314
 msgid "Unable to download updates: authentication was required"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1266
+#: src/gs-shell.c:1319
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1271
+#: src/gs-shell.c:1324
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1282
+#: src/gs-shell.c:1335
 msgid "Unable to get list of updates"
 msgstr "Жаңартулар тізімін алу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1324
+#: src/gs-shell.c:1377
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "%s орнату мүмкін емес, өйткені %s адресінен жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1330
+#: src/gs-shell.c:1383
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "%s орнату мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
@@ -3556,72 +3752,72 @@ msgstr "%s орнату мүмкін емес, өйткені жүктеп ал�
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1343
+#: src/gs-shell.c:1396
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "%s орнату мүмкін емес, өйткені %s орындалу ортасы қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1349
+#: src/gs-shell.c:1402
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "%s қолдауы жоқ ретінде орнату мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1356
+#: src/gs-shell.c:1409
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Орнату мүмкін емес: интернетке байланыс керек, бірақ, ол қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1362
+#: src/gs-shell.c:1415
 msgid "Unable to install: the application has an invalid format"
 msgstr "Орнату мүмкін емес: қолданба пішімі қате"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1367
+#: src/gs-shell.c:1420
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "%s орнату мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "%s орнату мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1381
+#: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "%s орнату мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1388
+#: src/gs-shell.c:1441
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "%s орнату мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1396
+#: src/gs-shell.c:1449
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "%s орнату мүмкін емес: эл. қорегіне қосылу керек"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1403
+#: src/gs-shell.c:1456
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "%s орнату мүмкін емес: батарея деңгейі тым төмен"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1412
+#: src/gs-shell.c:1465
 #, c-format
 msgid "Unable to install %s"
 msgstr "%s орнату мүмкін емес"
@@ -3630,7 +3826,7 @@ msgstr "%s орнату мүмкін емес"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1458
+#: src/gs-shell.c:1511
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr ""
@@ -3638,7 +3834,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1465
+#: src/gs-shell.c:1518
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "%s жаңарту мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
@@ -3646,7 +3842,7 @@ msgstr "%s жаңарту мүмкін емес, өйткені жүктеп а�
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1472
+#: src/gs-shell.c:1525
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr ""
@@ -3654,64 +3850,64 @@ msgstr ""
 "аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1476
+#: src/gs-shell.c:1529
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Жаңартуларды орнату мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1482
+#: src/gs-shell.c:1535
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Жаңарту мүмкін емес: интернетке байланыс керек, бірақ, ол қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1492
+#: src/gs-shell.c:1545
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "%s жаңарту мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1497
+#: src/gs-shell.c:1550
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Жаңартуларды орнату мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1507
+#: src/gs-shell.c:1560
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "%s жаңарту мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1512
+#: src/gs-shell.c:1565
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Жаңартуларды орнату мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1521
+#: src/gs-shell.c:1574
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "%s жаңарту мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1526
+#: src/gs-shell.c:1579
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Жаңартуларды орнату мүмкін емес: аутентификация сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1535
+#: src/gs-shell.c:1588
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "%s жаңарту мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1541
+#: src/gs-shell.c:1594
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3719,41 +3915,41 @@ msgstr "Жаңартуларды орнату мүмкін емес: сізде 
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1551
+#: src/gs-shell.c:1604
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "%s жаңарту мүмкін емес: эл. қорегіне қосылу керек"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1557
+#: src/gs-shell.c:1610
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Жаңартуларды орнату мүмкін емес: Эл. қорегіне қосылуы керек"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1566
+#: src/gs-shell.c:1619
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "%s жаңарту мүмкін емес: батарея деңгейі тым төмен"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1572
+#: src/gs-shell.c:1625
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Жаңартуларды орнату мүмкін емес: батарея деңгейі тым төмен"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1583
+#: src/gs-shell.c:1636
 #, c-format
 msgid "Unable to update %s"
 msgstr "%s жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1586
+#: src/gs-shell.c:1639
 #, c-format
 msgid "Unable to install updates"
 msgstr "Жаңартуларды орнату мүмкін емес"
@@ -3761,21 +3957,21 @@ msgstr "Жаңартуларды орнату мүмкін емес"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1628
+#: src/gs-shell.c:1681
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%s дейін %s өнімін жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1633
+#: src/gs-shell.c:1686
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "%s дейін жаңартылу мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1642
+#: src/gs-shell.c:1695
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3784,91 +3980,91 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "%s дейін жаңарту мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1659
+#: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "%s дейін жаңартылу мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1666
+#: src/gs-shell.c:1719
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "%s дейін жаңартылу мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1673
+#: src/gs-shell.c:1726
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "%s дейін жаңартылу мүмкін емес: сізде жүйені жаңартуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1680
+#: src/gs-shell.c:1733
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "%s дейін жаңартылу мүмкін емес: эл. қорегіне қосылу керек"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1687
+#: src/gs-shell.c:1740
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "%s дейін жаңартылу мүмкін емес: батарея деңгейі тым төмен"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1696
+#: src/gs-shell.c:1749
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "%s дейін жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1733
+#: src/gs-shell.c:1786
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "%s өшіру мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1739
+#: src/gs-shell.c:1792
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "%s өшіру мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1745
+#: src/gs-shell.c:1798
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "%s өшіру мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1752
+#: src/gs-shell.c:1805
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "%s өшіру мүмкін емес: эл. қорегіне қосылу керек"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1759
+#: src/gs-shell.c:1812
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "%s өшіру мүмкін емес: батарея деңгейі тым төмен"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1771
+#: src/gs-shell.c:1824
 #, c-format
 msgid "Unable to remove %s"
 msgstr "%s өшіру мүмкін емес"
@@ -3877,63 +4073,63 @@ msgstr "%s өшіру мүмкін емес"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1813
+#: src/gs-shell.c:1866
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "%s жөнелту мүмкін емес: %s орнатылмаған"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1820 src/gs-shell.c:1871 src/gs-shell.c:1912
-#: src/gs-shell.c:1957
+#: src/gs-shell.c:1873 src/gs-shell.c:1924 src/gs-shell.c:1965
+#: src/gs-shell.c:2010
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Диск орны жетпейді — орынды босатып, қайталап көріңіз"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1831 src/gs-shell.c:1882 src/gs-shell.c:1923
-#: src/gs-shell.c:1981
+#: src/gs-shell.c:1884 src/gs-shell.c:1935 src/gs-shell.c:1976
+#: src/gs-shell.c:2034
 msgid "Sorry, something went wrong"
 msgstr "Кешіріңіз, бірнәрсе қате кетті"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1863
+#: src/gs-shell.c:1916
 msgid "Failed to install file: not supported"
 msgstr "Файлды орнату сәтсіз аяқталды: қолдауы жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1867
+#: src/gs-shell.c:1920
 msgid "Failed to install file: authentication failed"
 msgstr "Файлды орнату сәтсіз аяқталды: аутентификация сәтсіз"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1904
+#: src/gs-shell.c:1957
 msgid "Failed to install: not supported"
 msgstr "Орнату сәтсіз аяқталды: қолдау жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1908
+#: src/gs-shell.c:1961
 msgid "Failed to install: authentication failed"
 msgstr "Орнату сәтсіз аяқталды: аутентификация сәтсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1951
+#: src/gs-shell.c:2004
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s адресіне байланысу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1963
+#: src/gs-shell.c:2016
 msgid "Software needs to be restarted to use new plugins."
 msgstr "Жаңа плагиндерді қолдану үшін БҚ қолданбасын қайта іске қосу керек."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1968
+#: src/gs-shell.c:2021
 msgid "AC power is required"
 msgstr "Эл. қорегіне қосылу керек"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1972
+#: src/gs-shell.c:2025
 msgid "The battery level is too low"
 msgstr "Батареяның деңгейі тым төмен"
 
@@ -3945,41 +4141,37 @@ msgstr "_БҚ қайнар көздері"
 msgid "_Update Preferences"
 msgstr "_Жаңарту баптаулары"
 
-#: src/gs-shell.ui:21 src/org.gnome.Software.desktop.in:3
-msgid "Software"
-msgstr "Бағд. қамтама"
-
 #. button in the info bar
-#: src/gs-shell.ui:86
+#: src/gs-shell.ui:98
 msgid "Examine Disk"
 msgstr "Дискті сынау"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:95 src/gs-updates-page.c:907
+#: src/gs-shell.ui:108 src/gs-updates-page.c:896
 msgid "Network Settings"
 msgstr "Желі баптаулары"
 
 #. button in the info bar
-#: src/gs-shell.ui:104
+#: src/gs-shell.ui:118
 msgid "Restart Now"
 msgstr "Қазір қайта қосу"
 
 #. button in the info bar
-#: src/gs-shell.ui:113
+#: src/gs-shell.ui:128
 msgid "More Information"
 msgstr "Көбірек ақпарат"
 
-#: src/gs-shell.ui:168
+#: src/gs-shell.ui:187
 msgid "Search"
 msgstr "Іздеу"
 
-#: src/gs-shell.ui:197
+#: src/gs-shell.ui:202
 msgid "Primary Menu"
 msgstr "Басты мәзір"
 
-#: src/gs-shell.ui:286
+#: src/gs-shell.ui:272
 msgid "Find Out _More"
 msgstr "Кө_бірек білу"
 
@@ -4028,12 +4220,12 @@ msgid "Shared system components required by this application"
 msgstr "Осы бағдарламаға қажетті ортақ жүйе компоненттері"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
-#: src/gs-storage-context-dialog.ui:9
+#: src/gs-storage-context-dialog.ui:5
 msgid "Storage"
 msgstr "Сақтау орны"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:117
+#: src/gs-storage-context-dialog.ui:79
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
@@ -4041,17 +4233,17 @@ msgstr ""
 "Кэштелген деректерді <a href=\"dummy\">қолд_анба параметрлерінен тазартуға</"
 "a>болады."
 
-#: src/gs-summary-tile.c:74
+#: src/gs-summary-tile.c:72
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Орнатылған)"
 
-#: src/gs-summary-tile.c:79
+#: src/gs-summary-tile.c:77
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Орнатылуда)"
 
-#: src/gs-summary-tile.c:84
+#: src/gs-summary-tile.c:82
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Өшірілуде)"
@@ -4060,106 +4252,106 @@ msgstr "%s (Өшірілуде)"
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:122
+#: src/gs-update-dialog.c:127
 #, c-format
 msgid "Installed on %s"
 msgstr "Орнатылған %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:142
+#: src/gs-update-dialog.c:146
 msgid "Installed Updates"
 msgstr "Орнатылған жаңартулар"
 
-#: src/gs-update-dialog.ui:70
+#: src/gs-update-dialog.ui:74
 msgid "No updates have been installed on this system."
 msgstr "Бұл жүйеде ешбір жаңарту орнатылмаған."
 
-#: src/gs-update-monitor.c:210
+#: src/gs-update-monitor.c:203
 msgid "Software Updates Are Out of Date"
 msgstr "БҚ жаңартулары ескірген"
 
-#: src/gs-update-monitor.c:211
+#: src/gs-update-monitor.c:204
 msgid "Please check for software updates."
 msgstr "БҚ жаңартуларын тексеріңіз."
 
-#: src/gs-update-monitor.c:217
+#: src/gs-update-monitor.c:210
 msgid "Critical Software Update Ready to Install"
 msgstr "Критикалық БҚ жаңартулары орнатылуға дайын"
 
-#: src/gs-update-monitor.c:218
+#: src/gs-update-monitor.c:211
 msgid "An important software update is ready to be installed."
 msgstr "Маңызды БҚ жаңартуы орнатуға дайын."
 
-#: src/gs-update-monitor.c:221
+#: src/gs-update-monitor.c:214
 msgid "Critical Software Updates Available to Download"
 msgstr "Маңызды БҚ жаңартулары жүктелуге қолжетімді"
 
-#: src/gs-update-monitor.c:222
+#: src/gs-update-monitor.c:215
 msgid "Important: critical software updates are waiting."
 msgstr "Маңызды: критикалық БҚ жаңартулары күтуде."
 
-#: src/gs-update-monitor.c:230
+#: src/gs-update-monitor.c:223
 msgid "Software Updates Ready to Install"
 msgstr "БҚ жаңартулары орнатылуға дайын"
 
-#: src/gs-update-monitor.c:231
+#: src/gs-update-monitor.c:224
 msgid "Software updates are waiting and ready to be installed."
 msgstr "БҚ жаңартуларын орнатуды күтіп отыр және орнатуға дайын."
 
-#: src/gs-update-monitor.c:236
+#: src/gs-update-monitor.c:229
 msgid "Software Updates Available to Download"
 msgstr "БҚ жаңартулары жүктелуге қолжетерлік"
 
-#: src/gs-update-monitor.c:237
+#: src/gs-update-monitor.c:230
 msgid "Please download waiting software updates."
 msgstr "Күтіп тұрған БҚ жаңартуларын жүктеп алыңыз."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:343
+#: src/gs-update-monitor.c:342
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
 msgstr[0] "%u қолданба жаңартылды — қайта іске қосу керек"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:349
+#: src/gs-update-monitor.c:348
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u қолданба жаңартылды"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:360
+#: src/gs-update-monitor.c:359
 #, c-format
 msgid "%s has been updated."
 msgstr "%s жаңартылды."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:363
+#: src/gs-update-monitor.c:362
 msgid "Please restart the application."
 msgstr "Қолданбаны қайта іске қосыңыз."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:371
+#: src/gs-update-monitor.c:370
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s және %s жаңартылды."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:377 src/gs-update-monitor.c:396
+#: src/gs-update-monitor.c:376 src/gs-update-monitor.c:395
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u қолданба қайта іске қосуды талап етеді."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:389
+#: src/gs-update-monitor.c:388
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Соның ішінде %s, %s және %s."
 
-#. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:656 src/gs-updates-page.ui:43
+#. TRANSLATORS: this is when the current operating system version goes end-of-life
+#: src/gs-update-monitor.c:656 src/gs-updates-page.ui:19
 msgid "Operating System Updates Unavailable"
 msgstr "ОЖ жаңартулары қолжетерсіз"
 
@@ -4181,73 +4373,73 @@ msgid "Software Upgrade Available"
 msgstr "БҚ жаңартулары қолжетерлік"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1114
+#: src/gs-update-monitor.c:1113
 msgid "Software Updates Failed"
 msgstr "БҚ жаңартулары сәтсіз"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1116
-msgid "An important OS update failed to be installed."
-msgstr "Маңызды БҚ жаңартуларын орнату сәтсіз аяқталды."
+#: src/gs-update-monitor.c:1115
+msgid "An important operating system update failed to be installed."
+msgstr "Маңызды жүйе жаңартуларын орнату сәтсіз аяқталды."
 
-#: src/gs-update-monitor.c:1117
+#: src/gs-update-monitor.c:1116
 msgid "Show Details"
 msgstr "Деректерді көрсету"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1140
+#: src/gs-update-monitor.c:1139
 msgid "System Upgrade Complete"
 msgstr "Жүйелік жаңарту аяқталды"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1145
+#: src/gs-update-monitor.c:1144
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "%s %s ішіне қош келдіңіз!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1151
+#: src/gs-update-monitor.c:1150
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "БҚ жаңартулары орнатылды"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1155
-msgid "An important OS update has been installed."
-msgid_plural "Important OS updates have been installed."
-msgstr[0] "Маңызды БҚ жаңартулары орнатылды."
+#: src/gs-update-monitor.c:1154
+msgid "An important operating system update has been installed."
+msgid_plural "Important operating system updates have been installed."
+msgstr[0] "Маңызды жүйе жаңартулары орнатылды."
 
 #. TRANSLATORS: Button to look at the updates that were installed.
 #. * Note that it has nothing to do with the application reviews, the
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1166
+#: src/gs-update-monitor.c:1165
 msgctxt "updates"
 msgid "Review"
 msgstr "Қарап шығу"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1215
+#: src/gs-update-monitor.c:1214
 msgid "Failed To Update"
 msgstr "Жаңарту сәтсіз аяқталды"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1221
+#: src/gs-update-monitor.c:1220
 msgid "The system was already up to date."
 msgstr "Жүйе жаңа болып тұр."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1226
+#: src/gs-update-monitor.c:1225
 msgid "The update was cancelled."
 msgstr "Жаңартудан бас тартылды."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1232
+#: src/gs-update-monitor.c:1231
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -4256,7 +4448,7 @@ msgstr ""
 "көріңіз."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1238
+#: src/gs-update-monitor.c:1237
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -4265,13 +4457,13 @@ msgstr ""
 "хабарласыңыз."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1244
+#: src/gs-update-monitor.c:1243
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Диск орны жетпеді. Орынды босатып, қайталап көріңіз."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1249
+#: src/gs-update-monitor.c:1248
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4280,41 +4472,40 @@ msgstr ""
 "қайталап көріңіз. Сонда да мәселе кетпесе, БҚ өндірушісіне хабарласыңыз."
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:252
+#: src/gs-updates-page.c:250
 #, c-format
 msgid "Last checked: %s"
 msgstr "Соңғы тексерілген: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:577
+#: src/gs-updates-page.c:572
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s үшін енді қолдау жоқ."
 
-#. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:582
-msgid "Your OS is no longer supported."
-msgstr "Сіздің ОЖ үшін енді қолдау жоқ."
+#: src/gs-updates-page.c:576
+msgid "Your operating system is no longer supported."
+msgstr "Сіздің операциялық жүйеңіз үшін енді қолдау жоқ."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:587
+#: src/gs-updates-page.c:581
 msgid "This means that it does not receive security updates."
 msgstr "Бұл дегеніміз, ол енді қауіпсіздік жаңартуларын алмайтын болады."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:591
+#: src/gs-updates-page.c:585
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Жаңалау нұсқаға дейін жаңарту ұсынылады."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:875
+#: src/gs-updates-page.c:864
 msgid "Charges May Apply"
 msgstr "Ақы алынуы мүмкін"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:879
+#: src/gs-updates-page.c:868
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -4324,53 +4515,53 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:883
+#: src/gs-updates-page.c:872
 msgid "Check _Anyway"
 msgstr "Сонд_а да тексеру"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:899
+#: src/gs-updates-page.c:888
 msgid "No Network"
 msgstr "Желі жоқ"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:903
+#: src/gs-updates-page.c:892
 msgid "Internet access is required to check for updates."
 msgstr "Жаңартуларға тексеру үшін Интернетпен байланыс керек."
 
-#: src/gs-updates-page.c:1295
+#: src/gs-updates-page.c:1278
 msgid "Checking…"
 msgstr "Тексеру…"
 
-#: src/gs-updates-page.c:1318
+#: src/gs-updates-page.c:1296
 msgid "Check for updates"
 msgstr "Жаңартуларға тексеру"
 
-#: src/gs-updates-page.ui:7
+#: src/gs-updates-page.ui:6
 msgid "Updates page"
 msgstr "Жаңартулар парағы"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:96
+#: src/gs-updates-page.ui:81
 msgid "Loading Updates…"
 msgstr "Жаңартулар жүктеліп алынуда…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:110
+#: src/gs-updates-page.ui:94
 msgid "This could take a while."
 msgstr "Бұл біраз уақытты алуы мүмкін."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:222
+#: src/gs-updates-page.ui:202
 msgid "Up to Date"
 msgstr "Жаңа болып тұр"
 
-#: src/gs-updates-page.ui:263
+#: src/gs-updates-page.ui:241
 msgid "Use Mobile Data?"
 msgstr "Мобильді деректерді қолдану керек пе?"
 
-#: src/gs-updates-page.ui:264
+#: src/gs-updates-page.ui:242
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
@@ -4378,109 +4569,119 @@ msgstr ""
 "Сымсыз кеңжолақты желісін пайдалану кезінде жаңартуларға тексеру қосымша "
 "шығындарға әкеп соғуы мүмкін."
 
-#: src/gs-updates-page.ui:267
+#: src/gs-updates-page.ui:245
 msgid "_Check Anyway"
 msgstr "_Сонда да тексеру"
 
-#: src/gs-updates-page.ui:282
+#: src/gs-updates-page.ui:261
 msgid "No Connection"
 msgstr "Байланыс жоқ"
 
-#: src/gs-updates-page.ui:283
+#: src/gs-updates-page.ui:262
 msgid "Go online to check for updates."
 msgstr "Жаңартуларды тексеру үшін онлайн өту."
 
-#: src/gs-updates-page.ui:286
+#: src/gs-updates-page.ui:265
 msgid "_Network Settings"
 msgstr "_Желі баптаулары"
 
-#: src/gs-updates-page.ui:312
+#: src/gs-updates-page.ui:294
 msgid "Error"
 msgstr "Қате"
 
-#: src/gs-updates-page.ui:313
+#: src/gs-updates-page.ui:295
 msgid "Updates are automatically managed."
 msgstr "Жаңартулар автоматты түрде басқарылады."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:323
+#: src/gs-updates-section.c:326
 msgid "Restart & Update"
 msgstr "Қайта қосу және жаңарту"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:329
+#: src/gs-updates-section.c:332
 msgid "Update All"
 msgstr "Барлығын жаңарту"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:457
+#: src/gs-updates-section.c:473
 msgid "Integrated Firmware"
 msgstr "Құрамындағы бинарлық кодтар"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:462
+#: src/gs-updates-section.c:478
 msgid "Requires Restart"
 msgstr "Қайта қосуды талап етеді"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:467
+#: src/gs-updates-section.c:483
 msgid "Application Updates"
 msgstr "Қолданба жаңартулары"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:472
+#: src/gs-updates-section.c:488
 msgid "Device Firmware"
 msgstr "Құрылғының бинарлық кодтары"
 
-#: src/gs-updates-section.ui:35 src/gs-upgrade-banner.ui:78
+#: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid "_Download"
 msgstr "Жү_ктеп алу"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. The first %s is the distro name
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
-#: src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:88
 #, c-format
 msgid "%s %s Available"
 msgstr "%s %s қолжетімді"
 
-#: src/gs-upgrade-banner.c:131
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. The %s is the distro name,
+#. * e.g. "GNOME OS Available"
+#: src/gs-upgrade-banner.c:93
+#, c-format
+#| msgid "%s %s Available"
+msgid "%s Available"
+msgstr "%s қолжетімді"
+
+#: src/gs-upgrade-banner.c:139
 msgid "Learn about the new version"
 msgstr "Жаңа нұсқа туралы көбірек білу"
 
-#: src/gs-upgrade-banner.c:151
+#: src/gs-upgrade-banner.c:163
 msgid "Downloading…"
 msgstr "Жүктеп алынуда…"
 
 #. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 #. with the total download size, forming text like "135 MB of 2 GB downloaded"
-#: src/gs-upgrade-banner.c:169
+#: src/gs-upgrade-banner.c:181
 #, c-format
 msgid "%s of %s downloaded"
 msgstr "%s жүктелді, барлығы %s"
 
 #. Translators: the '%u' is replaced with the actual percentage being already
 #. downloaded, forming text like "13% downloaded"
-#: src/gs-upgrade-banner.c:173
+#: src/gs-upgrade-banner.c:185
 #, c-format
 msgid "%u%% downloaded"
 msgstr "%u%% жүктелді"
 
-#: src/gs-upgrade-banner.ui:43
+#: src/gs-upgrade-banner.ui:42
 msgid "A major upgrade, with new features and added polish."
 msgstr "Маңызды жаңарту, жаңа мүмкіндіктерді әкеледі."
 
-#: src/gs-upgrade-banner.ui:213
+#: src/gs-upgrade-banner.ui:187
 msgid "_Restart & Upgrade"
 msgstr "Қа_йта қосу және жаңарту"
 
-#: src/gs-upgrade-banner.ui:230
+#: src/gs-upgrade-banner.ui:201
 msgid "Remember to back up data and files before upgrading."
 msgstr ""
 "Жаңартылу алдында деректер және файлдарыңыздың қор көшірмелерін жасауды "
@@ -4501,42 +4702,44 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:56
-msgid "OS Updates"
-msgstr "ОЖ жаңартулары"
+#: plugins/core/gs-plugin-generic-updates.c:67
+msgid "System Updates"
+msgstr "Жүйе жаңартулары"
 
 #. TRANSLATORS: this is a longer description of the
-#. * "OS Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:61
-msgid "Includes performance, stability and security improvements."
-msgstr "Өнімділік, тұрақтылық және қауіпсіздік жақсартуларын әкеледі."
+#. * "System Updates" string
+#: plugins/core/gs-plugin-generic-updates.c:72
+msgid ""
+"General system updates, such as security or bug fixes, and performance "
+"improvements."
+msgstr ""
 
 #. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-rewrite-resource.c:41
+#: plugins/core/gs-plugin-rewrite-resource.c:155
 msgid "Downloading featured images…"
 msgstr "Ұсынылатын суреттерді жүктеп алу…"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:560
+#: plugins/eos-updater/gs-plugin-eos-updater.c:605
 msgid "Endless OS"
 msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:563
+#: plugins/eos-updater/gs-plugin-eos-updater.c:608
 msgid "An Endless OS update with new features and fixes."
 msgstr "Жаңа мүмкіндіктер мен түзетулері бар Endless OS жаңартуы."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:824
+#: plugins/eos-updater/gs-plugin-eos-updater.c:919
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:195
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:266
 msgid "Downloading upgrade information…"
 msgstr "Жаңарту ақпаратын жүктеп алу…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:314
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:415
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4551,72 +4754,72 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak - бұл Linux үшін жұмыс үстел қолданбаларының жүйесі"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1132
+#: plugins/flatpak/gs-flatpak.c:1154
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "%s үшін flatpak метадеректерін алу…"
 
-#: plugins/flatpak/gs-flatpak.c:3105
+#: plugins/flatpak/gs-flatpak.c:3207
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-flatpak-utils.c:89
+#: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "User Installation"
 msgstr "Пайдаланушы орнатуы"
 
-#: plugins/flatpak/gs-flatpak-utils.c:89
+#: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "System Installation"
 msgstr "Жүйелік орнату"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:821
+#: plugins/flatpak/gs-plugin-flatpak.c:1076
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-plugin-flatpak.c:835
+#: plugins/flatpak/gs-plugin-flatpak.c:1090
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr ""
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:135
+#: plugins/fwupd/gs-fwupd-app.c:134
 #, c-format
 msgid "%s Device Update"
 msgstr "%s құрылғы жаңартуы"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:140
+#: plugins/fwupd/gs-fwupd-app.c:139
 #, c-format
 msgid "%s System Update"
 msgstr "%s жүйе жаңартуы"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:145
+#: plugins/fwupd/gs-fwupd-app.c:144
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s ендірілген контроллер жаңартуы"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:150
+#: plugins/fwupd/gs-fwupd-app.c:149
 #, c-format
 msgid "%s ME Update"
 msgstr "%s ME жаңартуы"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:155
+#: plugins/fwupd/gs-fwupd-app.c:154
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s корпоративтік ME жаңартуы"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:160
+#: plugins/fwupd/gs-fwupd-app.c:159
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s пайдаланушылық ME жаңартуы"
@@ -4624,7 +4827,7 @@ msgstr "%s пайдаланушылық ME жаңартуы"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:166
+#: plugins/fwupd/gs-fwupd-app.c:165
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s контроллер жаңартуы"
@@ -4632,73 +4835,90 @@ msgstr "%s контроллер жаңартуы"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:172
+#: plugins/fwupd/gs-fwupd-app.c:171
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt контроллері жаңартуы"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:177
+#: plugins/fwupd/gs-fwupd-app.c:176
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s процессор микрокодының жаңартуы"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
-#: plugins/fwupd/gs-fwupd-app.c:182
+#: plugins/fwupd/gs-fwupd-app.c:181
 #, c-format
 msgid "%s Configuration Update"
 msgstr "%s баптаулар жаңартуы"
 
 #. TRANSLATORS: battery refers to the system power source
-#: plugins/fwupd/gs-fwupd-app.c:186
+#: plugins/fwupd/gs-fwupd-app.c:185
 #, c-format
 msgid "%s Battery Update"
 msgstr "%s батарея жаңартуы"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
-#: plugins/fwupd/gs-fwupd-app.c:191
+#: plugins/fwupd/gs-fwupd-app.c:190
 #, c-format
 msgid "%s Camera Update"
 msgstr "%s камера жаңартуы"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
-#: plugins/fwupd/gs-fwupd-app.c:195
+#: plugins/fwupd/gs-fwupd-app.c:194
 #, c-format
 msgid "%s TPM Update"
 msgstr "%s TPM жаңартуы"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
-#: plugins/fwupd/gs-fwupd-app.c:199
+#: plugins/fwupd/gs-fwupd-app.c:198
 #, c-format
 msgid "%s Touchpad Update"
 msgstr "%s тачпад жаңартуы"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
-#: plugins/fwupd/gs-fwupd-app.c:203
+#: plugins/fwupd/gs-fwupd-app.c:202
 #, c-format
 msgid "%s Mouse Update"
 msgstr "%s тышқан жаңартуы"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
-#: plugins/fwupd/gs-fwupd-app.c:207
+#: plugins/fwupd/gs-fwupd-app.c:206
 #, c-format
 msgid "%s Keyboard Update"
 msgstr "%s пернетақта жаңартуы"
 
-#. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:716
-msgid "Downloading firmware update signature…"
-msgstr "Бинарлы кодтар жаңартудың қолтаңбасын жүктеп алу…"
+#. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
+#: plugins/fwupd/gs-fwupd-app.c:210
+#, c-format
+msgid "%s Storage Controller Update"
+msgstr "%s сақтауыш контроллер жаңартуы"
 
-#. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:758
-msgid "Downloading firmware update metadata…"
-msgstr "Бинарлы кодтар жаңартудың метадеректерін жүктеп алу…"
+#. TRANSLATORS: Network Interface refers to the physical
+#. * PCI card, not the logical wired connection
+#: plugins/fwupd/gs-fwupd-app.c:215
+#, c-format
+msgid "%s Network Interface Update"
+msgstr "%s желілік контроллер жаңартуы"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1180
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+msgid "%s Display Update"
+msgstr "%s монитор жаңартуы"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+msgid "%s BMC Update"
+msgstr "%s ME жаңартуы"
+
+#: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
 msgstr "Бинарлық кодтар"
 
@@ -4710,16 +4930,49 @@ msgstr "Бинарлық кодтарды жаңарту қолдауы"
 msgid "Provides support for firmware upgrades"
 msgstr "Бинарлық кодтарды жаңарту мүмкіндігін ұсынады"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:301
+#: plugins/packagekit/gs-packagekit-task.c:146
+msgid "Install Unsigned Software?"
+msgstr "Қолтаңбасы жоқ БҚ орнату керек пе?"
+
+#: plugins/packagekit/gs-packagekit-task.c:147
+msgid ""
+"Software that is to be installed is not signed. It will not be possible to "
+"verify the origin of updates to this software, or whether updates have been "
+"tampered with."
+msgstr ""
+
+#: plugins/packagekit/gs-packagekit-task.c:151
+msgid "Download Unsigned Software?"
+msgstr "Қолтаңбасы жоқ БҚ жүктеп алу керек пе?"
+
+#: plugins/packagekit/gs-packagekit-task.c:152
+msgid ""
+"Unsigned updates are available. Without a signature, it is not possible to "
+"verify the origin of the update, or whether it has been tampered with."
+msgstr ""
+
+#: plugins/packagekit/gs-packagekit-task.c:156
+msgid "Update Unsigned Software?"
+msgstr "Қолтаңбасы жоқ БҚ жаңарту керек пе?"
+
+#: plugins/packagekit/gs-packagekit-task.c:157
+msgid ""
+"Unsigned updates are available. Without a signature, it is not possible to "
+"verify the origin of the update, or whether it has been tampered with. "
+"Software updates will be disabled until unsigned updates are either removed "
+"or updated."
+msgstr ""
+
+#: plugins/packagekit/gs-plugin-packagekit.c:430
 msgid "Packages"
 msgstr "Дестелер"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2151
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2440
 msgid "Operating System (OSTree)"
 msgstr "Операциялық жүйе (OSTree)"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:239
+#: plugins/snap/gs-plugin-snap.c:284
 msgid "Snap Store"
 msgstr "Snap дүкені"
 
@@ -4730,6 +4983,75 @@ msgstr "Snap қолдауы"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap - бұл әмбебап Linux дестесі"
+
+#~ msgid "GNOME Software"
+#~ msgstr "GNOME Software"
+
+#~ msgid "Unknown"
+#~ msgstr "Белгісіз"
+
+#~ msgid "Software has unknown permissions"
+#~ msgstr "Бағдарламалық қамтаманың белгісіз рұқсаттары бар"
+
+#~ msgid "Software comes from a trusted source"
+#~ msgstr "Бағдарламалық қамтама сенімді дереккөзден келіп тұр"
+
+#~ msgid "Loading…"
+#~ msgstr "Жүктелуде…"
+
+#~ msgid "_Add shortcut"
+#~ msgstr "Жарлықты қо_су"
+
+#~ msgid "Re_move shortcut"
+#~ msgstr "Жарлықты ө_шіру"
+
+#~ msgid "Welcome"
+#~ msgstr "Қош келдіңіз"
+
+#~ msgid "Welcome to Software"
+#~ msgstr "Software қолданбасына қош келдіңіз"
+
+#~ msgid ""
+#~ "Software lets you install all the software you need, all from one place. "
+#~ "See our recommendations, browse the categories, or search for the "
+#~ "applications you want."
+#~ msgstr ""
+#~ "Software қолданбасы өзіңізге керек барлық БҚ-ны бір жерден орнатуға "
+#~ "мүмкін қылады. Біздің ұсыныстарымызды қарап, санаттарды шолыңыз, немесе "
+#~ "керек қолданбаны іздеп көріңіз."
+
+#~ msgid "_Browse Software"
+#~ msgstr "БҚ _шолу"
+
+#~ msgid "Downloading application ratings…"
+#~ msgstr "Қолданбалар рейтингтерін жүктеп алу…"
+
+#~ msgid "Picture"
+#~ msgstr "Сурет"
+
+#~ msgid "Unknown Permissions"
+#~ msgstr "Рұқсаттар белгісіз"
+
+#~ msgid "The permissions needed by this app aren’t known"
+#~ msgstr "Бұл бағдарламаға қажетті рұқсаттар белгісіз"
+
+#~ msgid "App comes from a trusted source"
+#~ msgstr "Бағдарлама сенімді көзден келеді"
+
+#~ msgid "Your distribution has verified that this app can be trusted"
+#~ msgstr "Дистрибутивіңіз осы бағдарламаға сенуге болатынын тексерді"
+
+#~ msgid "OS Updates"
+#~ msgstr "ОЖ жаңартулары"
+
+#~ msgid "Includes performance, stability and security improvements."
+#~ msgstr "Өнімділік, тұрақтылық және қауіпсіздік жақсартуларын әкеледі."
+
+#~ msgid "Downloading firmware update signature…"
+#~ msgstr "Бинарлы кодтар жаңартудың қолтаңбасын жүктеп алу…"
+
+#~ msgid "Downloading firmware update metadata…"
+#~ msgstr "Бинарлы кодтар жаңартудың метадеректерін жүктеп алу…"
 
 #~ msgid "Show the prompt to install nonfree software repositories"
 #~ msgstr ""
@@ -5046,17 +5368,11 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Rape or other violent sexual behavior"
 #~ msgstr "Зорлау немесе басқа жыныстық зорлық-зомбылық"
 
-#~ msgid "No references to alcohol"
-#~ msgstr "Алкогольге сілтемелер жоқ"
-
 #~ msgid "References to alcoholic beverages"
 #~ msgstr "Алкогольді өнімдеріне сілтемелер"
 
 #~ msgid "Use of alcoholic beverages"
 #~ msgstr "Алкогольді өнімдерін пайдалану"
-
-#~ msgid "No references to illicit drugs"
-#~ msgstr "Заңсыз есірткіге сілтемелер жоқ"
 
 #~ msgid "References to illicit drugs"
 #~ msgstr "Заңсыз есірткіге сілтемелер"
@@ -5064,29 +5380,17 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Use of illicit drugs"
 #~ msgstr "Заңсыз есірткіні қолдану"
 
-#~ msgid "No references to tobacco products"
-#~ msgstr "Темекі өнімдеріне сілтемелер жоқ"
-
 #~ msgid "References to tobacco products"
 #~ msgstr "Темекі өнімдеріне сілтемелер"
 
 #~ msgid "Use of tobacco products"
 #~ msgstr "Темекі өнімдерін пайдалану"
 
-#~ msgid "No nudity of any sort"
-#~ msgstr "Ешқандай жалаңаштық жоқ"
-
 #~ msgid "Brief artistic nudity"
 #~ msgstr "Қысқа көркем жалаңаштық"
 
 #~ msgid "Prolonged nudity"
 #~ msgstr "Ұзақ жалаңаштық"
-
-#~ msgid "No references to or depictions of sexual nature"
-#~ msgstr "Сексуалдық сипаттағы сілтемелер немесе бейнелер жоқ"
-
-#~ msgid "Provocative references or depictions"
-#~ msgstr "Арандатушылық сілтемелер немесе бейнелер"
 
 #~ msgid "Sexual references or depictions"
 #~ msgstr "Сексуалдық сілтемелер немесе бейнелер"
@@ -5103,9 +5407,6 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Mature or sexual humor"
 #~ msgstr "Жетілген немесе жыныстық әзіл"
 
-#~ msgid "No discriminatory language of any kind"
-#~ msgstr "Ешқандай дискриминациялық тіл жоқ"
-
 #~ msgid "Negativity towards a specific group of people"
 #~ msgstr "Адамдардың белгілі бір тобына деген теріс көзқарас"
 
@@ -5114,9 +5415,6 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 
 #~ msgid "Explicit discrimination based on gender, sexuality, race or religion"
 #~ msgstr "Жынысы, сексуалдылық, нәсілі немесе діні бойынша айқын кемсіту"
-
-#~ msgid "No advertising of any kind"
-#~ msgstr "Жарнаманың ешбір түрі жоқ"
 
 #~ msgid "Product placement"
 #~ msgstr "Өнімнің өз-өзін беру"
@@ -5128,9 +5426,6 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Users are encouraged to purchase specific real-world items"
 #~ msgstr "Пайдаланушыларға шын әлемнен кейбір нәрселерді сатып алу ұсынылады"
 
-#~ msgid "No gambling of any kind"
-#~ msgstr "Ешқандай құмар ойын болмайды"
-
 #~ msgid "Gambling on random events using tokens or credits"
 #~ msgstr ""
 #~ "Кездейсоқ оқиғалардағы токендер немесе кредиттер арқылы құмар ойындар"
@@ -5141,17 +5436,11 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Gambling using real money"
 #~ msgstr "Нақты ақшаны пайдаланатын құмар ойындар"
 
-#~ msgid "No ability to spend money"
-#~ msgstr "Ақшаны жарату мүмкіндігі жоқ"
-
 #~ msgid "Users are encouraged to donate real money"
 #~ msgstr "Пайдаланушылар шын ақшаны жіберуге ұсынылады"
 
 #~ msgid "Ability to spend real money in-app"
 #~ msgstr "Нақты ақшаны бағдарламада жұмсай алу мүмкіндігі"
-
-#~ msgid "No way to chat with other users"
-#~ msgstr "Басқа ойыншылармен чат мүмкін емес"
 
 #~ msgid "User-to-user interactions without chat functionality"
 #~ msgstr ""
@@ -5160,25 +5449,12 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Moderated chat functionality between users"
 #~ msgstr "Ойыншылар арасындағы басқарылатын чат мүмкіндігі"
 
-#~ msgid "Uncontrolled chat functionality between users"
-#~ msgstr "Ойыншылар арасындағы басқарылмайтын чат мүмкіндігі"
-
-#~ msgid "No way to talk with other users"
-#~ msgstr "Басқа ойыншылармен сөйлесу мүмкін емес"
-
 #~ msgid "Uncontrolled audio or video chat functionality between users"
 #~ msgstr ""
 #~ "Ойыншылар арасындағы басқарылмайтын аудио немесе видео чат мүмкіндігі"
 
-#~ msgid "No sharing of social network usernames or email addresses"
-#~ msgstr ""
-#~ "Әлеуметтік желілердегі аттар немесе эл. пошта адрестермен бөлісу жоқ"
-
 #~ msgid "Sharing social network usernames or email addresses"
 #~ msgstr "Әлеуметтік желілердегі аттар немесе эл. пошта адрестермен бөлісу"
-
-#~ msgid "No sharing of user information with third parties"
-#~ msgstr "Пайдаланушы ақпаратын үшінші тараппен бөліспеу"
 
 #~ msgid "Checking for the latest application version"
 #~ msgstr "Қолданбаның соңғы нұсқасы тексерілуде"
@@ -5191,14 +5467,8 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Sharing information that lets others identify the user"
 #~ msgstr "Басқалар пайдаланушыны анықтай алатын ақпаратымен бөлісу"
 
-#~ msgid "No sharing of physical location with other users"
-#~ msgstr "Басқа пайдаланушылармен физикалық орналасумен бөліспеу"
-
 #~ msgid "Sharing physical location with other users"
 #~ msgstr "Басқа пайдаланушылармен физикалық орналасумен бөлісу"
-
-#~ msgid "No references to homosexuality"
-#~ msgstr "Гомосексуализмге сілтемелер жоқ"
 
 #~ msgid "Indirect references to homosexuality"
 #~ msgstr "Гомосексуализмге жанама сілтемелер"
@@ -5209,9 +5479,6 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Graphic sexual behavior between people of the same gender"
 #~ msgstr "Бір жыныстағы адамдар арасындағы графикалық жыныстық қатынас"
 
-#~ msgid "No references to prostitution"
-#~ msgstr "Жезөкшелікке сілтемелер жоқ"
-
 #~ msgid "Indirect references to prostitution"
 #~ msgstr "Жезөкшелікке жанама сілтемелер"
 
@@ -5221,17 +5488,11 @@ msgstr "Snap - бұл әмбебап Linux дестесі"
 #~ msgid "Graphic depictions of the act of prostitution"
 #~ msgstr "Жезөкшелік актісінің графикалық бейнелері"
 
-#~ msgid "No visible dead human remains"
-#~ msgstr "Көзге көрінетін өлі адам жоқ"
-
 #~ msgid "Visible dead human remains"
 #~ msgstr "Көрінетін өлі адамның қалдықтары"
 
 #~ msgid "Dead human remains that are exposed to the elements"
 #~ msgstr "Элементтерге ұшыраған адамның өлі қалдықтары"
-
-#~ msgid "No references to slavery"
-#~ msgstr "Құлдық туралы сілтемелер жоқ"
 
 #~ msgid "Depictions of or references to historical slavery"
 #~ msgstr "Тарихи құлдықтың бейнелері немесе сілтемелері"
