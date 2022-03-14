@@ -69,6 +69,8 @@ gs_plugin_appstream_convert_component_kind (const gchar *kind)
 {
 	if (g_strcmp0 (kind, "webapp") == 0)
 		return "web-application";
+	if (g_strcmp0 (kind, "desktop") == 0)
+		return "desktop-application";
 	return kind;
 }
 
@@ -127,6 +129,60 @@ gs_plugin_appstream_add_origin_keyword_cb (XbBuilderFixup *self,
 			for (guint i = 0; i < components->len; i++) {
 				XbBuilderNode *component = g_ptr_array_index (components, i);
 				gs_appstream_component_add_keyword (component, origin);
+			}
+		}
+	}
+	return TRUE;
+}
+
+static void
+gs_plugin_appstream_media_baseurl_free (gpointer user_data)
+{
+	g_string_free ((GString *) user_data, TRUE);
+}
+
+static gboolean
+gs_plugin_appstream_media_baseurl_cb (XbBuilderFixup *self,
+				      XbBuilderNode *bn,
+				      gpointer user_data,
+				      GError **error)
+{
+	GString *baseurl = user_data;
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "components") == 0) {
+		const gchar *url = xb_builder_node_get_attr (bn, "media_baseurl");
+		if (url == NULL) {
+			g_string_truncate (baseurl, 0);
+			return TRUE;
+		}
+		g_string_assign (baseurl, url);
+		return TRUE;
+	}
+
+	if (baseurl->len == 0)
+		return TRUE;
+
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "icon") == 0) {
+		const gchar *type = xb_builder_node_get_attr (bn, "type");
+		if (g_strcmp0 (type, "remote") != 0)
+			return TRUE;
+		gs_appstream_component_fix_url (bn, baseurl->str);
+	} else if (g_strcmp0 (xb_builder_node_get_element (bn), "screenshots") == 0) {
+		GPtrArray *screenshots = xb_builder_node_get_children (bn);
+		for (guint i = 0; i < screenshots->len; i++) {
+			XbBuilderNode *screenshot = g_ptr_array_index (screenshots, i);
+			GPtrArray *children = NULL;
+			/* Type-check for security */
+			if (g_strcmp0 (xb_builder_node_get_element (screenshot), "screenshot") != 0) {
+				continue;
+			}
+			children = xb_builder_node_get_children (screenshot);
+			for (guint j = 0; j < children->len; j++) {
+				XbBuilderNode *child = g_ptr_array_index (children, j);
+				const gchar *element = xb_builder_node_get_element (child);
+				if (g_strcmp0 (element, "image") != 0 &&
+				    g_strcmp0 (element, "video") != 0)
+					continue;
+				gs_appstream_component_fix_url (child, baseurl->str);
 			}
 		}
 	}
@@ -398,6 +454,8 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 #if LIBXMLB_CHECK_VERSION(0,3,1)
 	g_autoptr(XbBuilderFixup) fixup4 = NULL;
 #endif
+	g_autoptr(XbBuilderFixup) fixup5 = NULL;
+	GString *media_baseurl = g_string_new (NULL);
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for DEP-11 files */
@@ -452,6 +510,14 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	xb_builder_fixup_set_max_depth (fixup4, 2);
 	xb_builder_source_add_fixup (source, fixup4);
 #endif
+
+	/* prepend media_baseurl to remote relative URLs */
+	fixup5 = xb_builder_fixup_new ("MediaBaseUrl",
+				       gs_plugin_appstream_media_baseurl_cb,
+				       media_baseurl,
+				       gs_plugin_appstream_media_baseurl_free);
+	xb_builder_fixup_set_max_depth (fixup5, 3);
+	xb_builder_source_add_fixup (source, fixup5);
 
 	/* success */
 	xb_builder_import_source (builder, source);
@@ -828,10 +894,10 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	/* look in AppStream then fall back to AppData */
 	if (origin && *origin) {
 		xb_string_append_union (xpath, "components[@origin='%s']/component/id[text()='%s']/../pkgname/..", origin, id);
-		xb_string_append_union (xpath, "components[@origin='%s']/component[@type='webapp']/id[text()='%s']/..", origin, id);
+		xb_string_append_union (xpath, "components[@origin='%s']/component[@type='web-application']/id[text()='%s']/..", origin, id);
 	} else {
 		xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
-		xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
+		xb_string_append_union (xpath, "components/component[@type='web-application']/id[text()='%s']/..", id);
 	}
 	xb_string_append_union (xpath, "component/id[text()='%s']/..", id);
 	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
@@ -886,9 +952,9 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 		locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 		/* prefer actual apps and then fallback to anything else */
-		xb_string_append_union (xpath, "components/component[@type='desktop']/pkgname[text()='%s']/..", pkgname);
-		xb_string_append_union (xpath, "components/component[@type='console']/pkgname[text()='%s']/..", pkgname);
-		xb_string_append_union (xpath, "components/component[@type='webapp']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='desktop-application']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='console-application']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component[@type='web-application']/pkgname[text()='%s']/..", pkgname);
 		xb_string_append_union (xpath, "components/component/pkgname[text()='%s']/..", pkgname);
 		component = xb_silo_query_first (priv->silo, xpath->str, &error_local);
 		if (component == NULL) {
