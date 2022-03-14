@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2021-09-28 14:50+0000\n"
-"PO-Revision-Date: 2022-01-20 22:00+0900\n"
+"PO-Revision-Date: 2022-03-14 20:30+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -42,12 +42,12 @@ msgstr ""
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
 msgid ""
-"GNOME Software showcases featured and popular applications with useful "
+"Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"GNOME ソフトウェアでは、注目アプリケーションやよく使用されるアプリケーション"
+"“ソフトウェア”では、注目アプリケーションやよく使用されるアプリケーション"
 "を、役立つ説明や豊富なスクリーンショットとともにわかりやすく紹介しています。"
 "お探しのアプリケーションを探すのに適した、カテゴリーリストや検索機能も備えて"
 "います。また、オフラインアップデートによるシステムの更新も可能です。"
@@ -329,6 +329,12 @@ msgstr "コンテンツタイプの検証に失敗しました: %s"
 #, c-format
 msgid "Failed to copy: %s"
 msgstr "コピーに失敗しました: %s"
+
+#. TRANSLATORS: error details
+#: gs-install-appstream/gs-install-appstream.c:178
+#, c-format
+msgid "Failed to move: %s"
+msgstr "移動に失敗しました: %s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -789,6 +795,10 @@ msgid ""
 "or ‘full’"
 msgstr ""
 
+#: src/gs-application.c:143
+msgid "Show a local metainfo or appdata file"
+msgstr ""
+
 #: src/gs-application.c:154
 msgid "Show verbose debugging information"
 msgstr "詳細なデバッグ情報を表示する"
@@ -814,8 +824,8 @@ msgid "Show version number"
 msgstr "バージョン情報を表示する"
 
 #: src/gs-application.c:358
-msgid "Copyright © 2016–2021 GNOME Software contributors"
-msgstr "Copyright © 2016–2021 GNOME Software contributors"
+msgid "Copyright © 2016–2022 GNOME Software contributors"
+msgstr "Copyright © 2016–2022 GNOME Software contributors"
 
 #: src/gs-application.c:361
 msgid "translator-credits"
@@ -1001,6 +1011,12 @@ msgstr "監査可能コード"
 #: src/gs-app-context-bar.c:406
 msgid "Software developer is verified"
 msgstr "ソフトウェア開発者は認証済み"
+
+#. Translators: This indicates an app or its runtime reached its end of life.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:422
+msgid "Software no longer supported"
+msgstr "サポートが終了したソフトウェア"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1673,8 +1689,14 @@ msgstr "アプリケーションを使用できます。"
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
 #: src/gs-common.c:146
+msgid "System updates are now installed"
+msgstr "システムアップデートをインストールしました"
+
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:146
 msgid "OS updates are now installed"
-msgstr "OS のアップデートをインストールしました"
+msgstr "OS アップデートをインストールしました"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
@@ -1761,6 +1783,12 @@ msgstr "パッケージマネージャーからのエラーの詳細:"
 #: src/gs-common.c:513 src/gs-safety-context-dialog.ui:116
 msgid "Details"
 msgstr "詳細"
+
+# 署名なしソフトウェアのインストール/アップデート時に表示されるボタンだと思われる。gnome-bluetooth と同じように「承認」と訳しておく。
+#. Translators: an accept button label, in a Cancel/Accept dialog
+#: src/gs-common.c:655
+msgid "_Accept"
+msgstr "承認(_A)"
 
 #. TRANSLATORS: we've just live-updated some apps
 #: src/gs-common.c:695
@@ -2111,10 +2139,28 @@ msgstr "問題を報告(_R)"
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
+#. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
+#: src/gs-details-page.ui:844
+msgid "_Write Review"
+msgstr "レビューを書く(_W)"
+
+#. Translators: Button opening a dialog showing all reviews for an app.
+#: src/gs-details-page.ui:881
+msgid "All Reviews"
+msgstr "すべてのレビュー"
+
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-details-page.ui:926
 msgid "Reviews"
 msgstr "レビュー"
+
+#: src/gs-app-reviews-dialog.ui:25
+msgid "No reviews were found for this application."
+msgstr "このアプリケーションのレビューはありません。"
+
+#: src/gs-app-reviews-dialog.ui:27
+msgid "No Reviews"
+msgstr "レビューなし"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
 #: src/gs-details-page.ui:944
@@ -2909,7 +2955,7 @@ msgstr "続行(_C)"
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
 #: src/gs-repos-dialog.c:265
 #, c-format
-msgid "Software that has been installed from “%s” will cease receive updates."
+msgid "Software that has been installed from “%s” will cease to receive updates."
 msgstr ""
 "“%s”からインストールされたソフトウェアはアップデートの受け取りを停止します。"
 
@@ -3135,10 +3181,12 @@ msgstr ""
 #: src/gs-review-dialog.ui:187
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>."
+"\">privacy policy</a>. The full name attached to your account will be shown "
+"publicly."
 msgstr ""
 "どのようなデータが送信されるかは<a href=\"https://odrs.gnome.org/privacy\">プ"
-"ライバシーポリシー</a>のページで確認できます。"
+"ライバシーポリシー</a>のページで確認できます。あなたのアカウントの氏名は公開"
+"されます。"
 
 #: src/gs-review-histogram.c:72
 #, c-format
@@ -3405,6 +3453,19 @@ msgstr "アプリ開発者は認証済み"
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "このアプリの開発者の身元は確認済み"
 
+#. Translators: This indicates an app uses an outdated SDK.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-safety-context-dialog.c:333
+msgid "Insecure Dependencies"
+msgstr "安全でない依存関係"
+
+#: src/gs-safety-context-dialog.c:334
+msgid ""
+"Software or its dependencies are no longer supported and may be insecure"
+msgstr ""
+"ソフトウェア自身または依存関係にあるもののサポートが終了しているため"
+"安全でない可能性あり"
+
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
 #: src/gs-safety-context-dialog.c:330
@@ -3438,6 +3499,10 @@ msgstr "ライセンス"
 #: src/gs-safety-context-dialog.ui:232
 msgid "SDK"
 msgstr "SDK"
+
+#: src/gs-safety-context-dialog.ui:212
+msgid "Outdated SDK version"
+msgstr "古い SDK のバージョン"
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:41
@@ -3524,6 +3589,13 @@ msgstr "アプリケーションが見つかりません"
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
+
+#. Translators: The '%s' is replaced with an error message, which had been shortened.
+#. The dots at the end are there to highlight that to the user.
+#: src/gs-shell.c:1238
+#, c-format
+msgid "%s…"
+msgstr "%s…"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
@@ -4221,7 +4293,7 @@ msgstr "%s、%s、%s を含みます。"
 #. TRANSLATORS: this is when the current OS version goes end-of-life
 #: src/gs-update-monitor.c:656 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
-msgstr "OS のアップデートは利用できません"
+msgstr "オペレーティングシステムのアップデートは利用できません"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
 #: src/gs-update-monitor.c:658
@@ -4247,8 +4319,8 @@ msgstr "ソフトウェアのアップデートに失敗しました"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: src/gs-update-monitor.c:1116
-msgid "An important OS update failed to be installed."
-msgstr "重要な OS アップデートのインストールに失敗しました。"
+msgid "An important operating system update failed to be installed."
+msgstr "重要なオペレーティングシステムアップデートのインストールに失敗しました。"
 
 #: src/gs-update-monitor.c:1117
 msgid "Show Details"
@@ -4271,13 +4343,13 @@ msgstr "%s %s へようこそ!"
 #: src/gs-update-monitor.c:1151
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
-msgstr[0] "ソフトウェアのアップデートをインストールしました"
+msgstr[0] "ソフトウェアアップデートをインストールしました"
 
 #. TRANSLATORS: message when we've done offline updates
 #: src/gs-update-monitor.c:1155
-msgid "An important OS update has been installed."
-msgid_plural "Important OS updates have been installed."
-msgstr[0] "重要な OS アップデートをインストールしました。"
+msgid "An important operating system update has been installed."
+msgid_plural "Important operating system updates have been installed."
+msgstr[0] "重要なオペレーティングシステムアップデートをインストールしました。"
 
 #. TRANSLATORS: Button to look at the updates that were installed.
 #. * Note that it has nothing to do with the application reviews, the
@@ -4356,8 +4428,8 @@ msgstr "%s %s はサポートが終了しています。"
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
 #: src/gs-updates-page.c:581
-msgid "Your OS is no longer supported."
-msgstr "お使いの OS はサポートが終了しています。"
+msgid "Your operating system is no longer supported."
+msgstr "お使いのオペレーティングシステムはサポートが終了しています。"
 
 #. TRANSLATORS: EOL distros do not get important updates
 #: src/gs-updates-page.c:586
@@ -4509,6 +4581,14 @@ msgstr "ダウンロード(_D)"
 msgid "%s %s Available"
 msgstr "%s %s が利用可能です"
 
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. The %s is the distro name,
+#. * e.g. "GNOME OS Available"
+#: src/gs-upgrade-banner.c:93
+#, c-format
+msgid "%s Available"
+msgstr "%s が利用可能です"
+
 #: src/gs-upgrade-banner.c:131
 msgid "Learn about the new version"
 msgstr "新しいバージョンについて確認する"
@@ -4559,6 +4639,22 @@ msgstr ""
 "Software;App;Store;更新;アップデート;アップグレード;ソース;リポジトリ;レポジ"
 "トリ;設定;インストール;アンインストール;プログラム;ソフトウェア;アプリケー"
 "ション;ストア;"
+
+#. TRANSLATORS: this is a group of updates that are not
+#. * packages and are not shown in the main list
+#: plugins/core/gs-plugin-generic-updates.c:67
+msgid "System Updates"
+msgstr "システムのアップデート"
+
+#. TRANSLATORS: this is a longer description of the
+#. * "System Updates" string
+#: plugins/core/gs-plugin-generic-updates.c:72
+msgid ""
+"General system updates, such as security or bug fixes, and performance "
+"improvements."
+msgstr ""
+"バグの修正、セキュリティホールの修正、パフォーマンスの向上といった一般的な"
+"システムアップデートです。"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -4750,6 +4846,33 @@ msgstr "%s マウスのアップデート"
 msgid "%s Keyboard Update"
 msgstr "%s キーボードのアップデート"
 
+#. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
+#: plugins/fwupd/gs-fwupd-app.c:210
+#, c-format
+msgid "%s Storage Controller Update"
+msgstr "%s ストレージコントローラーのアップデート"
+
+#. TRANSLATORS: Network Interface refers to the physical
+#. * PCI card, not the logical wired connection
+#: plugins/fwupd/gs-fwupd-app.c:215
+#, c-format
+msgid "%s Network Interface Update"
+msgstr "%s ネットワークインターフェースのアップデート"
+
+#. TRANSLATORS: Video Display refers to the laptop internal display or
+#. * external monitor
+#: plugins/fwupd/gs-fwupd-app.c:220
+#, c-format
+msgid "%s Display Update"
+msgstr "%s ディスプレイのアップデート"
+
+#. TRANSLATORS: BMC refers to baseboard management controller which
+#. * is the device that updates all the other firmware on the system
+#: plugins/fwupd/gs-fwupd-app.c:225
+#, c-format
+msgid "%s BMC Update"
+msgstr "%s BMC のアップデート"
+
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:716
 msgid "Downloading firmware update signature…"
@@ -4771,6 +4894,49 @@ msgstr "ファームウェアアップグレードサポート"
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:7
 msgid "Provides support for firmware upgrades"
 msgstr "ファームウェアのアップグレード機能を提供します"
+
+#: plugins/packagekit/gs-packagekit-task.c:146
+msgid "Install Unsigned Software?"
+msgstr "署名なしのソフトウェアをインストールしますか?"
+
+#: plugins/packagekit/gs-packagekit-task.c:147
+msgid ""
+"Software that is to be installed is not signed. It will not be possible to "
+"verify the origin of updates to this software, or whether updates have been "
+"tampered with."
+msgstr ""
+"インストールされるソフトウェアは署名されていません。このソフトウェアのアップ"
+"デートの提供元がどこであるかや、アップデートが改ざんされていないかどうかを検"
+"証することはできません。"
+
+#: plugins/packagekit/gs-packagekit-task.c:151
+msgid "Download Unsigned Software?"
+msgstr "署名なしのソフトウェアをダウンロードしますか?"
+
+#: plugins/packagekit/gs-packagekit-task.c:152
+msgid ""
+"Unsigned updates are available. Without a signature, it is not possible to "
+"verify the origin of the update, or whether it has been tampered with."
+msgstr ""
+"署名されていないアップデートが利用可能です。署名がない場合、アップデートの提"
+"供元がどこであるかや、アップデートが改ざんされていないかどうかを検証すること"
+"はできません。"
+
+#: plugins/packagekit/gs-packagekit-task.c:156
+msgid "Update Unsigned Software?"
+msgstr "署名なしのソフトウェアをアップデートしますか?"
+
+#: plugins/packagekit/gs-packagekit-task.c:157
+msgid ""
+"Unsigned updates are available. Without a signature, it is not possible to "
+"verify the origin of the update, or whether it has been tampered with. "
+"Software updates will be disabled until unsigned updates are either removed "
+"or updated."
+msgstr ""
+"署名されていないアップデートが利用可能です。署名がない場合、アップデートの提"
+"供元がどこであるかや、アップデートが改ざんされていないかどうかを検証すること"
+"はできません。署名されていないアップデートが削除されるか更新されるまで、ソフ"
+"トウェアアップデートは無効になります。"
 
 #: plugins/packagekit/gs-plugin-packagekit.c:301
 msgid "Packages"
