@@ -39,7 +39,7 @@ gs_plugin_fedora_langpacks_init (GsPluginFedoraLangpacks *self)
 
 	/*
 	* A few language code may have more than one language packs.
-	* Example: en {en_GB}, pt {pt_BR}, zh {zh_CN, zh_TW}
+	* Example: en {en_GB}, pt {pt_BR}, zh {zh_CN, zh_TW, zh_HK}
 	*/
 	self->locale_langpack_map = g_hash_table_new (g_str_hash, g_str_equal);
 #pragma GCC diagnostic push
@@ -48,6 +48,7 @@ gs_plugin_fedora_langpacks_init (GsPluginFedoraLangpacks *self)
 	g_hash_table_insert (self->locale_langpack_map, "pt_BR", "langpacks-pt_BR");
 	g_hash_table_insert (self->locale_langpack_map, "zh_CN", "langpacks-zh_CN");
 	g_hash_table_insert (self->locale_langpack_map, "zh_TW", "langpacks-zh_TW");
+	g_hash_table_insert (self->locale_langpack_map, "zh_HK", "langpacks-zh_HK");
 #pragma GCC diagnostic pop
 }
 
