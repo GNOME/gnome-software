@@ -554,6 +554,7 @@ proxy_new_cb (GObject      *source_object,
 	g_autofree gchar *background_filename = NULL;
 	g_autofree gchar *css = NULL;
 	g_autofree gchar *summary = NULL;
+	g_autofree gchar *version = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -609,8 +610,23 @@ proxy_new_cb (GObject      *source_object,
 		os_name = gs_os_release_get_name (os_release);
 	}
 
-	/* Translators: The '%s' is replaced with the OS name, like "Endless OS" */
-	summary = g_strdup_printf (_("%s update with new features and fixes."), os_name);
+	g_object_get (G_OBJECT (self->updater_proxy),
+		"version", &version,
+		"update-message", &summary,
+		NULL);
+
+	if (summary == NULL || *summary == '\0') {
+		g_clear_pointer (&summary, g_free);
+		g_object_get (G_OBJECT (self->updater_proxy),
+			"update-label", &summary,
+			NULL);
+	}
+
+	if (summary == NULL || *summary == '\0') {
+		g_clear_pointer (&summary, g_free);
+		/* Translators: The '%s' is replaced with the OS name, like "Endless OS" */
+		summary = g_strdup_printf (_("%s update with new features and fixes."), os_name);
+	}
 
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");
@@ -619,9 +635,7 @@ proxy_new_cb (GObject      *source_object,
 	gs_app_set_kind (app, AS_COMPONENT_KIND_OPERATING_SYSTEM);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, os_name);
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, summary);
-	/* ensure that the version doesn't appear as (NULL) in the banner, it
-	 * should be changed to the right value when it changes in the eos-updater */
-	gs_app_set_version (app, "");
+	gs_app_set_version (app, version == NULL ? "" : version);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
