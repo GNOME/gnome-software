@@ -35,6 +35,10 @@ meson test \
 	--gdb-path=/builds/GNOME/gnome-software/.gitlab-ci/mygdb.sh \
         "$@"
 
+sudo coredumpctl info
+echo -----user----
+coredumpctl info
+
 exit_code=$?
 
 python3 .gitlab-ci/meson-junit-report.py \
