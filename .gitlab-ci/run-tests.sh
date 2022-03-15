@@ -29,6 +29,8 @@ meson test \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
         --no-suite flaky \
 	--print-errorlogs \
+	--gdb	\
+	--gdb-path=mygdb.sh \
         "$@"
 
 exit_code=$?

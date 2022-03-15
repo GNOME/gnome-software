@@ -14,6 +14,7 @@ RUN dnf -y install \
     flatpak-devel \
     fwupd-devel \
     gcc \
+    gdb \
     gdk-pixbuf2-devel \
     gettext \
     git \
