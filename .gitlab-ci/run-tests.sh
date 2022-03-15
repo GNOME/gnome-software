@@ -12,8 +12,6 @@ case "$1" in
     log_file="_build/meson-logs/testlog.json"
 esac
 
-sudo dnf install -y gdb
-
 # FIXME: The tests should be isolated and use mock services so they do not
 # require a functioning system bus. This will have to do for now though.
 sudo mkdir -p /run/dbus
@@ -31,8 +29,6 @@ meson test \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
         --no-suite flaky \
 	--print-errorlogs \
-	--gdb	\
-	--gdb-path=/builds/GNOME/gnome-software/.gitlab-ci/mygdb.sh \
         "$@"
 
 sudo coredumpctl info
