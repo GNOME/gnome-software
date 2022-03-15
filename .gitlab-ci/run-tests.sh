@@ -32,7 +32,7 @@ meson test \
         --no-suite flaky \
 	--print-errorlogs \
 	--gdb	\
-	--gdb-path=mygdb.sh \
+	--gdb-path=/builds/GNOME/gnome-software/.gitlab-ci/mygdb.sh \
         "$@"
 
 exit_code=$?
