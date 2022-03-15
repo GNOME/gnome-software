@@ -1,8 +1,5 @@
 include: 'https://gitlab.gnome.org/GNOME/citemplates/raw/HEAD/flatpak/flatpak_ci_initiative.yml'
 
-cap_add:
-  - SYS_PTRACE
-
 stages:
   - build
   - deploy
@@ -22,6 +19,10 @@ variables:
     - cp -r $HOME/subprojects/* subprojects/
 
 fedora-x86_64:
+  cap_add:
+    - SYS_PTRACE
+  cap-add:
+    - SYS_PTRACE
   extends: .build
   image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v9
   stage: build
