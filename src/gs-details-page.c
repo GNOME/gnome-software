@@ -1691,11 +1691,15 @@ static void
 gs_details_page_load_stage1 (GsDetailsPage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
 	/* update UI */
 	gs_page_switch_to (GS_PAGE (self));
 	gs_page_scroll_up (GS_PAGE (self));
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+
+	g_cancellable_cancel (self->cancellable);
+	g_set_object (&self->cancellable, cancellable);
 
 	/* get extra details about the app */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
@@ -2096,7 +2100,7 @@ gs_details_page_setup (GsPage *page,
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->cancellable = g_object_ref (cancellable);
+	self->cancellable = g_cancellable_new ();
 
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
