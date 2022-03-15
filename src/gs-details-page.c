@@ -167,7 +167,8 @@ static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 static guint signals[SIGNAL_LAST] = { 0 };
 
 static void
-gs_details_page_cancel_cb (GsDetailsPage *self)
+gs_details_page_cancel_cb (GCancellable *cancellable,
+			   GsDetailsPage *self)
 {
 	if (self->app_reviews_dialog) {
 		gtk_window_destroy (GTK_WINDOW (self->app_reviews_dialog));
