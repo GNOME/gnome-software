@@ -12,6 +12,8 @@ case "$1" in
     log_file="_build/meson-logs/testlog.json"
 esac
 
+sudo dnf install -y gdb
+
 # FIXME: The tests should be isolated and use mock services so they do not
 # require a functioning system bus. This will have to do for now though.
 sudo mkdir -p /run/dbus
