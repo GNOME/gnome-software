@@ -12,6 +12,12 @@ case "$1" in
     log_file="_build/meson-logs/testlog.json"
 esac
 
+# Remove Flatpak triggers, to speed up the tests (specifically on Fedora,
+# they could even break the tests by a deadlock or something like that).
+if [ -d /usr/share/flatpak/triggers ]; then
+  sudo rm -rf /usr/share/flatpak/triggers
+fi
+
 # FIXME: The tests should be isolated and use mock services so they do not
 # require a functioning system bus. This will have to do for now though.
 sudo mkdir -p /run/dbus
