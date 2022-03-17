@@ -464,7 +464,8 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
            GError                         **error)
 {
 	JsonArray *collections;
-	JsonObject *root;
+	JsonNode *root_node;
+	JsonObject *root = NULL;
 	g_autoptr(JsonParser) parser = NULL;
 	g_autoptr(GPtrArray) new_distros = NULL;
 
@@ -472,15 +473,17 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 	parser = json_parser_new_immutable ();
 
 	if (!json_parser_load_from_mapped_file (parser, self->cachefn, error))
-		return FALSE;
+		return NULL;
 
-	root = json_node_get_object (json_parser_get_root (parser));
+	root_node = json_parser_get_root (parser);
+	if (root_node != NULL && JSON_NODE_HOLDS_OBJECT (root_node))
+		root = json_node_get_object (root_node);
 	if (root == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no root object");
-		return FALSE;
+		return NULL;
 	}
 
 	collections = json_object_get_array_member (root, "collections");
@@ -489,7 +492,7 @@ load_json (GsPluginFedoraPkgdbCollections  *self,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no collections object");
-		return FALSE;
+		return NULL;
 	}
 
 	for (guint i = 0; i < json_array_get_length (collections); i++) {
@@ -596,6 +599,11 @@ ensure_refresh_cb (GObject      *source_object,
 
 	distros = load_json (self, &local_error);
 	if (distros == NULL) {
+		g_autoptr(GFile) cache_file = g_file_new_for_path (self->cachefn);
+
+		g_debug ("Failed to load cache file ‘%s’, deleting it", self->cachefn);
+		g_file_delete (cache_file, NULL, NULL);
+
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -757,10 +765,27 @@ gs_plugin_fedora_pkgdb_collections_refine_async (GsPlugin            *plugin,
 {
 	GsPluginFedoraPkgdbCollections *self = GS_PLUGIN_FEDORA_PKGDB_COLLECTIONS (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean refine_needed = FALSE;
 	g_autoptr(GError) local_error = NULL;
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_fedora_pkgdb_collections_refine_async);
+
+	/* Check if any of the apps actually need to be refined by this plugin,
+	 * before potentially updating the collections file from the internet. */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM) {
+			refine_needed = TRUE;
+			break;
+		}
+	}
+
+	if (!refine_needed) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* ensure valid data is loaded */
 	_ensure_cache_async (self, cancellable, refine_cb, g_steal_pointer (&task));

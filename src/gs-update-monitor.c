@@ -1408,7 +1408,7 @@ gs_update_monitor_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
 						      network_available_notify_cb,
 						      monitor);
-		monitor->plugin_loader = NULL;
+		g_clear_object (&monitor->plugin_loader);
 	}
 	g_clear_object (&monitor->settings);
 	g_clear_object (&monitor->proxy_upower);
@@ -1436,7 +1436,8 @@ gs_update_monitor_class_init (GsUpdateMonitorClass *klass)
 }
 
 GsUpdateMonitor *
-gs_update_monitor_new (GsApplication *application)
+gs_update_monitor_new (GsApplication  *application,
+                       GsPluginLoader *plugin_loader)
 {
 	GsUpdateMonitor *monitor;
 
@@ -1444,7 +1445,7 @@ gs_update_monitor_new (GsApplication *application)
 	monitor->application = G_APPLICATION (application);
 	g_application_hold (monitor->application);
 
-	monitor->plugin_loader = gs_application_get_plugin_loader (application);
+	monitor->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (monitor->plugin_loader, "notify::allow-updates",
 			  G_CALLBACK (allow_updates_notify_cb), monitor);
 	g_signal_connect (monitor->plugin_loader, "notify::network-available",

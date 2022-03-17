@@ -580,9 +580,15 @@ gs_odrs_provider_refine_ratings (GsOdrsProvider  *self,
 							      GS_UTILS_CACHE_FLAG_CREATE_DIRECTORY,
 							      error);
 
-		if (!cache_filename ||
-		    !gs_odrs_provider_load_ratings (self, cache_filename, NULL))
+		if (!cache_filename)
 			return TRUE;
+
+		if (!gs_odrs_provider_load_ratings (self, cache_filename, NULL)) {
+			g_autoptr(GFile) cache_file = g_file_new_for_path (cache_filename);
+			g_debug ("Failed to load cache file ‘%s’, deleting it", cache_filename);
+			g_file_delete (cache_file, NULL, NULL);
+			return TRUE;
+		}
 
 		locker = g_mutex_locker_new (&self->ratings_mutex);
 
@@ -1380,10 +1386,14 @@ gs_odrs_provider_refresh_ratings_async (GsOdrsProvider             *self,
 		if (tmp < cache_age_secs) {
 			g_debug ("%s is only %" G_GUINT64_FORMAT " seconds old, so ignoring refresh",
 				 cache_filename, tmp);
-			if (!gs_odrs_provider_load_ratings (self, cache_filename, &error_local))
+			if (!gs_odrs_provider_load_ratings (self, cache_filename, &error_local)) {
+				g_debug ("Failed to load cache file ‘%s’, deleting it", cache_filename);
+				g_file_delete (cache_file, NULL, NULL);
+
 				g_task_return_error (task, g_steal_pointer (&error_local));
-			else
+			} else {
 				g_task_return_boolean (task, TRUE);
+			}
 			return;
 		}
 	}
@@ -1406,6 +1416,7 @@ download_ratings_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsOdrsProvider *self = g_task_get_source_object (task);
 	GFile *cache_file = g_task_get_task_data (task);
+	const gchar *cache_file_path = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	if (!gs_download_file_finish (soup_session, result, &local_error)) {
@@ -1415,12 +1426,17 @@ download_ratings_cb (GObject      *source_object,
 		return;
 	}
 
-	if (!gs_odrs_provider_load_ratings (self, g_file_peek_path (cache_file), &local_error))
+	cache_file_path = g_file_peek_path (cache_file);
+	if (!gs_odrs_provider_load_ratings (self, cache_file_path, &local_error)) {
+		g_debug ("Failed to load cache file ‘%s’, deleting it", cache_file_path);
+		g_file_delete (cache_file, NULL, NULL);
+
 		g_task_return_new_error (task, GS_ODRS_PROVIDER_ERROR,
 					 GS_ODRS_PROVIDER_ERROR_PARSING_DATA,
 					 "%s", local_error->message);
-	else
+	} else {
 		g_task_return_boolean (task, TRUE);
+	}
 }
 
 /**

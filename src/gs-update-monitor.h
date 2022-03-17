@@ -20,7 +20,8 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GObject)
 
-GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app);
+GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app,
+							 GsPluginLoader	*plugin_loader);
 void		 gs_update_monitor_autoupdate		(GsUpdateMonitor *monitor);
 void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
 							 GtkWindow	*window);
