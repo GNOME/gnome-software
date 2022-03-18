@@ -588,9 +588,9 @@ gs_plugin_example_refine_finish (GsPlugin *plugin,
           icons are going to be loaded, and you can re-use a lot of the existing
           code in the <code>appstream</code> plugin.
           To do this you just save an AppStream-format XML file in either
-          <filename>/usr/share/app-info/xmls/</filename>,
-          <filename>/var/cache/app-info/xmls/</filename> or
-          <filename>~/.local/share/app-info/xmls/</filename>.
+          <filename>/usr/share/swcatalog/xml/</filename>,
+          <filename>/var/cache/swcatalog/xml/</filename> or
+          <filename>~/.local/share/swcatalog/xml/</filename>.
           GNOME Software will immediately notice any new files, or changes to
           existing files as it has set up the various inotify watches.
         </para>

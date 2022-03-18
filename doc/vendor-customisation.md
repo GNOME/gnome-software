@@ -114,7 +114,7 @@ highlighted as required, all of which involve providing an additional appstream
 file which sets the additional metainfo for those applications.
 
 The main approach is to ship an additional distro-specific appstream file in
-`${DATADIR}/app-info/xmls`, providing and updating it via normal distribution
+`${DATADIR}/swcatalog/xml`, providing and updating it via normal distribution
 channels. For example, by packaging it in its own package which is updated
 regularly.
 
