@@ -644,7 +644,7 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 	g_autoptr(JsonArray) json_array = json_array_new ();
 	g_autoptr(JsonNode) json_node = json_node_new (JSON_NODE_ARRAY);
 
-	ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	ids = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
 	for (guint i = 0; i < provided->len; i++) {
 		GPtrArray *items;
 		AsProvided *prov = g_ptr_array_index (provided, i);
@@ -658,10 +658,8 @@ gs_odrs_provider_get_compat_ids (GsApp *app)
 			if (value == NULL)
 				continue;
 
-			if (g_hash_table_lookup (ids, value) != NULL)
-				continue;
-			g_hash_table_add (ids, g_strdup (value));
-			json_array_add_string_element (json_array, value);
+			if (g_hash_table_add (ids, (gpointer) value))
+				json_array_add_string_element (json_array, value);
 		}
 	}
 	if (json_array_get_length (json_array) == 0)
