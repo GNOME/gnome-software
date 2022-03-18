@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-03-04 15:26+0000\n"
-"PO-Revision-Date: 2022-03-10 11:41+0100\n"
+"POT-Creation-Date: 2022-03-18 08:24+0000\n"
+"PO-Revision-Date: 2022-03-18 16:17+0100\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -75,7 +75,7 @@ msgstr "Uppdateringspanel"
 msgid "The update details"
 msgstr "Detaljerna för uppdateringen"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1845
+#: data/appdata/org.gnome.Software.appdata.xml.in:1878
 msgid "The GNOME Project"
 msgstr "GNOME-projektet"
 
@@ -299,20 +299,20 @@ msgstr "URI som förklarar icke-fri och proprietär programvara"
 #: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
-"app-info folder"
+"swcatalog folder"
 msgstr ""
 "En lista över URL:er som pekar till appstream-filer som kommer att hämtas "
-"till en app-info-mapp"
+"till en swcatalog-mapp"
 
 #: data/org.gnome.software.gschema.xml:140
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
-"false, files are installed in non-standard $XDG_DATA_HOME/app-info/xmls "
+"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
 "Installera AppStream-filerna på en systemomfattande plats för alla "
 "användare. Om false (falskt) installeras filer i icke-standardkatalogen "
-"$XDG_DATA_HOME/app-info/xmls"
+"$XDG_DATA_HOME/swcatalog/xml"
 
 #: data/org.gnome.software.gschema.xml:144
 msgid ""
@@ -729,35 +729,35 @@ msgstr "?"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1020
+#: src/gs-age-rating-context-dialog.c:1029
 #, c-format
 msgid "%s is suitable for everyone"
 msgstr "%s passar för alla"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1024
+#: src/gs-age-rating-context-dialog.c:1033
 #, c-format
 msgid "%s is suitable for toddlers"
 msgstr "%s passar för småbarn"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1028
+#: src/gs-age-rating-context-dialog.c:1037
 #, c-format
 msgid "%s is suitable for young children"
 msgstr "%s passar för unga barn"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1036
+#: src/gs-age-rating-context-dialog.c:1045
 #, c-format
 msgid "%s is suitable for teenagers"
 msgstr "%s passar för tonåringar"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1040
+#: src/gs-age-rating-context-dialog.c:1049
 #, c-format
 msgid "%s is suitable for adults"
 msgstr "%s passar för vuxna"
@@ -765,7 +765,7 @@ msgstr "%s passar för vuxna"
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:1045
+#: src/gs-age-rating-context-dialog.c:1054
 #, c-format
 msgid "%s is suitable for %s"
 msgstr "%s passar för %s"
@@ -804,11 +804,11 @@ msgstr "Paket"
 msgid "Pending"
 msgstr "Väntar"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:445 src/gs-details-page.c:345
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:445 src/gs-details-page.c:346
 msgid "Pending install"
 msgstr "Väntar på att installeras"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:449 src/gs-details-page.c:352
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:449 src/gs-details-page.c:353
 msgid "Pending remove"
 msgstr "Väntar på att tas bort"
 
@@ -821,7 +821,7 @@ msgstr "Installerade"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:194 src/gs-details-page.c:338
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:194 src/gs-details-page.c:339
 msgid "Installing"
 msgstr "Installerar"
 
@@ -975,53 +975,53 @@ msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:127
+#: src/gs-application.c:121
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Uppstartsläge: antingen ”updates” (uppdateringar) , ”updated” (uppdaterat), "
 "”installed” (installerat) eller ”overview” (översikt)"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:121
 msgid "MODE"
 msgstr "LÄGE"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:123
 msgid "Search for applications"
 msgstr "Sök efter program"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:123
 msgid "SEARCH"
 msgstr "SÖKNING"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:125
 msgid "Show application details (using application ID)"
 msgstr "Visa programdetaljer (utifrån program-ID)"
 
-#: src/gs-application.c:131 src/gs-application.c:135
+#: src/gs-application.c:125 src/gs-application.c:129
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:127
 msgid "Show application details (using package name)"
 msgstr "Visa programdetaljer (utifrån paketnamn)"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:127
 msgid "PKGNAME"
 msgstr "PKTNAMN"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:129
 msgid "Install the application (using application ID)"
 msgstr "Installera programmet (utifrån program-ID)"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:131
 msgid "Open a local package file"
 msgstr "Öppna en lokal paketfil"
 
-#: src/gs-application.c:137 src/gs-application.c:142
+#: src/gs-application.c:131 src/gs-application.c:136
 msgid "FILENAME"
 msgstr "FILNAMN"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:133
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1029,39 +1029,39 @@ msgstr ""
 "Typen av interaktion som förväntas för denna åtgärd: antingen "
 "”none” (ingen), ”notify” (avisera) eller ”full”"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:136
 msgid "Show a local metainfo or appdata file"
 msgstr "Visa en lokal metainfo- eller appdata-fil"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:138
 msgid "Show verbose debugging information"
 msgstr "Visa utökad felsökningsinformation"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:140
 msgid "Installs any pending updates in the background"
 msgstr "Installerar väntande uppdateringar i bakgrunden"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:142
 msgid "Show update preferences"
 msgstr "Visa uppdateringsinställningar"
 
-#: src/gs-application.c:150
+#: src/gs-application.c:144
 msgid "Quit the running instance"
 msgstr "Avsluta den körande instansen"
 
-#: src/gs-application.c:152
+#: src/gs-application.c:146
 msgid "Prefer local file sources to AppStream"
 msgstr "Föredra lokala filkällor framför AppStream"
 
-#: src/gs-application.c:154
+#: src/gs-application.c:148
 msgid "Show version number"
 msgstr "Visa versionsnummer"
 
-#: src/gs-application.c:342
+#: src/gs-application.c:241
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "Copyright © 2016–2022 Bidragsgivarna till GNOME Programvara"
 
-#: src/gs-application.c:345
+#: src/gs-application.c:244
 msgid "translator-credits"
 msgstr ""
 "Mattias Eriksson <snaggen@gmail.com>\n"
@@ -1073,17 +1073,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:358 src/gs-shell.c:2147
+#: src/gs-application.c:257 src/gs-shell.c:2147
 msgid "About Software"
 msgstr "Om Programvara"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:361
+#: src/gs-application.c:260
 msgid "A nice way to manage the software on your system."
 msgstr "Ett trevligt sätt att hantera programvaran på ditt system."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:546
+#: src/gs-application.c:449
 msgid "Sorry! There are no details for that application."
 msgstr "Det finns tyvärr inga detaljer för det programmet."
 
@@ -2162,37 +2162,37 @@ msgstr "_Visa mer"
 msgid "_Show Less"
 msgstr "_Visa mindre"
 
-#: src/gs-details-page.c:333
+#: src/gs-details-page.c:334
 msgid "Removing…"
 msgstr "Ta bort…"
 
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:344
 msgid "Requires restart to finish install"
 msgstr "Kräver omstart för att slutföra installation"
 
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:351
 msgid "Requires restart to finish remove"
 msgstr "Kräver omstart för att slutföra borttagning"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:367
+#: src/gs-details-page.c:368
 msgid "Pending installation…"
 msgstr "Väntar på att installeras…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:374
+#: src/gs-details-page.c:375
 msgid "Pending update…"
 msgstr "Väntar på att uppdateras…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:390
+#: src/gs-details-page.c:391
 msgid "Preparing…"
 msgstr "Förbereder…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:393
+#: src/gs-details-page.c:394
 msgid "Uninstalling…"
 msgstr "Avinstallerar…"
 
@@ -2200,12 +2200,12 @@ msgstr "Avinstallerar…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:812 src/gs-details-page.c:838
+#: src/gs-details-page.c:813 src/gs-details-page.c:839
 #: src/gs-details-page.ui:220 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "_Installera"
 
-#: src/gs-details-page.c:828
+#: src/gs-details-page.c:829
 msgid "_Restart"
 msgstr "_Starta om"
 
@@ -2213,16 +2213,16 @@ msgstr "_Starta om"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:852
+#: src/gs-details-page.c:853
 msgid "_Install…"
 msgstr "_Installera…"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1386
+#: src/gs-details-page.c:1389
 msgid "You need internet access to write a review"
 msgstr "Du behöver vara ansluten till internet för att skriva ett omdöme"
 
-#: src/gs-details-page.c:1534 src/gs-details-page.c:1550
+#: src/gs-details-page.c:1537 src/gs-details-page.c:1553
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Kunde inte hitta ”%s”"
@@ -3022,7 +3022,7 @@ msgstr "Andra kategorier"
 msgid "No Application Data Found"
 msgstr "Inga programdata hittades"
 
-#: lib/gs-plugin-loader.c:2837
+#: lib/gs-plugin-loader.c:2878
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Okänt"
@@ -4873,7 +4873,7 @@ msgstr "Flatpak är ett ramverk för skrivbordsprogram på Linux"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Hämtar flatpak-metadata för %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3282
+#: plugins/flatpak/gs-flatpak.c:3303
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Misslyckades med att förfina tillägget ”%s”: %s"
