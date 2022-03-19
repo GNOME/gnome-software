@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-03-15 12:40+0000\n"
-"PO-Revision-Date: 2022-03-15 22:35+0100\n"
+"POT-Creation-Date: 2022-03-19 15:59+0000\n"
+"PO-Revision-Date: 2022-03-19 20:41+0100\n"
 "Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -72,7 +72,7 @@ msgstr "Okno posodobitev"
 msgid "The update details"
 msgstr "Podrobnosti posodobitve"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1845
+#: data/appdata/org.gnome.Software.appdata.xml.in:1878
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -289,20 +289,20 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
-"app-info folder"
+"swcatalog folder"
 msgstr ""
-"Seznam naslovov URL, ki kažejo na datoteke programov, ki bodo prejete v mapo "
-"app-info"
+"Seznam naslovov URL, ki kažejo na datoteke programov appstream, ki bodo "
+"prejete v mapo swcatalog"
 
 #: data/org.gnome.software.gschema.xml:140
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
-"false, files are installed in non-standard $XDG_DATA_HOME/app-info/xmls "
+"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
 "Namestitev datotek AppStream na sistemsko mesto za vse uporabnike: Če "
 "možnost ni izbrana, so datoteke nameščene na neobičajno mesto v mapo "
-"$XDG_DATA_HOME/app-info/xmls."
+"$XDG_DATA_HOME/swcatalog/xml."
 
 #: data/org.gnome.software.gschema.xml:144
 msgid ""
@@ -794,11 +794,11 @@ msgstr "Paket"
 msgid "Pending"
 msgstr "Na čakanju"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:445 src/gs-details-page.c:345
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:445 src/gs-details-page.c:346
 msgid "Pending install"
 msgstr "Namestitev na čakanju"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:449 src/gs-details-page.c:352
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:449 src/gs-details-page.c:353
 msgid "Pending remove"
 msgstr "Odstranitev na čakanju"
 
@@ -811,7 +811,7 @@ msgstr "Nameščeno"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:194 src/gs-details-page.c:338
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:194 src/gs-details-page.c:339
 msgid "Installing"
 msgstr "Nameščanje"
 
@@ -966,53 +966,53 @@ msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:127
+#: src/gs-application.c:121
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Začetni zagon je lahko prikaz »posodobitev«, »posodobljenih«, »nameščenih« "
 "ali »pregleda«."
 
-#: src/gs-application.c:127
+#: src/gs-application.c:121
 msgid "MODE"
 msgstr "NAČIN"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:123
 msgid "Search for applications"
 msgstr "Poišči program"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:123
 msgid "SEARCH"
 msgstr "POIŠČI"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:125
 msgid "Show application details (using application ID)"
 msgstr "Pokaži podrobnosti programa (prek številke ID)"
 
-#: src/gs-application.c:131 src/gs-application.c:135
+#: src/gs-application.c:125 src/gs-application.c:129
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:127
 msgid "Show application details (using package name)"
 msgstr "Pokaži podrobnosti programa (prek imena paketa)"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:127
 msgid "PKGNAME"
 msgstr "IME PAKETA"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:129
 msgid "Install the application (using application ID)"
 msgstr "Namesti programa (prek številke ID)"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:131
 msgid "Open a local package file"
 msgstr "Odpri krajevno namestitveno datoteko"
 
-#: src/gs-application.c:137 src/gs-application.c:142
+#: src/gs-application.c:131 src/gs-application.c:136
 msgid "FILENAME"
 msgstr "IMEDATOTEKE"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:133
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1020,55 +1020,55 @@ msgstr ""
 "Vrsta odziva, ki je pričakovan za to dejanje: možnost iso »brez«, »obvesti« "
 "in »polno«"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:136
 msgid "Show a local metainfo or appdata file"
 msgstr "Pokaži krajevne metapodatke oziroma datoteko appdata"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:138
 msgid "Show verbose debugging information"
 msgstr "Pokaži podroben izpis razhroščevanja"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:140
 msgid "Installs any pending updates in the background"
 msgstr "Namesti vse posodobitve v ozadju"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:142
 msgid "Show update preferences"
 msgstr "Pokaži nastavitve posodabljanja"
 
-#: src/gs-application.c:150
+#: src/gs-application.c:144
 msgid "Quit the running instance"
 msgstr "Končaj izvajanje zagnanega primerka"
 
-#: src/gs-application.c:152
+#: src/gs-application.c:146
 msgid "Prefer local file sources to AppStream"
 msgstr "Prednostno išči krajevne datotečne vire"
 
-#: src/gs-application.c:154
+#: src/gs-application.c:148
 msgid "Show version number"
 msgstr "Pokaži podatke različice"
 
-#: src/gs-application.c:342
+#: src/gs-application.c:241
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "Avtorske pravice © 2016–2022 Skupnost GNOME Software"
 
-#: src/gs-application.c:345
+#: src/gs-application.c:244
 msgid "translator-credits"
 msgstr "Matej Urbančič <mateju@src.gnome.org>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:358 src/gs-shell.c:2147
+#: src/gs-application.c:257 src/gs-shell.c:2147
 msgid "About Software"
 msgstr "O orodju Programi GNOME"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:361
+#: src/gs-application.c:260
 msgid "A nice way to manage the software on your system."
 msgstr "Enostaven način upravljanja s programsko opremo sistema."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:546
+#: src/gs-application.c:449
 msgid "Sorry! There are no details for that application."
 msgstr "Za ta program podrobnosti niso na voljo."
 
@@ -2162,37 +2162,37 @@ msgstr "Pokaži več _podrobnosti"
 msgid "_Show Less"
 msgstr "Pokaži manj _podrobnosti"
 
-#: src/gs-details-page.c:333
+#: src/gs-details-page.c:334
 msgid "Removing…"
 msgstr "Poteka odstranjevanje …"
 
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:344
 msgid "Requires restart to finish install"
 msgstr "Zahteva ponoven zagon za dokončanje namestitve"
 
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:351
 msgid "Requires restart to finish remove"
 msgstr "Zahteva ponoven zagon pred dokončanjem odstranjevanja"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:367
+#: src/gs-details-page.c:368
 msgid "Pending installation…"
 msgstr "Namestitev na čakanju …"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:374
+#: src/gs-details-page.c:375
 msgid "Pending update…"
 msgstr "Poteka nastavljanje posodobitev …"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:390
+#: src/gs-details-page.c:391
 msgid "Preparing…"
 msgstr "Poteka priprava …"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:393
+#: src/gs-details-page.c:394
 msgid "Uninstalling…"
 msgstr "Poteka odstranjevanje namestitve …"
 
@@ -2200,12 +2200,12 @@ msgstr "Poteka odstranjevanje namestitve …"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:812 src/gs-details-page.c:838
+#: src/gs-details-page.c:813 src/gs-details-page.c:839
 #: src/gs-details-page.ui:220 plugins/packagekit/gs-packagekit-task.c:148
 msgid "_Install"
 msgstr "_Namesti"
 
-#: src/gs-details-page.c:828
+#: src/gs-details-page.c:829
 msgid "_Restart"
 msgstr "_Ponovno zaženi"
 
@@ -2213,16 +2213,16 @@ msgstr "_Ponovno zaženi"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:852
+#: src/gs-details-page.c:853
 msgid "_Install…"
 msgstr "_Namesti …"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1388
+#: src/gs-details-page.c:1389
 msgid "You need internet access to write a review"
 msgstr "Za objavo mnenja ali ocene je zahtevana internetna povezava."
 
-#: src/gs-details-page.c:1536 src/gs-details-page.c:1552
+#: src/gs-details-page.c:1537 src/gs-details-page.c:1553
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Ni mogoče najti »%s«"
@@ -3034,7 +3034,7 @@ msgstr "Druge kategorije"
 msgid "No Application Data Found"
 msgstr "Podatkov o programu ni mogoče najti"
 
-#: lib/gs-plugin-loader.c:2837
+#: lib/gs-plugin-loader.c:2878
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Neznano"
@@ -4921,7 +4921,7 @@ msgstr "Flatpak je okolje za podporo namiznim programom sistema Linux"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Pridobi metapodatke flatpak za %s …"
 
-#: plugins/flatpak/gs-flatpak.c:3282
+#: plugins/flatpak/gs-flatpak.c:3303
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Ni mogoče določiti vstavka »%s«: %s"
