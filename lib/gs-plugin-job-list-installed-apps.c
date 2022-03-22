@@ -63,6 +63,7 @@ struct _GsPluginJobListInstalledApps
 	GsAppList *merged_list;  /* (owned) (nullable) */
 	GError *saved_error;  /* (owned) (nullable) */
 	guint n_pending_ops;
+	guint current_batch;
 
 	/* Results. */
 	GsAppList *result_list;  /* (owned) (nullable) */
@@ -281,12 +282,14 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 	/* run each plugin, keeping a counter of pending operations which is
 	 * initialised to 1 until all the operations are started */
 	self->n_pending_ops = 1;
+	self->current_batch = G_MAXUINT;
 	self->merged_list = gs_app_list_new ();
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		guint plugin_order = gs_plugin_get_order (plugin);
 
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
@@ -295,6 +298,11 @@ gs_plugin_job_list_installed_apps_run_async (GsPluginJob         *job,
 
 		/* at least one plugin supports this vfunc */
 		anything_ran = TRUE;
+
+		if (self->current_batch == G_MAXUINT)
+			self->current_batch = plugin_order;
+		else if (self->current_batch != plugin_order)
+			break;
 
 		/* run the plugin */
 		self->n_pending_ops++;
@@ -346,13 +354,52 @@ finish_op (GTask  *task,
 	GsPluginJobListInstalledApps *self = g_task_get_source_object (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
+	GPtrArray *plugins;  /* (element-type GsPlugin) */
 	g_autoptr(GsAppList) merged_list = NULL;
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+	guint prev_batch = self->current_batch;
 
 	if (error_owned != NULL && self->saved_error == NULL)
 		self->saved_error = g_steal_pointer (&error_owned);
 	else if (error_owned != NULL)
 		g_debug ("Additional error while listing installed apps: %s", error_owned->message);
+
+	g_assert (self->n_pending_ops > 0);
+	self->n_pending_ops--;
+
+	if (self->n_pending_ops > 0)
+		return;
+
+	self->n_pending_ops = 1; /* increment while starting the batch */
+	self->current_batch = G_MAXUINT;
+	plugins = gs_plugin_loader_get_plugins (plugin_loader);
+
+	/* Check if there's another batch of plugins to run */
+	for (guint i = 0; i < plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (plugins, i);
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		guint plugin_order = gs_plugin_get_order (plugin);
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+		if (plugin_class->list_installed_apps_async == NULL)
+			continue;
+
+		if (plugin_order <= prev_batch)
+			continue;
+
+		if (self->current_batch == G_MAXUINT)
+			self->current_batch = plugin_order;
+		else if (plugin_order > self->current_batch)
+			break;
+
+		/* run the plugin */
+		self->n_pending_ops++;
+		plugin_class->list_installed_apps_async (plugin, self->flags,
+							 cancellable,
+							 plugin_list_installed_apps_cb,
+							 g_object_ref (task));
+	}
 
 	g_assert (self->n_pending_ops > 0);
 	self->n_pending_ops--;
