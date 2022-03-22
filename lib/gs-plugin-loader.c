@@ -2142,6 +2142,7 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
 
 typedef struct {
 	guint n_pending;
+	guint current_batch;
 #ifdef HAVE_SYSPROF
 	gint64 setup_begin_time_nsec;
 	gint64 plugins_begin_time_nsec;
@@ -2429,6 +2430,7 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	/* run setup */
 	setup_data = setup_data_owned = g_new0 (SetupData, 1);
 	setup_data->n_pending = 1;  /* incremented until all operations have been started */
+	setup_data->current_batch = G_MAXUINT;
 #ifdef HAVE_SYSPROF
 	setup_data->setup_begin_time_nsec = begin_time_nsec;
 	setup_data->plugins_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
@@ -2436,17 +2438,28 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 
 	g_task_set_task_data (task, g_steal_pointer (&setup_data_owned), (GDestroyNotify) setup_data_free);
 
+	/* Set up the first batch of plugins as determined by order number set above */
 	for (i = 0; i < plugin_loader->plugins->len; i++) {
+		guint plugin_order;
 		plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
 
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 
-		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async != NULL) {
-			setup_data->n_pending++;
-			GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
-								   plugin_setup_cb, g_object_ref (task));
-		}
+		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async == NULL)
+			continue;
+
+		plugin_order = gs_plugin_get_order (plugin);
+		if (setup_data->current_batch == G_MAXUINT)
+			setup_data->current_batch = plugin_order;
+		else if (setup_data->current_batch != plugin_order)
+			break;
+
+		setup_data->n_pending++;
+		g_debug ("Setting up plugin %s in batch %u",
+			 gs_plugin_get_name (plugin), plugin_order);
+		GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
+							   plugin_setup_cb, g_object_ref (task));
 	}
 
 	finish_setup_op (task);
@@ -2497,6 +2510,45 @@ finish_setup_op (GTask *task)
 	GCancellable *cancellable = g_task_get_cancellable (task);
 	g_autoptr(GsAppList) install_queue = NULL;
 	g_autoptr(GError) local_error = NULL;
+	GsPlugin *plugin;
+	guint i;
+	guint prev_batch = data->current_batch;
+
+	g_assert (data->n_pending > 0);
+	data->n_pending--;
+
+	if (data->n_pending > 0)
+		return;
+
+	data->n_pending = 1; /* increment while starting the batch */
+	data->current_batch = G_MAXUINT;
+
+	/* Check if there's another batch of plugins to set up */
+	for (i = 0; i < plugin_loader->plugins->len; i++) {
+		guint plugin_order;
+		plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
+
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+
+		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async == NULL)
+			continue;
+
+		plugin_order = gs_plugin_get_order (plugin);
+		if (plugin_order <= prev_batch)
+			continue;
+
+		if (data->current_batch == G_MAXUINT)
+			data->current_batch = plugin_order;
+		else if (plugin_order > data->current_batch)
+			break;
+
+		data->n_pending++;
+		g_debug ("Setting up plugin %s in batch %u",
+			 gs_plugin_get_name (plugin), plugin_order);
+		GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
+							   plugin_setup_cb, g_object_ref (task));
+	}
 
 	g_assert (data->n_pending > 0);
 	data->n_pending--;
