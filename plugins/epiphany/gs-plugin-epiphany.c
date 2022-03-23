@@ -638,6 +638,7 @@ gs_plugin_app_install (GsPlugin      *plugin,
 	const char *url;
 	const char *name;
 	const char *token = NULL;
+	g_autofree char *installed_desktop_id = NULL;
 	g_autoptr(GVariant) token_v = NULL;
 	g_autoptr(GVariant) icon_v = NULL;
 	GVariantBuilder opt_builder;
@@ -697,13 +698,14 @@ gs_plugin_app_install (GsPlugin      *plugin,
 	g_variant_get (token_v, "(&s)", &token);
 	if (!gs_ephy_web_app_provider_call_install_sync (self->epiphany_proxy,
 							 url, name, token,
-							 NULL,
+							 &installed_desktop_id,
 							 cancellable,
 							 error)) {
 		gs_epiphany_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
+	gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID, installed_desktop_id);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 	return TRUE;
