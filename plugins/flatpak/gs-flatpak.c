@@ -3985,7 +3985,7 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_category_apps (self->silo,
+	return gs_appstream_add_category_apps (self->plugin, self->silo,
 					       category, list,
 					       cancellable, error);
 }
