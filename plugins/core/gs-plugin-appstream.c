@@ -1340,7 +1340,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_category_apps (self->silo,
+	return gs_appstream_add_category_apps (plugin,
+					       self->silo,
 					       category,
 					       list,
 					       cancellable,

@@ -1444,7 +1444,8 @@ gs_appstream_search (GsPlugin *plugin,
 }
 
 gboolean
-gs_appstream_add_category_apps (XbSilo *silo,
+gs_appstream_add_category_apps (GsPlugin *plugin,
+				XbSilo *silo,
 				GsCategory *category,
 				GsAppList *list,
 				GCancellable *cancellable,
@@ -1493,6 +1494,8 @@ gs_appstream_add_category_apps (XbSilo *silo,
 			if (id == NULL)
 				continue;
 			app = gs_app_new (id);
+			gs_app_set_metadata (app, "GnomeSoftware::Creator",
+					     gs_plugin_get_name (plugin));
 			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 			gs_app_list_add (list, app);
 		}
