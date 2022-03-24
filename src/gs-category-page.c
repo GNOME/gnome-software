@@ -34,6 +34,7 @@ struct _GsCategoryPage
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*featured_flow_box;
 	GtkWidget	*recently_updated_flow_box;
+	GtkWidget	*web_apps_flow_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -297,6 +298,7 @@ load_category_finish (LoadCategoryData *data)
 	/* Remove the loading tiles. */
 	gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
 	gs_widget_remove_all (self->recently_updated_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->web_apps_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
 	gs_widget_remove_all (self->category_detail_box, (GsRemoveFunc) gtk_flow_box_remove);
 
 	/* Last 30 days */
@@ -340,6 +342,8 @@ load_category_finish (LoadCategoryData *data)
 				recently_updated = g_slist_remove (recently_updated, tile);
 				min_release_date = gs_app_get_release_date (gs_app_tile_get_app (GS_APP_TILE (recently_updated->data)));
 			}
+		} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_WEB_APP) {
+			flow_box = self->web_apps_flow_box;
 		}
 
 		if (flow_box != NULL) {
@@ -362,6 +366,7 @@ load_category_finish (LoadCategoryData *data)
 	/* Show each of the flow boxes if they have any children. */
 	gtk_widget_set_visible (self->featured_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->featured_flow_box), 0) != NULL);
 	gtk_widget_set_visible (self->recently_updated_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->recently_updated_flow_box), 0) != NULL);
+	gtk_widget_set_visible (self->web_apps_flow_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->web_apps_flow_box), 0) != NULL);
 	gtk_widget_set_visible (self->category_detail_box, gtk_flow_box_get_child_at_index (GTK_FLOW_BOX (self->category_detail_box), 0) != NULL);
 
 	load_category_data_free (data);
@@ -395,6 +400,9 @@ gs_category_page_load_category (GsCategoryPage *self)
 					   MIN (30, gs_category_get_size (self->subcategory)));
 	gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENTLY_UPDATED_APPS);
 
+	if (gs_plugin_loader_get_enabled (self->plugin_loader, "epiphany"))
+		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->web_apps_flow_box), 12);
+
 	if (featured_subcat != NULL) {
 		/* set up the placeholders as having the featured category is a good
 		 * indicator that there will be featured apps */
@@ -417,9 +425,10 @@ gs_category_page_load_category (GsCategoryPage *self)
 	 * query.
 	 *
 	 * Once both queries have returned, turn the list of featured apps into
-	 * a filter, and split the main list in three:
+	 * a filter, and split the main list in four:
 	 *  - Featured apps
 	 *  - Recently updated apps
+	 *  - Web apps
 	 *  - Everything else
 	 * Then populate the UI.
 	 *
@@ -680,6 +689,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_flow_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, recently_updated_flow_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, web_apps_flow_box);
 
 	gtk_widget_class_bind_template_callback (widget_class, top_carousel_app_clicked_cb);
 }
