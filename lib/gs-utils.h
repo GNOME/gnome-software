@@ -134,6 +134,7 @@ guint64		 gs_utils_get_file_size		(const gchar		*filename,
 						 gpointer		 user_data,
 						 GCancellable		*cancellable);
 gchar *		 gs_utils_get_file_etag		(GFile			*file,
+						 GDateTime		**last_modified_date_out,
 						 GCancellable		*cancellable);
 gboolean	 gs_utils_set_file_etag		(GFile			*file,
 						 const gchar		*etag,

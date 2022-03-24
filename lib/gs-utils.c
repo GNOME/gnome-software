@@ -1493,6 +1493,9 @@ gs_utils_get_file_size (const gchar *filename,
 /**
  * gs_utils_get_file_etag:
  * @file: a file to get the ETag for
+ * @last_modified_date_out: (out callee-allocates) (transfer full) (optional) (nullable):
+ *   return location for the last modified date of the file (%NULL to ignore),
+ *   or %NULL if unknown
  * @cancellable: (nullable): an optional #GCancellable or %NULL
  *
  * Gets the ETag for the @file, previously stored by
@@ -1502,25 +1505,39 @@ gs_utils_get_file_size (const gchar *filename,
  *    or %NULL, when the file does not exist, no ETag is stored for it
  *    or other error occurs.
  *
- * Since: 42
+ * Since: 43
  **/
 gchar *
-gs_utils_get_file_etag (GFile        *file,
-                        GCancellable *cancellable)
+gs_utils_get_file_etag (GFile         *file,
+                        GDateTime    **last_modified_date_out,
+                        GCancellable  *cancellable)
 {
 	g_autoptr(GFileInfo) info = NULL;
+	const gchar *attributes;
 	g_autoptr(GError) local_error = NULL;
 
 	g_return_val_if_fail (G_IS_FILE (file), NULL);
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
 
-	info = g_file_query_info (file, METADATA_ETAG_ATTRIBUTE, G_FILE_QUERY_INFO_NONE, cancellable, &local_error);
+	if (last_modified_date_out == NULL)
+		attributes = METADATA_ETAG_ATTRIBUTE;
+	else
+		attributes = METADATA_ETAG_ATTRIBUTE "," G_FILE_ATTRIBUTE_TIME_MODIFIED;
+
+	info = g_file_query_info (file, attributes, G_FILE_QUERY_INFO_NONE, cancellable, &local_error);
 
 	if (info == NULL) {
 		g_debug ("Error getting attribute ‘%s’ for file ‘%s’: %s",
 			 METADATA_ETAG_ATTRIBUTE, g_file_peek_path (file), local_error->message);
+
+		if (last_modified_date_out != NULL)
+			*last_modified_date_out = NULL;
+
 		return NULL;
 	}
+
+	if (last_modified_date_out != NULL)
+		*last_modified_date_out = g_file_info_get_modification_date_time (info);
 
 	return g_strdup (g_file_info_get_attribute_string (info, METADATA_ETAG_ATTRIBUTE));
 }
