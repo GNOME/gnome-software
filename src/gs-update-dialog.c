@@ -56,7 +56,7 @@ leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDia
 		adw_leaflet_remove (leaflet, child);
 
 	child = adw_leaflet_get_visible_child (leaflet);
-	if (child != NULL) {
+	if (child != NULL && g_object_class_find_property (G_OBJECT_CLASS (GTK_WIDGET_GET_CLASS (child)), "title") != NULL) {
 		g_autofree gchar *title = NULL;
 		g_object_get (G_OBJECT (child), "title", &title, NULL);
 		gtk_window_set_title (GTK_WINDOW (dialog), title);
