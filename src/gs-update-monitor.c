@@ -25,7 +25,7 @@ struct _GsUpdateMonitor {
 	GObject		 parent;
 
 	GApplication	*application;
-	GCancellable    *cancellable;
+	GCancellable	*update_cancellable;
 	GCancellable	*refresh_cancellable;
 	GSettings	*settings;
 	GsPluginLoader	*plugin_loader;
@@ -494,7 +494,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						 NULL);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
-						    monitor->cancellable,
+						    monitor->update_cancellable,
 						    update_finished_cb,
 						    monitor);
 	}
@@ -746,7 +746,7 @@ get_updates (GsUpdateMonitor *monitor)
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
-					    monitor->cancellable,
+					    monitor->update_cancellable,
 					    get_updates_finished_cb,
 					    g_steal_pointer (&download_updates_data));
 }
@@ -776,7 +776,7 @@ get_upgrades (GsUpdateMonitor *monitor)
 							     GS_PLUGIN_REFINE_FLAGS_NONE);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
-					    monitor->cancellable,
+					    monitor->update_cancellable,
 					    get_upgrades_finished_cb,
 					    monitor);
 }
@@ -787,7 +787,7 @@ get_system (GsUpdateMonitor *monitor)
 	g_autoptr(GsApp) app = NULL;
 
 	g_debug ("Getting system");
-	gs_plugin_loader_get_system_app_async (monitor->plugin_loader, monitor->cancellable,
+	gs_plugin_loader_get_system_app_async (monitor->plugin_loader, monitor->update_cancellable,
 		get_system_finished_cb, monitor);
 }
 
@@ -877,7 +877,7 @@ get_language_pack_cb (GObject *object, GAsyncResult *res, gpointer data)
 							 NULL);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
-						    monitor->cancellable,
+						    monitor->update_cancellable,
 						    install_language_pack_cb,
 						    with_app_data);
 	}
@@ -900,7 +900,7 @@ check_language_pack (GsUpdateMonitor *monitor) {
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
-					    monitor->cancellable,
+					    monitor->update_cancellable,
 					    get_language_pack_cb,
 					    monitor);
 }
@@ -1193,7 +1193,7 @@ cleanup_notifications_cb (gpointer user_data)
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
-					    monitor->cancellable,
+					    monitor->update_cancellable,
 					    get_updates_historical_cb,
 					    monitor);
 
@@ -1304,9 +1304,9 @@ gs_update_monitor_power_profile_changed_cb (GObject    *object,
 		g_object_unref (self->refresh_cancellable);
 		self->refresh_cancellable = g_cancellable_new ();
 
-		g_cancellable_cancel (self->cancellable);
-		g_object_unref (self->cancellable);
-		self->cancellable = g_cancellable_new ();
+		g_cancellable_cancel (self->update_cancellable);
+		g_object_unref (self->update_cancellable);
+		self->update_cancellable = g_cancellable_new ();
 	} else {
 		/* Else, it might be time to check for updates */
 		check_updates (self);
@@ -1333,7 +1333,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	 * operations more opportunistically than other operations, since
 	 * they’re less important and cancelling them doesn’t result in much
 	 * wasted work */
-	monitor->cancellable = g_cancellable_new ();
+	monitor->update_cancellable = g_cancellable_new ();
 	monitor->refresh_cancellable = g_cancellable_new ();
 
 	/* connect to UPower to get the system power state */
@@ -1388,8 +1388,8 @@ gs_update_monitor_dispose (GObject *object)
 	g_clear_object (&monitor->power_profile_monitor);
 #endif
 
-	g_cancellable_cancel (monitor->cancellable);
-	g_clear_object (&monitor->cancellable);
+	g_cancellable_cancel (monitor->update_cancellable);
+	g_clear_object (&monitor->update_cancellable);
 	g_cancellable_cancel (monitor->refresh_cancellable);
 	g_clear_object (&monitor->refresh_cancellable);
 
