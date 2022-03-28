@@ -25,8 +25,24 @@ struct _GsUpdateMonitor {
 	GObject		 parent;
 
 	GApplication	*application;
-	GCancellable	*update_cancellable;
-	GCancellable	*refresh_cancellable;
+
+	/* We use three cancellables:
+	 *  - @shutdown_cancellable is cancelled only during shutdown/dispose of
+	 *    the #GsUpdateMonitor, to avoid long-running operations keeping the
+	 *    monitor alive.
+	 *  - @update_cancellable is for update/upgrade operations, and is
+	 *    cancelled if they should be cancelled, such as if the computer has
+	 *    to start trying to save power.
+	 *  - @refresh_cancellable is for refreshes and other inconsequential
+	 *    operations which can be cancelled more readily than
+	 *    @update_cancellable with fewer consequences. It’s cancelled if the
+	 *    computer is going into low power mode, or if network connectivity
+	 *    changes.
+	 */
+	GCancellable	*shutdown_cancellable;  /* (owned) (not nullable) */
+	GCancellable	*update_cancellable;  /* (owned) (not nullable) */
+	GCancellable	*refresh_cancellable;  /* (owned) (not nullable) */
+
 	GSettings	*settings;
 	GsPluginLoader	*plugin_loader;
 	GDBusProxy	*proxy_upower;
@@ -1186,14 +1202,15 @@ cleanup_notifications_cb (gpointer user_data)
 	GsUpdateMonitor *monitor = user_data;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	/* this doesn't do any network access */
+	/* this doesn't do any network access, and is only called once just
+	 * after startup, so don’t cancel it with refreshes/updates */
 	g_debug ("getting historical updates for fresh session");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
-					    monitor->update_cancellable,
+					    monitor->shutdown_cancellable,
 					    get_updates_historical_cb,
 					    monitor);
 
@@ -1329,10 +1346,12 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	monitor->check_startup_id =
 		g_timeout_add_seconds (60, check_updates_on_startup_cb, monitor);
 
-	/* we use two cancellables because we want to be able to cancel refresh
+	/* we use three cancellables because we want to be able to cancel refresh
 	 * operations more opportunistically than other operations, since
 	 * they’re less important and cancelling them doesn’t result in much
-	 * wasted work */
+	 * wasted work, and we want to be able to cancel some operations only on
+	 * shutdown. */
+	monitor->shutdown_cancellable = g_cancellable_new ();
 	monitor->update_cancellable = g_cancellable_new ();
 	monitor->refresh_cancellable = g_cancellable_new ();
 
@@ -1392,6 +1411,8 @@ gs_update_monitor_dispose (GObject *object)
 	g_clear_object (&monitor->update_cancellable);
 	g_cancellable_cancel (monitor->refresh_cancellable);
 	g_clear_object (&monitor->refresh_cancellable);
+	g_cancellable_cancel (monitor->shutdown_cancellable);
+	g_clear_object (&monitor->shutdown_cancellable);
 
 	stop_updates_check (monitor);
 	stop_upgrades_check (monitor);
