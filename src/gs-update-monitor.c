@@ -1125,6 +1125,12 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_debug ("Failed to get historical updates: %s", error->message);
+			g_clear_error (&monitor->last_offline_error);
+			return;
+		}
 
 		/* save this in case the user clicks the
 		 * 'Show Details' button from the notification below */
