@@ -26,6 +26,6 @@
 
 G_BEGIN_DECLS
 
-void gs_ioprio_init (void);
+void gs_ioprio_set (gint priority);
 
 G_END_DECLS

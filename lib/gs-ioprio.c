@@ -116,14 +116,73 @@ set_io_priority (int ioprio,
 	return ioprio_set (IOPRIO_WHO_PROCESS, 0, ioprio | (ioclass << IOPRIO_CLASS_SHIFT));
 }
 
-void
-gs_ioprio_init (void)
+static const gchar *
+ioclass_to_string (int ioclass)
 {
-	if (set_io_priority (7, IOPRIO_CLASS_IDLE) == -1) {
-		g_message ("Could not set idle IO priority, attempting best effort of 7");
+	switch (ioclass) {
+	case IOPRIO_CLASS_IDLE:
+		return "IDLE";
+	case IOPRIO_CLASS_BE:
+		return "BE";
+	default:
+		return "unknown";
+	}
+}
 
-		if (set_io_priority (7, IOPRIO_CLASS_BE) == -1) {
-			g_message ("Could not set best effort IO priority either, giving up");
+/**
+ * gs_ioprio_set:
+ * @priority: I/O priority, with higher numeric values indicating lower priority;
+ *   use %G_PRIORITY_DEFAULT as the default
+ *
+ * Set the I/O priority of the current thread using the `ioprio_set()` syscall.
+ *
+ * The @priority is quantised before being passed to the kernel.
+ *
+ * This function may fail if the process doesn’t have permission to change its
+ * I/O priority to the given value. If so, a warning will be printed, as the
+ * quantised priority values are chosen so they shouldn’t typically require
+ * permissions to set.
+ */
+void
+gs_ioprio_set (gint priority)
+{
+	int ioprio, ioclass;
+
+	/* If the priority is lower than default, use an idle I/O priority. The
+	 * condition looks wrong because higher integers indicate lower priority
+	 * in GLib.
+	 *
+	 * Otherwise use a default best-effort priority, which is the same as
+	 * what all new threads get (in the absence of an I/O context with
+	 * `CLONE_IO`). */
+	if (priority > G_PRIORITY_DEFAULT) {
+		ioprio = 7;
+		ioclass = IOPRIO_CLASS_IDLE;
+	} else if (priority == G_PRIORITY_DEFAULT) {
+		ioprio = 4;  /* this is the default priority in the BE class */
+		ioclass = IOPRIO_CLASS_BE;
+	} else {
+		ioprio = 0;  /* this is the highest priority in the BE class */
+		ioclass = IOPRIO_CLASS_BE;
+	}
+
+	g_debug ("Setting I/O priority of thread %p to %s, %d",
+		 g_thread_self (), ioclass_to_string (ioclass), ioprio);
+
+	if (set_io_priority (ioprio, ioclass) == -1) {
+		g_warning ("Could not set I/O priority to %s, %d",
+			   ioclass_to_string (ioclass), ioprio);
+
+		/* If we were trying to set to idle priority, try again with the
+		 * lowest-possible best-effort priority. This is because kernels
+		 * older than 2.6.25 required `CAP_SYS_ADMIN` to set
+		 * `IOPRIO_CLASS_IDLE`. Newer kernels do not. */
+		if (ioclass == IOPRIO_CLASS_IDLE) {
+			ioprio = 7;  /* this is the lowest priority in the BE class */
+			ioclass = IOPRIO_CLASS_BE;
+
+			if (set_io_priority (ioprio, ioclass) == -1)
+				g_warning ("Could not set best effort IO priority either, giving up");
 		}
 	}
 }
@@ -131,7 +190,7 @@ gs_ioprio_init (void)
 #else  /* __linux__ */
 
 void
-gs_ioprio_init (void)
+gs_ioprio_set (gint priority)
 {
 }
 
