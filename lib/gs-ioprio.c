@@ -110,33 +110,19 @@ ioprio_set (int which, int who, int ioprio_val)
 }
 
 static int
-set_io_priority_idle (void)
+set_io_priority (int ioprio,
+		 int ioclass)
 {
-	int ioprio, ioclass;
-
-	ioprio = 7; /* priority is ignored with idle class */
-	ioclass = IOPRIO_CLASS_IDLE << IOPRIO_CLASS_SHIFT;
-
-	return ioprio_set (IOPRIO_WHO_PROCESS, 0, ioprio | ioclass);
-}
-
-static int
-set_io_priority_best_effort (int ioprio_val)
-{
-	int ioclass;
-
-	ioclass = IOPRIO_CLASS_BE << IOPRIO_CLASS_SHIFT;
-
-	return ioprio_set (IOPRIO_WHO_PROCESS, 0, ioprio_val | ioclass);
+	return ioprio_set (IOPRIO_WHO_PROCESS, 0, ioprio | (ioclass << IOPRIO_CLASS_SHIFT));
 }
 
 void
 gs_ioprio_init (void)
 {
-	if (set_io_priority_idle () == -1) {
+	if (set_io_priority (7, IOPRIO_CLASS_IDLE) == -1) {
 		g_message ("Could not set idle IO priority, attempting best effort of 7");
 
-		if (set_io_priority_best_effort (7) == -1) {
+		if (set_io_priority (7, IOPRIO_CLASS_BE) == -1) {
 			g_message ("Could not set best effort IO priority either, giving up");
 		}
 	}
