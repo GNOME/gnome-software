@@ -336,6 +336,12 @@ gs_rpmostree_ref_proxies (GsPluginRpmOstree *self,
 	return gs_rpmostree_ref_proxies_locked (self, out_os_proxy, out_sysroot_proxy, cancellable, error);
 }
 
+static gint
+get_priority_for_interactivity (gboolean interactive)
+{
+	return interactive ? G_PRIORITY_DEFAULT : G_PRIORITY_LOW;
+}
+
 static void setup_thread_cb (GTask        *task,
                              gpointer      source_object,
                              gpointer      task_data,
@@ -1018,12 +1024,13 @@ gs_plugin_rpm_ostree_refresh_metadata_async (GsPlugin                     *plugi
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE);
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refresh_metadata_async);
 	g_task_set_task_data (task, gs_plugin_refresh_metadata_data_new (cache_age_secs, flags), (GDestroyNotify) gs_plugin_refresh_metadata_data_free);
 
-	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
 				refresh_metadata_thread_cb, g_steal_pointer (&task));
 }
 
@@ -2048,11 +2055,12 @@ gs_plugin_rpm_ostree_refine_async (GsPlugin            *plugin,
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rpm_ostree_refine_async);
 
-	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
 				refine_thread_cb, g_steal_pointer (&task));
 }
 
