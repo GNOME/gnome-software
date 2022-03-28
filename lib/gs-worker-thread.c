@@ -20,6 +20,9 @@
  * them in (priority, queue order) order. Each #GTaskThreadFunc is responsible
  * for calling `g_task_return_*()` on its #GTask to complete that task.
  *
+ * The priority passed to gs_worker_thread_queue() will be used to adjust the
+ * worker thread’s I/O priority (using `ioprio_set()`) when executing that task.
+ *
  * It is intended that gs_worker_thread_queue() is an alternative to using
  * g_task_run_in_thread(). g_task_run_in_thread() queues tasks into a single
  * process-wide thread pool, so they are mixed in with other tasks, and it can
@@ -38,6 +41,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "gs-ioprio.h"
 #include "gs-worker-thread.h"
 
 typedef enum {
@@ -204,6 +208,7 @@ gs_worker_thread_new (const gchar *name)
 typedef struct {
 	GTaskThreadFunc work_func;
 	GTask *task;  /* (owned) */
+	gint priority;
 } WorkData;
 
 static void
@@ -224,6 +229,10 @@ work_run_cb (gpointer _data)
 	gpointer task_data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
 
+	/* Set the I/O priority of the thread to match the priority of the
+	 * task. */
+	gs_ioprio_set (data->priority);
+
 	data->work_func (task, source_object, task_data, cancellable);
 
 	return G_SOURCE_REMOVE;
@@ -241,6 +250,11 @@ work_run_cb (gpointer _data)
  * Queue @task to be run in the worker thread at the given @priority.
  *
  * This function takes ownership of @task.
+ *
+ * @priority sets the order of the task in the queue, and also affects the I/O
+ * priority of the worker thread when the task is executed — high priorities
+ * result in a high I/O priority, low priorities result in an idle I/O priority,
+ * as per `ioprio_set()`.
  *
  * When the task is run, @work_func will be executed and passed @task and the
  * source object, task data and cancellable set on @task.
@@ -275,6 +289,7 @@ gs_worker_thread_queue (GsWorkerThread  *self,
 	data = g_new0 (WorkData, 1);
 	data->work_func = work_func;
 	data->task = g_steal_pointer (&task);
+	data->priority = priority;
 
 	g_main_context_invoke_full (self->worker_context, priority,
 				    work_run_cb, g_steal_pointer (&data), (GDestroyNotify) work_data_free);
