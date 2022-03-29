@@ -184,12 +184,13 @@ gs_plugin_rewrite_resource_refine_async (GsPlugin            *plugin,
 {
 	GsPluginRewriteResource *self = GS_PLUGIN_REWRITE_RESOURCE (plugin);
 	g_autoptr(GTask) task = NULL;
+	gboolean interactive = gs_plugin_has_flags (GS_PLUGIN (self), GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	task = gs_plugin_refine_data_new_task (plugin, list, flags, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_rewrite_resource_refine_async);
 
 	/* Queue a job for the refine. */
-	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
+	gs_worker_thread_queue (self->worker, interactive ? G_PRIORITY_DEFAULT : G_PRIORITY_LOW,
 				refine_thread_cb, g_steal_pointer (&task));
 }
 

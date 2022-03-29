@@ -3507,7 +3507,7 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 	GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 
-	gs_ioprio_init ();
+	gs_ioprio_set (G_PRIORITY_LOW);
 
 	gs_plugin_loader_process_thread_cb (task, source_object, task_data, cancellable);
 
