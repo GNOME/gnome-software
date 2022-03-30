@@ -105,12 +105,12 @@ enum {
 	SIGNAL_LAST
 };
 
-enum {
+typedef enum {
 	PROP_EVENTS = 1,
 	PROP_ALLOW_UPDATES,
 	PROP_NETWORK_AVAILABLE,
 	PROP_NETWORK_METERED,
-};
+} GsPluginLoaderProperty;
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
@@ -2613,7 +2613,7 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
-	switch (prop_id) {
+	switch ((GsPluginLoaderProperty) prop_id) {
 	case PROP_EVENTS:
 		g_value_set_pointer (value, plugin_loader->events_by_id);
 		break;
@@ -2636,7 +2636,14 @@ static void
 gs_plugin_loader_set_property (GObject *object, guint prop_id,
 			       const GValue *value, GParamSpec *pspec)
 {
-	switch (prop_id) {
+	switch ((GsPluginLoaderProperty) prop_id) {
+	case PROP_EVENTS:
+	case PROP_ALLOW_UPDATES:
+	case PROP_NETWORK_AVAILABLE:
+	case PROP_NETWORK_METERED:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
