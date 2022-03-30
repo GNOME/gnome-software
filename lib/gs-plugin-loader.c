@@ -106,12 +106,10 @@ enum {
 };
 
 enum {
-	PROP_0,
-	PROP_EVENTS,
+	PROP_EVENTS = 1,
 	PROP_ALLOW_UPDATES,
 	PROP_NETWORK_AVAILABLE,
 	PROP_NETWORK_METERED,
-	PROP_LAST
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
