@@ -1880,7 +1880,10 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_autoptr(GError) error = NULL;
 
 	/* create plugin from file */
-	plugin = gs_plugin_create (filename, &error);
+	plugin = gs_plugin_create (filename,
+				   plugin_loader->session_bus_connection,
+				   plugin_loader->system_bus_connection,
+				   &error);
 	if (plugin == NULL) {
 		g_warning ("Failed to load %s: %s", filename, error->message);
 		return;

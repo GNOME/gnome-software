@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib-object.h>
 #include <gmodule.h>
 
@@ -15,8 +16,11 @@
 
 G_BEGIN_DECLS
 
-GsPlugin	*gs_plugin_new				(void);
+GsPlugin	*gs_plugin_new				(GDBusConnection *session_bus_connection,
+							 GDBusConnection *system_bus_connection);
 GsPlugin	*gs_plugin_create			(const gchar	*filename,
+							 GDBusConnection *session_bus_connection,
+							 GDBusConnection *system_bus_connection,
 							 GError		**error);
 const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
 const gchar	*gs_plugin_action_to_string		(GsPluginAction	 action);
@@ -46,5 +50,8 @@ void		 gs_plugin_interactive_dec		(GsPlugin	*plugin);
 gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
 void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
+
+GDBusConnection	*gs_plugin_get_session_bus_connection	(GsPlugin	*self);
+GDBusConnection	*gs_plugin_get_system_bus_connection	(GsPlugin	*self);
 
 G_END_DECLS

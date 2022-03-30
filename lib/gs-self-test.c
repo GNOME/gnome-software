@@ -174,6 +174,7 @@ gs_plugin_download_rewrite_func (void)
 {
 	g_autofree gchar *css = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GDBusConnection) bus_connection = NULL;
 	g_autoptr(GsPlugin) plugin = NULL;
 	const gchar *resource = "background:\n"
 				" url('file://" DATADIR "/gnome-software/featured-maps.png')\n"
@@ -187,7 +188,10 @@ gs_plugin_download_rewrite_func (void)
 	}
 
 	/* test rewrite */
-	plugin = gs_plugin_new ();
+	bus_connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
+	g_assert_no_error (error);
+
+	plugin = gs_plugin_new (bus_connection, bus_connection);
 	gs_plugin_set_name (plugin, "self-test");
 	css = gs_plugin_download_rewrite_resource (plugin,
 						   NULL, /* app */
