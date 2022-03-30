@@ -10,7 +10,6 @@
 
 #include <glib-object.h>
 #include <gmodule.h>
-#include <libsoup/soup.h>
 
 #include "gs-plugin.h"
 
