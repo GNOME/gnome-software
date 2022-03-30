@@ -1059,83 +1059,15 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	return TRUE;
 }
 
-static GInputStream *
-gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
-				     XbBuilderSourceCtx *ctx,
-				     gpointer user_data,
-				     GCancellable *cancellable,
-				     GError **error)
+static gchar *
+gs_flatpak_get_desktop_files_dir (GsFlatpak *self)
 {
-	g_autofree gchar *xml = NULL;
-	g_autoptr(AsComponent) cpt = as_component_new ();
-	g_autoptr(AsContext) actx = as_context_new ();
-	g_autoptr(GBytes) bytes = NULL;
-	gboolean ret;
+	g_autoptr(GFile) path = NULL;
+	g_autofree gchar *path_str = NULL;
 
-	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
-	if (bytes == NULL)
-		return NULL;
-
-	as_component_set_id (cpt, xb_builder_source_ctx_get_filename (ctx));
-	ret = as_component_load_from_bytes (cpt,
-					    actx,
-					    AS_FORMAT_KIND_DESKTOP_ENTRY,
-					    bytes,
-					    error);
-	if (!ret)
-		return NULL;
-	xml = as_component_to_xml_data (cpt, actx, error);
-	if (xml == NULL)
-		return NULL;
-
-	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
-}
-
-static gboolean
-gs_flatpak_load_desktop_fn (GsFlatpak *self,
-			    XbBuilder *builder,
-			    const gchar *filename,
-			    const gchar *icon_prefix,
-			    GCancellable *cancellable,
-			    GError **error)
-{
-	g_autoptr(GFile) file = g_file_new_for_path (filename);
-	g_autoptr(XbBuilderNode) info = NULL;
-	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
-	g_autoptr(XbBuilderFixup) fixup = NULL;
-
-	/* add support for desktop files */
-	xb_builder_source_add_adapter (source, "application/x-desktop",
-				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
-
-	/* add the flatpak search keyword */
-	fixup = xb_builder_fixup_new ("AddKeywordFlatpak",
-				      gs_flatpak_add_flatpak_keyword_cb,
-				      self, NULL);
-	xb_builder_fixup_set_max_depth (fixup, 2);
-	xb_builder_source_add_fixup (source, fixup);
-
-	/* set the component metadata */
-	info = xb_builder_node_insert (NULL, "info", NULL);
-	xb_builder_node_insert_text (info, "scope", as_component_scope_to_string (self->scope), NULL);
-	xb_builder_node_insert_text (info, "icon-prefix", icon_prefix, NULL);
-	xb_builder_source_set_info (source, info);
-
-	/* add source */
-	if (!xb_builder_source_load_file (source, file,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					  XB_BUILDER_SOURCE_FLAG_WATCH_DIRECTORY,
-#else
-					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
-#endif
-					  cancellable,
-					  error)) {
-		return FALSE;
-	}
-
-	/* success */
-	xb_builder_import_source (builder, source);
-	return TRUE;
+	path = flatpak_installation_get_path (self->installation_noninteractive);
+	path_str = g_file_get_path (path);
+	return g_build_filename (path_str, "exports", "share", "applications", NULL);
 }
 
 static void
@@ -1144,41 +1076,13 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	const gchar *fn;
-	g_autoptr(GFile) path = NULL;
-	g_autoptr(GDir) dir = NULL;
-	g_autofree gchar *path_str = NULL;
-	g_autofree gchar *path_exports = NULL;
-	g_autofree gchar *path_apps = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* add all installed desktop files */
-	path = flatpak_installation_get_path (self->installation_noninteractive);
-	path_str = g_file_get_path (path);
-	path_exports = g_build_filename (path_str, "exports", NULL);
-	path_apps = g_build_filename (path_exports, "share", "applications", NULL);
-	dir = g_dir_open (path_apps, 0, NULL);
-	if (dir == NULL)
-		return;
-	while ((fn = g_dir_read_name (dir)) != NULL) {
-		g_autofree gchar *filename = NULL;
-		g_autoptr(GError) error_local = NULL;
-
-		/* ignore */
-		if (g_strcmp0 (fn, "mimeinfo.cache") == 0)
-			continue;
-
-		/* parse desktop files */
-		filename = g_build_filename (path_apps, fn, NULL);
-		if (!gs_flatpak_load_desktop_fn (self,
-						 builder,
-						 filename,
-						 path_exports,
-						 cancellable,
-						 &error_local)) {
-			g_debug ("ignoring %s: %s", filename, error_local->message);
-			continue;
-		}
-	}
+	path = gs_flatpak_get_desktop_files_dir (self);
+	if (!gs_appstream_load_desktop_files (builder, path, NULL, NULL, cancellable, &error_local))
+		g_debug ("Failed to read flatpak .desktop files in %s: %s", path, error_local->message);
 }
 
 static gboolean
