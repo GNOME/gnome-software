@@ -2739,7 +2739,7 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	obj_props[PROP_EVENTS] =
 		g_param_spec_string ("events", NULL, NULL,
 				     NULL,
-				     G_PARAM_READABLE);
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginLoader:allow-updates:
@@ -2752,7 +2752,7 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	obj_props[PROP_ALLOW_UPDATES] =
 		g_param_spec_boolean ("allow-updates", NULL, NULL,
 				      TRUE,
-				      G_PARAM_READABLE);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginLoader:network-available:
@@ -2764,7 +2764,7 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	obj_props[PROP_NETWORK_AVAILABLE] =
 		g_param_spec_boolean ("network-available", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READABLE);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsPluginLoader:network-metered:
@@ -2776,7 +2776,7 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	obj_props[PROP_NETWORK_METERED] =
 		g_param_spec_boolean ("network-metered", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READABLE);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
