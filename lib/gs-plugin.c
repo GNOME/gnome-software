@@ -75,9 +75,9 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
 
 G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
 
-enum {
+typedef enum {
 	PROP_FLAGS = 1,
-};
+} GsPluginProperty;
 
 enum {
 	SIGNAL_UPDATES_CHANGED,
@@ -1687,7 +1687,8 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 {
 	GsPlugin *plugin = GS_PLUGIN (object);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	switch (prop_id) {
+
+	switch ((GsPluginProperty) prop_id) {
 	case PROP_FLAGS:
 		priv->flags = g_value_get_flags (value);
 		break;
@@ -1702,7 +1703,8 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 {
 	GsPlugin *plugin = GS_PLUGIN (object);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	switch (prop_id) {
+
+	switch ((GsPluginProperty) prop_id) {
 	case PROP_FLAGS:
 		g_value_set_flags (value, priv->flags);
 		break;
