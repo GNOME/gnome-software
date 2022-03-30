@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include "gs-plugin-malcontent.h"
+#include "gs-plugin-private.h"
 
 /*
  * SECTION:
@@ -280,9 +281,6 @@ gs_plugin_malcontent_init (GsPluginMalcontent *self)
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Malcontent");
 }
 
-static void get_bus_cb (GObject      *source_object,
-                        GAsyncResult *result,
-                        gpointer      user_data);
 static void get_app_filter_cb (GObject      *source_object,
                                GAsyncResult *result,
                                gpointer      user_data);
@@ -299,28 +297,7 @@ gs_plugin_malcontent_setup_async (GsPlugin            *plugin,
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_malcontent_setup_async);
 
-	g_bus_get (G_BUS_TYPE_SYSTEM, cancellable, get_bus_cb, g_steal_pointer (&task));
-}
-
-static void
-get_bus_cb (GObject      *source_object,
-            GAsyncResult *result,
-            gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginMalcontent *self = g_task_get_source_object (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
-	g_autoptr(GDBusConnection) system_bus = NULL;
-	g_autoptr(GError) local_error = NULL;
-
-	system_bus = g_bus_get_finish (result, &local_error);
-	if (system_bus == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	self->manager = mct_manager_new (system_bus);
+	self->manager = mct_manager_new (gs_plugin_get_system_bus_connection (plugin));
 	self->manager_app_filter_changed_id = g_signal_connect (self->manager,
 								"app-filter-changed",
 								(GCallback) app_filter_changed_cb,
