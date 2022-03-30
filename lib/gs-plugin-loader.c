@@ -105,6 +105,8 @@ enum {
 	SIGNAL_LAST
 };
 
+static guint signals [SIGNAL_LAST] = { 0 };
+
 typedef enum {
 	PROP_EVENTS = 1,
 	PROP_ALLOW_UPDATES,
@@ -112,7 +114,7 @@ typedef enum {
 	PROP_NETWORK_METERED,
 } GsPluginLoaderProperty;
 
-static guint signals [SIGNAL_LAST] = { 0 };
+static GParamSpec *obj_props[PROP_NETWORK_METERED + 1] = { NULL, };
 
 typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
 typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
@@ -286,7 +288,7 @@ static gboolean
 gs_plugin_loader_notify_idle_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	g_object_notify (G_OBJECT (plugin_loader), "events");
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_EVENTS]);
 	return FALSE;
 }
 
@@ -1728,7 +1730,7 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 
 	/* notify display layer */
 	if (changed)
-		g_object_notify (G_OBJECT (plugin_loader), "allow-updates");
+		g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_ALLOW_UPDATES]);
 }
 
 static void
@@ -2722,7 +2724,6 @@ gs_plugin_loader_finalize (GObject *object)
 static void
 gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->get_property = gs_plugin_loader_get_property;
@@ -2730,25 +2731,54 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	object_class->dispose = gs_plugin_loader_dispose;
 	object_class->finalize = gs_plugin_loader_finalize;
 
-	pspec = g_param_spec_string ("events", NULL, NULL,
+	/**
+	 * GsPluginLoader:events:
+	 *
+	 * Events added on the plugin loader using gs_plugin_loader_add_event().
+	 */
+	obj_props[PROP_EVENTS] =
+		g_param_spec_string ("events", NULL, NULL,
 				     NULL,
 				     G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_EVENTS, pspec);
 
-	pspec = g_param_spec_boolean ("allow-updates", NULL, NULL,
+	/**
+	 * GsPluginLoader:allow-updates:
+	 *
+	 * Whether updates and upgrades are managed by gnome-software.
+	 *
+	 * If not, the updates UI should be hidden and no automatic updates
+	 * performed.
+	 */
+	obj_props[PROP_ALLOW_UPDATES] =
+		g_param_spec_boolean ("allow-updates", NULL, NULL,
 				      TRUE,
 				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_ALLOW_UPDATES, pspec);
 
-	pspec = g_param_spec_boolean ("network-available", NULL, NULL,
+	/**
+	 * GsPluginLoader:network-available:
+	 *
+	 * Whether the network is considered available.
+	 *
+	 * This has the same semantics as #GNetworkMonitor:network-available.
+	 */
+	obj_props[PROP_NETWORK_AVAILABLE] =
+		g_param_spec_boolean ("network-available", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_NETWORK_AVAILABLE, pspec);
 
-	pspec = g_param_spec_boolean ("network-metered", NULL, NULL,
+	/**
+	 * GsPluginLoader:network-metered:
+	 *
+	 * Whether the network is considered metered.
+	 *
+	 * This has the same semantics as #GNetworkMonitor:network-metered.
+	 */
+	obj_props[PROP_NETWORK_METERED] =
+		g_param_spec_boolean ("network-metered", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_NETWORK_METERED, pspec);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
@@ -2989,8 +3019,8 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		 available ? "online" : "offline",
 		 metered ? "metered" : "unmetered");
 
-	g_object_notify (G_OBJECT (plugin_loader), "network-available");
-	g_object_notify (G_OBJECT (plugin_loader), "network-metered");
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_AVAILABLE]);
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_METERED]);
 
 	if (available && !metered) {
 		g_autoptr(GsAppList) queue = NULL;
