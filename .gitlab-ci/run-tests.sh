@@ -23,13 +23,14 @@ fi
 sudo mkdir -p /run/dbus
 sudo mkdir -p /var
 sudo ln -s /var/run /run
-#sudo dbus-daemon --system --fork
+sudo dbus-daemon --system --fork
 #sudo /usr/lib/polkit-1/polkitd --no-debug &
 #sudo /usr/libexec/fwupd/fwupd --verbose &
 
 # FIXME: Running the flatpak tests as root means the system helper doesn’t
 # need to be used, which makes them run a lot faster.
 sudo \
+dbus-run-session -- \
 meson test \
         -C _build \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
