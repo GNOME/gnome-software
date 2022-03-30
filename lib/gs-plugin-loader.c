@@ -3099,15 +3099,30 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 /**
  * gs_plugin_loader_new:
+ * @session_bus_connection: (nullable) (transfer none): a D-Bus session bus
+ *   connection to use, or %NULL to use the default
+ * @system_bus_connection: (nullable) (transfer none): a D-Bus system bus
+ *   connection to use, or %NULL to use the default
  *
- * Return value: a new GsPluginLoader object.
+ * Create a new #GsPluginLoader.
+ *
+ * The D-Bus connection arguments should typically be %NULL, and only be
+ * non-%NULL when doing unit tests.
+ *
+ * Return value: (transfer full) (not nullable): a new #GsPluginLoader
+ * Since: 43
  **/
 GsPluginLoader *
-gs_plugin_loader_new (void)
+gs_plugin_loader_new (GDBusConnection *session_bus_connection,
+                      GDBusConnection *system_bus_connection)
 {
-	GsPluginLoader *plugin_loader;
-	plugin_loader = g_object_new (GS_TYPE_PLUGIN_LOADER, NULL);
-	return GS_PLUGIN_LOADER (plugin_loader);
+	g_return_val_if_fail (session_bus_connection == NULL || G_IS_DBUS_CONNECTION (session_bus_connection), NULL);
+	g_return_val_if_fail (system_bus_connection == NULL || G_IS_DBUS_CONNECTION (system_bus_connection), NULL);
+
+	return g_object_new (GS_TYPE_PLUGIN_LOADER,
+			     "session-bus-connection", session_bus_connection,
+			     "system-bus-connection", system_bus_connection,
+			     NULL);
 }
 
 static void

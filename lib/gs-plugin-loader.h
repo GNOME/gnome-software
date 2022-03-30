@@ -25,7 +25,8 @@ G_DECLARE_FINAL_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObje
 
 #include "gs-plugin-job.h"
 
-GsPluginLoader	*gs_plugin_loader_new			(void);
+GsPluginLoader	*gs_plugin_loader_new			(GDBusConnection *session_bus_connection,
+							 GDBusConnection *system_bus_connection);
 void		 gs_plugin_loader_job_process_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,

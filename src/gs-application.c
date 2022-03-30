@@ -945,7 +945,7 @@ gs_application_startup (GApplication *application)
 	if (tmp != NULL)
 		plugin_allowlist = g_strsplit (tmp, ",", -1);
 
-	app->plugin_loader = gs_plugin_loader_new ();
+	app->plugin_loader = gs_plugin_loader_new (g_application_get_dbus_connection (application), NULL);
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (app->plugin_loader, LOCALPLUGINDIR);
 

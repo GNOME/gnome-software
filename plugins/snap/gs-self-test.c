@@ -357,7 +357,7 @@ main (int argc, char **argv)
 	gs_test_init (&argc, &argv);
 
 	/* we can only load this once per process */
-	plugin_loader = gs_plugin_loader_new ();
+	plugin_loader = gs_plugin_loader_new (NULL, NULL);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_CORE);
 	ret = gs_plugin_loader_setup (plugin_loader,

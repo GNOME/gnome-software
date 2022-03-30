@@ -254,7 +254,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/markdown", gs_markdown_func);
 
 	/* we can only load this once per process */
-	plugin_loader = gs_plugin_loader_new ();
+	plugin_loader = gs_plugin_loader_new (NULL, NULL);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      allowlist,
