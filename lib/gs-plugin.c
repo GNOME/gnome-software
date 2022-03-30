@@ -588,6 +588,7 @@ gs_plugin_add_flags (GsPlugin *plugin, GsPluginFlags flags)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->flags |= flags;
+	g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
 }
 
 /**
@@ -604,6 +605,7 @@ gs_plugin_remove_flags (GsPlugin *plugin, GsPluginFlags flags)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->flags &= ~flags;
+	g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
 }
 
 /**
@@ -1693,6 +1695,7 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	switch ((GsPluginProperty) prop_id) {
 	case PROP_FLAGS:
 		priv->flags = g_value_get_flags (value);
+		g_object_notify_by_pspec (G_OBJECT (plugin), obj_props[PROP_FLAGS]);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1735,7 +1738,7 @@ gs_plugin_class_init (GsPluginClass *klass)
 	obj_props[PROP_FLAGS] =
 		g_param_spec_flags ("flags", NULL, NULL,
 				    GS_TYPE_PLUGIN_FLAGS, GS_PLUGIN_FLAGS_NONE,
-				    G_PARAM_READWRITE);
+				    G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
