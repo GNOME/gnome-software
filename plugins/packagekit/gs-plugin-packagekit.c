@@ -21,6 +21,7 @@
 #include "gs-markdown.h"
 #include "gs-packagekit-helper.h"
 #include "gs-packagekit-task.h"
+#include "gs-plugin-private.h"
 
 #include "gs-plugin-packagekit.h"
 
@@ -58,8 +59,6 @@ struct _GsPluginPackagekit {
 	PkControl		*control_refine;
 	PkClient		*client_refine;
 	GMutex			 client_mutex_refine;
-
-	GDBusConnection		*connection_history;
 
 	PkTask			*task_local;
 	GMutex			 task_mutex_local;
@@ -233,9 +232,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* refine */
 	g_clear_object (&self->client_refine);
 	g_clear_object (&self->control_refine);
-
-	/* history */
-	g_clear_object (&self->connection_history);
 
 	/* local */
 	g_clear_object (&self->task_local);
@@ -2298,9 +2294,6 @@ gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 	gs_plugin_packagekit_refresh_is_triggered (self, NULL);
 }
 
-static void setup_cb (GObject      *source_object,
-                      GAsyncResult *result,
-                      gpointer      user_data);
 static void setup_proxy_settings_cb (GObject      *source_object,
                                      GAsyncResult *result,
                                      gpointer      user_data);
@@ -2314,30 +2307,11 @@ gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
                                   GAsyncReadyCallback  callback,
                                   gpointer             user_data)
 {
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GTask) task = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_setup_async);
-
-	g_bus_get (G_BUS_TYPE_SYSTEM, cancellable, setup_cb, g_steal_pointer (&task));
-}
-
-static void
-setup_cb (GObject      *source_object,
-          GAsyncResult *result,
-          gpointer      user_data)
-{
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginPackagekit *self = g_task_get_source_object (task);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-	g_autoptr(GError) local_error = NULL;
-
-	self->connection_history = g_bus_get_finish (result, &local_error);
-	if (self->connection_history == NULL) {
-		gs_plugin_packagekit_error_convert (&local_error);
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
 
 	reload_proxy_settings_async (self, cancellable, setup_proxy_settings_cb, g_steal_pointer (&task));
 }
@@ -2476,7 +2450,7 @@ gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
 	}
 
 	g_debug ("getting history for %u packages", gs_app_list_length (list));
-	g_dbus_connection_call (self->connection_history,
+	g_dbus_connection_call (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
 				"org.freedesktop.PackageKit",
 				"/org/freedesktop/PackageKit",
 				"org.freedesktop.PackageKit",
@@ -3833,16 +3807,12 @@ gs_systemd_call_trigger (GsPlugin *plugin,
 			 GError **error)
 {
 	const gchar *tmp;
-	g_autoptr(GDBusConnection) connection = NULL;
 	g_autoptr(GVariant) res = NULL;
 
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
-	if (connection == NULL)
-		return FALSE;
 	tmp = pk_offline_action_to_string (action);
-	res = g_dbus_connection_call_sync (connection,
+	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
 					   "org.freedesktop.PackageKit",
 					   "/org/freedesktop/PackageKit",
 					   "org.freedesktop.PackageKit.Offline",
@@ -3863,15 +3833,11 @@ gs_systemd_call_cancel (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	g_autoptr(GDBusConnection) connection = NULL;
 	g_autoptr(GVariant) res = NULL;
 
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
-	if (connection == NULL)
-		return FALSE;
-	res = g_dbus_connection_call_sync (connection,
+	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
 					   "org.freedesktop.PackageKit",
 					   "/org/freedesktop/PackageKit",
 					   "org.freedesktop.PackageKit.Offline",
@@ -3894,16 +3860,12 @@ gs_systemd_call_trigger_upgrade (GsPlugin *plugin,
 				 GError **error)
 {
 	const gchar *tmp;
-	g_autoptr(GDBusConnection) connection = NULL;
 	g_autoptr(GVariant) res = NULL;
 
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, error);
-	if (connection == NULL)
-		return FALSE;
 	tmp = pk_offline_action_to_string (action);
-	res = g_dbus_connection_call_sync (connection,
+	res = g_dbus_connection_call_sync (gs_plugin_get_system_bus_connection (plugin),
 					   "org.freedesktop.PackageKit",
 					   "/org/freedesktop/PackageKit",
 					   "org.freedesktop.PackageKit.Offline",
