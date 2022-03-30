@@ -79,6 +79,8 @@ typedef enum {
 	PROP_FLAGS = 1,
 } GsPluginProperty;
 
+static GParamSpec *obj_props[PROP_FLAGS + 1] = { NULL, };
+
 enum {
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_STATUS_CHANGED,
@@ -1717,17 +1719,25 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 static void
 gs_plugin_class_init (GsPluginClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->set_property = gs_plugin_set_property;
 	object_class->get_property = gs_plugin_get_property;
 	object_class->finalize = gs_plugin_finalize;
 
-	pspec = g_param_spec_flags ("flags", NULL, NULL,
+	/**
+	 * GsPlugin:flags:
+	 *
+	 * Flags which indicate various boolean properties of the plugin.
+	 *
+	 * These may change during the plugin’s lifetime.
+	 */
+	obj_props[PROP_FLAGS] =
+		g_param_spec_flags ("flags", NULL, NULL,
 				    GS_TYPE_PLUGIN_FLAGS, GS_PLUGIN_FLAGS_NONE,
 				    G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_UPDATES_CHANGED] =
 		g_signal_new ("updates-changed",
