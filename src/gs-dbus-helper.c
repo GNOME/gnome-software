@@ -25,7 +25,6 @@
 
 struct _GsDbusHelper {
 	GObject			 parent;
-	GCancellable		*cancellable;
 	GDBusInterfaceSkeleton	*query_interface;
 	GDBusInterfaceSkeleton	*modify_interface;
 	GDBusInterfaceSkeleton	*modify2_interface;
@@ -820,7 +819,6 @@ static void
 gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 {
 	dbus_helper->task = pk_task_new ();
-	dbus_helper->cancellable = g_cancellable_new ();
 }
 
 static void
@@ -884,9 +882,6 @@ static void
 gs_dbus_helper_dispose (GObject *object)
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
-
-	g_cancellable_cancel (dbus_helper->cancellable);
-	g_clear_object (&dbus_helper->cancellable);
 
 	if (dbus_helper->dbus_own_name_id != 0) {
 		g_bus_unown_name (dbus_helper->dbus_own_name_id);
