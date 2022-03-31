@@ -2432,6 +2432,14 @@ gs_appstream_get_appstream_data_dirs (void)
 }
 
 void
+gs_appstream_add_current_locales (XbBuilder *builder)
+{
+	const gchar *const *locales = g_get_language_names ();
+	for (guint i = 0; locales[i] != NULL; i++)
+		xb_builder_add_locale (builder, locales[i]);
+}
+
+void
 gs_appstream_component_add_keyword (XbBuilderNode *component, const gchar *str)
 {
 	g_autoptr(XbBuilderNode) keyword = NULL;
