@@ -721,22 +721,10 @@ gs_dbus_helper_name_lost_cb (GDBusConnection *connection,
 }
 
 static void
-bus_gotten_cb (GObject      *source_object,
-               GAsyncResult *res,
-               gpointer      user_data)
+export_objects (GsDbusHelper *dbus_helper)
 {
-	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
-	g_autoptr(GDBusConnection) connection = NULL;
 	g_autoptr(GDesktopAppInfo) app_info = NULL;
 	g_autoptr(GError) error = NULL;
-
-	connection = g_bus_get_finish (res, &error);
-	if (connection == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
-		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("Could not get session bus: %s", error->message);
-		return;
-	}
 
 	/* Query interface */
 	dbus_helper->query_interface = G_DBUS_INTERFACE_SKELETON (gs_package_kit_query_skeleton_new ());
@@ -747,7 +735,7 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_query_search_file), dbus_helper);
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->query_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
@@ -775,7 +763,7 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_modify_install_printer_drivers), dbus_helper);
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->modify_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
@@ -813,14 +801,14 @@ bus_gotten_cb (GObject      *source_object,
 	}
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->modify2_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
 	        return;
 	}
 
-	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (connection,
+	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (dbus_helper->bus_connection,
 	                                                              "org.freedesktop.PackageKit",
 	                                                              G_BUS_NAME_OWNER_FLAGS_NONE,
 	                                                              gs_dbus_helper_name_acquired_cb,
@@ -833,11 +821,6 @@ gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 {
 	dbus_helper->task = pk_task_new ();
 	dbus_helper->cancellable = g_cancellable_new ();
-
-	g_bus_get (G_BUS_TYPE_SESSION,
-	           dbus_helper->cancellable,
-	           (GAsyncReadyCallback) bus_gotten_cb,
-	           dbus_helper);
 }
 
 static void
@@ -849,6 +832,14 @@ gs_dbus_helper_constructed (GObject *object)
 
 	/* Check all required properties have been set. */
 	g_assert (dbus_helper->bus_connection != NULL);
+
+	/* Export the objects.
+	 *
+	 * FIXME: This is failable and asynchronous, so should really happen
+	 * as the result of an explicit method call on some
+	 * gs_dbus_helper_start_async() call or similar, but that can wait until
+	 * a future refactoring. */
+	export_objects (dbus_helper);
 }
 
 static void
