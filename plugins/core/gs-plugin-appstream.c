@@ -622,6 +622,12 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		/* Nothing to watch in the tests */
 		parent_appstream = g_ptr_array_new_with_free_func (g_free);
 	} else {
+		g_autoptr(GPtrArray) parent_desktop = g_ptr_array_new ();
+
+		g_ptr_array_add (parent_desktop, (gpointer) DATADIR "/applications");
+		if (g_strcmp0 (DATADIR, "/usr/share") != 0)
+			g_ptr_array_add (parent_desktop, (gpointer) "/usr/share/applications");
+
 		/* add search paths */
 		parent_appstream = gs_appstream_get_appstream_data_dirs ();
 		gs_add_appstream_metainfo_location (parent_appdata, DATADIR);
@@ -657,20 +663,15 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 				return FALSE;
 			}
 		}
-		if (!gs_appstream_load_desktop_files (builder,
-						      DATADIR "/applications",
-						      NULL, NULL, cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
-		}
-		if (g_strcmp0 (DATADIR, "/usr/share") != 0 &&
-		    !gs_appstream_load_desktop_files (builder,
-						      "/usr/share/applications",
-						      NULL, NULL, cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
+		for (guint i = 0; i < parent_desktop->len; i++) {
+			g_autoptr(GFileMonitor) file_monitor = NULL;
+			const gchar *dir = g_ptr_array_index (parent_desktop, i);
+			if (!gs_appstream_load_desktop_files (builder, dir, NULL, &file_monitor, cancellable, error)) {
+				if (old_thread_default != NULL)
+					g_main_context_push_thread_default (old_thread_default);
+				return FALSE;
+			}
+			gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 		}
 
 		if (old_thread_default != NULL)
