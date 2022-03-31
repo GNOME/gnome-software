@@ -1091,7 +1091,6 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	const gchar *const *locales = g_get_language_names ();
 	g_autofree gchar *blobfn = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -1130,9 +1129,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 					      XB_SILO_PROFILE_FLAG_DEBUG);
 	}
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++)
-		xb_builder_add_locale (builder, locales[i]);
+	gs_appstream_add_current_locales (builder);
 
 	/* go through each remote adding metadata */
 	xremotes = flatpak_installation_list_remotes (gs_flatpak_get_installation (self, interactive),
@@ -3092,7 +3089,6 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 					GCancellable *cancellable,
 					GError **error)
 {
-	const gchar *const *locales = g_get_language_names ();
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
@@ -3117,9 +3113,7 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 		g_main_context_push_thread_default (old_thread_default);
 	g_clear_pointer (&old_thread_default, g_main_context_unref);
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++)
-		xb_builder_add_locale (builder, locales[i]);
+	gs_appstream_add_current_locales (builder);
 
 	/* decompress data */
 	decompressor = g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP);
@@ -3980,7 +3974,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GError **error)
 {
 	GsApp *runtime;
-	const gchar *const *locales = g_get_language_names ();
 	const gchar *remote_name;
 	gboolean is_runtime, success;
 	gsize len = 0;
@@ -4009,9 +4002,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autofree gchar *ref_branch = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++)
-		xb_builder_add_locale (builder, locales[i]);
+	gs_appstream_add_current_locales (builder);
 
 	/* get file data */
 	if (!g_file_load_contents (file,
