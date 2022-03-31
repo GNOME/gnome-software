@@ -1159,6 +1159,9 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	/* add any installed files without AppStream info */
 	gs_flatpak_rescan_installed (self, builder, cancellable, error);
 
+	/* regenerate with each minor release */
+	xb_builder_append_guid (builder, PACKAGE_VERSION);
+
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename (gs_flatpak_get_id (self),
 					      "components.xmlb",
