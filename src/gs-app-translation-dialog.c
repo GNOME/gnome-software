@@ -95,6 +95,10 @@ get_url_for_app (GsApp *app)
 
 	/* Try the translate URL, or a fallback */
 	url = gs_app_get_url (app, AS_URL_KIND_TRANSLATE);
+#if AS_CHECK_VERSION(0, 15, 3)
+	if (url == NULL)
+		url = gs_app_get_url (app, AS_URL_KIND_CONTRIBUTE);
+#endif
 	if (url == NULL)
 		url = gs_app_get_url (app, AS_URL_KIND_BUGTRACKER);
 
