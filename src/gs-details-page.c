@@ -2921,7 +2921,6 @@ gs_details_page_metainfo_thread (GTask *task,
 				 gpointer task_data,
 				 GCancellable *cancellable)
 {
-	const gchar *const *locales;
 	g_autofree gchar *path = NULL;
 	g_autofree gchar *icon_path = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
@@ -2956,12 +2955,8 @@ gs_details_page_metainfo_thread (GTask *task,
 	}
 
 	builder = xb_builder_new ();
-	locales = g_get_language_names ();
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++) {
-		xb_builder_add_locale (builder, locales[i]);
-	}
+	gs_appstream_add_current_locales (builder);
 
 	xb_builder_import_source (builder, builder_source);
 
