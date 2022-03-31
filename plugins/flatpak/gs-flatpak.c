@@ -1094,6 +1094,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_autofree gchar *blobfn = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
+	g_autoptr(GPtrArray) desktop_paths = NULL;
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(XbBuilder) builder = NULL;
@@ -1161,6 +1162,12 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 
 	/* regenerate with each minor release */
 	xb_builder_append_guid (builder, PACKAGE_VERSION);
+
+	/* Merge data from the installed files and the system appstream data,
+	   which is always checked, even when the 'appstream_paths' is NULL. */
+	desktop_paths = g_ptr_array_new_with_free_func (g_free);
+	g_ptr_array_add (desktop_paths, gs_flatpak_get_desktop_files_dir (self));
+	gs_appstream_add_data_merge_fixup (builder, NULL, desktop_paths, cancellable);
 
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename (gs_flatpak_get_id (self),
