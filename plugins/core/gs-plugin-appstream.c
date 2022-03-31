@@ -671,6 +671,8 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 		}
 
+		gs_appstream_add_data_merge_fixup (builder, parent_appstream, parent_desktop, cancellable);
+
 		if (old_thread_default != NULL)
 			g_main_context_push_thread_default (old_thread_default);
 		g_clear_pointer (&old_thread_default, g_main_context_unref);
