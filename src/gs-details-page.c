@@ -488,7 +488,15 @@ static void
 gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_tile,
 							GsDetailsPage *self)
 {
-	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
+	const gchar *uri = NULL;
+
+#if AS_CHECK_VERSION(0, 15, 3)
+	uri = gs_app_get_url (self->app, AS_URL_KIND_CONTRIBUTE);
+#endif
+	if (uri == NULL)
+		uri = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
+
+	gs_shell_show_uri (self->shell, uri);
 }
 
 static void

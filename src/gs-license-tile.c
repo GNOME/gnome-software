@@ -95,7 +95,12 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[0] = "heart-filled-symbolic";
 		lozenge_icon_names[1] = "community-symbolic";
 		lozenge_icon_names[2] = "sign-language-symbolic";
+#if AS_CHECK_VERSION(0, 15, 3)
+		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL ||
+					gs_app_get_url (self->app, AS_URL_KIND_CONTRIBUTE) != NULL);
+#else
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL);
+#endif
 
 		/* Translators: The placeholder here is the name of a software license. */
 		description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
