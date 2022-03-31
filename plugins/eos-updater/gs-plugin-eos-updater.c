@@ -37,6 +37,7 @@
 
 #include "gs-eos-updater-generated.h"
 #include "gs-plugin-eos-updater.h"
+#include "gs-plugin-private.h"
 
 /*
  * SECTION:
@@ -532,13 +533,13 @@ gs_plugin_eos_updater_setup_async (GsPlugin            *plugin,
 	 * the poll/fetch/apply sequence is run through again to recover from
 	 * the error. This is the only point in the plugin where we consider an
 	 * error from eos-updater to be fatal to the plugin. */
-	gs_eos_updater_proxy_new_for_bus (G_BUS_TYPE_SYSTEM,
-					  G_DBUS_PROXY_FLAGS_NONE,
-					  "com.endlessm.Updater",
-					  "/com/endlessm/Updater",
-					  cancellable,
-					  proxy_new_cb,
-					  g_steal_pointer (&task));
+	gs_eos_updater_proxy_new (gs_plugin_get_system_bus_connection (plugin),
+				  G_DBUS_PROXY_FLAGS_NONE,
+				  "com.endlessm.Updater",
+				  "/com/endlessm/Updater",
+				  cancellable,
+				  proxy_new_cb,
+				  g_steal_pointer (&task));
 }
 
 static void
@@ -558,7 +559,7 @@ proxy_new_cb (GObject      *source_object,
 
 	locker = g_mutex_locker_new (&self->mutex);
 
-	self->updater_proxy = gs_eos_updater_proxy_new_for_bus_finish (result, &local_error);
+	self->updater_proxy = gs_eos_updater_proxy_new_finish (result, &local_error);
 	if (self->updater_proxy == NULL) {
 		gs_eos_updater_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
