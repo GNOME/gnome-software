@@ -93,6 +93,10 @@ gboolean	 gs_appstream_load_desktop_files	(XbBuilder	*builder,
 							 GError		**error);
 GPtrArray	*gs_appstream_get_appstream_data_dirs	(void);
 void		 gs_appstream_add_current_locales	(XbBuilder	*builder);
+void		 gs_appstream_add_data_merge_fixup	(XbBuilder	*builder,
+							 GPtrArray	*appstream_paths,
+							 GPtrArray	*desktop_paths,
+							 GCancellable	*cancellable);
 void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);

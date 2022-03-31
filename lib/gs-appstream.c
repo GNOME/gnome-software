@@ -13,9 +13,17 @@
 #include <gnome-software.h>
 #include <locale.h>
 
+#include "gs-external-appstream-utils.h"
 #include "gs-appstream.h"
 
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
+
+/* This requires changes for https://github.com/hughsie/libxmlb/issues/120
+ * The libxmlb crashes when all nodes are marked for a removal in the fixup-s
+ */
+#if LIBXMLB_CHECK_VERSION(0, 3, 9)
+#define HAVE_FIXED_LIBXMLB 1
+#endif
 
 GsApp *
 gs_appstream_create_app (GsPlugin *plugin,
@@ -2429,6 +2437,657 @@ gs_appstream_add_current_locales (XbBuilder *builder)
 	const gchar *const *locales = g_get_language_names ();
 	for (guint i = 0; locales[i] != NULL; i++)
 		xb_builder_add_locale (builder, locales[i]);
+}
+
+static gboolean
+gs_appstream_is_merge_node (XbBuilderNode *bn)
+{
+	const gchar *merge = xb_builder_node_get_attr (bn, "merge");
+	if (merge != NULL) {
+		AsMergeKind kind = as_merge_kind_from_string (merge);
+		return kind != AS_MERGE_KIND_NONE;
+	}
+	return FALSE;
+}
+
+#ifdef HAVE_FIXED_LIBXMLB
+static gboolean
+gs_appstream_remove_merge_components_cb (XbBuilderFixup *self,
+					 XbBuilderNode *bn,
+					 gpointer user_data,
+					 GError **error)
+{
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0 &&
+	    gs_appstream_is_merge_node (bn))
+		xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
+	return TRUE;
+}
+
+static gboolean
+gs_appstream_remove_nonmerge_components_cb (XbBuilderFixup *self,
+					    XbBuilderNode *bn,
+					    gpointer user_data,
+					    GError **error)
+{
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0 &&
+	    !gs_appstream_is_merge_node (bn))
+		xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
+	return TRUE;
+}
+#endif
+
+static GInputStream *
+gs_appstream_load_dep11_cb (XbBuilderSource *self,
+			    XbBuilderSourceCtx *ctx,
+			    gpointer user_data,
+			    GCancellable *cancellable,
+			    GError **error)
+{
+	g_autoptr(AsMetadata) mdata = as_metadata_new ();
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GError) tmp_error = NULL;
+	g_autofree gchar *xml = NULL;
+
+	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
+	if (bytes == NULL)
+		return NULL;
+
+	as_metadata_set_format_style (mdata, AS_FORMAT_STYLE_COLLECTION);
+	as_metadata_parse_bytes (mdata,
+				 bytes,
+				 AS_FORMAT_KIND_YAML,
+				 &tmp_error);
+	if (tmp_error != NULL) {
+		g_propagate_error (error, g_steal_pointer (&tmp_error));
+		return NULL;
+	}
+
+	xml = as_metadata_components_to_catalog (mdata, AS_FORMAT_KIND_XML, &tmp_error);
+	if (xml == NULL) {
+		/* This API currently returns NULL if there is nothing to serialize, so we
+		 * have to test if this is an error or not.
+		 * See https://gitlab.gnome.org/GNOME/gnome-software/-/merge_requests/763
+		 * for discussion about changing this API. */
+		if (tmp_error != NULL) {
+			g_propagate_error (error, g_steal_pointer (&tmp_error));
+			return NULL;
+		}
+
+		xml = g_strdup ("");
+	}
+
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), (gssize) -1, g_free);
+}
+
+static gboolean
+gs_appstream_load_appstream_file (XbBuilder *builder,
+				  const gchar *filename,
+				  GCancellable *cancellable)
+{
+	g_autoptr(GFile) file = g_file_new_for_path (filename);
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+	g_autoptr(XbBuilderNode) info = NULL;
+	g_autoptr(XbBuilderFixup) fixup = NULL;
+
+	if (g_cancellable_is_cancelled (cancellable))
+		return FALSE;
+
+	/* add support for DEP-11 files */
+	xb_builder_source_add_adapter (source,
+				       "application/yaml",
+				       gs_appstream_load_dep11_cb,
+				       NULL, NULL);
+	xb_builder_source_add_adapter (source,
+				       "application/x-yaml",
+				       gs_appstream_load_dep11_cb,
+				       NULL, NULL);
+
+	/* add source */
+	if (!xb_builder_source_load_file (source, file, XB_BUILDER_SOURCE_FLAG_NONE, cancellable, &local_error)) {
+		g_debug ("Failed to load appstream file '%s': %s", filename, local_error->message);
+		return FALSE;
+	}
+
+	/* add metadata */
+	info = xb_builder_node_insert (NULL, "info", NULL);
+	xb_builder_node_insert_text (info, "filename", filename, NULL);
+	xb_builder_source_set_info (source, info);
+
+	#ifdef HAVE_FIXED_LIBXMLB
+	fixup = xb_builder_fixup_new ("RemoveNonMergeComponents",
+				       gs_appstream_remove_nonmerge_components_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup, 2);
+	xb_builder_source_add_fixup (source, fixup);
+	#endif
+
+	xb_builder_import_source (builder, source);
+
+	return TRUE;
+}
+
+static gboolean
+gs_appstream_load_appstream_dir (XbBuilder *builder,
+				 const gchar *path,
+				 GCancellable *cancellable)
+{
+	const gchar *fn;
+	gboolean any_loaded = FALSE;
+	g_autoptr(GDir) dir = NULL;
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+	g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+	gboolean external_appstream_system_wide = g_settings_get_boolean (settings, "external-appstream-system-wide");
+#endif
+
+	dir = g_dir_open (path, 0, NULL);
+	if (dir == NULL)
+		return FALSE;
+	while ((fn = g_dir_read_name (dir)) != NULL && !g_cancellable_is_cancelled (cancellable)) {
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+		/* Ignore our own system-installed files when
+		   external-appstream-system-wide is FALSE */
+		if (!external_appstream_system_wide &&
+		    g_strcmp0 (path, gs_external_appstream_utils_get_system_dir ()) == 0 &&
+		    g_str_has_prefix (fn, EXTERNAL_APPSTREAM_PREFIX))
+			continue;
+#endif
+		if (g_str_has_suffix (fn, ".xml") ||
+		    g_str_has_suffix (fn, ".yml") ||
+		    g_str_has_suffix (fn, ".yml.gz") ||
+		    g_str_has_suffix (fn, ".xml.gz")) {
+			g_autofree gchar *filename = g_build_filename (path, fn, NULL);
+			any_loaded = gs_appstream_load_appstream_file (builder, filename, cancellable) || any_loaded;
+		}
+	}
+
+	return any_loaded;
+}
+
+typedef struct {
+	GSList *components; /* XbNode * */
+} SiloIndexData;
+
+static SiloIndexData *
+silo_index_data_new (XbNode *node)
+{
+	SiloIndexData *sid = g_new0 (SiloIndexData, 1);
+	sid->components = g_slist_prepend (sid->components, g_object_ref (node));
+	return sid;
+}
+
+static void
+silo_index_data_free (SiloIndexData *sid)
+{
+	if (sid != NULL) {
+		g_slist_free_full (sid->components, g_object_unref);
+		g_free (sid);
+	}
+}
+
+typedef struct {
+	XbSilo *appstream_silo;
+	XbSilo *desktop_silo;
+	GHashTable *appstream_index; /* gchar *id ~> SiloIndexData * */
+	GHashTable *desktop_index; /* gchar *id ~> SiloIndexData * */
+} MergeData;
+
+static MergeData *
+merge_data_new (void)
+{
+	MergeData *md = g_new0 (MergeData, 1);
+	return md;
+}
+
+static void
+merge_data_free (MergeData *md)
+{
+	if (md == NULL)
+		return;
+
+	g_clear_pointer (&md->appstream_index, g_hash_table_unref);
+	g_clear_pointer (&md->desktop_index, g_hash_table_unref);
+	g_clear_object (&md->appstream_silo);
+	g_clear_object (&md->desktop_silo);
+	g_free (md);
+}
+
+static void
+gs_appstream_add_node_to_silo_index (GHashTable *index, /* gchar *id ~> SiloIndexData * */
+				     const gchar *id,
+				     XbNode *node)
+{
+	SiloIndexData *sid;
+	if (id == NULL)
+		return;
+	sid = g_hash_table_lookup (index, id);
+	if (sid != NULL) {
+		sid->components = g_slist_prepend (sid->components, g_object_ref (node));
+	} else {
+		sid = silo_index_data_new (node);
+		g_hash_table_insert (index, g_strdup (id), sid);
+	}
+}
+
+static void
+gs_appstream_traverse_silo_for_index (XbNode *node,
+				      GHashTable *index,
+				      gboolean only_merges,
+				      gint depth)
+{
+	if (g_strcmp0 (xb_node_get_element (node), "component") == 0) {
+		g_autoptr(XbNode) child = NULL;
+		g_autoptr(XbNode) next = NULL;
+		gboolean need_id = TRUE, need_provides = !only_merges, need_info = need_provides;
+		if (only_merges) {
+			gboolean is_merge = FALSE;
+			const gchar *merge = xb_node_get_attr (node, "merge");
+			if (merge != NULL) {
+				AsMergeKind kind = as_merge_kind_from_string (merge);
+				is_merge = kind != AS_MERGE_KIND_NONE;
+			}
+			if (!is_merge)
+				return;
+		}
+		for (child = xb_node_get_child (node);
+		     child != NULL && (need_id || need_provides || need_info);
+		     g_object_unref (child), child = g_steal_pointer (&next)) {
+			const gchar *element = xb_node_get_element (child);
+			next = xb_node_get_next (child);
+			if (need_id && g_strcmp0 (element, "id") == 0) {
+				gs_appstream_add_node_to_silo_index (index, xb_node_get_text (child), node);
+				need_id = FALSE;
+			} else if (need_provides && g_strcmp0 (element, "provides") == 0) {
+				g_autoptr(XbNode) provides_child = NULL;
+				g_autoptr(XbNode) provides_next = NULL;
+				for (provides_child = xb_node_get_child (child);
+				     provides_child != NULL;
+				     g_object_unref (provides_child), provides_child = g_steal_pointer (&provides_next)) {
+					provides_next = xb_node_get_next (provides_child);
+					if (g_strcmp0 (xb_node_get_element (provides_child), "id") == 0)
+						gs_appstream_add_node_to_silo_index (index, xb_node_get_text (provides_child), node);
+				}
+
+				need_provides = FALSE;
+			} else if (need_info && g_strcmp0 (element, "info") == 0) {
+				/* In case it's a .desktop file and the node is not there yet, then add it.
+				   It's because the <id/> from the desktop file may not match the <launchable/>,
+				   which is the file name. */
+				g_autoptr(XbNode) info_child = NULL;
+				g_autoptr(XbNode) info_next = NULL;
+				for (info_child = xb_node_get_child (child);
+				     info_child != NULL;
+				     g_object_unref (info_child), info_child = g_steal_pointer (&info_next)) {
+					info_next = xb_node_get_next (info_child);
+					if (g_strcmp0 (xb_node_get_element (info_child), "filename") == 0) {
+						const gchar *filename = xb_node_get_text (info_child);
+						if (filename != NULL && g_str_has_suffix (filename, ".desktop")) {
+							filename = strrchr (filename, G_DIR_SEPARATOR);
+							if (filename != NULL) {
+								SiloIndexData *sid;
+								filename++;
+								sid = g_hash_table_lookup (index, filename);
+								if (sid != NULL) {
+									if (!g_slist_find (sid->components, node))
+										sid->components = g_slist_prepend (sid->components, g_object_ref (node));
+								} else {
+									sid = silo_index_data_new (node);
+									g_hash_table_insert (index, g_strdup (filename), sid);
+								}
+							}
+						}
+					}
+				}
+
+				need_info = FALSE;
+			}
+		}
+	} else if (depth < 2) {
+		XbNodeChildIter iter;
+		XbNode *child = NULL;
+		xb_node_child_iter_init (&iter, node);
+		while (xb_node_child_iter_loop (&iter, &child)) {
+			gs_appstream_traverse_silo_for_index (child, index, only_merges, depth + 1);
+		}
+	}
+}
+
+static GHashTable * /* gchar *id ~> SiloIndexData * */
+gs_appstream_create_silo_index (XbSilo *silo,
+				gboolean only_merges)
+{
+	GHashTable *index = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) silo_index_data_free);
+	for (g_autoptr(XbNode) node = xb_silo_get_root (silo); node != NULL; node_set_to_next (&node)) {
+		gs_appstream_traverse_silo_for_index (node, index, only_merges, 0);
+	}
+	return index;
+}
+
+static MergeData *
+gs_appstream_gather_merge_data (GPtrArray *appstream_paths,
+				GPtrArray *desktop_paths,
+				GCancellable *cancellable)
+{
+	MergeData *md = merge_data_new ();
+	g_autoptr(GPtrArray) common_appstream_paths = gs_appstream_get_appstream_data_dirs ();
+	if (appstream_paths != NULL) {
+		g_autoptr(GError) local_error = NULL;
+		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		gboolean any_loaded = FALSE;
+		gs_appstream_add_current_locales (builder);
+		for (guint i = 0; i < appstream_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
+			const gchar *path = g_ptr_array_index (appstream_paths, i);
+			if (g_file_test (path, G_FILE_TEST_IS_DIR))
+				any_loaded = gs_appstream_load_appstream_dir (builder, path, cancellable) || any_loaded;
+			else
+				any_loaded = gs_appstream_load_appstream_file (builder, path, cancellable) || any_loaded;
+			for (guint j = 0; j < common_appstream_paths->len; j++) {
+				if (g_strcmp0 (g_ptr_array_index (common_appstream_paths, j), path) == 0) {
+					g_ptr_array_remove_index (common_appstream_paths, j);
+					break;
+				}
+			}
+		}
+		for (guint i = 0; i < common_appstream_paths->len; i++) {
+			const gchar *path = g_ptr_array_index (common_appstream_paths, i);
+			any_loaded = gs_appstream_load_appstream_dir (builder, path, cancellable) || any_loaded;
+		}
+		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
+			md->appstream_silo = xb_builder_compile (builder,
+								 XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+								 XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+								 cancellable, &local_error);
+			if (md->appstream_silo != NULL)
+				md->appstream_index = gs_appstream_create_silo_index (md->appstream_silo, TRUE);
+			else
+				g_warning ("Failed to compile appstream silo: %s", local_error->message);
+		}
+	} else {
+		g_autoptr(GError) local_error = NULL;
+		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		gboolean any_loaded = FALSE;
+		gs_appstream_add_current_locales (builder);
+		for (guint i = 0; i < common_appstream_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
+			const gchar *path = g_ptr_array_index (common_appstream_paths, i);
+			any_loaded = gs_appstream_load_appstream_dir (builder, path, cancellable) || any_loaded;
+		}
+		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
+			md->appstream_silo = xb_builder_compile (builder,
+								 XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+								 XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+								 cancellable, &local_error);
+			if (md->appstream_silo != NULL)
+				md->appstream_index = gs_appstream_create_silo_index (md->appstream_silo, TRUE);
+			else
+				g_warning ("Failed to compile common paths appstream silo: %s", local_error->message);
+		}
+	}
+	if (desktop_paths != NULL) {
+		g_autoptr(GError) local_error = NULL;
+		g_autoptr(XbBuilder) builder = xb_builder_new ();
+		gboolean any_loaded = FALSE;
+		gs_appstream_add_current_locales (builder);
+		for (guint i = 0; i < desktop_paths->len && !g_cancellable_is_cancelled (cancellable); i++) {
+			const gchar *path = g_ptr_array_index (desktop_paths, i);
+			gboolean this_loaded = FALSE;
+			gs_appstream_load_desktop_files (builder, path, &this_loaded, NULL, cancellable, NULL);
+			any_loaded = any_loaded || this_loaded;
+		}
+		if (any_loaded && !g_cancellable_is_cancelled (cancellable)) {
+			md->desktop_silo = xb_builder_compile (builder,
+							       XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
+							       XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+							       cancellable, &local_error);
+			if (md->desktop_silo != NULL && !g_cancellable_is_cancelled (cancellable))
+				md->desktop_index = gs_appstream_create_silo_index (md->desktop_silo, FALSE);
+			else
+				g_warning ("Failed to compile desktop silo: %s", local_error->message);
+		}
+	}
+	return md;
+}
+
+static void
+gs_appstream_copy_attrs (XbBuilderNode *des_node,
+			 XbNode *src_node)
+{
+	XbNodeAttrIter iter;
+	const gchar *attr_name, *attr_value;
+
+	xb_node_attr_iter_init (&iter, src_node);
+	while (xb_node_attr_iter_next (&iter, &attr_name, &attr_value)) {
+		xb_builder_node_set_attr (des_node, attr_name, attr_value);
+	}
+}
+
+static void
+gs_appstream_copy_node (XbBuilderNode *des_parent,
+			XbNode *src_node,
+			gint level)
+{
+	g_autoptr(XbBuilderNode) new_node = NULL;
+	g_autoptr(GPtrArray) children = NULL;
+	const gchar *text, *element_name;
+	gboolean merge_into_existing = FALSE;
+	element_name = xb_node_get_element (src_node);
+	text = xb_node_get_text (src_node);
+	if (level == 1 && (
+	    g_strcmp0 (element_name, "categories") == 0 ||
+	    g_strcmp0 (element_name, "custom") == 0 ||
+	    g_strcmp0 (element_name, "kudos") == 0 ||
+	    g_strcmp0 (element_name, "provides") == 0)) {
+		new_node = xb_builder_node_get_child (des_parent, element_name, text);
+		merge_into_existing = new_node != NULL;
+	} else if (level == 2 && (
+	    g_strcmp0 (element_name, "category") == 0 ||
+	    g_strcmp0 (element_name, "kudo") == 0)) {
+		/* Such category/kudo already exists */
+		new_node = xb_builder_node_get_child (des_parent, element_name, text);
+		if (new_node != NULL)
+			return;
+	}
+	if (new_node == NULL) {
+		new_node = xb_builder_node_new (element_name);
+		if (text != NULL)
+			xb_builder_node_set_text (new_node, text, -1);
+		xb_builder_node_add_child (des_parent, new_node);
+		gs_appstream_copy_attrs (new_node, src_node);
+	}
+	children = xb_node_get_children (src_node);
+	for (guint i = 0; children && i < children->len; i++) {
+		XbNode *child = g_ptr_array_index (children, i);
+		gs_appstream_copy_node (new_node, child, level + 1);
+	}
+	if (!merge_into_existing) {
+		text = xb_node_get_tail (src_node);
+		if (text != NULL)
+			xb_builder_node_set_tail (new_node, text, -1);
+	}
+}
+
+static void
+gs_appstream_merge_component_children (XbBuilderNode *bn,
+				       XbNode *node,
+				       gboolean is_replace)
+{
+	g_autoptr(GHashTable) checked_elems = g_hash_table_new (g_str_hash, g_str_equal); /* gchar *name ~> NULL*/
+	g_autoptr(GHashTable) existing_elems = NULL;
+	g_autoptr(GPtrArray) node_children = xb_node_get_children (node);
+	if (!is_replace) {
+		GPtrArray *bn_children = xb_builder_node_get_children (bn);
+		existing_elems = g_hash_table_new (g_str_hash, g_str_equal); /* gchar *name ~> NULL*/
+		for (guint i = 0; bn_children && i < bn_children->len; i++) {
+			XbBuilderNode *bn_child = g_ptr_array_index (bn_children, i);
+			const gchar *elem_name = xb_builder_node_get_element (bn_child);
+			if (elem_name)
+				g_hash_table_add (existing_elems, (gpointer) elem_name);
+		}
+	}
+	for (guint i = 0; node_children != NULL && i < node_children->len; i++) {
+		XbNode *child = g_ptr_array_index (node_children, i);
+		const gchar *elem_name = xb_node_get_element (child);
+		if (g_strcmp0 (elem_name, "id") == 0 ||
+		    g_strcmp0 (elem_name, "info") == 0)
+			continue;
+		if (is_replace && g_hash_table_add (checked_elems, (gpointer) elem_name)) {
+			GPtrArray *bn_children = xb_builder_node_get_children (bn);
+			for (guint j = 0; bn_children && j < bn_children->len; j++) {
+				XbBuilderNode *bn_child = g_ptr_array_index (bn_children, j);
+				if (g_strcmp0 (xb_builder_node_get_element (bn_child), elem_name) == 0)
+					xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
+			}
+		} else if (!is_replace && g_hash_table_contains (existing_elems, elem_name)) {
+			/* list of those to skip if already exist */
+			if (g_strcmp0 (elem_name, "name") == 0 ||
+			    g_strcmp0 (elem_name, "summary") == 0 ||
+			    g_strcmp0 (elem_name, "description") == 0 ||
+			    g_strcmp0 (elem_name, "launchable") == 0)
+				continue;
+		}
+		gs_appstream_copy_node (bn, child, 1);
+	}
+}
+
+static gboolean
+gs_appstream_apply_merges_for_id (MergeData *md,
+				  XbBuilderNode *bn,
+				  const gchar *id)
+{
+	SiloIndexData *sid;
+
+	if (id == NULL || md->appstream_index == NULL)
+		return FALSE;
+
+	sid = g_hash_table_lookup (md->appstream_index, id);
+	if (sid != NULL) {
+		for (GSList *link = sid->components; link != NULL; link = g_slist_next (link)) {
+			XbNode *node = link->data;
+			if (node != NULL) {
+				const gchar *merge = xb_node_get_attr (node, "merge");
+				if (merge != NULL) {
+					AsMergeKind kind = as_merge_kind_from_string (merge);
+					if (kind == AS_MERGE_KIND_REMOVE_COMPONENT) {
+						xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
+						return TRUE;
+					} else if (kind == AS_MERGE_KIND_APPEND ||
+						   kind == AS_MERGE_KIND_REPLACE) {
+						gs_appstream_merge_component_children (bn, node, kind == AS_MERGE_KIND_REPLACE);
+					}
+				}
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+static gboolean
+gs_appstream_apply_merges_cb (XbBuilderFixup *self,
+			      XbBuilderNode *bn,
+			      gpointer user_data,
+			      GError **error)
+{
+	MergeData *md = user_data;
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0 &&
+	    !gs_appstream_is_merge_node (bn)) {
+		if (md->appstream_index != NULL) {
+			g_autoptr(XbBuilderNode) id_node = xb_builder_node_get_child (bn, "id", NULL);
+			if (id_node != NULL) {
+				g_autoptr(XbBuilderNode) provides_node = NULL;
+				const gchar *id = xb_builder_node_get_text (id_node);
+				gboolean skip_node = gs_appstream_apply_merges_for_id (md, bn, id);
+				if (skip_node)
+					return TRUE;
+				provides_node = xb_builder_node_get_child (bn, "provides", NULL);
+				if (provides_node != NULL) {
+					GPtrArray *children = xb_builder_node_get_children (provides_node);
+					for (guint i = 0; children != NULL && i < children->len; i++) {
+						XbBuilderNode *child = g_ptr_array_index (children, i);
+						if (g_strcmp0 (xb_builder_node_get_element (child), "id") == 0) {
+							id = xb_builder_node_get_text (child);
+							skip_node = gs_appstream_apply_merges_for_id (md, bn, id);
+							if (skip_node)
+								return TRUE;
+						}
+					}
+				}
+			}
+		}
+		if (md->desktop_index) {
+			GPtrArray *children = xb_builder_node_get_children (bn);
+			const gchar *desktop_id = NULL;
+			for (guint i = 0; children != NULL && i < children->len; i++) {
+				XbBuilderNode *child = g_ptr_array_index (children, i);
+				if (g_strcmp0 (xb_builder_node_get_element (child), "launchable") == 0 &&
+				    g_strcmp0 (xb_builder_node_get_attr (child, "type"), "desktop-id") == 0) {
+					/* Can merge, only if just one desktop-id launchable is present:
+					   https://www.freedesktop.org/software/appstream/docs/sect-Metadata-Application.html#tag-dapp-launchable */
+					if (desktop_id != NULL) {
+						desktop_id = NULL;
+						break;
+					}
+					desktop_id = xb_builder_node_get_text (child);
+					if (desktop_id != NULL && *desktop_id == '\0')
+						desktop_id = NULL;
+				} else if (g_strcmp0 (xb_builder_node_get_element (child), "info") == 0) {
+					/* Make sure it'll not update itself, aka skip updating data
+					   from .desktop files into .desktop files */
+					g_autoptr(XbBuilderNode) filename_node = xb_builder_node_get_child (child, "filename", NULL);
+					if (filename_node) {
+						const gchar *filename = xb_builder_node_get_text (filename_node);
+						if (filename != NULL && g_str_has_suffix (filename, ".desktop")) {
+							desktop_id = NULL;
+							break;
+						}
+					}
+				}
+			}
+			if (desktop_id != NULL) {
+				SiloIndexData *sid = g_hash_table_lookup (md->desktop_index, desktop_id);
+				if (sid != NULL) {
+					for (GSList *link = sid->components; link != NULL; link = g_slist_next (link)) {
+						XbNode *node = link->data;
+						/* Add data from the corresponding .desktop file */
+						if (node != NULL)
+							gs_appstream_merge_component_children (bn, node, FALSE);
+					}
+				}
+			}
+		}
+	}
+	return TRUE;
+}
+
+void
+gs_appstream_add_data_merge_fixup (XbBuilder *builder,
+				   GPtrArray *appstream_paths,
+				   GPtrArray *desktop_paths,
+				   GCancellable *cancellable)
+{
+	#ifdef HAVE_FIXED_LIBXMLB
+	g_autoptr(XbBuilderFixup) fixup1 = NULL;
+	#endif
+	g_autoptr(XbBuilderFixup) fixup2 = NULL;
+	MergeData *md;
+
+	/* First read all of the merge components and .desktop files (which will be merged as well) */
+	md = gs_appstream_gather_merge_data (appstream_paths, desktop_paths, cancellable);
+
+	#ifdef HAVE_FIXED_LIBXMLB
+	/* Then drop all the merge components from the result, because they are useless when being merged */
+	fixup1 = xb_builder_fixup_new ("RemoveMergeComponents",
+				       gs_appstream_remove_merge_components_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup1, 2);
+	xb_builder_add_fixup (builder, fixup1);
+	#endif
+
+	/* Then apply merge data to the components */
+	fixup2 = xb_builder_fixup_new ("ApplyMerges",
+				       gs_appstream_apply_merges_cb,
+				       md, (GDestroyNotify) merge_data_free);
+	xb_builder_fixup_set_max_depth (fixup2, 2);
+	xb_builder_add_fixup (builder, fixup2);
 }
 
 void
