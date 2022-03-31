@@ -85,6 +85,12 @@ gboolean	gs_appstream_url_to_app			(GsPlugin	*plugin,
 							 const gchar	*url,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_load_desktop_files	(XbBuilder	*builder,
+							 const gchar	*path,
+							 gboolean	*out_any_loaded,
+							 GFileMonitor  **out_file_monitor,
+							 GCancellable	*cancellable,
+							 GError		**error);
 void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);
