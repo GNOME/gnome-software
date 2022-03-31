@@ -9,6 +9,7 @@
 
 #include "config.h"
 
+#include <glib/gstdio.h>
 #include <gnome-software.h>
 #include <locale.h>
 
@@ -2322,6 +2323,112 @@ gs_appstream_load_desktop_files (XbBuilder      *builder,
 
 	/* success */
 	return TRUE;
+}
+
+static void
+gs_add_appstream_catalog_location (GPtrArray *locations,
+				   const gchar *root)
+{
+	g_autofree gchar *catalog_path = NULL;
+	g_autofree gchar *catalog_legacy_path = NULL;
+	gboolean ignore_legacy_path = FALSE;
+
+	catalog_path = g_build_filename (root, "swcatalog", NULL);
+	catalog_legacy_path = g_build_filename (root, "app-info", NULL);
+
+	/* ignore compatibility symlink if one exists, so we don't scan the same location twice */
+	if (g_file_test (catalog_legacy_path, G_FILE_TEST_IS_SYMLINK)) {
+		g_autofree gchar *link_target = g_file_read_link (catalog_legacy_path, NULL);
+		if (link_target != NULL) {
+			if (g_strcmp0 (link_target, catalog_path) == 0) {
+				ignore_legacy_path = TRUE;
+				g_debug ("Ignoring legacy AppStream catalog location '%s'.", catalog_legacy_path);
+			}
+		}
+	}
+
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "xml", NULL));
+	g_ptr_array_add (locations,
+			 g_build_filename (catalog_path, "yaml", NULL));
+
+	if (!ignore_legacy_path) {
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "xml", NULL));
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "xmls", NULL));
+		g_ptr_array_add (locations,
+				 g_build_filename (catalog_legacy_path, "yaml", NULL));
+	}
+}
+
+GPtrArray *
+gs_appstream_get_appstream_data_dirs (void)
+{
+	GPtrArray *appstream_data_dirs = g_ptr_array_new_with_free_func (g_free);
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+	g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+#endif
+	g_autofree gchar *state_cache_dir = NULL;
+	g_autofree gchar *state_lib_dir = NULL;
+
+	/* add search paths */
+	gs_add_appstream_catalog_location (appstream_data_dirs, DATADIR);
+
+	state_cache_dir = g_build_filename (LOCALSTATEDIR, "cache", NULL);
+	gs_add_appstream_catalog_location (appstream_data_dirs, state_cache_dir);
+	state_lib_dir = g_build_filename (LOCALSTATEDIR, "lib", NULL);
+	gs_add_appstream_catalog_location (appstream_data_dirs, state_lib_dir);
+
+#ifdef ENABLE_EXTERNAL_APPSTREAM
+	/* check for the corresponding setting */
+	if (!g_settings_get_boolean (settings, "external-appstream-system-wide")) {
+		g_autofree gchar *user_catalog_path = NULL;
+		g_autofree gchar *user_catalog_old_path = NULL;
+
+		/* migrate data paths */
+		user_catalog_path = g_build_filename (g_get_user_data_dir (), "swcatalog", NULL);
+		user_catalog_old_path = g_build_filename (g_get_user_data_dir (), "app-info", NULL);
+		if (g_file_test (user_catalog_old_path, G_FILE_TEST_IS_DIR) &&
+		    !g_file_test (user_catalog_path, G_FILE_TEST_IS_DIR)) {
+			g_debug ("Migrating external AppStream user location.");
+			if (g_rename (user_catalog_old_path, user_catalog_path) == 0) {
+				g_autofree gchar *user_catalog_xml_path = NULL;
+				g_autofree gchar *user_catalog_xml_old_path = NULL;
+
+				user_catalog_xml_path = g_build_filename (user_catalog_path, "xml", NULL);
+				user_catalog_xml_old_path = g_build_filename (user_catalog_path, "xmls", NULL);
+				if (g_file_test (user_catalog_xml_old_path, G_FILE_TEST_IS_DIR)) {
+					if (g_rename (user_catalog_xml_old_path, user_catalog_xml_path) != 0)
+						g_warning ("Unable to migrate external XML data location from '%s' to '%s': %s",
+							user_catalog_xml_old_path, user_catalog_xml_path, g_strerror (errno));
+				}
+			} else {
+				g_warning ("Unable to migrate external data location from '%s' to '%s': %s",
+					   user_catalog_old_path, user_catalog_path, g_strerror (errno));
+			}
+		}
+
+		/* add modern locations only */
+		g_ptr_array_add (appstream_data_dirs,
+				g_build_filename (user_catalog_path, "xml", NULL));
+		g_ptr_array_add (appstream_data_dirs,
+				g_build_filename (user_catalog_path, "yaml", NULL));
+	}
+#endif
+
+	/* Add the normal system directories if the installation prefix
+	 * is different from normal — typically this happens when doing
+	 * development builds. It’s useful to still list the system apps
+	 * during development. */
+	if (g_strcmp0 (DATADIR, "/usr/share") != 0)
+		gs_add_appstream_catalog_location (appstream_data_dirs, "/usr/share");
+	if (g_strcmp0 (LOCALSTATEDIR, "/var") != 0) {
+		gs_add_appstream_catalog_location (appstream_data_dirs, "/var/cache");
+		gs_add_appstream_catalog_location (appstream_data_dirs, "/var/lib");
+	}
+
+	return appstream_data_dirs;
 }
 
 void

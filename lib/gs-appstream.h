@@ -91,6 +91,7 @@ gboolean	 gs_appstream_load_desktop_files	(XbBuilder	*builder,
 							 GFileMonitor  **out_file_monitor,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GPtrArray	*gs_appstream_get_appstream_data_dirs	(void);
 void		 gs_appstream_component_add_extra_info	(XbBuilderNode	*component);
 void		 gs_appstream_component_add_keyword	(XbBuilderNode	*component,
 							 const gchar	*str);
