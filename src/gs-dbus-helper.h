@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -17,6 +18,6 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsDbusHelper, gs_dbus_helper, GS, DBUS_HELPER, GObject)
 
-GsDbusHelper	*gs_dbus_helper_new		(void);
+GsDbusHelper	*gs_dbus_helper_new		(GDBusConnection *bus_connection);
 
 G_END_DECLS

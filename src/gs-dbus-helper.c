@@ -31,9 +31,17 @@ struct _GsDbusHelper {
 	GDBusInterfaceSkeleton	*modify2_interface;
 	PkTask			*task;
 	guint			 dbus_own_name_id;
+
+	GDBusConnection		*bus_connection;  /* (owned) (not nullable) */
 };
 
 G_DEFINE_TYPE (GsDbusHelper, gs_dbus_helper, G_TYPE_OBJECT)
+
+typedef enum {
+	PROP_BUS_CONNECTION = 1,
+} GsDbusHelperProperty;
+
+static GParamSpec *obj_props[PROP_BUS_CONNECTION + 1] = { NULL, };
 
 typedef struct {
 	GDBusMethodInvocation	*invocation;
@@ -833,6 +841,55 @@ gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 }
 
 static void
+gs_dbus_helper_constructed (GObject *object)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->constructed (object);
+
+	/* Check all required properties have been set. */
+	g_assert (dbus_helper->bus_connection != NULL);
+}
+
+static void
+gs_dbus_helper_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	switch ((GsDbusHelperProperty) prop_id) {
+	case PROP_BUS_CONNECTION:
+		g_value_set_object (value, dbus_helper->bus_connection);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_dbus_helper_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	switch ((GsDbusHelperProperty) prop_id) {
+	case PROP_BUS_CONNECTION:
+		/* Construct only */
+		g_assert (dbus_helper->bus_connection == NULL);
+		dbus_helper->bus_connection = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_dbus_helper_dispose (GObject *object)
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
@@ -861,6 +918,7 @@ gs_dbus_helper_dispose (GObject *object)
 	}
 
 	g_clear_object (&dbus_helper->task);
+	g_clear_object (&dbus_helper->bus_connection);
 
 	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->dispose (object);
 }
@@ -869,11 +927,45 @@ static void
 gs_dbus_helper_class_init (GsDbusHelperClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->constructed = gs_dbus_helper_constructed;
+	object_class->get_property = gs_dbus_helper_get_property;
+	object_class->set_property = gs_dbus_helper_set_property;
 	object_class->dispose = gs_dbus_helper_dispose;
+
+	/**
+	 * GsDbusHelper:bus-connection: (not nullable)
+	 *
+	 * A connection to the D-Bus session bus.
+	 *
+	 * This must be set at construction time and will not be %NULL
+	 * afterwards.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_BUS_CONNECTION] =
+		g_param_spec_object ("bus-connection", NULL, NULL,
+				     G_TYPE_DBUS_CONNECTION,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
+/**
+ * gs_dbus_helper_new:
+ * @bus_connection: a #GDBusConnection to export the helper methods on
+ *
+ * Create a new #GsDbusHelper and export it on @bus_connection.
+ *
+ * Returns: (transfer full): a new #GsDbusHelper
+ * Since: 43
+ */
 GsDbusHelper *
-gs_dbus_helper_new (void)
+gs_dbus_helper_new (GDBusConnection *bus_connection)
 {
-	return GS_DBUS_HELPER (g_object_new (GS_TYPE_DBUS_HELPER, NULL));
+	g_return_val_if_fail (G_IS_DBUS_CONNECTION (bus_connection), NULL);
+
+	return GS_DBUS_HELPER (g_object_new (GS_TYPE_DBUS_HELPER,
+					     "bus-connection", bus_connection,
+					     NULL));
 }

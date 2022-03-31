@@ -952,7 +952,7 @@ gs_application_startup (GApplication *application)
 	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
 #ifdef HAVE_PACKAGEKIT
-	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
+	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new (g_application_get_dbus_connection (application));
 #endif
 	settings = g_settings_new ("org.gnome.software");
 	GS_APPLICATION (application)->settings = settings;
