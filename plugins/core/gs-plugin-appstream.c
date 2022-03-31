@@ -554,7 +554,6 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = NULL;
-	const gchar *const *locales = g_get_language_names ();
 	g_autoptr(GMainContext) old_thread_default = NULL;
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
@@ -593,9 +592,7 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 					      XB_SILO_PROFILE_FLAG_DEBUG);
 	}
 
-	/* add current locales */
-	for (guint i = 0; locales[i] != NULL; i++)
-		xb_builder_add_locale (builder, locales[i]);
+	gs_appstream_add_current_locales (builder);
 
 	/* only when in self test */
 	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
