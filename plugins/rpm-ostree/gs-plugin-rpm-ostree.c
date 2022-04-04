@@ -1846,7 +1846,9 @@ resolve_available_packages_app (GsPlugin *plugin,
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, dnf_package_get_name (pkg));
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, dnf_package_get_summary (pkg));
 
-		/* set hide-from-search quirk for available apps we don't want to show */
+		/* set hide-from-search quirk for available apps we don't want to show; results for non-installed desktop apps
+		 * are intentionally hidden (as recommended by Matthias Clasen) by a special quirk because app layering
+		 * should be intended for power users and not a common practice on Fedora Silverblue */
 		if (!gs_app_is_installed (app)) {
 			switch (gs_app_get_kind (app)) {
 			case AS_COMPONENT_KIND_DESKTOP_APP:
