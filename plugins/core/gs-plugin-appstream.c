@@ -472,7 +472,6 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 	g_autoptr(XbBuilderFixup) fixup4 = NULL;
 #endif
 	g_autoptr(XbBuilderFixup) fixup5 = NULL;
-	GString *media_baseurl = g_string_new (NULL);
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for DEP-11 files */
@@ -531,7 +530,7 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 	/* prepend media_baseurl to remote relative URLs */
 	fixup5 = xb_builder_fixup_new ("MediaBaseUrl",
 				       gs_plugin_appstream_media_baseurl_cb,
-				       media_baseurl,
+				       g_string_new (NULL),
 				       gs_plugin_appstream_media_baseurl_free);
 	xb_builder_fixup_set_max_depth (fixup5, 3);
 	xb_builder_source_add_fixup (source, fixup5);
