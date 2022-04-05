@@ -30,6 +30,7 @@ struct _GsUpdateDialog
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
 	AdwWindowTitle	*window_title;
+	gboolean	 showing_installed_updates;
 };
 
 G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, ADW_TYPE_WINDOW)
@@ -56,10 +57,12 @@ leaflet_child_transition_cb (AdwLeaflet *leaflet, GParamSpec *pspec, GsUpdateDia
 		adw_leaflet_remove (leaflet, child);
 
 	child = adw_leaflet_get_visible_child (leaflet);
-	if (child != NULL) {
+	if (child != NULL && g_object_class_find_property (G_OBJECT_CLASS (GTK_WIDGET_GET_CLASS (child)), "title") != NULL) {
 		g_autofree gchar *title = NULL;
 		g_object_get (G_OBJECT (child), "title", &title, NULL);
 		gtk_window_set_title (GTK_WINDOW (dialog), title);
+	} else if (dialog->showing_installed_updates) {
+		gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
 	} else {
 		gtk_window_set_title (GTK_WINDOW (dialog), "");
 	}
@@ -143,6 +146,8 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
+	dialog->showing_installed_updates = TRUE;
+
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
 
@@ -205,12 +210,14 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 		gs_os_update_page_set_app (GS_OS_UPDATE_PAGE (page), app);
 		g_signal_connect (page, "app-activated",
 				  G_CALLBACK (app_activated_cb), dialog);
+		gs_os_update_page_set_show_back_button (GS_OS_UPDATE_PAGE (page), dialog->showing_installed_updates);
 	} else {
 		page = gs_app_details_page_new ();
 		gs_app_details_page_set_app (GS_APP_DETAILS_PAGE (page), app);
-		g_signal_connect (page, "back-clicked",
-				  G_CALLBACK (back_clicked_cb), dialog);
 	}
+
+	g_signal_connect (page, "back-clicked",
+			  G_CALLBACK (back_clicked_cb), dialog);
 
 	gtk_widget_show (page);
 

@@ -22,5 +22,10 @@ GtkWidget	*gs_os_update_page_new		(void);
 GsApp		*gs_os_update_page_get_app	(GsOsUpdatePage	*page);
 void		 gs_os_update_page_set_app	(GsOsUpdatePage	*page,
 						 GsApp		*app);
+gboolean	 gs_os_update_page_get_show_back_button
+						(GsOsUpdatePage *page);
+void		 gs_os_update_page_set_show_back_button
+						(GsOsUpdatePage *page,
+						 gboolean show_back_button);
 
 G_END_DECLS

@@ -11,6 +11,21 @@
         <property name="title-widget">
           <object class="AdwWindowTitle" id="window_title" />
         </property>
+        <child type="start">
+          <object class="GtkButton" id="back_button">
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="icon_name">go-previous-symbolic</property>
+            <property name="visible">False</property>
+            <signal name="clicked" handler="back_clicked_cb"/>
+            <style>
+              <class name="image-button"/>
+            </style>
+            <accessibility>
+              <property name="label" translatable="yes">Go back</property>
+            </accessibility>
+          </object>
+        </child>
       </object>
     </child>
     <child>
