@@ -103,7 +103,7 @@ sections:
    vfunc.
  * Carousel on the category page: Applications are included if they are in the
    `Featured` subcategory of the displayed category. They are also required to
-   have a high-resolution icon, and the set of applications show in the carousel
+   have a high-resolution icon, and the set of applications shown in the carousel
    is randomised and limited to (for example) 5.
  * “Editor’s Choice” on the category page: Applications are included if they
    meet the requirements for being in the carousel, but weren’t chosen as part
