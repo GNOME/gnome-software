@@ -32,4 +32,6 @@ GsAppListFilterFlags	 gs_app_query_get_dedupe_flags	(GsAppQuery *self);
 GsAppListSortFunc	 gs_app_query_get_sort_func	(GsAppQuery *self,
 							 gpointer   *user_data_out);
 
+const gchar * const	*gs_app_query_get_provides_files (GsAppQuery *self);
+
 G_END_DECLS

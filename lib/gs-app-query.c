@@ -57,6 +57,9 @@ struct _GsAppQuery
 	GsAppListSortFunc sort_func;
 	gpointer sort_user_data;
 	GDestroyNotify sort_user_data_notify;
+
+	/* This is guaranteed to either be %NULL, or a non-empty array */
+	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -68,9 +71,10 @@ typedef enum {
 	PROP_SORT_FUNC,
 	PROP_SORT_USER_DATA,
 	PROP_SORT_USER_DATA_NOTIFY,
+	PROP_PROVIDES_FILES,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_SORT_USER_DATA_NOTIFY + 1] = { NULL, };
+static GParamSpec *props[PROP_PROVIDES_FILES + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -98,6 +102,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_SORT_USER_DATA_NOTIFY:
 		g_value_set_pointer (value, self->sort_user_data_notify);
+		break;
+	case PROP_PROVIDES_FILES:
+		g_value_set_boxed (value, self->provides_files);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -144,6 +151,16 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->sort_user_data_notify == NULL);
 		self->sort_user_data_notify = g_value_get_pointer (value);
 		break;
+	case PROP_PROVIDES_FILES:
+		/* Construct only. */
+		g_assert (self->provides_files == NULL);
+		self->provides_files = g_value_dup_boxed (value);
+
+		/* Squash empty arrays to %NULL. */
+		if (self->provides_files != NULL && self->provides_files[0] == NULL)
+			g_clear_pointer (&self->provides_files, g_strfreev);
+
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -164,6 +181,16 @@ gs_app_query_dispose (GObject *object)
 }
 
 static void
+gs_app_query_finalize (GObject *object)
+{
+	GsAppQuery *self = GS_APP_QUERY (object);
+
+	g_clear_pointer (&self->provides_files, g_strfreev);
+
+	G_OBJECT_CLASS (gs_app_query_parent_class)->finalize (object);
+}
+
+static void
 gs_app_query_class_init (GsAppQueryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -171,6 +198,7 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	object_class->get_property = gs_app_query_get_property;
 	object_class->set_property = gs_app_query_set_property;
 	object_class->dispose = gs_app_query_dispose;
+	object_class->finalize = gs_app_query_finalize;
 
 	/**
 	 * GsAppQuery:refine-flags:
@@ -260,6 +288,26 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				      "A function to free #GsAppQuery:sort-user-data once it is no longer needed.",
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:provides-files: (nullable)
+	 *
+	 * A list of file paths which the apps must provide.
+	 *
+	 * Used to search for apps which provide specific files on the local
+	 * file system.
+	 *
+	 * This may be %NULL to not filter on file paths. An empty array is
+	 * considered equivalent to %NULL.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_PROVIDES_FILES] =
+		g_param_spec_boxed ("provides-files", "Provides Files",
+				    "A list of file paths which the apps must provide.",
+				    G_TYPE_STRV,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
@@ -367,4 +415,25 @@ gs_app_query_get_sort_func (GsAppQuery *self,
 		*user_data_out = self->sort_user_data;
 
 	return self->sort_func;
+}
+
+/**
+ * gs_app_query_get_provides_files:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:provides-files.
+ *
+ * Returns: (nullable): a list of file paths which the apps must provide,
+ *   or %NULL to not filter on file paths
+ * Since: 43
+ */
+const gchar * const *
+gs_app_query_get_provides_files (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	/* Always return %NULL or a non-empty array */
+	g_assert (self->provides_files == NULL || self->provides_files[0] != NULL);
+
+	return (const gchar * const *) self->provides_files;
 }
