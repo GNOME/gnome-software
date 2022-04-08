@@ -738,10 +738,15 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 		search_data = g_ptr_array_index (self->array_search_data, i);
 		if (search_data->search_filename != NULL) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_FILES,
-							 "search", search_data->search_filename,
-							 "refine-flags", refine_flags,
-							 NULL);
+			g_autoptr(GsAppQuery) query = NULL;
+			const gchar *provides_files[2] = { search_data->search_filename, NULL };
+
+			query = gs_app_query_new ("provides-files", provides_files,
+						  "refine-flags", refine_flags,
+						  NULL);
+
+			plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
 			g_debug ("searching filename: '%s'", search_data->search_filename);
 			gs_plugin_loader_job_process_async (self->plugin_loader,
 							    plugin_job,
