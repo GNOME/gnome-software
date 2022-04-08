@@ -298,10 +298,12 @@ gs_fedora_third_party_switch_sync (GsFedoraThirdParty *self,
 
 	g_mutex_lock (&self->lock);
 	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
+		gint wait_status = -1;
 		args[1] = self->executable;
 		args[2] = enable ? "enable" : "disable";
 		args[3] = config_only ? "--config-only" : NULL;
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, NULL, error);
+		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
+			  g_spawn_check_wait_status (wait_status, error);
 	}
 	g_mutex_unlock (&self->lock);
 
@@ -366,7 +368,9 @@ gs_fedora_third_party_opt_out_sync (GsFedoraThirdParty *self,
 
 	g_mutex_lock (&self->lock);
 	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, NULL, error);
+		gint wait_status = -1;
+		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error) &&
+			  g_spawn_check_wait_status (wait_status, error);
 	}
 	g_mutex_unlock (&self->lock);
 
@@ -440,9 +444,11 @@ gs_fedora_third_party_list_sync (GsFedoraThirdParty *self,
 	if (self->repos == NULL || (g_get_real_time () / G_USEC_PER_SEC) - self->last_update > 12 * 60 * 60) {
 		g_clear_pointer (&self->repos, g_hash_table_unref);
 		if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
+			gint wait_status = -1;
 			g_autofree gchar *stdoutput = NULL;
 			args[0] = self->executable;
-			if (g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_DEFAULT, NULL, NULL, &stdoutput, NULL, NULL, error)) {
+			if (g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_DEFAULT, NULL, NULL, &stdoutput, NULL, &wait_status, error) &&
+			    g_spawn_check_wait_status (wait_status, error)) {
 				GHashTable *repos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 				g_auto(GStrv) lines = NULL;
 
