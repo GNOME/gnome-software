@@ -209,13 +209,13 @@ gs_fedora_third_party_query_sync (GsFedoraThirdParty *self,
 
 	g_mutex_lock (&self->lock);
 	if (gs_fedora_third_party_ensure_executable_locked (self, error)) {
-		gint exit_status = -1;
+		gint wait_status = -1;
 		args[0] = self->executable;
-		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &exit_status, error);
+		success = g_spawn_sync (NULL, (gchar **) args, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL, &wait_status, error);
 		if (success) {
 			GsFedoraThirdPartyState state = GS_FEDORA_THIRD_PARTY_STATE_UNKNOWN;
 			/* See https://pagure.io/fedora-third-party/blob/main/f/doc/fedora-third-party.1.md */
-			switch (WEXITSTATUS (exit_status)) {
+			switch (WEXITSTATUS (wait_status)) {
 			case 0:
 				state = GS_FEDORA_THIRD_PARTY_STATE_ENABLED;
 				break;
