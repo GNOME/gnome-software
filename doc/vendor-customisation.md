@@ -103,11 +103,46 @@ sections:
    vfunc.
  * Carousel on the category page: Applications are included if they are in the
    `Featured` subcategory of the displayed category. They are also required to
-   have a high-resolution icon, and the set of applications show in the carousel
+   have a high-resolution icon, and the set of applications shown in the carousel
    is randomised and limited to (for example) 5.
  * “Editor’s Choice” on the category page: Applications are included if they
    meet the requirements for being in the carousel, but weren’t chosen as part
    of the randomisation process.
+
+Example:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<components>
+  <component merge="append">
+    <!-- The ID must always be present to allow merging -->
+    <id>org.gnome.Podcasts</id>
+
+    <!-- Make the app a candidate for inclusion in the carousel on the
+         overview page (if it has a hi-res icon). -->
+    <custom>
+      <value key="GnomeSoftware::FeatureTile">True</value>
+    </custom>
+
+    <!-- Include the app in the “Editor’s Choice” section on the overview page. -->
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+
+    <!-- Make the app a candidate for inclusion in the carousel or
+         “Editor’s Choice” section on category pages (if it has a hi-res icon). -->
+    <categories>
+      <!-- Note that, due to a bug (https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1649),
+           currently all the other categories for the app must also be listed
+           here, as well as the additional ‘Featured’ category. -->
+      <category>AudioVideo</category>
+      <category>Player</category>
+      <!-- This category has been added: -->
+      <category>Featured</category>
+    </categories>
+  </component>
+  <!-- more components -->
+</components>
+```
 
 There are several ways to modify the metainfo for applications so that they are
 highlighted as required, all of which involve providing an additional appstream
