@@ -14,9 +14,10 @@
  *
  * #GsAppQuery is an object to represent a query for apps.
  *
- * It will typically be used with a #GsPluginJob which searches for matching
- * apps, but may have multiple consumers. #GsAppQuery only represents the query
- * and does not provide an implementation for executing that query.
+ * It will typically be used with #GsPluginJobListApps, which searches for
+ * matching apps, but it may have multiple consumers. #GsAppQuery only
+ * represents the query and does not provide an implementation for executing
+ * that query.
  *
  * It is immutable after construction, and hence threadsafe. It may be extended
  * in future by adding more query properties. The existing query properties are

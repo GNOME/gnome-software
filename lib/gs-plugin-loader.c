@@ -3884,6 +3884,10 @@ run_job_cb (GObject      *source_object,
 		GsAppList *list = gs_plugin_job_list_installed_apps_get_result_list (GS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
+	} else if (GS_IS_PLUGIN_JOB_LIST_APPS (plugin_job)) {
+		GsAppList *list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {
 		GsAppList *list = gs_plugin_job_list_distro_upgrades_get_result_list (GS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);

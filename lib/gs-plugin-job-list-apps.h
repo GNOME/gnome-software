@@ -19,7 +19,13 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_PLUGIN_JOB_LIST_APPS (gs_plugin_job_list_apps_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsPluginJobListApps, gs_plugin_job_list_apps, GS, PLUGIN_JOB_LIST_APPS, GsPluginJob)
+
 GsPluginJob	*gs_plugin_job_list_apps_new	(GsAppQuery            *query,
 						 GsPluginListAppsFlags  flags);
+
+GsAppList	*gs_plugin_job_list_apps_get_result_list	(GsPluginJobListApps *self);
 
 G_END_DECLS
