@@ -257,8 +257,12 @@ gs_plugin_appstream_load_appdata (GsPluginAppstream  *self,
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
-	if (!g_file_query_exists (parent, cancellable))
+	if (!g_file_query_exists (parent, cancellable)) {
+		g_debug ("appstream: Skipping appdata path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
 		return TRUE;
+	}
+
+	g_debug ("appstream: Loading appdata path '%s'", path);
 
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
@@ -362,8 +366,12 @@ gs_plugin_appstream_load_desktop (GsPluginAppstream  *self,
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
-	if (!g_file_query_exists (parent, cancellable))
+	if (!g_file_query_exists (parent, cancellable)) {
+		g_debug ("appstream: Skipping desktop path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
 		return TRUE;
+	}
+
+	g_debug ("appstream: Loading desktop path '%s'", path);
 
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
@@ -552,8 +560,11 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
 
 	/* parent path does not exist */
-	if (!g_file_query_exists (parent, cancellable))
+	if (!g_file_query_exists (parent, cancellable)) {
+		g_debug ("appstream: Skipping appstream path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
 		return TRUE;
+	}
+	g_debug ("appstream: Loading appstream path '%s'", path);
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
