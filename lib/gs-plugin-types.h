@@ -260,7 +260,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
  * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
  * @GS_PLUGIN_ACTION_SEARCH:			Get the search results for a query
- * @GS_PLUGIN_ACTION_SEARCH_FILES:		Get the search results for a file query
  * @GS_PLUGIN_ACTION_SEARCH_PROVIDES:		Get the search results for a provide query
  * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
  * @GS_PLUGIN_ACTION_GET_CATEGORY_APPS:		Get the apps for a specific category
@@ -292,7 +291,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_GET_POPULAR,
 	GS_PLUGIN_ACTION_GET_FEATURED,
 	GS_PLUGIN_ACTION_SEARCH,
-	GS_PLUGIN_ACTION_SEARCH_FILES,
 	GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	GS_PLUGIN_ACTION_GET_CATEGORIES,
 	GS_PLUGIN_ACTION_GET_CATEGORY_APPS,

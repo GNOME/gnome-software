@@ -84,27 +84,6 @@ gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_search_files:
- * @plugin: a #GsPlugin
- * @values: a list of filenames, e.g. [ "/usr/share/help/gimp/index.html" ]
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Called when searching for an application that provides a specific filename
- * on the filesystem.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_search_files		(GsPlugin	*plugin,
-							 gchar		**values,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_search_what_provides
  * @plugin: a list of tags, e.g. [ "text/rtf" ]
  * @values: a #GStrv

@@ -673,7 +673,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
@@ -3620,7 +3619,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -4128,7 +4126,6 @@ job_process_cb (GTask *task)
 	/* check required args */
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		if (gs_plugin_job_get_search (plugin_job) == NULL) {
@@ -4206,7 +4203,6 @@ job_process_cb (GTask *task)
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_RECENT:
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
 			helper->timeout_id =
