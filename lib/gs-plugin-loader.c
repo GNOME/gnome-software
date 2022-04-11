@@ -1094,10 +1094,10 @@ gs_plugin_loader_app_is_desktop (GsApp *app, gpointer user_data)
 	return gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP;
 }
 
-static gboolean
-gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
+gboolean
+gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
+                                    GsApp          *app)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	const gchar *tmp;
 	guint i;
 
@@ -1112,6 +1112,15 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 	g_debug ("removing incompatible %s from project group %s",
 		 gs_app_get_id (app), gs_app_get_project_group (app));
 	return FALSE;
+}
+
+static gboolean
+gs_plugin_loader_get_app_is_compatible (GsApp    *app,
+                                        gpointer  user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	return gs_plugin_loader_app_is_compatible (plugin_loader, app);
 }
 
 /******************************************************************************/
