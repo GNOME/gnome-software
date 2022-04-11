@@ -79,6 +79,7 @@ add_size_row (GtkListBox   *list_box,
 {
 	GtkListBoxRow *row;
 	g_autofree gchar *size_bytes_str = NULL;
+	gboolean is_markup = FALSE;
 
 	if (size_bytes == GS_APP_SIZE_UNKNOWABLE)
 		/* Translators: This is shown in a bubble if the storage
@@ -92,10 +93,11 @@ add_size_row (GtkListBox   *list_box,
 		 * possible. */
 		size_bytes_str = g_strdup (_("None"));
 	else
-		size_bytes_str = g_format_size (size_bytes);
+		size_bytes_str = gs_utils_format_size (size_bytes, &is_markup);
 
 	row = gs_context_dialog_row_new_text (size_bytes_str, GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 					      title, description);
+	gs_context_dialog_row_set_content_is_markup (GS_CONTEXT_DIALOG_ROW (row), is_markup);
 	gs_context_dialog_row_set_size_groups (GS_CONTEXT_DIALOG_ROW (row), lozenge_size_group, NULL, NULL);
 	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
@@ -107,6 +109,7 @@ update_sizes_list (GsStorageContextDialog *self)
 	g_autofree gchar *title_size_bytes_str = NULL;
 	const gchar *title;
 	gboolean cache_row_added = FALSE;
+	gboolean is_markup = FALSE;
 
 	gs_widget_remove_all (GTK_WIDGET (self->sizes_list), (GsRemoveFunc) gtk_list_box_remove);
 
@@ -170,8 +173,11 @@ update_sizes_list (GsStorageContextDialog *self)
 		/* FIXME: Addons, Potential Additional Downloads */
 	}
 
-	title_size_bytes_str = g_format_size (title_size_bytes);
-	gtk_label_set_text (self->lozenge_content, title_size_bytes_str);
+	title_size_bytes_str = gs_utils_format_size (title_size_bytes, &is_markup);
+	if (is_markup)
+		gtk_label_set_markup (self->lozenge_content, title_size_bytes_str);
+	else
+		gtk_label_set_text (self->lozenge_content, title_size_bytes_str);
 	gtk_label_set_text (self->title, title);
 
 	/* Update the Manage Storage label. */
