@@ -465,6 +465,11 @@ gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 	g_hash_table_remove_all (self->remote_title);
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
+	/* give all the repos a second chance */
+	locker = g_mutex_locker_new (&self->broken_remotes_mutex);
+	g_hash_table_remove_all (self->broken_remotes);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
 	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
 	if (self->silo)
 		xb_silo_invalidate (self->silo);
