@@ -188,20 +188,20 @@ refine_app (GsPlugin             *plugin,
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE))
 		return TRUE;
 
+	/* Software sources/repositories are represented as #GsApps too. Add the
+	 * provenance quirk to the system-configured repositories (but not
+	 * user-configured ones). */
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+		if (gs_plugin_provenance_find_repo_flags (repos, provenance_wildcards, compulsory_wildcards, gs_app_get_id (app), &quirks) &&
+		    gs_app_get_scope (app) != AS_COMPONENT_SCOPE_USER)
+			gs_plugin_provenance_add_quirks (app, quirks);
+		return TRUE;
+	}
+
 	/* simple case */
 	origin = gs_app_get_origin (app);
 	if (gs_plugin_provenance_find_repo_flags (repos, provenance_wildcards, compulsory_wildcards, origin, &quirks)) {
 		gs_plugin_provenance_add_quirks (app, quirks);
-		return TRUE;
-	}
-
-	/* Software sources/repositories are represented as #GsApps too. Add the
-	 * provenance quirk to the system-configured repositories (but not
-	 * user-configured ones). */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY &&
-	    gs_plugin_provenance_find_repo_flags (repos, provenance_wildcards, compulsory_wildcards, gs_app_get_id (app), &quirks)) {
-		if (gs_app_get_scope (app) != AS_COMPONENT_SCOPE_USER)
-			gs_plugin_provenance_add_quirks (app, quirks);
 		return TRUE;
 	}
 
