@@ -451,22 +451,6 @@ static gboolean
 gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 {
 	GsFlatpak *self = user_data;
-
-	self->requires_full_rescan = TRUE;
-
-	gs_plugin_cache_invalidate (self->plugin);
-	gs_plugin_reload (self->plugin);
-
-	return G_SOURCE_REMOVE;
-}
-
-static void
-gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
-			      GFile *child,
-			      GFile *other_file,
-			      GFileMonitorEvent event_type,
-			      GsFlatpak *self)
-{
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
@@ -486,6 +470,21 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 		xb_silo_invalidate (self->silo);
 	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
 
+	self->requires_full_rescan = TRUE;
+
+	gs_plugin_cache_invalidate (self->plugin);
+	gs_plugin_reload (self->plugin);
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
+			      GFile *child,
+			      GFile *other_file,
+			      GFileMonitorEvent event_type,
+			      GsFlatpak *self)
+{
 	if (gs_flatpak_get_busy (self)) {
 		self->changed_while_busy = TRUE;
 	} else {
