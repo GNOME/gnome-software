@@ -251,13 +251,11 @@ app_add_icon (GsApp  *app,
 }
 
 static void
-gs_appstream_refine_icon (GsApp *app, XbNode *component)
+traverse_component_icons (GsApp *app,
+			  XbNode *component,
+			  GPtrArray *icons)
 {
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
-
-	icons = xb_node_query (component, "icon", 0, &local_error);
-	if (icons == NULL)
+	if (!icons)
 		return;
 
 	/* This code deliberately does *not* check that the icon files or theme
@@ -278,6 +276,68 @@ gs_appstream_refine_icon (GsApp *app, XbNode *component)
 
 		icon = gs_appstream_new_icon (component, icon_node, icon_kind, 0);
 		app_add_icon (app, icon);
+	}
+}
+
+static void
+traverse_components_xpath_for_icons (GsApp *app,
+				     XbSilo *silo,
+				     const gchar *xpath,
+				     gboolean try_with_launchable)
+{
+	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	components = xb_silo_query (silo, xpath, 0, &local_error);
+	if (components) {
+		for (guint i = 0; i < components->len; i++) {
+			g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
+			XbNode *component = g_ptr_array_index (components, i);
+			g_autofree gchar *xml = xb_node_export (component, 0, NULL);
+			icons = xb_node_query (component, "icon", 0, NULL);
+			traverse_component_icons (app, component, icons);
+
+			if (try_with_launchable && gs_app_get_icons (app) == NULL) {
+				const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
+				if (launchable_id != NULL) {
+					g_autofree gchar *xpath2 = NULL;
+
+					/* Inherit the icon from the .desktop file */
+					xpath2 = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
+								  launchable_id);
+					traverse_components_xpath_for_icons (app, silo, xpath2, FALSE);
+				}
+			}
+		}
+	}
+}
+
+static void
+gs_appstream_refine_icon (GsApp *app,
+			  XbSilo *silo,
+			  XbNode *component)
+{
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GPtrArray) icons = NULL;  /* (element-type XbNode) */
+
+	icons = xb_node_query (component, "icon", 0, &local_error);
+	traverse_component_icons (app, component, icons);
+	g_clear_pointer (&icons, g_ptr_array_unref);
+
+	/* If no icon found, try to inherit the icon from the .desktop file */
+	if (gs_app_get_icons (app) == NULL) {
+		g_autofree gchar *xpath = NULL;
+		const gchar *launchable_id = xb_node_query_text (component, "launchable[@type='desktop-id']", NULL);
+		if (launchable_id != NULL) {
+			xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
+						 launchable_id);
+			traverse_components_xpath_for_icons (app, silo, xpath, FALSE);
+			g_clear_pointer (&xpath, g_free);
+		}
+
+		xpath = g_strdup_printf ("/component[@type='desktop-application']/launchable[@type='desktop-id'][text()='%s']/..",
+					 gs_app_get_id (app));
+		traverse_components_xpath_for_icons (app, silo, xpath, FALSE);
 	}
 }
 
@@ -1101,7 +1161,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
 	    gs_app_get_icons (app) == NULL)
-		gs_appstream_refine_icon (app, component);
+		gs_appstream_refine_icon (app, silo, component);
 
 	/* set categories */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) {
