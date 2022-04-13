@@ -220,11 +220,11 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		goto out;
 	}
 
-	gs_app_list_sort (list, gs_overview_page_sort_recent_cb, NULL);
+	g_assert (gs_app_list_length (list) <= N_TILES);
 
 	gs_widget_remove_all (self->box_recent, (GsRemoveFunc) gtk_flow_box_remove);
 
-	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -543,8 +543,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		now = g_date_time_new_now_local ();
 		released_since = g_date_time_add_seconds (now, -(60 * 60 * 24 * 30));
 		query = gs_app_query_new ("released-since", released_since,
-					  /* To have large-enough set, in case filtering removes some non-applicable apps */
-					  "max-results", 3 * N_TILES,
+					  "max-results", N_TILES,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID |
