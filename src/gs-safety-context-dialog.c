@@ -279,10 +279,23 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Download Folder Read Access"),
 				    _("Can read all data in your downloads directory"),
 				    NULL, NULL, NULL);
+		add_permission_row (self->permissions_list, &chosen_rating,
+				    ((permissions & GS_APP_PERMISSIONS_FILESYSTEM_OTHER) != 0 &&
+				     !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
+						      GS_APP_PERMISSIONS_FILESYSTEM_READ |
+						      GS_APP_PERMISSIONS_HOME_FULL |
+						      GS_APP_PERMISSIONS_HOME_READ))),
+				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+				    "folder-documents-symbolic",
+				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
+				    _("Access arbitrary files"),
+				    _("Can access arbitrary files on the file system"),
+				    NULL, NULL, NULL);
 
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
 						     GS_APP_PERMISSIONS_FILESYSTEM_READ |
+						     GS_APP_PERMISSIONS_FILESYSTEM_OTHER |
 						     GS_APP_PERMISSIONS_HOME_FULL |
 						     GS_APP_PERMISSIONS_HOME_READ |
 						     GS_APP_PERMISSIONS_DOWNLOADS_FULL |
