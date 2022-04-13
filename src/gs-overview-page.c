@@ -182,6 +182,14 @@ gs_overview_page_sort_recent_cb (GsApp *app1,
 	return -1;
 }
 
+static gboolean
+gs_overview_page_filter_recent_cb (GsApp    *app,
+                                   gpointer  user_data)
+{
+	return (!gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY) &&
+		gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP);
+}
+
 static void
 gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -527,18 +535,28 @@ gs_overview_page_load (GsOverviewPage *self)
 
 	if (!self->loading_recent) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		g_autoptr(GDateTime) now = NULL;
+		g_autoptr(GDateTime) released_since = NULL;
+		g_autoptr(GsAppQuery) query = NULL;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+		now = g_date_time_new_now_local ();
+		released_since = g_date_time_add_seconds (now, -(60 * 60 * 24 * 30));
+		query = gs_app_query_new ("released-since", released_since,
+					  /* To have large-enough set, in case filtering removes some non-applicable apps */
+					  "max-results", 3 * N_TILES,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID |
+							  GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  "sort-func", gs_overview_page_sort_recent_cb,
+					  "filter-func", gs_overview_page_filter_recent_cb,
+					  NULL);
+
+		plugin_job = gs_plugin_job_list_apps_new (query, flags);
 
 		self->loading_recent = TRUE;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-						 "age", (guint64) (60 * 60 * 24 * 30),
-						 /* To have large-enough set, in case filtering removes some non-applicable apps */
-						 "max-results", 3 * N_TILES,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-						 NULL);
-		gs_plugin_job_set_sort_func (plugin_job, gs_overview_page_sort_recent_cb, NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
