@@ -35,5 +35,6 @@ GsAppListFilterFunc	 gs_app_query_get_filter_func	(GsAppQuery *self,
 							 gpointer   *user_data_out);
 
 const gchar * const	*gs_app_query_get_provides_files (GsAppQuery *self);
+GDateTime		*gs_app_query_get_released_since (GsAppQuery *self);
 
 G_END_DECLS

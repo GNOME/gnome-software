@@ -72,6 +72,7 @@ struct _GsAppQuery
 
 	/* This is guaranteed to either be %NULL, or a non-empty array */
 	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
+	GDateTime *released_since;  /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -87,9 +88,10 @@ typedef enum {
 	PROP_FILTER_USER_DATA,
 	PROP_FILTER_USER_DATA_NOTIFY,
 	PROP_PROVIDES_FILES,
+	PROP_RELEASED_SINCE,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_PROVIDES_FILES + 1] = { NULL, };
+static GParamSpec *props[PROP_RELEASED_SINCE + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -129,6 +131,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_PROVIDES_FILES:
 		g_value_set_boxed (value, self->provides_files);
+		break;
+	case PROP_RELEASED_SINCE:
+		g_value_set_boxed (value, self->released_since);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -200,6 +205,11 @@ gs_app_query_set_property (GObject      *object,
 			g_clear_pointer (&self->provides_files, g_strfreev);
 
 		break;
+	case PROP_RELEASED_SINCE:
+		/* Construct only. */
+		g_assert (self->released_since == NULL);
+		self->released_since = g_value_dup_boxed (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -230,6 +240,7 @@ gs_app_query_finalize (GObject *object)
 	GsAppQuery *self = GS_APP_QUERY (object);
 
 	g_clear_pointer (&self->provides_files, g_strfreev);
+	g_clear_pointer (&self->released_since, g_date_time_unref);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->finalize (object);
 }
@@ -400,6 +411,24 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:released-since: (nullable)
+	 *
+	 * A date/time which apps must have been released since (exclusive).
+	 *
+	 * Used to search for apps which have been updated recently.
+	 *
+	 * This may be %NULL to not filter on release date.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_RELEASED_SINCE] =
+		g_param_spec_boxed ("released-since", "Released Since",
+				    "A date/time which apps must have been released since (exclusive).",
+				    G_TYPE_DATE_TIME,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -550,4 +579,22 @@ gs_app_query_get_provides_files (GsAppQuery *self)
 	g_assert (self->provides_files == NULL || self->provides_files[0] != NULL);
 
 	return (const gchar * const *) self->provides_files;
+}
+
+/**
+ * gs_app_query_get_released_since:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:released-since.
+ *
+ * Returns: (nullable): a date/time which apps must have been released since,
+ *   or %NULL to not filter on release date
+ * Since: 43
+ */
+GDateTime *
+gs_app_query_get_released_since (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	return self->released_since;
 }
