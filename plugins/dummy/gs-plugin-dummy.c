@@ -883,25 +883,55 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_recent (GsPlugin *plugin,
-		      GsAppList *list,
-		      guint64 age,
-		      GCancellable *cancellable,
-		      GError **error)
+static void
+gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
+                                 GsAppQuery            *query,
+                                 GsPluginListAppsFlags  flags,
+                                 GCancellable          *cancellable,
+                                 GAsyncReadyCallback    callback,
+                                 gpointer               user_data)
 {
-	g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
-	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
-	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_add_icon (app, icon);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_list_add (list, app);
-	return TRUE;
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	GDateTime *released_since = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
+
+	if (query != NULL)
+		released_since = gs_app_query_get_released_since (query);
+
+	/* Currently only support released-since queries. */
+	if (released_since == NULL) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	if (released_since != NULL) {
+		g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
+		g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		gs_app_add_icon (app, icon);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_management_plugin (app, plugin);
+
+		gs_app_list_add (list, app);
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&list), (GDestroyNotify) g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_dummy_list_apps_finish (GsPlugin      *plugin,
+                                  GAsyncResult  *result,
+                                  GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 static void
@@ -1081,6 +1111,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->refine_finish = gs_plugin_dummy_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_dummy_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_dummy_list_installed_apps_finish;
+	plugin_class->list_apps_async = gs_plugin_dummy_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_dummy_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_dummy_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
 	plugin_class->list_distro_upgrades_async = gs_plugin_dummy_list_distro_upgrades_async;
