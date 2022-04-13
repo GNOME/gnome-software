@@ -2562,15 +2562,15 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	GsAppList *addons_list;
+	g_autoptr(GsAppList) addons_list = NULL;
 	g_autoptr(GPtrArray) installed_related_refs = NULL;
 	g_autoptr(GPtrArray) remote_related_refs = NULL;
 	g_autofree gchar *ref = NULL;
 	FlatpakInstallation *installation = gs_flatpak_get_installation (self, interactive);
 	g_autoptr(GError) error_local = NULL;
 
-	addons_list = gs_app_get_addons (app);
-	if (gs_app_list_length (addons_list) == 0)
+	addons_list = gs_app_dup_addons (app);
+	if (addons_list == NULL || gs_app_list_length (addons_list) == 0)
 		return TRUE;
 
 	if (gs_app_get_origin (app) == NULL)
@@ -3282,11 +3282,11 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			  gboolean interactive,
 			  GCancellable *cancellable)
 {
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GString) errors = NULL;
 	guint ii, sz;
 
-	addons = gs_app_get_addons (parent_app);
+	addons = gs_app_dup_addons (parent_app);
 	sz = addons ? gs_app_list_length (addons) : 0;
 
 	for (ii = 0; ii < sz; ii++) {

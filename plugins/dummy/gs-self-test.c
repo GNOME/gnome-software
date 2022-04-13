@@ -352,7 +352,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *addon;
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -405,7 +405,8 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (menu_path, ==, "Create->Music Players");
 
 	/* check addon */
-	addons = gs_app_get_addons (app);
+	addons = gs_app_dup_addons (app);
+	g_assert_nonnull (addons);
 	g_assert_cmpint (gs_app_list_length (addons), ==, 1);
 	addon = gs_app_list_index (addons, 0);
 	g_assert_cmpstr (gs_app_get_id (addon), ==, "zeus-spell.addon");

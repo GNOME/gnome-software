@@ -472,8 +472,9 @@ finish_refine_internal_op (GTask  *task,
 
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
-			GsAppList *addons = gs_app_get_addons (app);
-			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+			g_autoptr(GsAppList) addons = gs_app_dup_addons (app);
+
+			for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
 				GsApp *addon = gs_app_list_index (addons, j);
 				g_debug ("refining app %s addon %s",
 					 gs_app_get_id (app),
@@ -665,13 +666,13 @@ run_cb (GObject      *source_object,
 		for (guint i = 0; i < gs_app_list_length (result_list); i++) {
 			g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
 			GsApp *app = gs_app_list_index (result_list, i);
-			GsAppList *addons = gs_app_get_addons (app);
+			g_autoptr(GsAppList) addons = gs_app_dup_addons (app);
 
 			/* find any apps with the same source */
 			const gchar *pkgname_parent = gs_app_get_source_default (app);
 			if (pkgname_parent == NULL)
 				continue;
-			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+			for (guint j = 0; addons != NULL && j < gs_app_list_length (addons); j++) {
 				GsApp *addon = gs_app_list_index (addons, j);
 				if (g_strcmp0 (gs_app_get_source_default (addon),
 					       pkgname_parent) == 0) {

@@ -137,8 +137,9 @@ gs_app_list_add_watched_for_app (GsAppList *list, GPtrArray *apps, GsApp *app)
 	if (list->flags & GS_APP_LIST_FLAG_WATCH_APPS)
 		g_ptr_array_add (apps, app);
 	if (list->flags & GS_APP_LIST_FLAG_WATCH_APPS_ADDONS) {
-		GsAppList *list2 = gs_app_get_addons (app);
-		for (guint i = 0; i < gs_app_list_length (list2); i++) {
+		g_autoptr(GsAppList) list2 = gs_app_dup_addons (app);
+
+		for (guint i = 0; list2 != NULL && i < gs_app_list_length (list2); i++) {
 			GsApp *app2 = gs_app_list_index (list2, i);
 			g_ptr_array_add (apps, app2);
 		}

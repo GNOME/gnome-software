@@ -3866,21 +3866,23 @@ gs_app_set_metadata_variant (GsApp *app, const gchar *key, GVariant *value)
 }
 
 /**
- * gs_app_get_addons:
+ * gs_app_dup_addons:
  * @app: a #GsApp
  *
  * Gets the list of addons for the application.
  *
- * Returns: (transfer none): a list of addons
+ * Returns: (transfer full) (nullable): a list of addons, or %NULL if there are none
  *
- * Since: 3.22
- **/
+ * Since: 43
+ */
 GsAppList *
-gs_app_get_addons (GsApp *app)
+gs_app_dup_addons (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->addons;
+	locker = g_mutex_locker_new (&priv->mutex);
+	return (priv->addons != NULL) ? g_object_ref (priv->addons) : NULL;
 }
 
 /**
