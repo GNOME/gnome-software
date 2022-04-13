@@ -19,6 +19,7 @@ G_BEGIN_DECLS
 
 /* Dependency loop means we can’t include the header. */
 typedef struct _GsPlugin GsPlugin;
+typedef struct _GsAppList GsAppList;
 
 #define GS_TYPE_APP (gs_app_get_type ())
 
@@ -428,8 +429,8 @@ guint64		 gs_app_get_size_download_dependencies
 						(GsApp		*app);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);
-void		 gs_app_add_addon		(GsApp		*app,
-						 GsApp		*addon);
+void		 gs_app_add_addons		(GsApp		*app,
+						 GsAppList	*addons);
 void		 gs_app_add_history		(GsApp		*app,
 						 GsApp		*app2);
 guint64		 gs_app_get_install_date	(GsApp		*app);

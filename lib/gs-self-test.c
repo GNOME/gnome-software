@@ -564,12 +564,15 @@ static void
 gs_app_addons_func (void)
 {
 	g_autoptr(GsApp) app = gs_app_new ("test.desktop");
-	GsApp *addon;
+	g_autoptr(GsApp) addon = NULL;
+	g_autoptr(GsAppList) addons_list = NULL;
 
 	/* create, add then drop ref, so @app has the only refcount of addon */
 	addon = gs_app_new ("test.desktop");
-	gs_app_add_addon (app, addon);
-	g_object_unref (addon);
+	addons_list = gs_app_list_new ();
+	gs_app_list_add (addons_list, addon);
+
+	gs_app_add_addons (app, addons_list);
 
 	gs_app_remove_addon (app, addon);
 }
