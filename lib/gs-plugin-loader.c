@@ -1134,16 +1134,6 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 }
 
 static gint
-gs_plugin_loader_app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
-		return -1;
-	if (gs_app_get_kind (app2) == AS_COMPONENT_KIND_DESKTOP_APP)
-		return 1;
-	return 0;
-}
-
-static gint
 gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	if (gs_app_get_match_value (app1) > gs_app_get_match_value (app2))
@@ -4146,12 +4136,6 @@ job_process_cb (GTask *task)
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_match_value_cb, NULL);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_kind_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:

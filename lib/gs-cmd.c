@@ -285,6 +285,16 @@ gs_cmd_self_free (GsCmdSelf *self)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
 
+static gint
+app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
+		return -1;
+	if (gs_app_get_kind (app2) == AS_COMPONENT_KIND_DESKTOP_APP)
+		return 1;
+	return 0;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -630,6 +640,7 @@ main (int argc, char **argv)
 							 "max-results", self->max_results,
 							 "interactive", self->interactive,
 							 NULL);
+			gs_plugin_job_set_sort_func (plugin_job, app_sort_kind_cb, NULL);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
