@@ -451,6 +451,29 @@ static gboolean
 gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 {
 	GsFlatpak *self = user_data;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
+
+	/* drop the installed refs cache */
+	locker = g_mutex_locker_new (&self->installed_refs_mutex);
+	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
+	/* drop the remote title cache */
+	locker = g_mutex_locker_new (&self->remote_title_mutex);
+	g_hash_table_remove_all (self->remote_title);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
+	/* give all the repos a second chance */
+	locker = g_mutex_locker_new (&self->broken_remotes_mutex);
+	g_hash_table_remove_all (self->broken_remotes);
+	g_clear_pointer (&locker, g_mutex_locker_free);
+
+	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
+	if (self->silo)
+		xb_silo_invalidate (self->silo);
+	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
 
 	self->requires_full_rescan = TRUE;
 
@@ -467,25 +490,6 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFileMonitorEvent event_type,
 			      GsFlatpak *self)
 {
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
-
-	/* drop the installed refs cache */
-	locker = g_mutex_locker_new (&self->installed_refs_mutex);
-	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
-	g_clear_pointer (&locker, g_mutex_locker_free);
-
-	/* drop the remote title cache */
-	locker = g_mutex_locker_new (&self->remote_title_mutex);
-	g_hash_table_remove_all (self->remote_title);
-	g_clear_pointer (&locker, g_mutex_locker_free);
-
-	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
-	if (self->silo)
-		xb_silo_invalidate (self->silo);
-	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
-
 	if (gs_flatpak_get_busy (self)) {
 		self->changed_while_busy = TRUE;
 	} else {
