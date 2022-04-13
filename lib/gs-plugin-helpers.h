@@ -44,4 +44,20 @@ GsPluginRefreshMetadataData *gs_plugin_refresh_metadata_data_new (guint64       
 void gs_plugin_refresh_metadata_data_free (GsPluginRefreshMetadataData *data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefreshMetadataData, gs_plugin_refresh_metadata_data_free)
 
+typedef struct {
+	GsAppQuery *query;  /* (owned) (nullable) */
+	GsPluginListAppsFlags flags;
+} GsPluginListAppsData;
+
+GsPluginListAppsData *gs_plugin_list_apps_data_new (GsAppQuery            *query,
+                                                    GsPluginListAppsFlags  flags);
+GTask *gs_plugin_list_apps_data_new_task (gpointer               source_object,
+                                          GsAppQuery            *query,
+                                          GsPluginListAppsFlags  flags,
+                                          GCancellable          *cancellable,
+                                          GAsyncReadyCallback    callback,
+                                          gpointer               user_data);
+void gs_plugin_list_apps_data_free (GsPluginListAppsData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginListAppsData, gs_plugin_list_apps_data_free)
+
 G_END_DECLS
