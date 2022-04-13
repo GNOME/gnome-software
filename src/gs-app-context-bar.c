@@ -333,6 +333,13 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read your downloads"));
 			break;
+		case GS_APP_PERMISSIONS_FILESYSTEM_OTHER:
+			add_to_safety_rating (&chosen_rating, descriptions,
+					      SAFETY_POTENTIALLY_UNSAFE,
+					      /* Translators: This indicates an app can access data in the system unknown to the Software.
+					       * It’s used in a context tile, so should be short. */
+					      _("Can access arbitrary files"));
+			break;
 		case GS_APP_PERMISSIONS_SETTINGS:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
