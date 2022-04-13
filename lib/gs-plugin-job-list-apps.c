@@ -337,6 +337,8 @@ finish_task (GTask     *task,
 	GsAppListFilterFlags dedupe_flags = GS_APP_LIST_FILTER_FLAG_NONE;
 	GsAppListSortFunc sort_func = NULL;
 	gpointer sort_func_data = NULL;
+	GsAppListFilterFunc filter_func = NULL;
+	gpointer filter_func_data = NULL;
 	guint max_results = 0;
 	g_autofree gchar *job_debug = NULL;
 
@@ -344,6 +346,13 @@ finish_task (GTask     *task,
 	 *
 	 * FIXME: It feels like this filter should be done in a different layer. */
 	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
+
+	/* Caller-specified filtering. */
+	if (self->query != NULL)
+		filter_func = gs_app_query_get_filter_func (self->query, &filter_func_data);
+
+	if (filter_func != NULL)
+		gs_app_list_filter (merged_list, filter_func, filter_func_data);
 
 	/* Filter duplicates with priority, taking into account the source name
 	 * & version, so we combine available updates with the installed app */
