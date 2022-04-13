@@ -32,6 +32,13 @@
  * #GsPluginJobRefine). `max-results` and `dedupe-flags` are used to limit the
  * set of results.
  *
+ * Results must always be processed in this order:
+ *  - Filtering using #GsAppQuery:filter-func (and any other custom filter
+ *    functions the query executor provides).
+ *  - Deduplication using #GsAppQuery:dedupe-flags.
+ *  - Sorting using #GsAppQuery:sort-func.
+ *  - Truncating result list length to #GsAppQuery:max-results.
+ *
  * Since: 43
  */
 
@@ -59,6 +66,10 @@ struct _GsAppQuery
 	gpointer sort_user_data;
 	GDestroyNotify sort_user_data_notify;
 
+	GsAppListFilterFunc filter_func;
+	gpointer filter_user_data;
+	GDestroyNotify filter_user_data_notify;
+
 	/* This is guaranteed to either be %NULL, or a non-empty array */
 	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
 };
@@ -72,6 +83,9 @@ typedef enum {
 	PROP_SORT_FUNC,
 	PROP_SORT_USER_DATA,
 	PROP_SORT_USER_DATA_NOTIFY,
+	PROP_FILTER_FUNC,
+	PROP_FILTER_USER_DATA,
+	PROP_FILTER_USER_DATA_NOTIFY,
 	PROP_PROVIDES_FILES,
 } GsAppQueryProperty;
 
@@ -103,6 +117,15 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_SORT_USER_DATA_NOTIFY:
 		g_value_set_pointer (value, self->sort_user_data_notify);
+		break;
+	case PROP_FILTER_FUNC:
+		g_value_set_pointer (value, self->filter_func);
+		break;
+	case PROP_FILTER_USER_DATA:
+		g_value_set_pointer (value, self->filter_user_data);
+		break;
+	case PROP_FILTER_USER_DATA_NOTIFY:
+		g_value_set_pointer (value, self->filter_user_data_notify);
 		break;
 	case PROP_PROVIDES_FILES:
 		g_value_set_boxed (value, self->provides_files);
@@ -152,6 +175,21 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->sort_user_data_notify == NULL);
 		self->sort_user_data_notify = g_value_get_pointer (value);
 		break;
+	case PROP_FILTER_FUNC:
+		/* Construct only. */
+		g_assert (self->filter_func == NULL);
+		self->filter_func = g_value_get_pointer (value);
+		break;
+	case PROP_FILTER_USER_DATA:
+		/* Construct only. */
+		g_assert (self->filter_user_data == NULL);
+		self->filter_user_data = g_value_get_pointer (value);
+		break;
+	case PROP_FILTER_USER_DATA_NOTIFY:
+		/* Construct only. */
+		g_assert (self->filter_user_data_notify == NULL);
+		self->filter_user_data_notify = g_value_get_pointer (value);
+		break;
 	case PROP_PROVIDES_FILES:
 		/* Construct only. */
 		g_assert (self->provides_files == NULL);
@@ -176,6 +214,11 @@ gs_app_query_dispose (GObject *object)
 	if (self->sort_user_data_notify != NULL && self->sort_user_data != NULL) {
 		self->sort_user_data_notify (g_steal_pointer (&self->sort_user_data));
 		self->sort_user_data_notify = NULL;
+	}
+
+	if (self->filter_user_data_notify != NULL && self->filter_user_data != NULL) {
+		self->filter_user_data_notify (g_steal_pointer (&self->filter_user_data));
+		self->filter_user_data_notify = NULL;
 	}
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->dispose (object);
@@ -287,6 +330,53 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	props[PROP_SORT_USER_DATA_NOTIFY] =
 		g_param_spec_pointer ("sort-user-data-notify", "Sort User Data Notify",
 				      "A function to free #GsAppQuery:sort-user-data once it is no longer needed.",
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:filter-func: (nullable)
+	 *
+	 * A filter function to filter the returned apps.
+	 *
+	 * This must be of type #GsAppListFilterFunc.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_FILTER_FUNC] =
+		g_param_spec_pointer ("filter-func", "Filter Function",
+				      "A filter function to filter the returned apps.",
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:filter-user-data: (nullable)
+	 *
+	 * User data to pass to #GsAppQuery:filter-func.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_FILTER_USER_DATA] =
+		g_param_spec_pointer ("filter-user-data", "Filter User Data",
+				      "User data to pass to #GsAppQuery:filter-func.",
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:filter-user-data-notify: (nullable)
+	 *
+	 * A function to free #GsAppQuery:filter-user-data once it is no longer
+	 * needed.
+	 *
+	 * This must be of type #GDestroyNotify.
+	 *
+	 * This will be called exactly once between being set and when the
+	 * #GsAppQuery is finalized.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_FILTER_USER_DATA_NOTIFY] =
+		g_param_spec_pointer ("filter-user-data-notify", "Filter User Data Notify",
+				      "A function to free #GsAppQuery:filter-user-data once it is no longer needed.",
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -416,6 +506,29 @@ gs_app_query_get_sort_func (GsAppQuery *self,
 		*user_data_out = self->sort_user_data;
 
 	return self->sort_func;
+}
+
+/**
+ * gs_app_query_get_filter_func:
+ * @self: a #GsAppQuery
+ * @user_data_out: (out) (transfer none) (optional) (nullable): return location
+ *   for the #GsAppQuery:filter-user-data, or %NULL to ignore
+ *
+ * Get the value of #GsAppQuery:filter-func.
+ *
+ * Returns: (nullable): the filter function for the query
+ * Since: 43
+ */
+GsAppListFilterFunc
+gs_app_query_get_filter_func (GsAppQuery *self,
+                              gpointer   *user_data_out)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	if (user_data_out != NULL)
+		*user_data_out = self->filter_user_data;
+
+	return self->filter_func;
 }
 
 /**
