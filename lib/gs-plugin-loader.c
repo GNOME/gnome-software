@@ -648,14 +648,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		{
-			GsPluginGetRecentFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_age (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
@@ -1079,18 +1071,6 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 	return TRUE;
-}
-
-static gboolean
-gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
-{
-	return !gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY);
-}
-
-static gboolean
-gs_plugin_loader_app_is_desktop (GsApp *app, gpointer user_data)
-{
-	return gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP;
 }
 
 gboolean
@@ -3482,13 +3462,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	if (action == GS_PLUGIN_ACTION_GET_RECENT) {
-		/* Preliminary filter recent apps, to have truncated a meaningful list */
-		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
-	}
-
 	/* filter to reduce to a sane set */
 	gs_plugin_loader_job_sorted_truncation (helper->plugin_job, list);
 
@@ -3630,13 +3603,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
-		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -4185,7 +4151,6 @@ job_process_cb (GTask *task)
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
-	case GS_PLUGIN_ACTION_GET_RECENT:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {

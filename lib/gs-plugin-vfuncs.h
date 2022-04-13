@@ -224,26 +224,6 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_recent:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @age: a number of seconds
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Return all the applications that have had upstream releases recently.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_recent			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 guint64	 age,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_popular:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
