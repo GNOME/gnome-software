@@ -3138,6 +3138,18 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 }
 
 static void
+gs_plugin_loader_inherit_list_props (GsAppList *des_list,
+				     GsAppList *src_list)
+{
+	if (gs_app_list_has_flag (src_list, GS_APP_LIST_FLAG_IS_TRUNCATED))
+		gs_app_list_add_flag (des_list, GS_APP_LIST_FLAG_IS_TRUNCATED);
+	if (gs_app_list_has_flag (src_list, GS_APP_LIST_FLAG_IS_RANDOMIZED))
+		gs_app_list_add_flag (des_list, GS_APP_LIST_FLAG_IS_RANDOMIZED);
+
+	gs_app_list_set_size_peak (des_list, gs_app_list_get_size_peak (src_list));
+}
+
+static void
 gs_plugin_loader_process_thread_cb (GTask *task,
 				    gpointer object,
 				    gpointer task_data,
@@ -3339,6 +3351,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			return;
 		}
 
+		gs_plugin_loader_inherit_list_props (new_list, list);
+
 		/* Update the app list in case the refine resolved any wildcards. */
 		g_set_object (&list, new_list);
 	} else {
@@ -3384,6 +3398,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, g_steal_pointer (&error));
 			return;
 		}
+
+		gs_plugin_loader_inherit_list_props (new_list, list);
 
 		/* Update the app list in case the refine resolved any wildcards. */
 		g_set_object (&list, new_list);

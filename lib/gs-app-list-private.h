@@ -34,6 +34,8 @@ typedef enum {
 } GsAppListFlags;
 
 guint		 gs_app_list_get_size_peak	(GsAppList	*list);
+void		 gs_app_list_set_size_peak	(GsAppList	*list,
+						 guint		 size_peak);
 void		 gs_app_list_filter_duplicates	(GsAppList	*list,
 						 GsAppListFilterFlags flags);
 void		 gs_app_list_randomize		(GsAppList	*list);
