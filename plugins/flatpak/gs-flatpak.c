@@ -258,10 +258,12 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "xdg-download:ro", GS_APP_PERMISSIONS_DOWNLOADS_READ },
 			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_ESCAPE_SANDBOX }
 		};
+		guint filesystems_hits = 0;
 
 		for (guint i = 0; i < G_N_ELEMENTS (filesystems_access); i++) {
 			if (g_strv_contains ((const gchar * const *) strv, filesystems_access[i].key)) {
 				permissions |= filesystems_access[i].perm;
+				filesystems_hits++;
 			}
 		}
 
@@ -271,6 +273,9 @@ perms_from_metadata (GKeyFile *keyfile)
 			permissions = permissions & ~GS_APP_PERMISSIONS_FILESYSTEM_READ;
 		if ((permissions & GS_APP_PERMISSIONS_DOWNLOADS_FULL) != 0)
 			permissions = permissions & ~GS_APP_PERMISSIONS_DOWNLOADS_READ;
+
+		if (g_strv_length (strv) > filesystems_hits)
+			permissions |= GS_APP_PERMISSIONS_FILESYSTEM_OTHER;
 	}
 	g_strfreev (strv);
 
