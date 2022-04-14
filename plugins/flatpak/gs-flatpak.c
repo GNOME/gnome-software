@@ -3261,7 +3261,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 					 gs_app_get_unique_id (app),
 					 error_local->message);
 			} else {
-				g_prefix_error (&error_local, "failed to get permissions: ");
+				g_prefix_error (&error_local, "failed to read permissions from app '%s' metadata: ", gs_app_get_unique_id (app));
 				g_propagate_error (error, g_steal_pointer (&error_local));
 				return FALSE;
 			}
