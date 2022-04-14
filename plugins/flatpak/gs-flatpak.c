@@ -447,11 +447,9 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	return g_steal_pointer (&app);
 }
 
-static gboolean
-gs_flatpak_claim_changed_idle_cb (gpointer user_data)
+static void
+gs_flatpak_internal_data_changed (GsFlatpak *self)
 {
-	GsFlatpak *self = user_data;
-	g_autoptr(GError) error = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 
@@ -476,7 +474,14 @@ gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
 
 	self->requires_full_rescan = TRUE;
+}
 
+static gboolean
+gs_flatpak_claim_changed_idle_cb (gpointer user_data)
+{
+	GsFlatpak *self = user_data;
+
+	gs_flatpak_internal_data_changed (self);
 	gs_plugin_cache_invalidate (self->plugin);
 	gs_plugin_reload (self->plugin);
 
@@ -1086,10 +1091,17 @@ gs_flatpak_rescan_app_data (GsFlatpak *self,
 		gboolean res = gs_flatpak_refresh (self, 0, interactive, cancellable, error);
 		if (res)
 			self->requires_full_rescan = FALSE;
+		else
+			gs_flatpak_internal_data_changed (self);
 		return res;
 	}
 
-	return gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error);
+	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+		gs_flatpak_internal_data_changed (self);
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 gboolean
