@@ -1968,8 +1968,16 @@ gs_flatpak_refresh (GsFlatpak *self,
 	g_hash_table_remove_all (self->broken_remotes);
 	g_mutex_unlock (&self->broken_remotes_mutex);
 
-	/* manually drop the cache */
-	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, interactive),
+	/* manually drop the cache in both installation instances;
+	 * it's needed to have them both agree on the content. */
+	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, FALSE),
+					       cancellable,
+					       error)) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, TRUE),
 					       cancellable,
 					       error)) {
 		gs_flatpak_error_convert (error);
