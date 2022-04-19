@@ -106,6 +106,7 @@ gs_update_list_init (GsUpdateList *update_list)
 	gtk_list_box_set_selection_mode (priv->listbox, GTK_SELECTION_NONE);
 	gtk_widget_set_parent (GTK_WIDGET (priv->listbox), GTK_WIDGET (update_list));
 	gtk_list_box_set_sort_func (priv->listbox, list_sort_func, update_list, NULL);
+	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (priv->listbox)), "boxed-list");
 
 	g_signal_connect (priv->listbox, "row-activated",
 			  G_CALLBACK (installed_updates_row_activated_cb), update_list);
