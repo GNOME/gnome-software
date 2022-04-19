@@ -47,6 +47,7 @@ typedef struct
 	gboolean	 show_source;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
+	gboolean	 show_installed;
 	guint		 pending_refresh_id;
 	gboolean	 is_narrow;
 } GsAppRowPrivate;
@@ -70,6 +71,7 @@ typedef enum {
 	PROP_SHOW_RATING,
 	PROP_SHOW_UPDATE,
 	PROP_SHOW_INSTALLED_SIZE,
+	PROP_SHOW_INSTALLED,
 	PROP_IS_NARROW,
 } GsAppRowProperty;
 
@@ -335,7 +337,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UPDATABLE_LIVE:
 		case GS_APP_STATE_INSTALLED:
-			gtk_widget_set_visible (priv->label_installed, TRUE);
+			gtk_widget_set_visible (priv->label_installed, priv->show_installed);
 			break;
 		default:
 			gtk_widget_set_visible (priv->label_installed, FALSE);
@@ -658,6 +660,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_SHOW_INSTALLED_SIZE:
 		g_value_set_boolean (value, priv->show_installed_size);
 		break;
+	case PROP_SHOW_INSTALLED:
+		g_value_set_boolean (value, priv->show_installed);
+		break;
 	case PROP_IS_NARROW:
 		g_value_set_boolean (value, gs_app_row_get_is_narrow (app_row));
 		break;
@@ -696,6 +701,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_INSTALLED:
+		gs_app_row_set_show_installed (app_row, g_value_get_boolean (value));
 		break;
 	case PROP_IS_NARROW:
 		gs_app_row_set_is_narrow (app_row, g_value_get_boolean (value));
@@ -819,6 +827,18 @@ gs_app_row_class_init (GsAppRowClass *klass)
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
+	 * GsAppRow:show-installed:
+	 *
+	 * Show an "Installed" check in the app row, when the app is installed.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_SHOW_INSTALLED] =
+		g_param_spec_boolean ("show-installed", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
 	 * GsAppRow:show-installed-size:
 	 *
 	 * Show the installed size of the app in the row.
@@ -898,6 +918,7 @@ gs_app_row_init (GsAppRow *app_row)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_description = TRUE;
+	priv->show_installed = TRUE;
 
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
@@ -1103,6 +1124,31 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 	priv->show_update = show_update;
 	gs_app_row_schedule_refresh (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_UPDATE]);
+}
+
+/**
+ * gs_app_row_set_show_installed:
+ * @app_row: a #GsAppRow
+ * @show_installed: value to set
+ *
+ * Set whether to show "installed" label. Default is %TRUE. This has effect only
+ * when not showing buttons (gs_app_row_set_show_buttons()).
+ *
+ * Since: 42.1
+ **/
+void
+gs_app_row_set_show_installed (GsAppRow *app_row,
+			       gboolean show_installed)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!show_installed) != (!priv->show_installed)) {
+		priv->show_installed = show_installed;
+		gs_app_row_schedule_refresh (app_row);
+		g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_INSTALLED]);
+	}
 }
 
 GtkWidget *
