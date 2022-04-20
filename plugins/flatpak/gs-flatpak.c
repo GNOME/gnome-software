@@ -1752,21 +1752,15 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		g_prefix_error (error, "cannot modify remote: ");
 		gs_app_set_state_recover (app);
+		gs_flatpak_internal_data_changed (self);
 		return FALSE;
 	}
 
-	/* invalidate cache */
-	g_rw_lock_reader_lock (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
-	g_rw_lock_reader_unlock (&self->silo_lock);
+	/* Mark the internal cache as obsolete. */
+	gs_flatpak_internal_data_changed (self);
 
 	/* success */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	/* This can fail silently, it's only to update necessary caches, to provide
-	 * up-to-date information after the successful remote enable/install. */
-	gs_flatpak_refresh (self, 1, interactive, cancellable, NULL);
 
 	gs_plugin_repository_changed (self->plugin, app);
 
