@@ -1042,6 +1042,10 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		if (!gs_flatpak_add_apps_from_xremote (self, builder, xremote, interactive, cancellable, &error_local)) {
 			g_debug ("Failed to add apps from remote ‘%s’; skipping: %s",
 				 flatpak_remote_get_name (xremote), error_local->message);
+			if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
 		}
 	}
 
@@ -1069,7 +1073,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	self->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-					NULL, error);
+					cancellable, error);
 
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
