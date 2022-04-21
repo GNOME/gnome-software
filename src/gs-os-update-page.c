@@ -109,8 +109,8 @@ format_version_update (GsApp *app, GtkTextDirection direction)
 			 * RTL locales, but not change the text order.
 			 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html */
 			return g_strdup_printf ("%s ← %s",
-						version_current,
-						version_update);
+						version_update,
+						version_current);
 		case GTK_TEXT_DIR_NONE:
 		case GTK_TEXT_DIR_LTR:
 		default:
