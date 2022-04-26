@@ -1343,8 +1343,10 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 	}
 
 	/* ensure the AppStream silo is up to date */
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+		gs_flatpak_internal_data_changed (self);
 		return FALSE;
+	}
 
 	return TRUE;
 }
