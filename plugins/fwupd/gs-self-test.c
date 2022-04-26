@@ -52,17 +52,18 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
 			 "cab file.\n\nThis is the second paragraph.");
-#if FWUPD_CHECK_VERSION(1, 7, 1)
-	/* Changes introduced in fwupd commit d3706e0e0b0fc210796da839b84ac391f7a251f8 */
-	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==,
-			 "Some of the platform secrets may be invalidated when "
-			 "updating this firmware. Please ensure you have the "
-			 "volume recovery key before continuing.\n\nLatest "
-			 "firmware release.");
-#else
-	g_assert_cmpstr (gs_app_get_update_details_markup (app), ==,
-			 "Latest firmware release.");
-#endif
+
+	/* The message is different if BitLocker Full Disk Encryption is
+	 * detected. See
+	 * https://github.com/fwupd/fwupd/wiki/Full-Disk-Encryption-Detected */
+	if (g_strcmp0 (gs_app_get_update_details_markup (app),
+		       "Some of the platform secrets may be invalidated when "
+		       "updating this firmware. Please ensure you have the "
+		       "volume recovery key before continuing.\n\nLatest "
+		       "firmware release.") != 0) {
+		g_assert_cmpstr (gs_app_get_update_details_markup (app), ==,
+				 "Latest firmware release.");
+	}
 
 	/* seems wrong, but this is only set if the update is available */
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UNKNOWN);
