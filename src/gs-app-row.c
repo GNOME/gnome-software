@@ -63,6 +63,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 typedef enum {
 	PROP_APP = 1,
+	PROP_COLORFUL,
 	PROP_SHOW_DESCRIPTION,
 	PROP_SHOW_SOURCE,
 	PROP_SHOW_BUTTONS,
@@ -637,6 +638,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_APP:
 		g_value_set_object (value, priv->app);
 		break;
+	case PROP_COLORFUL:
+		g_value_set_boolean (value, priv->colorful);
+		break;
 	case PROP_SHOW_DESCRIPTION:
 		g_value_set_boolean (value, gs_app_row_get_show_description (app_row));
 		break;
@@ -672,6 +676,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	switch ((GsAppRowProperty) prop_id) {
 	case PROP_APP:
 		gs_app_row_set_app (app_row, g_value_get_object (value));
+		break;
+	case PROP_COLORFUL:
+		gs_app_row_set_colorful (app_row, g_value_get_boolean (value));
 		break;
 	case PROP_SHOW_DESCRIPTION:
 		gs_app_row_set_show_description (app_row, g_value_get_boolean (value));
@@ -739,6 +746,18 @@ gs_app_row_class_init (GsAppRowClass *klass)
 		g_param_spec_object ("app", NULL, NULL,
 				     GS_TYPE_APP,
 				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsAppRow:colorful:
+	 *
+	 * Whether the buttons can be colorized in the row.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_COLORFUL] =
+		g_param_spec_boolean ("colorful", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:show-description:
@@ -907,6 +926,7 @@ gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 
 	priv->colorful = colorful;
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_COLORFUL]);
 }
 
 void
