@@ -47,6 +47,7 @@ typedef struct
 	gboolean	 show_source;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
+	gboolean	 show_installed;
 	guint		 pending_refresh_id;
 	gboolean	 is_narrow;
 } GsAppRowPrivate;
@@ -63,10 +64,14 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 typedef enum {
 	PROP_APP = 1,
+	PROP_COLORFUL,
 	PROP_SHOW_DESCRIPTION,
 	PROP_SHOW_SOURCE,
 	PROP_SHOW_BUTTONS,
+	PROP_SHOW_RATING,
+	PROP_SHOW_UPDATE,
 	PROP_SHOW_INSTALLED_SIZE,
+	PROP_SHOW_INSTALLED,
 	PROP_IS_NARROW,
 } GsAppRowProperty;
 
@@ -332,7 +337,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UPDATABLE_LIVE:
 		case GS_APP_STATE_INSTALLED:
-			gtk_widget_set_visible (priv->label_installed, TRUE);
+			gtk_widget_set_visible (priv->label_installed, priv->show_installed);
 			break;
 		default:
 			gtk_widget_set_visible (priv->label_installed, FALSE);
@@ -620,9 +625,8 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 
-	g_object_notify (G_OBJECT (app_row), "app");
-
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_APP]);
 }
 
 static void
@@ -635,6 +639,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_APP:
 		g_value_set_object (value, priv->app);
 		break;
+	case PROP_COLORFUL:
+		g_value_set_boolean (value, priv->colorful);
+		break;
 	case PROP_SHOW_DESCRIPTION:
 		g_value_set_boolean (value, gs_app_row_get_show_description (app_row));
 		break;
@@ -644,8 +651,17 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_SHOW_BUTTONS:
 		g_value_set_boolean (value, priv->show_buttons);
 		break;
+	case PROP_SHOW_RATING:
+		g_value_set_boolean (value, priv->show_rating);
+		break;
+	case PROP_SHOW_UPDATE:
+		g_value_set_boolean (value, priv->show_update);
+		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		g_value_set_boolean (value, priv->show_installed_size);
+		break;
+	case PROP_SHOW_INSTALLED:
+		g_value_set_boolean (value, priv->show_installed);
 		break;
 	case PROP_IS_NARROW:
 		g_value_set_boolean (value, gs_app_row_get_is_narrow (app_row));
@@ -665,6 +681,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	case PROP_APP:
 		gs_app_row_set_app (app_row, g_value_get_object (value));
 		break;
+	case PROP_COLORFUL:
+		gs_app_row_set_colorful (app_row, g_value_get_boolean (value));
+		break;
 	case PROP_SHOW_DESCRIPTION:
 		gs_app_row_set_show_description (app_row, g_value_get_boolean (value));
 		break;
@@ -674,8 +693,17 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 	case PROP_SHOW_BUTTONS:
 		gs_app_row_set_show_buttons (app_row, g_value_get_boolean (value));
 		break;
+	case PROP_SHOW_RATING:
+		gs_app_row_set_show_rating (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_UPDATE:
+		gs_app_row_set_show_update (app_row, g_value_get_boolean (value));
+		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_INSTALLED:
+		gs_app_row_set_show_installed (app_row, g_value_get_boolean (value));
 		break;
 	case PROP_IS_NARROW:
 		gs_app_row_set_is_narrow (app_row, g_value_get_boolean (value));
@@ -727,6 +755,18 @@ gs_app_row_class_init (GsAppRowClass *klass)
 				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsAppRow:colorful:
+	 *
+	 * Whether the buttons can be colorized in the row.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_COLORFUL] =
+		g_param_spec_boolean ("colorful", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
 	 * GsAppRow:show-description:
 	 *
 	 * Show the description of the app in the row.
@@ -748,7 +788,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_SOURCE] =
 		g_param_spec_boolean ("show-source", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:show-buttons:
@@ -760,7 +800,43 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_BUTTONS] =
 		g_param_spec_boolean ("show-buttons", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppRow:show-rating:
+	 *
+	 * Show app rating in the app row.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_SHOW_RATING] =
+		g_param_spec_boolean ("show-rating", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppRow:show-update:
+	 *
+	 * Show update (version) information in the app row.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_SHOW_UPDATE] =
+		g_param_spec_boolean ("show-update", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppRow:show-installed:
+	 *
+	 * Show an "Installed" check in the app row, when the app is installed.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_SHOW_INSTALLED] =
+		g_param_spec_boolean ("show-installed", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:show-installed-size:
@@ -772,7 +848,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_INSTALLED_SIZE] =
 		g_param_spec_boolean ("show-installed-size", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:is-narrow:
@@ -842,6 +918,7 @@ gs_app_row_init (GsAppRow *app_row)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_description = TRUE;
+	priv->show_installed = TRUE;
 
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
@@ -857,6 +934,8 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
 	if (name != NULL)
 		gtk_size_group_add_widget (name, priv->name_box);
 	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (priv->button), button_label, button_image);
@@ -867,8 +946,14 @@ gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->colorful) == (!colorful))
+		return;
+
 	priv->colorful = colorful;
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_COLORFUL]);
 }
 
 void
@@ -876,9 +961,14 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_buttons) == (!show_buttons))
+		return;
+
 	priv->show_buttons = show_buttons;
-	g_object_notify (G_OBJECT (app_row), "show-buttons");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_BUTTONS]);
 }
 
 void
@@ -886,8 +976,14 @@ gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_rating) == (!show_rating))
+		return;
+
 	priv->show_rating = show_rating;
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_RATING]);
 }
 
 /**
@@ -932,8 +1028,8 @@ gs_app_row_set_show_description (GsAppRow *app_row, gboolean show_description)
 		return;
 
 	priv->show_description = show_description;
-	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_DESCRIPTION]);
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_DESCRIPTION]);
 }
 
 void
@@ -941,18 +1037,29 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_source) == (!show_source))
+		return;
+
 	priv->show_source = show_source;
-	g_object_notify (G_OBJECT (app_row), "show-source");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_SOURCE]);
 }
 
 void
 gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_installed_size) == (!show_size))
+		return;
+
 	priv->show_installed_size = show_size;
-	g_object_notify (G_OBJECT (app_row), "show-installed-size");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_INSTALLED_SIZE]);
 }
 
 /**
@@ -1011,8 +1118,37 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	if ((!priv->show_update) == (!show_update))
+		return;
+
 	priv->show_update = show_update;
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_UPDATE]);
+}
+
+/**
+ * gs_app_row_set_show_installed:
+ * @app_row: a #GsAppRow
+ * @show_installed: value to set
+ *
+ * Set whether to show "installed" label. Default is %TRUE. This has effect only
+ * when not showing buttons (gs_app_row_set_show_buttons()).
+ *
+ * Since: 42.1
+ **/
+void
+gs_app_row_set_show_installed (GsAppRow *app_row,
+			       gboolean show_installed)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!show_installed) != (!priv->show_installed)) {
+		priv->show_installed = show_installed;
+		gs_app_row_schedule_refresh (app_row);
+		g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_INSTALLED]);
+	}
 }
 
 GtkWidget *
