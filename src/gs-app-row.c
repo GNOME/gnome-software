@@ -623,9 +623,8 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 
-	g_object_notify (G_OBJECT (app_row), "app");
-
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_APP]);
 }
 
 static void
@@ -935,8 +934,8 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_buttons = show_buttons;
-	g_object_notify (G_OBJECT (app_row), "show-buttons");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_BUTTONS]);
 }
 
 void
@@ -945,8 +944,8 @@ gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_rating = show_rating;
-	g_object_notify (G_OBJECT (app_row), "show-rating");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_RATING]);
 }
 
 /**
@@ -991,8 +990,8 @@ gs_app_row_set_show_description (GsAppRow *app_row, gboolean show_description)
 		return;
 
 	priv->show_description = show_description;
-	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_DESCRIPTION]);
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_DESCRIPTION]);
 }
 
 void
@@ -1001,8 +1000,8 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_source = show_source;
-	g_object_notify (G_OBJECT (app_row), "show-source");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_SOURCE]);
 }
 
 void
@@ -1010,8 +1009,8 @@ gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	priv->show_installed_size = show_size;
-	g_object_notify (G_OBJECT (app_row), "show-installed-size");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_INSTALLED_SIZE]);
 }
 
 /**
@@ -1071,8 +1070,8 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_update = show_update;
-	g_object_notify (G_OBJECT (app_row), "show-update");
 	gs_app_row_schedule_refresh (app_row);
+	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_UPDATE]);
 }
 
 GtkWidget *
