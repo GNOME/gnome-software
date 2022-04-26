@@ -913,6 +913,8 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
 	if (name != NULL)
 		gtk_size_group_add_widget (name, priv->name_box);
 	gs_progress_button_set_size_groups (GS_PROGRESS_BUTTON (priv->button), button_label, button_image);
@@ -922,6 +924,11 @@ void
 gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->colorful) == (!colorful))
+		return;
 
 	priv->colorful = colorful;
 	gs_app_row_schedule_refresh (app_row);
@@ -933,6 +940,11 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_buttons) == (!show_buttons))
+		return;
+
 	priv->show_buttons = show_buttons;
 	gs_app_row_schedule_refresh (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_BUTTONS]);
@@ -942,6 +954,11 @@ void
 gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_rating) == (!show_rating))
+		return;
 
 	priv->show_rating = show_rating;
 	gs_app_row_schedule_refresh (app_row);
@@ -999,6 +1016,11 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_source) == (!show_source))
+		return;
+
 	priv->show_source = show_source;
 	gs_app_row_schedule_refresh (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_SOURCE]);
@@ -1008,6 +1030,12 @@ void
 gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	if ((!priv->show_installed_size) == (!show_size))
+		return;
+
 	priv->show_installed_size = show_size;
 	gs_app_row_schedule_refresh (app_row);
 	g_object_notify_by_pspec (G_OBJECT (app_row), obj_props[PROP_SHOW_INSTALLED_SIZE]);
@@ -1068,6 +1096,9 @@ void
 gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	if ((!priv->show_update) == (!show_update))
+		return;
 
 	priv->show_update = show_update;
 	gs_app_row_schedule_refresh (app_row);
