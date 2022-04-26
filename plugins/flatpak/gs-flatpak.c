@@ -447,11 +447,9 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	return g_steal_pointer (&app);
 }
 
-static gboolean
-gs_flatpak_claim_changed_idle_cb (gpointer user_data)
+static void
+gs_flatpak_internal_data_changed (GsFlatpak *self)
 {
-	GsFlatpak *self = user_data;
-	g_autoptr(GError) error = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 
@@ -476,7 +474,14 @@ gs_flatpak_claim_changed_idle_cb (gpointer user_data)
 	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
 
 	self->requires_full_rescan = TRUE;
+}
 
+static gboolean
+gs_flatpak_claim_changed_idle_cb (gpointer user_data)
+{
+	GsFlatpak *self = user_data;
+
+	gs_flatpak_internal_data_changed (self);
 	gs_plugin_cache_invalidate (self->plugin);
 	gs_plugin_reload (self->plugin);
 
@@ -1037,6 +1042,10 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		if (!gs_flatpak_add_apps_from_xremote (self, builder, xremote, interactive, cancellable, &error_local)) {
 			g_debug ("Failed to add apps from remote ‘%s’; skipping: %s",
 				 flatpak_remote_get_name (xremote), error_local->message);
+			if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
 		}
 	}
 
@@ -1064,7 +1073,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	self->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-					NULL, error);
+					cancellable, error);
 
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
@@ -1086,10 +1095,17 @@ gs_flatpak_rescan_app_data (GsFlatpak *self,
 		gboolean res = gs_flatpak_refresh (self, 0, interactive, cancellable, error);
 		if (res)
 			self->requires_full_rescan = FALSE;
+		else
+			gs_flatpak_internal_data_changed (self);
 		return res;
 	}
 
-	return gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error);
+	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+		gs_flatpak_internal_data_changed (self);
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 gboolean
@@ -1740,21 +1756,15 @@ gs_flatpak_app_install_source (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		g_prefix_error (error, "cannot modify remote: ");
 		gs_app_set_state_recover (app);
+		gs_flatpak_internal_data_changed (self);
 		return FALSE;
 	}
 
-	/* invalidate cache */
-	g_rw_lock_reader_lock (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
-	g_rw_lock_reader_unlock (&self->silo_lock);
+	/* Mark the internal cache as obsolete. */
+	gs_flatpak_internal_data_changed (self);
 
 	/* success */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	/* This can fail silently, it's only to update necessary caches, to provide
-	 * up-to-date information after the successful remote enable/install. */
-	gs_flatpak_refresh (self, 1, interactive, cancellable, NULL);
 
 	gs_plugin_repository_changed (self->plugin, app);
 
@@ -1956,8 +1966,16 @@ gs_flatpak_refresh (GsFlatpak *self,
 	g_hash_table_remove_all (self->broken_remotes);
 	g_mutex_unlock (&self->broken_remotes_mutex);
 
-	/* manually drop the cache */
-	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, interactive),
+	/* manually drop the cache in both installation instances;
+	 * it's needed to have them both agree on the content. */
+	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, FALSE),
+					       cancellable,
+					       error)) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	if (!flatpak_installation_drop_caches (gs_flatpak_get_installation (self, TRUE),
 					       cancellable,
 					       error)) {
 		gs_flatpak_error_convert (error);
@@ -3985,7 +4003,7 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 {
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
 		return FALSE;
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
