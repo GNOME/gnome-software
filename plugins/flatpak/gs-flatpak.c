@@ -1997,10 +1997,6 @@ gs_flatpak_refresh (GsFlatpak *self,
 	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, cancellable, error))
 		return FALSE;
 
-	/* ensure valid */
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error))
-		return FALSE;
-
 	/* success */
 	return TRUE;
 }
