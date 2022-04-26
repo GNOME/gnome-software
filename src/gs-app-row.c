@@ -67,6 +67,7 @@ typedef enum {
 	PROP_SHOW_SOURCE,
 	PROP_SHOW_BUTTONS,
 	PROP_SHOW_RATING,
+	PROP_SHOW_UPDATE,
 	PROP_SHOW_INSTALLED_SIZE,
 	PROP_IS_NARROW,
 } GsAppRowProperty;
@@ -648,6 +649,9 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 	case PROP_SHOW_RATING:
 		g_value_set_boolean (value, priv->show_rating);
 		break;
+	case PROP_SHOW_UPDATE:
+		g_value_set_boolean (value, priv->show_update);
+		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		g_value_set_boolean (value, priv->show_installed_size);
 		break;
@@ -680,6 +684,9 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_SHOW_RATING:
 		gs_app_row_set_show_rating (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_UPDATE:
+		gs_app_row_set_show_update (app_row, g_value_get_boolean (value));
 		break;
 	case PROP_SHOW_INSTALLED_SIZE:
 		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
@@ -778,6 +785,18 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	 */
 	obj_props[PROP_SHOW_RATING] =
 		g_param_spec_boolean ("show-rating", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppRow:show-update:
+	 *
+	 * Show update (version) information in the app row.
+	 *
+	 * Since: 42.1
+	 */
+	obj_props[PROP_SHOW_UPDATE] =
+		g_param_spec_boolean ("show-update", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
@@ -1032,6 +1051,7 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_update = show_update;
+	g_object_notify (G_OBJECT (app_row), "show-update");
 	gs_app_row_schedule_refresh (app_row);
 }
 
