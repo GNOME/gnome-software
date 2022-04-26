@@ -101,16 +101,12 @@ format_version_update (GsApp *app, GtkTextDirection direction)
 	    g_strcmp0 (version_current, version_update) != 0) {
 		switch (direction) {
 		case GTK_TEXT_DIR_RTL:
-			/* This might look the wrong way round, but that’s
-			 * because the #GtkLabel this is put in will reverse the
-			 * text order in RTL, but won’t swap ← for → or
-			 * vice-versa (the bidi mirroring property of those two
-			 * arrows is false). So we need to explicitly use ‘←’ in
-			 * RTL locales, but not change the text order.
+			/* ensure the arrow is the right way round for the text direction,
+			 * as arrows are not bidi-mirrored automatically
 			 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html */
 			return g_strdup_printf ("%s ← %s",
-						version_current,
-						version_update);
+						version_update,
+						version_current);
 		case GTK_TEXT_DIR_NONE:
 		case GTK_TEXT_DIR_LTR:
 		default:
