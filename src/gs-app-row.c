@@ -780,7 +780,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_SOURCE] =
 		g_param_spec_boolean ("show-source", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:show-buttons:
@@ -792,7 +792,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_BUTTONS] =
 		g_param_spec_boolean ("show-buttons", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:show-rating:
@@ -828,7 +828,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	obj_props[PROP_SHOW_INSTALLED_SIZE] =
 		g_param_spec_boolean ("show-installed-size", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppRow:is-narrow:
