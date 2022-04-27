@@ -80,6 +80,9 @@ struct _GsPluginLoader
 #ifdef HAVE_SYSPROF
 	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
 #endif
+
+	GDBusConnection		*session_bus_connection;  /* (owned); (not nullable) after setup */
+	GDBusConnection		*system_bus_connection;  /* (owned); (not nullable) after setup */
 };
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -105,16 +108,18 @@ enum {
 	SIGNAL_LAST
 };
 
-enum {
-	PROP_0,
-	PROP_EVENTS,
+static guint signals [SIGNAL_LAST] = { 0 };
+
+typedef enum {
+	PROP_EVENTS = 1,
 	PROP_ALLOW_UPDATES,
 	PROP_NETWORK_AVAILABLE,
 	PROP_NETWORK_METERED,
-	PROP_LAST
-};
+	PROP_SESSION_BUS_CONNECTION,
+	PROP_SYSTEM_BUS_CONNECTION,
+} GsPluginLoaderProperty;
 
-static guint signals [SIGNAL_LAST] = { 0 };
+static GParamSpec *obj_props[PROP_SYSTEM_BUS_CONNECTION + 1] = { NULL, };
 
 typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
 typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
@@ -288,7 +293,7 @@ static gboolean
 gs_plugin_loader_notify_idle_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	g_object_notify (G_OBJECT (plugin_loader), "events");
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_EVENTS]);
 	return FALSE;
 }
 
@@ -1730,7 +1735,7 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 
 	/* notify display layer */
 	if (changed)
-		g_object_notify (G_OBJECT (plugin_loader), "allow-updates");
+		g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_ALLOW_UPDATES]);
 }
 
 static void
@@ -1875,7 +1880,10 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_autoptr(GError) error = NULL;
 
 	/* create plugin from file */
-	plugin = gs_plugin_create (filename, &error);
+	plugin = gs_plugin_create (filename,
+				   plugin_loader->session_bus_connection,
+				   plugin_loader->system_bus_connection,
+				   &error);
 	if (plugin == NULL) {
 		g_warning ("Failed to load %s: %s", filename, error->message);
 		return;
@@ -2142,6 +2150,8 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
 
 typedef struct {
 	guint n_pending;
+	gchar **allowlist;
+	gchar **blocklist;
 #ifdef HAVE_SYSPROF
 	gint64 setup_begin_time_nsec;
 	gint64 plugins_begin_time_nsec;
@@ -2151,11 +2161,20 @@ typedef struct {
 static void
 setup_data_free (SetupData *data)
 {
+	g_clear_pointer (&data->allowlist, g_strfreev);
+	g_clear_pointer (&data->blocklist, g_strfreev);
 	g_free (data);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (SetupData, setup_data_free)
 
+static void get_session_bus_cb (GObject      *object,
+                                GAsyncResult *result,
+                                gpointer      user_data);
+static void get_system_bus_cb (GObject      *object,
+                               GAsyncResult *result,
+                               gpointer      user_data);
+static void finish_setup_get_bus (GTask *task);
 static void plugin_setup_cb (GObject      *source_object,
                              GAsyncResult *result,
                              gpointer      user_data);
@@ -2196,19 +2215,8 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
                               GAsyncReadyCallback  callback,
                               gpointer             user_data)
 {
-	const gchar *plugin_name;
-	gboolean changes;
-	GPtrArray *deps;
-	GsPlugin *dep;
-	GsPlugin *plugin;
-	guint dep_loop_check = 0;
-	guint i;
-	guint j;
 	SetupData *setup_data;
 	g_autoptr(SetupData) setup_data_owned = NULL;
-	g_autoptr(GsPluginLoaderHelper) helper = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GPtrArray) locations = NULL;
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GError) local_error = NULL;
 #ifdef HAVE_SYSPROF
@@ -2223,6 +2231,94 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 		g_task_return_boolean (task, TRUE);
 		return;
 	}
+
+	/* Setup data closure. */
+	setup_data = setup_data_owned = g_new0 (SetupData, 1);
+	setup_data->allowlist = g_strdupv ((gchar **) allowlist);
+	setup_data->blocklist = g_strdupv ((gchar **) blocklist);
+#ifdef HAVE_SYSPROF
+	setup_data->setup_begin_time_nsec = begin_time_nsec;
+#endif
+
+	g_task_set_task_data (task, g_steal_pointer (&setup_data_owned), (GDestroyNotify) setup_data_free);
+
+	/* Connect to D-Bus if connections haven’t been provided at construction
+	 * time. */
+	if (plugin_loader->session_bus_connection == NULL)
+		g_bus_get (G_BUS_TYPE_SESSION, cancellable, get_session_bus_cb, g_object_ref (task));
+	if (plugin_loader->system_bus_connection == NULL)
+		g_bus_get (G_BUS_TYPE_SYSTEM, cancellable, get_system_bus_cb, g_object_ref (task));
+
+	finish_setup_get_bus (task);
+}
+
+static void
+get_session_bus_cb (GObject      *object,
+                    GAsyncResult *result,
+                    gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	plugin_loader->session_bus_connection = g_bus_get_finish (result, &local_error);
+	if (plugin_loader->session_bus_connection == NULL) {
+		notify_setup_complete (plugin_loader);
+		g_prefix_error_literal (&local_error, "Error getting session bus: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_SESSION_BUS_CONNECTION]);
+
+	finish_setup_get_bus (task);
+}
+
+static void
+get_system_bus_cb (GObject      *object,
+                   GAsyncResult *result,
+                   gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+	g_autoptr(GError) local_error = NULL;
+
+	plugin_loader->system_bus_connection = g_bus_get_finish (result, &local_error);
+	if (plugin_loader->system_bus_connection == NULL) {
+		notify_setup_complete (plugin_loader);
+		g_prefix_error_literal (&local_error, "Error getting system bus: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_SYSTEM_BUS_CONNECTION]);
+
+	finish_setup_get_bus (task);
+}
+
+static void
+finish_setup_get_bus (GTask *task)
+{
+	SetupData *data = g_task_get_task_data (task);
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	const gchar *plugin_name;
+	gboolean changes;
+	GPtrArray *deps;
+	GsPlugin *dep;
+	GsPlugin *plugin;
+	guint dep_loop_check = 0;
+	guint i;
+	guint j;
+	g_autoptr(GsPluginLoaderHelper) helper = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GPtrArray) locations = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	/* Wait until we’ve got all the buses we need. */
+	if (plugin_loader->session_bus_connection == NULL ||
+	    plugin_loader->system_bus_connection == NULL)
+		return;
 
 	/* use the default, but this requires a 'make install' */
 	if (plugin_loader->locations->len == 0) {
@@ -2275,13 +2371,13 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	}
 
 	/* optional allowlist */
-	if (allowlist != NULL) {
+	if (data->allowlist != NULL) {
 		for (i = 0; i < plugin_loader->plugins->len; i++) {
 			gboolean ret;
 			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			ret = g_strv_contains ((const gchar * const *) allowlist,
+			ret = g_strv_contains ((const gchar * const *) data->allowlist,
 					       gs_plugin_get_name (plugin));
 			if (!ret) {
 				g_debug ("%s not in allowlist, disabling",
@@ -2292,13 +2388,13 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	}
 
 	/* optional blocklist */
-	if (blocklist != NULL) {
+	if (data->blocklist != NULL) {
 		for (i = 0; i < plugin_loader->plugins->len; i++) {
 			gboolean ret;
 			plugin = g_ptr_array_index (plugin_loader->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			ret = g_strv_contains ((const gchar * const *) blocklist,
+			ret = g_strv_contains ((const gchar * const *) data->blocklist,
 					       gs_plugin_get_name (plugin));
 			if (ret)
 				gs_plugin_set_enabled (plugin, FALSE);
@@ -2427,14 +2523,10 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	} while (changes);
 
 	/* run setup */
-	setup_data = setup_data_owned = g_new0 (SetupData, 1);
-	setup_data->n_pending = 1;  /* incremented until all operations have been started */
+	data->n_pending = 1;  /* incremented until all operations have been started */
 #ifdef HAVE_SYSPROF
-	setup_data->setup_begin_time_nsec = begin_time_nsec;
-	setup_data->plugins_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+	data->plugins_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
-
-	g_task_set_task_data (task, g_steal_pointer (&setup_data_owned), (GDestroyNotify) setup_data_free);
 
 	for (i = 0; i < plugin_loader->plugins->len; i++) {
 		plugin = GS_PLUGIN (plugin_loader->plugins->pdata[i]);
@@ -2443,7 +2535,7 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 			continue;
 
 		if (GS_PLUGIN_GET_CLASS (plugin)->setup_async != NULL) {
-			setup_data->n_pending++;
+			data->n_pending++;
 			GS_PLUGIN_GET_CLASS (plugin)->setup_async (plugin, cancellable,
 								   plugin_setup_cb, g_object_ref (task));
 		}
@@ -2615,7 +2707,7 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
-	switch (prop_id) {
+	switch ((GsPluginLoaderProperty) prop_id) {
 	case PROP_EVENTS:
 		g_value_set_pointer (value, plugin_loader->events_by_id);
 		break;
@@ -2628,6 +2720,12 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_NETWORK_METERED:
 		g_value_set_boolean (value, gs_plugin_loader_get_network_metered (plugin_loader));
 		break;
+	case PROP_SESSION_BUS_CONNECTION:
+		g_value_set_object (value, plugin_loader->session_bus_connection);
+		break;
+	case PROP_SYSTEM_BUS_CONNECTION:
+		g_value_set_object (value, plugin_loader->system_bus_connection);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2638,7 +2736,26 @@ static void
 gs_plugin_loader_set_property (GObject *object, guint prop_id,
 			       const GValue *value, GParamSpec *pspec)
 {
-	switch (prop_id) {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	switch ((GsPluginLoaderProperty) prop_id) {
+	case PROP_EVENTS:
+	case PROP_ALLOW_UPDATES:
+	case PROP_NETWORK_AVAILABLE:
+	case PROP_NETWORK_METERED:
+		/* Read only */
+		g_assert_not_reached ();
+		break;
+	case PROP_SESSION_BUS_CONNECTION:
+		/* Construct only */
+		g_assert (plugin_loader->session_bus_connection == NULL);
+		plugin_loader->session_bus_connection = g_value_dup_object (value);
+		break;
+	case PROP_SYSTEM_BUS_CONNECTION:
+		/* Construct only */
+		g_assert (plugin_loader->system_bus_connection == NULL);
+		plugin_loader->system_bus_connection = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2692,6 +2809,9 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
 #endif
 
+	g_clear_object (&plugin_loader->session_bus_connection);
+	g_clear_object (&plugin_loader->system_bus_connection);
+
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
 }
 
@@ -2717,7 +2837,6 @@ gs_plugin_loader_finalize (GObject *object)
 static void
 gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->get_property = gs_plugin_loader_get_property;
@@ -2725,25 +2844,86 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 	object_class->dispose = gs_plugin_loader_dispose;
 	object_class->finalize = gs_plugin_loader_finalize;
 
-	pspec = g_param_spec_string ("events", NULL, NULL,
+	/**
+	 * GsPluginLoader:events:
+	 *
+	 * Events added on the plugin loader using gs_plugin_loader_add_event().
+	 */
+	obj_props[PROP_EVENTS] =
+		g_param_spec_string ("events", NULL, NULL,
 				     NULL,
-				     G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_EVENTS, pspec);
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
-	pspec = g_param_spec_boolean ("allow-updates", NULL, NULL,
+	/**
+	 * GsPluginLoader:allow-updates:
+	 *
+	 * Whether updates and upgrades are managed by gnome-software.
+	 *
+	 * If not, the updates UI should be hidden and no automatic updates
+	 * performed.
+	 */
+	obj_props[PROP_ALLOW_UPDATES] =
+		g_param_spec_boolean ("allow-updates", NULL, NULL,
 				      TRUE,
-				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_ALLOW_UPDATES, pspec);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
-	pspec = g_param_spec_boolean ("network-available", NULL, NULL,
+	/**
+	 * GsPluginLoader:network-available:
+	 *
+	 * Whether the network is considered available.
+	 *
+	 * This has the same semantics as #GNetworkMonitor:network-available.
+	 */
+	obj_props[PROP_NETWORK_AVAILABLE] =
+		g_param_spec_boolean ("network-available", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_NETWORK_AVAILABLE, pspec);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
-	pspec = g_param_spec_boolean ("network-metered", NULL, NULL,
+	/**
+	 * GsPluginLoader:network-metered:
+	 *
+	 * Whether the network is considered metered.
+	 *
+	 * This has the same semantics as #GNetworkMonitor:network-metered.
+	 */
+	obj_props[PROP_NETWORK_METERED] =
+		g_param_spec_boolean ("network-metered", NULL, NULL,
 				      FALSE,
-				      G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_NETWORK_METERED, pspec);
+				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginLoader:session-bus-connection: (nullable)
+	 *
+	 * A connection to the D-Bus session bus.
+	 *
+	 * This may be %NULL at construction time. If so, the default session
+	 * bus connection will be used (and returned as the value of this
+	 * property) after gs_plugin_loader_setup_async() is called.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SESSION_BUS_CONNECTION] =
+		g_param_spec_object ("session-bus-connection", NULL, NULL,
+				     G_TYPE_DBUS_CONNECTION,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsPluginLoader:system-bus-connection: (not nullable)
+	 *
+	 * A connection to the D-Bus system bus.
+	 *
+	 * This may be %NULL at construction time. If so, the default system
+	 * bus connection will be used (and returned as the value of this
+	 * property) after gs_plugin_loader_setup_async() is called.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SYSTEM_BUS_CONNECTION] =
+		g_param_spec_object ("system-bus-connection", NULL, NULL,
+				     G_TYPE_DBUS_CONNECTION,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
@@ -2922,15 +3102,30 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 /**
  * gs_plugin_loader_new:
+ * @session_bus_connection: (nullable) (transfer none): a D-Bus session bus
+ *   connection to use, or %NULL to use the default
+ * @system_bus_connection: (nullable) (transfer none): a D-Bus system bus
+ *   connection to use, or %NULL to use the default
  *
- * Return value: a new GsPluginLoader object.
+ * Create a new #GsPluginLoader.
+ *
+ * The D-Bus connection arguments should typically be %NULL, and only be
+ * non-%NULL when doing unit tests.
+ *
+ * Return value: (transfer full) (not nullable): a new #GsPluginLoader
+ * Since: 43
  **/
 GsPluginLoader *
-gs_plugin_loader_new (void)
+gs_plugin_loader_new (GDBusConnection *session_bus_connection,
+                      GDBusConnection *system_bus_connection)
 {
-	GsPluginLoader *plugin_loader;
-	plugin_loader = g_object_new (GS_TYPE_PLUGIN_LOADER, NULL);
-	return GS_PLUGIN_LOADER (plugin_loader);
+	g_return_val_if_fail (session_bus_connection == NULL || G_IS_DBUS_CONNECTION (session_bus_connection), NULL);
+	g_return_val_if_fail (system_bus_connection == NULL || G_IS_DBUS_CONNECTION (system_bus_connection), NULL);
+
+	return g_object_new (GS_TYPE_PLUGIN_LOADER,
+			     "session-bus-connection", session_bus_connection,
+			     "system-bus-connection", system_bus_connection,
+			     NULL);
 }
 
 static void
@@ -2984,8 +3179,8 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		 available ? "online" : "offline",
 		 metered ? "metered" : "unmetered");
 
-	g_object_notify (G_OBJECT (plugin_loader), "network-available");
-	g_object_notify (G_OBJECT (plugin_loader), "network-metered");
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_AVAILABLE]);
+	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_METERED]);
 
 	if (available && !metered) {
 		g_autoptr(GsAppList) queue = NULL;

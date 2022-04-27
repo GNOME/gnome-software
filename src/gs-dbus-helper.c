@@ -25,15 +25,22 @@
 
 struct _GsDbusHelper {
 	GObject			 parent;
-	GCancellable		*cancellable;
 	GDBusInterfaceSkeleton	*query_interface;
 	GDBusInterfaceSkeleton	*modify_interface;
 	GDBusInterfaceSkeleton	*modify2_interface;
 	PkTask			*task;
 	guint			 dbus_own_name_id;
+
+	GDBusConnection		*bus_connection;  /* (owned) (not nullable) */
 };
 
 G_DEFINE_TYPE (GsDbusHelper, gs_dbus_helper, G_TYPE_OBJECT)
+
+typedef enum {
+	PROP_BUS_CONNECTION = 1,
+} GsDbusHelperProperty;
+
+static GParamSpec *obj_props[PROP_BUS_CONNECTION + 1] = { NULL, };
 
 typedef struct {
 	GDBusMethodInvocation	*invocation;
@@ -713,22 +720,10 @@ gs_dbus_helper_name_lost_cb (GDBusConnection *connection,
 }
 
 static void
-bus_gotten_cb (GObject      *source_object,
-               GAsyncResult *res,
-               gpointer      user_data)
+export_objects (GsDbusHelper *dbus_helper)
 {
-	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
-	g_autoptr(GDBusConnection) connection = NULL;
 	g_autoptr(GDesktopAppInfo) app_info = NULL;
 	g_autoptr(GError) error = NULL;
-
-	connection = g_bus_get_finish (res, &error);
-	if (connection == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
-		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("Could not get session bus: %s", error->message);
-		return;
-	}
 
 	/* Query interface */
 	dbus_helper->query_interface = G_DBUS_INTERFACE_SKELETON (gs_package_kit_query_skeleton_new ());
@@ -739,7 +734,7 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_query_search_file), dbus_helper);
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->query_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
@@ -767,7 +762,7 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_modify_install_printer_drivers), dbus_helper);
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->modify_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
@@ -805,14 +800,14 @@ bus_gotten_cb (GObject      *source_object,
 	}
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->modify2_interface,
-	                                       connection,
+	                                       dbus_helper->bus_connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
 	        g_warning ("Could not export dbus interface: %s", error->message);
 	        return;
 	}
 
-	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (connection,
+	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (dbus_helper->bus_connection,
 	                                                              "org.freedesktop.PackageKit",
 	                                                              G_BUS_NAME_OWNER_FLAGS_NONE,
 	                                                              gs_dbus_helper_name_acquired_cb,
@@ -824,21 +819,69 @@ static void
 gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 {
 	dbus_helper->task = pk_task_new ();
-	dbus_helper->cancellable = g_cancellable_new ();
+}
 
-	g_bus_get (G_BUS_TYPE_SESSION,
-	           dbus_helper->cancellable,
-	           (GAsyncReadyCallback) bus_gotten_cb,
-	           dbus_helper);
+static void
+gs_dbus_helper_constructed (GObject *object)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->constructed (object);
+
+	/* Check all required properties have been set. */
+	g_assert (dbus_helper->bus_connection != NULL);
+
+	/* Export the objects.
+	 *
+	 * FIXME: This is failable and asynchronous, so should really happen
+	 * as the result of an explicit method call on some
+	 * gs_dbus_helper_start_async() call or similar, but that can wait until
+	 * a future refactoring. */
+	export_objects (dbus_helper);
+}
+
+static void
+gs_dbus_helper_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	switch ((GsDbusHelperProperty) prop_id) {
+	case PROP_BUS_CONNECTION:
+		g_value_set_object (value, dbus_helper->bus_connection);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_dbus_helper_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
+
+	switch ((GsDbusHelperProperty) prop_id) {
+	case PROP_BUS_CONNECTION:
+		/* Construct only */
+		g_assert (dbus_helper->bus_connection == NULL);
+		dbus_helper->bus_connection = g_value_dup_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
 gs_dbus_helper_dispose (GObject *object)
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
-
-	g_cancellable_cancel (dbus_helper->cancellable);
-	g_clear_object (&dbus_helper->cancellable);
 
 	if (dbus_helper->dbus_own_name_id != 0) {
 		g_bus_unown_name (dbus_helper->dbus_own_name_id);
@@ -861,6 +904,7 @@ gs_dbus_helper_dispose (GObject *object)
 	}
 
 	g_clear_object (&dbus_helper->task);
+	g_clear_object (&dbus_helper->bus_connection);
 
 	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->dispose (object);
 }
@@ -869,11 +913,45 @@ static void
 gs_dbus_helper_class_init (GsDbusHelperClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->constructed = gs_dbus_helper_constructed;
+	object_class->get_property = gs_dbus_helper_get_property;
+	object_class->set_property = gs_dbus_helper_set_property;
 	object_class->dispose = gs_dbus_helper_dispose;
+
+	/**
+	 * GsDbusHelper:bus-connection: (not nullable)
+	 *
+	 * A connection to the D-Bus session bus.
+	 *
+	 * This must be set at construction time and will not be %NULL
+	 * afterwards.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_BUS_CONNECTION] =
+		g_param_spec_object ("bus-connection", NULL, NULL,
+				     G_TYPE_DBUS_CONNECTION,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
+/**
+ * gs_dbus_helper_new:
+ * @bus_connection: a #GDBusConnection to export the helper methods on
+ *
+ * Create a new #GsDbusHelper and export it on @bus_connection.
+ *
+ * Returns: (transfer full): a new #GsDbusHelper
+ * Since: 43
+ */
 GsDbusHelper *
-gs_dbus_helper_new (void)
+gs_dbus_helper_new (GDBusConnection *bus_connection)
 {
-	return GS_DBUS_HELPER (g_object_new (GS_TYPE_DBUS_HELPER, NULL));
+	g_return_val_if_fail (G_IS_DBUS_CONNECTION (bus_connection), NULL);
+
+	return GS_DBUS_HELPER (g_object_new (GS_TYPE_DBUS_HELPER,
+					     "bus-connection", bus_connection,
+					     NULL));
 }

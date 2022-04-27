@@ -362,7 +362,7 @@ main (int argc, char **argv)
 	}
 
 	/* load plugins */
-	self->plugin_loader = gs_plugin_loader_new ();
+	self->plugin_loader = gs_plugin_loader_new (NULL, NULL);
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (self->plugin_loader, LOCALPLUGINDIR);
 	if (plugin_allowlist_str != NULL)

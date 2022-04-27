@@ -22,6 +22,7 @@
 #include <rpm/rpmts.h>
 #include <rpmostree.h>
 
+#include "gs-plugin-private.h"
 #include "gs-plugin-rpm-ostree.h"
 #include "gs-rpmostree-generated.h"
 
@@ -228,12 +229,12 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 	if (self->sysroot_proxy == NULL) {
 		g_autoptr(GVariantBuilder) options_builder = NULL;
 
-		self->sysroot_proxy = gs_rpmostree_sysroot_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
-		                                                                   G_DBUS_PROXY_FLAGS_NONE,
-		                                                                   "org.projectatomic.rpmostree1",
-		                                                                   "/org/projectatomic/rpmostree1/Sysroot",
-		                                                                   cancellable,
-		                                                                   error);
+		self->sysroot_proxy = gs_rpmostree_sysroot_proxy_new_sync (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
+		                                                           G_DBUS_PROXY_FLAGS_NONE,
+		                                                           "org.projectatomic.rpmostree1",
+		                                                           "/org/projectatomic/rpmostree1/Sysroot",
+		                                                           cancellable,
+		                                                           error);
 		if (self->sysroot_proxy == NULL) {
 			gs_rpmostree_error_convert (error);
 			return FALSE;
@@ -271,12 +272,12 @@ gs_rpmostree_ref_proxies_locked (GsPluginRpmOstree *self,
 			return FALSE;
 		}
 
-		self->os_proxy = gs_rpmostree_os_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
-		                                                         G_DBUS_PROXY_FLAGS_NONE,
-		                                                         "org.projectatomic.rpmostree1",
-		                                                         os_object_path,
-		                                                         cancellable,
-		                                                         error);
+		self->os_proxy = gs_rpmostree_os_proxy_new_sync (gs_plugin_get_system_bus_connection (GS_PLUGIN (self)),
+		                                                 G_DBUS_PROXY_FLAGS_NONE,
+		                                                 "org.projectatomic.rpmostree1",
+		                                                 os_object_path,
+		                                                 cancellable,
+		                                                 error);
 		if (self->os_proxy == NULL) {
 			gs_rpmostree_error_convert (error);
 			g_clear_object (&self->sysroot_proxy);
