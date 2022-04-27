@@ -73,6 +73,7 @@ static const struct {
   { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
   { GS_APP_PERMISSIONS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
   { GS_APP_PERMISSIONS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_OTHER, N_("File system"), N_("Can access arbitrary files") },
   { GS_APP_PERMISSIONS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
   { GS_APP_PERMISSIONS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
   { GS_APP_PERMISSIONS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
