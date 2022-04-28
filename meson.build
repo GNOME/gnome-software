@@ -23,7 +23,7 @@ conf.set_quoted('APPLICATION_ID', application_id)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-gs_plugin_api_version = '18'
+gs_plugin_api_version = '19'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 # private subdirectory of libdir for the private shared libgnomesoftware to live in
