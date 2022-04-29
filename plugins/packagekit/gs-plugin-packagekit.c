@@ -902,7 +902,6 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	g_mutex_lock (&self->task_mutex);
-	pk_client_set_background (PK_CLIENT (self->task), !interactive);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_UNKNOWN, interactive);
 
 	if (gs_app_query_get_provides_files (query) != NULL) {
@@ -3755,7 +3754,6 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	g_mutex_lock (&self->task_mutex_refresh);
-	pk_client_set_background (PK_CLIENT (self->task_refresh), !interactive);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
 	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age_secs);
 
