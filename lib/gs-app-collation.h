@@ -15,7 +15,7 @@
 G_BEGIN_DECLS
 
 GsAppList	*gs_app_get_related		(GsApp		*app);
-GsAppList	*gs_app_get_addons		(GsApp		*app);
+GsAppList	*gs_app_dup_addons		(GsApp		*app);
 GsAppList	*gs_app_get_history		(GsApp		*app);
 
 G_END_DECLS

@@ -350,6 +350,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) addons = NULL;
+	g_autoptr(GsAppList) addons_list = NULL;
 
 	/* get all components */
 	xpath = g_strdup_printf ("components/component/extends[text()='%s']/..",
@@ -363,14 +364,22 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
+
+	addons_list = gs_app_list_new ();
+
 	for (guint i = 0; i < addons->len; i++) {
 		XbNode *addon = g_ptr_array_index (addons, i);
-		g_autoptr(GsApp) app2 = NULL;
-		app2 = gs_appstream_create_app (plugin, silo, addon, error);
-		if (app2 == NULL)
+		g_autoptr(GsApp) addon_app = NULL;
+
+		addon_app = gs_appstream_create_app (plugin, silo, addon, error);
+		if (addon_app == NULL)
 			return FALSE;
-		gs_app_add_addon (app, app2);
+
+		gs_app_list_add (addons_list, addon_app);
 	}
+
+	gs_app_add_addons (app, addons_list);
+
 	return TRUE;
 }
 

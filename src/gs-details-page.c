@@ -1217,13 +1217,13 @@ static void gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_d
 static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
 {
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	guint i, rows = 0;
 
 	gs_widget_remove_all (self->list_box_addons, (GsRemoveFunc) gtk_list_box_remove);
 
-	addons = gs_app_get_addons (self->app);
-	for (i = 0; i < gs_app_list_length (addons); i++) {
+	addons = gs_app_dup_addons (self->app);
+	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 		GsApp *addon;
 		GtkWidget *row;
 
@@ -1986,12 +1986,12 @@ static void
 gs_details_page_app_installed (GsPage *page, GsApp *app)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	guint i;
 
 	/* if the app is just an addon, no need for a full refresh */
-	addons = gs_app_get_addons (self->app);
-	for (i = 0; i < gs_app_list_length (addons); i++) {
+	addons = gs_app_dup_addons (self->app);
+	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 		GsApp *addon;
 		addon = gs_app_list_index (addons, i);
 		if (addon == app)

@@ -211,12 +211,12 @@ gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_
 static void
 reset_app_progress (GsApp *app)
 {
-	GsAppList *addons = gs_app_get_addons (app);
+	g_autoptr(GsAppList) addons = gs_app_dup_addons (app);
 	GsAppList *related = gs_app_get_related (app);
 
 	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 
-	for (guint i = 0; i < gs_app_list_length (addons); i++) {
+	for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 		GsApp *app_addons = gs_app_list_index (addons, i);
 		gs_app_set_progress (app_addons, GS_APP_PROGRESS_UNKNOWN);
 	}
@@ -1521,7 +1521,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	guint i;
 	guint id;
 
@@ -1536,8 +1536,8 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	save_install_queue (plugin_loader);
 
 	/* recursively queue any addons */
-	addons = gs_app_get_addons (app);
-	for (i = 0; i < gs_app_list_length (addons); i++) {
+	addons = gs_app_dup_addons (app);
+	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 		GsApp *addon = gs_app_list_index (addons, i);
 		if (gs_app_get_to_be_installed (addon))
 			add_app_to_install_queue (plugin_loader, addon);
@@ -1547,7 +1547,7 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	gboolean ret;
 	guint i;
 	guint id;
@@ -1563,8 +1563,8 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 		save_install_queue (plugin_loader);
 
 		/* recursively remove any queued addons */
-		addons = gs_app_get_addons (app);
-		for (i = 0; i < gs_app_list_length (addons); i++) {
+		addons = gs_app_dup_addons (app);
+		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			remove_app_from_install_queue (plugin_loader, addon);
 		}
@@ -3475,9 +3475,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* unstage addons */
 	if (add_to_pending_array) {
-		GsAppList *addons;
-		addons = gs_app_get_addons (gs_plugin_job_get_app (helper->plugin_job));
-		for (guint i = 0; i < gs_app_list_length (addons); i++) {
+		g_autoptr(GsAppList) addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
+
+		for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_to_be_installed (addon, FALSE);

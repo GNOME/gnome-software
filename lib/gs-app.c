@@ -3866,43 +3866,57 @@ gs_app_set_metadata_variant (GsApp *app, const gchar *key, GVariant *value)
 }
 
 /**
- * gs_app_get_addons:
+ * gs_app_dup_addons:
  * @app: a #GsApp
  *
  * Gets the list of addons for the application.
  *
- * Returns: (transfer none): a list of addons
+ * Returns: (transfer full) (nullable): a list of addons, or %NULL if there are none
  *
- * Since: 3.22
- **/
+ * Since: 43
+ */
 GsAppList *
-gs_app_get_addons (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->addons;
-}
-
-/**
- * gs_app_add_addon:
- * @app: a #GsApp
- * @addon: a #GsApp
- *
- * Adds an addon to the list of application addons.
- *
- * Since: 3.22
- **/
-void
-gs_app_add_addon (GsApp *app, GsApp *addon)
+gs_app_dup_addons (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
+	return (priv->addons != NULL) ? g_object_ref (priv->addons) : NULL;
+}
+
+/**
+ * gs_app_add_addons:
+ * @app: a #GsApp
+ * @addons: (transfer none) (not nullable): a list of #GsApps
+ *
+ * Adds zero or more addons to the list of application addons.
+ *
+ * Since: 43
+ **/
+void
+gs_app_add_addons (GsApp     *app,
+                   GsAppList *addons)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GsAppList) new_addons = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GS_IS_APP (addon));
+	g_return_if_fail (GS_IS_APP_LIST (addons));
+
+	if (gs_app_list_length (addons) == 0)
+		return;
 
 	locker = g_mutex_locker_new (&priv->mutex);
-	gs_app_list_add (priv->addons, addon);
+
+	if (priv->addons != NULL)
+		new_addons = gs_app_list_copy (priv->addons);
+	else
+		new_addons = gs_app_list_new ();
+	gs_app_list_add_list (new_addons, addons);
+
+	g_set_object (&priv->addons, new_addons);
 }
 
 /**
@@ -3922,7 +3936,9 @@ gs_app_remove_addon (GsApp *app, GsApp *addon)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
 	locker = g_mutex_locker_new (&priv->mutex);
-	gs_app_list_remove (priv->addons, addon);
+
+	if (priv->addons != NULL)
+		gs_app_list_remove (priv->addons, addon);
 }
 
 /**
@@ -5584,7 +5600,6 @@ gs_app_init (GsApp *app)
 	priv->sources = g_ptr_array_new_with_free_func (g_free);
 	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	priv->categories = g_ptr_array_new_with_free_func (g_free);
-	priv->addons = gs_app_list_new ();
 	priv->related = gs_app_list_new ();
 	priv->history = gs_app_list_new ();
 	priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);

@@ -285,7 +285,9 @@ typedef gboolean (*GsAppFilterFunc) (GsApp *app);
 
 /* The elements in the returned #GPtrArray reference memory from within the
  * @apps list, so the array is only valid as long as @apps is not modified or
- * freed. The array is not NULL-terminated. */
+ * freed. The array is not NULL-terminated.
+ *
+ * If @apps is %NULL, that’s considered equivalent to an empty list. */
 static GPtrArray *
 app_list_get_package_ids (GsAppList       *apps,
                           GsAppFilterFunc  app_filter,
@@ -293,7 +295,7 @@ app_list_get_package_ids (GsAppList       *apps,
 {
 	g_autoptr(GPtrArray) list_package_ids = g_ptr_array_new_with_free_func (NULL);
 
-	for (guint i = 0; i < gs_app_list_length (apps); i++) {
+	for (guint i = 0; apps != NULL && i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 		GPtrArray *app_source_ids;
 
@@ -507,7 +509,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	GPtrArray *source_ids;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *package_id;
@@ -594,7 +596,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			return FALSE;
 		}
 
-		addons = gs_app_get_addons (app);
+		addons = gs_app_dup_addons (app);
 		array_package_ids = app_list_get_package_ids (addons,
 							      gs_app_get_to_be_installed,
 							      TRUE);
@@ -711,7 +713,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	const gchar *package_id;
 	GPtrArray *source_ids;
-	GsAppList *addons;
+	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	guint i;
 	guint cnt = 0;
@@ -767,8 +769,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* Make sure addons' state is updated as well */
-	addons = gs_app_get_addons (app);
-	for (i = 0; i < gs_app_list_length (addons); i++) {
+	addons = gs_app_dup_addons (app);
+	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 		GsApp *addon = gs_app_list_index (addons, i);
 		if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLED) {
 			gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
