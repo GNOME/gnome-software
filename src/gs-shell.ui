@@ -155,6 +155,7 @@
                 </child>
                 <child>
                   <object class="AdwLeaflet" id="details_leaflet">
+                    <property name="can-navigate-back">True</property>
                     <property name="can-unfold">False</property>
                     <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
 
@@ -164,6 +165,7 @@
                         <property name="name">main</property>
                         <property name="child">
                           <object class="AdwLeaflet" id="main_leaflet">
+                            <property name="can-navigate-back">True</property>
                             <property name="can-unfold">False</property>
                             <signal name="notify::visible-child" handler="stack_notify_visible_child_cb"/>
 
