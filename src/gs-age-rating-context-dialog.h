@@ -16,6 +16,7 @@
 
 #include "gs-app.h"
 #include "gs-info-window.h"
+#include "gs-lozenge.h"
 
 G_BEGIN_DECLS
 
@@ -32,8 +33,7 @@ void				 gs_age_rating_context_dialog_set_app		(GsAgeRatingContextDialog	*self,
 gchar *gs_age_rating_context_dialog_format_age_short (AsContentRatingSystem system,
                                                       guint                 age);
 void gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
-                                                  GtkWidget *lozenge,
-                                                  GtkLabel  *lozenge_content,
+                                                  GsLozenge *lozenge,
                                                   gboolean  *is_unknown_out);
 
 
