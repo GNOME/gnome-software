@@ -875,37 +875,81 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return gs_plugin_packagekit_add_updates (plugin, list, cancellable, error);
 }
 
-gboolean
-gs_plugin_add_search_files (GsPlugin *plugin,
-                            gchar **search,
-                            GsAppList *list,
-                            GCancellable *cancellable,
-                            GError **error)
+static void list_apps_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data);
+
+static void
+gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
+                                      GsAppQuery            *query,
+                                      GsPluginListAppsFlags  flags,
+                                      GCancellable          *cancellable,
+                                      GAsyncReadyCallback    callback,
+                                      gpointer               user_data)
 {
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	PkBitfield filter;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
 
-	/* do sync call */
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_list_apps_async);
+	g_task_set_task_data (task, g_object_ref (helper), g_object_unref);
+
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
-					 PK_FILTER_ENUM_ARCH,
-					 -1);
-	g_mutex_lock (&self->task_mutex);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_SEARCH_FILES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_search_files (PK_CLIENT (self->task),
-	                                  filter,
-	                                  search,
-	                                  cancellable,
-	                                  gs_packagekit_helper_cb, helper,
-	                                  error);
-	g_mutex_unlock (&self->task_mutex);
-	if (!gs_plugin_packagekit_results_valid (results, error))
-		return FALSE;
+	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
-	/* add results */
-	return gs_plugin_packagekit_add_results (plugin, list, results, error);
+	g_mutex_lock (&self->task_mutex);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task), GS_PLUGIN_ACTION_UNKNOWN, interactive);
+
+	if (gs_app_query_get_provides_files (query) != NULL) {
+		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+						 PK_FILTER_ENUM_ARCH,
+						 -1);
+		pk_client_search_files_async (PK_CLIENT (self->task),
+					      filter,
+					      (gchar **) gs_app_query_get_provides_files (query),
+					      cancellable,
+					      gs_packagekit_helper_cb, helper,
+					      list_apps_cb, g_steal_pointer (&task));
+	} else {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+	}
+
+	g_mutex_unlock (&self->task_mutex);
+}
+
+static void
+list_apps_cb (GObject      *source_object,
+              GAsyncResult *result,
+              gpointer      user_data)
+{
+	PkClient *client = PK_CLIENT (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPlugin *plugin = g_task_get_source_object (task);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GError) local_error = NULL;
+
+	results = pk_client_generic_finish (client, result, &local_error);
+
+	if (!gs_plugin_packagekit_results_valid (results, &local_error) ||
+	    !gs_plugin_packagekit_add_results (plugin, list, results, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	} else {
+		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	}
+}
+
+static GsAppList *
+gs_plugin_packagekit_list_apps_finish (GsPlugin      *plugin,
+                                       GAsyncResult  *result,
+                                       GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -3710,7 +3754,6 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	g_mutex_lock (&self->task_mutex_refresh);
-	pk_client_set_background (PK_CLIENT (self->task_refresh), !interactive);
 	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
 	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age_secs);
 
@@ -4011,6 +4054,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->refine_finish = gs_plugin_packagekit_refine_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_packagekit_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_packagekit_refresh_metadata_finish;
+	plugin_class->list_apps_async = gs_plugin_packagekit_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_packagekit_list_apps_finish;
 }
 
 GType

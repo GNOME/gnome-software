@@ -1465,12 +1465,8 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_updates";
 	if (action == GS_PLUGIN_ACTION_GET_POPULAR)
 		return "gs_plugin_add_popular";
-	if (action == GS_PLUGIN_ACTION_GET_RECENT)
-		return "gs_plugin_add_recent";
 	if (action == GS_PLUGIN_ACTION_SEARCH)
 		return "gs_plugin_add_search";
-	if (action == GS_PLUGIN_ACTION_SEARCH_FILES)
-		return "gs_plugin_add_search_files";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "gs_plugin_add_search_what_provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
@@ -1531,8 +1527,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-featured";
 	if (action == GS_PLUGIN_ACTION_SEARCH)
 		return "search";
-	if (action == GS_PLUGIN_ACTION_SEARCH_FILES)
-		return "search-files";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "search-provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
@@ -1543,8 +1537,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "url-to-app";
-	if (action == GS_PLUGIN_ACTION_GET_RECENT)
-		return "get-recent";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
 		return "get-updates-historical";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
@@ -1601,8 +1593,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_FEATURED;
 	if (g_strcmp0 (action, "search") == 0)
 		return GS_PLUGIN_ACTION_SEARCH;
-	if (g_strcmp0 (action, "search-files") == 0)
-		return GS_PLUGIN_ACTION_SEARCH_FILES;
 	if (g_strcmp0 (action, "search-provides") == 0)
 		return GS_PLUGIN_ACTION_SEARCH_PROVIDES;
 	if (g_strcmp0 (action, "get-categories") == 0)
@@ -1613,8 +1603,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
 		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "get-recent") == 0)
-		return GS_PLUGIN_ACTION_GET_RECENT;
 	if (g_strcmp0 (action, "get-updates-historical") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
 	if (g_strcmp0 (action, "get-alternates") == 0)

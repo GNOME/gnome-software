@@ -229,7 +229,17 @@ gs_packagekit_task_setup (GsPackagekitTask *task,
 	g_return_if_fail (GS_IS_PACKAGEKIT_TASK (task));
 
 	priv->action = action;
+
+	/* The :interactive and :background properties have slightly different
+	 * purposes:
+	 *  - :interactive controls whether the task can create interactive
+	 *    authentication (polkit) prompts
+	 *  - :background controls the scheduling of the task relative to other
+	 *    PackageKit tasks from this client and other clients
+	 * However, we always want to set them both based on the same
+	 * conditions. */
 	pk_client_set_interactive (PK_CLIENT (task), interactive);
+	pk_client_set_background (PK_CLIENT (task), !interactive);
 }
 
 GsPluginAction

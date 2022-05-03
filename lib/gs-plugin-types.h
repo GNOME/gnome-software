@@ -171,6 +171,20 @@ typedef enum {
 } GsPluginRefineFlags;
 
 /**
+ * GsPluginListAppsFlags:
+ * @GS_PLUGIN_LIST_APPS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to list apps matching a given query.
+ *
+ * Since: 43
+ */
+typedef enum {
+	GS_PLUGIN_LIST_APPS_FLAGS_NONE = 0,
+	GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginListAppsFlags;
+
+/**
  * GsPluginListInstalledAppsFlags:
  * @GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE: User initiated the job.
@@ -246,13 +260,11 @@ typedef enum {
  * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
  * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
  * @GS_PLUGIN_ACTION_SEARCH:			Get the search results for a query
- * @GS_PLUGIN_ACTION_SEARCH_FILES:		Get the search results for a file query
  * @GS_PLUGIN_ACTION_SEARCH_PROVIDES:		Get the search results for a provide query
  * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
  * @GS_PLUGIN_ACTION_GET_CATEGORY_APPS:		Get the apps for a specific category
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
- * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
@@ -278,13 +290,11 @@ typedef enum {
 	GS_PLUGIN_ACTION_GET_POPULAR,
 	GS_PLUGIN_ACTION_GET_FEATURED,
 	GS_PLUGIN_ACTION_SEARCH,
-	GS_PLUGIN_ACTION_SEARCH_FILES,
 	GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	GS_PLUGIN_ACTION_GET_CATEGORIES,
 	GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,
-	GS_PLUGIN_ACTION_GET_RECENT,
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,

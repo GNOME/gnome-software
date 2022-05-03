@@ -15,6 +15,7 @@
 
 #include "gs-app.h"
 #include "gs-app-list.h"
+#include "gs-app-query.h"
 #include "gs-category.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-types.h"
@@ -51,6 +52,9 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   batched by the plugin where possible.
  * @refine_finish: (nullable): Finish method for @refine_async. Must be
  *   implemented if @refine_async is implemented.
+ * @list_apps_async: (nullable): List apps matching a given query. (Since: 43)
+ * @list_apps_finish: (nullable): Finish method for @list_apps_async. Must be
+ *   implemented if @list_apps_async is implemented. (Since: 43)
  * @list_installed_apps_async: (nullable): Get the list of installed apps
  *   belonging to this plugin.
  * @list_installed_apps_finish: (nullable): Finish method for
@@ -119,6 +123,16 @@ struct _GsPluginClass
 	gboolean		(*refine_finish)	(GsPlugin		*plugin,
 							 GAsyncResult		*result,
 							 GError			**error);
+
+	void			(*list_apps_async)		(GsPlugin		*plugin,
+								 GsAppQuery		*query,
+								 GsPluginListAppsFlags	 flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	GsAppList *		(*list_apps_finish)		(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
 
 	void			(*list_installed_apps_async)	(GsPlugin		*plugin,
 								 GsPluginListInstalledAppsFlags flags,

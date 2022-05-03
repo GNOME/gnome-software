@@ -285,6 +285,16 @@ gs_cmd_self_free (GsCmdSelf *self)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
 
+static gint
+app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
+		return -1;
+	if (gs_app_get_kind (app2) == AS_COMPONENT_KIND_DESKTOP_APP)
+		return 1;
+	return 0;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -622,14 +632,27 @@ main (int argc, char **argv)
 			cache_age_secs = 60 * 60 * 24 * 60;
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autoptr(GDateTime) now = NULL;
+			g_autoptr(GDateTime) released_since = NULL;
+			g_autoptr(GsAppQuery) query = NULL;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-							 "age", cache_age_secs,
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
+
+			now = g_date_time_new_now_local ();
+			released_since = g_date_time_add_seconds (now, -cache_age_secs);
+			query = gs_app_query_new ("released-since", released_since,
+						  "refine-flags", self->refine_flags,
+						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
+						  "max-results", self->max_results,
+						  "sort-func", app_sort_kind_cb,
+						  NULL);
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {

@@ -648,14 +648,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, app, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		{
-			GsPluginGetRecentFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
-					   gs_plugin_job_get_age (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
@@ -673,7 +665,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
@@ -1082,22 +1073,10 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
+gboolean
+gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
+                                    GsApp          *app)
 {
-	return !gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY);
-}
-
-static gboolean
-gs_plugin_loader_app_is_desktop (GsApp *app, gpointer user_data)
-{
-	return gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP;
-}
-
-static gboolean
-gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	const gchar *tmp;
 	guint i;
 
@@ -1114,6 +1093,15 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 	return FALSE;
 }
 
+static gboolean
+gs_plugin_loader_get_app_is_compatible (GsApp    *app,
+                                        gpointer  user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	return gs_plugin_loader_app_is_compatible (plugin_loader, app);
+}
+
 /******************************************************************************/
 
 static gboolean
@@ -1123,16 +1111,6 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 	    g_getenv ("GNOME_SOFTWARE_FEATURED")) == 0)
 		return TRUE;
 	return FALSE;
-}
-
-static gint
-gs_plugin_loader_app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
-		return -1;
-	if (gs_app_get_kind (app2) == AS_COMPONENT_KIND_DESKTOP_APP)
-		return 1;
-	return 0;
 }
 
 static gint
@@ -3484,13 +3462,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	if (action == GS_PLUGIN_ACTION_GET_RECENT) {
-		/* Preliminary filter recent apps, to have truncated a meaningful list */
-		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
-	}
-
 	/* filter to reduce to a sane set */
 	gs_plugin_loader_job_sorted_truncation (helper->plugin_job, list);
 
@@ -3611,7 +3582,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -3633,13 +3603,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
-		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_desktop, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_POPULAR:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -3873,6 +3836,10 @@ run_job_cb (GObject      *source_object,
 		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job)) {
 		GsAppList *list = gs_plugin_job_list_installed_apps_get_result_list (GS_PLUGIN_JOB_LIST_INSTALLED_APPS (plugin_job));
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
+	} else if (GS_IS_PLUGIN_JOB_LIST_APPS (plugin_job)) {
+		GsAppList *list = gs_plugin_job_list_apps_get_result_list (GS_PLUGIN_JOB_LIST_APPS (plugin_job));
 		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 		return;
 	} else if (GS_IS_PLUGIN_JOB_LIST_DISTRO_UPGRADES (plugin_job)) {
@@ -4115,7 +4082,6 @@ job_process_cb (GTask *task)
 	/* check required args */
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		if (gs_plugin_job_get_search (plugin_job) == NULL) {
@@ -4136,12 +4102,6 @@ job_process_cb (GTask *task)
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_match_value_cb, NULL);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_RECENT:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_kind_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
@@ -4191,9 +4151,7 @@ job_process_cb (GTask *task)
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_GET_POPULAR:
-	case GS_PLUGIN_ACTION_GET_RECENT:
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
 			helper->timeout_id =

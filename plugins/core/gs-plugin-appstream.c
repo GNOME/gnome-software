@@ -1517,22 +1517,86 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	return gs_appstream_add_featured (self->silo, list, cancellable, error);
 }
 
-gboolean
-gs_plugin_add_recent (GsPlugin *plugin,
-		      GsAppList *list,
-		      guint64 age,
-		      GCancellable *cancellable,
-		      GError **error)
+static void list_apps_thread_cb (GTask        *task,
+                                 gpointer      source_object,
+                                 gpointer      task_data,
+                                 GCancellable *cancellable);
+
+static void
+gs_plugin_appstream_list_apps_async (GsPlugin              *plugin,
+                                     GsAppQuery            *query,
+                                     GsPluginListAppsFlags  flags,
+                                     GCancellable          *cancellable,
+                                     GAsyncReadyCallback    callback,
+                                     gpointer               user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_appstream_list_apps_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				list_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+list_apps_thread_cb (GTask        *task,
+                     gpointer      source_object,
+                     gpointer      task_data,
+                     GCancellable *cancellable)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	GsPluginListAppsData *data = task_data;
+	GDateTime *released_since = NULL;
+	guint64 age_secs = 0;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	if (data->query != NULL)
+		released_since = gs_app_query_get_released_since (data->query);
+	if (released_since != NULL) {
+		g_autoptr(GDateTime) now = g_date_time_new_now_utc ();
+		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
+	}
+
+	/* Currently only support released-since queries. */
+	if (released_since == NULL) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	/* check silo is valid */
+	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_recent (GS_PLUGIN (self), self->silo, list, age,
-					cancellable, error);
+
+	if (!gs_appstream_add_recent (GS_PLUGIN (self), self->silo, list, age_secs,
+				      cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_appstream_list_apps_finish (GsPlugin      *plugin,
+                                      GAsyncResult  *result,
+                                      GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -1621,6 +1685,8 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->refine_finish = gs_plugin_appstream_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_appstream_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_appstream_list_installed_apps_finish;
+	plugin_class->list_apps_async = gs_plugin_appstream_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_appstream_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_appstream_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_appstream_refresh_metadata_finish;
 }

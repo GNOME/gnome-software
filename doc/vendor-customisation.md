@@ -85,7 +85,8 @@ Both pages also have a “New & Updated” section (`box_recent` or
 listed in the new and updated section are not curated: they are chosen as the
 applications which have had a recent release, according to the
 `component/releases/release[@timestamp]` attribute in their metainfo.
-Technically these are the results of the `gs_plugin_add_recent()` vfunc.
+Technically these are the results of a `GsPlugin.list_apps_async()` query with
+`GsAppQuery:released-since` set.
 
 Applications are included in any of the curated sets through having special
 metadata in their metainfo. The required metadata is different for the different
