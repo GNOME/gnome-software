@@ -3881,9 +3881,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC (CancellableData, cancellable_data_free)
 static gboolean job_process_setup_complete_cb (GCancellable *cancellable,
                                                gpointer      user_data);
 static void job_process_cb (GTask *task);
-static void job_process_refine_cb (GObject      *source_object,
-                                   GAsyncResult *result,
-                                   gpointer      user_data);
 
 /**
  * gs_plugin_loader_job_process_async:
@@ -4021,32 +4018,6 @@ job_process_cb (GTask *task)
 		}
 	}
 
-	/* hardcoded, so resolve a set list */
-	if (action == GS_PLUGIN_ACTION_GET_POPULAR) {
-		g_auto(GStrv) apps = NULL;
-		if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
-			apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
-		}
-		if (apps != NULL && g_strv_length (apps) > 0) {
-			GsAppList *list = gs_plugin_job_get_list (plugin_job);
-			g_autoptr(GsPluginJob) refine_job = NULL;
-
-			for (guint i = 0; apps[i] != NULL; i++) {
-				g_autoptr(GsApp) app = gs_app_new (apps[i]);
-				gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
-				gs_app_list_add (list, app);
-			}
-
-			/* Refine the list of wildcard popular apps and return
-			 * to the caller. */
-			refine_job = gs_plugin_job_refine_new (list, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
-			gs_plugin_loader_job_process_async (plugin_loader, refine_job,
-							    cancellable,
-							    job_process_refine_cb, g_object_ref (task));
-			return;
-		}
-	}
-
 	/* FIXME: the plugins should specify this, rather than hardcoding */
 	if (gs_plugin_job_has_refine_flags (plugin_job,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)) {
@@ -4177,24 +4148,6 @@ job_process_cb (GTask *task)
 
 	/* run in a thread */
 	g_task_run_in_thread (task, gs_plugin_loader_process_thread_cb);
-}
-
-static void
-job_process_refine_cb (GObject      *source_object,
-                       GAsyncResult *result,
-                       gpointer      user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	g_autoptr(GsAppList) results = NULL;
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	g_autoptr(GError) local_error = NULL;
-
-	results = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
-
-	if (results == NULL)
-		g_task_return_error (task, g_steal_pointer (&local_error));
-	else
-		g_task_return_pointer (task, g_steal_pointer (&results), (GDestroyNotify) g_object_unref);
 }
 
 /******************************************************************************/

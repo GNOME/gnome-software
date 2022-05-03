@@ -596,6 +596,21 @@ gs_plugin_add_popular (GsPlugin *plugin,
 {
 	g_autoptr(GsApp) app1 = NULL;
 	g_autoptr(GsApp) app2 = NULL;
+	g_auto(GStrv) apps = NULL;
+
+	if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
+		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
+	}
+
+	if (apps != NULL && g_strv_length (apps) > 0) {
+		for (gsize i = 0; apps[i] != NULL; i++) {
+			g_autoptr(GsApp) app = gs_app_new (apps[i]);
+			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+			gs_app_list_add (list, app);
+		}
+
+		return TRUE;
+	}
 
 	/* add wildcard */
 	app1 = gs_app_new ("zeus.desktop");

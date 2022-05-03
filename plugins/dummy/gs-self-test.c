@@ -579,7 +579,7 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	g_auto(GStrv) apps = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	/* use the plugin's add_popular function */
+	/* use the plugin's default popular list */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
@@ -589,7 +589,7 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	g_assert (list1 != NULL);
 	g_assert_cmpint (gs_app_list_length (list1), ==, 1);
 
-	/* override the popular list (do not use the add_popular function) */
+	/* override the list */
 	g_setenv ("GNOME_SOFTWARE_POPULAR", popular_override, TRUE);
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
