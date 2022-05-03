@@ -43,6 +43,12 @@ struct _GsPluginAppstream
 	GHashTable		*silo_installed_by_id;
 	AsComponentScope	 default_scope;
 	GSettings		*settings;
+
+	GPtrArray		*file_monitors; /* (owned) (element-type GFileMonitor) */
+	/* The stamps help to avoid locking the silo lock in the main thread
+	   and also to detect changes while loading other appstream data. */
+	gint			 file_monitor_stamp; /* the file monitor stamp, increased on every file monitor change */
+	gint			 file_monitor_stamp_current; /* the currently known file monitor stamp, checked for changes */
 };
 
 G_DEFINE_TYPE (GsPluginAppstream, gs_plugin_appstream, GS_TYPE_PLUGIN)
@@ -62,6 +68,7 @@ gs_plugin_appstream_dispose (GObject *object)
 	g_clear_object (&self->settings);
 	g_rw_lock_clear (&self->silo_lock);
 	g_clear_object (&self->worker);
+	g_clear_pointer (&self->file_monitors, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_appstream_parent_class)->dispose (object);
 }
@@ -86,6 +93,8 @@ gs_plugin_appstream_init (GsPluginAppstream *self)
 		g_signal_connect_object (application, "repository-changed",
 			G_CALLBACK (gs_plugin_update_cache_state_for_repository), self, G_CONNECT_SWAPPED);
 	}
+
+	self->file_monitors = g_ptr_array_new_with_free_func (g_object_unref);
 }
 
 static const gchar *
@@ -213,6 +222,30 @@ gs_plugin_appstream_media_baseurl_cb (XbBuilderFixup *self,
 	return TRUE;
 }
 
+static void
+gs_plugin_appstream_file_monitor_changed_cb (GFileMonitor *monitor,
+					     GFile *file,
+					     GFile *other_file,
+					     GFileMonitorEvent event_type,
+					     gpointer user_data)
+{
+	GsPluginAppstream *self = user_data;
+	g_atomic_int_inc (&self->file_monitor_stamp);
+}
+
+static void
+gs_plugin_appstream_maybe_store_file_monitor (GsPluginAppstream  *self,
+					      GFileMonitor *file_monitor) /* (nullable) (transfer none) */
+{
+	if (!file_monitor)
+		return;
+
+	g_signal_connect_object (file_monitor, "changed",
+		G_CALLBACK (gs_plugin_appstream_file_monitor_changed_cb), self, 0);
+
+	g_ptr_array_add (self->file_monitors, g_object_ref (file_monitor));
+}
+
 static gboolean
 gs_plugin_appstream_load_appdata_fn (GsPluginAppstream  *self,
                                      XbBuilder          *builder,
@@ -226,16 +259,8 @@ gs_plugin_appstream_load_appdata_fn (GsPluginAppstream  *self,
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add source */
-	if (!xb_builder_source_load_file (source, file,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					  XB_BUILDER_SOURCE_FLAG_WATCH_DIRECTORY,
-#else
-					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
-#endif
-					  cancellable,
-					  error)) {
+	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
 		return FALSE;
-	}
 
 	/* fix up any legacy installed files */
 	fixup = xb_builder_fixup_new ("AppStreamUpgrade2",
@@ -264,6 +289,8 @@ gs_plugin_appstream_load_appdata (GsPluginAppstream  *self,
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
+	g_autoptr(GFileMonitor) file_monitor = NULL;
+	g_autoptr(GError) local_error = NULL;
 	if (!g_file_query_exists (parent, cancellable)) {
 		g_debug ("appstream: Skipping appdata path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
 		return TRUE;
@@ -274,6 +301,11 @@ gs_plugin_appstream_load_appdata (GsPluginAppstream  *self,
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
+
+	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
+	if (local_error)
+		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
+	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		if (g_str_has_suffix (fn, ".appdata.xml") ||
@@ -342,16 +374,8 @@ gs_plugin_appstream_load_desktop_fn (GsPluginAppstream  *self,
 				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
 
 	/* add source */
-	if (!xb_builder_source_load_file (source, file,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					  XB_BUILDER_SOURCE_FLAG_WATCH_DIRECTORY,
-#else
-					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
-#endif
-					  cancellable,
-					  error)) {
+	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
 		return FALSE;
-	}
 
 	/* add metadata */
 	info = xb_builder_node_insert (NULL, "info", NULL);
@@ -373,6 +397,8 @@ gs_plugin_appstream_load_desktop (GsPluginAppstream  *self,
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
+	g_autoptr(GFileMonitor) file_monitor = NULL;
+	g_autoptr(GError) local_error = NULL;
 	if (!g_file_query_exists (parent, cancellable)) {
 		g_debug ("appstream: Skipping desktop path '%s' as %s", path, g_cancellable_is_cancelled (cancellable) ? "cancelled" : "does not exist");
 		return TRUE;
@@ -383,6 +409,11 @@ gs_plugin_appstream_load_desktop (GsPluginAppstream  *self,
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
+
+	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
+	if (local_error)
+		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
+	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
 
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		if (g_str_has_suffix (fn, ".desktop")) {
@@ -500,16 +531,8 @@ gs_plugin_appstream_load_appstream_fn (GsPluginAppstream  *self,
 				       NULL, NULL);
 
 	/* add source */
-	if (!xb_builder_source_load_file (source, file,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					  XB_BUILDER_SOURCE_FLAG_WATCH_DIRECTORY,
-#else
-					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
-#endif
-					  cancellable,
-					  error)) {
+	if (!xb_builder_source_load_file (source, file, 0, cancellable, error))
 		return FALSE;
-	}
 
 	/* add metadata */
 	info = xb_builder_node_insert (NULL, "info", NULL);
@@ -569,6 +592,8 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
+	g_autoptr(GFileMonitor) file_monitor = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* parent path does not exist */
 	if (!g_file_query_exists (parent, cancellable)) {
@@ -579,6 +604,12 @@ gs_plugin_appstream_load_appstream (GsPluginAppstream  *self,
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
+
+	file_monitor = g_file_monitor (parent, G_FILE_MONITOR_NONE, cancellable, &local_error);
+	if (local_error)
+		g_debug ("appstream: Failed to create file monitor for '%s': %s", path, local_error->message);
+	gs_plugin_appstream_maybe_store_file_monitor (self, file_monitor);
+
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 #ifdef ENABLE_EXTERNAL_APPSTREAM
 		/* Ignore our own system-installed files when
@@ -674,17 +705,21 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 	/* everything is okay */
-	if (self->silo != NULL && xb_silo_is_valid (self->silo))
+	if (self->silo != NULL && xb_silo_is_valid (self->silo) &&
+	    g_atomic_int_get (&self->file_monitor_stamp_current) == g_atomic_int_get (&self->file_monitor_stamp))
 		return TRUE;
 	g_clear_pointer (&reader_locker, g_rw_lock_reader_locker_free);
 
 	/* drat! silo needs regenerating */
 	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
+ reload:
 	g_clear_object (&self->silo);
 	g_clear_pointer (&self->silo_filename, g_free);
 	g_clear_pointer (&self->silo_installed_by_desktopid, g_hash_table_unref);
 	g_clear_pointer (&self->silo_installed_by_id, g_hash_table_unref);
 	self->default_scope = AS_COMPONENT_SCOPE_UNKNOWN;
+	g_ptr_array_set_size (self->file_monitors, 0);
+	g_atomic_int_set (&self->file_monitor_stamp_current, g_atomic_int_get (&self->file_monitor_stamp));
 
 	/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
 	old_thread_default = g_main_context_ref_thread_default ();
@@ -793,30 +828,49 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 			gs_add_appstream_catalog_location (parent_appstream, "/var/lib");
 		}
 
+		/* FIXME: https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1422 */
+		old_thread_default = g_main_context_ref_thread_default ();
+		if (old_thread_default == g_main_context_default ())
+			g_clear_pointer (&old_thread_default, g_main_context_unref);
+		if (old_thread_default != NULL)
+			g_main_context_pop_thread_default (old_thread_default);
+
 		/* import all files */
 		for (guint i = 0; i < parent_appstream->len; i++) {
 			const gchar *fn = g_ptr_array_index (parent_appstream, i);
-			if (!gs_plugin_appstream_load_appstream (self, builder, fn,
-								 cancellable, error))
+			if (!gs_plugin_appstream_load_appstream (self, builder, fn, cancellable, error)) {
+				if (old_thread_default != NULL)
+					g_main_context_push_thread_default (old_thread_default);
 				return FALSE;
+			}
 		}
 		for (guint i = 0; i < parent_appdata->len; i++) {
 			const gchar *fn = g_ptr_array_index (parent_appdata, i);
-			if (!gs_plugin_appstream_load_appdata (self, builder, fn,
-							       cancellable, error))
+			if (!gs_plugin_appstream_load_appdata (self, builder, fn, cancellable, error)) {
+				if (old_thread_default != NULL)
+					g_main_context_push_thread_default (old_thread_default);
 				return FALSE;
+			}
 		}
 		if (!gs_plugin_appstream_load_desktop (self, builder,
 						       DATADIR "/applications",
 						       cancellable, error)) {
+			if (old_thread_default != NULL)
+				g_main_context_push_thread_default (old_thread_default);
 			return FALSE;
 		}
 		if (g_strcmp0 (DATADIR, "/usr/share") != 0 &&
 		    !gs_plugin_appstream_load_desktop (self, builder,
 						       "/usr/share/applications",
 						       cancellable, error)) {
+			if (old_thread_default != NULL)
+				g_main_context_push_thread_default (old_thread_default);
 			return FALSE;
 		}
+
+		if (old_thread_default != NULL)
+			g_main_context_push_thread_default (old_thread_default);
+		g_clear_pointer (&old_thread_default, g_main_context_unref);
 	}
 
 	/* regenerate with each minor release */
@@ -849,28 +903,15 @@ gs_plugin_appstream_check_silo (GsPluginAppstream  *self,
 		return FALSE;
 	}
 
-	/* watch all directories too */
-	for (guint i = 0; i < parent_appstream->len; i++) {
-		const gchar *fn = g_ptr_array_index (parent_appstream, i);
-		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
-		if (!xb_silo_watch_file (self->silo, file_tmp, cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
-		}
-	}
-	for (guint i = 0; i < parent_appdata->len; i++) {
-		const gchar *fn = g_ptr_array_index (parent_appdata, i);
-		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
-		if (!xb_silo_watch_file (self->silo, file_tmp, cancellable, error)) {
-			if (old_thread_default != NULL)
-				g_main_context_push_thread_default (old_thread_default);
-			return FALSE;
-		}
-	}
-
 	if (old_thread_default != NULL)
 		g_main_context_push_thread_default (old_thread_default);
+
+	if (g_atomic_int_get (&self->file_monitor_stamp_current) != g_atomic_int_get (&self->file_monitor_stamp)) {
+		g_ptr_array_set_size (parent_appdata, 0);
+		g_ptr_array_set_size (parent_appstream, 0);
+		g_debug ("appstream: File monitors reported change while loading appstream data, reloading...");
+		goto reload;
+	}
 
 	/* test we found something */
 	n = xb_silo_query_first (self->silo, "components/component", NULL);
