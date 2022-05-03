@@ -50,6 +50,7 @@ gnome_software_sources = [
   'gs-info-window.c',
   'gs-installed-page.c',
   'gs-language.c',
+  'gs-layout-manager.c',
   'gs-license-tile.c',
   'gs-loading-page.c',
   'gs-main.c',
