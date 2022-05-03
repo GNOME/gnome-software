@@ -100,8 +100,8 @@ sections:
    `gs_plugin_add_featured()` vfunc.
  * “Editor’s Choice” on the overview page: Applications are included if they
    have `component/kudos/kudo[text()='GnomeSoftware::popular']` set in their
-   metainfo. Technically these are the results of the `gs_plugin_add_popular()`
-   vfunc.
+   metainfo. Technically these are the results of a `GsPlugin.list_apps_async()`
+   query with `GsAppQuery:is-curated` set.
  * Carousel on the category page: Applications are included if they are in the
    `Featured` subcategory of the displayed category. They are also required to
    have a high-resolution icon, and the set of applications shown in the carousel

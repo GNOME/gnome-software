@@ -651,7 +651,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
-	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		{
 			GsPluginResultsFunc plugin_func = func;
@@ -3604,11 +3603,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
 		break;
-	case GS_PLUGIN_ACTION_GET_POPULAR:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
 	default:
 		break;
 	}
@@ -4119,7 +4113,6 @@ job_process_cb (GTask *task)
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
-	case GS_PLUGIN_ACTION_GET_POPULAR:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
