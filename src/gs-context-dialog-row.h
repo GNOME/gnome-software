@@ -57,9 +57,9 @@ const gchar			*gs_context_dialog_row_get_content	(GsContextDialogRow	*self);
 GsContextDialogRowImportance	 gs_context_dialog_row_get_importance	(GsContextDialogRow	*self);
 gboolean			 gs_context_dialog_row_get_content_is_markup
 									(GsContextDialogRow	*self);
-void				 gs_context_dialog_row_set_content_is_markup
+void				 gs_context_dialog_row_set_content_markup
 									(GsContextDialogRow	*self,
-									 gboolean		 is_markup);
+									 const gchar		*markup);
 
 void				 gs_context_dialog_row_set_size_groups	(GsContextDialogRow	*self,
 									 GtkSizeGroup		*lozenge,
