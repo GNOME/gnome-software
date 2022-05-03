@@ -53,6 +53,7 @@ gnome_software_sources = [
   'gs-layout-manager.c',
   'gs-license-tile.c',
   'gs-loading-page.c',
+  'gs-lozenge-layout.c',
   'gs-main.c',
   'gs-metered-data-dialog.c',
   'gs-moderate-page.c',
