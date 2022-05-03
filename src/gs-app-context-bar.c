@@ -38,6 +38,7 @@
 #include "gs-app-context-bar.h"
 #include "gs-common.h"
 #include "gs-hardware-support-context-dialog.h"
+#include "gs-lozenge.h"
 #include "gs-safety-context-dialog.h"
 #include "gs-storage-context-dialog.h"
 
@@ -45,7 +46,6 @@ typedef struct
 {
 	GtkWidget	*tile;
 	GtkWidget	*lozenge;
-	GtkWidget	*lozenge_content;
 	GtkLabel	*title;
 	GtkLabel	*description;
 } GsAppContextTile;
@@ -215,9 +215,9 @@ update_storage_tile (GsAppContextBar *self)
 	}
 
 	if (lozenge_text_is_markup)
-		gtk_label_set_markup (GTK_LABEL (self->tiles[STORAGE_TILE].lozenge_content), lozenge_text);
+		gs_lozenge_set_markup (GS_LOZENGE (self->tiles[STORAGE_TILE].lozenge), lozenge_text);
 	else
-		gtk_label_set_text (GTK_LABEL (self->tiles[STORAGE_TILE].lozenge_content), lozenge_text);
+		gs_lozenge_set_text (GS_LOZENGE (self->tiles[STORAGE_TILE].lozenge), lozenge_text);
 	gtk_label_set_text (self->tiles[STORAGE_TILE].title, title);
 	gtk_label_set_text (self->tiles[STORAGE_TILE].description, description);
 }
@@ -482,7 +482,7 @@ update_safety_tile (GsAppContextBar *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[SAFETY_TILE].lozenge_content), icon_name);
+	gs_lozenge_set_icon_name (GS_LOZENGE (self->tiles[SAFETY_TILE].lozenge), icon_name);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].title, title);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].description, description);
 
@@ -654,8 +654,8 @@ update_hardware_support_tile (GsAppContextBar *self)
 	/* Update the UI. The `adaptive-symbolic` icon needs a special size to
 	 * be set, as it is wider than it is tall. Setting the size ensures it’s
 	 * rendered at the right height. */
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), icon_name);
-	gtk_image_set_pixel_size (GTK_IMAGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge_content), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
+	gs_lozenge_set_icon_name (GS_LOZENGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge), icon_name);
+	gs_lozenge_set_pixel_size (GS_LOZENGE (self->tiles[HARDWARE_SUPPORT_TILE].lozenge), g_str_equal (icon_name, "adaptive-symbolic") ? 56 : -1);
 
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].description, description);
@@ -732,8 +732,7 @@ update_age_rating_tile (GsAppContextBar *self)
 
 	content_rating = gs_app_dup_content_rating (self->app);
 	gs_age_rating_context_dialog_update_lozenge (self->app,
-						     self->tiles[AGE_RATING_TILE].lozenge,
-						     GTK_LABEL (self->tiles[AGE_RATING_TILE].lozenge_content),
+						     GS_LOZENGE (self->tiles[AGE_RATING_TILE].lozenge),
 						     &is_unknown);
 
 	/* Description */
@@ -885,22 +884,18 @@ gs_app_context_bar_class_init (GsAppContextBarClass *klass)
 
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge));
-	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "storage_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[STORAGE_TILE].description));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge));
-	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "safety_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[SAFETY_TILE].description));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge));
-	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "hardware_support_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[HARDWARE_SUPPORT_TILE].description));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].tile));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge));
-	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_lozenge_content", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].lozenge_content));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_title", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].title));
 	gtk_widget_class_bind_template_child_full (widget_class, "age_rating_tile_description", FALSE, G_STRUCT_OFFSET (GsAppContextBar, tiles[AGE_RATING_TILE].description));
 	gtk_widget_class_bind_template_callback (widget_class, tile_clicked_cb);
