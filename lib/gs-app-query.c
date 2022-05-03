@@ -73,6 +73,7 @@ struct _GsAppQuery
 	/* This is guaranteed to either be %NULL, or a non-empty array */
 	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
 	GDateTime *released_since;  /* (owned) (nullable) */
+	GsAppQueryTristate is_curated;
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -89,9 +90,10 @@ typedef enum {
 	PROP_FILTER_USER_DATA_NOTIFY,
 	PROP_PROVIDES_FILES,
 	PROP_RELEASED_SINCE,
+	PROP_IS_CURATED,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_RELEASED_SINCE + 1] = { NULL, };
+static GParamSpec *props[PROP_IS_CURATED + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -134,6 +136,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_RELEASED_SINCE:
 		g_value_set_boxed (value, self->released_since);
+		break;
+	case PROP_IS_CURATED:
+		g_value_set_enum (value, self->is_curated);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -209,6 +214,11 @@ gs_app_query_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->released_since == NULL);
 		self->released_since = g_value_dup_boxed (value);
+		break;
+	case PROP_IS_CURATED:
+		/* Construct only. */
+		g_assert (self->is_curated == GS_APP_QUERY_TRISTATE_UNSET);
+		self->is_curated = g_value_get_enum (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -429,12 +439,36 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:is-curated:
+	 *
+	 * Whether apps must be curated (%GS_APP_QUERY_TRISTATE_TRUE), or not
+	 * curated (%GS_APP_QUERY_TRISTATE_FALSE).
+	 *
+	 * If this is %GS_APP_QUERY_TRISTATE_UNSET, apps are not filtered by
+	 * their curation state.
+	 *
+	 * ‘Curated’ apps have been reviewed and picked by an editor to be
+	 * promoted to users in some way. They should be high quality and
+	 * feature complete.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_IS_CURATED] =
+		g_param_spec_enum ("is-curated", "Is Curated",
+				   "Whether apps must be curated, or not curated.",
+				   GS_TYPE_APP_QUERY_TRISTATE,
+				   GS_APP_QUERY_TRISTATE_UNSET,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
 static void
 gs_app_query_init (GsAppQuery *self)
 {
+	self->is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 }
 
 /**
@@ -597,4 +631,23 @@ gs_app_query_get_released_since (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
 
 	return self->released_since;
+}
+
+/**
+ * gs_app_query_get_is_curated:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:is-curated.
+ *
+ * Returns: %GS_APP_QUERY_TRISTATE_TRUE if apps must be curated,
+ *   %GS_APP_QUERY_TRISTATE_FALSE if they must be not curated, or
+ *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
+ * Since: 43
+ */
+GsAppQueryTristate
+gs_app_query_get_is_curated (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_FALSE);
+
+	return self->is_curated;
 }
