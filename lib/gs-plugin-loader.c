@@ -4026,8 +4026,6 @@ job_process_cb (GTask *task)
 		g_auto(GStrv) apps = NULL;
 		if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
 			apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
-		} else {
-			apps = g_settings_get_strv (plugin_loader->settings, "popular-overrides");
 		}
 		if (apps != NULL && g_strv_length (apps) > 0) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
