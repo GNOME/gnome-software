@@ -80,7 +80,6 @@ gnome_software_sources = [
   'gs-star-widget.c',
   'gs-storage-context-dialog.c',
   'gs-summary-tile.c',
-  'gs-summary-tile-layout.c',
   'gs-update-dialog.c',
   'gs-update-list.c',
   'gs-update-monitor.c',

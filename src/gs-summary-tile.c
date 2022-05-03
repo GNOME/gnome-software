@@ -12,8 +12,54 @@
 #include <glib/gi18n.h>
 
 #include "gs-summary-tile.h"
-#include "gs-summary-tile-layout.h"
+#include "gs-layout-manager.h"
 #include "gs-common.h"
+
+#define GS_TYPE_SUMMARY_TILE_LAYOUT (gs_summary_tile_layout_get_type ())
+G_DECLARE_FINAL_TYPE (GsSummaryTileLayout, gs_summary_tile_layout, GS, SUMMARY_TILE_LAYOUT, GsLayoutManager)
+
+struct _GsSummaryTileLayout
+{
+	GsLayoutManager parent_instance;
+
+	gint		preferred_width;
+};
+
+G_DEFINE_TYPE (GsSummaryTileLayout, gs_summary_tile_layout, GS_TYPE_LAYOUT_MANAGER)
+
+static void
+gs_summary_tile_layout_measure (GtkLayoutManager *layout_manager,
+				GtkWidget        *widget,
+				GtkOrientation    orientation,
+				gint              for_size,
+				gint             *minimum,
+				gint             *natural,
+				gint             *minimum_baseline,
+				gint             *natural_baseline)
+{
+	GsSummaryTileLayout *self = GS_SUMMARY_TILE_LAYOUT (layout_manager);
+
+	GTK_LAYOUT_MANAGER_CLASS (gs_summary_tile_layout_parent_class)->measure (layout_manager,
+		widget, orientation, for_size, minimum, natural, minimum_baseline, natural_baseline);
+
+	/* Limit the natural width */
+	if (self->preferred_width > 0 && orientation == GTK_ORIENTATION_HORIZONTAL)
+		*natural = MAX (*minimum, self->preferred_width);
+}
+
+static void
+gs_summary_tile_layout_class_init (GsSummaryTileLayoutClass *klass)
+{
+	GtkLayoutManagerClass *layout_manager_class = GTK_LAYOUT_MANAGER_CLASS (klass);
+	layout_manager_class->measure = gs_summary_tile_layout_measure;
+}
+
+static void
+gs_summary_tile_layout_init (GsSummaryTileLayout *self)
+{
+}
+
+/* ********************************************************************* */
 
 struct _GsSummaryTile
 {
@@ -138,8 +184,8 @@ gs_summary_tile_set_property (GObject *object,
 	case PROP_PREFERRED_WIDTH:
 		app_tile->preferred_width = g_value_get_int (value);
 		layout_manager = gtk_widget_get_layout_manager (GTK_WIDGET (app_tile));
-		gs_summary_tile_layout_set_preferred_width (GS_SUMMARY_TILE_LAYOUT (layout_manager),
-							    g_value_get_int (value));
+		GS_SUMMARY_TILE_LAYOUT (layout_manager)->preferred_width = app_tile->preferred_width;
+		gtk_layout_manager_layout_changed (layout_manager);
 		g_object_notify_by_pspec (object, obj_props[PROP_PREFERRED_WIDTH]);
 		break;
 	default:
