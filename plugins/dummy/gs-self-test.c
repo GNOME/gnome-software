@@ -578,11 +578,14 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	const gchar *popular_override = "chiron.desktop,zeus.desktop";
 	g_auto(GStrv) apps = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 
-	/* use the plugin's default popular list */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	/* use the plugin's default curated list */
+	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -592,9 +595,13 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	/* override the list */
 	g_setenv ("GNOME_SOFTWARE_POPULAR", popular_override, TRUE);
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	g_object_unref (query);
+
+	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
