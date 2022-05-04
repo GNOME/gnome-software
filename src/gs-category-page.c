@@ -373,6 +373,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 	GsCategory *featured_subcat = NULL;
 	GtkAdjustment *adj = NULL;
 	g_autoptr(GsPluginJob) featured_plugin_job = NULL;
+	g_autoptr(GsAppQuery) main_query = NULL;
 	g_autoptr(GsPluginJob) main_plugin_job = NULL;
 	LoadCategoryData *load_data = NULL;
 
@@ -429,12 +430,13 @@ gs_category_page_load_category (GsCategoryPage *self)
 	load_data->page = g_object_ref (self);
 
 	if (featured_subcat != NULL) {
-		featured_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-							  "interactive", TRUE,
-							  "category", featured_subcat,
-							  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
-							  NULL);
-		gs_plugin_job_set_sort_func (featured_plugin_job, app_sort_name_cb, NULL);
+		g_autoptr(GsAppQuery) featured_query = NULL;
+
+		featured_query = gs_app_query_new ("category", featured_subcat,
+						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+						   "sort-func", app_sort_name_cb,
+						   NULL);
+		featured_plugin_job = gs_plugin_job_list_apps_new (featured_query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    featured_plugin_job,
 						    self->cancellable,
@@ -445,16 +447,15 @@ gs_category_page_load_category (GsCategoryPage *self)
 		load_data->get_featured_apps_finished = TRUE;
 	}
 
-	main_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-					      "interactive", TRUE,
-					      "category", self->subcategory,
-					      "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							      GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
-					      "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							      GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					      NULL);
-	gs_plugin_job_set_sort_func (main_plugin_job, _max_results_sort_cb, NULL);
+	main_query = gs_app_query_new ("category", self->subcategory,
+				       "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+						       GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
+				       "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+						       GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+				       "sort-func", _max_results_sort_cb,
+				       NULL);
+	main_plugin_job = gs_plugin_job_list_apps_new (main_query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    main_plugin_job,
 					    self->cancellable,
