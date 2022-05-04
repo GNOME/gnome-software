@@ -1344,28 +1344,6 @@ refine_wildcard (GsPluginAppstream    *self,
 }
 
 gboolean
-gs_plugin_add_category_apps (GsPlugin *plugin,
-			     GsCategory *category,
-			     GsAppList *list,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_category_apps (plugin,
-					       self->silo,
-					       category,
-					       list,
-					       cancellable,
-					       error);
-}
-
-gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
 		      GsAppList *list,
@@ -1540,6 +1518,7 @@ list_apps_thread_cb (GTask        *task,
 	GsPluginListAppsData *data = task_data;
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	GsCategory *category = NULL;
 	guint64 age_secs = 0;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1548,6 +1527,7 @@ list_apps_thread_cb (GTask        *task,
 	if (data->query != NULL) {
 		released_since = gs_app_query_get_released_since (data->query);
 		is_curated = gs_app_query_get_is_curated (data->query);
+		category = gs_app_query_get_category (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1555,9 +1535,10 @@ list_apps_thread_cb (GTask        *task,
 		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
 	}
 
-	/* Currently only support released-since or is-curated queries (but not both).
+	/* Currently only support released-since, is-curated and category queries (but only one at once).
 	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((released_since == NULL) == (is_curated == GS_APP_QUERY_TRISTATE_UNSET) ||
+	if ((released_since == NULL && is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
+	    gs_app_query_get_n_properties_set (data->query) != 1 ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -1581,6 +1562,12 @@ list_apps_thread_cb (GTask        *task,
 
 	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET &&
 	    !gs_appstream_add_popular (self->silo, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (category != NULL &&
+	    !gs_appstream_add_category_apps (GS_PLUGIN (self), self->silo, category, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
