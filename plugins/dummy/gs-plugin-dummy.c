@@ -869,6 +869,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	guint max_results = 0;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
@@ -876,6 +877,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	if (query != NULL) {
 		released_since = gs_app_query_get_released_since (query);
 		is_curated = gs_app_query_get_is_curated (query);
+		max_results = gs_app_query_get_max_results (query);
 	}
 
 	/* Currently only support released-since or is-curated queries (but not both).
@@ -905,14 +907,12 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET) {
 		g_autoptr(GsApp) app1 = NULL;
 		g_autoptr(GsApp) app2 = NULL;
-		g_auto(GStrv) apps = NULL;
 
-		if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
-			apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
-		}
-
-		if (apps != NULL && g_strv_length (apps) > 0) {
-			for (gsize i = 0; apps[i] != NULL; i++) {
+		/* Hacky way of letting callers indicate which set of results
+		 * they want, for unit testing. */
+		if (max_results == 6) {
+			const gchar *apps[] = { "chiron.desktop", "zeus.desktop" };
+			for (gsize i = 0; i < G_N_ELEMENTS (apps); i++) {
 				g_autoptr(GsApp) app = gs_app_new (apps[i]);
 				gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 				gs_app_list_add (list, app);
@@ -924,14 +924,6 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 			gs_app_set_metadata (app1, "GnomeSoftware::Creator",
 					     gs_plugin_get_name (plugin));
 			gs_app_list_add (list, app1);
-
-			/* add again, this time with a prefix so it gets deduplicated */
-			app2 = gs_app_new ("zeus.desktop");
-			gs_app_set_scope (app2, AS_COMPONENT_SCOPE_USER);
-			gs_app_set_bundle_kind (app2, AS_BUNDLE_KIND_SNAP);
-			gs_app_set_metadata (app2, "GnomeSoftware::Creator",
-					     gs_plugin_get_name (plugin));
-			gs_app_list_add (list, app2);
 		}
 	}
 
