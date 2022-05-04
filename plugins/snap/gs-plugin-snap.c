@@ -615,15 +615,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autofree gchar *category_path = NULL;
-	const gchar *sections = NULL;
+	const gchar * const *sections = NULL;
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
-
-	category_path = category_build_full_path (category);
 
 	/*
 	 * Unused categories:
@@ -635,39 +628,46 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	 * server-and-cloud
 	 * entertainment
 	 */
+	const struct {
+		const gchar *category_path;
+		const gchar *sections[4];
+	} category_to_sections_map[] = {
+		{ "play/featured", { "games", NULL, }},
+		{ "create/featured", { "photo-and-video", "art-and-design", "music-and-video", NULL, }},
+		{ "socialize/featured", { "social", "news-and-weather", NULL, }},
+		{ "work/featured", { "productivity", "finance", "utilities", NULL, }},
+		{ "develop/featured", { "development", NULL, }},
+		{ "learn/featured", { "education", "science", "books-and-reference", NULL, }},
+	};
 
-	if (strcmp (category_path, "play/featured") == 0)
-		sections = "games";
-	else if (strcmp (category_path, "create/featured") == 0)
-		sections = "photo-and-video;art-and-design;music-and-video";
-	else if (strcmp (category_path, "socialize/featured") == 0)
-		sections = "social;news-and-weather";
-	else if (strcmp (category_path, "work/featured") == 0)
-		sections = "productivity;finance;utilities";
-	else if (strcmp (category_path, "develop/featured") == 0)
-		sections = "development";
-	else if (strcmp (category_path, "learn/featured") == 0)
-		sections = "education;science;books-and-reference";
+	/* Create client. */
+	client = get_client (self, interactive, error);
+	if (client == NULL)
+		return FALSE;
 
-	if (sections != NULL) {
-		g_auto(GStrv) tokens = NULL;
-		int i;
+	category_path = category_build_full_path (category);
 
-		tokens = g_strsplit (sections, ";", -1);
-		for (i = 0; tokens[i] != NULL; i++) {
-			g_autoptr(GPtrArray) snaps = NULL;
-			guint j;
-
-			snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE,
-					    tokens[i], NULL, cancellable, error);
-			if (snaps == NULL)
-				return FALSE;
-			for (j = 0; j < snaps->len; j++) {
-				g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j), NULL);
-				gs_app_list_add (list, app);
-			}
+	for (gsize i = 0; i < G_N_ELEMENTS (category_to_sections_map); i++) {
+		if (g_str_equal (category_to_sections_map[i].category_path, category_path)) {
+			sections = category_to_sections_map[i].sections;
+			break;
 		}
 	}
+
+	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
+		g_autoptr(GPtrArray) snaps = NULL;
+
+		snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE,
+				    sections[i], NULL, cancellable, error);
+		if (snaps == NULL)
+			return FALSE;
+
+		for (guint j = 0; j < snaps->len; j++) {
+			g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j), NULL);
+			gs_app_list_add (list, app);
+		}
+	}
+
 	return TRUE;
 }
 
