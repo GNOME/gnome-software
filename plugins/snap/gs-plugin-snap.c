@@ -563,6 +563,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	g_autoptr(SnapdClient) client = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	GsCategory *category = NULL;
 	const gchar * const *sections = NULL;
 	const gchar * const curated_sections[] = { "featured", NULL };
 	g_autoptr(GError) local_error = NULL;
@@ -578,18 +579,58 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		return;
 	}
 
-	if (query != NULL)
+	if (query != NULL) {
 		is_curated = gs_app_query_get_is_curated (query);
+		category = gs_app_query_get_category (query);
+	}
 
-	/* Currently only support is-curated==GS_APP_QUERY_TRISTATE_TRUE queries. */
-	if (is_curated != GS_APP_QUERY_TRISTATE_TRUE) {
+	/* Currently only support is-curated and category queries (but only one at once).
+	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
+	    gs_app_query_get_n_properties_set (query) != 1 ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
 	}
 
 	/* Work out which sections we’re querying for. */
-	sections = curated_sections;
+	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET) {
+		sections = curated_sections;
+	} else if (category != NULL) {
+		g_autofree gchar *category_path = NULL;
+
+		/*
+		 * Unused categories:
+		 *
+		 * health-and-fitness
+		 * personalisation
+		 * devices-and-iot
+		 * security
+		 * server-and-cloud
+		 * entertainment
+		 */
+		const struct {
+			const gchar *category_path;
+			const gchar *sections[4];
+		} category_to_sections_map[] = {
+			{ "play/featured", { "games", NULL, }},
+			{ "create/featured", { "photo-and-video", "art-and-design", "music-and-video", NULL, }},
+			{ "socialize/featured", { "social", "news-and-weather", NULL, }},
+			{ "work/featured", { "productivity", "finance", "utilities", NULL, }},
+			{ "develop/featured", { "development", NULL, }},
+			{ "learn/featured", { "education", "science", "books-and-reference", NULL, }},
+		};
+
+		category_path = category_build_full_path (category);
+
+		for (gsize i = 0; i < G_N_ELEMENTS (category_to_sections_map); i++) {
+			if (g_str_equal (category_to_sections_map[i].category_path, category_path)) {
+				sections = category_to_sections_map[i].sections;
+				break;
+			}
+		}
+	}
 
 	/* Start a query for each of the sections we’re interested in, keeping a
 	 * counter of pending operations which is initialised to 1 until all
@@ -672,72 +713,6 @@ gs_plugin_snap_list_apps_finish (GsPlugin      *plugin,
                                  GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_category_apps (GsPlugin *plugin,
-			     GsCategory *category,
-			     GsAppList *list,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(SnapdClient) client = NULL;
-	g_autofree gchar *category_path = NULL;
-	const gchar * const *sections = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/*
-	 * Unused categories:
-	 *
-	 * health-and-fitness
-	 * personalisation
-	 * devices-and-iot
-	 * security
-	 * server-and-cloud
-	 * entertainment
-	 */
-	const struct {
-		const gchar *category_path;
-		const gchar *sections[4];
-	} category_to_sections_map[] = {
-		{ "play/featured", { "games", NULL, }},
-		{ "create/featured", { "photo-and-video", "art-and-design", "music-and-video", NULL, }},
-		{ "socialize/featured", { "social", "news-and-weather", NULL, }},
-		{ "work/featured", { "productivity", "finance", "utilities", NULL, }},
-		{ "develop/featured", { "development", NULL, }},
-		{ "learn/featured", { "education", "science", "books-and-reference", NULL, }},
-	};
-
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
-
-	category_path = category_build_full_path (category);
-
-	for (gsize i = 0; i < G_N_ELEMENTS (category_to_sections_map); i++) {
-		if (g_str_equal (category_to_sections_map[i].category_path, category_path)) {
-			sections = category_to_sections_map[i].sections;
-			break;
-		}
-	}
-
-	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
-		g_autoptr(GPtrArray) snaps = NULL;
-
-		snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE,
-				    sections[i], NULL, cancellable, error);
-		if (snaps == NULL)
-			return FALSE;
-
-		for (guint j = 0; j < snaps->len; j++) {
-			g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j), NULL);
-			gs_app_list_add (list, app);
-		}
-	}
-
-	return TRUE;
 }
 
 static void list_installed_apps_cb (GObject      *source_object,
