@@ -271,12 +271,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free)
 
-static gint
-gs_plugin_loader_app_sort_name_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-}
-
 GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
@@ -4065,12 +4059,6 @@ job_process_cb (GTask *task)
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_match_value_cb, NULL);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_name_cb, NULL);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
