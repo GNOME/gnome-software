@@ -623,6 +623,39 @@ gs_app_query_get_filter_func (GsAppQuery *self,
 }
 
 /**
+ * gs_app_query_get_n_properties_set:
+ * @self: a #GsAppQuery
+ *
+ * Get the number of query properties which have been set.
+ *
+ * These are the properties which determine the query results, rather than ones
+ * which control refining the results (#GsAppQuery:refine-flags,
+ * #GsAppQuery:max-results, #GsAppQuery:dedupe-flags, #GsAppQuery:sort-func and
+ * its user data, #GsAppQuery:filter-func and its user data).
+ *
+ * Returns: number of properties set so they will affect query results
+ * Since: 43
+ */
+guint
+gs_app_query_get_n_properties_set (GsAppQuery *self)
+{
+	guint n = 0;
+
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), 0);
+
+	if (self->provides_files != NULL)
+		n++;
+	if (self->released_since != NULL)
+		n++;
+	if (self->is_curated != GS_APP_QUERY_TRISTATE_UNSET)
+		n++;
+	if (self->category != NULL)
+		n++;
+
+	return n;
+}
+
+/**
  * gs_app_query_get_provides_files:
  * @self: a #GsAppQuery
  *
