@@ -680,15 +680,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		{
-			GsPluginCategoryFunc plugin_func = func;
-			ret = plugin_func (plugin,
-					   gs_plugin_job_get_category (helper->plugin_job),
-					   list,
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
@@ -3581,11 +3572,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
 			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
@@ -4099,7 +4085,6 @@ job_process_cb (GTask *task)
 	/* set up a hang handler */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:

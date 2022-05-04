@@ -1467,8 +1467,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_search";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "gs_plugin_add_search_what_provides";
-	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
-		return "gs_plugin_add_category_apps";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
 		return "gs_plugin_add_categories";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
@@ -1527,8 +1525,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "search-provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
 		return "get-categories";
-	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
-		return "get-category-apps";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1591,8 +1587,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_SEARCH_PROVIDES;
 	if (g_strcmp0 (action, "get-categories") == 0)
 		return GS_PLUGIN_ACTION_GET_CATEGORIES;
-	if (g_strcmp0 (action, "get-category-apps") == 0)
-		return GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
 	if (g_strcmp0 (action, "file-to-app") == 0)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
