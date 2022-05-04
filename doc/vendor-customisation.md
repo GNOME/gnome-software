@@ -75,7 +75,7 @@ Featured apps and Editor’s Choice
 
 There are several ways to promote and highlight specific applications in GNOME
 Software. On the overview page, there’s a carousel of featured applications
-(`featured_carousel`), and an “Editor’s Choice” section (`box_popular`). Both of
+(`featured_carousel`), and an “Editor’s Choice” section (`box_curated`). Both of
 them highlight curated sets of applications. The same is true on each category
 page: a carousel (`top_carousel`) and an “Editor’s Choice” section
 (`featured_flow_box`) are present.
@@ -174,8 +174,8 @@ the [GNOME Circle](https://circle.gnome.org/). See
 `data/assets/org.gnome.Software.Featured.xml` for this list, and for an example
 of the metainfo XML needed to feature or highlight applications. See
 `data/assets/org.gnome.Software.Popular.xml` for a default hard-coded list of
-popular applications, which is displayed in the “Editor’s Choice” section of the
-overview page.
+curated high quality applications, which is displayed in the “Editor’s Choice”
+section of the overview page.
 
 Pass `-Ddefault_featured_apps=false` when configuring GNOME Software to disable
 the default list of featured applications. Pass `-Dhardcoded_popular=false` to

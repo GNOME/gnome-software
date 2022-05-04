@@ -105,7 +105,7 @@
                                 </child>
 
                                 <child>
-                                  <object class="GtkLabel" id="popular_heading">
+                                  <object class="GtkLabel" id="curated_heading">
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Choice</property>
                                     <property name="margin-top">21</property>
@@ -116,13 +116,13 @@
                                   </object>
                                 </child>
                                 <child>
-                                  <object class="GtkFlowBox" id="box_popular">
+                                  <object class="GtkFlowBox" id="box_curated">
                                     <property name="homogeneous">True</property>
                                     <property name="column-spacing">14</property>
                                     <property name="row-spacing">14</property>
                                     <property name="valign">start</property>
                                     <accessibility>
-                                      <relation name="labelled-by">popular_heading</relation>
+                                      <relation name="labelled-by">curated_heading</relation>
                                     </accessibility>
                                   </object>
                                 </child>
