@@ -1862,23 +1862,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_popular (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_add_popular (flatpak, list, interactive, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
-}
-
-gboolean
 gs_plugin_add_alternates (GsPlugin *plugin,
 			  GsApp *app,
 			  GsAppList *list,
@@ -1952,20 +1935,26 @@ list_apps_thread_cb (GTask        *task,
 	GsPluginListAppsData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	GDateTime *released_since = NULL;
+	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (data->query != NULL)
+	if (data->query != NULL) {
 		released_since = gs_app_query_get_released_since (data->query);
+		is_curated = gs_app_query_get_is_curated (data->query);
+	}
+
 	if (released_since != NULL) {
 		g_autoptr(GDateTime) now = g_date_time_new_now_local ();
 		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
 	}
 
-	/* Currently only support released-since queries. */
-	if (released_since == NULL) {
+	/* Currently only support released-since or is-curated queries (but not both).
+	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((released_since == NULL) == (is_curated == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
@@ -1974,7 +1963,14 @@ list_apps_thread_cb (GTask        *task,
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_add_recent (flatpak, list, age_secs, interactive, cancellable, &local_error)) {
+		if (released_since != NULL &&
+		    !gs_flatpak_add_recent (flatpak, list, age_secs, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		if (is_curated != GS_APP_QUERY_TRISTATE_UNSET &&
+		    !gs_flatpak_add_popular (flatpak, list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
