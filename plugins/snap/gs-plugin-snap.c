@@ -522,9 +522,31 @@ category_build_full_path (GsCategory *category)
 	return g_string_free (g_steal_pointer (&id), FALSE);
 }
 
+typedef struct {
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+	GsAppList *results_list;  /* (owned) (nullable) */
+} ListAppsData;
+
+static void
+list_apps_data_free (ListAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+	g_assert (data->results_list == NULL);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ListAppsData, list_apps_data_free)
+
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
+static void finish_list_apps_op (GTask  *task,
+                                 GError *error);
 
 static void
 gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
@@ -536,13 +558,18 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(ListAppsData) owned_data = NULL;
+	ListAppsData *data;
 	g_autoptr(SnapdClient) client = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	const gchar * const *sections = NULL;
+	const gchar * const curated_sections[] = { "featured", NULL };
 	g_autoptr(GError) local_error = NULL;
 
-	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
-						  cancellable, callback, user_data);
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	data = owned_data = g_new0 (ListAppsData, 1);
+	g_task_set_task_data (task, g_steal_pointer (&owned_data), (GDestroyNotify) list_apps_data_free);
 	g_task_set_source_tag (task, gs_plugin_snap_list_apps_async);
 
 	client = get_client (self, interactive, &local_error);
@@ -561,8 +588,22 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		return;
 	}
 
-	snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
-					 cancellable, list_apps_cb, g_steal_pointer (&task));
+	/* Work out which sections we’re querying for. */
+	sections = curated_sections;
+
+	/* Start a query for each of the sections we’re interested in, keeping a
+	 * counter of pending operations which is initialised to 1 until all
+	 * the operations are started. */
+	data->n_pending_ops = 1;
+	data->results_list = gs_app_list_new ();
+
+	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
+		data->n_pending_ops++;
+		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
+						 cancellable, list_apps_cb, g_object_ref (task));
+	}
+
+	finish_list_apps_op (task, NULL);
 }
 
 static void
@@ -573,28 +614,56 @@ list_apps_cb (GObject      *source_object,
 	SnapdClient *client = SNAPD_CLIENT (source_object);
 	g_autoptr(GTask) task = G_TASK (user_data);
 	GsPluginSnap *self = g_task_get_source_object (task);
-	g_autoptr(GsAppList) list = gs_app_list_new ();
+	ListAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
-	if (snaps == NULL) {
+
+	if (snaps != NULL) {
+		store_snap_cache_update (self, snaps, FALSE);
+
+		for (guint i = 0; i < snaps->len; i++) {
+			SnapdSnap *snap = g_ptr_array_index (snaps, i);
+			g_autoptr(GsApp) app = NULL;
+
+			app = snap_to_app (self, snap, NULL);
+			gs_app_list_add (data->results_list, app);
+		}
+	} else {
 		snapd_error_convert (&local_error);
-		g_task_return_error (task, g_steal_pointer (&local_error));
+	}
+
+	finish_list_apps_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_list_apps_op (GTask  *task,
+                     GError *error)
+{
+	ListAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GsAppList) results_list = NULL;
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while listing apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
 		return;
-	}
 
-	store_snap_cache_update (self, snaps, FALSE);
+	/* Get the results of the parallel ops. */
+	results_list = g_steal_pointer (&data->results_list);
 
-	for (guint i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = g_ptr_array_index (snaps, i);
-		g_autoptr(GsApp) app = NULL;
-
-		app = snap_to_app (self, snap, NULL);
-		gs_app_list_add (list, app);
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_pointer (task, g_steal_pointer (&results_list), g_object_unref);
 }
 
 static GsAppList *
