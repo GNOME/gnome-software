@@ -505,6 +505,23 @@ is_banner_icon_image (const gchar *filename)
 	return g_regex_match_simple ("^banner-icon(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
 }
 
+/* Build a string representation of the IDs of a category and its parents.
+ * For example, `develop/featured`. */
+static gchar *
+category_build_full_path (GsCategory *category)
+{
+	g_autoptr(GString) id = g_string_new ("");
+	GsCategory *c;
+
+	for (c = category; c != NULL; c = gs_category_get_parent (c)) {
+		if (c != category)
+			g_string_prepend (id, "/");
+		g_string_prepend (id, gs_category_get_id (c));
+	}
+
+	return g_string_free (g_steal_pointer (&id), FALSE);
+}
+
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
@@ -597,8 +614,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(SnapdClient) client = NULL;
-	GsCategory *c;
-	g_autoptr(GString) id = NULL;
+	g_autofree gchar *category_path = NULL;
 	const gchar *sections = NULL;
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
@@ -607,12 +623,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	if (client == NULL)
 		return FALSE;
 
-	id = g_string_new ("");
-	for (c = category; c != NULL; c = gs_category_get_parent (c)) {
-		if (c != category)
-			g_string_prepend (id, "/");
-		g_string_prepend (id, gs_category_get_id (c));
-	}
+	category_path = category_build_full_path (category);
 
 	/*
 	 * Unused categories:
@@ -625,17 +636,17 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	 * entertainment
 	 */
 
-	if (strcmp (id->str, "play/featured") == 0)
+	if (strcmp (category_path, "play/featured") == 0)
 		sections = "games";
-	else if (strcmp (id->str, "create/featured") == 0)
+	else if (strcmp (category_path, "create/featured") == 0)
 		sections = "photo-and-video;art-and-design;music-and-video";
-	else if (strcmp (id->str, "socialize/featured") == 0)
+	else if (strcmp (category_path, "socialize/featured") == 0)
 		sections = "social;news-and-weather";
-	else if (strcmp (id->str, "work/featured") == 0)
+	else if (strcmp (category_path, "work/featured") == 0)
 		sections = "productivity;finance;utilities";
-	else if (strcmp (id->str, "develop/featured") == 0)
+	else if (strcmp (category_path, "develop/featured") == 0)
 		sections = "development";
-	else if (strcmp (id->str, "learn/featured") == 0)
+	else if (strcmp (category_path, "learn/featured") == 0)
 		sections = "education;science;books-and-reference";
 
 	if (sections != NULL) {
