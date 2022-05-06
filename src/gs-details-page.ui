@@ -902,6 +902,48 @@
                                 </child>
                               </object>
                             </child>
+                            <child>
+                              <object class="AdwClamp">
+                                <property name="visible" bind-source="box_developer_apps" bind-property="visible" bind-flags="sync-create"/>
+                                <property name="maximum-size">860</property>
+                                <!-- ~⅔ of the maximum size. -->
+                                <property name="tightening-threshold">576</property>
+                                <property name="margin-start">12</property>
+                                <property name="margin-end">12</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="halign">center</property>
+                                    <property name="hexpand">False</property>
+                                    <property name="orientation">vertical</property>
+                                    <property name="valign">start</property>
+                                    <property name="spacing">6</property>
+                                    <child>
+                                      <object class="GtkLabel" id="developer_apps_heading">
+                                        <property name="xalign">0</property>
+                                        <!-- the label is set in the code -->
+                                        <property name="label">Other Apps by ...</property>
+                                        <property name="margin-top">21</property>
+                                        <property name="margin-bottom">6</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFlowBox" id="box_developer_apps">
+                                        <property name="homogeneous">True</property>
+                                        <property name="column-spacing">14</property>
+                                        <property name="row-spacing">14</property>
+                                        <property name="valign">start</property>
+                                        <accessibility>
+                                          <relation name="labelled-by">developer_apps_heading</relation>
+                                        </accessibility>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

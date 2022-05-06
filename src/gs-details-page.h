@@ -35,5 +35,10 @@ void		 gs_details_page_set_is_narrow	(GsDetailsPage	*self,
 						 gboolean	 is_narrow);
 void		 gs_details_page_set_metainfo	(GsDetailsPage *self,
 						 GFile *file);
+gdouble		 gs_details_page_get_vscroll_position
+						(GsDetailsPage *self);
+void		 gs_details_page_set_vscroll_position
+						(GsDetailsPage *self,
+						 gdouble value);
 
 G_END_DECLS
