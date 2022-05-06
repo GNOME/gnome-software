@@ -4007,6 +4007,80 @@ gs_flatpak_search (GsFlatpak *self,
 }
 
 gboolean
+gs_flatpak_search_developer_apps (GsFlatpak *self,
+				  const gchar * const *values,
+				  GsAppList *list,
+				  gboolean interactive,
+				  GCancellable *cancellable,
+				  GError **error)
+{
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(GMutexLocker) app_silo_locker = NULL;
+	g_autoptr(GPtrArray) silos_to_remove = g_ptr_array_new ();
+	GHashTableIter iter;
+	gpointer key, value;
+
+	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
+	if (!gs_appstream_search_developer_apps (self->plugin, self->silo, values, list_tmp,
+						 cancellable, error))
+		return FALSE;
+
+	gs_flatpak_ensure_remote_title (self, interactive, cancellable);
+
+	gs_flatpak_claim_app_list (self, list_tmp, interactive);
+	gs_app_list_add_list (list, list_tmp);
+
+	/* Also search silos from installed apps which were missing from self->silo */
+	app_silo_locker = g_mutex_locker_new (&self->app_silos_mutex);
+	g_hash_table_iter_init (&iter, self->app_silos);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		g_autoptr(XbSilo) app_silo = g_object_ref (value);
+		g_autoptr(GsAppList) app_list_tmp = gs_app_list_new ();
+		const char *app_ref = (char *)key;
+		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+		g_auto(GStrv) split = NULL;
+		FlatpakRefKind kind;
+
+		/* Ignore any silos of apps that have since been removed.
+		 * FIXME: can we use self->installed_refs here? */
+		split = g_strsplit (app_ref, "/", -1);
+		g_assert (g_strv_length (split) == 4);
+		if (g_strcmp0 (split[0], "app") == 0)
+			kind = FLATPAK_REF_KIND_APP;
+		else
+			kind = FLATPAK_REF_KIND_RUNTIME;
+		installed_ref = flatpak_installation_get_installed_ref (gs_flatpak_get_installation (self, interactive),
+									kind,
+									split[1],
+									split[2],
+									split[3],
+									NULL, NULL);
+		if (installed_ref == NULL) {
+			g_ptr_array_add (silos_to_remove, (gpointer) app_ref);
+			continue;
+		}
+
+		if (!gs_appstream_search_developer_apps (self->plugin, app_silo, values, app_list_tmp,
+							 cancellable, error))
+			return FALSE;
+
+		gs_flatpak_claim_app_list (self, app_list_tmp, interactive);
+		gs_app_list_add_list (list, app_list_tmp);
+	}
+
+	for (guint i = 0; i < silos_to_remove->len; i++) {
+		const char *silo = g_ptr_array_index (silos_to_remove, i);
+		g_hash_table_remove (self->app_silos, silo);
+	}
+
+	return TRUE;
+}
+
+gboolean
 gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GsCategory *category,
 			      GsAppList *list,
