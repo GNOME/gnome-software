@@ -1846,6 +1846,7 @@ list_apps_thread_cb (GTask        *task,
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
+	const gchar * const *deployment_featured = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1856,6 +1857,7 @@ list_apps_thread_cb (GTask        *task,
 		is_featured = gs_app_query_get_is_featured (data->query);
 		category = gs_app_query_get_category (data->query);
 		is_installed = gs_app_query_get_is_installed (data->query);
+		deployment_featured = gs_app_query_get_deployment_featured (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1869,7 +1871,8 @@ list_apps_thread_cb (GTask        *task,
 	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
 	     is_featured == GS_APP_QUERY_TRISTATE_UNSET &&
 	     category == NULL &&
-	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
+	     deployment_featured == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1908,6 +1911,12 @@ list_apps_thread_cb (GTask        *task,
 
 		if (is_installed != GS_APP_QUERY_TRISTATE_UNSET &&
 		    !gs_flatpak_add_installed (flatpak, list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		if (deployment_featured != NULL &&
+		    !gs_flatpak_add_deployment_featured (flatpak, list, interactive, deployment_featured, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
