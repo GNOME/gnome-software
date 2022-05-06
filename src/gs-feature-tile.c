@@ -544,7 +544,7 @@ gs_feature_tile_refresh (GsAppTile *self)
 	case GS_APP_STATE_UPDATABLE_LIVE:
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
-					_("Installed"));
+					C_("Single app", "Installed"));
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_INSTALLING:

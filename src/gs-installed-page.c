@@ -706,7 +706,7 @@ gs_installed_page_get_property (GObject    *object,
 		break;
 	case PROP_TITLE:
 		/* Translators: This is in the context of a list of apps which are installed on the system. */
-		g_value_set_string (value, _("Installed"));
+		g_value_set_string (value, C_("List of installed apps", "Installed"));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
