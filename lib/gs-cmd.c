@@ -660,6 +660,33 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 3 && g_strcmp0 (argv[1], "deployment-featured") == 0) {
+		g_auto(GStrv) split = g_strsplit (argv[2], ",", -1);
+		for (i = 0; i < repeat; i++) {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autoptr(GsAppQuery) query = NULL;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+
+			if (list != NULL)
+				g_object_unref (list);
+
+			query = gs_app_query_new ("deployment-featured", split,
+						  "refine-flags", self->refine_flags,
+						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID,
+						  "max-results", self->max_results,
+						  NULL);
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
+							     NULL, &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "recent") == 0) {
 		if (cache_age_secs == 0)
 			cache_age_secs = 60 * 60 * 24 * 60;
