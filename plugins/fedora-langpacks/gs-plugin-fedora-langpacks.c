@@ -70,10 +70,22 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginFedoraLangpacks *self = GS_PLUGIN_FEDORA_LANGPACKS (plugin);
+	gchar *separator;
 	const gchar *language_code;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *langpack_pkgname = NULL;
 	g_auto(GStrv) language_region = NULL;
+
+	/* This plugin may receive user locale in the form as documented in `man 3 setlocale`:
+	 *
+	 * language[_territory][.codeset][@modifier]
+	 *
+	 * e.g. `ja_JP.UTF-8` or `en_GB.iso88591` or `uz_UZ.utf8@cyrillic` or `de_DE@euro`
+	 * Get the locale without codeset and modifier as required for langpacks.
+	 */
+	separator = strpbrk (locale, ".@");
+	if (separator != NULL)
+		*separator = '\0';
 
 	if (g_strrstr (locale, "_") != NULL &&
 	    !g_hash_table_lookup (self->locale_langpack_map, locale)) {
