@@ -180,3 +180,35 @@ section of the overview page.
 Pass `-Ddefault_featured_apps=false` when configuring GNOME Software to disable
 the default list of featured applications. Pass `-Dhardcoded_curated=false` to
 disable the default list of “Editor’s Choice” applications.
+
+Deployment Featured Apps
+------------------------
+
+Deployments can feature their own applications, which will be shown in the Explore
+page in its own section. To have the section shown, two files need to be provided.
+The number of deployment-featured apps is limited in the UI, and if not enough
+deployment-featured apps are found, then the section will not be shown at all.
+
+The first file is `org.gnome.Software.DeploymentFeatured.xml`, which works similarly
+to `org.gnome.Software.Featured.xml` and should be saved beside it in an appstream
+directory. It sets the `GnomeSoftware::DeploymentFeatured` key on apps which should
+be featured for this distribution or deployment. The value of this key is a string
+containing the deployment name as an identifier.
+
+The second file is `deployment-featured.ini`, which contains a human-readable title and
+the selector for the section. The title is a localized key, and is used to set the heading
+for the section on the Explore page. The selector defines which apps should be picked.
+It is a semicolon-separated list of `GnomeSoftware::DeploymentFeatured` key values, thus
+the deployment can feature apps from zero or more vendors.
+
+The `deployment-featured.ini` file should be saved in one of the `sysconfdir`, system
+config dirs or system data dirs. They are checked, in that order, for existence of
+the `gnome-software/deployment-featured.ini` file. The first directory containing
+it will be used. The relevant file names are `/etc/xdg/gnome-software/deployment-featured.ini`,
+`/usr/local/share/gnome-software/deployment-featured.ini` and
+`/usr/share/gnome-software/deployment-featured.ini`.
+
+Any changes to these files, including adding or removing them, will only be noticed
+when gnome-software is restarted.
+
+Example files can be found in the `contrib/` directory.
