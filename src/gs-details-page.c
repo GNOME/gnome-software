@@ -973,6 +973,33 @@ gs_details_page_app_tile_clicked (GsAppTile *tile,
 	g_signal_emit (self, signals[SIGNAL_APP_CLICKED], 0, app);
 }
 
+/* Consider app IDs with and without the ".desktop" suffix being the same app */
+static gboolean
+gs_details_page_app_id_equal (GsApp *app1,
+			      GsApp *app2)
+{
+	const gchar *id1, *id2;
+
+	id1 = gs_app_get_id (app1);
+	id2 = gs_app_get_id (app2);
+	if (g_strcmp0 (id1, id2) == 0)
+		return TRUE;
+
+	if (id1 == NULL || id2 == NULL)
+		return FALSE;
+
+	if (g_str_has_suffix (id1, ".desktop")) {
+		return !g_str_has_suffix (id2, ".desktop") &&
+			strlen (id1) == strlen (id2) + 8 /* strlen (".desktop") */ &&
+			g_str_has_prefix (id1, id2);
+	}
+
+	return g_str_has_suffix (id2, ".desktop") &&
+		!g_str_has_suffix (id1, ".desktop") &&
+		strlen (id2) == strlen (id1) + 8 /* strlen (".desktop") */ &&
+		g_str_has_prefix (id2, id1);
+}
+
 static void
 gs_details_page_search_developer_apps_cb (GObject *source_object,
 					  GAsyncResult *result,
@@ -999,7 +1026,7 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (app != self->app && g_strcmp0 (gs_app_get_id (app), gs_app_get_id (self->app)) != 0) {
+		if (app != self->app && !gs_details_page_app_id_equal (app, self->app)) {
 			GtkWidget *tile = gs_summary_tile_new (app);
 			g_signal_connect (tile, "clicked", G_CALLBACK (gs_details_page_app_tile_clicked), self);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->box_developer_apps), tile, -1);
