@@ -40,6 +40,10 @@
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4
 
+/* How many other developer apps can be shown; should be divisible by 3 and 2,
+   to catch full width and smaller width without bottom gap */
+#define N_DEVELOPER_APPS 18
+
 #define GS_DETAILS_PAGE_REFINE_FLAGS	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS | \
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES | \
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING | \
@@ -977,7 +981,7 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) local_error = NULL;
-	gboolean any_added = FALSE;
+	guint n_added = 0;
 
 	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, &local_error);
 	if (list == NULL) {
@@ -1000,11 +1004,13 @@ gs_details_page_search_developer_apps_cb (GObject *source_object,
 			g_signal_connect (tile, "clicked", G_CALLBACK (gs_details_page_app_tile_clicked), self);
 			gtk_flow_box_insert (GTK_FLOW_BOX (self->box_developer_apps), tile, -1);
 
-			any_added = TRUE;
+			n_added++;
+			if (n_added == N_DEVELOPER_APPS)
+				break;
 		}
 	}
 
-	gtk_widget_set_visible (self->box_developer_apps, any_added);
+	gtk_widget_set_visible (self->box_developer_apps, n_added > 0);
 }
 
 static void
@@ -1109,7 +1115,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 			names[0] = self->last_developer_name;
 			query = gs_app_query_new ("developers", names,
-						  "max-results", 18,
+						  "max-results", N_DEVELOPER_APPS * 3, /* Ask for more, some can be skipped */
 						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						  NULL);
