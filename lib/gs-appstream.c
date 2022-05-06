@@ -1771,20 +1771,18 @@ gs_appstream_add_alternates (XbSilo *silo,
 	return TRUE;
 }
 
-gboolean
-gs_appstream_add_featured (XbSilo *silo,
-			   GsAppList *list,
-			   GCancellable *cancellable,
-			   GError **error)
+static gboolean
+gs_appstream_add_featured_with_query (XbSilo *silo,
+				      const gchar *query,
+				      GsAppList *list,
+				      GCancellable *cancellable,
+				      GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	/* find out how many packages are in each category */
-	array = xb_silo_query (silo,
-			       "components/component/custom/value[@key='GnomeSoftware::FeatureTile']/../..|"
-			       "components/component/custom/value[@key='GnomeSoftware::FeatureTile-css']/../..",
-			       0, &error_local);
+	array = xb_silo_query (silo, query, 0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
@@ -1804,6 +1802,39 @@ gs_appstream_add_featured (XbSilo *silo,
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
+}
+
+gboolean
+gs_appstream_add_featured (XbSilo *silo,
+			   GsAppList *list,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	const gchar *query = "components/component/custom/value[@key='GnomeSoftware::FeatureTile']/../..|"
+			     "components/component/custom/value[@key='GnomeSoftware::FeatureTile-css']/../..";
+	return gs_appstream_add_featured_with_query (silo, query, list, cancellable, error);
+}
+
+gboolean
+gs_appstream_add_deployment_featured (XbSilo *silo,
+				      const gchar * const *deployments,
+				      GsAppList *list,
+				      GCancellable *cancellable,
+				      GError **error)
+{
+	g_autoptr(GString) query = g_string_new (NULL);
+	g_return_val_if_fail (deployments != NULL, FALSE);
+	for (guint ii = 0; deployments[ii] != NULL; ii++) {
+		g_autofree gchar *escaped = xb_string_escape (deployments[ii]);
+		if (escaped != NULL && *escaped != '\0') {
+			xb_string_append_union (query,
+				"components/component/custom/value[@key='GnomeSoftware::DeploymentFeatured'][text()='%s']/../..",
+				escaped);
+		}
+	}
+	if (!query->len)
+		return TRUE;
+	return gs_appstream_add_featured_with_query (silo, query->str, list, cancellable, error);
 }
 
 gboolean
