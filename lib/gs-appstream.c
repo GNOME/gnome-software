@@ -1389,32 +1389,24 @@ gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, const g
 	return matches_sum;
 }
 
-gboolean
-gs_appstream_search (GsPlugin *plugin,
-		     XbSilo *silo,
-		     const gchar * const *values,
-		     GsAppList *list,
-		     GCancellable *cancellable,
-		     GError **error)
+typedef struct {
+	AsSearchTokenMatch	match_value;
+	const gchar		*xpath;
+} Query;
+
+static gboolean
+gs_appstream_do_search (GsPlugin *plugin,
+			XbSilo *silo,
+			const gchar * const *values,
+			const Query queries[],
+			GsAppList *list,
+			GCancellable *cancellable,
+			GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
-	const struct {
-		AsSearchTokenMatch	match_value;
-		const gchar		*xpath;
-	} queries[] = {
-		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_NAME,	"name[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ID,	"id[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ID,	"launchable[text()~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
-		{ AS_SEARCH_TOKEN_MATCH_NONE,	NULL }
-	};
 
 	/* add some weighted queries */
 	for (guint i = 0; queries[i].xpath != NULL; i++) {
@@ -1480,6 +1472,46 @@ gs_appstream_search (GsPlugin *plugin,
 	}
 	g_debug ("search took %fms", g_timer_elapsed (timer, NULL) * 1000);
 	return TRUE;
+}
+
+gboolean
+gs_appstream_search (GsPlugin *plugin,
+		     XbSilo *silo,
+		     const gchar * const *values,
+		     GsAppList *list,
+		     GCancellable *cancellable,
+		     GError **error)
+{
+	const Query queries[] = {
+		{ AS_SEARCH_TOKEN_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"summary[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NAME,	"name[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ID,	"id[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ID,	"launchable[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NONE,	NULL }
+	};
+
+	return gs_appstream_do_search (plugin, silo, values, queries, list, cancellable, error);
+}
+
+gboolean
+gs_appstream_search_developer_apps (GsPlugin *plugin,
+				    XbSilo *silo,
+				    const gchar * const *values,
+				    GsAppList *list,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	const Query queries[] = {
+		{ AS_SEARCH_TOKEN_MATCH_PKGNAME,	"developer_name[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_SUMMARY,	"project_group[text()~=stem(?)]" },
+		{ AS_SEARCH_TOKEN_MATCH_NONE,		NULL }
+	};
+
+	return gs_appstream_do_search (plugin, silo, values, queries, list, cancellable, error);
 }
 
 gboolean
