@@ -35,15 +35,15 @@ gitlab-changelog.py GNOME/gnome-software ${previous_version}..
 ```
 
 Edit this down to just the user visible changes, and list them in
-`data/appdata/org.gnome.Software.appdata.xml.in`. User visible changes are ones
+`data/metainfo/org.gnome.Software.metainfo.xml.in`. User visible changes are ones
 which the average user might be interested to know about, such as a fix for an
 impactful bug, a UI change, or a feature change.
 
-You can get review of your appdata changes from other co-maintainers if you wish.
+You can get review of your metainfo changes from other co-maintainers if you wish.
 
 Generate `NEWS` file:
 ```
-appstreamcli metainfo-to-news ./data/appdata/org.gnome.Software.appdata.xml.in ./NEWS
+appstreamcli metainfo-to-news ./data/metainfo/org.gnome.Software.metainfo.xml.in ./NEWS
 ```
 
 Commit the release:

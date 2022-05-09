@@ -1,4 +1,4 @@
-subdir('appdata')
+subdir('metainfo')
 subdir('icons')
 subdir('assets')
 
