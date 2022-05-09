@@ -541,53 +541,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-static void
-gs_plugin_dummy_list_installed_apps_async (GsPlugin                       *plugin,
-                                           GsPluginListInstalledAppsFlags  flags,
-                                           GCancellable                   *cancellable,
-                                           GAsyncReadyCallback             callback,
-                                           gpointer                        user_data)
-{
-	const gchar *packages[] = { "zeus", "zeus-common", NULL };
-	const gchar *app_ids[] = { "Uninstall Zeus.desktop", NULL };
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GTask) task = NULL;
-	guint i;
-
-	task = g_task_new (plugin, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_dummy_list_installed_apps_async);
-
-	/* add all packages */
-	for (i = 0; packages[i] != NULL; i++) {
-		g_autoptr(GsApp) app = gs_app_new (NULL);
-		gs_app_add_source (app, packages[i]);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
-		gs_app_set_origin (app, "london-west");
-		gs_app_set_management_plugin (app, plugin);
-		gs_app_list_add (list, app);
-	}
-
-	/* add all app-ids */
-	for (i = 0; app_ids[i] != NULL; i++) {
-		g_autoptr(GsApp) app = gs_app_new (app_ids[i]);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-		gs_app_set_management_plugin (app, plugin);
-		gs_app_list_add (list, app);
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-}
-
-static GsAppList *
-gs_plugin_dummy_list_installed_apps_finish (GsPlugin      *plugin,
-                                            GAsyncResult  *result,
-                                            GError       **error)
-{
-	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -850,6 +803,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	guint max_results = 0;
 	GsCategory *category = NULL;
+	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
@@ -859,13 +813,18 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		is_curated = gs_app_query_get_is_curated (query);
 		max_results = gs_app_query_get_max_results (query);
 		category = gs_app_query_get_category (query);
+		is_installed = gs_app_query_get_is_installed (query);
 	}
 
-	/* Currently only support released-since, is-curated and category queries (but only one at once).
-	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((released_since == NULL && is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
-	    gs_app_query_get_n_properties_set (query) != 1 ||
-	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
+	/* Currently only support a subset of query properties, and only one set at once.
+	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((released_since == NULL &&
+	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
+	     category == NULL &&
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
@@ -921,6 +880,31 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 		gs_app_set_management_plugin (app, plugin);
 		gs_app_list_add (list, app);
+	}
+
+	if (is_installed != GS_APP_QUERY_TRISTATE_UNSET) {
+		const gchar *packages[] = { "zeus", "zeus-common", NULL };
+		const gchar *app_ids[] = { "Uninstall Zeus.desktop", NULL };
+
+		/* add all packages */
+		for (gsize i = 0; packages[i] != NULL; i++) {
+			g_autoptr(GsApp) app = gs_app_new (NULL);
+			gs_app_add_source (app, packages[i]);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
+			gs_app_set_origin (app, "london-west");
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_list_add (list, app);
+		}
+
+		/* add all app-ids */
+		for (gsize i = 0; app_ids[i] != NULL; i++) {
+			g_autoptr(GsApp) app = gs_app_new (app_ids[i]);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+			gs_app_set_management_plugin (app, plugin);
+			gs_app_list_add (list, app);
+		}
 	}
 
 	g_task_return_pointer (task, g_steal_pointer (&list), (GDestroyNotify) g_object_unref);
@@ -1109,8 +1093,6 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->setup_finish = gs_plugin_dummy_setup_finish;
 	plugin_class->refine_async = gs_plugin_dummy_refine_async;
 	plugin_class->refine_finish = gs_plugin_dummy_refine_finish;
-	plugin_class->list_installed_apps_async = gs_plugin_dummy_list_installed_apps_async;
-	plugin_class->list_installed_apps_finish = gs_plugin_dummy_list_installed_apps_finish;
 	plugin_class->list_apps_async = gs_plugin_dummy_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_dummy_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_dummy_refresh_metadata_async;
