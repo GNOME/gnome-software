@@ -505,34 +505,87 @@ is_banner_icon_image (const gchar *filename)
 	return g_regex_match_simple ("^banner-icon(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
 }
 
-gboolean
-gs_plugin_add_popular (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
+static void list_apps_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data);
+
+static void
+gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
+                                GsAppQuery            *query,
+                                GsPluginListAppsFlags  flags,
+                                GCancellable          *cancellable,
+                                GAsyncReadyCallback    callback,
+                                gpointer               user_data)
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
+	g_autoptr(GTask) task = NULL;
 	g_autoptr(SnapdClient) client = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	g_autoptr(GError) local_error = NULL;
+
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_snap_list_apps_async);
+
+	client = get_client (self, interactive, &local_error);
+	if (client == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (query != NULL)
+		is_curated = gs_app_query_get_is_curated (query);
+
+	/* Currently only support is-curated==GS_APP_QUERY_TRISTATE_TRUE queries. */
+	if (is_curated != GS_APP_QUERY_TRISTATE_TRUE) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
+					 cancellable, list_apps_cb, g_steal_pointer (&task));
+}
+
+static void
+list_apps_cb (GObject      *source_object,
+              GAsyncResult *result,
+              gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = G_TASK (user_data);
+	GsPluginSnap *self = g_task_get_source_object (task);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
 	g_autoptr(GPtrArray) snaps = NULL;
-	guint i;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
 
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
+	if (snaps == NULL) {
+		snapd_error_convert (&local_error);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
-	snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured",
-			    NULL, cancellable, error);
-	if (snaps == NULL)
-		return FALSE;
+	store_snap_cache_update (self, snaps, FALSE);
 
-	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i), NULL);
+	for (guint i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = g_ptr_array_index (snaps, i);
+		g_autoptr(GsApp) app = NULL;
+
+		app = snap_to_app (self, snap, NULL);
 		gs_app_list_add (list, app);
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_snap_list_apps_finish (GsPlugin      *plugin,
+                                 GAsyncResult  *result,
+                                 GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -1685,6 +1738,8 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->refine_finish = gs_plugin_snap_refine_finish;
 	plugin_class->list_installed_apps_async = gs_plugin_snap_list_installed_apps_async;
 	plugin_class->list_installed_apps_finish = gs_plugin_snap_list_installed_apps_finish;
+	plugin_class->list_apps_async = gs_plugin_snap_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
 }
 
 GType

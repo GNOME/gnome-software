@@ -67,7 +67,4 @@ with a blocklist rule in the AppStream builder.
 If you are a vendor, or a system distributor and just want to increase the
 number of kudos for your pet proprietary application that's essential to
 business function, a good kudo to manually add would be `FeaturedRecommended`,
-although, perhaps adding the desktop ID to the GSettings key
-`org.gnome.software.popular-overrides` would be a better idea.
-Adding application IDs to this key allows you to show any business-critical
-applications prominently in the GNOME Software application.
+or `GnomeSoftware::popular`.

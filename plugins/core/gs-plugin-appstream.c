@@ -1486,22 +1486,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_popular (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_popular (self->silo, list, cancellable, error);
-}
-
-gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
 			GsAppList *list,
 			GCancellable *cancellable,
@@ -1555,20 +1539,26 @@ list_apps_thread_cb (GTask        *task,
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GsPluginListAppsData *data = task_data;
 	GDateTime *released_since = NULL;
+	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
-	if (data->query != NULL)
+	if (data->query != NULL) {
 		released_since = gs_app_query_get_released_since (data->query);
+		is_curated = gs_app_query_get_is_curated (data->query);
+	}
+
 	if (released_since != NULL) {
 		g_autoptr(GDateTime) now = g_date_time_new_now_utc ();
 		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
 	}
 
-	/* Currently only support released-since queries. */
-	if (released_since == NULL) {
+	/* Currently only support released-since or is-curated queries (but not both).
+	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((released_since == NULL) == (is_curated == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
@@ -1582,8 +1572,15 @@ list_apps_thread_cb (GTask        *task,
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
-	if (!gs_appstream_add_recent (GS_PLUGIN (self), self->silo, list, age_secs,
+	if (released_since != NULL &&
+	    !gs_appstream_add_recent (GS_PLUGIN (self), self->silo, list, age_secs,
 				      cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET &&
+	    !gs_appstream_add_popular (self->silo, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}

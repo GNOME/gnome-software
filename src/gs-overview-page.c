@@ -35,7 +35,7 @@ struct _GsOverviewPage
 	GsShell			*shell;
 	gint			 action_cnt;
 	gboolean		 loading_featured;
-	gboolean		 loading_popular;
+	gboolean		 loading_curated;
 	gboolean		 loading_recent;
 	gboolean		 loading_categories;
 	gboolean		 empty;
@@ -48,12 +48,12 @@ struct _GsOverviewPage
 	GtkWidget		*label_third_party;
 	GtkWidget		*featured_carousel;
 	GtkWidget		*box_overview;
-	GtkWidget		*box_popular;
+	GtkWidget		*box_curated;
 	GtkWidget		*box_recent;
 	GtkWidget		*flowbox_categories;
 	GtkWidget		*flowbox_iconless_categories;
 	GtkWidget		*iconless_categories_heading;
-	GtkWidget		*popular_heading;
+	GtkWidget		*curated_heading;
 	GtkWidget		*recent_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
@@ -115,12 +115,12 @@ gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
 	self->loading_categories = FALSE;
 	self->loading_featured = FALSE;
-	self->loading_popular = FALSE;
+	self->loading_curated = FALSE;
 	self->loading_recent = FALSE;
 }
 
 static void
-gs_overview_page_get_popular_cb (GObject *source_object,
+gs_overview_page_get_curated_cb (GObject *source_object,
                                  GAsyncResult *res,
                                  gpointer user_data)
 {
@@ -132,37 +132,37 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
-	/* get popular apps */
+	/* get curated apps */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to get popular apps: %s", error->message);
+			g_warning ("failed to get curated apps: %s", error->message);
 		goto out;
 	}
 
 	/* not enough to show */
 	if (gs_app_list_length (list) < N_TILES) {
-		g_warning ("Only %u apps for popular list, hiding",
+		g_warning ("Only %u apps for curated list, hiding",
 		           gs_app_list_length (list));
-		gtk_widget_set_visible (self->box_popular, FALSE);
-		gtk_widget_set_visible (self->popular_heading, FALSE);
+		gtk_widget_set_visible (self->box_curated, FALSE);
+		gtk_widget_set_visible (self->curated_heading, FALSE);
 		goto out;
 	}
 
 	gs_app_list_randomize (list);
 
-	gs_widget_remove_all (self->box_popular, (GsRemoveFunc) gtk_flow_box_remove);
+	gs_widget_remove_all (self->box_curated, (GsRemoveFunc) gtk_flow_box_remove);
 
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
-		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_curated), tile, -1);
 	}
-	gtk_widget_set_visible (self->box_popular, TRUE);
-	gtk_widget_set_visible (self->popular_heading, TRUE);
+	gtk_widget_set_visible (self->box_curated, TRUE);
+	gtk_widget_set_visible (self->curated_heading, TRUE);
 
 	self->empty = FALSE;
 
@@ -513,22 +513,27 @@ gs_overview_page_load (GsOverviewPage *self)
 		self->action_cnt++;
 	}
 
-	if (!self->loading_popular) {
+	if (!self->loading_curated) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		g_autoptr(GsAppQuery) query = NULL;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
-		self->loading_popular = TRUE;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-						 "max-results", 20,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
-								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-						 NULL);
+		query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
+					  "max-results", 20,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  NULL);
+
+		plugin_job = gs_plugin_job_list_apps_new (query, flags);
+
+		self->loading_curated = TRUE;
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
-						    gs_overview_page_get_popular_cb,
+						    gs_overview_page_get_curated_cb,
 						    self);
 		self->action_cnt++;
 	}
@@ -692,7 +697,7 @@ gs_overview_page_setup (GsPage *page,
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_summary_tile_new (NULL);
-		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_popular), tile, -1);
+		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_curated), tile, -1);
 	}
 
 	for (i = 0; i < N_TILES; i++) {
@@ -806,12 +811,12 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, label_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, featured_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_overview);
-	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_popular);
+	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_curated);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_categories);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, flowbox_iconless_categories);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, iconless_categories_heading);
-	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, popular_heading);
+	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, curated_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, recent_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child (widget_class, GsOverviewPage, stack_overview);

@@ -19,6 +19,27 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsAppQueryTristate:
+ * @GS_APP_QUERY_TRISTATE_UNSET: Value is unset.
+ * @GS_APP_QUERY_TRISTATE_FALSE: False. Equal in value to %FALSE.
+ * @GS_APP_QUERY_TRISTATE_TRUE: True. Equal in value to %TRUE.
+ *
+ * A type for storing a boolean value which can also have an ‘unknown’ or
+ * ‘unset’ state.
+ *
+ * Within #GsAppQuery this is used for boolean query properties which are unset
+ * by default so that they don’t affect the query.
+ *
+ * Since: 43
+ */
+typedef enum
+{
+	GS_APP_QUERY_TRISTATE_UNSET = -1,
+	GS_APP_QUERY_TRISTATE_FALSE = 0,
+	GS_APP_QUERY_TRISTATE_TRUE = 1,
+} GsAppQueryTristate;
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
@@ -36,5 +57,6 @@ GsAppListFilterFunc	 gs_app_query_get_filter_func	(GsAppQuery *self,
 
 const gchar * const	*gs_app_query_get_provides_files (GsAppQuery *self);
 GDateTime		*gs_app_query_get_released_since (GsAppQuery *self);
+GsAppQueryTristate	 gs_app_query_get_is_curated	 (GsAppQuery *self);
 
 G_END_DECLS

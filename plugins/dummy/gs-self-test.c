@@ -575,37 +575,42 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list1 = NULL;
 	g_autoptr(GsAppList) list2 = NULL;
-	const gchar *popular_override = "chiron.desktop,zeus.desktop";
-	g_auto(GStrv) apps = NULL;
+	const gchar *expected_apps2[] = { "chiron.desktop", "zeus.desktop", NULL };
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 
-	/* use the plugin's add_popular function */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	/* use the plugin's default curated list, indicated by setting max-results=5 */
+	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
+				  "max-results", 5,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list1 != NULL);
 	g_assert_cmpint (gs_app_list_length (list1), ==, 1);
-
-	/* override the popular list (do not use the add_popular function) */
-	g_setenv ("GNOME_SOFTWARE_POPULAR", popular_override, TRUE);
 	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	g_object_unref (query);
+
+	/* use the plugin’s second list, indicated by setting max-results=6 */
+	query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
+				  "max-results", 6,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list2 != NULL);
 
-	apps = g_strsplit (popular_override, ",", 0);
-	g_assert_cmpint (gs_app_list_length (list2), ==, g_strv_length (apps));
+	g_assert_cmpint (gs_app_list_length (list2), ==, g_strv_length ((gchar **) expected_apps2));
 
 	for (guint i = 0; i < gs_app_list_length (list2); ++i) {
 		GsApp *app = gs_app_list_index (list2, i);
-		g_assert (g_strv_contains ((const gchar * const *) apps, gs_app_get_id (app)));
+		g_assert (g_strv_contains (expected_apps2, gs_app_get_id (app)));
 	}
 }
 
@@ -761,7 +766,6 @@ main (int argc, char **argv)
 	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
-	g_setenv ("GNOME_SOFTWARE_POPULAR", "", TRUE);
 
 	/* Use a common cache directory for all tests, since the appstream
 	 * plugin uses it and cannot be reinitialised for each test. */

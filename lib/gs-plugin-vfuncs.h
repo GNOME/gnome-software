@@ -224,32 +224,6 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_popular:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get popular applications that should be featured on the main page as
- * "Editors Picks".
- * This is expected to be a curated list of applications that are high quality
- * and feature-complete.
- *
- * The returned list of popular applications are not sorted, but each #GsApp has
- * to be valid, for instance having a known state and a valid icon.
- * If an insufficient number of applications are added by plugins then the
- * section on the overview shell may be hidden.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_featured:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
