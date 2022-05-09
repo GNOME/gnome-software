@@ -204,26 +204,6 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_category_apps:
- * @plugin: a #GsPlugin
- * @category: a #GsCategory
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get all the applications that match a specific category.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
-							 GsCategory	*category,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_featured:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList

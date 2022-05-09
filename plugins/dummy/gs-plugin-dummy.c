@@ -836,27 +836,6 @@ gs_plugin_dummy_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_add_category_apps (GsPlugin *plugin,
-			     GsCategory *category,
-			     GsAppList *list,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
-	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
-	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	gs_app_add_icon (app, icon);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_list_add (list, app);
-	return TRUE;
-}
-
 static void
 gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
                                  GsAppQuery            *query,
@@ -870,6 +849,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	guint max_results = 0;
+	GsCategory *category = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
@@ -878,11 +858,13 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		released_since = gs_app_query_get_released_since (query);
 		is_curated = gs_app_query_get_is_curated (query);
 		max_results = gs_app_query_get_max_results (query);
+		category = gs_app_query_get_category (query);
 	}
 
-	/* Currently only support released-since or is-curated queries (but not both).
+	/* Currently only support released-since, is-curated and category queries (but only one at once).
 	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((released_since == NULL) == (is_curated == GS_APP_QUERY_TRISTATE_UNSET) ||
+	if ((released_since == NULL && is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
+	    gs_app_query_get_n_properties_set (query) != 1 ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -925,6 +907,20 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 					     gs_plugin_get_name (plugin));
 			gs_app_list_add (list, app1);
 		}
+	}
+
+	if (category != NULL) {
+		g_autoptr(GIcon) icon = g_themed_icon_new ("chiron.desktop");
+		g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		gs_app_add_icon (app, icon);
+		gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+		gs_app_set_management_plugin (app, plugin);
+		gs_app_list_add (list, app);
 	}
 
 	g_task_return_pointer (task, g_steal_pointer (&list), (GDestroyNotify) g_object_unref);

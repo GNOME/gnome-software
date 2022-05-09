@@ -505,9 +505,48 @@ is_banner_icon_image (const gchar *filename)
 	return g_regex_match_simple ("^banner-icon(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
 }
 
+/* Build a string representation of the IDs of a category and its parents.
+ * For example, `develop/featured`. */
+static gchar *
+category_build_full_path (GsCategory *category)
+{
+	g_autoptr(GString) id = g_string_new ("");
+	GsCategory *c;
+
+	for (c = category; c != NULL; c = gs_category_get_parent (c)) {
+		if (c != category)
+			g_string_prepend (id, "/");
+		g_string_prepend (id, gs_category_get_id (c));
+	}
+
+	return g_string_free (g_steal_pointer (&id), FALSE);
+}
+
+typedef struct {
+	/* In-progress data. */
+	guint n_pending_ops;
+	GError *saved_error;  /* (owned) (nullable) */
+	GsAppList *results_list;  /* (owned) (nullable) */
+} ListAppsData;
+
+static void
+list_apps_data_free (ListAppsData *data)
+{
+	/* Error should have been propagated by now, and all pending ops completed. */
+	g_assert (data->saved_error == NULL);
+	g_assert (data->n_pending_ops == 0);
+	g_assert (data->results_list == NULL);
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (ListAppsData, list_apps_data_free)
+
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
+static void finish_list_apps_op (GTask  *task,
+                                 GError *error);
 
 static void
 gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
@@ -519,13 +558,19 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 {
 	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(ListAppsData) owned_data = NULL;
+	ListAppsData *data;
 	g_autoptr(SnapdClient) client = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	GsCategory *category = NULL;
+	const gchar * const *sections = NULL;
+	const gchar * const curated_sections[] = { "featured", NULL };
 	g_autoptr(GError) local_error = NULL;
 
-	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
-						  cancellable, callback, user_data);
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	data = owned_data = g_new0 (ListAppsData, 1);
+	g_task_set_task_data (task, g_steal_pointer (&owned_data), (GDestroyNotify) list_apps_data_free);
 	g_task_set_source_tag (task, gs_plugin_snap_list_apps_async);
 
 	client = get_client (self, interactive, &local_error);
@@ -534,18 +579,72 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		return;
 	}
 
-	if (query != NULL)
+	if (query != NULL) {
 		is_curated = gs_app_query_get_is_curated (query);
+		category = gs_app_query_get_category (query);
+	}
 
-	/* Currently only support is-curated==GS_APP_QUERY_TRISTATE_TRUE queries. */
-	if (is_curated != GS_APP_QUERY_TRISTATE_TRUE) {
+	/* Currently only support is-curated and category queries (but only one at once).
+	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
+	    gs_app_query_get_n_properties_set (query) != 1 ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
 	}
 
-	snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
-					 cancellable, list_apps_cb, g_steal_pointer (&task));
+	/* Work out which sections we’re querying for. */
+	if (is_curated != GS_APP_QUERY_TRISTATE_UNSET) {
+		sections = curated_sections;
+	} else if (category != NULL) {
+		g_autofree gchar *category_path = NULL;
+
+		/*
+		 * Unused categories:
+		 *
+		 * health-and-fitness
+		 * personalisation
+		 * devices-and-iot
+		 * security
+		 * server-and-cloud
+		 * entertainment
+		 */
+		const struct {
+			const gchar *category_path;
+			const gchar *sections[4];
+		} category_to_sections_map[] = {
+			{ "play/featured", { "games", NULL, }},
+			{ "create/featured", { "photo-and-video", "art-and-design", "music-and-video", NULL, }},
+			{ "socialize/featured", { "social", "news-and-weather", NULL, }},
+			{ "work/featured", { "productivity", "finance", "utilities", NULL, }},
+			{ "develop/featured", { "development", NULL, }},
+			{ "learn/featured", { "education", "science", "books-and-reference", NULL, }},
+		};
+
+		category_path = category_build_full_path (category);
+
+		for (gsize i = 0; i < G_N_ELEMENTS (category_to_sections_map); i++) {
+			if (g_str_equal (category_to_sections_map[i].category_path, category_path)) {
+				sections = category_to_sections_map[i].sections;
+				break;
+			}
+		}
+	}
+
+	/* Start a query for each of the sections we’re interested in, keeping a
+	 * counter of pending operations which is initialised to 1 until all
+	 * the operations are started. */
+	data->n_pending_ops = 1;
+	data->results_list = gs_app_list_new ();
+
+	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
+		data->n_pending_ops++;
+		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
+						 cancellable, list_apps_cb, g_object_ref (task));
+	}
+
+	finish_list_apps_op (task, NULL);
 }
 
 static void
@@ -556,28 +655,56 @@ list_apps_cb (GObject      *source_object,
 	SnapdClient *client = SNAPD_CLIENT (source_object);
 	g_autoptr(GTask) task = G_TASK (user_data);
 	GsPluginSnap *self = g_task_get_source_object (task);
-	g_autoptr(GsAppList) list = gs_app_list_new ();
+	ListAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GPtrArray) snaps = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	snaps = snapd_client_find_section_finish (client, result, NULL, &local_error);
-	if (snaps == NULL) {
+
+	if (snaps != NULL) {
+		store_snap_cache_update (self, snaps, FALSE);
+
+		for (guint i = 0; i < snaps->len; i++) {
+			SnapdSnap *snap = g_ptr_array_index (snaps, i);
+			g_autoptr(GsApp) app = NULL;
+
+			app = snap_to_app (self, snap, NULL);
+			gs_app_list_add (data->results_list, app);
+		}
+	} else {
 		snapd_error_convert (&local_error);
-		g_task_return_error (task, g_steal_pointer (&local_error));
+	}
+
+	finish_list_apps_op (task, g_steal_pointer (&local_error));
+}
+
+/* @error is (transfer full) if non-%NULL */
+static void
+finish_list_apps_op (GTask  *task,
+                     GError *error)
+{
+	ListAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GsAppList) results_list = NULL;
+	g_autoptr(GError) error_owned = g_steal_pointer (&error);
+
+	if (error_owned != NULL && data->saved_error == NULL)
+		data->saved_error = g_steal_pointer (&error_owned);
+	else if (error_owned != NULL)
+		g_debug ("Additional error while listing apps: %s", error_owned->message);
+
+	g_assert (data->n_pending_ops > 0);
+	data->n_pending_ops--;
+
+	if (data->n_pending_ops > 0)
 		return;
-	}
 
-	store_snap_cache_update (self, snaps, FALSE);
+	/* Get the results of the parallel ops. */
+	results_list = g_steal_pointer (&data->results_list);
 
-	for (guint i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = g_ptr_array_index (snaps, i);
-		g_autoptr(GsApp) app = NULL;
-
-		app = snap_to_app (self, snap, NULL);
-		gs_app_list_add (list, app);
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+	if (data->saved_error != NULL)
+		g_task_return_error (task, g_steal_pointer (&data->saved_error));
+	else
+		g_task_return_pointer (task, g_steal_pointer (&results_list), g_object_unref);
 }
 
 static GsAppList *
@@ -586,78 +713,6 @@ gs_plugin_snap_list_apps_finish (GsPlugin      *plugin,
                                  GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_category_apps (GsPlugin *plugin,
-			     GsCategory *category,
-			     GsAppList *list,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(SnapdClient) client = NULL;
-	GsCategory *c;
-	g_autoptr(GString) id = NULL;
-	const gchar *sections = NULL;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
-
-	id = g_string_new ("");
-	for (c = category; c != NULL; c = gs_category_get_parent (c)) {
-		if (c != category)
-			g_string_prepend (id, "/");
-		g_string_prepend (id, gs_category_get_id (c));
-	}
-
-	/*
-	 * Unused categories:
-	 *
-	 * health-and-fitness
-	 * personalisation
-	 * devices-and-iot
-	 * security
-	 * server-and-cloud
-	 * entertainment
-	 */
-
-	if (strcmp (id->str, "play/featured") == 0)
-		sections = "games";
-	else if (strcmp (id->str, "create/featured") == 0)
-		sections = "photo-and-video;art-and-design;music-and-video";
-	else if (strcmp (id->str, "socialize/featured") == 0)
-		sections = "social;news-and-weather";
-	else if (strcmp (id->str, "work/featured") == 0)
-		sections = "productivity;finance;utilities";
-	else if (strcmp (id->str, "develop/featured") == 0)
-		sections = "development";
-	else if (strcmp (id->str, "learn/featured") == 0)
-		sections = "education;science;books-and-reference";
-
-	if (sections != NULL) {
-		g_auto(GStrv) tokens = NULL;
-		int i;
-
-		tokens = g_strsplit (sections, ";", -1);
-		for (i = 0; tokens[i] != NULL; i++) {
-			g_autoptr(GPtrArray) snaps = NULL;
-			guint j;
-
-			snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE,
-					    tokens[i], NULL, cancellable, error);
-			if (snaps == NULL)
-				return FALSE;
-			for (j = 0; j < snaps->len; j++) {
-				g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, j), NULL);
-				gs_app_list_add (list, app);
-			}
-		}
-	}
-	return TRUE;
 }
 
 static void list_installed_apps_cb (GObject      *source_object,

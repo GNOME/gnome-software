@@ -271,12 +271,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free)
 
-static gint
-gs_plugin_loader_app_sort_name_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-}
-
 GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
@@ -683,15 +677,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginCategoriesFunc plugin_func = func;
 			ret = plugin_func (plugin, helper->catlist,
-					   cancellable, &error_local);
-		}
-		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		{
-			GsPluginCategoryFunc plugin_func = func;
-			ret = plugin_func (plugin,
-					   gs_plugin_job_get_category (helper->plugin_job),
-					   list,
 					   cancellable, &error_local);
 		}
 		break;
@@ -3587,11 +3572,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
 			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
@@ -4067,12 +4047,6 @@ job_process_cb (GTask *task)
 						     gs_plugin_loader_app_sort_match_value_cb, NULL);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_name_cb, NULL);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
@@ -4111,7 +4085,6 @@ job_process_cb (GTask *task)
 	/* set up a hang handler */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:

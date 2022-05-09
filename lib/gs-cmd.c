@@ -286,6 +286,14 @@ gs_cmd_self_free (GsCmdSelf *self)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
 
 static gint
+app_sort_name_cb (GsApp    *app1,
+                  GsApp    *app2,
+                  gpointer  user_data)
+{
+	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
+}
+
+static gint
 app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
@@ -710,14 +718,22 @@ main (int argc, char **argv)
 
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autoptr(GsAppQuery) query = NULL;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
-							 "category", category,
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
+
+			query = gs_app_query_new ("category", category,
+						  "refine-flags", self->refine_flags,
+						  "max-results", self->max_results,
+						  "sort-func", app_sort_name_cb,
+						  NULL);
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;

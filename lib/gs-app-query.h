@@ -15,6 +15,7 @@
 #include <gio/gio.h>
 
 #include "gs-app-list.h"
+#include "gs-category.h"
 #include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
@@ -55,8 +56,11 @@ GsAppListSortFunc	 gs_app_query_get_sort_func	(GsAppQuery *self,
 GsAppListFilterFunc	 gs_app_query_get_filter_func	(GsAppQuery *self,
 							 gpointer   *user_data_out);
 
+guint			 gs_app_query_get_n_properties_set (GsAppQuery *self);
+
 const gchar * const	*gs_app_query_get_provides_files (GsAppQuery *self);
 GDateTime		*gs_app_query_get_released_since (GsAppQuery *self);
 GsAppQueryTristate	 gs_app_query_get_is_curated	 (GsAppQuery *self);
+GsCategory		*gs_app_query_get_category	 (GsAppQuery *self);
 
 G_END_DECLS

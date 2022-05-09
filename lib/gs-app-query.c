@@ -74,6 +74,7 @@ struct _GsAppQuery
 	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
 	GDateTime *released_since;  /* (owned) (nullable) */
 	GsAppQueryTristate is_curated;
+	GsCategory *category;  /* (nullable) (owned) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -91,9 +92,10 @@ typedef enum {
 	PROP_PROVIDES_FILES,
 	PROP_RELEASED_SINCE,
 	PROP_IS_CURATED,
+	PROP_CATEGORY,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_IS_CURATED + 1] = { NULL, };
+static GParamSpec *props[PROP_CATEGORY + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -139,6 +141,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_IS_CURATED:
 		g_value_set_enum (value, self->is_curated);
+		break;
+	case PROP_CATEGORY:
+		g_value_set_object (value, self->category);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -220,6 +225,11 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->is_curated == GS_APP_QUERY_TRISTATE_UNSET);
 		self->is_curated = g_value_get_enum (value);
 		break;
+	case PROP_CATEGORY:
+		/* Construct only. */
+		g_assert (self->category == NULL);
+		self->category = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -240,6 +250,8 @@ gs_app_query_dispose (GObject *object)
 		self->filter_user_data_notify (g_steal_pointer (&self->filter_user_data));
 		self->filter_user_data_notify = NULL;
 	}
+
+	g_clear_object (&self->category);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->dispose (object);
 }
@@ -462,6 +474,22 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:category: (nullable)
+	 *
+	 * A category which apps must be in.
+	 *
+	 * If this is %NULL, apps are not filtered by category.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_CATEGORY] =
+		g_param_spec_object ("category", "Category",
+				     "A category which apps must be in.",
+				     GS_TYPE_CATEGORY,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -595,6 +623,39 @@ gs_app_query_get_filter_func (GsAppQuery *self,
 }
 
 /**
+ * gs_app_query_get_n_properties_set:
+ * @self: a #GsAppQuery
+ *
+ * Get the number of query properties which have been set.
+ *
+ * These are the properties which determine the query results, rather than ones
+ * which control refining the results (#GsAppQuery:refine-flags,
+ * #GsAppQuery:max-results, #GsAppQuery:dedupe-flags, #GsAppQuery:sort-func and
+ * its user data, #GsAppQuery:filter-func and its user data).
+ *
+ * Returns: number of properties set so they will affect query results
+ * Since: 43
+ */
+guint
+gs_app_query_get_n_properties_set (GsAppQuery *self)
+{
+	guint n = 0;
+
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), 0);
+
+	if (self->provides_files != NULL)
+		n++;
+	if (self->released_since != NULL)
+		n++;
+	if (self->is_curated != GS_APP_QUERY_TRISTATE_UNSET)
+		n++;
+	if (self->category != NULL)
+		n++;
+
+	return n;
+}
+
+/**
  * gs_app_query_get_provides_files:
  * @self: a #GsAppQuery
  *
@@ -650,4 +711,22 @@ gs_app_query_get_is_curated (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_FALSE);
 
 	return self->is_curated;
+}
+
+/**
+ * gs_app_query_get_category:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:category.
+ *
+ * Returns: (nullable) (transfer none): a category which apps must be part of,
+ *   or %NULL to not filter on category
+ * Since: 43
+ */
+GsCategory *
+gs_app_query_get_category (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	return self->category;
 }
