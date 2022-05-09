@@ -1837,7 +1837,6 @@ gs_plugin_flatpak_list_apps_async (GsPlugin              *plugin,
 	g_autoptr(GTask) task = NULL;
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
-
 	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
 						  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_list_apps_async);
