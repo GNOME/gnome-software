@@ -362,66 +362,6 @@ gs_plugin_flatpak_shutdown_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-static void list_installed_apps_thread_cb (GTask        *task,
-                                           gpointer      source_object,
-                                           gpointer      task_data,
-                                           GCancellable *cancellable);
-
-static void
-gs_plugin_flatpak_list_installed_apps_async (GsPlugin                       *plugin,
-                                             GsPluginListInstalledAppsFlags  flags,
-                                             GCancellable                   *cancellable,
-                                             GAsyncReadyCallback             callback,
-                                             gpointer                        user_data)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	g_autoptr(GTask) task = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
-
-	task = g_task_new (plugin, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_flatpak_list_installed_apps_async);
-	g_task_set_task_data (task, GINT_TO_POINTER (flags), NULL);
-
-	/* Queue a job to get the installed apps. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
-				list_installed_apps_thread_cb, g_steal_pointer (&task));
-}
-
-/* Run in @worker. */
-static void
-list_installed_apps_thread_cb (GTask        *task,
-                               gpointer      source_object,
-                               gpointer      task_data,
-                               GCancellable *cancellable)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	GsPluginListInstalledAppsFlags flags = GPOINTER_TO_INT (task_data);
-	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
-	g_autoptr(GError) local_error = NULL;
-
-	assert_in_worker (self);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-
-		if (!gs_flatpak_add_installed (flatpak, list, interactive, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-}
-
-static GsAppList *
-gs_plugin_flatpak_list_installed_apps_finish (GsPlugin      *plugin,
-                                              GAsyncResult  *result,
-                                              GError       **error)
-{
-	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -1921,6 +1861,7 @@ list_apps_thread_cb (GTask        *task,
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
+	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1930,6 +1871,7 @@ list_apps_thread_cb (GTask        *task,
 		released_since = gs_app_query_get_released_since (data->query);
 		is_curated = gs_app_query_get_is_curated (data->query);
 		category = gs_app_query_get_category (data->query);
+		is_installed = gs_app_query_get_is_installed (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1937,11 +1879,15 @@ list_apps_thread_cb (GTask        *task,
 		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
 	}
 
-	/* Currently only support released-since, is-curated and category queries (but only one at once).
-	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((released_since == NULL && is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
-	    gs_app_query_get_n_properties_set (data->query) != 1 ||
-	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
+	/* Currently only support a subset of query properties, and only one set at once.
+	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((released_since == NULL &&
+	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
+	     category == NULL &&
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
@@ -1964,6 +1910,12 @@ list_apps_thread_cb (GTask        *task,
 
 		if (category != NULL &&
 		    !gs_flatpak_add_category_apps (flatpak, category, list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		if (is_installed != GS_APP_QUERY_TRISTATE_UNSET &&
+		    !gs_flatpak_add_installed (flatpak, list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
@@ -2101,8 +2053,6 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_flatpak_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_flatpak_refine_async;
 	plugin_class->refine_finish = gs_plugin_flatpak_refine_finish;
-	plugin_class->list_installed_apps_async = gs_plugin_flatpak_list_installed_apps_async;
-	plugin_class->list_installed_apps_finish = gs_plugin_flatpak_list_installed_apps_finish;
 	plugin_class->list_apps_async = gs_plugin_flatpak_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_flatpak_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_flatpak_refresh_metadata_async;
