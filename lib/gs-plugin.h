@@ -55,11 +55,6 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @list_apps_async: (nullable): List apps matching a given query. (Since: 43)
  * @list_apps_finish: (nullable): Finish method for @list_apps_async. Must be
  *   implemented if @list_apps_async is implemented. (Since: 43)
- * @list_installed_apps_async: (nullable): Get the list of installed apps
- *   belonging to this plugin.
- * @list_installed_apps_finish: (nullable): Finish method for
- *   @list_installed_apps_async. Must be implemented if
- *   @list_installed_apps_async is implemented.
  * @refresh_metadata_async: (nullable): Refresh plugin metadata.
  * @refresh_metadata_finish: (nullable): Finish method for
  *   @refresh_metadata_async. Must be implemented if @refresh_metadata_async is
@@ -131,15 +126,6 @@ struct _GsPluginClass
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
 	GsAppList *		(*list_apps_finish)		(GsPlugin		*plugin,
-								 GAsyncResult		*result,
-								 GError			**error);
-
-	void			(*list_installed_apps_async)	(GsPlugin		*plugin,
-								 GsPluginListInstalledAppsFlags flags,
-								 GCancellable		*cancellable,
-								 GAsyncReadyCallback	 callback,
-								 gpointer		 user_data);
-	GsAppList *		(*list_installed_apps_finish)	(GsPlugin		*plugin,
 								 GAsyncResult		*result,
 								 GError			**error);
 
