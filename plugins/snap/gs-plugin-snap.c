@@ -552,6 +552,9 @@ list_apps_data_free (ListAppsData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (ListAppsData, list_apps_data_free)
 
+static void list_installed_apps_cb (GObject      *source_object,
+                                    GAsyncResult *result,
+                                    gpointer      user_data);
 static void list_apps_cb (GObject      *source_object,
                           GAsyncResult *result,
                           gpointer      user_data);
@@ -574,6 +577,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
+	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	const gchar * const *sections = NULL;
 	const gchar * const curated_sections[] = { "featured", NULL };
 	g_autoptr(GError) local_error = NULL;
@@ -592,15 +596,30 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	if (query != NULL) {
 		is_curated = gs_app_query_get_is_curated (query);
 		category = gs_app_query_get_category (query);
+		is_installed = gs_app_query_get_is_installed (query);
 	}
 
-	/* Currently only support is-curated and category queries (but only one at once).
-	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
-	    gs_app_query_get_n_properties_set (query) != 1 ||
-	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
+	/* Currently only support a subset of query properties, and only one set at once.
+	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
+	     category == NULL &&
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
+		return;
+	}
+
+	data->results_list = gs_app_list_new ();
+
+	/* Listing installed apps requires calling a different libsnapd method,
+	 * so check that first. */
+	if (is_installed != GS_APP_QUERY_TRISTATE_UNSET) {
+		data->n_pending_ops++;
+		snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, NULL,
+					      cancellable, list_installed_apps_cb, g_steal_pointer (&task));
 		return;
 	}
 
@@ -646,7 +665,6 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	 * counter of pending operations which is initialised to 1 until all
 	 * the operations are started. */
 	data->n_pending_ops = 1;
-	data->results_list = gs_app_list_new ();
 
 	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
 		data->n_pending_ops++;
@@ -655,6 +673,35 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	}
 
 	finish_list_apps_op (task, NULL);
+}
+
+static void
+list_installed_apps_cb (GObject      *source_object,
+                        GAsyncResult *result,
+                        gpointer      user_data)
+{
+	SnapdClient *client = SNAPD_CLIENT (source_object);
+	g_autoptr(GTask) task = G_TASK (user_data);
+	GsPluginSnap *self = g_task_get_source_object (task);
+	ListAppsData *data = g_task_get_task_data (task);
+	g_autoptr(GPtrArray) snaps = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	snaps = snapd_client_get_snaps_finish (client, result, &local_error);
+
+	if (snaps == NULL) {
+		snapd_error_convert (&local_error);
+	}
+
+	for (guint i = 0; snaps != NULL && i < snaps->len; i++) {
+		SnapdSnap *snap = g_ptr_array_index (snaps, i);
+		g_autoptr(GsApp) app = NULL;
+
+		app = snap_to_app (self, snap, NULL);
+		gs_app_list_add (data->results_list, app);
+	}
+
+	finish_list_apps_op (task, g_steal_pointer (&local_error));
 }
 
 static void
@@ -721,73 +768,6 @@ static GsAppList *
 gs_plugin_snap_list_apps_finish (GsPlugin      *plugin,
                                  GAsyncResult  *result,
                                  GError       **error)
-{
-	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-static void list_installed_apps_cb (GObject      *source_object,
-                                    GAsyncResult *result,
-                                    gpointer      user_data);
-
-static void
-gs_plugin_snap_list_installed_apps_async (GsPlugin                       *plugin,
-                                          GsPluginListInstalledAppsFlags  flags,
-                                          GCancellable                   *cancellable,
-                                          GAsyncReadyCallback             callback,
-                                          gpointer                        user_data)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(GTask) task = NULL;
-	g_autoptr(SnapdClient) client = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
-	g_autoptr(GError) local_error = NULL;
-
-	task = g_task_new (plugin, cancellable, callback, user_data);
-
-	client = get_client (self, interactive, &local_error);
-	if (client == NULL) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, NULL,
-				      cancellable, list_installed_apps_cb, g_steal_pointer (&task));
-}
-
-static void
-list_installed_apps_cb (GObject      *source_object,
-                        GAsyncResult *result,
-                        gpointer      user_data)
-{
-	SnapdClient *client = SNAPD_CLIENT (source_object);
-	g_autoptr(GTask) task = G_TASK (user_data);
-	GsPluginSnap *self = g_task_get_source_object (task);
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GPtrArray) snaps = NULL;
-	g_autoptr(GError) local_error = NULL;
-
-	snaps = snapd_client_get_snaps_finish (client, result, &local_error);
-	if (snaps == NULL) {
-		snapd_error_convert (&local_error);
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	for (guint i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = g_ptr_array_index (snaps, i);
-		g_autoptr(GsApp) app = NULL;
-
-		app = snap_to_app (self, snap, NULL);
-		gs_app_list_add (list, app);
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-}
-
-static GsAppList *
-gs_plugin_snap_list_installed_apps_finish (GsPlugin      *plugin,
-                                           GAsyncResult  *result,
-                                           GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
@@ -1808,8 +1788,6 @@ gs_plugin_snap_class_init (GsPluginSnapClass *klass)
 	plugin_class->setup_finish = gs_plugin_snap_setup_finish;
 	plugin_class->refine_async = gs_plugin_snap_refine_async;
 	plugin_class->refine_finish = gs_plugin_snap_refine_finish;
-	plugin_class->list_installed_apps_async = gs_plugin_snap_list_installed_apps_async;
-	plugin_class->list_installed_apps_finish = gs_plugin_snap_list_installed_apps_finish;
 	plugin_class->list_apps_async = gs_plugin_snap_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_snap_list_apps_finish;
 }
