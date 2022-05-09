@@ -347,6 +347,13 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UPDATABLE);
 }
 
+static gboolean
+filter_valid_cb (GsApp    *app,
+                 gpointer  user_data)
+{
+	return gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_FLAGS_NONE);
+}
+
 static void
 gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 {
@@ -356,6 +363,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GIcon) icon = NULL;
 	GsPluginRefineFlags refine_flags;
@@ -369,8 +377,12 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 			GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
 			GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE);
 
-	plugin_job = gs_plugin_job_list_installed_apps_new (refine_flags, 0, GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
-							    GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_NONE);
+	query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", refine_flags,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "filter-func", filter_valid_cb,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
