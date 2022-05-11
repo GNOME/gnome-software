@@ -33,6 +33,7 @@ RUN dnf -y install \
     libcurl-devel \
     libdnf-devel \
     libepoxy-devel \
+    libglib-testing-devel \
     libgudev-devel \
     libjpeg-turbo-devel \
     liboauth-devel \

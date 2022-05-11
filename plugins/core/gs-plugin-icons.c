@@ -46,6 +46,7 @@ gs_plugin_icons_init (GsPluginIcons *self)
 {
 	/* needs remote icons downloaded */
 	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (GS_PLUGIN (self), GS_PLUGIN_RULE_RUN_AFTER, "epiphany");
 }
 
 static void

@@ -11,7 +11,7 @@ cache:
 variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 4
   G_MESSAGES_DEBUG: all
-  MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr -Dsoup2=true"
+  MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr -Dsoup2=true -Dwebapps=true"
   BUNDLE: "gnome-software-dev.flatpak"
 
 .build:
@@ -20,7 +20,7 @@ variables:
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v9
+  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v10
   stage: build
   except:
     - tags
