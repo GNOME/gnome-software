@@ -740,7 +740,7 @@ gs_app_query_get_released_since (GsAppQuery *self)
 GsAppQueryTristate
 gs_app_query_get_is_curated (GsAppQuery *self)
 {
-	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_FALSE);
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
 
 	return self->is_curated;
 }
