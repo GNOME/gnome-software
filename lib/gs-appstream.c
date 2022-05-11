@@ -1662,7 +1662,7 @@ gs_appstream_add_installed (GsPlugin      *plugin,
 		if (app == NULL)
 			return FALSE;
 
-		/* Can get cached gsApp, which has the state already updated */
+		/* Can get cached GsApp, which has the state already updated */
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
 		    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
