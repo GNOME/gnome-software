@@ -248,8 +248,8 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 				fwupd_release_get_homepage (rel));
 	}
 	if (fwupd_release_get_size (rel) != 0) {
-		gs_app_set_size_installed (app, 0);
-		gs_app_set_size_download (app, fwupd_release_get_size (rel));
+		gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 0);
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, fwupd_release_get_size (rel));
 	}
 	if (fwupd_release_get_version (rel) != NULL)
 		gs_app_set_update_version (app, fwupd_release_get_version (rel));

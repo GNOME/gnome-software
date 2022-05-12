@@ -247,8 +247,8 @@ gs_plugin_custom_list_installed_apps_async (GsPlugin                       *plug
 
   /* these are all optional, but make details page looks better */
   gs_app_set_version (app, "1.2.3");
-  gs_app_set_size_installed (app, 2 * 1024 * 1024);
-  gs_app_set_size_download (app, 3 * 1024 * 1024);
+  gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 2 * 1024 * 1024);
+  gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 3 * 1024 * 1024);
   gs_app_set_origin_hostname (app, "http://www.teaching-example.org/");
   gs_app_add_category (app, "Game");
   gs_app_add_category (app, "ActionGame");

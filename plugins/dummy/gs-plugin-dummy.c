@@ -424,8 +424,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
 	gs_app_add_icon (app, ic);
-	gs_app_set_size_installed (app, 42 * 1024 * 1024);
-	gs_app_set_size_download (app, 50 * 1024 * 1024);
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 42 * 1024 * 1024);
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 50 * 1024 * 1024);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	gs_app_set_management_plugin (app, plugin);
@@ -977,8 +977,8 @@ gs_plugin_dummy_list_distro_upgrades_async (GsPlugin                        *plu
 	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_set_version (app, "34");
-	gs_app_set_size_installed (app, 256 * 1024 * 1024);
-	gs_app_set_size_download (app, 1024 * 1024 * 1024);
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 256 * 1024 * 1024);
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 1024 * 1024 * 1024);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
 	gs_app_set_management_plugin (app, plugin);
 

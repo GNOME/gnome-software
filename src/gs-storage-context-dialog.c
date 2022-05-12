@@ -73,6 +73,7 @@ typedef enum {
 static void
 add_size_row (GtkListBox   *list_box,
               GtkSizeGroup *lozenge_size_group,
+              GsSizeType    size_type,
               guint64       size_bytes,
               const gchar  *title,
               const gchar  *description)
@@ -81,7 +82,7 @@ add_size_row (GtkListBox   *list_box,
 	g_autofree gchar *size_bytes_str = NULL;
 	gboolean is_markup = FALSE;
 
-	if (size_bytes == GS_APP_SIZE_UNKNOWABLE)
+	if (size_type != GS_SIZE_TYPE_VALID)
 		/* Translators: This is shown in a bubble if the storage
 		 * size of an application is not known. The bubble is small,
 		 * so the string should be as short as possible. */
@@ -105,6 +106,7 @@ add_size_row (GtkListBox   *list_box,
 static void
 update_sizes_list (GsStorageContextDialog *self)
 {
+	GsSizeType title_size_type;
 	guint64 title_size_bytes;
 	g_autofree gchar *title_size_bytes_str = NULL;
 	const gchar *title;
@@ -118,66 +120,77 @@ update_sizes_list (GsStorageContextDialog *self)
 		return;
 
 	if (gs_app_is_installed (self->app)) {
-		guint64 size_installed;
-		guint64 size_user_data;
-		guint64 size_cache_data;
+		guint64 size_installed_bytes, size_user_data_bytes, size_cache_data_bytes;
+		GsSizeType size_installed_type, size_user_data_type, size_cache_data_type;
 
 		/* Don’t list the size of the dependencies as that space likely
 		 * won’t be reclaimed unless many other apps are removed. */
-		size_installed = gs_app_get_size_installed (self->app);
-		size_user_data = gs_app_get_size_user_data (self->app);
-		size_cache_data = gs_app_get_size_cache_data (self->app);
+		size_installed_type = gs_app_get_size_installed (self->app, &size_installed_bytes);
+		size_user_data_type = gs_app_get_size_user_data (self->app, &size_user_data_bytes);
+		size_cache_data_type = gs_app_get_size_cache_data (self->app, &size_cache_data_bytes);
 
 		title = _("Installed Size");
-		title_size_bytes = size_installed;
+		title_size_bytes = size_installed_bytes;
+		title_size_type = size_installed_type;
 
-		add_size_row (self->sizes_list, self->lozenge_size_group, size_installed,
+		add_size_row (self->sizes_list, self->lozenge_size_group,
+			      size_installed_type, size_installed_bytes,
 			      _("Application Data"),
 			      _("Data needed for the application to run"));
 
-		if (size_user_data != GS_APP_SIZE_UNKNOWABLE) {
-			add_size_row (self->sizes_list, self->lozenge_size_group, size_user_data,
+		if (size_user_data_type == GS_SIZE_TYPE_VALID) {
+			add_size_row (self->sizes_list, self->lozenge_size_group,
+				      size_user_data_type, size_user_data_bytes,
 				      _("User Data"),
 				      _("Data created by you in the application"));
-			title_size_bytes += size_user_data;
+			title_size_bytes += size_user_data_bytes;
 		}
 
-		if (size_cache_data != GS_APP_SIZE_UNKNOWABLE) {
-			add_size_row (self->sizes_list, self->lozenge_size_group, size_cache_data,
+		if (size_cache_data_type == GS_SIZE_TYPE_VALID) {
+			add_size_row (self->sizes_list, self->lozenge_size_group,
+				      size_cache_data_type, size_cache_data_bytes,
 				      _("Cache Data"),
 				      _("Temporary cached data"));
-			title_size_bytes += size_cache_data;
+			title_size_bytes += size_cache_data_bytes;
 			cache_row_added = TRUE;
 		}
 	} else {
-		guint64 size_download;
-		guint64 size_download_dependencies;
+		guint64 size_download_bytes, size_download_dependencies_bytes;
+		GsSizeType size_download_type, size_download_dependencies_type;
 
-		size_download = gs_app_get_size_download (self->app);
-		size_download_dependencies = gs_app_get_size_download_dependencies (self->app);
+		size_download_type = gs_app_get_size_download (self->app, &size_download_bytes);
+		size_download_dependencies_type = gs_app_get_size_download_dependencies (self->app, &size_download_dependencies_bytes);
 
 		title = _("Download Size");
-		title_size_bytes = size_download;
+		title_size_bytes = size_download_bytes;
+		title_size_type = size_download_type;
 
-		add_size_row (self->sizes_list, self->lozenge_size_group, size_download,
+		add_size_row (self->sizes_list, self->lozenge_size_group,
+			      size_download_type, size_download_bytes,
 			      gs_app_get_name (self->app),
 			      _("The application itself"));
 
-		if (size_download_dependencies != GS_APP_SIZE_UNKNOWABLE) {
-			add_size_row (self->sizes_list, self->lozenge_size_group, size_download_dependencies,
+		if (size_download_dependencies_type == GS_SIZE_TYPE_VALID) {
+			add_size_row (self->sizes_list, self->lozenge_size_group,
+				      size_download_dependencies_type, size_download_dependencies_bytes,
 				      _("Required Dependencies"),
 				      _("Shared system components required by this application"));
-			title_size_bytes += size_download_dependencies;
+			title_size_bytes += size_download_dependencies_bytes;
 		}
 
 		/* FIXME: Addons, Potential Additional Downloads */
 	}
 
-	title_size_bytes_str = gs_utils_format_size (title_size_bytes, &is_markup);
+	if (title_size_type == GS_SIZE_TYPE_VALID)
+		title_size_bytes_str = gs_utils_format_size (title_size_bytes, &is_markup);
+	else
+		title_size_bytes_str = g_strdup (C_("Download size", "Unknown"));
+
 	if (is_markup)
 		gtk_label_set_markup (self->lozenge_content, title_size_bytes_str);
 	else
 		gtk_label_set_text (self->lozenge_content, title_size_bytes_str);
+
 	gtk_label_set_text (self->title, title);
 
 	/* Update the Manage Storage label. */

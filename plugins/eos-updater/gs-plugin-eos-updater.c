@@ -388,19 +388,23 @@ sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
 		/* Nothing to do here. */
 		break;
 	} case EOS_UPDATER_STATE_UPDATE_AVAILABLE: {
-		guint64 total_size;
+		gint64 total_size;
 
 		app_set_state (plugin, app, GS_APP_STATE_AVAILABLE);
 
+		/* The property returns -1 to indicate unknown size */
 		total_size = gs_eos_updater_get_download_size (self->updater_proxy);
-		gs_app_set_size_download (app, total_size);
+		if (total_size >= 0)
+			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, total_size);
+		else
+			gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
 
 		break;
 	}
 	case EOS_UPDATER_STATE_FETCHING: {
-		guint64 total_size = 0;
-		guint64 downloaded = 0;
-		gfloat progress = 0;
+		gint64 total_size = 0;
+		gint64 downloaded = 0;
+		guint progress = 0;
 
 		/* FIXME: Set to QUEUED_FOR_INSTALL if we’re waiting for metered
 		 * data permission. */
@@ -412,13 +416,17 @@ sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
 		if (total_size == 0) {
 			g_debug ("OS upgrade %s total size is 0!",
 				 gs_app_get_unique_id (app));
+			progress = GS_APP_PROGRESS_UNKNOWN;
+		} else if (downloaded < 0 || total_size < 0) {
+			/* Both properties return -1 to indicate unknown */
+			progress = GS_APP_PROGRESS_UNKNOWN;
 		} else {
 			/* set progress only up to a max percentage, leaving the
 			 * remaining for applying the update */
 			progress = (gfloat) downloaded / (gfloat) total_size *
 				   (gfloat) max_progress_for_update;
 		}
-		gs_app_set_progress (app, (guint) progress);
+		gs_app_set_progress (app, progress);
 
 		break;
 	}

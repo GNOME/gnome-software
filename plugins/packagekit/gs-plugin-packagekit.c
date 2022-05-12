@@ -844,8 +844,12 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 	for (guint i = 0; i < array->len; i++) {
 		PkPackage *package = g_ptr_array_index (array, i);
 		g_autoptr(GsApp) app = NULL;
+		guint64 size_download_bytes;
+
 		app = gs_plugin_packagekit_build_update_app (plugin, package);
-		all_downloaded = all_downloaded && !gs_app_get_size_download (app);
+		all_downloaded = (all_downloaded &&
+				  gs_app_get_size_download (app, &size_download_bytes) == GS_SIZE_TYPE_VALID &&
+				  size_download_bytes == 0);
 		if (all_downloaded && first_app == NULL)
 			first_app = g_object_ref (app);
 		gs_app_list_add (list, app);
@@ -860,7 +864,7 @@ gs_plugin_packagekit_add_updates (GsPlugin *plugin,
 		   way to verify the prepared-update file exists. */
 		prepared_ids = pk_offline_get_prepared_ids (NULL);
 		if (prepared_ids == NULL || prepared_ids[0] == NULL)
-			gs_app_set_size_download (first_app, 1);
+			gs_app_set_size_download (first_app, GS_SIZE_TYPE_VALID, 1);
 	}
 
 	return TRUE;
@@ -1196,10 +1200,10 @@ gs_plugin_refine_app_needs_details (GsPluginRefineFlags  flags,
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
-	    gs_app_get_size_installed (app) == 0)
+	    gs_app_get_size_installed (app, NULL) != GS_SIZE_TYPE_VALID)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
-	    gs_app_get_size_download (app) == 0)
+	    gs_app_get_size_download (app, NULL) != GS_SIZE_TYPE_VALID)
 		return TRUE;
 	return FALSE;
 }
@@ -2827,8 +2831,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 				pk_details_get_description (item));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
-	gs_app_set_size_installed (app, pk_details_get_size (item));
-	gs_app_set_size_download (app, 0);
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, pk_details_get_size (item));
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	license_spdx = as_license_to_spdx_id (pk_details_get_license (item));
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 	add_quirks_from_package_name (app, split[PK_PACKAGE_ID_NAME]);
@@ -3660,7 +3664,7 @@ _download_only (GsPluginPackagekit  *self,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		/* To indicate the app is already downloaded */
-		gs_app_set_size_download (app, 0);
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	}
 	return TRUE;
 }

@@ -22,6 +22,8 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsSizeType size_download_type;
+	guint64 size_download_bytes;
 
 	/* no fwupd, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "fwupd")) {
@@ -48,7 +50,9 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "0.2");
-	g_assert_cmpint ((gint64) gs_app_get_size_download (app), ==, 32784);
+	size_download_type = gs_app_get_size_download (app, &size_download_bytes);
+	g_assert_cmpint (size_download_type, ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpuint (size_download_bytes, ==, 32784);
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
 			 "cab file.\n\nThis is the second paragraph.");
