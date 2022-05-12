@@ -287,7 +287,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
 
 	body = g_string_new ("");
-	origin_ui = gs_app_get_origin_ui (app);
+	origin_ui = gs_app_dup_origin_ui (app);
 
 	if (hint & GS_APP_LICENSE_NONFREE) {
 		g_string_append_printf (body,

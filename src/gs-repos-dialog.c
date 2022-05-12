@@ -374,7 +374,7 @@ add_repo (GsReposDialog *dialog,
 		return;
 	}
 
-	origin_ui = gs_app_get_origin_ui (repo);
+	origin_ui = gs_app_dup_origin_ui (repo);
 	if (!origin_ui)
 		origin_ui = gs_app_get_packaging_format (repo);
 	if (!origin_ui) {

@@ -5027,7 +5027,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_take_boxed (value, gs_app_get_relations (app));
 		break;
 	case PROP_ORIGIN_UI:
-		g_value_take_string (value, gs_app_get_origin_ui (app));
+		g_value_take_string (value, gs_app_dup_origin_ui (app));
 		break;
 	case PROP_HAS_TRANSLATIONS:
 		g_value_set_boolean (value, gs_app_get_has_translations (app));
@@ -5715,18 +5715,18 @@ gs_app_new_from_unique_id (const gchar *unique_id)
 }
 
 /**
- * gs_app_get_origin_ui:
+ * gs_app_dup_origin_ui:
  * @app: a #GsApp
  *
  * Gets the package origin that's suitable for UI use. i.e. The value of
  * #GsApp:origin-ui.
  *
- * Returns: (not nullable): The package origin for UI use
+ * Returns: (not nullable) (transfer full): The package origin for UI use
  *
- * Since: 3.32
+ * Since: 43
  **/
 gchar *
-gs_app_get_origin_ui (GsApp *app)
+gs_app_dup_origin_ui (GsApp *app)
 {
 	GsAppPrivate *priv;
 	g_autoptr(GMutexLocker) locker = NULL;
