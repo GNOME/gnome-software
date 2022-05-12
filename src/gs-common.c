@@ -232,6 +232,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	GtkWidget *dialog;
 	const gchar *license;
 	gboolean already_enabled = FALSE;	/* FIXME */
+	g_autofree gchar *origin_ui = NULL;
 	guint i;
 	struct {
 		const gchar	*str;
@@ -286,6 +287,8 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
 
 	body = g_string_new ("");
+	origin_ui = gs_app_get_origin_ui (app);
+
 	if (hint & GS_APP_LICENSE_NONFREE) {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
@@ -296,7 +299,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 					  "free and open source software</a>, "
 					  "and is provided by “%s”."),
 					gs_app_get_name (app),
-					gs_app_get_origin_ui (app));
+					origin_ui);
 	} else {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
@@ -304,7 +307,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 					 * 2. Software repository name, e.g. fedora-optional */
 					_("%s is provided by “%s”."),
 					gs_app_get_name (app),
-					gs_app_get_origin_ui (app));
+					origin_ui);
 	}
 
 	/* tell the use what needs to be done */
