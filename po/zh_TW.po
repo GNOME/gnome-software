@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2022-05-05 09:36+0000\n"
-"PO-Revision-Date: 2022-05-12 15:50+0800\n"
+"PO-Revision-Date: 2022-05-12 22:44+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -35,21 +35,15 @@ msgstr ""
 "《軟體》讓您可以找尋、安裝新程式與系統擴充套件，以及移除所安裝的應用程式。"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
-#, fuzzy
-#| msgid ""
-#| "GNOME Software showcases featured and popular applications with useful "
-#| "descriptions and multiple screenshots per application. Applications can "
-#| "be found either through browsing the list of categories or by searching. "
-#| "It also allows you to update your system using an offline update."
 msgid ""
 "Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"GNOME《軟體》陳列各種具有特色，以及廣受歡迎的應用程式，並附上有用的描述與多張"
-"螢幕擷圖。除了瀏覽類別清單之外，您還可以透過搜尋的方式來找出想要的應用程式。"
-"此外，它也可讓您採用離線更新的方式更新系統。"
+"《軟體》陳列各種有特色與受歡迎的應用程式，並附上有用的描述與多張螢幕擷圖。您"
+"可以透過瀏覽類別清單，以及搜尋的方式來找出想要的應用程式。此外，它也能讓您採"
+"用離線更新的方式更新系統。"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -228,11 +222,8 @@ msgid "A list of official repositories that should not be considered 3rd party"
 msgstr "不應視為第三方的官方軟體庫列表"
 
 #: data/org.gnome.software.gschema.xml:99
-#, fuzzy
-#| msgid ""
-#| "A list of official repositories that should not be considered 3rd party"
 msgid "A list of required repositories that cannot be disabled or removed"
-msgstr "不應視為第三方的官方軟體庫列表"
+msgstr "無法停用或移除的必須軟體庫列表"
 
 #: data/org.gnome.software.gschema.xml:103
 msgid "A list of official repositories that should be considered free software"
@@ -241,7 +232,7 @@ msgstr "應視為自由軟體的官方軟體庫列表"
 #: data/org.gnome.software.gschema.xml:107
 msgid ""
 "The licence URL to use when an application should be considered free software"
-msgstr "將應用程式視為自由軟體的授權方式 URL"
+msgstr "應用軟體應視為自由軟體時所使用的授權方式網址"
 
 #: data/org.gnome.software.gschema.xml:111
 msgid "Install bundled applications for all users on the system where possible"
@@ -273,23 +264,19 @@ msgid "The URI that explains nonfree and proprietary software"
 msgstr "闡釋非自由軟體和專有軟體的連結"
 
 #: data/org.gnome.software.gschema.xml:136
-#, fuzzy
-#| msgid ""
-#| "A list of URLs pointing to appstream files that will be downloaded into "
-#| "an app-info folder"
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
-msgstr "一份要下載至 app-info 資料夾中的 appstream 檔案指向 URL 清單"
+msgstr "一份要下載至 swcatalog 資料夾中的 appstream 檔案指向 URL 清單"
 
 #: data/org.gnome.software.gschema.xml:140
-#, fuzzy
-#| msgid "Install the AppStream files to a system-wide location for all users"
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
-msgstr "為所有使用者安裝 AppStream 檔案到系統層級位置上"
+msgstr ""
+"為所有使用者安裝 AppStream 檔案到系統層級位置上。若為否，則檔案會在非標準的 "
+"$XDG_DATA_HOME/swcatalog/xml 目錄中安裝"
 
 #: data/org.gnome.software.gschema.xml:144
 msgid ""
@@ -324,17 +311,15 @@ msgstr "此程式僅能由 root 使用者使用"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:167
-#, fuzzy, c-format
-#| msgid "Failed to validate content type"
+#, c-format
 msgid "Failed to validate content type: %s"
-msgstr "無法驗證內容類型"
+msgstr "無法驗證內容類型：%s"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
-#, fuzzy, c-format
-#| msgid "Failed to copy"
+#, c-format
 msgid "Failed to move: %s"
-msgstr "無法複製"
+msgstr "無法移動：%s"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -352,7 +337,7 @@ msgstr "動漫暴力"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:137
 msgid "No information regarding cartoon violence"
-msgstr ""
+msgstr "沒有動漫暴力的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:145
@@ -362,7 +347,7 @@ msgstr "幻想暴力"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:147
 msgid "No information regarding fantasy violence"
-msgstr ""
+msgstr "沒有幻想暴力的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:155
@@ -372,7 +357,7 @@ msgstr "現實暴力"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:157
 msgid "No information regarding realistic violence"
-msgstr ""
+msgstr "沒有現實暴力的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:165
@@ -392,7 +377,7 @@ msgstr "性暴力"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:177
 msgid "No information regarding sexual violence"
-msgstr ""
+msgstr "沒有性暴力的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:185
@@ -401,22 +386,18 @@ msgstr "酒精"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:187
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "No information regarding references to alcohol"
-msgstr "沒有涉及酒精"
+msgstr "沒有涉及酒精的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:195
 msgid "Narcotics"
-msgstr ""
+msgstr "毒品"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:197
-#, fuzzy
-#| msgid "No references to illicit drugs"
 msgid "No information regarding references to illicit drugs"
-msgstr "沒有涉及非法藥物"
+msgstr "沒有涉及非法藥品的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:205
@@ -425,10 +406,8 @@ msgstr "菸草"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:207
-#, fuzzy
-#| msgid "No references to tobacco products"
 msgid "No information regarding references to tobacco products"
-msgstr "沒有涉及菸草產品"
+msgstr "沒有涉及菸草產品的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:215
@@ -438,10 +417,8 @@ msgstr "裸體"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:217
-#, fuzzy
-#| msgid "No nudity of any sort"
 msgid "No information regarding nudity of any sort"
-msgstr "沒有任何形式之裸體"
+msgstr "沒有任何形式之裸體的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:225
@@ -450,10 +427,8 @@ msgstr "性事主題"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:227
-#, fuzzy
-#| msgid "No references to or depictions of sexual nature"
 msgid "No information regarding references to or depictions of sexual nature"
-msgstr "沒有涉及性事或描繪性事"
+msgstr "沒有涉及性事或描繪性事的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:235
@@ -462,10 +437,8 @@ msgstr "辱罵"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:237
-#, fuzzy
-#| msgid "No profanity of any kind"
 msgid "No information regarding profanity of any kind"
-msgstr "沒有任何形式之辱駡"
+msgstr "沒有任何辱駡形式的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:245
@@ -475,7 +448,7 @@ msgstr "不適切之幽默"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:247
 msgid "No information regarding inappropriate humor"
-msgstr ""
+msgstr "沒有不適切之幽默的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:255
@@ -484,10 +457,8 @@ msgstr "歧視"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:257
-#, fuzzy
-#| msgid "No discriminatory language of any kind"
 msgid "No information regarding discriminatory language of any kind"
-msgstr "沒有任何形式之歧視用語"
+msgstr "沒有任何歧視用語的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:265
@@ -496,10 +467,8 @@ msgstr "行銷"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:267
-#, fuzzy
-#| msgid "No advertising of any kind"
 msgid "No information regarding advertising of any kind"
-msgstr "沒有任何形式之行銷"
+msgstr "沒有任何行銷形式的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:275
@@ -508,10 +477,8 @@ msgstr "賭博"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:277
-#, fuzzy
-#| msgid "No gambling of any kind"
 msgid "No information regarding gambling of any kind"
-msgstr "沒有任何形式之賭博"
+msgstr "沒有任何賭博形式的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:285
@@ -520,10 +487,8 @@ msgstr "購買"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:287
-#, fuzzy
-#| msgid "No ability to spend money"
 msgid "No information regarding the ability to spend money"
-msgstr "沒有金錢花費之功能"
+msgstr "沒有金錢花費之功能的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:295
@@ -532,10 +497,8 @@ msgstr "使用者間聊天"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:297
-#, fuzzy
-#| msgid "No way to chat with other users"
 msgid "No information regarding ways to chat with other users"
-msgstr "無法和其他使用者聊天"
+msgstr "沒有和其他使用者聊天方式的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:305
@@ -544,10 +507,8 @@ msgstr "使用者間語音聊天"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:307
-#, fuzzy
-#| msgid "No way to talk with other users"
 msgid "No information regarding ways to talk with other users"
-msgstr "無法和其他使用者對談"
+msgstr "沒有和其他使用者對談方式的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:315
@@ -556,12 +517,10 @@ msgstr "聯絡資訊細節"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:317
-#, fuzzy
-#| msgid "No sharing of social network usernames or email addresses"
 msgid ""
 "No information regarding sharing of social network usernames or email "
 "addresses"
-msgstr "不會分享社交網路使用者名稱或電子郵件爲止"
+msgstr "沒有分享社交網路使用者名稱或電子郵件位址的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:325
@@ -570,10 +529,8 @@ msgstr "可辨識身分的資訊"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:327
-#, fuzzy
-#| msgid "No sharing of user information with third parties"
 msgid "No information regarding sharing of user information with third parties"
-msgstr "不會與第三方單位分享使用者資訊"
+msgstr "沒有與第三方單位分享使用者資訊的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:335
@@ -582,10 +539,8 @@ msgstr "地理定位分享"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:337
-#, fuzzy
-#| msgid "No sharing of physical location with other users"
 msgid "No information regarding sharing of physical location with other users"
-msgstr "不會與其他使用者分享實際地理位置"
+msgstr "沒有與其他使用者分享實際地理定位的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:361
@@ -594,10 +549,8 @@ msgstr "同性戀"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:363
-#, fuzzy
-#| msgid "No references to homosexuality"
 msgid "No information regarding references to homosexuality"
-msgstr "沒有涉及同性戀議題"
+msgstr "沒有涉及同性戀議題的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:371
@@ -606,10 +559,8 @@ msgstr "賣淫"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:373
-#, fuzzy
-#| msgid "No references to prostitution"
 msgid "No information regarding references to prostitution"
-msgstr "沒有涉及賣淫"
+msgstr "沒有涉及賣淫的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:381
@@ -618,10 +569,8 @@ msgstr "通姦"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:383
-#, fuzzy
-#| msgid "No references to adultery"
 msgid "No information regarding references to adultery"
-msgstr "沒有涉及通姦"
+msgstr "沒有涉及通姦的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:391
@@ -631,7 +580,7 @@ msgstr "性化角色"
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:393
 msgid "No information regarding sexualized characters"
-msgstr ""
+msgstr "沒有性化角色的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:401
@@ -640,10 +589,8 @@ msgstr "褻瀆"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:403
-#, fuzzy
-#| msgid "No references to desecration"
 msgid "No information regarding references to desecration"
-msgstr "沒有涉及褻瀆"
+msgstr "沒有涉及褻瀆的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:411
@@ -652,10 +599,8 @@ msgstr "人類遺體"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:413
-#, fuzzy
-#| msgid "No visible dead human remains"
 msgid "No information regarding visible dead human remains"
-msgstr "不會看見亡者遺體"
+msgstr "沒有看見亡者遺體的相關資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:421
@@ -664,41 +609,33 @@ msgstr "奴隸行為"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:423
-#, fuzzy
-#| msgid "No references to slavery"
 msgid "No information regarding references to slavery"
-msgstr "沒有涉及奴隸行為"
+msgstr "沒有涉及奴隸行為的相關資訊"
 
 #: src/gs-age-rating-context-dialog.c:495
-#, fuzzy
-#| msgid "No references to illicit drugs"
 msgid "Does not include references to drugs"
-msgstr "沒有涉及非法藥物"
+msgstr "不含涉及藥物"
 
 #: src/gs-age-rating-context-dialog.c:497
 msgid ""
 "Does not include swearing, profanity, and other kinds of strong language"
-msgstr ""
+msgstr "不含詛咒、辱駡，或其他強硬語言"
 
 #: src/gs-age-rating-context-dialog.c:499
 msgid "Does not include ads or monetary transactions"
-msgstr ""
+msgstr "不含廣告或金錢交易功能"
 
 #: src/gs-age-rating-context-dialog.c:501
 msgid "Does not include sex or nudity"
-msgstr ""
+msgstr "不含性事或裸體"
 
 #: src/gs-age-rating-context-dialog.c:503
-#, fuzzy
-#| msgid "Uncontrolled chat functionality between users"
 msgid "Does not include uncontrolled chat functionality"
-msgstr "未受管制的使用者間聊天功能"
+msgstr "不含不受控制的聊天功能"
 
 #: src/gs-age-rating-context-dialog.c:505
-#, fuzzy
-#| msgid "No realistic violence"
 msgid "Does not include violence"
-msgstr "沒有現實暴力"
+msgstr "不含暴力"
 
 #: src/gs-age-rating-context-dialog.c:538
 msgid "Drugs"
@@ -752,36 +689,35 @@ msgstr "？"
 #: src/gs-age-rating-context-dialog.c:1029
 #, c-format
 msgid "%s is suitable for everyone"
-msgstr ""
+msgstr "%s 適合任何人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1033
 #, c-format
 msgid "%s is suitable for toddlers"
-msgstr ""
+msgstr "%s 適合學齡前幼童"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1037
 #, c-format
 msgid "%s is suitable for young children"
-msgstr ""
+msgstr "%s 適合孩童"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1045
 #, c-format
 msgid "%s is suitable for teenagers"
-msgstr ""
+msgstr "%s 適合青少年"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
 #: src/gs-age-rating-context-dialog.c:1049
-#, fuzzy, c-format
-#| msgid "%s file format"
+#, c-format
 msgid "%s is suitable for adults"
-msgstr "%s 檔案格式"
+msgstr "%s 適合成人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
@@ -789,7 +725,7 @@ msgstr "%s 檔案格式"
 #: src/gs-age-rating-context-dialog.c:1054
 #, c-format
 msgid "%s is suitable for %s"
-msgstr ""
+msgstr "%s 適合 %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
@@ -972,10 +908,8 @@ msgid "Reviews"
 msgstr "評論"
 
 #: src/gs-app-reviews-dialog.ui:25
-#, fuzzy
-#| msgid "Sorry! There are no details for that application."
 msgid "No reviews were found for this application."
-msgstr "抱歉！沒有該應用程式的詳細資訊。"
+msgstr "找不到此應用程式的評論。"
 
 #: src/gs-app-reviews-dialog.ui:27
 msgid "No Reviews"
@@ -1062,7 +996,7 @@ msgstr ""
 
 #: src/gs-application.c:136
 msgid "Show a local metainfo or appdata file"
-msgstr ""
+msgstr "顯示本機中介資料或 appdata 檔案"
 
 #: src/gs-application.c:138
 msgid "Show verbose debugging information"
@@ -1121,22 +1055,19 @@ msgid "Installed Size"
 msgstr "安裝後大小"
 
 #: src/gs-app-context-bar.c:158
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of data and %s of cache"
-msgstr "包括 %s、%s、%s 等。"
+msgstr "包括 %s 的資料與 %s 的快取"
 
 #: src/gs-app-context-bar.c:161
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of data"
-msgstr "包括 %s、%s、%s 等。"
+msgstr "包括 %s 的資料"
 
 #: src/gs-app-context-bar.c:164
-#, fuzzy, c-format
-#| msgid "Includes %s, %s and %s."
+#, c-format
 msgid "Includes %s of cache"
-msgstr "包括 %s、%s、%s 等。"
+msgstr "包括 %s 的快取"
 
 #: src/gs-app-context-bar.c:167
 msgid "Cache and data usage unknown"
@@ -1150,18 +1081,18 @@ msgstr "下載大小"
 
 #: src/gs-app-context-bar.c:179
 msgid "Needs no additional system downloads"
-msgstr ""
+msgstr "不需要額外系統下載"
 
 #: src/gs-app-context-bar.c:181
 msgid "Needs an unknown size of additional system downloads"
-msgstr ""
+msgstr "需要未知大小的額外系統下載"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
 #: src/gs-app-context-bar.c:186
 #, c-format
 msgid "Needs %s of additional system downloads"
-msgstr ""
+msgstr "需要 %s 的額外系統下載"
 
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
@@ -1180,71 +1111,61 @@ msgstr "沒有取用權"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:275
 msgid "Has network access"
-msgstr ""
+msgstr "有網路存取權"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:282
-#, fuzzy
-#| msgid "System Services"
 msgid "Uses system services"
-msgstr "系統服務"
+msgstr "使用系統服務"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:289
-#, fuzzy
-#| msgid "Session Services"
 msgid "Uses session services"
-msgstr "作業階段服務"
+msgstr "使用作業階段服務"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:296
-#, fuzzy
-#| msgid "Can access system device files"
 msgid "Can access hardware devices"
-msgstr "可以存取系統裝置檔案"
+msgstr "可以存取硬體裝置"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:308
 msgid "Can read/write all your data"
-msgstr ""
+msgstr "可以讀取/寫入所有您的資料"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:320
 msgid "Can read all your data"
-msgstr ""
+msgstr "可以讀取所有您的資料"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:327
 msgid "Can read/write your downloads"
-msgstr ""
+msgstr "可以讀取/寫入您的下載"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:334
 msgid "Can read your downloads"
-msgstr ""
+msgstr "可以讀取您的下載"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:218
-#, fuzzy
-#| msgid "Can view and change any settings"
 msgid "Can access and change user settings"
-msgstr "可以檢視並變更任何設定"
+msgstr "可以存取並變更使用者設定"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:355 src/gs-safety-context-dialog.c:202
-#, fuzzy
-#| msgid "Uses an old, insecure display system"
 msgid "Uses a legacy windowing system"
-msgstr "使用舊式、不安全的顯示系統"
+msgstr "使用舊式視窗顯示系統"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
@@ -1257,14 +1178,14 @@ msgstr "可以獲得任意取用權"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:388 src/gs-safety-context-dialog.c:143
 msgid "Reviewed by your distribution"
-msgstr ""
+msgstr "經您的散布版檢閱過"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:395 src/gs-safety-context-dialog.c:140
 msgid "Provided by a third party"
-msgstr ""
+msgstr "由第三方提供"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
@@ -1281,18 +1202,14 @@ msgstr "可稽核的程式碼"
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:420
-#, fuzzy
-#| msgid "Software Repository Identified"
 msgid "Software developer is verified"
-msgstr "已識明軟體庫"
+msgstr "軟體開發者已通過核驗"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:429
-#, fuzzy
-#| msgid "Your OS is no longer supported."
 msgid "Software no longer supported"
-msgstr "您的作業系統已不再有支援。"
+msgstr "軟體不再支援"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1310,112 +1227,104 @@ msgstr "您的作業系統已不再有支援。"
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
 #: src/gs-app-context-bar.c:441 src/gs-app-context-bar.c:702
 msgid "; "
-msgstr ""
+msgstr "；"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:449
 msgid "Safe"
-msgstr ""
+msgstr "安全"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:456
 msgid "Potentially Unsafe"
-msgstr ""
+msgstr "潛在不安全"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-app-context-bar.c:463
 msgid "Unsafe"
-msgstr ""
+msgstr "不安全"
 
 #: src/gs-app-context-bar.c:542 src/gs-app-context-bar.c:574
 #: src/gs-hardware-support-context-dialog.c:588
 msgid "Mobile Only"
-msgstr ""
+msgstr "僅行動裝置"
 
 #: src/gs-app-context-bar.c:543
 msgid "Only works on a small screen"
-msgstr ""
+msgstr "僅能在小螢幕上運作"
 
 #: src/gs-app-context-bar.c:548 src/gs-app-context-bar.c:581
 #: src/gs-app-context-bar.c:588 src/gs-app-context-bar.c:628
 #: src/gs-app-context-bar.c:633 src/gs-hardware-support-context-dialog.c:568
 msgid "Desktop Only"
-msgstr ""
+msgstr "僅桌面型電腦"
 
 #: src/gs-app-context-bar.c:549
 msgid "Only works on a large screen"
-msgstr ""
+msgstr "僅能在大螢幕上運作"
 
 #: src/gs-app-context-bar.c:553 src/gs-hardware-support-context-dialog.c:606
 msgid "Screen Size Mismatch"
-msgstr ""
+msgstr "螢幕大小不符"
 
 #: src/gs-app-context-bar.c:554 src/gs-hardware-support-context-dialog.c:607
 msgid "Doesn’t support your current screen size"
-msgstr ""
+msgstr "不支援您目前的螢幕大小"
 
 #: src/gs-app-context-bar.c:575 src/gs-hardware-support-context-dialog.c:659
 #: src/gs-hardware-support-context-dialog.c:665
 msgid "Requires a touchscreen"
-msgstr ""
+msgstr "需要觸控板"
 
 #: src/gs-app-context-bar.c:582 src/gs-hardware-support-context-dialog.c:619
 #: src/gs-hardware-support-context-dialog.c:625
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires a keyboard"
-msgstr "必須重新啟動"
+msgstr "需要鍵盤"
 
 #: src/gs-app-context-bar.c:589
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires a mouse"
-msgstr "必須重新啟動"
+msgstr "需要滑鼠"
 
 #: src/gs-app-context-bar.c:600
 msgid "Gamepad Needed"
-msgstr ""
+msgstr "需要遊戲控制器"
 
 #: src/gs-app-context-bar.c:601
 msgid "Requires a gamepad to play"
-msgstr ""
+msgstr "需要可以玩的遊戲控制器"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
 #: src/gs-app-context-bar.c:615
 msgid "Adaptive"
-msgstr ""
+msgstr "適應性"
 
 #: src/gs-app-context-bar.c:616
 msgid "Works on phones, tablets and desktops"
-msgstr ""
+msgstr "可在手機、平板、桌面上運作"
 
 #: src/gs-app-context-bar.c:629
 msgid "Probably requires a keyboard or mouse"
-msgstr ""
+msgstr "可能需要鍵盤或滑鼠"
 
 #: src/gs-app-context-bar.c:634
 msgid "Works on desktops and laptops"
-msgstr ""
+msgstr "可以在桌面電腦與筆電上運作"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
 #: src/gs-app-context-bar.c:677
-#, fuzzy
-#| msgid "The application contains no age-inappropriate content."
 msgid "Contains no age-inappropriate content"
-msgstr "該應用程式不含年齡不適當內容。"
+msgstr "不含年齡不適當內容"
 
 #: src/gs-app-context-bar.c:726
-#, fuzzy
-#| msgid "No update description available."
 msgid "No age rating information available"
-msgstr "未提供更新的詳細資訊。"
+msgstr "沒有年齡分級資訊"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
