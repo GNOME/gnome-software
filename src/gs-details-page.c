@@ -259,7 +259,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 		return;
 	}
 
-	origin_ui = gs_app_get_origin_ui (self->app);
+	origin_ui = gs_app_dup_origin_ui (self->app);
 	if (origin_ui != NULL)
 		gtk_menu_button_set_label (GTK_MENU_BUTTON (self->origin_button), origin_ui);
 	else
@@ -529,8 +529,8 @@ app_origin_equal (GsApp *a,
 	if (a == b)
 		return TRUE;
 
-	a_origin_ui = gs_app_get_origin_ui (a);
-	b_origin_ui = gs_app_get_origin_ui (b);
+	a_origin_ui = gs_app_dup_origin_ui (a);
+	b_origin_ui = gs_app_dup_origin_ui (b);
 
 	a_local_file = gs_app_get_local_file (a);
 	b_local_file = gs_app_get_local_file (b);
@@ -1704,8 +1704,8 @@ origin_popover_list_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (a));
 	GsApp *a2 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (b));
-	g_autofree gchar *a1_origin = gs_app_get_origin_ui (a1);
-	g_autofree gchar *a2_origin = gs_app_get_origin_ui (a2);
+	g_autofree gchar *a1_origin = gs_app_dup_origin_ui (a1);
+	g_autofree gchar *a2_origin = gs_app_dup_origin_ui (a2);
 
 	return gs_utils_sort_strcmp (a1_origin, a2_origin);
 }
