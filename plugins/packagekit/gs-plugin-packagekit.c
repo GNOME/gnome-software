@@ -621,7 +621,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
-		for (i = 0; i < gs_app_list_length (addons); i++) {
+		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_state (addon, GS_APP_STATE_INSTALLING);
@@ -636,7 +636,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 error);
 		g_mutex_unlock (&self->task_mutex);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
-			for (i = 0; i < gs_app_list_length (addons); i++) {
+			for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 				GsApp *addon = gs_app_list_index (addons, i);
 				if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING)
 					gs_app_set_state_recover (addon);
@@ -646,7 +646,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 
 		/* state is known */
-		for (i = 0; i < gs_app_list_length (addons); i++) {
+		for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
 			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_state (addon) == GS_APP_STATE_INSTALLING) {
 				gs_app_set_state (addon, GS_APP_STATE_INSTALLED);
