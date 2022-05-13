@@ -2356,6 +2356,11 @@ gs_plugin_packagekit_setup_async (GsPlugin            *plugin,
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GTask) task = NULL;
 
+	g_debug ("PackageKit version: %d.%d.%d",
+		PK_MAJOR_VERSION,
+		PK_MINOR_VERSION,
+		PK_MICRO_VERSION);
+
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_setup_async);
 
