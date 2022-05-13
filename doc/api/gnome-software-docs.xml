@@ -27,7 +27,7 @@
           each one can do things like editing an existing application or adding a
           new application to the result set.
           This is how we can add support for things like firmware updating,
-          Steam, GNOME Shell web-apps and flatpak bundles without making big
+          GNOME Shell web-apps and flatpak bundles without making big
           changes all over the source tree.
         </para>
         <para>
@@ -597,20 +597,12 @@ gs_plugin_example_refine_finish (GsPlugin *plugin,
         <para>
           This allows plugins to care a lot less about how applications are
           going to be shown.
-          For example, the <code>steam</code> plugin downloads and parses the
-          descriptions from a remote service during
-          <code>refresh_metadata_async()</code>, and also finds the best icon types
-          and downloads them too.
-          Then it exports the data to an AppStream XML file, saving it to your
-          home directory.
-          This allows all the applications to be easily created (and then refined)
-          using something as simple as <code>gs_app_new("steam:foo.desktop")</code>.
-          All the search tokenisation and matching is done automatically,
-          so it makes the plugin much simpler and faster.
+          For example, the <code>flatpak</code> plugin downloads AppStream data
+          for configured remotes during <code>refresh_metadata_async()</code>.
         </para>
         <para>
-          The only extra step the steam plugin needs to do is implement the
-          <code>gs_plugin_adopt_app()</code> function.
+          The only extra step a plugin providing its own apps needs to do
+          is to implement the <code>gs_plugin_adopt_app()</code> function.
           This is called when an application does not have a management plugin
           set, and allows the plugin to <emphasis>claim</emphasis> the
           application for itself so it can handle installation, removal and
