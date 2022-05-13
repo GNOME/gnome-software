@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include "gs-os-release.h"
 #include "gs-debug.h"
 
 struct _GsDebug
@@ -273,5 +274,22 @@ gs_debug_set_verbose (GsDebug  *self,
 {
 	g_return_if_fail (GS_IS_DEBUG (self));
 
-	g_atomic_int_set (&self->verbose, verbose);
+	/* If we’re changing from !verbose → verbose, print OS information.
+	 * This is helpful in verbose logs when people file bug reports. */
+	if (g_atomic_int_compare_and_exchange (&self->verbose, !verbose, verbose) &&
+	    verbose) {
+		g_autoptr(GsOsRelease) os_release = NULL;
+		g_autoptr(GError) error = NULL;
+
+		g_debug (PACKAGE_NAME " " PACKAGE_VERSION);
+
+		os_release = gs_os_release_new (&error);
+		if (os_release) {
+			g_debug ("OS: %s; %s",
+				gs_os_release_get_name (os_release),
+				gs_os_release_get_version (os_release));
+		} else {
+			g_debug ("Failed to get OS Release information: %s", error->message);
+		}
+	}
 }
