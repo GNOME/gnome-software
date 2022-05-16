@@ -36,6 +36,7 @@
 #include "gs-age-rating-context-dialog.h"
 #include "gs-app.h"
 #include "gs-app-context-bar.h"
+#include "gs-common.h"
 #include "gs-hardware-support-context-dialog.h"
 #include "gs-safety-context-dialog.h"
 #include "gs-storage-context-dialog.h"
@@ -116,6 +117,7 @@ static void
 update_storage_tile (GsAppContextBar *self)
 {
 	g_autofree gchar *lozenge_text = NULL;
+	gboolean lozenge_text_is_markup = FALSE;
 	const gchar *title;
 	g_autofree gchar *description = NULL;
 	guint64 size_bytes;
@@ -199,10 +201,13 @@ update_storage_tile (GsAppContextBar *self)
 		 * This is displayed in a context tile, so the string should be short. */
 		description = g_strdup (_("Size is unknown"));
 	} else {
-		lozenge_text = g_format_size (size_bytes);
+		lozenge_text = gs_utils_format_size (size_bytes, &lozenge_text_is_markup);
 	}
 
-	gtk_label_set_text (GTK_LABEL (self->tiles[STORAGE_TILE].lozenge_content), lozenge_text);
+	if (lozenge_text_is_markup)
+		gtk_label_set_markup (GTK_LABEL (self->tiles[STORAGE_TILE].lozenge_content), lozenge_text);
+	else
+		gtk_label_set_text (GTK_LABEL (self->tiles[STORAGE_TILE].lozenge_content), lozenge_text);
 	gtk_label_set_text (self->tiles[STORAGE_TILE].title, title);
 	gtk_label_set_text (self->tiles[STORAGE_TILE].description, description);
 }

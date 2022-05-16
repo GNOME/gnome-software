@@ -303,6 +303,41 @@ gs_context_dialog_row_get_content (GsContextDialogRow *self)
 }
 
 /**
+ * gs_context_dialog_row_get_content_is_markup:
+ * @self: a #GsContextDialogRow
+ *
+ * Get whether the #GsContextDialogRow:content is markup.
+ *
+ * Returns: %TRUE when then content text is markup
+ * Since: 43
+ */
+gboolean
+gs_context_dialog_row_get_content_is_markup (GsContextDialogRow *self)
+{
+	g_return_val_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self), FALSE);
+
+	return gtk_label_get_use_markup (self->lozenge_content_text);
+}
+
+/**
+ * gs_context_dialog_row_set_content_is_markup:
+ * @self: a #GsContextDialogRow
+ * @is_markup: value to set
+ *
+ * Set to %TRUE, when the #GsContextDialogRow:content is markup.
+ *
+ * Since: 43
+ */
+void
+gs_context_dialog_row_set_content_is_markup (GsContextDialogRow *self,
+					     gboolean is_markup)
+{
+	g_return_if_fail (GS_IS_CONTEXT_DIALOG_ROW (self));
+
+	gtk_label_set_use_markup (self->lozenge_content_text, is_markup);
+}
+
+/**
  * gs_context_dialog_row_get_importance:
  * @self: a #GsContextDialogRow
  *

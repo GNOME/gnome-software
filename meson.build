@@ -157,6 +157,11 @@ libadwaita = dependency('libadwaita-1',
   ]
 )
 
+# This should be available in GLib 2.74
+if meson.get_compiler('c').has_header_symbol('glib.h', 'G_FORMAT_SIZE_ONLY_VALUE', dependencies: glib)
+  conf.set('HAVE_G_FORMAT_SIZE_ONLY_VALUE', '1')
+endif
+
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),
   default_options: [
