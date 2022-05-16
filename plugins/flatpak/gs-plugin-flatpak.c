@@ -1170,6 +1170,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* get any new state */
+	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_UNKNOWN, 0);
+
 	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, interactive, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
