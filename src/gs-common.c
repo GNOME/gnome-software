@@ -935,3 +935,42 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 				ready_callback,
 				user_data);
 }
+
+/**
+ * gs_utils_format_size:
+ * @size_bytes: size to format, in bytes
+ * @out_is_markup: (out) (not nullable): stores whther the returned string is a markup
+ *
+ * Similar to `g_format_size`, only splits the value and the unit into
+ * separate parts and draws the unit with a smaller font, in case
+ * the relevant code is available in GLib while compiling.
+ *
+ * The @out_is_markup is always set, providing the information about
+ * used format of the returned string.
+ *
+ * Returns: (transfer full): a new string, containing the @size_bytes formatted as string
+ *
+ * Since: 43
+ **/
+gchar *
+gs_utils_format_size (guint64 size_bytes,
+		      gboolean *out_is_markup)
+{
+#ifdef HAVE_G_FORMAT_SIZE_ONLY_VALUE
+	g_autofree gchar *value_str = g_format_size_full (size_bytes, G_FORMAT_SIZE_ONLY_VALUE);
+	g_autofree gchar *unit_str = g_format_size_full (size_bytes, G_FORMAT_SIZE_ONLY_UNIT);
+	g_autofree gchar *value_escaped = g_markup_escape_text (value_str, -1);
+	g_autofree gchar *unit_escaped = g_markup_printf_escaped ("<span font_size='x-small'>%s</span>", unit_str);
+	g_return_val_if_fail (out_is_markup != NULL, NULL);
+	*out_is_markup = TRUE;
+	/* Translators: This is to construct a disk size string consisting of the value and its unit, while
+	 * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
+	 * Make sure you'll preserve the no break space between the values.
+	 * Example result: "13.0 MB" */
+	return g_strdup_printf (C_("format-size", "%s\302\240%s"), value_escaped, unit_escaped);
+#else /* HAVE_G_FORMAT_SIZE_ONLY_VALUE */
+	g_return_val_if_fail (out_is_markup != NULL, NULL);
+	*out_is_markup = FALSE;
+	return g_format_size (size_bytes);
+#endif /* HAVE_G_FORMAT_SIZE_ONLY_VALUE */
+}
