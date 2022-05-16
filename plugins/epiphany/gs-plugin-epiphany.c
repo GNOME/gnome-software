@@ -355,7 +355,7 @@ static gboolean ensure_installed_apps_cache (GsPluginEpiphany  *self,
 					     GCancellable      *cancellable,
 					     GError           **error);
 
-/* Run in @worker */
+/* Run in @worker. The caller must have already done ensure_installed_apps_cache() */
 static void
 gs_epiphany_refine_app_state (GsPlugin *plugin,
 			      GsApp    *app)
@@ -366,13 +366,7 @@ gs_epiphany_refine_app_state (GsPlugin *plugin,
 
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 		g_autoptr(GsApp) cached_app = NULL;
-		g_autoptr(GError) local_error = NULL;
 		const char *appstream_source;
-
-		if (!ensure_installed_apps_cache (self, NULL, &local_error)) {
-			g_warning ("Failed to refresh installed apps cache: %s", local_error->message);
-			return;
-		}
 
 		/* If we have a cached app, set the state from there. Otherwise
 		 * only set the state to available if the app came from
@@ -823,6 +817,11 @@ refine_thread_cb (GTask        *task,
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
+
+	if (!ensure_installed_apps_cache (self, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
