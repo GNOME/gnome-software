@@ -2223,6 +2223,10 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	g_return_if_fail (app != runtime);
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->runtime, runtime);
+
+	/* The runtime adds to the main app’s sizes. */
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE]);
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES]);
 }
 
 /**
