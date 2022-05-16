@@ -98,7 +98,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
+	gtk_spinner_stop (GTK_SPINNER (dialog->spinner));
 
 	/* error */
 	if (list == NULL) {
@@ -151,7 +151,7 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
 
-	gs_start_spinner (GTK_SPINNER (dialog->spinner));
+	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,

@@ -459,7 +459,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* stop the spinner */
-	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
+	gtk_spinner_stop (GTK_SPINNER (dialog->spinner));
 
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
@@ -754,7 +754,7 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 			       NULL);
 	set_plugin_loader (dialog, plugin_loader);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
-	gs_start_spinner (GTK_SPINNER (dialog->spinner));
+	gtk_spinner_start (GTK_SPINNER (dialog->spinner));
 	reload_third_party_repos (dialog);
 
 	return GTK_WIDGET (dialog);

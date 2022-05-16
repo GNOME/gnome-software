@@ -196,7 +196,7 @@ gs_moderate_page_refine_unvoted_reviews_cb (GObject      *source_object,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
-	gs_stop_spinner (GTK_SPINNER (self->spinner_install));
+	gtk_spinner_stop (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
@@ -254,7 +254,7 @@ gs_moderate_page_load (GsModeratePage *self)
 					    self->cancellable,
 					    gs_moderate_page_refine_unvoted_reviews_cb,
 					    self);
-	gs_start_spinner (GTK_SPINNER (self->spinner_install));
+	gtk_spinner_start (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 

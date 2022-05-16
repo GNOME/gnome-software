@@ -537,3 +537,25 @@ row.app > box.header > image {
 row.app label.warning {
   color: #cc0000;
 }
+
+/**************
+ * GtkSpinner *
+ **************/
+
+/* Ensure the spinner is hidden before the animation is triggered. */
+@keyframes pre-delay {
+  from { opacity: 0; }
+  to { opacity: 0; }
+}
+
+/* We don't use the opacity CSS property because it's used by the spinner and we
+ * want to leave it untouched. */
+@keyframes fade-in {
+  from { filter: opacity(0%); }
+}
+
+/* Give a fade-in animation to spinners. */
+spinner.fade-in:checked {
+  animation: pre-delay 0.5s linear 1, fade-in 1s linear 1, spin 1s linear infinite;
+  animation-delay: 0s, 0.5s, 0.5s;
+}

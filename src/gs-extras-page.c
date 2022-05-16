@@ -194,12 +194,12 @@ gs_extras_page_update_ui_state (GsExtrasPage *self)
 	/* main spinner */
 	switch (self->state) {
 	case GS_EXTRAS_PAGE_STATE_LOADING:
-		gs_start_spinner (GTK_SPINNER (self->spinner));
+		gtk_spinner_start (GTK_SPINNER (self->spinner));
 		break;
 	case GS_EXTRAS_PAGE_STATE_READY:
 	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
 	case GS_EXTRAS_PAGE_STATE_FAILED:
-		gs_stop_spinner (GTK_SPINNER (self->spinner));
+		gtk_spinner_stop (GTK_SPINNER (self->spinner));
 		break;
 	default:
 		g_assert_not_reached ();
