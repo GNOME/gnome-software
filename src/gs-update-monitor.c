@@ -124,6 +124,7 @@ check_updates_kind (GsAppList *apps,
 
 	for (ii = 0; ii < len && (!has_important || all_downloaded || !any_downloaded); ii++) {
 		gboolean is_important;
+		guint64 size_download_bytes;
 
 		app = gs_app_list_index (apps, ii);
 
@@ -132,7 +133,8 @@ check_updates_kind (GsAppList *apps,
 
 		/* took from gs-updates-section.c: _all_offline_updates_downloaded();
 		   the app is considered downloaded, when its download size is 0 */
-		if (gs_app_get_size_download (app)) {
+		if (gs_app_get_size_download (app, &size_download_bytes) != GS_SIZE_TYPE_VALID ||
+		    size_download_bytes != 0) {
 			all_downloaded = FALSE;
 		} else {
 			any_downloaded = TRUE;
@@ -553,9 +555,12 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 			"security-timestamp", "x", &security_timestamp_old);
 	for (guint i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
+		guint64 size_download_bytes;
+		GsSizeType size_download_type = gs_app_get_size_download (app, &size_download_bytes);
+
 		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL &&
-		    gs_app_get_size_download (app) > 0 &&
-		    gs_app_get_size_download (app) != GS_APP_SIZE_UNKNOWABLE) {
+		    size_download_type == GS_SIZE_TYPE_VALID &&
+		    size_download_bytes > 0) {
 			security_timestamp = (guint64) g_get_monotonic_time ();
 			break;
 		}

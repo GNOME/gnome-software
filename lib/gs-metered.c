@@ -257,13 +257,13 @@ gs_metered_block_app_on_download_scheduler (GsApp         *app,
 {
 	g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
 	g_autoptr(GVariant) parameters = NULL;
-	guint64 download_size = gs_app_get_size_download (app);
+	guint64 download_size;
 
 	/* Currently no plugins support resumable downloads. This may change in
 	 * future, in which case this parameter should be refactored. */
 	g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
 
-	if (download_size != 0 && download_size != GS_APP_SIZE_UNKNOWABLE) {
+	if (gs_app_get_size_download (app, &download_size) == GS_SIZE_TYPE_VALID) {
 		g_variant_dict_insert (&parameters_dict, "size-minimum", "t", download_size);
 		g_variant_dict_insert (&parameters_dict, "size-maximum", "t", download_size);
 	}

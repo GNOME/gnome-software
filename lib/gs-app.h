@@ -171,7 +171,25 @@ typedef enum {
 
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
-#define	GS_APP_SIZE_UNKNOWABLE			G_MAXUINT64
+
+/**
+ * GsSizeType:
+ * @GS_SIZE_TYPE_UNKNOWN:	Size is unknown
+ * @GS_SIZE_TYPE_UNKNOWABLE:	Size is unknown and is impossible to calculate
+ * @GS_SIZE_TYPE_VALID:		Size is known and valid
+ *
+ * Types of download or file size for applications.
+ *
+ * These are used to represent the validity of properties like
+ * #GsApp:size-download.
+ *
+ * Since: 43
+ */
+typedef enum {
+	GS_SIZE_TYPE_UNKNOWN,
+	GS_SIZE_TYPE_UNKNOWABLE,
+	GS_SIZE_TYPE_VALID,
+} GsSizeType;
 
 /**
  * GsAppQuality:
@@ -412,22 +430,32 @@ AsProvided	*gs_app_get_provided_for_kind	(GsApp		*app,
 void		 gs_app_add_provided_item	(GsApp		*app,
 						 AsProvidedKind kind,
 						 const gchar	*item);
-guint64		 gs_app_get_size_installed	(GsApp		*app);
+GsSizeType	 gs_app_get_size_installed	(GsApp		*app,
+						 guint64	*size_bytes_out);
 void		 gs_app_set_size_installed	(GsApp		*app,
-						 guint64	 size_installed);
-guint64		 gs_app_get_size_installed_dependencies
-						(GsApp		*app);
-guint64		 gs_app_get_size_user_data	(GsApp		*app);
+						 GsSizeType	 size_type,
+						 guint64	 size_bytes);
+GsSizeType	 gs_app_get_size_installed_dependencies
+						(GsApp		*app,
+						 guint64	*size_bytes_out);
+GsSizeType	 gs_app_get_size_user_data	(GsApp		*app,
+						 guint64	*size_bytes_out);
 void		 gs_app_set_size_user_data	(GsApp		*app,
-						 guint64	 size_user_data);
-guint64		 gs_app_get_size_cache_data	(GsApp		*app);
+						 GsSizeType	 size_type,
+						 guint64	 size_bytes);
+GsSizeType	 gs_app_get_size_cache_data	(GsApp		*app,
+						 guint64	*size_bytes_out);
 void		 gs_app_set_size_cache_data	(GsApp		*app,
-						 guint64	 size_cache_data);
-guint64		 gs_app_get_size_download	(GsApp		*app);
+						 GsSizeType	 size_type,
+						 guint64	 size_bytes);
+GsSizeType	 gs_app_get_size_download	(GsApp		*app,
+						 guint64	*size_bytes_out);
 void		 gs_app_set_size_download	(GsApp		*app,
-						 guint64	 size_download);
-guint64		 gs_app_get_size_download_dependencies
-						(GsApp		*app);
+						 GsSizeType	 size_type,
+						 guint64	 size_bytes);
+GsSizeType	 gs_app_get_size_download_dependencies
+						(GsApp		*app,
+						 guint64	*size_bytes_out);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);
 void		 gs_app_add_addons		(GsApp		*app,

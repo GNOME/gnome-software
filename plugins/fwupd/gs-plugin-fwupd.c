@@ -538,7 +538,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 
 	/* already downloaded, so overwrite */
 	if (g_file_test (filename_cache, G_FILE_TEST_EXISTS))
-		gs_app_set_size_download (app, 0);
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
 	/* actually add the application */
 	file = g_file_new_for_path (filename_cache);
@@ -1066,7 +1066,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 		if (!download_success)
 			return FALSE;
 	}
-	gs_app_set_size_download (app, 0);
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	return TRUE;
 }
 

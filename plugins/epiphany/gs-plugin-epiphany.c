@@ -549,7 +549,7 @@ list_installed_apps_thread_cb (GTask        *task,
 			gs_app_set_install_date (app, install_date);
 		}
 		if (desktop_size > 0 || icon_size > 0) {
-			gs_app_set_size_installed (app, desktop_size + icon_size);
+			gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, desktop_size + icon_size);
 		}
 		gs_app_list_add (list, app);
 	}

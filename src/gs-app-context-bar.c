@@ -121,21 +121,25 @@ update_storage_tile (GsAppContextBar *self)
 	const gchar *title;
 	g_autofree gchar *description = NULL;
 	guint64 size_bytes;
+	GsSizeType size_type;
 
 	g_assert (self->app != NULL);
 
 	if (gs_app_is_installed (self->app)) {
-		guint64 size_installed = gs_app_get_size_installed (self->app);
-		guint64 size_user_data = gs_app_get_size_user_data (self->app);
-		guint64 size_cache_data = gs_app_get_size_cache_data (self->app);
+		guint64 size_installed, size_user_data, size_cache_data;
+		GsSizeType size_installed_type, size_user_data_type, size_cache_data_type;
 		g_autofree gchar *size_user_data_str = NULL;
 		g_autofree gchar *size_cache_data_str = NULL;
 
+		size_installed_type = gs_app_get_size_installed (self->app, &size_installed);
+		size_user_data_type = gs_app_get_size_user_data (self->app, &size_user_data);
+		size_cache_data_type = gs_app_get_size_cache_data (self->app, &size_cache_data);
+
 		/* Treat `0` sizes as `unknown`, to not show `0 bytes` in the text. */
 		if (size_user_data == 0)
-			size_user_data = GS_APP_SIZE_UNKNOWABLE;
+			size_user_data_type = GS_SIZE_TYPE_UNKNOWN;
 		if (size_cache_data == 0)
-			size_cache_data = GS_APP_SIZE_UNKNOWABLE;
+			size_cache_data_type = GS_SIZE_TYPE_UNKNOWN;
 
 		/* If any installed sizes are unknowable, ignore them. This
 		 * means the stated installed size is a lower bound on the
@@ -144,9 +148,10 @@ update_storage_tile (GsAppContextBar *self)
 		 * because uninstalling the app won’t reclaim that space unless
 		 * it’s the last app using those dependencies. */
 		size_bytes = size_installed;
-		if (size_user_data != GS_APP_SIZE_UNKNOWABLE)
+		size_type = size_installed_type;
+		if (size_user_data_type == GS_SIZE_TYPE_VALID)
 			size_bytes += size_user_data;
-		if (size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+		if (size_cache_data_type == GS_SIZE_TYPE_VALID)
 			size_bytes += size_cache_data;
 
 		size_user_data_str = g_format_size (size_user_data);
@@ -156,30 +161,35 @@ update_storage_tile (GsAppContextBar *self)
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Installed Size");
 
-		if (size_user_data != GS_APP_SIZE_UNKNOWABLE && size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+		if (size_user_data_type == GS_SIZE_TYPE_VALID && size_cache_data_type == GS_SIZE_TYPE_VALID)
 			description = g_strdup_printf (_("Includes %s of data and %s of cache"),
 						       size_user_data_str, size_cache_data_str);
-		else if (size_user_data != GS_APP_SIZE_UNKNOWABLE)
+		else if (size_user_data_type == GS_SIZE_TYPE_VALID)
 			description = g_strdup_printf (_("Includes %s of data"),
 						       size_user_data_str);
-		else if (size_cache_data != GS_APP_SIZE_UNKNOWABLE)
+		else if (size_cache_data_type == GS_SIZE_TYPE_VALID)
 			description = g_strdup_printf (_("Includes %s of cache"),
 						       size_cache_data_str);
 		else
 			description = g_strdup (_("Cache and data usage unknown"));
 	} else {
-		guint64 app_download_size_bytes = gs_app_get_size_download (self->app);
-		guint64 dependencies_download_size_bytes = gs_app_get_size_download_dependencies (self->app);
+		guint64 app_download_size_bytes, dependencies_download_size_bytes;
+		GsSizeType app_download_size_type, dependencies_download_size_type;
+
+		app_download_size_type = gs_app_get_size_download (self->app, &app_download_size_bytes);
+		dependencies_download_size_type = gs_app_get_size_download_dependencies (self->app, &dependencies_download_size_bytes);
 
 		size_bytes = app_download_size_bytes;
+		size_type = app_download_size_type;
 
 		/* Translators: The download size of an application.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Download Size");
 
-		if (dependencies_download_size_bytes == 0) {
+		if (dependencies_download_size_type == GS_SIZE_TYPE_VALID &&
+		    dependencies_download_size_bytes == 0) {
 			description = g_strdup (_("Needs no additional system downloads"));
-		} else if (dependencies_download_size_bytes == GS_APP_SIZE_UNKNOWABLE) {
+		} else if (dependencies_download_size_type != GS_SIZE_TYPE_VALID) {
 			description = g_strdup (_("Needs an unknown size of additional system downloads"));
 		} else {
 			g_autofree gchar *size = g_format_size (dependencies_download_size_bytes);
@@ -189,7 +199,7 @@ update_storage_tile (GsAppContextBar *self)
 		}
 	}
 
-	if (size_bytes == 0 || size_bytes == GS_APP_SIZE_UNKNOWABLE) {
+	if (size_type != GS_SIZE_TYPE_VALID) {
 		/* Translators: This is displayed for the download size in an
 		 * app’s context tile if the size is unknown. It should be short
 		 * (at most a couple of characters wide). */

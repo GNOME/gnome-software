@@ -1429,9 +1429,12 @@ get_snaps_cb (GObject      *object,
 		if (local_snap != NULL) {
 			SnapdApp *snap_app;
 			GDateTime *install_date;
+			gint64 installed_size_bytes;
 
 			install_date = snapd_snap_get_install_date (local_snap);
-			gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
+			installed_size_bytes = snapd_snap_get_installed_size (local_snap);
+
+			gs_app_set_size_installed (app, (installed_size_bytes > 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, (guint64) installed_size_bytes);
 			gs_app_set_install_date (app, install_date != NULL ? g_date_time_to_unix (install_date) : GS_APP_INSTALL_DATE_UNKNOWN);
 
 			snap_app = get_primary_app (local_snap);
@@ -1445,9 +1448,13 @@ get_snaps_cb (GObject      *object,
 
 		/* add information specific to store snaps */
 		if (store_snap != NULL) {
+			gint64 download_size_bytes;
+
 			gs_app_set_origin (app, self->store_name);
 			gs_app_set_origin_hostname (app, self->store_hostname);
-			gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
+
+			download_size_bytes = snapd_snap_get_download_size (store_snap);
+			gs_app_set_size_download (app, (download_size_bytes > 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, (guint64) download_size_bytes);
 
 			if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS && gs_app_get_screenshots (app)->len == 0)
 				refine_screenshots (app, store_snap);
@@ -1460,14 +1467,14 @@ get_snaps_cb (GObject      *object,
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
 		    gs_app_is_installed (app) &&
 		    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
-			if (gs_app_get_size_cache_data (app) == GS_APP_SIZE_UNKNOWABLE)
-				gs_app_set_size_cache_data (app, gs_snap_get_app_directory_size (snap_name, TRUE, cancellable));
-			if (gs_app_get_size_user_data (app) == GS_APP_SIZE_UNKNOWABLE)
-				gs_app_set_size_user_data (app, gs_snap_get_app_directory_size (snap_name, FALSE, cancellable));
+			if (gs_app_get_size_cache_data (app, NULL) != GS_SIZE_TYPE_VALID)
+				gs_app_set_size_cache_data (app, GS_SIZE_TYPE_VALID, gs_snap_get_app_directory_size (snap_name, TRUE, cancellable));
+			if (gs_app_get_size_user_data (app, NULL) != GS_SIZE_TYPE_VALID)
+				gs_app_set_size_user_data (app, GS_SIZE_TYPE_VALID, gs_snap_get_app_directory_size (snap_name, FALSE, cancellable));
 
 			if (g_cancellable_is_cancelled (cancellable)) {
-				gs_app_set_size_cache_data (app, GS_APP_SIZE_UNKNOWABLE);
-				gs_app_set_size_user_data (app, GS_APP_SIZE_UNKNOWABLE);
+				gs_app_set_size_cache_data (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
+				gs_app_set_size_user_data (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 			}
 		}
 	}

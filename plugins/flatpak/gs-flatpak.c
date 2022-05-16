@@ -390,10 +390,9 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	} else if (FLATPAK_IS_INSTALLED_REF (xref)) {
 		installed_size = flatpak_installed_ref_get_installed_size (FLATPAK_INSTALLED_REF (xref));
 	}
-	if (installed_size != 0)
-		gs_app_set_size_installed (app, installed_size);
-	if (download_size != 0)
-		gs_app_set_size_download (app, download_size);
+
+	gs_app_set_size_installed (app, (installed_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, installed_size);
+	gs_app_set_size_download (app, (download_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, download_size);
 }
 
 static GsApp *
@@ -1417,8 +1416,7 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self,
 
 	/* this is faster than flatpak_installation_fetch_remote_size_sync() */
 	size_installed = flatpak_installed_ref_get_installed_size (xref);
-	if (size_installed != 0)
-		gs_app_set_size_installed (app, size_installed);
+	gs_app_set_size_installed (app, (size_installed != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, size_installed);
 
 	appdata_version = flatpak_installed_ref_get_appdata_version (xref);
 	if (appdata_version != NULL)
@@ -1941,7 +1939,7 @@ gs_flatpak_add_updates (GsFlatpak *self,
 			gs_app_set_update_details_markup (main_app, NULL);
 			gs_app_set_update_version (main_app, NULL);
 			gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
-			gs_app_set_size_download (main_app, 0);
+			gs_app_set_size_download (main_app, GS_SIZE_TYPE_VALID, 0);
 
 		/* needs download */
 		} else {
@@ -1950,7 +1948,7 @@ gs_flatpak_add_updates (GsFlatpak *self,
 				 flatpak_ref_get_name (FLATPAK_REF (xref)));
 
 			/* get the current download size */
-			if (gs_app_get_size_download (main_app) == 0) {
+			if (gs_app_get_size_download (main_app, NULL) != GS_SIZE_TYPE_VALID) {
 				if (!flatpak_installation_fetch_remote_size_sync (installation,
 										  gs_app_get_origin (app),
 										  FLATPAK_REF (xref),
@@ -1961,9 +1959,9 @@ gs_flatpak_add_updates (GsFlatpak *self,
 					g_warning ("failed to get download size: %s",
 						   error_local->message);
 					g_clear_error (&error_local);
-					gs_app_set_size_download (main_app, GS_APP_SIZE_UNKNOWABLE);
+					gs_app_set_size_download (main_app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 				} else {
-					gs_app_set_size_download (main_app, download_size);
+					gs_app_set_size_download (main_app, GS_SIZE_TYPE_VALID, download_size);
 				}
 			}
 		}
@@ -2741,8 +2739,9 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 			    GError **error)
 {
 	gboolean ret;
-	guint64 download_size = GS_APP_SIZE_UNKNOWABLE;
-	guint64 installed_size = GS_APP_SIZE_UNKNOWABLE;
+	guint64 download_size = 0;
+	guint64 installed_size = 0;
+	GsSizeType size_type = GS_SIZE_TYPE_UNKNOWABLE;
 
 	/* not applicable */
 	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
@@ -2753,11 +2752,11 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	/* already set */
 	if (gs_app_is_installed (app)) {
 		/* only care about the installed size if the app is installed */
-		if (gs_app_get_size_installed (app) > 0)
+		if (gs_app_get_size_installed (app, NULL) == GS_SIZE_TYPE_VALID)
 			return TRUE;
 	} else {
-		if (gs_app_get_size_installed (app) > 0 &&
-		    gs_app_get_size_download (app) > 0)
+		if (gs_app_get_size_installed (app, NULL) == GS_SIZE_TYPE_VALID &&
+		    gs_app_get_size_download (app, NULL) == GS_SIZE_TYPE_VALID)
 		return TRUE;
 	}
 
@@ -2804,8 +2803,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		if (xref == NULL)
 			return FALSE;
 		installed_size = flatpak_installed_ref_get_installed_size (xref);
-		if (installed_size == 0)
-			installed_size = GS_APP_SIZE_UNKNOWABLE;
+		size_type = (installed_size > 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWABLE;
 	} else {
 		g_autoptr(FlatpakRef) xref = NULL;
 		g_autoptr(GError) error_local = NULL;
@@ -2834,11 +2832,13 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 			g_warning ("libflatpak failed to return application "
 				   "size: %s", error_local->message);
 			g_clear_error (&error_local);
+		} else {
+			size_type = GS_SIZE_TYPE_VALID;
 		}
 	}
 
-	gs_app_set_size_installed (app, installed_size);
-	gs_app_set_size_download (app, download_size);
+	gs_app_set_size_installed (app, size_type, installed_size);
+	gs_app_set_size_download (app, size_type, download_size);
 
 	return TRUE;
 }
@@ -3260,15 +3260,17 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE_DATA) != 0 &&
 	    gs_app_is_installed (app) &&
 	    gs_app_get_kind (app) != AS_COMPONENT_KIND_RUNTIME) {
-		if (gs_app_get_size_cache_data (app) == GS_APP_SIZE_UNKNOWABLE)
-			gs_app_set_size_cache_data (app, gs_flatpak_get_app_directory_size (app, "cache", cancellable));
-		if (gs_app_get_size_user_data (app) == GS_APP_SIZE_UNKNOWABLE)
-			gs_app_set_size_user_data (app, gs_flatpak_get_app_directory_size (app, "config", cancellable) +
-							gs_flatpak_get_app_directory_size (app, "data", cancellable));
+		if (gs_app_get_size_cache_data (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_cache_data (app, GS_SIZE_TYPE_VALID,
+						    gs_flatpak_get_app_directory_size (app, "cache", cancellable));
+		if (gs_app_get_size_user_data (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_user_data (app, GS_SIZE_TYPE_VALID,
+						   gs_flatpak_get_app_directory_size (app, "config", cancellable) +
+						   gs_flatpak_get_app_directory_size (app, "data", cancellable));
 
 		if (g_cancellable_is_cancelled (cancellable)) {
-			gs_app_set_size_cache_data (app, GS_APP_SIZE_UNKNOWABLE);
-			gs_app_set_size_user_data (app, GS_APP_SIZE_UNKNOWABLE);
+			gs_app_set_size_cache_data (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
+			gs_app_set_size_user_data (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 		}
 	}
 
@@ -3530,7 +3532,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_BUNDLE);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
-	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
+	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, flatpak_bundle_ref_get_installed_size (xref_bundle));
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
 	metadata = flatpak_bundle_ref_get_metadata (xref_bundle);
 	if (!gs_flatpak_set_app_metadata (self, app,
@@ -3800,10 +3802,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	app = gs_flatpak_create_app (self, remote_name, FLATPAK_REF (remote_ref), NULL, interactive, cancellable);
 #else
 	app = gs_flatpak_create_app (self, remote_name, parsed_ref, NULL, interactive, cancellable);
-	if (app_download_size != 0)
-		gs_app_set_size_download (app, app_download_size);
-	if (app_installed_size != 0)
-		gs_app_set_size_installed (app, app_installed_size);
+	gs_app_set_size_download (app, (app_download_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, app_download_size);
+	gs_app_set_size_installed (app, (app_installed_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, app_installed_size);
 #endif
 
 	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
@@ -3831,11 +3831,9 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			if (g_strcmp0 (runtime_ref, op_ref) == 0) {
 				guint64 installed_size = 0, download_size = 0;
 				download_size = flatpak_transaction_operation_get_download_size (op);
-				if (download_size != 0)
-					gs_app_set_size_download (runtime, download_size);
+				gs_app_set_size_download (runtime, (download_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, download_size);
 				installed_size = flatpak_transaction_operation_get_installed_size (op);
-				if (installed_size != 0)
-					gs_app_set_size_installed (runtime, installed_size);
+				gs_app_set_size_installed (runtime, (installed_size != 0) ? GS_SIZE_TYPE_VALID : GS_SIZE_TYPE_UNKNOWN, installed_size);
 				break;
 			}
 		}

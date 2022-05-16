@@ -276,7 +276,8 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	GString *str = NULL;
 	const gchar *tmp;
 	gboolean missing_search_result;
-	guint64 size = 0;
+	guint64 size_installed_bytes = 0;
+	GsSizeType size_installed_type = GS_SIZE_TYPE_UNKNOWN;
 	g_autoptr(GIcon) icon = NULL;
 
 	if (priv->app == NULL)
@@ -485,11 +486,11 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	/* show the right size */
 	if (priv->show_installed_size) {
-		size = gs_app_get_size_installed (priv->app);
+		size_installed_type = gs_app_get_size_installed (priv->app, &size_installed_bytes);
 	}
-	if (size != GS_APP_SIZE_UNKNOWABLE && size != 0) {
+	if (size_installed_type == GS_SIZE_TYPE_VALID && size_installed_bytes > 0) {
 		g_autofree gchar *sizestr = NULL;
-		sizestr = g_format_size (size);
+		sizestr = g_format_size (size_installed_bytes);
 		gtk_label_set_label (GTK_LABEL (priv->label_app_size), sizestr);
 		gtk_widget_show (priv->label_app_size);
 	} else {

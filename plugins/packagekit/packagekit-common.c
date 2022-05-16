@@ -394,10 +394,10 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 	/* set unavailable state */
 	if (pk_package_get_info (package) == PK_INFO_ENUM_UNAVAILABLE) {
 		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
-		if (gs_app_get_size_installed (app) == 0)
-			gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-		if (gs_app_get_size_download (app) == 0)
-			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+		if (gs_app_get_size_installed (app, NULL) == GS_SIZE_TYPE_UNKNOWN)
+			gs_app_set_size_installed (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
+		if (gs_app_get_size_download (app, NULL) == GS_SIZE_TYPE_UNKNOWN)
+			gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 	}
 	if (gs_app_get_version (app) == NULL)
 		gs_app_set_version (app, pk_package_get_version (package));
@@ -551,20 +551,20 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 
 	/* the size is the size of all sources */
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE) {
-		if (install_size > 0 && gs_app_get_size_installed (app) == 0)
-			gs_app_set_size_installed (app, install_size);
-		if (download_size > 0 && gs_app_get_size_download (app) == 0)
-			gs_app_set_size_download (app, download_size);
+		if (install_size > 0 && gs_app_get_size_installed (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, install_size);
+		if (download_size > 0 && gs_app_get_size_download (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, download_size);
 	} else if (gs_app_is_installed (app)) {
-		if (gs_app_get_size_download (app) == 0)
-			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-		if (install_size > 0 && gs_app_get_size_installed (app) == 0)
-			gs_app_set_size_installed (app, install_size);
+		if (gs_app_get_size_download (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
+		if (install_size > 0 && gs_app_get_size_installed (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, install_size);
 	} else {
-		if (gs_app_get_size_installed (app) == 0)
-			gs_app_set_size_installed (app, install_size > 0 ? install_size : GS_APP_SIZE_UNKNOWABLE);
-		if (download_size > 0 && gs_app_get_size_download (app) == 0)
-			gs_app_set_size_download (app, download_size);
+		if (install_size > 0 && gs_app_get_size_installed (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, install_size);
+		if (download_size > 0 && gs_app_get_size_download (app, NULL) != GS_SIZE_TYPE_VALID)
+			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, download_size);
 	}
 }
 

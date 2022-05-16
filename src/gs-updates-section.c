@@ -288,11 +288,15 @@ _all_offline_updates_downloaded (GsUpdatesSection *self)
 	/* use the download size to figure out what is downloaded and what not */
 	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
 		GsApp *app = gs_app_list_index (self->list, i);
-		guint64 size = gs_app_get_size_download (app);
-		if (size != 0)
+		GsSizeType size_type;
+		guint64 size_bytes;
+
+		size_type = gs_app_get_size_download (app, &size_bytes);
+		if (size_type != GS_SIZE_TYPE_VALID || size_bytes != 0)
 			return FALSE;
-		size = gs_app_get_size_download_dependencies (app);
-		if (size != 0)
+
+		size_type = gs_app_get_size_download_dependencies (app, &size_bytes);
+		if (size_type != GS_SIZE_TYPE_VALID || size_bytes != 0)
 			return FALSE;
 	}
 

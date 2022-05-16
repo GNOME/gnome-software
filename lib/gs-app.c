@@ -101,10 +101,16 @@ typedef struct
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of AsReview */
 	GPtrArray		*provided; /* of AsProvided */
+
+	GsSizeType		 size_installed_type;
 	guint64			 size_installed;
+	GsSizeType		 size_download_type;
 	guint64			 size_download;
+	GsSizeType		 size_user_data_type;
 	guint64			 size_user_data;
+	GsSizeType		 size_cache_data_type;
 	guint64			 size_cache_data;
+
 	AsComponentKind		 kind;
 	GsAppSpecialKind	 special_kind;
 	GsAppState		 state;
@@ -158,11 +164,17 @@ typedef enum {
 	PROP_URL_MISSING,
 	PROP_CONTENT_RATING,
 	PROP_LICENSE,
+	PROP_SIZE_CACHE_DATA_TYPE,
 	PROP_SIZE_CACHE_DATA,
+	PROP_SIZE_DOWNLOAD_TYPE,
 	PROP_SIZE_DOWNLOAD,
+	PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE,
 	PROP_SIZE_DOWNLOAD_DEPENDENCIES,
+	PROP_SIZE_INSTALLED_TYPE,
 	PROP_SIZE_INSTALLED,
+	PROP_SIZE_INSTALLED_DEPENDENCIES_TYPE,
 	PROP_SIZE_INSTALLED_DEPENDENCIES,
+	PROP_SIZE_USER_DATA_TYPE,
 	PROP_SIZE_USER_DATA,
 	PROP_PERMISSIONS,
 	PROP_RELATIONS,
@@ -269,15 +281,27 @@ gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 }
 
 static void
-gs_app_kv_size (GString *str, const gchar *key, guint64 value)
+gs_app_kv_size (GString     *str,
+                const gchar *key,
+                GsSizeType   size_type,
+                guint64      value)
 {
 	g_autofree gchar *tmp = NULL;
-	if (value == GS_APP_SIZE_UNKNOWABLE) {
+
+	switch (size_type) {
+	case GS_SIZE_TYPE_UNKNOWN:
+		gs_app_kv_lpad (str, key, "unknown");
+		break;
+	case GS_SIZE_TYPE_UNKNOWABLE:
 		gs_app_kv_lpad (str, key, "unknowable");
-		return;
+		break;
+	case GS_SIZE_TYPE_VALID:
+		tmp = g_format_size (value);
+		gs_app_kv_lpad (str, key, tmp);
+		break;
+	default:
+		g_assert_not_reached ();
 	}
-	tmp = g_format_size (value);
-	gs_app_kv_lpad (str, key, tmp);
 }
 
 G_GNUC_PRINTF (3, 4)
@@ -515,6 +539,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	const gchar *tmp;
 	guint i;
 	g_autoptr(GsPlugin) management_plugin = NULL;
+	GsSizeType size_download_dependencies_type, size_installed_dependencies_type;
+	guint64 size_download_dependencies_bytes, size_installed_dependencies_bytes;
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (str != NULL);
@@ -681,18 +707,15 @@ gs_app_to_string_append (GsApp *app, GString *str)
 				  G_GUINT64_FORMAT "",
 				  priv->release_date);
 	}
-	if (priv->size_installed != 0)
-		gs_app_kv_size (str, "size-installed", priv->size_installed);
-	if (gs_app_get_size_installed_dependencies (app) != 0)
-		gs_app_kv_size (str, "size-installed-dependencies", gs_app_get_size_installed_dependencies (app));
-	if (priv->size_download != 0)
-		gs_app_kv_size (str, "size-download", gs_app_get_size_download (app));
-	if (gs_app_get_size_download_dependencies (app) != 0)
-		gs_app_kv_size (str, "size-download-dependencies", gs_app_get_size_download_dependencies (app));
-	if (priv->size_cache_data != GS_APP_SIZE_UNKNOWABLE)
-		gs_app_kv_size (str, "size-cache-data", gs_app_get_size_cache_data (app));
-	if (priv->size_user_data != GS_APP_SIZE_UNKNOWABLE)
-		gs_app_kv_size (str, "size-user-data", gs_app_get_size_user_data (app));
+
+	gs_app_kv_size (str, "size-installed", priv->size_installed_type, priv->size_installed);
+	size_installed_dependencies_type = gs_app_get_size_installed_dependencies (app, &size_installed_dependencies_bytes);
+	gs_app_kv_size (str, "size-installed-dependencies", size_installed_dependencies_type, size_installed_dependencies_bytes);
+	gs_app_kv_size (str, "size-download", priv->size_download_type, priv->size_download);
+	size_download_dependencies_type = gs_app_get_size_download_dependencies (app, &size_download_dependencies_bytes);
+	gs_app_kv_size (str, "size-download-dependencies", size_download_dependencies_type, size_download_dependencies_bytes);
+	gs_app_kv_size (str, "size-cache-data", priv->size_cache_data_type, priv->size_cache_data);
+	gs_app_kv_size (str, "size-user-data", priv->size_user_data_type, priv->size_user_data);
 
 	for (i = 0; i < gs_app_list_length (priv->related); i++) {
 		GsApp *app_tmp = gs_app_list_index (priv->related, i);
@@ -2200,6 +2223,10 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	g_return_if_fail (app != runtime);
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->runtime, runtime);
+
+	/* The runtime adds to the main app’s sizes. */
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE]);
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES]);
 }
 
 /**
@@ -3523,227 +3550,412 @@ gs_app_add_provided_item (GsApp *app, AsProvidedKind kind, const gchar *item)
 /**
  * gs_app_get_size_download:
  * @app: A #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the download size, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-download.
+ * Get the values of #GsApp:size-download-type and #GsApp:size-download.
  *
- * Returns: number of bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the download size. Otherwise, its value will be undefined.
  *
- * Since: 3.22
+ * Returns: type of the download size
+ * Since: 43
  **/
-guint64
-gs_app_get_size_download (GsApp *app)
+GsSizeType
+gs_app_get_size_download (GsApp   *app,
+                          guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	return priv->size_download;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (priv->size_download_type == GS_SIZE_TYPE_VALID) ? priv->size_download : 0;
+
+	return priv->size_download_type;
 }
 
 /**
  * gs_app_set_size_download:
  * @app: a #GsApp
- * @size_download: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ * @size_type: type of the download size
+ * @size_bytes: size in bytes
  *
  * Sets the download size of the application, not including any
  * required runtime.
  *
- * Since: 3.22
+ * @size_bytes will be ignored unless @size_type is %GS_SIZE_TYPE_VALID.
+ *
+ * Since: 43
  **/
 void
-gs_app_set_size_download (GsApp *app, guint64 size_download)
+gs_app_set_size_download (GsApp      *app,
+                          GsSizeType  size_type,
+                          guint64     size_bytes)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_download == priv->size_download)
-		return;
-	priv->size_download = size_download;
-	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
+
+	if (size_type != GS_SIZE_TYPE_VALID)
+		size_bytes = 0;
+
+	if (priv->size_download_type != size_type) {
+		priv->size_download_type = size_type;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_TYPE]);
+	}
+
+	if (priv->size_download != size_bytes) {
+		priv->size_download = size_bytes;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD]);
+	}
+}
+
+/* Add two sizes, accounting for their validity, and checking for overflow. This
+ * is essentially `out_bytes = a_bytes + b_bytes` with additional checking.
+ *
+ * If either of @a_type or @b_type is %GS_SIZE_TYPE_UNKNOWN or
+ * %GS_SIZE_TYPE_UNKNOWABLE, that type will be propagated to @out_type.
+ *
+ * If the sum of @a_bytes and @b_bytes exceeds %G_MAXUINT64, the result in
+ * @out_bytes will silently be clamped to %G_MAXUINT64.
+ */
+static gboolean
+add_sizes (GsSizeType  a_type,
+           guint64     a_bytes,
+           GsSizeType  b_type,
+           guint64     b_bytes,
+           GsSizeType *out_type,
+           guint64    *out_bytes)
+{
+	g_return_val_if_fail (out_type != NULL, FALSE);
+	g_return_val_if_fail (out_bytes != NULL, FALSE);
+
+	if (a_type == GS_SIZE_TYPE_VALID && b_type == GS_SIZE_TYPE_VALID) {
+		*out_type = GS_SIZE_TYPE_VALID;
+		if (!g_uint64_checked_add (out_bytes, a_bytes, b_bytes))
+			*out_bytes = G_MAXUINT64;
+		return TRUE;
+	}
+
+	*out_type = (a_type == GS_SIZE_TYPE_UNKNOWABLE || b_type == GS_SIZE_TYPE_UNKNOWABLE) ? GS_SIZE_TYPE_UNKNOWABLE : GS_SIZE_TYPE_UNKNOWN;
+	*out_bytes = 0;
+
+	return FALSE;
 }
 
 /**
  * gs_app_get_size_download_dependencies:
  * @app: A #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the download size of dependencies, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-download-dependencies.
+ * Get the value of #GsApp:size-download-dependencies-type and
+ * #GsApp:size-download-dependencies.
  *
- * Returns: number of bytes, `0` for unknown
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the download size of dependencies. Otherwise, its value will be
+ * undefined.
  *
- * Since: 41
+ * Returns: type of the download size of dependencies
+ * Since: 43
  **/
-guint64
-gs_app_get_size_download_dependencies (GsApp *app)
+GsSizeType
+gs_app_get_size_download_dependencies (GsApp   *app,
+                                       guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	guint64 sz = 0;
+	GsSizeType size_type = GS_SIZE_TYPE_VALID;
+	guint64 size_bytes = 0;
 
-	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
 	/* add the runtime if this is not installed */
-	if (priv->runtime != NULL) {
-		if (gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE)
-			sz += gs_app_get_size_download (priv->runtime) +
-			      gs_app_get_size_download_dependencies (priv->runtime);
+	if (priv->runtime != NULL &&
+	    gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE) {
+		GsSizeType runtime_size_download_type, runtime_size_download_dependencies_type;
+		guint64 runtime_size_download_bytes, runtime_size_download_dependencies_bytes;
+
+		runtime_size_download_type = gs_app_get_size_download (priv->runtime, &runtime_size_download_bytes);
+
+		if (add_sizes (size_type, size_bytes,
+			       runtime_size_download_type, runtime_size_download_bytes,
+			       &size_type, &size_bytes)) {
+			runtime_size_download_dependencies_type = gs_app_get_size_download_dependencies (priv->runtime, &runtime_size_download_dependencies_bytes);
+
+			add_sizes (size_type, size_bytes,
+				   runtime_size_download_dependencies_type, runtime_size_download_dependencies_bytes,
+				   &size_type, &size_bytes);
+		}
 	}
 
 	/* add related apps */
 	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
 		GsApp *app_related = gs_app_list_index (priv->related, i);
-		sz += gs_app_get_size_download (app_related) +
-		      gs_app_get_size_download_dependencies (app_related);
+		GsSizeType related_size_download_type, related_size_download_dependencies_type;
+		guint64 related_size_download_bytes, related_size_download_dependencies_bytes;
+
+		related_size_download_type = gs_app_get_size_download (app_related, &related_size_download_bytes);
+
+		if (!add_sizes (size_type, size_bytes,
+				related_size_download_type, related_size_download_bytes,
+				&size_type, &size_bytes))
+			break;
+
+		related_size_download_dependencies_type = gs_app_get_size_download_dependencies (app_related, &related_size_download_dependencies_bytes);
+
+		if (!add_sizes (size_type, size_bytes,
+				related_size_download_dependencies_type, related_size_download_dependencies_bytes,
+				&size_type, &size_bytes))
+			break;
 	}
 
-	return sz;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
+
+	return size_type;
 }
 
 /**
  * gs_app_get_size_installed:
  * @app: a #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the installed size, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-installed.
+ * Get the values of #GsApp:size-installed-type and #GsApp:size-installed.
  *
- * Returns: size in bytes, `0` for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the installed size. Otherwise, its value will be undefined.
  *
- * Since: 3.22
+ * Returns: type of the installed size
+ * Since: 43
  **/
-guint64
-gs_app_get_size_installed (GsApp *app)
+GsSizeType
+gs_app_get_size_installed (GsApp   *app,
+                           guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	return priv->size_installed;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (priv->size_installed_type == GS_SIZE_TYPE_VALID) ? priv->size_installed : 0;
+
+	return priv->size_installed_type;
 }
 
 /**
  * gs_app_set_size_installed:
  * @app: a #GsApp
- * @size_installed: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ * @size_type: type of the installed size
+ * @size_bytes: size in bytes
  *
  * Sets the installed size of the application.
  *
- * Since: 3.22
+ * @size_bytes will be ignored unless @size_type is %GS_SIZE_TYPE_VALID.
+ *
+ * Since: 43
  **/
 void
-gs_app_set_size_installed (GsApp *app, guint64 size_installed)
+gs_app_set_size_installed (GsApp      *app,
+                           GsSizeType  size_type,
+                           guint64     size_bytes)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_installed == priv->size_installed)
-		return;
-	priv->size_installed = size_installed;
-	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
+
+	if (size_type != GS_SIZE_TYPE_VALID)
+		size_bytes = 0;
+
+	if (priv->size_installed_type != size_type) {
+		priv->size_installed_type = size_type;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED_TYPE]);
+	}
+
+	if (priv->size_installed != size_bytes) {
+		priv->size_installed = size_bytes;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED]);
+	}
 }
 
 /**
  * gs_app_get_size_installed_dependencies:
  * @app: a #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the installed size of dependencies, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-installed-dependencies.
+ * Get the values of #GsApp:size-installed-dependencies-type and
+ * #GsApp:size-installed-dependencies.
  *
- * Returns: size in bytes, `0` for unknown.
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the installed size of dependencies. Otherwise, its value will be
+ * undefined.
  *
- * Since: 41
+ * Returns: type of the installed size of dependencies
+ * Since: 43
  **/
-guint64
-gs_app_get_size_installed_dependencies (GsApp *app)
+GsSizeType
+gs_app_get_size_installed_dependencies (GsApp   *app,
+                                        guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	guint64 sz = 0;
+	GsSizeType size_type = GS_SIZE_TYPE_VALID;
+	guint64 size_bytes = 0;
 
-	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
 	/* add related apps */
 	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
 		GsApp *app_related = gs_app_list_index (priv->related, i);
-		sz += gs_app_get_size_installed (app_related) +
-		      gs_app_get_size_installed_dependencies (app_related);
+		GsSizeType related_size_installed_type, related_size_installed_dependencies_type;
+		guint64 related_size_installed_bytes, related_size_installed_dependencies_bytes;
+
+		related_size_installed_type = gs_app_get_size_installed (app_related, &related_size_installed_bytes);
+
+		if (!add_sizes (size_type, size_bytes,
+				related_size_installed_type, related_size_installed_bytes,
+				&size_type, &size_bytes))
+			break;
+
+		related_size_installed_dependencies_type = gs_app_get_size_installed_dependencies (app_related, &related_size_installed_dependencies_bytes);
+
+		if (!add_sizes (size_type, size_bytes,
+				related_size_installed_dependencies_type, related_size_installed_dependencies_bytes,
+				&size_type, &size_bytes))
+			break;
 	}
 
-	return sz;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
+
+	return size_type;
 }
 
 /**
  * gs_app_get_size_user_data:
  * @app: A #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the user data size, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-user-data.
+ * Get the values of #GsApp:size-user-data-type and #GsApp:size-user-data.
  *
- * Returns: number of bytes, or %GS_APP_SIZE_UNKNOWABLE for unknown
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the user data size. Otherwise, its value will be undefined.
  *
- * Since: 41
+ * Returns: type of the user data size
+ * Since: 43
  **/
-guint64
-gs_app_get_size_user_data (GsApp *app)
+GsSizeType
+gs_app_get_size_user_data (GsApp   *app,
+                           guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_SIZE_UNKNOWABLE);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	return priv->size_user_data;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (priv->size_user_data_type == GS_SIZE_TYPE_VALID) ? priv->size_user_data : 0;
+
+	return priv->size_user_data_type;
 }
 
 /**
  * gs_app_set_size_user_data:
  * @app: a #GsApp
- * @size_user_data: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for unknown
+ * @size_type: type of the user data size
+ * @size_bytes: size in bytes
  *
  * Sets the user data size of the @app.
  *
- * Since: 41
+ * @size_bytes will be ignored unless @size_type is %GS_SIZE_TYPE_VALID.
+ *
+ * Since: 43
  **/
 void
-gs_app_set_size_user_data (GsApp *app,
-			   guint64 size_user_data)
+gs_app_set_size_user_data (GsApp      *app,
+                           GsSizeType  size_type,
+                           guint64     size_bytes)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_user_data == priv->size_user_data)
-		return;
-	priv->size_user_data = size_user_data;
-	gs_app_queue_notify (app, obj_props[PROP_SIZE_USER_DATA]);
+
+	if (size_type != GS_SIZE_TYPE_VALID)
+		size_bytes = 0;
+
+	if (priv->size_user_data_type != size_type) {
+		priv->size_user_data_type = size_type;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_USER_DATA_TYPE]);
+	}
+
+	if (priv->size_user_data != size_bytes) {
+		priv->size_user_data = size_bytes;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_USER_DATA]);
+	}
 }
 
 /**
  * gs_app_get_size_cache_data:
  * @app: A #GsApp
+ * @size_bytes_out: (optional) (out caller-allocates): return location for
+ *   the cache data size, in bytes, or %NULL to ignore
  *
- * Get the value of #GsApp:size-cache-data.
+ * Get the values of #GsApp:size-cache-data-type and #GsApp:size-cache-data.
  *
- * Returns: number of bytes, or %GS_APP_SIZE_UNKNOWABLE for unknown
+ * If this returns %GS_SIZE_TYPE_VALID, @size_bytes_out (if non-%NULL) will be
+ * set to the cache data size. Otherwise, its value will be undefined.
  *
- * Since: 41
+ * Returns: type of the cache data size
+ * Since: 43
  **/
-guint64
-gs_app_get_size_cache_data (GsApp *app)
+GsSizeType
+gs_app_get_size_cache_data (GsApp   *app,
+                            guint64 *size_bytes_out)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_SIZE_UNKNOWABLE);
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	return priv->size_cache_data;
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (priv->size_cache_data_type == GS_SIZE_TYPE_VALID) ? priv->size_cache_data : 0;
+
+	return priv->size_cache_data_type;
 }
 
 /**
  * gs_app_set_size_cache_data:
  * @app: a #GsApp
- * @size_cache_data: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for unknown
+ * @size_type: type of the cache data size
+ * @size_bytes: size in bytes
  *
  * Sets the cache data size of the @app.
  *
- * Since: 41
+ * @size_bytes will be ignored unless @size_type is %GS_SIZE_TYPE_VALID.
+ *
+ * Since: 43
  **/
 void
-gs_app_set_size_cache_data (GsApp *app,
-			    guint64 size_cache_data)
+gs_app_set_size_cache_data (GsApp      *app,
+                            GsSizeType  size_type,
+                            guint64     size_bytes)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_cache_data == priv->size_cache_data)
-		return;
-	priv->size_cache_data = size_cache_data;
-	gs_app_queue_notify (app, obj_props[PROP_SIZE_CACHE_DATA]);
+
+	if (size_type != GS_SIZE_TYPE_VALID)
+		size_bytes = 0;
+
+	if (priv->size_cache_data_type != size_type) {
+		priv->size_cache_data_type = size_type;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_CACHE_DATA_TYPE]);
+	}
+
+	if (priv->size_cache_data != size_bytes) {
+		priv->size_cache_data = size_bytes;
+		gs_app_queue_notify (app, obj_props[PROP_SIZE_CACHE_DATA]);
+	}
 }
 
 /**
@@ -3989,7 +4201,9 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	gs_app_list_add (priv->related, app2);
 
 	/* The related apps add to the main app’s sizes. */
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE]);
 	gs_app_queue_notify (app, obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES]);
+	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED_DEPENDENCIES_TYPE]);
 	gs_app_queue_notify (app, obj_props[PROP_SIZE_INSTALLED_DEPENDENCIES]);
 }
 
@@ -5002,24 +5216,60 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_LICENSE:
 		g_value_set_string (value, priv->license);
 		break;
-	case PROP_SIZE_CACHE_DATA:
-		g_value_set_uint64 (value, gs_app_get_size_cache_data (app));
+	case PROP_SIZE_CACHE_DATA_TYPE:
+		g_value_set_enum (value, gs_app_get_size_cache_data (app, NULL));
 		break;
-	case PROP_SIZE_DOWNLOAD:
-		g_value_set_uint64 (value, gs_app_get_size_download (app));
+	case PROP_SIZE_CACHE_DATA: {
+		guint64 size_bytes;
+		gs_app_get_size_cache_data (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
 		break;
-	case PROP_SIZE_DOWNLOAD_DEPENDENCIES:
-		g_value_set_uint64 (value, gs_app_get_size_download_dependencies (app));
+	}
+	case PROP_SIZE_DOWNLOAD_TYPE:
+		g_value_set_enum (value, gs_app_get_size_download (app, NULL));
 		break;
-	case PROP_SIZE_INSTALLED:
-		g_value_set_uint64 (value, gs_app_get_size_installed (app));
+	case PROP_SIZE_DOWNLOAD: {
+		guint64 size_bytes;
+		gs_app_get_size_download (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
 		break;
-	case PROP_SIZE_INSTALLED_DEPENDENCIES:
-		g_value_set_uint64 (value, gs_app_get_size_installed_dependencies (app));
+	}
+	case PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE:
+		g_value_set_enum (value, gs_app_get_size_download_dependencies (app, NULL));
 		break;
-	case PROP_SIZE_USER_DATA:
-		g_value_set_uint64 (value, gs_app_get_size_user_data (app));
+	case PROP_SIZE_DOWNLOAD_DEPENDENCIES: {
+		guint64 size_bytes;
+		gs_app_get_size_download_dependencies (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
 		break;
+	}
+	case PROP_SIZE_INSTALLED_TYPE:
+		g_value_set_enum (value, gs_app_get_size_installed (app, NULL));
+		break;
+	case PROP_SIZE_INSTALLED: {
+		guint64 size_bytes;
+		gs_app_get_size_installed (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
+		break;
+	}
+	case PROP_SIZE_INSTALLED_DEPENDENCIES_TYPE:
+		g_value_set_enum (value, gs_app_get_size_installed_dependencies (app, NULL));
+		break;
+	case PROP_SIZE_INSTALLED_DEPENDENCIES: {
+		guint64 size_bytes;
+		gs_app_get_size_installed_dependencies (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
+		break;
+	}
+	case PROP_SIZE_USER_DATA_TYPE:
+		g_value_set_enum (value, gs_app_get_size_user_data (app, NULL));
+		break;
+	case PROP_SIZE_USER_DATA: {
+		guint64 size_bytes;
+		gs_app_get_size_user_data (app, &size_bytes);
+		g_value_set_uint64 (value, size_bytes);
+		break;
+	}
 	case PROP_PERMISSIONS:
 		g_value_set_flags (value, priv->permissions);
 		break;
@@ -5116,23 +5366,37 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_LICENSE:
 		/* Read-only */
 		g_assert_not_reached ();
+	case PROP_SIZE_CACHE_DATA_TYPE:
+		gs_app_set_size_cache_data (app, g_value_get_enum (value), priv->size_cache_data);
+		break;
 	case PROP_SIZE_CACHE_DATA:
-		gs_app_set_size_cache_data (app, g_value_get_uint64 (value));
+		gs_app_set_size_cache_data (app, priv->size_cache_data_type, g_value_get_uint64 (value));
+		break;
+	case PROP_SIZE_DOWNLOAD_TYPE:
+		gs_app_set_size_download (app, g_value_get_enum (value), priv->size_download);
 		break;
 	case PROP_SIZE_DOWNLOAD:
-		gs_app_set_size_download (app, g_value_get_uint64 (value));
+		gs_app_set_size_download (app, priv->size_download_type, g_value_get_uint64 (value));
 		break;
+	case PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE:
 	case PROP_SIZE_DOWNLOAD_DEPENDENCIES:
 		/* Read-only */
 		g_assert_not_reached ();
-	case PROP_SIZE_INSTALLED:
-		gs_app_set_size_installed (app, g_value_get_uint64 (value));
+	case PROP_SIZE_INSTALLED_TYPE:
+		gs_app_set_size_installed (app, g_value_get_enum (value), priv->size_installed);
 		break;
+	case PROP_SIZE_INSTALLED:
+		gs_app_set_size_installed (app, priv->size_installed_type, g_value_get_uint64 (value));
+		break;
+	case PROP_SIZE_INSTALLED_DEPENDENCIES_TYPE:
 	case PROP_SIZE_INSTALLED_DEPENDENCIES:
 		/* Read-only */
 		g_assert_not_reached ();
+	case PROP_SIZE_USER_DATA_TYPE:
+		gs_app_set_size_user_data (app, g_value_get_enum (value), priv->size_user_data);
+		break;
 	case PROP_SIZE_USER_DATA:
-		gs_app_set_size_user_data (app, g_value_get_uint64 (value));
+		gs_app_set_size_user_data (app, priv->size_user_data_type, g_value_get_uint64 (value));
 		break;
 	case PROP_PERMISSIONS:
 		gs_app_set_permissions (app, g_value_get_flags (value));
@@ -5430,11 +5694,24 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-cache-data-type
+	 *
+	 * The type of #GsApp:size-cache-data.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_CACHE_DATA_TYPE] =
+		g_param_spec_enum ("size-cache-data-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-cache-data
 	 *
 	 * The size on the disk for the cache data of the application.
 	 *
-	 * This is %GS_APP_SIZE_UNKNOWABLE if not known.
+	 * This is undefined if #GsApp:size-cache-data-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * Since: 41
 	 */
@@ -5444,14 +5721,26 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-download-type
+	 *
+	 * The type of #GsApp:size-download.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_DOWNLOAD_TYPE] =
+		g_param_spec_enum ("size-download-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-download
 	 *
 	 * The size of the total download needed to either install or update
 	 * this application, in bytes. If the app is partially downloaded, this
 	 * is the number of bytes remaining to download.
 	 *
-	 * This is `0` if the download size is unknown, and
-	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 * This is undefined if #GsApp:size-download-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * To get the runtime or other dependencies download size,
 	 * use #GsApp:size-download-dependencies.
@@ -5464,13 +5753,26 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-download-dependencies-type
+	 *
+	 * The type of #GsApp:size-download-dependencies.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_DOWNLOAD_DEPENDENCIES_TYPE] =
+		g_param_spec_enum ("size-download-dependencies-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-download-dependencies
 	 *
 	 * The size of the total download needed to either install or update
 	 * this application's dependencies, in bytes. If the dependencies are partially
 	 * downloaded, this is the number of bytes remaining to download.
 	 *
-	 * This is `0` if the download size is unknown.
+	 * This is undefined if #GsApp:size-download-dependencies-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * Since: 41
 	 */
@@ -5480,13 +5782,25 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-installed-type
+	 *
+	 * The type of #GsApp:size-installed.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_INSTALLED_TYPE] =
+		g_param_spec_enum ("size-installed-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-installed
 	 *
 	 * The size of the application on disk, in bytes. If the application is
 	 * not yet installed, this is the size it would need, once installed.
 	 *
-	 * This is `0` if the download size is unknown, and
-	 * %GS_APP_SIZE_UNKNOWABLE if it’s not possible to know.
+	 * This is undefined if #GsApp:size-installed-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * To get the application runtime or extensions installed sizes,
 	 * use #GsApp:size-installed-dependencies.
@@ -5499,12 +5813,25 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-installed-dependencies-type
+	 *
+	 * The type of #GsApp:size-installed-dependencies.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_INSTALLED_DEPENDENCIES_TYPE] =
+		g_param_spec_enum ("size-installed-dependencies-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-installed-dependencies
 	 *
 	 * The size of the application's dependencies on disk, in bytes. If the dependencies are
 	 * not yet installed, this is the size it would need, once installed.
 	 *
-	 * This is `0` if the download size is unknown.
+	 * This is undefined if #GsApp:size-installed-dependencies-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * Since: 41
 	 */
@@ -5514,11 +5841,24 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
+	 * GsApp:size-user-data-type
+	 *
+	 * The type of #GsApp:size-user-data.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_SIZE_USER_DATA_TYPE] =
+		g_param_spec_enum ("size-user-data-type", NULL, NULL,
+				   GS_TYPE_SIZE_TYPE, GS_SIZE_TYPE_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+	/**
 	 * GsApp:size-user-data
 	 *
 	 * The size on the disk for the user data of the application.
 	 *
-	 * This is %GS_APP_SIZE_UNKNOWABLE if not known.
+	 * This is undefined if #GsApp:size-user-data-type is not
+	 * %GS_SIZE_TYPE_VALID.
 	 *
 	 * Since: 41
 	 */
@@ -5614,8 +5954,10 @@ gs_app_init (GsApp *app)
 	                                           NULL,
 	                                           g_free);
 	priv->allow_cancel = TRUE;
-	priv->size_cache_data = GS_APP_SIZE_UNKNOWABLE;
-	priv->size_user_data = GS_APP_SIZE_UNKNOWABLE;
+	priv->size_download_type = GS_SIZE_TYPE_UNKNOWN;
+	priv->size_installed_type = GS_SIZE_TYPE_UNKNOWN;
+	priv->size_cache_data_type = GS_SIZE_TYPE_UNKNOWN;
+	priv->size_user_data_type = GS_SIZE_TYPE_UNKNOWN;
 	g_mutex_init (&priv->mutex);
 }
 

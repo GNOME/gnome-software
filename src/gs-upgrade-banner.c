@@ -75,6 +75,8 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	const gchar *uri, *summary, *version;
 	g_autofree gchar *str = NULL;
 	guint percentage;
+	GsSizeType size_download_type;
+	guint64 size_download_bytes;
 
 	if (priv->app == NULL)
 		return;
@@ -134,16 +136,18 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_summary), summary);
 
 	uri = gs_app_get_url (priv->app, AS_URL_KIND_HOMEPAGE);
+	size_download_type = gs_app_get_size_download (priv->app, &size_download_bytes);
+
 	if (uri != NULL) {
 		g_autofree gchar *link = NULL;
 		link = g_markup_printf_escaped ("<a href=\"%s\">%s</a>", uri, _("Learn about the new version"));
 		gtk_label_set_markup (GTK_LABEL (priv->label_download_info), link);
 		gtk_widget_show (priv->label_download_info);
-	} else if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
-		   gs_app_get_size_download (priv->app) != 0) {
+	} else if (size_download_type == GS_SIZE_TYPE_VALID &&
+		   size_download_bytes > 0) {
 		g_autofree gchar *tmp = NULL;
 		g_clear_pointer (&str, g_free);
-		tmp = g_format_size (gs_app_get_size_download (priv->app));
+		tmp = g_format_size (size_download_bytes);
 		/* Translators: the '%s' is replaced with the download size, forming text like "2 GB download" */
 		str = g_strdup_printf ("%s download", tmp);
 		gtk_label_set_text (GTK_LABEL (priv->label_download_info), str);
@@ -167,15 +171,15 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
 						       (gdouble) percentage / 100.f);
 			g_clear_pointer (&str, g_free);
-			if (gs_app_get_size_download (priv->app) != GS_APP_SIZE_UNKNOWABLE &&
-			    gs_app_get_size_download (priv->app) != 0) {
+
+			if (size_download_type == GS_SIZE_TYPE_VALID) {
 				g_autofree gchar *tmp = NULL;
 				g_autofree gchar *downloaded_tmp = NULL;
 				guint64 downloaded;
 
-				downloaded = gs_app_get_size_download (priv->app) * percentage / 100.0;
+				downloaded = size_download_bytes * percentage / 100.0;
 				downloaded_tmp = g_format_size (downloaded);
-				tmp = g_format_size (gs_app_get_size_download (priv->app));
+				tmp = g_format_size (size_download_bytes);
 				/* Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 				   with the total download size, forming text like "135 MB of 2 GB downloaded" */
 				str = g_strdup_printf (_("%s of %s downloaded"), downloaded_tmp, tmp);
