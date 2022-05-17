@@ -1343,8 +1343,10 @@ gs_flatpak_refresh_appstream (GsFlatpak     *self,
 	}
 
 	/* ensure the AppStream silo is up to date */
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error))
+	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error)) {
+		gs_flatpak_internal_data_changed (self);
 		return FALSE;
+	}
 
 	return TRUE;
 }
@@ -2014,10 +2016,6 @@ gs_flatpak_refresh (GsFlatpak *self,
 
 	/* update AppStream metadata */
 	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, cancellable, error))
-		return FALSE;
-
-	/* ensure valid */
-	if (!gs_flatpak_rescan_appstream_store (self, interactive, cancellable, error))
 		return FALSE;
 
 	/* success */
