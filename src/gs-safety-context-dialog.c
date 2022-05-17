@@ -38,6 +38,7 @@
 #include "gs-app.h"
 #include "gs-common.h"
 #include "gs-context-dialog-row.h"
+#include "gs-lozenge.h"
 #include "gs-safety-context-dialog.h"
 
 struct _GsSafetyContextDialog
@@ -51,7 +52,6 @@ struct _GsSafetyContextDialog
 	gulong			 app_notify_handler_license;
 	gulong			 app_notify_handler_related;
 
-	GtkImage		*icon;
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
 	GtkListBox		*permissions_list;
@@ -374,7 +374,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name);
+	gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenge), icon_name);
 	gtk_label_set_text (self->title, title);
 
 	context = gtk_widget_get_style_context (self->lozenge);
@@ -533,7 +533,6 @@ gs_safety_context_dialog_class_init (GsSafetyContextDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-safety-context-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, icon);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsSafetyContextDialog, permissions_list);

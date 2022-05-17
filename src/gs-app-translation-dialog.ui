@@ -27,24 +27,17 @@
                     <property name="spacing">12</property>
 
                     <child>
-                      <object class="GtkBox" id="lozenge">
-                        <property name="halign">center</property>
+                      <object class="GsLozenge" id="lozenge">
+                        <property name="circular">True</property>
+                        <property name="icon-name">flag-outline-thin-symbolic</property>
+                        <property name="pixel-size">24</property>
                         <style>
-                          <class name="context-tile-lozenge"/>
                           <class name="large"/>
                           <class name="blue"/>
                         </style>
-                        <child>
-                          <object class="GtkImage" id="icon">
-                            <property name="halign">center</property>
-                            <property name="hexpand">True</property>
-                            <property name="icon-name">flag-outline-thin-symbolic</property>
-                            <property name="pixel-size">24</property>
-                            <accessibility>
-                              <relation name="labelled-by">title</relation>
-                            </accessibility>
-                          </object>
-                        </child>
+                        <accessibility>
+                          <relation name="labelled-by">title</relation>
+                        </accessibility>
                       </object>
                     </child>
 

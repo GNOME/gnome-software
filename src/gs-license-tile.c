@@ -30,6 +30,7 @@
 
 #include "gs-common.h"
 #include "gs-license-tile.h"
+#include "gs-lozenge.h"
 
 struct _GsLicenseTile
 {
@@ -40,7 +41,6 @@ struct _GsLicenseTile
 	gulong		 notify_urls_handler;
 
 	GtkWidget	*lozenges[3];
-	GtkImage	*lozenge_images[3];
 	GtkLabel	*title_label;
 	GtkLabel	*description_label;
 	GtkListBoxRow	*get_involved_row;
@@ -125,10 +125,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		gtk_style_context_remove_class (context, "green");
 		gtk_style_context_remove_class (context, "grey");
 		gtk_style_context_add_class (context, css_class);
+		gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenges[i]), lozenge_icon_names[i]);
 	}
-
-	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenge_images); i++)
-		gtk_image_set_from_icon_name (self->lozenge_images[i], lozenge_icon_names[i]);
 
 	gtk_label_set_label (self->title_label, title);
 	gtk_label_set_label (self->description_label, description);
@@ -236,11 +234,8 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-license-tile.ui");
 
 	gtk_widget_class_bind_template_child_full (widget_class, "lozenge0", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenges[0]));
-	gtk_widget_class_bind_template_child_full (widget_class, "lozenge0_image", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenge_images[0]));
 	gtk_widget_class_bind_template_child_full (widget_class, "lozenge1", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenges[1]));
-	gtk_widget_class_bind_template_child_full (widget_class, "lozenge1_image", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenge_images[1]));
 	gtk_widget_class_bind_template_child_full (widget_class, "lozenge2", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenges[2]));
-	gtk_widget_class_bind_template_child_full (widget_class, "lozenge2_image", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenge_images[2]));
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, title_label);
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, description_label);
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_row);

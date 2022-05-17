@@ -40,6 +40,7 @@
 #include "gs-common.h"
 #include "gs-context-dialog-row.h"
 #include "gs-hardware-support-context-dialog.h"
+#include "gs-lozenge.h"
 
 struct _GsHardwareSupportContextDialog
 {
@@ -49,7 +50,6 @@ struct _GsHardwareSupportContextDialog
 	gulong			 app_notify_handler_relations;
 	gulong			 app_notify_handler_name;
 
-	GtkImage		*icon;
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
 	GtkListBox		*relations_list;
@@ -722,7 +722,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		g_assert_not_reached ();
 	}
 
-	gtk_image_set_from_icon_name (GTK_IMAGE (self->icon), icon_name);
+	gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenge), icon_name);
 	gtk_label_set_text (self->title, title);
 
 	context = gtk_widget_get_style_context (self->lozenge);
@@ -826,7 +826,6 @@ gs_hardware_support_context_dialog_class_init (GsHardwareSupportContextDialogCla
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-hardware-support-context-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, icon);
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsHardwareSupportContextDialog, relations_list);

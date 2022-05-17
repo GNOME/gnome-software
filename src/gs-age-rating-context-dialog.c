@@ -70,8 +70,7 @@ struct _GsAgeRatingContextDialog
 	GsContextDialogRow	*rows[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (unowned) */
 	GList			*attributes[GS_AGE_RATING_GROUP_TYPE_COUNT];  /* (element-type GsAgeRatingAttribute) */
 
-	GtkLabel		*age;
-	GtkWidget		*lozenge;
+	GsLozenge		*lozenge;
 	GtkLabel		*title;
 	GtkListBox		*attributes_list;  /* (element-type GsContextDialogRow) */
 };
@@ -878,15 +877,13 @@ gs_age_rating_context_dialog_format_age_short (AsContentRatingSystem system,
 /**
  * gs_age_rating_context_dialog_update_lozenge:
  * @app: the #GsApp to rate
- * @lozenge: lozenge widget
- * @lozenge_content: label within the lozenge widget
+ * @lozenge: a #GsLozenge widget
  * @is_unknown_out: (out caller-allocates) (not optional): return location for
  *     a boolean indicating whether the age rating is unknown, rather than a
  *     specific age
  *
- * Update the @lozenge and @lozenge_content widgets to indicate the overall
- * age rating for @app. This involves changing their CSS class and label
- * content.
+ * Update the @lozenge widget to indicate the overall age rating for @app.
+ * This involves changing its CSS class and label content.
  *
  * If the overall age rating for @app is unknown (because the app doesn’t
  * provide a complete `<content_rating>` element in its appdata), the lozenge is
@@ -896,8 +893,7 @@ gs_age_rating_context_dialog_format_age_short (AsContentRatingSystem system,
  */
 void
 gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
-                                             GtkWidget *lozenge,
-                                             GtkLabel  *lozenge_content,
+                                             GsLozenge *lozenge,
                                              gboolean  *is_unknown_out)
 {
 	const gchar *css_class;
@@ -916,8 +912,7 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	g_autofree gchar *age_text = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GTK_IS_WIDGET (lozenge));
-	g_return_if_fail (GTK_IS_LABEL (lozenge_content));
+	g_return_if_fail (GS_IS_LOZENGE (lozenge));
 	g_return_if_fail (is_unknown_out != NULL);
 
 	/* get the content rating system from the locale */
@@ -971,9 +966,9 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	}
 
 	/* Update the UI. */
-	gtk_label_set_text (lozenge_content, age_text);
+	gs_lozenge_set_text (lozenge, age_text);
 
-	context = gtk_widget_get_style_context (lozenge);
+	context = gtk_widget_get_style_context (GTK_WIDGET (lozenge));
 
 	for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++)
 		gtk_style_context_remove_class (context, css_age_classes[i]);
@@ -1008,7 +1003,6 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 	content_rating = gs_app_dup_content_rating (self->app);
 	gs_age_rating_context_dialog_update_lozenge (self->app,
 						     self->lozenge,
-						     self->age,
 						     &is_unknown);
 
 	/* Title */
@@ -1052,7 +1046,7 @@ update_attributes_list (GsAgeRatingContextDialog *self)
 			 * for a specified age group. The first placeholder is the app name, the second
 			 * is the age group. */
 			title = g_strdup_printf (_("%s is suitable for %s"), gs_app_get_name (self->app),
-						 gtk_label_get_text (self->age));
+						 gs_lozenge_get_text (self->lozenge));
 	}
 
 	gtk_label_set_text (self->title, title);
@@ -1180,7 +1174,6 @@ gs_age_rating_context_dialog_class_init (GsAgeRatingContextDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-age-rating-context-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, age);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsAgeRatingContextDialog, attributes_list);

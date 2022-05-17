@@ -38,6 +38,7 @@
 #include "gs-app.h"
 #include "gs-common.h"
 #include "gs-context-dialog-row.h"
+#include "gs-lozenge.h"
 #include "gs-storage-context-dialog.h"
 
 struct _GsStorageContextDialog
@@ -48,7 +49,6 @@ struct _GsStorageContextDialog
 	gulong			 app_notify_handler;
 
 	GtkSizeGroup		*lozenge_size_group;
-	GtkLabel		*lozenge_content;
 	GtkWidget		*lozenge;
 	GtkLabel		*title;
 	GtkListBox		*sizes_list;
@@ -98,7 +98,8 @@ add_size_row (GtkListBox   *list_box,
 
 	row = gs_context_dialog_row_new_text (size_bytes_str, GS_CONTEXT_DIALOG_ROW_IMPORTANCE_NEUTRAL,
 					      title, description);
-	gs_context_dialog_row_set_content_is_markup (GS_CONTEXT_DIALOG_ROW (row), is_markup);
+	if (is_markup)
+		gs_context_dialog_row_set_content_markup (GS_CONTEXT_DIALOG_ROW (row), size_bytes_str);
 	gs_context_dialog_row_set_size_groups (GS_CONTEXT_DIALOG_ROW (row), lozenge_size_group, NULL, NULL);
 	gtk_list_box_append (list_box, GTK_WIDGET (row));
 }
@@ -187,9 +188,9 @@ update_sizes_list (GsStorageContextDialog *self)
 		title_size_bytes_str = g_strdup (C_("Download size", "Unknown"));
 
 	if (is_markup)
-		gtk_label_set_markup (self->lozenge_content, title_size_bytes_str);
+		gs_lozenge_set_markup (GS_LOZENGE (self->lozenge), title_size_bytes_str);
 	else
-		gtk_label_set_text (self->lozenge_content, title_size_bytes_str);
+		gs_lozenge_set_text (GS_LOZENGE (self->lozenge), title_size_bytes_str);
 
 	gtk_label_set_text (self->title, title);
 
@@ -332,7 +333,6 @@ gs_storage_context_dialog_class_init (GsStorageContextDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-storage-context-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, lozenge_size_group);
-	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, lozenge_content);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, lozenge);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, title);
 	gtk_widget_class_bind_template_child (widget_class, GsStorageContextDialog, sizes_list);

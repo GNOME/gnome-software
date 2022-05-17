@@ -24,25 +24,15 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <child>
-                  <object class="GtkBox" id="storage_tile_lozenge">
-                    <property name="halign">center</property>
+                  <object class="GsLozenge" id="storage_tile_lozenge">
+                    <property name="circular">False</property>
                     <style>
-                      <class name="context-tile-lozenge"/>
                       <class name="grey"/>
                     </style>
-                    <child>
-                      <object class="GtkLabel" id="storage_tile_lozenge_content">
-                        <property name="halign">center</property>
-                        <property name="hexpand">True</property>
-                        <!-- this is a placeholder: the text is actually set in code -->
-                        <property name="label">20 MB</property>
-                        <property name="xalign">0.5</property>
-                        <accessibility>
-                          <relation name="labelled-by">storage_tile_title</relation>
-                          <relation name="details">storage_tile_description</relation>
-                        </accessibility>
-                      </object>
-                    </child>
+                    <accessibility>
+                      <relation name="labelled-by">storage_tile_title</relation>
+                      <relation name="details">storage_tile_description</relation>
+                    </accessibility>
                   </object>
                 </child>
                 <child>
@@ -86,24 +76,17 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <child>
-                  <object class="GtkBox" id="safety_tile_lozenge">
-                    <property name="halign">center</property>
+                  <object class="GsLozenge" id="safety_tile_lozenge">
+                    <property name="circular">True</property>
+                    <!-- this is a placeholder: the icon is actually set in code -->
+                    <property name="icon-name">safety-symbolic</property>
                     <style>
-                      <class name="context-tile-lozenge"/>
                       <class name="green"/>
                     </style>
-                    <child>
-                      <object class="GtkImage" id="safety_tile_lozenge_content">
-                        <property name="halign">center</property>
-                        <property name="hexpand">True</property>
-                        <!-- this is a placeholder: the icon is actually set in code -->
-                        <property name="icon-name">safety-symbolic</property>
-                        <accessibility>
-                          <relation name="labelled-by">safety_tile_title</relation>
-                          <relation name="details">safety_tile_description</relation>
-                        </accessibility>
-                      </object>
-                    </child>
+                    <accessibility>
+                      <relation name="labelled-by">safety_tile_title</relation>
+                      <relation name="details">safety_tile_description</relation>
+                    </accessibility>
                   </object>
                 </child>
                 <child>
@@ -154,26 +137,19 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <child>
-                  <object class="GtkBox" id="hardware_support_tile_lozenge">
-                    <property name="halign">center</property>
+                  <object class="GsLozenge" id="hardware_support_tile_lozenge">
+                    <property name="circular">False</property>
+                    <!-- this is a placeholder: the icon is actually set in code -->
+                    <property name="icon-name">adaptive-symbolic</property>
+                    <property name="pixel-size">56</property>
                     <style>
-                      <class name="context-tile-lozenge"/>
                       <class name="green"/>
                       <class name="wide-image"/>
                     </style>
-                    <child>
-                      <object class="GtkImage" id="hardware_support_tile_lozenge_content">
-                        <property name="halign">center</property>
-                        <property name="hexpand">True</property>
-                        <!-- this is a placeholder: the icon is actually set in code -->
-                        <property name="icon-name">adaptive-symbolic</property>
-                        <property name="pixel-size">56</property>
-                        <accessibility>
-                          <relation name="labelled-by">hardware_support_tile_title</relation>
-                          <relation name="details">hardware_support_tile_description</relation>
-                        </accessibility>
-                      </object>
-                    </child>
+                    <accessibility>
+                      <relation name="labelled-by">hardware_support_tile_title</relation>
+                      <relation name="details">hardware_support_tile_description</relation>
+                    </accessibility>
                   </object>
                 </child>
                 <child>
@@ -217,25 +193,15 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">8</property>
                 <child>
-                  <object class="GtkBox" id="age_rating_tile_lozenge">
-                    <property name="halign">center</property>
+                  <object class="GsLozenge" id="age_rating_tile_lozenge">
+                    <property name="circular">True</property>
                     <style>
-                      <class name="context-tile-lozenge"/>
                       <class name="details-rating-18"/>
                     </style>
-                    <child>
-                      <object class="GtkLabel" id="age_rating_tile_lozenge_content">
-                        <property name="halign">center</property>
-                        <property name="hexpand">True</property>
-                        <!-- this is a placeholder: the text is actually set in code -->
-                        <property name="label">18+</property>
-                        <property name="xalign">0.5</property>
-                        <accessibility>
-                          <relation name="labelled-by">age_rating_tile_title</relation>
-                          <relation name="details">age_rating_tile_description</relation>
-                        </accessibility>
-                      </object>
-                    </child>
+                    <accessibility>
+                      <relation name="labelled-by">age_rating_tile_title</relation>
+                      <relation name="details">age_rating_tile_description</relation>
+                    </accessibility>
                   </object>
                 </child>
                 <child>
