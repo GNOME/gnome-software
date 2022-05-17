@@ -11,6 +11,7 @@
 
 #include <locale.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <appstream.h>
 #include <math.h>
 
@@ -52,7 +53,7 @@ struct _GsPluginLoader
 	AsPool			*as_pool;
 
 	GMutex			 pending_apps_mutex;
-	GPtrArray		*pending_apps;
+	GsAppList		*pending_apps;		/* (nullable) (owned) */
 
 	GThreadPool		*queued_ops_pool;
 
@@ -1334,10 +1335,13 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->pending_apps_mutex);
 
+	if (plugin_loader->pending_apps == NULL)
+		plugin_loader->pending_apps = gs_app_list_new ();
+
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
+		gs_app_list_add (plugin_loader->pending_apps, app);
 		/* make sure the progress is properly initialized */
 		gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 	}
@@ -1354,7 +1358,8 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_ptr_array_remove (plugin_loader->pending_apps, app);
+		if (plugin_loader->pending_apps != NULL)
+			gs_app_list_remove (plugin_loader->pending_apps, app);
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
@@ -1412,10 +1417,13 @@ load_install_queue (GsPluginLoader  *plugin_loader,
 	names = g_strsplit (contents, "\n", 0);
 	for (guint i = 0; names[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
-		if (strlen (names[i]) == 0)
+		g_auto(GStrv) split = g_strsplit (names[i], "\t", -1);
+		if (split[0] == NULL || split[1] == NULL)
 			continue;
-		app = gs_app_new (names[i]);
+		app = gs_app_new (NULL);
+		gs_app_set_from_unique_id (app, split[0], as_component_kind_from_string (split[1]));
 		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_list_add (list, app);
 	}
 
@@ -1424,7 +1432,9 @@ load_install_queue (GsPluginLoader  *plugin_loader,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		g_debug ("adding pending app %s", gs_app_get_unique_id (app));
-		g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
+		if (plugin_loader->pending_apps == NULL)
+			plugin_loader->pending_apps = gs_app_list_new ();
+		gs_app_list_add (plugin_loader->pending_apps, app);
 	}
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
@@ -1434,21 +1444,19 @@ load_install_queue (GsPluginLoader  *plugin_loader,
 static void
 save_install_queue (GsPluginLoader *plugin_loader)
 {
-	GPtrArray *pending_apps;
 	gboolean ret;
-	gint i;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
 
 	s = g_string_new ("");
-	pending_apps = plugin_loader->pending_apps;
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
-	for (i = (gint) pending_apps->len - 1; i >= 0; i--) {
-		GsApp *app;
-		app = g_ptr_array_index (pending_apps, i);
+	for (guint i = 0; plugin_loader->pending_apps != NULL && i < gs_app_list_length (plugin_loader->pending_apps); i++) {
+		GsApp *app = gs_app_list_index (plugin_loader->pending_apps, i);
 		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-			g_string_append (s, gs_app_get_id (app));
+			g_string_append (s, gs_app_get_unique_id (app));
+			g_string_append_c (s, '\t');
+			g_string_append (s, as_component_kind_to_string (gs_app_get_kind (app)));
 			g_string_append_c (s, '\n');
 		}
 	}
@@ -1459,6 +1467,14 @@ save_install_queue (GsPluginLoader *plugin_loader)
 				 "gnome-software",
 				 "install-queue",
 				 NULL);
+	if (s->len == 0) {
+		if (g_unlink (file) == -1 && errno != ENOENT) {
+			gint errn = errno;
+			g_warning ("Failed to unlink '%s': %s", file, g_strerror (errn));
+		}
+		return;
+	}
+
 	if (!gs_mkdir_parent (file, &error)) {
 		g_warning ("failed to create dir for %s: %s",
 			   file, error->message);
@@ -1479,7 +1495,9 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* queue the app itself */
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
-	g_ptr_array_add (plugin_loader->pending_apps, g_object_ref (app));
+	if (plugin_loader->pending_apps == NULL)
+		plugin_loader->pending_apps = gs_app_list_new ();
+	gs_app_list_add (plugin_loader->pending_apps, app);
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
@@ -1505,7 +1523,7 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	guint id;
 
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
-	ret = g_ptr_array_remove (plugin_loader->pending_apps, app);
+	ret = plugin_loader->pending_apps != NULL && gs_app_list_remove (plugin_loader->pending_apps, app);
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
@@ -1550,14 +1568,11 @@ GsAppList *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
 	GsAppList *array;
-	guint i;
 
 	array = gs_app_list_new ();
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
-	for (i = 0; i < plugin_loader->pending_apps->len; i++) {
-		GsApp *app = g_ptr_array_index (plugin_loader->pending_apps, i);
-		gs_app_list_add (array, app);
-	}
+	if (plugin_loader->pending_apps != NULL)
+		gs_app_list_add_list (array, plugin_loader->pending_apps);
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	return array;
@@ -2580,7 +2595,10 @@ finish_setup_op (GTask *task)
 	if (gs_app_list_length (install_queue) > 0) {
 		g_autoptr(GsPluginJob) refine_job = NULL;
 
-		refine_job = gs_plugin_job_refine_new (install_queue, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID | GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
+		/* Require ID and Origin to get complete unique IDs */
+		refine_job = gs_plugin_job_refine_new (install_queue, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ID |
+								      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+								      GS_PLUGIN_REFINE_FLAGS_DISABLE_FILTERING);
 		gs_plugin_loader_job_process_async (plugin_loader, refine_job,
 						    cancellable,
 						    finish_setup_install_queue_cb,
@@ -2589,6 +2607,8 @@ finish_setup_op (GTask *task)
 		g_task_return_boolean (task, TRUE);
 	}
 }
+
+static void gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loader);
 
 static void
 finish_setup_install_queue_cb (GObject      *source_object,
@@ -2601,10 +2621,47 @@ finish_setup_install_queue_cb (GObject      *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	new_list = gs_plugin_loader_job_process_finish (plugin_loader, result, &local_error);
-	if (new_list == NULL)
+	if (new_list == NULL) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
-	else
+	} else {
+		g_autoptr(GsAppList) old_pending_apps = NULL;
+		gboolean has_pending_apps = FALSE;
+		gboolean changed;
+		g_mutex_lock (&plugin_loader->pending_apps_mutex);
+		changed = plugin_loader->pending_apps != NULL;
+		/* Merge the existing and newly-loaded lists, in case pending apps were added
+		   while the install-queue file was being loaded */
+		old_pending_apps = g_steal_pointer (&plugin_loader->pending_apps);
+		if (old_pending_apps != NULL && gs_app_list_length (new_list) > 0) {
+			g_autoptr(GHashTable) expected_unique_ids = g_hash_table_new (g_str_hash, g_str_equal);
+			for (guint i = 0; i < gs_app_list_length (old_pending_apps); i++) {
+				GsApp *app = gs_app_list_index (old_pending_apps, i);
+				if (gs_app_get_unique_id (app) != NULL)
+					g_hash_table_add (expected_unique_ids, (gpointer) gs_app_get_unique_id (app));
+			}
+			for (guint i = 0; i < gs_app_list_length (new_list); i++) {
+				GsApp *app = gs_app_list_index (new_list, i);
+				if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE &&
+				    gs_app_get_unique_id (app) != NULL &&
+				    g_hash_table_contains (expected_unique_ids, gs_app_get_unique_id (app))) {
+					if (plugin_loader->pending_apps == NULL)
+						plugin_loader->pending_apps = gs_app_list_new ();
+					gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
+					gs_app_set_pending_action (app, GS_PLUGIN_ACTION_INSTALL);
+					gs_app_list_add (plugin_loader->pending_apps, app);
+				}
+			}
+			has_pending_apps = plugin_loader->pending_apps != NULL;
+			changed = TRUE;
+		}
+		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 		g_task_return_boolean (task, TRUE);
+
+		if (changed)
+			save_install_queue (plugin_loader);
+		if (has_pending_apps)
+			gs_plugin_loader_maybe_flush_pending_install_queue (plugin_loader);
+	}
 }
 
 /**
@@ -2754,7 +2811,7 @@ gs_plugin_loader_dispose (GObject *object)
 	}
 	g_clear_object (&plugin_loader->network_monitor);
 	g_clear_object (&plugin_loader->settings);
-	g_clear_pointer (&plugin_loader->pending_apps, g_ptr_array_unref);
+	g_clear_object (&plugin_loader->pending_apps);
 	g_clear_object (&plugin_loader->category_manager);
 	g_clear_object (&plugin_loader->odrs_provider);
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
@@ -2963,7 +3020,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->setup_complete_cancellable = g_cancellable_new ();
 	plugin_loader->scale = 1;
 	plugin_loader->plugins = g_ptr_array_new_with_free_func (g_object_unref);
-	plugin_loader->pending_apps = g_ptr_array_new_with_free_func (g_object_unref);
+	plugin_loader->pending_apps = NULL;
 	plugin_loader->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
 						   NULL,
 						   get_max_parallel_ops (),
@@ -3095,8 +3152,8 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 	ret = gs_plugin_loader_job_action_finish (plugin_loader,
 						   res,
 						   &error);
+	remove_app_from_install_queue (plugin_loader, app);
 	if (!ret) {
-		remove_app_from_install_queue (plugin_loader, app);
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_unique_id (app), error->message);
 	}
@@ -3123,6 +3180,57 @@ gs_plugin_loader_get_network_metered (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsAppList) obsolete = NULL;
+	g_autoptr(GsAppList) queue = NULL;
+
+	if (!gs_plugin_loader_get_network_available (plugin_loader) ||
+	    gs_plugin_loader_get_network_metered (plugin_loader)) {
+		/* Print the debug message only when had anything to skip */
+		g_mutex_lock (&plugin_loader->pending_apps_mutex);
+		if (plugin_loader->pending_apps != NULL) {
+			g_debug ("Cannot flush pending install queue, because is %sonline and is %smetered",
+				 !gs_plugin_loader_get_network_available (plugin_loader) ? "not " : "",
+				 gs_plugin_loader_get_network_metered (plugin_loader) ? "" : "not ");
+		}
+		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
+		return;
+	}
+
+	queue = gs_app_list_new ();
+	obsolete = gs_app_list_new ();
+	g_mutex_lock (&plugin_loader->pending_apps_mutex);
+	for (guint i = 0; plugin_loader->pending_apps != NULL && i < gs_app_list_length (plugin_loader->pending_apps); i++) {
+		GsApp *app = gs_app_list_index (plugin_loader->pending_apps, i);
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+			gs_app_list_add (queue, app);
+		} else {
+			gs_app_list_add (obsolete, app);
+		}
+	}
+	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
+	for (guint i = 0; i < gs_app_list_length (obsolete); i++) {
+		GsApp *app = gs_app_list_index (obsolete, i);
+		remove_app_from_install_queue (plugin_loader, app);
+	}
+	for (guint i = 0; i < gs_app_list_length (queue); i++) {
+		GsApp *app = gs_app_list_index (queue, i);
+		GsPluginAction action = gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY ? GS_PLUGIN_ACTION_INSTALL_REPO : GS_PLUGIN_ACTION_INSTALL;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (action,
+						 "app", app,
+						 "interactive", TRUE, /* needed for credentials prompt, otherwise it just fails */
+						 NULL);
+		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+						    NULL,
+						    gs_plugin_loader_app_installed_cb,
+						    g_object_ref (app));
+	}
+}
+
+static void
 gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 				     gboolean available,
 				     GsPluginLoader *plugin_loader)
@@ -3136,31 +3244,7 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_AVAILABLE]);
 	g_object_notify_by_pspec (G_OBJECT (plugin_loader), obj_props[PROP_NETWORK_METERED]);
 
-	if (available && !metered) {
-		g_autoptr(GsAppList) queue = NULL;
-		g_mutex_lock (&plugin_loader->pending_apps_mutex);
-		queue = gs_app_list_new ();
-		for (guint i = 0; i < plugin_loader->pending_apps->len; i++) {
-			GsApp *app = g_ptr_array_index (plugin_loader->pending_apps, i);
-			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
-				gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-				gs_app_list_add (queue, app);
-			}
-		}
-		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
-		for (guint i = 0; i < gs_app_list_length (queue); i++) {
-			GsApp *app = gs_app_list_index (queue, i);
-			GsPluginAction action = gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY ? GS_PLUGIN_ACTION_INSTALL_REPO : GS_PLUGIN_ACTION_INSTALL;
-			g_autoptr(GsPluginJob) plugin_job = NULL;
-			plugin_job = gs_plugin_job_newv (action,
-							 "app", app,
-							 NULL);
-			gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-							    NULL,
-							    gs_plugin_loader_app_installed_cb,
-							    g_object_ref (app));
-		}
-	}
+	gs_plugin_loader_maybe_flush_pending_install_queue (plugin_loader);
 }
 
 static void
