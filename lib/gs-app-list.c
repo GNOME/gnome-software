@@ -424,20 +424,10 @@ typedef enum {
 static void
 gs_app_list_add_safe (GsAppList *list, GsApp *app, GsAppListAddFlag flag)
 {
-	const gchar *id;
-
 	/* check for duplicate */
 	if ((flag & GS_APP_LIST_ADD_FLAG_CHECK_FOR_DUPE) > 0 &&
 	    !gs_app_list_check_for_duplicate (list, app))
 		return;
-
-	/* if we're lazy-loading the ID then we can't use the ID hash */
-	id = gs_app_get_unique_id (app);
-	if (id == NULL) {
-		gs_app_list_maybe_watch_app (list, app);
-		g_ptr_array_add (list->array, g_object_ref (app));
-		return;
-	}
 
 	/* just use the ref */
 	gs_app_list_maybe_watch_app (list, app);
