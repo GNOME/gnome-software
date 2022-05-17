@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-05 09:36+0000\n"
-"PO-Revision-Date: 2022-05-12 22:44+0800\n"
+"POT-Creation-Date: 2022-05-12 14:46+0000\n"
+"PO-Revision-Date: 2022-05-17 21:54+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -883,7 +883,6 @@ msgstr "可以跳脫沙盒並繞過任何限制"
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
 #: src/gs-app-details-page.c:138
 #, c-format
-#| msgid "%s %f"
 msgid "%s %s"
 msgstr "%s %s"
 
@@ -2613,7 +2612,7 @@ msgstr "滑鼠支援未知"
 #: src/gs-hardware-support-context-dialog.c:642
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
-msgstr ""
+msgstr "資訊不足以知道是否支援滑鼠或指向裝置"
 
 #: src/gs-hardware-support-context-dialog.c:644
 msgid "Mouse Required"
@@ -2621,96 +2620,88 @@ msgstr "需要滑鼠"
 
 #: src/gs-hardware-support-context-dialog.c:648
 msgid "Supports mice and pointing devices"
-msgstr ""
+msgstr "支援滑鼠與指向裝置"
 
 #: src/gs-hardware-support-context-dialog.c:650
 msgid "Mouse Not Supported"
-msgstr ""
+msgstr "滑鼠不支援"
 
 #: src/gs-hardware-support-context-dialog.c:651
 msgid "Cannot be used with a mouse or pointing device"
-msgstr ""
+msgstr "無法搭配滑鼠或指向裝置使用"
 
 #: src/gs-hardware-support-context-dialog.c:658
 #: src/gs-hardware-support-context-dialog.c:667
 msgid "Touchscreen Support"
-msgstr ""
+msgstr "觸控螢幕支援"
 
 #: src/gs-hardware-support-context-dialog.c:661
 msgid "Touchscreen Support Unknown"
-msgstr ""
+msgstr "觸控螢幕支援未知"
 
 #: src/gs-hardware-support-context-dialog.c:662
 msgid "Not enough information to know if touchscreens are supported"
-msgstr ""
+msgstr "資訊不足以知道是否支援觸控螢幕"
 
 #: src/gs-hardware-support-context-dialog.c:664
-#, fuzzy
-#| msgid "Login Required"
 msgid "Touchscreen Required"
-msgstr "需要登入"
+msgstr "需要觸控螢幕"
 
 #: src/gs-hardware-support-context-dialog.c:668
 msgid "Supports touchscreens"
-msgstr ""
+msgstr "支援觸控螢幕"
 
 #: src/gs-hardware-support-context-dialog.c:670
 msgid "Touchscreen Not Supported"
-msgstr ""
+msgstr "觸控螢幕不支援"
 
 #: src/gs-hardware-support-context-dialog.c:671
 msgid "Cannot be used with a touchscreen"
-msgstr ""
+msgstr "無法搭配觸控螢幕使用"
 
 #: src/gs-hardware-support-context-dialog.c:684
-#, fuzzy
-#| msgid "Login Required"
 msgid "Gamepad Required"
-msgstr "需要登入"
+msgstr "需要遊戲控制板"
 
 #: src/gs-hardware-support-context-dialog.c:685
-#, fuzzy
-#| msgid "Requires Restart"
 msgid "Requires a gamepad"
-msgstr "必須重新啟動"
+msgstr "需要有遊戲控制板"
 
 #: src/gs-hardware-support-context-dialog.c:687
-#, fuzzy
-#| msgid "Snap Support"
 msgid "Gamepad Support"
-msgstr "Snap 支援"
+msgstr "遊戲控制板支援"
 
 #: src/gs-hardware-support-context-dialog.c:688
 msgid "Supports gamepads"
-msgstr ""
+msgstr "支援遊戲控制板"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:697
 #, c-format
 msgid "%s probably works on this device"
-msgstr ""
+msgstr "%s 或許可以在此裝置上運作"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:704
 #, c-format
 msgid "%s works on this device"
-msgstr ""
+msgstr "%s 能在此裝置上運作"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:711
 #, c-format
 msgid "%s will not work properly on this device"
-msgstr ""
+msgstr "%s 無法在此裝置上適當運作"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
 #: src/gs-hardware-support-context-dialog.c:718
 #, c-format
 msgid "%s will not work on this device"
-msgstr ""
+msgstr "%s 無法在此裝置上運作"
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:5
@@ -2889,13 +2880,11 @@ msgstr "選取額外來源"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
 #: src/gs-overview-page.c:660
-#, fuzzy, c-format
-#| msgid ""
-#| "Provides access to additional software, including web browsers and games."
+#, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
-msgstr "提供額外軟體，包含一些網頁瀏覽器和遊戲。"
+msgstr "讓您可以從 %s 存取額外軟體。它內含一些專有軟體。"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
@@ -2977,12 +2966,10 @@ msgstr "更新偏好設定"
 
 #: src/gs-prefs-dialog.ui:16
 #, fuzzy
-#| msgid ""
-#| "Automatic updates are disabled when on mobile or metered connections."
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
-msgstr "使用行動數據或計費連線時，將停用自動更新。"
+msgstr "為了避免費用與網路，在使用行動數據或計費連線時不會自動下載軟體更新。"
 
 #: src/gs-prefs-dialog.ui:19
 msgid "Automatic Updates"
