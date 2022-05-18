@@ -9,7 +9,61 @@
 #include "config.h"
 
 #include "gs-lozenge.h"
-#include "gs-lozenge-layout.h"
+#include "gs-layout-manager.h"
+
+#define GS_TYPE_LOZENGE_LAYOUT (gs_lozenge_layout_get_type ())
+G_DECLARE_FINAL_TYPE (GsLozengeLayout, gs_lozenge_layout, GS, LOZENGE_LAYOUT, GsLayoutManager)
+
+struct _GsLozengeLayout
+{
+	GsLayoutManager		 parent_instance;
+
+	gboolean		 circular;
+};
+
+G_DEFINE_TYPE (GsLozengeLayout, gs_lozenge_layout, GS_TYPE_LAYOUT_MANAGER)
+
+static void
+gs_lozenge_layout_measure (GtkLayoutManager *layout_manager,
+			   GtkWidget	    *widget,
+			   GtkOrientation    orientation,
+			   gint		     for_size,
+			   gint		    *minimum,
+			   gint		    *natural,
+			   gint		    *minimum_baseline,
+			   gint		    *natural_baseline)
+{
+	GsLozengeLayout *self = GS_LOZENGE_LAYOUT (layout_manager);
+
+	GTK_LAYOUT_MANAGER_CLASS (gs_lozenge_layout_parent_class)->measure (layout_manager,
+		widget, orientation, for_size, minimum, natural, minimum_baseline, natural_baseline);
+
+	if (self->circular) {
+		*minimum = MAX (for_size, *minimum);
+		*natural = *minimum;
+		*natural_baseline = *minimum_baseline;
+	}
+
+	if (*natural_baseline > *natural)
+		*natural_baseline = *natural;
+	if (*minimum_baseline > *minimum)
+		*minimum_baseline = *minimum;
+}
+
+static void
+gs_lozenge_layout_class_init (GsLozengeLayoutClass *klass)
+{
+	GtkLayoutManagerClass *layout_manager_class = GTK_LAYOUT_MANAGER_CLASS (klass);
+
+	layout_manager_class->measure = gs_lozenge_layout_measure;
+}
+
+static void
+gs_lozenge_layout_init (GsLozengeLayout *self)
+{
+}
+
+/* ********************************************************************* */
 
 struct _GsLozenge
 {
@@ -245,7 +299,8 @@ gs_lozenge_set_circular (GsLozenge *self,
 	self->circular = value;
 
 	layout_manager = gtk_widget_get_layout_manager (GTK_WIDGET (self));
-	gs_lozenge_layout_set_circular (GS_LOZENGE_LAYOUT (layout_manager), self->circular);
+	GS_LOZENGE_LAYOUT (layout_manager)->circular = self->circular;
+	gtk_layout_manager_layout_changed (layout_manager);
 
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_CIRCULAR]);
 }
