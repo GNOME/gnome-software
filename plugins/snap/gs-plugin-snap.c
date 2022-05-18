@@ -288,6 +288,11 @@ get_system_information_cb (GObject      *source_object,
 	}
 	self->system_confinement = snapd_system_information_get_confinement (system_information);
 
+	g_debug ("Version '%s' on OS %s %s",
+		snapd_system_information_get_version (system_information),
+		snapd_system_information_get_os_id (system_information),
+		snapd_system_information_get_os_version (system_information));
+
 	/* success */
 	g_task_return_boolean (task, TRUE);
 }
@@ -328,6 +333,11 @@ store_snap_cache_update (GsPluginSnap *self,
 
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = snaps->pdata[i];
+		g_debug ("Caching '%s' by '%s' version %s revision %s",
+			snapd_snap_get_title (snap),
+			snapd_snap_get_publisher_display_name (snap),
+			snapd_snap_get_version (snap),
+			snapd_snap_get_revision (snap));
 		g_hash_table_insert (self->store_snaps, g_strdup (snapd_snap_get_name (snap)), cache_entry_new (snap, full_details));
 	}
 }
