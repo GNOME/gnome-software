@@ -176,6 +176,11 @@ gs_plugin_flatpak_setup_async (GsPlugin            *plugin,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
 
+	g_debug ("Flatpak version: %d.%d.%d",
+		FLATPAK_MAJOR_VERSION,
+		FLATPAK_MINOR_VERSION,
+		FLATPAK_MICRO_VERSION);
+
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_setup_async);
 
