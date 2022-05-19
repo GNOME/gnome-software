@@ -925,6 +925,28 @@ gs_app_row_init (GsAppRow *app_row)
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);
+
+	/* A fix for this is included in 4.6.4, apply workaround, if not running with new-enough gtk. */
+	if (gtk_get_major_version () < 4 ||
+	   (gtk_get_major_version () == 4 && gtk_get_minor_version () < 6) ||
+	   (gtk_get_major_version () == 4 && gtk_get_minor_version () == 6 && gtk_get_micro_version () < 4)) {
+		g_object_set (G_OBJECT (priv->name_label),
+			      "wrap", FALSE,
+			      "lines", 1,
+			      NULL);
+		g_object_set (G_OBJECT (priv->description_label),
+			      "wrap", FALSE,
+			      "lines", 1,
+			      NULL);
+		g_object_set (G_OBJECT (priv->label_warning),
+			      "wrap", FALSE,
+			      "lines", 1,
+			      NULL);
+		g_object_set (G_OBJECT (priv->system_updates_label),
+			      "wrap", FALSE,
+			      "lines", 1,
+			      NULL);
+	}
 }
 
 void
