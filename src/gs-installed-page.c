@@ -39,11 +39,13 @@ struct _GsInstalledPage
 	GtkWidget		*group_install_apps;
 	GtkWidget		*group_install_system_apps;
 	GtkWidget		*group_install_addons;
+	GtkWidget		*group_install_web_apps;
 
 	GtkWidget		*list_box_install_in_progress;
 	GtkWidget		*list_box_install_apps;
 	GtkWidget		*list_box_install_system_apps;
 	GtkWidget		*list_box_install_addons;
+	GtkWidget		*list_box_install_web_apps;
 	GtkWidget		*scrolledwindow_install;
 	GtkWidget		*spinner_install;
 	GtkWidget		*stack_install;
@@ -71,6 +73,7 @@ typedef enum {
 	GS_UPDATE_LIST_SECTION_REMOVABLE_APPS,
 	GS_UPDATE_LIST_SECTION_SYSTEM_APPS,
 	GS_UPDATE_LIST_SECTION_ADDONS,
+	GS_UPDATE_LIST_SECTION_WEB_APPS,
 	GS_UPDATE_LIST_SECTION_LAST
 } GsInstalledPageSection;
 
@@ -87,12 +90,14 @@ gs_installed_page_get_app_section (GsApp *app)
 	    state == GS_APP_STATE_REMOVING)
 		return GS_UPDATE_LIST_SECTION_INSTALLING_AND_REMOVING;
 
-	if (kind == AS_COMPONENT_KIND_DESKTOP_APP ||
-	    kind == AS_COMPONENT_KIND_WEB_APP) {
+	if (kind == AS_COMPONENT_KIND_DESKTOP_APP) {
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
 			return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
 		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
 	}
+
+	if (kind == AS_COMPONENT_KIND_WEB_APP)
+		return GS_UPDATE_LIST_SECTION_WEB_APPS;
 
 	return GS_UPDATE_LIST_SECTION_ADDONS;
 }
@@ -108,6 +113,8 @@ update_groups (GsInstalledPage *self)
 				gtk_widget_get_first_child (self->list_box_install_system_apps) != NULL);
 	gtk_widget_set_visible (self->group_install_addons,
 				gtk_widget_get_first_child (self->list_box_install_addons) != NULL);
+	gtk_widget_set_visible (self->group_install_web_apps,
+				gtk_widget_get_first_child (self->list_box_install_web_apps) != NULL);
 }
 
 static GsInstalledPageSection
@@ -128,6 +135,8 @@ gs_installed_page_get_row_section (GsInstalledPage *self,
 		return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
 	if (parent == self->list_box_install_addons)
 		return GS_UPDATE_LIST_SECTION_ADDONS;
+	if (parent == self->list_box_install_web_apps)
+		return GS_UPDATE_LIST_SECTION_WEB_APPS;
 
 	g_warn_if_reached ();
 
@@ -195,6 +204,7 @@ gs_installed_page_find_app_row (GsInstalledPage *self,
 		self->list_box_install_apps,
 		self->list_box_install_system_apps,
 		self->list_box_install_addons,
+		self->list_box_install_web_apps,
 		NULL
 	};
 
@@ -259,6 +269,9 @@ gs_installed_page_maybe_move_app_row (GsInstalledPage *self,
 			break;
 		case GS_UPDATE_LIST_SECTION_ADDONS:
 			widget = self->list_box_install_addons;
+			break;
+		case GS_UPDATE_LIST_SECTION_WEB_APPS:
+			widget = self->list_box_install_web_apps;
 			break;
 		default:
 			g_warn_if_reached ();
@@ -357,6 +370,9 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	case GS_UPDATE_LIST_SECTION_ADDONS:
 		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_addons), app_row);
 		break;
+	case GS_UPDATE_LIST_SECTION_WEB_APPS:
+		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install_web_apps), app_row);
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -440,6 +456,7 @@ gs_installed_page_load (GsInstalledPage *self)
 	gs_widget_remove_all (self->list_box_install_apps, gs_installed_page_remove_all_cb);
 	gs_widget_remove_all (self->list_box_install_system_apps, gs_installed_page_remove_all_cb);
 	gs_widget_remove_all (self->list_box_install_addons, gs_installed_page_remove_all_cb);
+	gs_widget_remove_all (self->list_box_install_web_apps, gs_installed_page_remove_all_cb);
 	update_groups (self);
 
 	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -610,6 +627,7 @@ gs_installed_page_has_app (GsInstalledPage *self,
 		self->list_box_install_apps,
 		self->list_box_install_system_apps,
 		self->list_box_install_addons,
+		self->list_box_install_web_apps,
 		NULL
 	};
 
@@ -690,6 +708,9 @@ gs_installed_page_setup (GsPage *page,
 				    gs_installed_page_sort_func,
 				    self, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_install_addons),
+				    gs_installed_page_sort_func,
+				    self, NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_install_web_apps),
 				    gs_installed_page_sort_func,
 				    self, NULL);
 	return TRUE;
@@ -802,10 +823,12 @@ gs_installed_page_class_init (GsInstalledPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, group_install_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, group_install_system_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, group_install_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, group_install_web_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_in_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_system_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install_web_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, scrolledwindow_install);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, spinner_install);
 	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, stack_install);

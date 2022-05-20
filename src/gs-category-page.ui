@@ -90,6 +90,34 @@
                     </child>
 
                     <child>
+                      <object class="GtkLabel" id="web_apps_heading">
+                        <property name="visible" bind-source="web_apps_flow_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
+                        <property name="xalign">0</property>
+                        <property name="margin_top">24</property>
+                        <property name="label" translatable="yes" comments="Heading for web apps on a category page">Picks from the Web</property>
+                        <style>
+                          <class name="heading"/>
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkFlowBox" id="web_apps_flow_box">
+                        <property name="visible">False</property>
+                        <property name="column_spacing">14</property>
+                        <property name="halign">fill</property>
+                        <property name="row_spacing">14</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="selection-mode">none</property>
+                        <accessibility>
+                          <relation name="labelled-by">web_apps_heading</relation>
+                        </accessibility>
+                      </object>
+                    </child>
+
+                    <child>
                       <object class="GtkLabel" id="other_heading">
                         <property name="visible" bind-source="category_detail_box" bind-property="visible" bind-flags="sync-create|bidirectional" />
                         <property name="xalign">0</property>

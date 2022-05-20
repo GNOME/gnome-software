@@ -150,6 +150,8 @@ gs_plugins_epiphany_installed_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list = NULL;
 	GsApp *app;
 	const char *app_id = "org.gnome.Epiphany.WebApp_e9d0e1e4b0a10856aa3b38d9eb4375de4070d043";
+	const char *metainfo_app_id = "org.gnome.Software.WebApp_e636aa5f2069f6e9c02deccc7b65f43da7985e32.desktop";
+	const char *launchable_app_id;
 	g_autofree char *app_id_desktop = NULL;
 	g_autofree char *desktop_path = NULL;
 	g_autofree char *origin_ui = NULL;
@@ -167,7 +169,9 @@ gs_plugins_epiphany_installed_func (GsPluginLoader *plugin_loader)
 
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	app = gs_app_list_index (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app), ==, app_id_desktop);
+	g_assert_cmpstr (gs_app_get_id (app), ==, metainfo_app_id);
+	launchable_app_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	g_assert_cmpstr (launchable_app_id, ==, app_id_desktop);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_WEB_APP);
 	g_assert_cmpint (gs_app_get_scope (app), ==, AS_COMPONENT_SCOPE_USER);
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
