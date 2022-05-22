@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-08 06:44+0000\n"
-"PO-Revision-Date: 2022-05-08 09:47+0300\n"
+"POT-Creation-Date: 2022-05-19 10:16+0000\n"
+"PO-Revision-Date: 2022-05-22 14:12+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
 "Language: tr\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.0.1\n"
 "X-POOTLE-MTIME: 1433975102.000000\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7 src/gs-shell.ui:21
@@ -806,7 +806,7 @@ msgstr "Kaldırma bekleniyor"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:198 src/gs-app-tile.ui:50
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:197 src/gs-app-tile.ui:50
 #: src/gs-feature-tile.c:547 src/gs-installed-page.c:709 src/gs-shell.ui:305
 msgid "Installed"
 msgstr "Kurulu"
@@ -956,7 +956,7 @@ msgstr "Sürüm Geçmişi"
 #: src/gs-app-version-history-row.c:71
 #, c-format
 msgid "New in Version %s"
-msgstr "%s Sürümünde Yenilikler"
+msgstr "%s Sürümü Yenilikleri"
 
 #: src/gs-app-version-history-row.c:78
 #, c-format
@@ -1383,7 +1383,7 @@ msgstr "İptal"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:341 src/gs-page.c:366
+#: src/gs-app-row.c:169 src/gs-common.c:344 src/gs-page.c:366
 msgid "Install"
 msgstr "Kur"
 
@@ -1464,7 +1464,7 @@ msgstr "%s (%s etki alanı) giriş gerektiriyor"
 msgid "Login Required"
 msgstr "Giriş Gerekiyor"
 
-#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:667
+#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:670
 #: src/gs-details-page.ui:286 src/gs-removal-dialog.ui:17
 #: src/gs-review-dialog.ui:18
 msgid "_Cancel"
@@ -1514,7 +1514,7 @@ msgstr "Diğer Yazılım"
 #: lib/gs-cmd.c:194
 #, c-format
 msgid "Please enter a number from 1 to %u: "
-msgstr "1 ile %u arasında bir sayı gir: "
+msgstr "1 ile %u arası sayı gir: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:258
@@ -1925,7 +1925,7 @@ msgid "Recently installed updates are available to review"
 msgstr "Son olarak kurulan güncellemeler gözden geçirme için uygun"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:168 src/gs-common.c:830
+#: src/gs-common.c:168 src/gs-common.c:833
 msgid "Restart"
 msgstr "Yeniden Başlat"
 
@@ -1934,12 +1934,12 @@ msgid "Launch"
 msgstr "Başlat"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:275
+#: src/gs-common.c:276
 msgid "Install Third-Party Software?"
 msgstr "Üçüncü Taraf Yazılım Kurulsun Mu?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:279 src/gs-repos-dialog.c:165
+#: src/gs-common.c:280 src/gs-repos-dialog.c:165
 msgid "Enable Third-Party Software Repository?"
 msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin Mi?"
 
@@ -1947,7 +1947,7 @@ msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin Mi?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:295
+#: src/gs-common.c:298
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1960,113 +1960,113 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:305
+#: src/gs-common.c:308
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s, “%s” tarafından sağlanıyor."
 
-#: src/gs-common.c:314
+#: src/gs-common.c:317
 msgid "This software repository must be enabled to continue installation."
 msgstr "Kurulumu sürdürmek için bu yazılım deposu etkinleştirilmelidir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:324
+#: src/gs-common.c:327
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "%s yazılımını kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:330
+#: src/gs-common.c:333
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Bu kod çözücüyü kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:337
+#: src/gs-common.c:340
 msgid "Don’t Warn Again"
 msgstr "Bir Daha Uyarma"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:346
+#: src/gs-common.c:349
 msgid "Enable and Install"
 msgstr "Etkinleştir ve Kur"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:548
+#: src/gs-common.c:551
 msgid "Detailed errors from the package manager follow:"
 msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
+#: src/gs-common.c:567 src/gs-safety-context-dialog.ui:79
 msgid "Details"
 msgstr "Ayrıntılar"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:655
+#: src/gs-common.c:658
 msgid "_Accept"
 msgstr "_Onayla"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:805
+#: src/gs-common.c:808
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Güncellemeler kuruldu"
 
 #. TRANSLATORS: we've just removed some apps
-#: src/gs-common.c:815
+#: src/gs-common.c:818
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
 msgstr[0] "Uygulama(lar) kaldırıldı"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:821
+#: src/gs-common.c:824
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Bunların etkili olması için yeniden başlatma gerekiyor."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:828
+#: src/gs-common.c:831
 msgid "Not Now"
 msgstr "Şimdi Değil"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:920
+#: src/gs-common.c:923
 msgid "Just now"
 msgstr "Şimdi"
 
-#: src/gs-common.c:922
+#: src/gs-common.c:925
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d dakika önce"
 
-#: src/gs-common.c:926
+#: src/gs-common.c:929
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d saat önce"
 
-#: src/gs-common.c:930
+#: src/gs-common.c:933
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d gün önce"
 
-#: src/gs-common.c:934
+#: src/gs-common.c:937
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d hafta önce"
 
-#: src/gs-common.c:938
+#: src/gs-common.c:941
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d ay önce"
 
-#: src/gs-common.c:942
+#: src/gs-common.c:945
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
@@ -4826,7 +4826,7 @@ msgstr "Flatpak, Linux’taki masaüstü uygulamaları için çerçevedir"
 msgid "Getting flatpak metadata for %s…"
 msgstr "%s için flatpak üst verisi alınıyor…"
 
-#: plugins/flatpak/gs-flatpak.c:3344
+#: plugins/flatpak/gs-flatpak.c:3342
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi arıtılamadı: %s"
@@ -4839,12 +4839,12 @@ msgstr "Kullanıcı Kurulumu"
 msgid "System Installation"
 msgstr "Sistem Kurulumu"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1093
+#: plugins/flatpak/gs-plugin-flatpak.c:1098
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kurulum eklenemedi: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1107
+#: plugins/flatpak/gs-plugin-flatpak.c:1112
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kaldırma eklenemedi: %s"
@@ -5069,7 +5069,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paketler"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2450
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2452
 msgid "Operating System (OSTree)"
 msgstr "İşletim Sistemi (OSTree)"
 
