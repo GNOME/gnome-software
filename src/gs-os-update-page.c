@@ -255,7 +255,7 @@ get_section_header (GsOsUpdatePage *page, GsOsUpdatePageSection section)
 	} else if (section == GS_OS_UPDATE_PAGE_SECTION_UPDATES) {
 		/* TRANSLATORS: This is the header for package updates during
 		 * a system update */
-		label = gtk_label_new (_("Updates"));
+		label = gtk_label_new (C_("Packages to be updated during a system upgrade", "Updates"));
 	} else if (section == GS_OS_UPDATE_PAGE_SECTION_DOWNGRADES) {
 		/* TRANSLATORS: This is the header for package downgrades during
 		 * a system update */
