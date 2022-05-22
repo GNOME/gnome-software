@@ -1642,6 +1642,38 @@ gs_appstream_add_categories (XbSilo *silo,
 }
 
 gboolean
+gs_appstream_add_installed (GsPlugin      *plugin,
+                            XbSilo        *silo,
+                            GsAppList     *list,
+                            GCancellable  *cancellable,
+                            GError       **error)
+{
+	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	/* get all installed appdata files (notice no 'components/' prefix...) */
+	components = xb_silo_query (silo, "component/description/..", 0, NULL);
+	if (components == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
+		if (app == NULL)
+			return FALSE;
+
+		/* Can get cached GsApp, which has the state already updated */
+		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
+		    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
+gboolean
 gs_appstream_add_popular (XbSilo *silo,
 			  GsAppList *list,
 			  GCancellable *cancellable,

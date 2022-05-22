@@ -62,5 +62,6 @@ const gchar * const	*gs_app_query_get_provides_files (GsAppQuery *self);
 GDateTime		*gs_app_query_get_released_since (GsAppQuery *self);
 GsAppQueryTristate	 gs_app_query_get_is_curated	 (GsAppQuery *self);
 GsCategory		*gs_app_query_get_category	 (GsAppQuery *self);
+GsAppQueryTristate	 gs_app_query_get_is_installed	 (GsAppQuery *self);
 
 G_END_DECLS

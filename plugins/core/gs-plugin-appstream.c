@@ -1365,87 +1365,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 				    error);
 }
 
-static void list_installed_apps_thread_cb (GTask        *task,
-                                           gpointer      source_object,
-                                           gpointer      task_data,
-                                           GCancellable *cancellable);
-
-static void
-gs_plugin_appstream_list_installed_apps_async (GsPlugin                       *plugin,
-                                               GsPluginListInstalledAppsFlags  flags,
-                                               GCancellable                   *cancellable,
-                                               GAsyncReadyCallback             callback,
-                                               gpointer                        user_data)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GTask) task = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
-
-	task = g_task_new (plugin, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_appstream_list_installed_apps_async);
-
-	/* Queue a job to check the silo, which will cause it to be loaded. */
-	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
-				list_installed_apps_thread_cb, g_steal_pointer (&task));
-}
-
-/* Run in @worker. */
-static void
-list_installed_apps_thread_cb (GTask        *task,
-                               gpointer      source_object,
-                               gpointer      task_data,
-                               GCancellable *cancellable)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-	g_autoptr(GPtrArray) components = NULL;
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GError) local_error = NULL;
-
-	assert_in_worker (self);
-
-	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-
-	/* get all installed appdata files (notice no 'components/' prefix...) */
-	components = xb_silo_query (self->silo, "component/description/..", 0, NULL);
-	if (components == NULL) {
-		g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-		return;
-	}
-
-	for (guint i = 0; i < components->len; i++) {
-		XbNode *component = g_ptr_array_index (components, i);
-		g_autoptr(GsApp) app = gs_appstream_create_app (GS_PLUGIN (self), self->silo, component, &local_error);
-		if (app == NULL) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
-
-		/* Can get cached gsApp, which has the state already updated */
-		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
-		    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-		gs_app_list_add (list, app);
-	}
-
-	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
-}
-
-static GsAppList *
-gs_plugin_appstream_list_installed_apps_finish (GsPlugin      *plugin,
-                                                GAsyncResult  *result,
-                                                GError       **error)
-{
-	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,
@@ -1519,6 +1438,7 @@ list_apps_thread_cb (GTask        *task,
 	GDateTime *released_since = NULL;
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
+	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1528,6 +1448,7 @@ list_apps_thread_cb (GTask        *task,
 		released_since = gs_app_query_get_released_since (data->query);
 		is_curated = gs_app_query_get_is_curated (data->query);
 		category = gs_app_query_get_category (data->query);
+		is_installed = gs_app_query_get_is_installed (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1535,11 +1456,15 @@ list_apps_thread_cb (GTask        *task,
 		age_secs = g_date_time_difference (now, released_since) / G_TIME_SPAN_SECOND;
 	}
 
-	/* Currently only support released-since, is-curated and category queries (but only one at once).
-	 * Also don’t currently support is-curated==GS_APP_QUERY_TRISTATE_FALSE. */
-	if ((released_since == NULL && is_curated == GS_APP_QUERY_TRISTATE_UNSET && category == NULL) ||
-	    gs_app_query_get_n_properties_set (data->query) != 1 ||
-	    is_curated == GS_APP_QUERY_TRISTATE_FALSE) {
+	/* Currently only support a subset of query properties, and only one set at once.
+	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
+	if ((released_since == NULL &&
+	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
+	     category == NULL &&
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
+	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
 		return;
@@ -1568,6 +1493,12 @@ list_apps_thread_cb (GTask        *task,
 
 	if (category != NULL &&
 	    !gs_appstream_add_category_apps (GS_PLUGIN (self), self->silo, category, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (is_installed == GS_APP_QUERY_TRISTATE_TRUE &&
+	    !gs_appstream_add_installed (GS_PLUGIN (self), self->silo, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
@@ -1667,8 +1598,6 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_appstream_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_appstream_refine_async;
 	plugin_class->refine_finish = gs_plugin_appstream_refine_finish;
-	plugin_class->list_installed_apps_async = gs_plugin_appstream_list_installed_apps_async;
-	plugin_class->list_installed_apps_finish = gs_plugin_appstream_list_installed_apps_finish;
 	plugin_class->list_apps_async = gs_plugin_appstream_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_appstream_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_appstream_refresh_metadata_async;

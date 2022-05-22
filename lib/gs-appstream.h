@@ -39,6 +39,11 @@ gboolean	 gs_appstream_add_category_apps		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_add_installed		(GsPlugin	*plugin,
+							 XbSilo		*silo,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_appstream_add_popular		(XbSilo		*silo,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,

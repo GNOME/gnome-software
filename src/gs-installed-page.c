@@ -441,10 +441,32 @@ gs_installed_page_remove_all_cb (GtkWidget *container,
 	gtk_list_box_remove (GTK_LIST_BOX (container), child);
 }
 
+static gboolean
+filter_app_kinds_cb (GsApp    *app,
+                     gpointer  user_data)
+{
+	/* Remove invalid apps. */
+	if (!gs_plugin_loader_app_is_valid (app, GS_PLUGIN_REFINE_FLAGS_NONE))
+		return FALSE;
+
+	switch (gs_app_get_kind (app)) {
+	case AS_COMPONENT_KIND_OPERATING_SYSTEM:
+	case AS_COMPONENT_KIND_CODEC:
+	case AS_COMPONENT_KIND_FONT:
+		g_debug ("app invalid as %s: %s",
+			 as_component_kind_to_string (gs_app_get_kind (app)),
+			 gs_app_get_unique_id (app));
+		return FALSE;
+	default:
+		return TRUE;
+	}
+}
+
 static void
 gs_installed_page_load (GsInstalledPage *self)
 {
 	GsPluginRefineFlags flags;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->waiting)
@@ -475,8 +497,11 @@ gs_installed_page_load (GsInstalledPage *self)
 		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
 
 	/* get installed apps */
-	plugin_job = gs_plugin_job_list_installed_apps_new (flags, 0, GS_APP_LIST_FILTER_FLAG_NONE,
-							    GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
+	query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
+				  "refine-flags", flags,
+				  "filter-func", filter_app_kinds_cb,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    plugin_job,
 					    self->cancellable,

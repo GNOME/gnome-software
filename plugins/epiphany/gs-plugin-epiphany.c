@@ -404,28 +404,30 @@ get_priority_for_interactivity (gboolean interactive)
 	return interactive ? G_PRIORITY_DEFAULT : G_PRIORITY_LOW;
 }
 
-static void list_installed_apps_thread_cb (GTask        *task,
-                                           gpointer      source_object,
-                                           gpointer      task_data,
-                                           GCancellable *cancellable);
+static void list_apps_thread_cb (GTask        *task,
+                                 gpointer      source_object,
+                                 gpointer      task_data,
+                                 GCancellable *cancellable);
 
 static void
-gs_plugin_epiphany_list_installed_apps_async (GsPlugin                       *plugin,
-					      GsPluginListInstalledAppsFlags  flags,
-					      GCancellable                   *cancellable,
-					      GAsyncReadyCallback             callback,
-					      gpointer                        user_data)
+gs_plugin_epiphany_list_apps_async (GsPlugin              *plugin,
+                                    GsAppQuery            *query,
+                                    GsPluginListAppsFlags  flags,
+                                    GCancellable          *cancellable,
+                                    GAsyncReadyCallback    callback,
+                                    gpointer               user_data)
 {
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (plugin);
 	g_autoptr(GTask) task = NULL;
-	gboolean interactive = (flags & GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE);
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 
-	task = g_task_new (plugin, cancellable, callback, user_data);
-	g_task_set_source_tag (task, gs_plugin_epiphany_list_installed_apps_async);
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_epiphany_list_apps_async);
 
-	/* Queue a job to get the installed apps. */
+	/* Queue a job to get the apps. */
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
-				list_installed_apps_thread_cb, g_steal_pointer (&task));
+				list_apps_thread_cb, g_steal_pointer (&task));
 }
 
 /* Run in @worker */
@@ -733,30 +735,51 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 
 /* Run in @worker */
 static void
-list_installed_apps_thread_cb (GTask        *task,
-                               gpointer      source_object,
-                               gpointer      task_data,
-                               GCancellable *cancellable)
+list_apps_thread_cb (GTask        *task,
+                     gpointer      source_object,
+                     gpointer      task_data,
+                     GCancellable *cancellable)
 {
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (source_object);
 	g_autoptr(GsAppList) list = gs_app_list_new ();
+	GsPluginListAppsData *data = task_data;
+	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	g_autoptr(GError) local_error = NULL;
 
+	assert_in_worker (self);
+
+	if (data->query != NULL) {
+		is_installed = gs_app_query_get_is_installed (data->query);
+	}
+
+	/* Currently only support a subset of query properties, and only one set at once.
+	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
+	if (is_installed == GS_APP_QUERY_TRISTATE_UNSET ||
+	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
+	    gs_app_query_get_n_properties_set (data->query) != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	/* Ensure the cache is up to date. */
 	if (!ensure_installed_apps_cache (self, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	gs_plugin_cache_lookup_by_state (GS_PLUGIN (self), list, GS_APP_STATE_INSTALLED);
+	if (is_installed == GS_APP_QUERY_TRISTATE_TRUE)
+		gs_plugin_cache_lookup_by_state (GS_PLUGIN (self), list, GS_APP_STATE_INSTALLED);
+
 	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
 static GsAppList *
-gs_plugin_epiphany_list_installed_apps_finish (GsPlugin      *plugin,
-                                               GAsyncResult  *result,
-                                               GError       **error)
+gs_plugin_epiphany_list_apps_finish (GsPlugin      *plugin,
+                                     GAsyncResult  *result,
+                                     GError       **error)
 {
-	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_plugin_epiphany_list_installed_apps_async, FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_plugin_epiphany_list_apps_async, FALSE);
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
@@ -1086,8 +1109,8 @@ gs_plugin_epiphany_class_init (GsPluginEpiphanyClass *klass)
 	plugin_class->shutdown_finish = gs_plugin_epiphany_shutdown_finish;
 	plugin_class->refine_async = gs_plugin_epiphany_refine_async;
 	plugin_class->refine_finish = gs_plugin_epiphany_refine_finish;
-	plugin_class->list_installed_apps_async = gs_plugin_epiphany_list_installed_apps_async;
-	plugin_class->list_installed_apps_finish = gs_plugin_epiphany_list_installed_apps_finish;
+	plugin_class->list_apps_async = gs_plugin_epiphany_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_epiphany_list_apps_finish;
 }
 
 GType

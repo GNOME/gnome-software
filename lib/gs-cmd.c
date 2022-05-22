@@ -419,16 +419,23 @@ main (int argc, char **argv)
 	/* do action */
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		for (i = 0; i < repeat; i++) {
+			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPluginListInstalledAppsFlags installed_flags = GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_NONE;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
 
 			if (list != NULL)
 				g_object_unref (list);
 
-			if (self->interactive)
-				installed_flags |= GS_PLUGIN_LIST_INSTALLED_APPS_FLAGS_INTERACTIVE;
+			query = gs_app_query_new ("is-installed", GS_APP_QUERY_TRISTATE_TRUE,
+						  "refine-flags", self->refine_flags,
+						  "max-results", self->max_results,
+						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  NULL);
 
-			plugin_job = gs_plugin_job_list_installed_apps_new (self->refine_flags, self->max_results, GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT, installed_flags);
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {

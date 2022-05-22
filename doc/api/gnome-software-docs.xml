@@ -212,11 +212,12 @@ gs_plugin_sample_init (GsPluginSample *self)
 }
 
 static void
-gs_plugin_custom_list_installed_apps_async (GsPlugin                       *plugin,
-                                            GsPluginListInstalledAppsFlags  flags,
-                                            GCancellable                   *cancellable,
-                                            GAsyncReadyCallback             callback,
-                                            gpointer                        user_data)
+gs_plugin_custom_list_apps_async (GsPlugin              *plugin,
+                                  GsAppQuery            *query,
+                                  GsPluginListAppsFlags  flags,
+                                  GCancellable          *cancellable,
+                                  GAsyncReadyCallback    callback,
+                                  gpointer               user_data)
 {
   g_autofree gchar *fn = NULL;
   g_autoptr(GsApp) app = NULL;
@@ -225,7 +226,16 @@ gs_plugin_custom_list_installed_apps_async (GsPlugin                       *plug
   g_autoptr(GTask) task = NULL;
 
   task = g_task_new (plugin, cancellable, callback, user_data);
-  g_task_set_source_tag (task, gs_plugin_custom_list_installed_apps_async);
+  g_task_set_source_tag (task, gs_plugin_custom_list_apps_async);
+
+  /* We’re only listing installed apps in this example. */
+  if (query == NULL ||
+      gs_app_query_get_is_installed (query) != GS_APP_QUERY_TRISTATE_TRUE ||
+      gs_app_query_get_n_properties_set (query) != 1) {
+    g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+                             "Unsupported query");
+    return;
+  }
 
   /* check if the app exists */
   fn = g_build_filename (g_get_home_dir (), "chiron", NULL);
@@ -266,9 +276,9 @@ gs_plugin_custom_list_installed_apps_async (GsPlugin                       *plug
 }
 
 static GsAppList *
-gs_plugin_custom_list_installed_apps_finish (GsPlugin      *plugin,
-                                             GAsyncResult  *result,
-                                             GError       **error)
+gs_plugin_custom_list_apps_finish (GsPlugin      *plugin,
+                                   GAsyncResult  *result,
+                                   GError       **error)
 {
   return g_task_propagate_pointer (G_TASK (result), error);
 }
@@ -664,7 +674,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
           same logical thing.
           This means we can query the installed list, start installing an
           application, then query it again before the install has finished.
-          The GsApp returned from the second <code>list_installed_apps()</code>
+          The GsApp returned from the second <code>list_apps()</code>
           request will be the same GObject, and thus all the signals connecting
           up to the UI will still be correct.
           This means we don't have to care about <emphasis>migrating</emphasis>
@@ -718,7 +728,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
     <xi:include href="xml/gs-plugin-helpers.xml"/>
     <xi:include href="xml/gs-plugin-job-list-apps.xml"/>
     <xi:include href="xml/gs-plugin-job-list-distro-upgrades.xml"/>
-    <xi:include href="xml/gs-plugin-job-list-installed-apps.xml"/>
     <xi:include href="xml/gs-plugin-job-refine.xml"/>
     <xi:include href="xml/gs-plugin-job-refresh-metadata.xml"/>
     <xi:include href="xml/gs-plugin-job.xml"/>
