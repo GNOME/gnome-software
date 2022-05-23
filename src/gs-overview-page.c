@@ -291,10 +291,8 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		goto out;
 	}
 
-	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
-		gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-		gs_app_list_randomize (list);
-	}
+	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
+	gs_app_list_randomize (list);
 
 	/* Filter out apps which don’t have a suitable hi-res icon. */
 	gs_app_list_filter (list, filter_hi_res_icon, self);

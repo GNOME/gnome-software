@@ -1088,15 +1088,6 @@ gs_plugin_loader_get_app_is_compatible (GsApp    *app,
 
 /******************************************************************************/
 
-static gboolean
-gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
-{
-	if (g_strcmp0 (gs_app_get_id (app),
-	    g_getenv ("GNOME_SOFTWARE_FEATURED")) == 0)
-		return TRUE;
-	return FALSE;
-}
-
 static gint
 gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
@@ -3573,12 +3564,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_FEATURED:
-		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
-			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
-		} else {
-			gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-			gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		}
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
+		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
