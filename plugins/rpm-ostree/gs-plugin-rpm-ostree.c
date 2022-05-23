@@ -1049,6 +1049,7 @@ refresh_metadata_thread_cb (GTask        *task,
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
 	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	assert_in_worker (self);
 
@@ -1074,14 +1075,28 @@ refresh_metadata_thread_cb (GTask        *task,
 		tp->plugin = g_object_ref (plugin);
 
 		options = make_refresh_md_options_variant (FALSE /* force */);
-		if (!gs_rpmostree_os_call_refresh_md_sync (os_proxy,
-							   options,
-							   &transaction_address,
-							   cancellable,
-							   &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+		done = FALSE;
+		while (!done) {
+			done = TRUE;
+			if (!gs_rpmostree_os_call_refresh_md_sync (os_proxy,
+								   options,
+								   &transaction_address,
+								   cancellable,
+								   &local_error)) {
+				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+					g_clear_error (&local_error);
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+						g_task_return_error (task, g_steal_pointer (&local_error));
+						return;
+					}
+					done = FALSE;
+					continue;
+				}
+
+				gs_rpmostree_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1122,16 +1137,29 @@ refresh_metadata_thread_cb (GTask        *task,
 		                                          FALSE,  /* no-pull-base */
 		                                          FALSE,  /* dry-run */
 		                                          FALSE); /* no-overrides */
-		if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
-		                                        options,
-		                                        NULL /* fd list */,
-		                                        &transaction_address,
-		                                        NULL /* fd list out */,
-		                                        cancellable,
-		                                        &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+		done = FALSE;
+		while (!done) {
+			done = TRUE;
+			if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
+								options,
+								NULL /* fd list */,
+								&transaction_address,
+								NULL /* fd list out */,
+								cancellable,
+								&local_error)) {
+				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+					g_clear_error (&local_error);
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+						g_task_return_error (task, g_steal_pointer (&local_error));
+						return;
+					}
+					done = FALSE;
+					continue;
+				}
+				gs_rpmostree_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1164,15 +1192,28 @@ refresh_metadata_thread_cb (GTask        *task,
 		g_variant_dict_insert (&dict, "mode", "s", "check");
 		options = g_variant_ref_sink (g_variant_dict_end (&dict));
 
-		if (!gs_rpmostree_os_call_automatic_update_trigger_sync (os_proxy,
-		                                                         options,
-		                                                         NULL,
-		                                                         &transaction_address,
-		                                                         cancellable,
-		                                                         &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+		done = FALSE;
+		while (!done) {
+			done = TRUE;
+			if (!gs_rpmostree_os_call_automatic_update_trigger_sync (os_proxy,
+										 options,
+										 NULL,
+										 &transaction_address,
+										 cancellable,
+										 &local_error)) {
+				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+					g_clear_error (&local_error);
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+						g_task_return_error (task, g_steal_pointer (&local_error));
+						return;
+					}
+					done = FALSE;
+					continue;
+				}
+				gs_rpmostree_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
 		}
 
 		if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1329,6 +1370,8 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	/* if we can process this online do not require a trigger */
 	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
@@ -1354,15 +1397,28 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 	                                          FALSE,  /* no-pull-base */
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
-	if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
-	                                        options,
-	                                        NULL /* fd list */,
-	                                        &transaction_address,
-	                                        NULL /* fd list out */,
-	                                        cancellable,
-	                                        error)) {
-		gs_rpmostree_error_convert (error);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_upgrade_sync (os_proxy,
+							options,
+							NULL /* fd list */,
+							&transaction_address,
+							NULL /* fd list out */,
+							cancellable,
+							&local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+					return FALSE;
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			return FALSE;
+		}
 	}
 
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1423,6 +1479,8 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1452,17 +1510,30 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
 
-	if (!gs_rpmostree_os_call_rebase_sync (os_proxy,
-	                                       options,
-	                                       new_refspec,
-	                                       packages,
-	                                       NULL /* fd list */,
-	                                       &transaction_address,
-	                                       NULL /* fd list out */,
-	                                       cancellable,
-	                                       error)) {
-		gs_rpmostree_error_convert (error);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_rebase_sync (os_proxy,
+						       options,
+						       new_refspec,
+						       packages,
+						       NULL /* fd list */,
+						       &transaction_address,
+						       NULL /* fd list out */,
+						       cancellable,
+						       &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+					return FALSE;
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			return FALSE;
+		}
 	}
 
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1497,6 +1568,8 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariantBuilder) options_builder = NULL;
 	g_autoptr(TransactionProgress) tp = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 		return FALSE;
@@ -1506,18 +1579,35 @@ gs_rpmostree_repo_enable (GsPlugin *plugin,
 	else
 		gs_app_set_state (app, GS_APP_STATE_REMOVING);
 
-	options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{ss}"));
-	g_variant_builder_add (options_builder, "{ss}", "enabled", enable ? "1" : "0");
-	if (!gs_rpmostree_os_call_modify_yum_repo_sync (os_proxy,
-	                                                gs_app_get_id (app),
-	                                                g_variant_builder_end (options_builder),
-	                                                &transaction_address,
-	                                                cancellable,
-	                                                error)) {
-		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		gs_utils_error_add_origin_id (error, app);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		g_clear_pointer (&options_builder, g_variant_builder_unref);
+		options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{ss}"));
+		g_variant_builder_add (options_builder, "{ss}", "enabled", enable ? "1" : "0");
+		if (!gs_rpmostree_os_call_modify_yum_repo_sync (os_proxy,
+								gs_app_get_id (app),
+								g_variant_builder_end (options_builder),
+								&transaction_address,
+								cancellable,
+								&local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					gs_app_set_state_recover (app);
+					gs_utils_error_add_origin_id (error, app);
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			gs_app_set_state_recover (app);
+			gs_utils_error_add_origin_id (error, app);
+			return FALSE;
+		}
 	}
 
 	tp = transaction_progress_new ();
@@ -1560,6 +1650,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1618,17 +1710,32 @@ gs_plugin_app_install (GsPlugin *plugin,
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
 
-	if (!rpmostree_update_deployment (os_proxy,
-	                                  install_package,
-	                                  NULL /* remove package */,
-	                                  local_filename,
-	                                  options,
-	                                  &transaction_address,
-	                                  cancellable,
-	                                  error)) {
-		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!rpmostree_update_deployment (os_proxy,
+						  install_package,
+						  NULL /* remove package */,
+						  local_filename,
+						  options,
+						  &transaction_address,
+						  cancellable,
+						  &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					gs_app_set_state_recover (app);
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -1666,6 +1773,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -1692,17 +1801,32 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
 
-	if (!rpmostree_update_deployment (os_proxy,
-	                                  NULL /* install package */,
-	                                  gs_app_get_source_default (app),
-	                                  NULL /* install local package */,
-	                                  options,
-	                                  &transaction_address,
-	                                  cancellable,
-	                                  error)) {
-		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!rpmostree_update_deployment (os_proxy,
+						  NULL /* install package */,
+						  gs_app_get_source_default (app),
+						  NULL /* install local package */,
+						  options,
+						  &transaction_address,
+						  cancellable,
+						  &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					gs_app_set_state_recover (app);
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
@@ -2112,6 +2236,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean done;
 
 	/* only process this app if was created by this plugin */
 	if (!gs_app_has_management_plugin (app, plugin))
@@ -2143,18 +2269,33 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
-	if (!gs_rpmostree_os_call_rebase_sync (os_proxy,
-	                                       options,
-	                                       new_refspec,
-	                                       packages,
-	                                       NULL /* fd list */,
-	                                       &transaction_address,
-	                                       NULL /* fd list out */,
-	                                       cancellable,
-	                                       error)) {
-		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_rebase_sync (os_proxy,
+						       options,
+						       new_refspec,
+						       packages,
+						       NULL /* fd list */,
+						       &transaction_address,
+						       NULL /* fd list out */,
+						       cancellable,
+						       &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					gs_app_set_state_recover (app);
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			if (local_error)
+				g_propagate_error (error, g_steal_pointer (&local_error));
+			gs_rpmostree_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	if (!gs_rpmostree_transaction_get_response_sync (sysroot_proxy,
