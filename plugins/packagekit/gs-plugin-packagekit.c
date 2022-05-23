@@ -287,6 +287,27 @@ gs_plugin_packagekit_finalize (GObject *object)
 
 typedef gboolean (*GsAppFilterFunc) (GsApp *app);
 
+static gboolean
+package_is_installed (const gchar *package_id)
+{
+	g_auto(GStrv) split = NULL;
+	const gchar *data;
+
+	split = pk_package_id_split (package_id);
+	if (split == NULL) {
+		return FALSE;
+	}
+
+	data = split[PK_PACKAGE_ID_DATA];
+	if (g_str_has_prefix (data, "installed") ||
+            g_str_has_prefix (data, "manual:") ||
+            g_str_has_prefix (data, "auto:")) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 /* The elements in the returned #GPtrArray reference memory from within the
  * @apps list, so the array is only valid as long as @apps is not modified or
  * freed. The array is not NULL-terminated. */
@@ -308,8 +329,7 @@ app_list_get_package_ids (GsAppList       *apps,
 		for (guint j = 0; j < app_source_ids->len; j++) {
 			const gchar *package_id = g_ptr_array_index (app_source_ids, j);
 
-			if (ignore_installed &&
-			    g_strstr_len (package_id, -1, ";installed") != NULL)
+			if (ignore_installed && package_is_installed (package_id))
 				continue;
 
 			g_ptr_array_add (list_package_ids, (gchar *) package_id);
@@ -605,7 +625,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		for (i = 0; i < source_ids->len; i++) {
 			package_id = g_ptr_array_index (source_ids, i);
-			if (g_strstr_len (package_id, -1, ";installed") != NULL)
+			if (package_is_installed (package_id))
 				continue;
 			g_ptr_array_add (array_package_ids, (gpointer) package_id);
 		}
@@ -741,7 +761,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	package_ids = g_new0 (gchar *, source_ids->len + 1);
 	for (i = 0; i < source_ids->len; i++) {
 		package_id = g_ptr_array_index (source_ids, i);
-		if (g_strstr_len (package_id, -1, ";installed") == NULL)
+		if (!package_is_installed (package_id))
 			continue;
 		package_ids[cnt++] = g_strdup (package_id);
 	}
