@@ -747,6 +747,93 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 0);
 }
 
+static void
+gs_plugins_dummy_app_size_calc_func (GsPluginLoader *loader)
+{
+	g_autoptr(GsApp) app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) runtime = NULL;
+	guint64 value = 0;
+
+	app1 = gs_app_new ("app1");
+	gs_app_set_state (app1, GS_APP_STATE_AVAILABLE);
+	gs_app_set_size_download (app1, GS_SIZE_TYPE_VALID, 1);
+	gs_app_set_size_installed (app1, GS_SIZE_TYPE_VALID, 1000);
+	g_assert_cmpint (gs_app_get_size_download (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+	g_assert_cmpint (gs_app_get_size_installed (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+
+	app2 = gs_app_new ("app2");
+	gs_app_set_state (app2, GS_APP_STATE_AVAILABLE);
+	gs_app_set_size_download (app2, GS_SIZE_TYPE_VALID, 20);
+	gs_app_set_size_installed (app2, GS_SIZE_TYPE_VALID, 20000);
+	g_assert_cmpint (gs_app_get_size_download (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+	g_assert_cmpint (gs_app_get_size_installed (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+
+	runtime = gs_app_new ("runtime");
+	gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE);
+	gs_app_set_size_download (runtime, GS_SIZE_TYPE_VALID, 300);
+	gs_app_set_size_installed (runtime, GS_SIZE_TYPE_VALID, 300000);
+	g_assert_cmpint (gs_app_get_size_download (runtime, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 300);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (runtime, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+	g_assert_cmpint (gs_app_get_size_installed (runtime, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 300000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (runtime, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+
+	gs_app_set_runtime (app1, runtime);
+	g_assert_cmpint (gs_app_get_size_download (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 300);
+	g_assert_cmpint (gs_app_get_size_installed (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+
+	gs_app_set_runtime (app2, runtime);
+	g_assert_cmpint (gs_app_get_size_download (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 300);
+	g_assert_cmpint (gs_app_get_size_installed (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+
+	gs_app_add_related (app1, app2);
+	g_assert_cmpint (gs_app_get_size_download (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 320);
+	g_assert_cmpint (gs_app_get_size_installed (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 1000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app1, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20000);
+
+	g_assert_cmpint (gs_app_get_size_download (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20);
+	g_assert_cmpint (gs_app_get_size_download_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 300);
+	g_assert_cmpint (gs_app_get_size_installed (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 20000);
+	g_assert_cmpint (gs_app_get_size_installed_dependencies (app2, &value), ==, GS_SIZE_TYPE_VALID);
+	g_assert_cmpint (value, ==, 0);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -905,6 +992,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/limit-parallel-ops",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_limit_parallel_ops_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/app-size-calc",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_app_size_calc_func);
 	retval = g_test_run ();
 
 	/* Clean up. */
