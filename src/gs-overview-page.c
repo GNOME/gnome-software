@@ -496,15 +496,23 @@ gs_overview_page_load (GsOverviewPage *self)
 
 	if (!self->loading_featured) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		g_autoptr(GsAppQuery) query = NULL;
+		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
-		/* Ask for more than 5, the list will be shrunk based on usability of the returned apps. */
+		/* Ask for more than 5, the list will be shrunk based on usability of the returned apps.
+		 * FIXME: The predicates for shrinking the list should be moved
+		 * into GsAppQuery so that the right number of results can be
+		 * returned on the first attempt. */
+		query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
+					  "max-results", 20,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  NULL);
+
+		plugin_job = gs_plugin_job_list_apps_new (query, flags);
+
 		self->loading_featured = TRUE;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
-						 "max-results", 20,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-						 NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
