@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-22 12:40+0000\n"
-"PO-Revision-Date: 2022-05-22 21:19+0300\n"
+"POT-Creation-Date: 2022-05-23 12:25+0000\n"
+"PO-Revision-Date: 2022-05-23 16:18+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -2835,7 +2835,7 @@ msgstr "Підтримка апаратної частини"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:736 src/gs-shell.ui:307
+#: src/gs-installed-page.c:761 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Встановлено"
@@ -3011,8 +3011,9 @@ msgstr "Вилучення"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:258 src/gs-shell.ui:328 src/gs-updates-page.c:1298
+#: src/gs-os-update-page.c:258
+#| msgid "Updates"
+msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Оновлення"
 
@@ -3460,28 +3461,28 @@ msgid "Report"
 msgstr "Зазвітувати"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:80
+#: src/gs-review-row.ui:84
 msgid "Was this review useful to you?"
 msgstr "Огляд був корисний для вас?"
 
-#: src/gs-review-row.ui:96
+#: src/gs-review-row.ui:100
 msgid "Yes"
 msgstr "Так"
 
-#: src/gs-review-row.ui:104
+#: src/gs-review-row.ui:108
 msgid "No"
 msgstr "Ні"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:112
+#: src/gs-review-row.ui:116
 msgid "Meh"
 msgstr "Таке собі"
 
-#: src/gs-review-row.ui:122
+#: src/gs-review-row.ui:128
 msgid "Report…"
 msgstr "Зазвітувати…"
 
-#: src/gs-review-row.ui:131
+#: src/gs-review-row.ui:137
 msgid "Remove…"
 msgstr "Вилучити…"
 
@@ -4346,6 +4347,13 @@ msgstr "Основне меню"
 msgid "Find Out _More"
 msgstr "З'ясувати _більше"
 
+#. Translators: A label for a button to show only updates which are available to install.
+#: src/gs-shell.ui:328
+#| msgid "Updates"
+msgctxt "Header bar button for list of apps to be updated"
+msgid "Updates"
+msgstr "Оновлення"
+
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
 #. * bubble is small, so the string should be as short as
@@ -4729,6 +4737,12 @@ msgstr "Потрібен інтернет, щоб перевірити онов�
 msgid "Check for updates"
 msgstr "Перевірити на оновлення"
 
+#: src/gs-updates-page.c:1298
+#| msgid "Updates"
+msgctxt "Apps to be updated"
+msgid "Updates"
+msgstr "Оновлення"
+
 #: src/gs-updates-page.ui:6
 msgid "Updates page"
 msgstr "Сторінка оновлень"
@@ -4919,12 +4933,11 @@ msgstr "Оновлення %s із новими можливостями і ви
 msgid "EOS update service could not fetch and apply the update."
 msgstr "Службі оновлень EOS не вдалося отримати і застосувати оновлення."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:462
+#: plugins/epiphany/gs-plugin-epiphany.c:464
 msgid "GNOME Web"
 msgstr "Тенета GNOME"
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
-#| msgid "Desktop Support"
 msgid "Web Apps Support"
 msgstr "Підтримка вебпрограм"
 
@@ -4974,12 +4987,12 @@ msgstr "Встановлення для користувача"
 msgid "System Installation"
 msgstr "Загальносистемне встановлення"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1098
+#: plugins/flatpak/gs-plugin-flatpak.c:1038
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Не вдалося додати для встановлення додатка «%s»: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1112
+#: plugins/flatpak/gs-plugin-flatpak.c:1052
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Не вдалося додати для вилучення додатка «%s»: %s"
