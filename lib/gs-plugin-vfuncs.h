@@ -204,33 +204,6 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_featured:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get applications that should be featured as a large full-width banner on the
- * overview page.
- * This is expected to be a curated list of applications that are high quality
- * and feature-complete.
- *
- * The returned list of popular applications are randomized in a way so that
- * the same application is featured for the entire calendar day.
- *
- * NOTE: The UI code may expect that applications have additional metadata set on
- * results, for instance <code>GnomeSoftware::FeatureTile</code>.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_launch:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

@@ -96,8 +96,8 @@ sections:
    `component/custom/value[@key='GnomeSoftware::FeatureTile-css]` set in their
    metainfo. They are also required to have a high-resolution icon, and the set
    of applications shown in the carousel is randomised and limited to (for
-   example) 5. Technically these are the results of the
-   `gs_plugin_add_featured()` vfunc.
+   example) 5. Technically these are the results of a
+   `GsPlugin.list_apps_async()` query with `GsAppQuery:is-featured` set.
  * “Editor’s Choice” on the overview page: Applications are included if they
    have `component/kudos/kudo[text()='GnomeSoftware::popular']` set in their
    metainfo. Technically these are the results of a `GsPlugin.list_apps_async()`
