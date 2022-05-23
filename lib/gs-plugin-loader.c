@@ -645,7 +645,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
-	case GS_PLUGIN_ACTION_GET_FEATURED:
 		{
 			GsPluginResultsFunc plugin_func = func;
 			ret = plugin_func (plugin, list, cancellable, &error_local);
@@ -1087,15 +1086,6 @@ gs_plugin_loader_get_app_is_compatible (GsApp    *app,
 }
 
 /******************************************************************************/
-
-static gboolean
-gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
-{
-	if (g_strcmp0 (gs_app_get_id (app),
-	    g_getenv ("GNOME_SOFTWARE_FEATURED")) == 0)
-		return TRUE;
-	return FALSE;
-}
 
 static gint
 gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
@@ -3572,14 +3562,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
-	case GS_PLUGIN_ACTION_GET_FEATURED:
-		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
-			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
-		} else {
-			gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-			gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
 		break;
@@ -4081,7 +4063,6 @@ job_process_cb (GTask *task)
 	/* set up a hang handler */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {

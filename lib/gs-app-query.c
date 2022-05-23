@@ -74,6 +74,7 @@ struct _GsAppQuery
 	gchar **provides_files;  /* (owned) (nullable) (array zero-terminated=1) */
 	GDateTime *released_since;  /* (owned) (nullable) */
 	GsAppQueryTristate is_curated;
+	GsAppQueryTristate is_featured;
 	GsCategory *category;  /* (nullable) (owned) */
 	GsAppQueryTristate is_installed;
 };
@@ -93,6 +94,7 @@ typedef enum {
 	PROP_PROVIDES_FILES,
 	PROP_RELEASED_SINCE,
 	PROP_IS_CURATED,
+	PROP_IS_FEATURED,
 	PROP_CATEGORY,
 	PROP_IS_INSTALLED,
 } GsAppQueryProperty;
@@ -143,6 +145,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_IS_CURATED:
 		g_value_set_enum (value, self->is_curated);
+		break;
+	case PROP_IS_FEATURED:
+		g_value_set_enum (value, self->is_featured);
 		break;
 	case PROP_CATEGORY:
 		g_value_set_object (value, self->category);
@@ -229,6 +234,11 @@ gs_app_query_set_property (GObject      *object,
 		/* Construct only. */
 		g_assert (self->is_curated == GS_APP_QUERY_TRISTATE_UNSET);
 		self->is_curated = g_value_get_enum (value);
+		break;
+	case PROP_IS_FEATURED:
+		/* Construct only. */
+		g_assert (self->is_featured == GS_APP_QUERY_TRISTATE_UNSET);
+		self->is_featured = g_value_get_enum (value);
 		break;
 	case PROP_CATEGORY:
 		/* Construct only. */
@@ -485,6 +495,29 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
+	 * GsAppQuery:is-featured:
+	 *
+	 * Whether apps must be featured (%GS_APP_QUERY_TRISTATE_TRUE), or not
+	 * featured (%GS_APP_QUERY_TRISTATE_FALSE).
+	 *
+	 * If this is %GS_APP_QUERY_TRISTATE_UNSET, apps are not filtered by
+	 * their featured state.
+	 *
+	 * ‘Featured’ apps have been selected by the distribution or software
+	 * source to be highlighted or promoted to users in some way. They
+	 * should be high quality and feature complete.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_IS_FEATURED] =
+		g_param_spec_enum ("is-featured", "Is Featured",
+				   "Whether apps must be featured, or not featured.",
+				   GS_TYPE_APP_QUERY_TRISTATE,
+				   GS_APP_QUERY_TRISTATE_UNSET,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
 	 * GsAppQuery:category: (nullable)
 	 *
 	 * A category which apps must be in.
@@ -526,6 +559,7 @@ static void
 gs_app_query_init (GsAppQuery *self)
 {
 	self->is_curated = GS_APP_QUERY_TRISTATE_UNSET;
+	self->is_featured = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 }
 
@@ -679,6 +713,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 		n++;
 	if (self->is_curated != GS_APP_QUERY_TRISTATE_UNSET)
 		n++;
+	if (self->is_featured != GS_APP_QUERY_TRISTATE_UNSET)
+		n++;
 	if (self->category != NULL)
 		n++;
 	if (self->is_installed != GS_APP_QUERY_TRISTATE_UNSET)
@@ -743,6 +779,25 @@ gs_app_query_get_is_curated (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
 
 	return self->is_curated;
+}
+
+/**
+ * gs_app_query_get_is_featured:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:is-featured.
+ *
+ * Returns: %GS_APP_QUERY_TRISTATE_TRUE if apps must be featured,
+ *   %GS_APP_QUERY_TRISTATE_FALSE if they must be not featured, or
+ *   %GS_APP_QUERY_TRISTATE_UNSET if it doesn’t matter
+ * Since: 43
+ */
+GsAppQueryTristate
+gs_app_query_get_is_featured (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
+
+	return self->is_featured;
 }
 
 /**
