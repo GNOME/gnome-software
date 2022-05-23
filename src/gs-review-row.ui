@@ -72,47 +72,53 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="box_voting">
-            <property name="visible">False</property>
+          <object class="GtkBox">
+            <property name="visible">True</property>
             <property name="spacing">9</property>
             <child>
-              <object class="GtkLabel">
-                <property name="label" translatable="yes" comments="Translators: Users can express their opinions about other users&apos; opinions about the apps.">Was this review useful to you?</property>
-                <property name="wrap">True</property>
-                <property name="xalign">0</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="box_vote_buttons">
-                <property name="spacing">0</property>
-                <style>
-                  <class name="vote-buttons"/>
-                </style>
+              <object class="GtkBox" id="box_voting">
+                <property name="visible">False</property>
+                <property name="spacing">9</property>
                 <child>
-                  <object class="GtkButton" id="button_yes">
-                    <property name="label" translatable="yes">Yes</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="has-frame">False</property>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes" comments="Translators: Users can express their opinions about other users&apos; opinions about the apps.">Was this review useful to you?</property>
+                    <property name="wrap">True</property>
+                    <property name="xalign">0</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button_no">
-                    <property name="label" translatable="yes">No</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="has-frame">False</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_dismiss">
-                    <property name="label" translatable="yes" comments="Translators: Button text for indifference, only used when moderating">Meh</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="has-frame">False</property>
+                  <object class="GtkBox" id="box_vote_buttons">
+                    <property name="spacing">0</property>
+                    <style>
+                      <class name="vote-buttons"/>
+                    </style>
+                    <child>
+                      <object class="GtkButton" id="button_yes">
+                        <property name="label" translatable="yes">Yes</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="has-frame">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button_no">
+                        <property name="label" translatable="yes">No</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="has-frame">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button_dismiss">
+                        <property name="label" translatable="yes" comments="Translators: Button text for indifference, only used when moderating">Meh</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="has-frame">False</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
