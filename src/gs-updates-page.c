@@ -1295,7 +1295,7 @@ gs_updates_page_get_property (GObject    *object,
 		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates)));
 		break;
 	case PROP_TITLE:
-		g_value_set_string (value, _("Updates"));
+		g_value_set_string (value, C_("Apps to be updated", "Updates"));
 		break;
 	case PROP_COUNTER:
 		g_value_set_uint (value, self->updates_counter);
