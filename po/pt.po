@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-20 11:04+0000\n"
-"PO-Revision-Date: 2022-05-20 18:03+0100\n"
+"POT-Creation-Date: 2022-05-23 07:04+0000\n"
+"PO-Revision-Date: 2022-05-23 11:29+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -2841,7 +2841,7 @@ msgstr "Suporte a hardware"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:736 src/gs-shell.ui:307
+#: src/gs-installed-page.c:761 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Instalado"
@@ -3015,10 +3015,10 @@ msgstr "Pacotes a remover"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:258 src/gs-shell.ui:328 src/gs-updates-page.c:1298
+#: src/gs-os-update-page.c:258
+msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
-msgstr "Pacotes a atualizar"
+msgstr "Atualizações"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
@@ -3457,28 +3457,28 @@ msgid "Report"
 msgstr "Denunciar"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:80
+#: src/gs-review-row.ui:84
 msgid "Was this review useful to you?"
 msgstr "Esta análise foi-lhe útil?"
 
-#: src/gs-review-row.ui:96
+#: src/gs-review-row.ui:100
 msgid "Yes"
 msgstr "Sim"
 
-#: src/gs-review-row.ui:104
+#: src/gs-review-row.ui:108
 msgid "No"
 msgstr "Não"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:112
+#: src/gs-review-row.ui:116
 msgid "Meh"
 msgstr "Meh"
 
-#: src/gs-review-row.ui:122
+#: src/gs-review-row.ui:128
 msgid "Report…"
 msgstr "Reporte…"
 
-#: src/gs-review-row.ui:131
+#: src/gs-review-row.ui:137
 msgid "Remove…"
 msgstr "Remover…"
 
@@ -4355,6 +4355,12 @@ msgstr "Menu principal"
 msgid "Find Out _More"
 msgstr "Saber _mais"
 
+#. Translators: A label for a button to show only updates which are available to install.
+#: src/gs-shell.ui:328
+msgctxt "Header bar button for list of apps to be updated"
+msgid "Updates"
+msgstr "Atualizações"
+
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
 #. * bubble is small, so the string should be as short as
@@ -4725,6 +4731,11 @@ msgstr "É necessário acesso à Internet para procurar atualizações."
 msgid "Check for updates"
 msgstr "Procurar atualizações"
 
+#: src/gs-updates-page.c:1298
+msgctxt "Apps to be updated"
+msgid "Updates"
+msgstr "Atualizações"
+
 #: src/gs-updates-page.ui:6
 msgid "Updates page"
 msgstr "Página das atualizações"
@@ -4916,9 +4927,17 @@ msgid "EOS update service could not fetch and apply the update."
 msgstr ""
 "O serviço de atualizações EOS não conseguiu obter e aplicar a atualização."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:462
+#: plugins/epiphany/gs-plugin-epiphany.c:464
 msgid "GNOME Web"
 msgstr "GNOME Web"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
+msgid "Web Apps Support"
+msgstr "Suporte de aplicações web"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
+msgid "Run popular web applications in a browser"
+msgstr "Executar aplicações web populares num navegador"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:257
@@ -4930,7 +4949,7 @@ msgstr "A transferir informação sobre a atualização…"
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
-"Atualize para obter as últimas funcionalidades e melhorias de desempenho e "
+"Atualizar para obter as últimas funcionalidades e melhorias de desempenho e "
 "estabilidade."
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
@@ -4961,12 +4980,12 @@ msgstr "Instalação do utilizador"
 msgid "System Installation"
 msgstr "Instalação do sistema"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1098
+#: plugins/flatpak/gs-plugin-flatpak.c:1038
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "Falha ao adicionar para instalação o complemento ‘%s’: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1112
+#: plugins/flatpak/gs-plugin-flatpak.c:1052
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Falha ao adicionar para desinstalação o complemento ‘%s’: %s"
