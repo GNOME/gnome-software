@@ -290,14 +290,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		goto out;
 	}
 
-	/* Filter out apps which don’t have a suitable hi-res icon. */
-	gs_app_list_filter (list, filter_hi_res_icon, self);
-
-	if (gs_app_list_length (list) > 5) {
-		g_debug ("%s: Received %u apps, truncated to 5", G_STRFUNC, gs_app_list_length (list));
-		gs_app_list_truncate (list, 5);
-	}
-
 	gtk_widget_set_visible (self->featured_carousel, gs_app_list_length (list) > 0);
 	gs_featured_carousel_set_apps (GS_FEATURED_CAROUSEL (self->featured_carousel), list);
 
@@ -493,15 +485,13 @@ gs_overview_page_load (GsOverviewPage *self)
 		g_autoptr(GsAppQuery) query = NULL;
 		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
-		/* Ask for more than 5, the list will be shrunk based on usability of the returned apps.
-		 * FIXME: The predicates for shrinking the list should be moved
-		 * into GsAppQuery so that the right number of results can be
-		 * returned on the first attempt. */
 		query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
-					  "max-results", 20,
+					  "max-results", 5,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  "filter-func", filter_hi_res_icon,
+					  "filter-user-data", self,
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);
