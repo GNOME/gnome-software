@@ -214,12 +214,12 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			 * PCI card, not the logical wired connection */
 			return g_strdup_printf (_("%s Network Interface Update"), name);
 		}
-		if (g_strcmp0(cat, "X-VideoDisplay") == 0) {
+		if (g_strcmp0 (cat, "X-VideoDisplay") == 0) {
 			/* TRANSLATORS: Video Display refers to the laptop internal display or
 			 * external monitor */
 			return g_strdup_printf (_("%s Display Update"), name);
 		}
-		if (g_strcmp0(cat, "X-BaseboardManagementController") == 0) {
+		if (g_strcmp0 (cat, "X-BaseboardManagementController") == 0) {
 			/* TRANSLATORS: BMC refers to baseboard management controller which
 			 * is the device that updates all the other firmware on the system */
 			return g_strdup_printf (_("%s BMC Update"), name);
