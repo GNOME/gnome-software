@@ -291,7 +291,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		goto out;
 	}
 
-	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 	gs_app_list_randomize (list);
 
 	/* Filter out apps which don’t have a suitable hi-res icon. */
