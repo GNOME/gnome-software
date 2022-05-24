@@ -32,7 +32,6 @@ typedef struct
 	GsApp			*app;
 	GsAppList		*list;
 	GFile			*file;
-	GsCategory		*category;
 	gint64			 time_created;
 } GsPluginJobPrivate;
 
@@ -47,7 +46,6 @@ enum {
 	PROP_APP,
 	PROP_LIST,
 	PROP_FILE,
-	PROP_CATEGORY,
 	PROP_MAX_RESULTS,
 	PROP_TIMEOUT,
 	PROP_PROPAGATE_ERROR,
@@ -93,17 +91,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
 					priv->search);
-	}
-	if (priv->category != NULL) {
-		GsCategory *parent = gs_category_get_parent (priv->category);
-		if (parent != NULL) {
-			g_string_append_printf (str, " with category=%s/%s",
-						gs_category_get_id (parent),
-						gs_category_get_id (priv->category));
-		} else {
-			g_string_append_printf (str, " with category=%s",
-						gs_category_get_id (priv->category));
-		}
 	}
 	if (priv->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (priv->file);
@@ -385,22 +372,6 @@ gs_plugin_job_get_plugin (GsPluginJob *self)
 	return priv->plugin;
 }
 
-void
-gs_plugin_job_set_category (GsPluginJob *self, GsCategory *category)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&priv->category, category);
-}
-
-GsCategory *
-gs_plugin_job_get_category (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->category;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -434,9 +405,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_FILE:
 		g_value_set_object (value, priv->file);
-		break;
-	case PROP_CATEGORY:
-		g_value_set_object (value, priv->category);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, priv->max_results);
@@ -486,9 +454,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_FILE:
 		gs_plugin_job_set_file (self, g_value_get_object (value));
 		break;
-	case PROP_CATEGORY:
-		gs_plugin_job_set_category (self, g_value_get_object (value));
-		break;
 	case PROP_MAX_RESULTS:
 		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
 		break;
@@ -515,7 +480,6 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&priv->list);
 	g_clear_object (&priv->file);
 	g_clear_object (&priv->plugin);
-	g_clear_object (&priv->category);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
@@ -574,11 +538,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_TYPE_FILE,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILE, pspec);
-
-	pspec = g_param_spec_object ("category", NULL, NULL,
-				     GS_TYPE_CATEGORY,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_CATEGORY, pspec);
 
 	pspec = g_param_spec_uint ("max-results", NULL, NULL,
 				   0, G_MAXUINT, 0,

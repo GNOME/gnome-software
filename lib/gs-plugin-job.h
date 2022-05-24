@@ -11,7 +11,6 @@
 #include <glib-object.h>
 
 #include "gs-app-list.h"
-#include "gs-category.h"
 #include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
@@ -63,8 +62,6 @@ void		 gs_plugin_job_set_file			(GsPluginJob	*self,
 							 GFile		*file);
 void		 gs_plugin_job_set_plugin		(GsPluginJob	*self,
 							 GsPlugin	*plugin);
-void		 gs_plugin_job_set_category		(GsPluginJob	*self,
-							 GsCategory	*category);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 
