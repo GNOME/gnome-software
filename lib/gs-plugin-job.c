@@ -23,7 +23,6 @@ typedef struct
 	gboolean		 propagate_error;
 	guint			 max_results;
 	guint			 timeout;
-	guint64			 age;
 	GsPlugin		*plugin;
 	GsPluginAction		 action;
 	GsAppListSortFunc	 sort_func;
@@ -38,7 +37,6 @@ typedef struct
 enum {
 	PROP_0,
 	PROP_ACTION,
-	PROP_AGE,
 	PROP_SEARCH,
 	PROP_REFINE_FLAGS,
 	PROP_DEDUPE_FLAGS,
@@ -80,14 +78,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_string_append_printf (str, " with timeout=%u", priv->timeout);
 	if (priv->max_results > 0)
 		g_string_append_printf (str, " with max-results=%u", priv->max_results);
-	if (priv->age != 0) {
-		if (priv->age == G_MAXUINT) {
-			g_string_append (str, " with cache age=any");
-		} else {
-			g_string_append_printf (str, " with cache age=%" G_GUINT64_FORMAT,
-						priv->age);
-		}
-	}
 	if (priv->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
 					priv->search);
@@ -235,22 +225,6 @@ gs_plugin_job_get_timeout (GsPluginJob *self)
 }
 
 void
-gs_plugin_job_set_age (GsPluginJob *self, guint64 age)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->age = age;
-}
-
-guint64
-gs_plugin_job_get_age (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return priv->age;
-}
-
-void
 gs_plugin_job_set_action (GsPluginJob *self, GsPluginAction action)
 {
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
@@ -382,9 +356,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_ACTION:
 		g_value_set_enum (value, priv->action);
 		break;
-	case PROP_AGE:
-		g_value_set_uint64 (value, priv->age);
-		break;
 	case PROP_REFINE_FLAGS:
 		g_value_set_flags (value, priv->refine_flags);
 		break;
@@ -429,9 +400,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	switch (prop_id) {
 	case PROP_ACTION:
 		gs_plugin_job_set_action (self, g_value_get_enum (value));
-		break;
-	case PROP_AGE:
-		gs_plugin_job_set_age (self, g_value_get_uint64 (value));
 		break;
 	case PROP_REFINE_FLAGS:
 		gs_plugin_job_set_refine_flags (self, g_value_get_flags (value));
@@ -497,11 +465,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   GS_TYPE_PLUGIN_ACTION, GS_PLUGIN_ACTION_UNKNOWN,
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_ACTION, pspec);
-
-	pspec = g_param_spec_uint64 ("age", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_AGE, pspec);
 
 	pspec = g_param_spec_flags ("refine-flags", NULL, NULL,
 				    GS_TYPE_PLUGIN_REFINE_FLAGS, GS_PLUGIN_REFINE_FLAGS_NONE,
