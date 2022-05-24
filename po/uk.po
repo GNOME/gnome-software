@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-23 12:25+0000\n"
-"PO-Revision-Date: 2022-05-23 16:18+0300\n"
+"POT-Creation-Date: 2022-05-24 14:15+0000\n"
+"PO-Revision-Date: 2022-05-24 22:01+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -3012,7 +3012,6 @@ msgstr "Вилучення"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #: src/gs-os-update-page.c:258
-#| msgid "Updates"
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Оновлення"
@@ -3026,12 +3025,12 @@ msgstr "Зниження версій"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:680
+#: src/gs-overview-page.c:686
 msgid "selected external sources"
 msgstr "вибраних зовнішніх джерел"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:682
+#: src/gs-overview-page.c:688
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3042,13 +3041,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:691 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:697 src/gs-repos-dialog.c:170
 msgid "Enable"
 msgstr "Увімкнути"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:745 src/gs-shell.ui:294
+#: src/gs-overview-page.c:751 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "Ознайомлення"
 
@@ -3069,7 +3068,7 @@ msgstr "Інші категорії"
 msgid "No Application Data Found"
 msgstr "Не знайдено даних про програму"
 
-#: lib/gs-plugin-loader.c:3020
+#: lib/gs-plugin-loader.c:3010
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Невідома"
@@ -4349,7 +4348,6 @@ msgstr "З'ясувати _більше"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gs-shell.ui:328
-#| msgid "Updates"
 msgctxt "Header bar button for list of apps to be updated"
 msgid "Updates"
 msgstr "Оновлення"
@@ -4738,7 +4736,6 @@ msgid "Check for updates"
 msgstr "Перевірити на оновлення"
 
 #: src/gs-updates-page.c:1298
-#| msgid "Updates"
 msgctxt "Apps to be updated"
 msgid "Updates"
 msgstr "Оновлення"
@@ -5133,6 +5130,14 @@ msgstr "Оновлення для дисплея %s"
 msgid "%s BMC Update"
 msgstr "Оновлення BMC для %s"
 
+#. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
+#. * device that stays in the USB port so the wireless peripheral works
+#: plugins/fwupd/gs-fwupd-app.c:230
+#, c-format
+#| msgid "%s Device Update"
+msgid "%s USB Receiver Update"
+msgstr "Оновлення для USB-приймача %s"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
 msgstr "Мікропрограма"
@@ -5192,7 +5197,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Пакунки"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2453
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
 msgid "Operating System (OSTree)"
 msgstr "Операційна система (OSTree)"
 
