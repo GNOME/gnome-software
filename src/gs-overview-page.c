@@ -150,7 +150,6 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 		goto out;
 	}
 
-	gs_app_list_randomize (list);
 
 	gs_widget_remove_all (self->box_curated, (GsRemoveFunc) gtk_flow_box_remove);
 
@@ -290,8 +289,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		gtk_widget_set_visible (self->featured_carousel, FALSE);
 		goto out;
 	}
-
-	gs_app_list_randomize (list);
 
 	/* Filter out apps which don’t have a suitable hi-res icon. */
 	gs_app_list_filter (list, filter_hi_res_icon, self);
