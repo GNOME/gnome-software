@@ -15,8 +15,12 @@
  * #GsHardwareSupportContextDialog is a dialog which shows detailed information
  * about what hardware an app requires or recommends to be used when running it.
  * For example, what input devices it requires, and what display sizes it
- * supports. This information is derived from the `<requires>` and
- * `<recommends>` elements in the app’s appdata.
+ * supports. This information is derived from the `<requires>`,
+ * `<recommends>` and `<supports>` elements in the app’s appdata.
+ *
+ * Currently, `<supports>` is treated as a synonym of `<recommends>` as it’s
+ * only just been introduced into the appstream standard, and many apps which
+ * should be using `<supports>` are still using `<recommends>`.
  *
  * It is designed to show a more detailed view of the information which the
  * app’s hardware support tile in #GsAppContextBar is derived from.
@@ -127,6 +131,9 @@ add_relation_row (GtkListBox                   *list_box,
 		}
 		break;
 	case AS_RELATION_KIND_RECOMMENDS:
+#if AS_CHECK_VERSION(0, 15, 0)
+	case AS_RELATION_KIND_SUPPORTS:
+#endif
 		rating = GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT;
 		icon_name = icon_name_recommends;
 		title = title_recommends;
@@ -205,6 +212,10 @@ max_relation_kind (AsRelationKind kind1,
 		return AS_RELATION_KIND_REQUIRES;
 	if (kind1 == AS_RELATION_KIND_RECOMMENDS || kind2 == AS_RELATION_KIND_RECOMMENDS)
 		return AS_RELATION_KIND_RECOMMENDS;
+#if AS_CHECK_VERSION(0, 15, 0)
+	if (kind1 == AS_RELATION_KIND_SUPPORTS || kind2 == AS_RELATION_KIND_SUPPORTS)
+		return AS_RELATION_KIND_SUPPORTS;
+#endif
 	return AS_RELATION_KIND_UNKNOWN;
 }
 
@@ -328,6 +339,9 @@ gs_hardware_support_context_dialog_get_control_support (GdkDisplay     *display,
 			control_relations[control_kind] = MAX (control_relations[control_kind], kind);
 
 			if (kind == AS_RELATION_KIND_REQUIRES ||
+#if AS_CHECK_VERSION(0, 15, 0)
+			    kind == AS_RELATION_KIND_SUPPORTS ||
+#endif
 			    kind == AS_RELATION_KIND_RECOMMENDS)
 				any_control_relations_set = TRUE;
 		}
@@ -393,8 +407,9 @@ gs_hardware_support_context_dialog_get_control_support (GdkDisplay     *display,
  *
  * @desktop_relation_kind_out is set to the type of support the app has for
  * desktop displays: whether they’re required (%AS_RELATION_KIND_REQUIRES),
- * supported but not required (%AS_RELATION_KIND_RECOMMENDS) or whether there’s
- * no information (%AS_RELATION_KIND_UNKNOWN).
+ * supported but not required (%AS_RELATION_KIND_RECOMMENDS or
+ * %AS_RELATION_KIND_SUPPORTS) or whether there’s no information
+ * (%AS_RELATION_KIND_UNKNOWN).
  *
  * @mobile_match_out and @mobile_relation_kind_out behave similarly, but for
  * mobile displays (smaller than 768 pixels).

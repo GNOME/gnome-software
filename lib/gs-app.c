@@ -5892,7 +5892,8 @@ gs_app_class_init (GsAppClass *klass)
 	 * %NULL is equivalent to an empty array. Relations of kind
 	 * %AS_RELATION_KIND_REQUIRES are conjunctive, so each additional
 	 * relation further restricts the set of computers which can run the
-	 * app. Relations of kind %AS_RELATION_KIND_RECOMMENDS are disjunctive.
+	 * app. Relations of kind %AS_RELATION_KIND_RECOMMENDS and
+	 * %AS_RELATION_KIND_SUPPORTS are disjunctive.
 	 *
 	 * Since: 41
 	 */

@@ -886,14 +886,14 @@ gs_appstream_refine_app_relation (GsApp           *app,
 		as_relation_set_kind (relation, kind);
 
 		if (g_str_equal (item_kind, "control")) {
-			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-control */
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control */
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_CONTROL);
 			as_relation_set_value_control_kind (relation, as_control_kind_from_string (xb_node_get_text (child)));
 		} else if (g_str_equal (item_kind, "display_length")) {
 			AsDisplayLengthKind display_length_kind;
 			const gchar *compare;
 
-			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length */
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_DISPLAY_LENGTH);
 
 			compare = xb_node_get_attr (child, "compare");
@@ -929,6 +929,9 @@ gs_appstream_refine_app_relations (GsApp     *app,
 		const gchar *element_name;
 		AsRelationKind relation_kind;
 	} relation_types[] = {
+#if AS_CHECK_VERSION(0, 15, 0)
+		{ "supports", AS_RELATION_KIND_SUPPORTS },
+#endif
 		{ "recommends", AS_RELATION_KIND_RECOMMENDS },
 		{ "requires", AS_RELATION_KIND_REQUIRES },
 	};
