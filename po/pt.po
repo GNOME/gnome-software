@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-23 07:04+0000\n"
-"PO-Revision-Date: 2022-05-23 11:29+0100\n"
+"POT-Creation-Date: 2022-05-24 14:15+0000\n"
+"PO-Revision-Date: 2022-05-24 15:37+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -996,9 +996,9 @@ msgstr "%e %B %Y"
 #: src/gs-application.c:121
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"Modo de inicialização: pode ser \"updates\" (para atualizações), \"updated"
-"\" (para atualizados), \"installed\" (para instalados) ou \"overview\" (para "
-"visão geral)"
+"Modo de inicialização: pode ser \"updates\" (para atualizações), "
+"\"updated\" (para atualizados), \"installed\" (para instalados) ou "
+"\"overview\" (para visão geral)"
 
 #: src/gs-application.c:121
 msgid "MODE"
@@ -3029,12 +3029,12 @@ msgstr "Pacotes a reverter"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:680
+#: src/gs-overview-page.c:686
 msgid "selected external sources"
 msgstr "fontes externas selecionadas"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:682
+#: src/gs-overview-page.c:688
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -3045,13 +3045,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:691 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:697 src/gs-repos-dialog.c:170
 msgid "Enable"
 msgstr "Ativar"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:745 src/gs-shell.ui:294
+#: src/gs-overview-page.c:751 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "Explorar"
 
@@ -3072,7 +3072,7 @@ msgstr "Outras categorias"
 msgid "No Application Data Found"
 msgstr "Nenhuns dados de aplicação encontrados"
 
-#: lib/gs-plugin-loader.c:3020
+#: lib/gs-plugin-loader.c:3010
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconhecida"
@@ -3403,9 +3403,9 @@ msgstr ""
 
 #: src/gs-review-dialog.ui:156
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>. The full name attached to your account will be shown "
-"publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
+"privacy\">privacy policy</a>. The full name attached to your account will be "
+"shown publicly."
 msgstr ""
 "Saiba que dados são enviados na nossa <a href=\"https://odrs.gnome.org/"
 "privacy\">política de privacidade</a>. O nome completo anexado à sua conta "
@@ -5126,6 +5126,13 @@ msgstr "Atualização de ecrã do %s"
 msgid "%s BMC Update"
 msgstr "Atualização do BMC do %s"
 
+#. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
+#. * device that stays in the USB port so the wireless peripheral works
+#: plugins/fwupd/gs-fwupd-app.c:230
+#, c-format
+msgid "%s USB Receiver Update"
+msgstr "Atualização do receptor USB %s"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
 msgstr "Firmware"
@@ -5184,7 +5191,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Pacotes"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2453
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
 msgid "Operating System (OSTree)"
 msgstr "Sistema Operativo (OSTree)"
 
