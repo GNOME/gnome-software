@@ -33,7 +33,6 @@ typedef struct
 	GsAppList		*list;
 	GFile			*file;
 	GsCategory		*category;
-	AsReview		*review;
 	gint64			 time_created;
 } GsPluginJobPrivate;
 
@@ -49,7 +48,6 @@ enum {
 	PROP_LIST,
 	PROP_FILE,
 	PROP_CATEGORY,
-	PROP_REVIEW,
 	PROP_MAX_RESULTS,
 	PROP_TIMEOUT,
 	PROP_PROPAGATE_ERROR,
@@ -106,10 +104,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 			g_string_append_printf (str, " with category=%s",
 						gs_category_get_id (priv->category));
 		}
-	}
-	if (priv->review != NULL) {
-		g_string_append_printf (str, " with review=%s",
-					as_review_get_id (priv->review));
 	}
 	if (priv->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (priv->file);
@@ -407,22 +401,6 @@ gs_plugin_job_get_category (GsPluginJob *self)
 	return priv->category;
 }
 
-void
-gs_plugin_job_set_review (GsPluginJob *self, AsReview *review)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&priv->review, review);
-}
-
-AsReview *
-gs_plugin_job_get_review (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return priv->review;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -459,9 +437,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_CATEGORY:
 		g_value_set_object (value, priv->category);
-		break;
-	case PROP_REVIEW:
-		g_value_set_object (value, priv->review);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, priv->max_results);
@@ -514,9 +489,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_CATEGORY:
 		gs_plugin_job_set_category (self, g_value_get_object (value));
 		break;
-	case PROP_REVIEW:
-		gs_plugin_job_set_review (self, g_value_get_object (value));
-		break;
 	case PROP_MAX_RESULTS:
 		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
 		break;
@@ -544,7 +516,6 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&priv->file);
 	g_clear_object (&priv->plugin);
 	g_clear_object (&priv->category);
-	g_clear_object (&priv->review);
 
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
@@ -608,11 +579,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     GS_TYPE_CATEGORY,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CATEGORY, pspec);
-
-	pspec = g_param_spec_object ("review", NULL, NULL,
-				     AS_TYPE_REVIEW,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_REVIEW, pspec);
 
 	pspec = g_param_spec_uint ("max-results", NULL, NULL,
 				   0, G_MAXUINT, 0,

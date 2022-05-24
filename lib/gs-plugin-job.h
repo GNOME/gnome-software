@@ -65,8 +65,6 @@ void		 gs_plugin_job_set_plugin		(GsPluginJob	*self,
 							 GsPlugin	*plugin);
 void		 gs_plugin_job_set_category		(GsPluginJob	*self,
 							 GsCategory	*category);
-void		 gs_plugin_job_set_review		(GsPluginJob	*self,
-							 AsReview	*review);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 
