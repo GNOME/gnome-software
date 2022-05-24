@@ -15,7 +15,6 @@ G_BEGIN_DECLS
 /**
  * GsAppListFlags:
  * @GS_APP_LIST_FLAG_NONE:			No flags set
- * @GS_APP_LIST_FLAG_IS_RANDOMIZED:		List has been randomized
  * @GS_APP_LIST_FLAG_IS_TRUNCATED:		List has been truncated
  * @GS_APP_LIST_FLAG_WATCH_APPS:		Applications will be monitored
  * @GS_APP_LIST_FLAG_WATCH_APPS_RELATED:	Applications related apps will be monitored
@@ -25,7 +24,7 @@ G_BEGIN_DECLS
  **/
 typedef enum {
 	GS_APP_LIST_FLAG_NONE			= 0,
-	GS_APP_LIST_FLAG_IS_RANDOMIZED		= 1 << 0,
+	/* empty slot */
 	GS_APP_LIST_FLAG_IS_TRUNCATED		= 1 << 1,
 	GS_APP_LIST_FLAG_WATCH_APPS		= 1 << 2,
 	GS_APP_LIST_FLAG_WATCH_APPS_RELATED	= 1 << 3,

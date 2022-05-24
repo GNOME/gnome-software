@@ -741,9 +741,6 @@ gs_app_list_randomize (GsAppList *list)
 
 	locker = g_mutex_locker_new (&list->mutex);
 
-	/* mark this list as random */
-	list->flags |= GS_APP_LIST_FLAG_IS_RANDOMIZED;
-
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
