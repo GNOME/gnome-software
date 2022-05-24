@@ -150,10 +150,11 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 		goto out;
 	}
 
+	g_assert (gs_app_list_length (list) == N_TILES);
 
 	gs_widget_remove_all (self->box_curated, (GsRemoveFunc) gtk_flow_box_remove);
 
-	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -511,7 +512,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
 		query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
-					  "max-results", 20,
+					  "max-results", N_TILES,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
