@@ -1048,11 +1048,8 @@ gs_application_startup (GApplication *application)
 							 G_CALLBACK (gs_application_shell_loaded_cb),
 							 app);
 
-	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
 	app->main_window = GTK_WINDOW (app->shell);
 	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
-
-	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 
 	gs_application_update_software_sources_presence (application);
 
@@ -1079,6 +1076,7 @@ startup_cb (GObject      *source_object,
             GAsyncResult *result,
             gpointer      user_data)
 {
+	GsApplication *app = GS_APPLICATION (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) local_error = NULL;
 
@@ -1091,6 +1089,11 @@ startup_cb (GObject      *source_object,
 
 	/* show the priority of each plugin */
 	gs_plugin_loader_dump_state (plugin_loader);
+
+	/* Setup the shell only after the plugin loader finished its setup,
+	   thus all plugins are loaded and ready for the jobs. */
+	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
+	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 }
 
 static void
