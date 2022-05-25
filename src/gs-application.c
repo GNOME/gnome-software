@@ -148,8 +148,18 @@ gs_application_init (GsApplication *application)
 		  _("Show version number"), NULL },
 		{ NULL }
 	};
+	GApplication *gapp = G_APPLICATION (application);
 
-	g_application_add_main_option_entries (G_APPLICATION (application), options);
+	g_application_add_main_option_entries (gapp, options);
+
+	/* Remove possibly obsolete notifications */
+	g_application_withdraw_notification (gapp, "installed");
+	g_application_withdraw_notification (gapp, "restart-required");
+	g_application_withdraw_notification (gapp, "updates-available");
+	g_application_withdraw_notification (gapp, "updates-installed");
+	g_application_withdraw_notification (gapp, "upgrades-available");
+	g_application_withdraw_notification (gapp, "offline-updates");
+	g_application_withdraw_notification (gapp, "eol");
 }
 
 static gboolean
