@@ -1057,8 +1057,6 @@ gs_plugin_appstream_refine_state (GsPluginAppstream  *self,
 	if (component == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -1100,8 +1098,6 @@ gs_plugin_refine_from_id (GsPluginAppstream    *self,
 	components = xb_silo_query (self->silo, xpath->str, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -1155,8 +1151,6 @@ gs_plugin_refine_from_pkgname (GsPluginAppstream    *self,
 		component = xb_silo_query_first (self->silo, xpath->str, &error_local);
 		if (component == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-				continue;
-			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 				continue;
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
@@ -1309,8 +1303,6 @@ refine_wildcard (GsPluginAppstream    *self,
 	components = xb_silo_query (self->silo, xpath, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;

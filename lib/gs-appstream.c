@@ -359,8 +359,6 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 	if (addons == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -394,8 +392,6 @@ gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot
 	if (images == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -423,8 +419,6 @@ gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **err
 	screenshots = xb_node_query (component, "screenshots/screenshot", 0, &error_local);
 	if (screenshots == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -455,8 +449,6 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 	provides = xb_node_query (component, "provides/*", 0, &error_local);
 	if (provides == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -561,8 +553,6 @@ gs_appstream_copy_metadata (GsApp *app, XbNode *component, GError **error)
 	if (values == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -601,8 +591,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 				 gs_app_get_id (app));
 	releases_inst = xb_silo_query (silo, xpath, 0, &error_local);
 	if (releases_inst == NULL) {
-		if (!g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND) &&
-		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT)) {
+		if (!g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
@@ -620,8 +609,6 @@ gs_appstream_refine_app_updates (GsApp *app,
 	releases = xb_node_query (component, "releases/*", 0, &error_local);
 	if (releases == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -721,8 +708,6 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 	releases = xb_node_query (component, "releases/*", 0, &error_local);
 	if (releases == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -844,9 +829,6 @@ gs_appstream_refine_app_content_rating (GsApp *app,
 	if (content_attributes == NULL &&
 	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
 		g_clear_error (&error_local);
-	} else if (content_attributes == NULL &&
-		 g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT)) {
-		return TRUE;
 	} else if (content_attributes == NULL) {
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -876,8 +858,6 @@ gs_appstream_refine_app_content_ratings (GsApp *app,
 	if (content_ratings == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -906,14 +886,14 @@ gs_appstream_refine_app_relation (GsApp           *app,
 		as_relation_set_kind (relation, kind);
 
 		if (g_str_equal (item_kind, "control")) {
-			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-control */
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-control */
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_CONTROL);
 			as_relation_set_value_control_kind (relation, as_control_kind_from_string (xb_node_get_text (child)));
 		} else if (g_str_equal (item_kind, "display_length")) {
 			AsDisplayLengthKind display_length_kind;
 			const gchar *compare;
 
-			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-requires-recommends-display_length */
+			/* https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-relations-display_length */
 			as_relation_set_item_kind (relation, AS_RELATION_ITEM_KIND_DISPLAY_LENGTH);
 
 			compare = xb_node_get_attr (child, "compare");
@@ -945,42 +925,34 @@ gs_appstream_refine_app_relations (GsApp     *app,
                                    XbNode    *component,
                                    GError   **error)
 {
-	g_autoptr(GPtrArray) recommends = NULL;
-	g_autoptr(GPtrArray) requires = NULL;
-	g_autoptr(GError) error_local = NULL;
+	const struct {
+		const gchar *element_name;
+		AsRelationKind relation_kind;
+	} relation_types[] = {
+#if AS_CHECK_VERSION(0, 15, 0)
+		{ "supports", AS_RELATION_KIND_SUPPORTS },
+#endif
+		{ "recommends", AS_RELATION_KIND_RECOMMENDS },
+		{ "requires", AS_RELATION_KIND_REQUIRES },
+	};
 
-	/* find any recommends */
-	recommends = xb_node_query (component, "recommends", 0, &error_local);
-	if (recommends == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	for (gsize i = 0; i < G_N_ELEMENTS (relation_types); i++) {
+		g_autoptr(GPtrArray) relations = NULL;
+		g_autoptr(GError) error_local = NULL;
 
-	for (guint i = 0; i < recommends->len; i++) {
-		XbNode *recommend = g_ptr_array_index (recommends, i);
-		if (!gs_appstream_refine_app_relation (app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
+		/* find any instances of this @element_name */
+		relations = xb_node_query (component, relation_types[i].element_name, 0, &error_local);
+		if (relations == NULL &&
+		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
-	}
+		}
 
-	/* find any requires */
-	requires = xb_node_query (component, "requires", 0, &error_local);
-	if (requires == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-
-	for (guint i = 0; i < requires->len; i++) {
-		XbNode *require = g_ptr_array_index (requires, i);
-		if (!gs_appstream_refine_app_relation (app, require, AS_RELATION_KIND_REQUIRES, error))
-			return FALSE;
+		for (guint j = 0; relations != NULL && j < relations->len; j++) {
+			XbNode *relation = g_ptr_array_index (relations, j);
+			if (!gs_appstream_refine_app_relation (app, relation, relation_types[i].relation_kind, error))
+				return FALSE;
+		}
 	}
 
 	return TRUE;
@@ -1463,8 +1435,6 @@ gs_appstream_search (GsPlugin *plugin,
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -1521,7 +1491,6 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 				GError **error)
 {
 	GPtrArray *desktop_groups;
-	g_autoptr(GError) error_local = NULL;
 
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
@@ -1533,6 +1502,7 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		g_autofree gchar *xpath = NULL;
 		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 		g_autoptr(GPtrArray) components = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		/* generate query */
 		if (g_strv_length (split) == 1) {
@@ -1548,9 +1518,7 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		components = xb_silo_query (silo, xpath, 0, &error_local);
 		if (components == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-				return TRUE;
-			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-				return TRUE;
+				continue;
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
@@ -1599,8 +1567,6 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 	array = xb_silo_query (silo, xpath, limit, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return 0;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return 0;
 		g_warning ("%s", error_local->message);
 		return 0;
@@ -1690,8 +1656,6 @@ gs_appstream_add_popular (XbSilo *silo,
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -1728,8 +1692,6 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	array = xb_silo_query (silo, xpath, 0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
@@ -1791,8 +1753,6 @@ gs_appstream_add_alternates (XbSilo *silo,
 	if (ids == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
@@ -1827,8 +1787,6 @@ gs_appstream_add_featured (XbSilo *silo,
 			       0, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
 			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;

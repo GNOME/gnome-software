@@ -619,10 +619,20 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	/* Otherwise, is it adaptive? Note that %AS_RELATION_KIND_RECOMMENDS
 	 * means more like ‘supports’ than ‘recommends’. */
+#if AS_CHECK_VERSION(0, 15, 0)
+	if (icon_name == NULL &&
+	    (control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_RECOMMENDS ||
+	     control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_SUPPORTS) &&
+	    (control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_RECOMMENDS ||
+	     control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_SUPPORTS) &&
+	    (control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_RECOMMENDS ||
+	     control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_SUPPORTS)) {
+#else
 	if (icon_name == NULL &&
 	    control_relations[AS_CONTROL_KIND_TOUCH] == AS_RELATION_KIND_RECOMMENDS &&
 	    control_relations[AS_CONTROL_KIND_KEYBOARD] == AS_RELATION_KIND_RECOMMENDS &&
 	    control_relations[AS_CONTROL_KIND_POINTING] == AS_RELATION_KIND_RECOMMENDS) {
+#endif
 		icon_name = "adaptive-symbolic";
 		/* Translators: This is used in a context tile to indicate that
 		 * an app works on phones, tablets *and* desktops. It should be
