@@ -1486,7 +1486,6 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 				GError **error)
 {
 	GPtrArray *desktop_groups;
-	g_autoptr(GError) error_local = NULL;
 
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
@@ -1498,6 +1497,7 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		g_autofree gchar *xpath = NULL;
 		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 		g_autoptr(GPtrArray) components = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		/* generate query */
 		if (g_strv_length (split) == 1) {
@@ -1513,7 +1513,7 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		components = xb_silo_query (silo, xpath, 0, &error_local);
 		if (components == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-				return TRUE;
+				continue;
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
