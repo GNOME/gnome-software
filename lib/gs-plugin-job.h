@@ -11,7 +11,6 @@
 #include <glib-object.h>
 
 #include "gs-app-list.h"
-#include "gs-category.h"
 #include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
@@ -48,8 +47,6 @@ void		 gs_plugin_job_set_max_results		(GsPluginJob	*self,
 							 guint		 max_results);
 void		 gs_plugin_job_set_timeout		(GsPluginJob	*self,
 							 guint		 timeout);
-void		 gs_plugin_job_set_age			(GsPluginJob	*self,
-							 guint64	 age);
 void		 gs_plugin_job_set_sort_func		(GsPluginJob	*self,
 							 GsAppListSortFunc sort_func,
 							 gpointer	 user_data);
@@ -63,10 +60,6 @@ void		 gs_plugin_job_set_file			(GsPluginJob	*self,
 							 GFile		*file);
 void		 gs_plugin_job_set_plugin		(GsPluginJob	*self,
 							 GsPlugin	*plugin);
-void		 gs_plugin_job_set_category		(GsPluginJob	*self,
-							 GsCategory	*category);
-void		 gs_plugin_job_set_review		(GsPluginJob	*self,
-							 AsReview	*review);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 

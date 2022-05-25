@@ -27,7 +27,6 @@ gboolean		 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 gboolean		 gs_plugin_job_get_propagate_error	(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
 guint			 gs_plugin_job_get_timeout		(GsPluginJob	*self);
-guint64			 gs_plugin_job_get_age			(GsPluginJob	*self);
 GsAppListSortFunc	 gs_plugin_job_get_sort_func		(GsPluginJob	*self,
 								 gpointer	*user_data_out);
 const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
@@ -35,8 +34,6 @@ GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 GsAppList		*gs_plugin_job_get_list			(GsPluginJob	*self);
 GFile			*gs_plugin_job_get_file			(GsPluginJob	*self);
 GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
-GsCategory		*gs_plugin_job_get_category		(GsPluginJob	*self);
-AsReview		*gs_plugin_job_get_review		(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);
