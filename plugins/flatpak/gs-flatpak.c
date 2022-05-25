@@ -3400,8 +3400,6 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
