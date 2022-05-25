@@ -12,6 +12,10 @@
 #include <glib/gi18n.h>
 #include <gio/gdesktopappinfo.h>
 
+#ifndef TESTDATADIR
+#include "gs-application.h"
+#endif
+
 #include "gs-common.h"
 
 #ifdef HAVE_GSETTINGS_DESKTOP_SCHEMAS
@@ -112,7 +116,11 @@ gs_app_notify_installed (GsApp *app)
 	}
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
 						       gs_app_get_unique_id (app), "");
+	#ifdef TESTDATADIR
 	g_application_send_notification (g_application_get_default (), "installed", n);
+	#else
+	gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "installed", n, 24 * 60);
+	#endif
 }
 
 typedef enum {
@@ -767,7 +775,11 @@ gs_utils_reboot_notify (GsAppList *list,
 	g_notification_add_button_with_target (n, _("Restart"), "app.reboot", NULL);
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_notification_set_priority (n, G_NOTIFICATION_PRIORITY_URGENT);
+	#ifdef TESTDATADIR
 	g_application_send_notification (g_application_get_default (), "restart-required", n);
+	#else
+	gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "restart-required", n, 0);
+	#endif
 }
 
 /**
