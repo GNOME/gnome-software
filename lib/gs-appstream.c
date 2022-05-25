@@ -931,29 +931,29 @@ gs_appstream_refine_app_relations (GsApp     *app,
 
 	/* find any recommends */
 	recommends = xb_node_query (component, "recommends", 0, &error_local);
-	if (recommends == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
+	if (recommends == NULL &&
+	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
 
-	for (guint i = 0; i < recommends->len; i++) {
+	for (guint i = 0; recommends != NULL && i < recommends->len; i++) {
 		XbNode *recommend = g_ptr_array_index (recommends, i);
 		if (!gs_appstream_refine_app_relation (app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
 			return FALSE;
 	}
 
+	g_clear_error (&error_local);
+
 	/* find any requires */
 	requires = xb_node_query (component, "requires", 0, &error_local);
-	if (requires == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
+	if (requires == NULL &&
+	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
 
-	for (guint i = 0; i < requires->len; i++) {
+	for (guint i = 0; requires != NULL && i < requires->len; i++) {
 		XbNode *require = g_ptr_array_index (requires, i);
 		if (!gs_appstream_refine_app_relation (app, require, AS_RELATION_KIND_REQUIRES, error))
 			return FALSE;
