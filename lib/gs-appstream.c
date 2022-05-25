@@ -925,38 +925,31 @@ gs_appstream_refine_app_relations (GsApp     *app,
                                    XbNode    *component,
                                    GError   **error)
 {
-	g_autoptr(GPtrArray) recommends = NULL;
-	g_autoptr(GPtrArray) requires = NULL;
-	g_autoptr(GError) error_local = NULL;
+	const struct {
+		const gchar *element_name;
+		AsRelationKind relation_kind;
+	} relation_types[] = {
+		{ "recommends", AS_RELATION_KIND_RECOMMENDS },
+		{ "requires", AS_RELATION_KIND_REQUIRES },
+	};
 
-	/* find any recommends */
-	recommends = xb_node_query (component, "recommends", 0, &error_local);
-	if (recommends == NULL &&
-	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
+	for (gsize i = 0; i < G_N_ELEMENTS (relation_types); i++) {
+		g_autoptr(GPtrArray) relations = NULL;
+		g_autoptr(GError) error_local = NULL;
 
-	for (guint i = 0; recommends != NULL && i < recommends->len; i++) {
-		XbNode *recommend = g_ptr_array_index (recommends, i);
-		if (!gs_appstream_refine_app_relation (app, recommend, AS_RELATION_KIND_RECOMMENDS, error))
+		/* find any instances of this @element_name */
+		relations = xb_node_query (component, relation_types[i].element_name, 0, &error_local);
+		if (relations == NULL &&
+		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
-	}
+		}
 
-	g_clear_error (&error_local);
-
-	/* find any requires */
-	requires = xb_node_query (component, "requires", 0, &error_local);
-	if (requires == NULL &&
-	    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		return FALSE;
-	}
-
-	for (guint i = 0; requires != NULL && i < requires->len; i++) {
-		XbNode *require = g_ptr_array_index (requires, i);
-		if (!gs_appstream_refine_app_relation (app, require, AS_RELATION_KIND_REQUIRES, error))
-			return FALSE;
+		for (guint j = 0; relations != NULL && j < relations->len; j++) {
+			XbNode *relation = g_ptr_array_index (relations, j);
+			if (!gs_appstream_refine_app_relation (app, relation, relation_types[i].relation_kind, error))
+				return FALSE;
+		}
 	}
 
 	return TRUE;
