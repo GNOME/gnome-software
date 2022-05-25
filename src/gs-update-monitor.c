@@ -20,11 +20,12 @@
 
 #define SECONDS_IN_AN_HOUR (60 * 60)
 #define SECONDS_IN_A_DAY (SECONDS_IN_AN_HOUR * 24)
+#define MINUTES_IN_A_DAY (SECONDS_IN_A_DAY / 60)
 
 struct _GsUpdateMonitor {
 	GObject		 parent;
 
-	GApplication	*application;
+	GsApplication	*application;
 
 	/* We use three cancellables:
 	 *  - @shutdown_cancellable is cancelled only during shutdown/dispose of
@@ -298,7 +299,7 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 	nn = g_notification_new (title);
 	g_notification_set_body (nn, body);
 	g_notification_set_default_action_and_target (nn, "app.set-mode", "s", "updates");
-	g_application_send_notification (monitor->application, "updates-available", nn);
+	gs_application_send_notification (monitor->application, "updates-available", nn, MINUTES_IN_A_DAY);
 
 	/* Keep the old notification time when there are no updates and the update download is disabled,
 	   to notify the user every day after 7 days of no update check */
@@ -448,12 +449,10 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* notifications are optional */
 	if (g_settings_get_boolean (monitor->settings, "download-updates-notify")) {
 		g_autoptr(GNotification) n = NULL;
-		g_application_withdraw_notification (monitor->application,
-						     "updates-installed");
+		gs_application_withdraw_notification (monitor->application, "updates-installed");
 		n = _build_autoupdated_notification (monitor, list);
 		if (n != NULL)
-			g_application_send_notification (monitor->application,
-							 "updates-installed", n);
+			gs_application_send_notification (monitor->application, "updates-installed", n, MINUTES_IN_A_DAY);
 	}
 }
 
@@ -545,8 +544,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* no updates */
 	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no updates; withdrawing updates-available notification");
-		g_application_withdraw_notification (monitor->application,
-						     "updates-available");
+		gs_application_withdraw_notification (monitor->application, "updates-available");
 		return;
 	}
 
@@ -665,10 +663,10 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	}
 
 	/* might be already showing, so just withdraw it and re-issue it */
-	g_application_withdraw_notification (monitor->application, "eol");
+	gs_application_withdraw_notification (monitor->application, "eol");
 
 	/* do not show when the main window is active */
-	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+	if (gs_application_has_active_window (monitor->application))
 		return;
 
 	/* is not EOL */
@@ -680,7 +678,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* TRANSLATORS: this is the message dialog for the distro EOL notice */
 	g_notification_set_body (n, _("Upgrade to continue receiving security updates."));
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
-	g_application_send_notification (monitor->application, "eol", n);
+	gs_application_send_notification (monitor->application, "eol", n, MINUTES_IN_A_DAY);
 }
 
 static void
@@ -710,13 +708,12 @@ get_upgrades_finished_cb (GObject *object,
 	/* no results */
 	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no upgrades; withdrawing upgrades-available notification");
-		g_application_withdraw_notification (monitor->application,
-						     "upgrades-available");
+		gs_application_withdraw_notification (monitor->application, "upgrades-available");
 		return;
 	}
 
 	/* do not show if gnome-software is already open */
-	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+	if (gs_application_has_active_window (monitor->application))
 		return;
 
 	/* only nag about upgrades once per week */
@@ -741,7 +738,7 @@ get_upgrades_finished_cb (GObject *object,
 	n = g_notification_new (_("Software Upgrade Available"));
 	g_notification_set_body (n, body);
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
-	g_application_send_notification (monitor->application, "upgrades-available", n);
+	gs_application_send_notification (monitor->application, "upgrades-available", n, MINUTES_IN_A_DAY);
 }
 
 static void
@@ -1148,15 +1145,14 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		g_notification_set_body (notification, _("An important operating system update failed to be installed."));
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
 		g_notification_set_default_action (notification, "app.show-offline-update-error");
-		g_application_send_notification (monitor->application, "offline-updates", notification);
+		gs_application_send_notification (monitor->application, "offline-updates", notification, MINUTES_IN_A_DAY);
 		return;
 	}
 
 	/* no results */
 	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no historical updates; withdrawing notification");
-		g_application_withdraw_notification (monitor->application,
-						     "updates-available");
+		gs_application_withdraw_notification (monitor->application, "updates-available");
 		return;
 	}
 
@@ -1198,7 +1194,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		g_notification_add_button_with_target (notification, C_("updates", "Review"), "app.set-mode", "s", "updated");
 		g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
 	}
-	g_application_send_notification (monitor->application, "offline-updates", notification);
+	gs_application_send_notification (monitor->application, "offline-updates", notification, MINUTES_IN_A_DAY);
 
 	/* update the timestamp so we don't show again */
 	g_settings_set (monitor->settings,
@@ -1226,8 +1222,7 @@ cleanup_notifications_cb (gpointer user_data)
 					    monitor);
 
 	/* wait until first check to show */
-	g_application_withdraw_notification (monitor->application,
-					     "updates-available");
+	gs_application_withdraw_notification (monitor->application, "updates-available");
 
 	monitor->cleanup_notifications_id = 0;
 	return G_SOURCE_REMOVE;
@@ -1453,7 +1448,7 @@ gs_update_monitor_finalize (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
-	g_application_release (monitor->application);
+	g_application_release (G_APPLICATION (monitor->application));
 	g_clear_error (&monitor->last_offline_error);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->finalize (object);
@@ -1474,8 +1469,8 @@ gs_update_monitor_new (GsApplication  *application,
 	GsUpdateMonitor *monitor;
 
 	monitor = GS_UPDATE_MONITOR (g_object_new (GS_TYPE_UPDATE_MONITOR, NULL));
-	monitor->application = G_APPLICATION (application);
-	g_application_hold (monitor->application);
+	monitor->application = application;
+	g_application_hold (G_APPLICATION (monitor->application));
 
 	monitor->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (monitor->plugin_loader, "notify::allow-updates",
