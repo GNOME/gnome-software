@@ -147,17 +147,19 @@ gs_category_set_size (GsCategory *category, guint size)
 /**
  * gs_category_increment_size:
  * @category: a #GsCategory
+ * @value: how many to add
  *
- * Adds one to the size count if an application is available
+ * Adds @value to the size count.
  *
  * Since: 3.22
  **/
 void
-gs_category_increment_size (GsCategory *category)
+gs_category_increment_size (GsCategory *category,
+			    guint value)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
 
-	category->size++;
+	category->size += value;
 	g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
 }
 
