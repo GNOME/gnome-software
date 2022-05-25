@@ -17,6 +17,7 @@
 
 #include "gnome-software-private.h"
 
+#include "gs-application.h"
 #include "gs-dbus-helper.h"
 #include "gs-packagekit-generated.h"
 #include "gs-packagekit-modify2-generated.h"
@@ -330,7 +331,7 @@ notify_search_resources (GsExtrasPageMode   mode,
 	/* TRANSLATORS: this is a button that launches gnome-software */
 	g_notification_add_button_with_target (n, _("Find in Software"), "app.install-resources", "(s^assss)", mode_string, resources, "", desktop_id, ident);
 	g_notification_set_default_action_and_target (n, "app.install-resources", "(s^assss)", mode_string, resources, "", desktop_id, ident);
-	g_application_send_notification (g_application_get_default (), "install-resources", n);
+	gs_application_send_notification (GS_APPLICATION (g_application_get_default ()), "install-resources", n, 60);
 }
 
 typedef struct _InstallResourcesData {
