@@ -3290,8 +3290,6 @@ gs_plugin_loader_inherit_list_props (GsAppList *des_list,
 {
 	if (gs_app_list_has_flag (src_list, GS_APP_LIST_FLAG_IS_TRUNCATED))
 		gs_app_list_add_flag (des_list, GS_APP_LIST_FLAG_IS_TRUNCATED);
-	if (gs_app_list_has_flag (src_list, GS_APP_LIST_FLAG_IS_RANDOMIZED))
-		gs_app_list_add_flag (des_list, GS_APP_LIST_FLAG_IS_RANDOMIZED);
 
 	gs_app_list_set_size_peak (des_list, gs_app_list_get_size_peak (src_list));
 }

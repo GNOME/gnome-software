@@ -155,11 +155,11 @@ gs_overview_page_get_curated_cb (GObject *source_object,
 		goto out;
 	}
 
-	gs_app_list_randomize (list);
+	g_assert (gs_app_list_length (list) == N_TILES);
 
 	gs_widget_remove_all (self->box_curated, (GsRemoveFunc) gtk_flow_box_remove);
 
-	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_summary_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -294,17 +294,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 			   (error != NULL) ? error->message : "no apps to show");
 		gtk_widget_set_visible (self->featured_carousel, FALSE);
 		goto out;
-	}
-
-	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-	gs_app_list_randomize (list);
-
-	/* Filter out apps which don’t have a suitable hi-res icon. */
-	gs_app_list_filter (list, filter_hi_res_icon, self);
-
-	if (gs_app_list_length (list) > 5) {
-		g_debug ("%s: Received %u apps, truncated to 5", G_STRFUNC, gs_app_list_length (list));
-		gs_app_list_truncate (list, 5);
 	}
 
 	gtk_widget_set_visible (self->featured_carousel, gs_app_list_length (list) > 0);
@@ -651,15 +640,13 @@ gs_overview_page_load (GsOverviewPage *self)
 		g_autoptr(GsAppQuery) query = NULL;
 		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
-		/* Ask for more than 5, the list will be shrunk based on usability of the returned apps.
-		 * FIXME: The predicates for shrinking the list should be moved
-		 * into GsAppQuery so that the right number of results can be
-		 * returned on the first attempt. */
 		query = gs_app_query_new ("is-featured", GS_APP_QUERY_TRISTATE_TRUE,
-					  "max-results", 20,
+					  "max-results", 5,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  "filter-func", filter_hi_res_icon,
+					  "filter-user-data", self,
 					  NULL);
 
 		plugin_job = gs_plugin_job_list_apps_new (query, flags);
@@ -705,7 +692,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
 
 		query = gs_app_query_new ("is-curated", GS_APP_QUERY_TRISTATE_TRUE,
-					  "max-results", 20,
+					  "max-results", N_TILES,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
