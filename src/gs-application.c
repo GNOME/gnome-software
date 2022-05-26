@@ -46,6 +46,9 @@ struct _GsApplication {
 	GSimpleActionGroup	*action_map;
 	guint		 shell_loaded_handler_id;
 	GsDebug		*debug;  /* (owned) (not nullable) */
+
+	/* Created/freed on demand */
+	GHashTable *withdraw_notifications; /* gchar *notification_id ~> GUINT_TO_POINTER (timeout_id) */
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, ADW_TYPE_APPLICATION);
@@ -148,8 +151,18 @@ gs_application_init (GsApplication *application)
 		  _("Show version number"), NULL },
 		{ NULL }
 	};
+	GApplication *gapp = G_APPLICATION (application);
 
-	g_application_add_main_option_entries (G_APPLICATION (application), options);
+	g_application_add_main_option_entries (gapp, options);
+
+	/* Remove possibly obsolete notifications */
+	g_application_withdraw_notification (gapp, "installed");
+	g_application_withdraw_notification (gapp, "restart-required");
+	g_application_withdraw_notification (gapp, "updates-available");
+	g_application_withdraw_notification (gapp, "updates-installed");
+	g_application_withdraw_notification (gapp, "upgrades-available");
+	g_application_withdraw_notification (gapp, "offline-updates");
+	g_application_withdraw_notification (gapp, "eol");
 }
 
 static gboolean
@@ -1088,6 +1101,7 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->settings);
 	g_clear_object (&app->action_map);
 	g_clear_object (&app->debug);
+	g_clear_pointer (&app->withdraw_notifications, g_hash_table_unref);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
@@ -1329,4 +1343,89 @@ gs_application_emit_install_resources_done (GsApplication *application,
 					    const GError *op_error)
 {
 	g_signal_emit (application, signals[INSTALL_RESOURCES_DONE], 0, ident, op_error, NULL);
+}
+
+static gboolean
+gs_application_withdraw_notification_cb (gpointer user_data)
+{
+	GApplication *application = g_application_get_default ();
+	const gchar *notification_id = user_data;
+
+	gs_application_withdraw_notification (GS_APPLICATION (application), notification_id);
+
+	return G_SOURCE_REMOVE;
+}
+
+/**
+ * gs_application_send_notification:
+ * @self: a #GsApplication
+ * @notification_id: the @notification ID
+ * @notification: a #GNotification
+ * @timeout_minutes: how many minutes to wait, before withdraw the notification; 0 for not withdraw
+ *
+ * Sends the @notification and schedules withdraw of it after
+ * @timeout_minutes. This is used to auto-hide notifications
+ * after certain period of time. The @timeout_minutes set to 0
+ * means to not auto-withdraw it.
+ *
+ * Since: 43
+ **/
+void
+gs_application_send_notification (GsApplication *self,
+				  const gchar *notification_id,
+				  GNotification *notification,
+				  guint timeout_minutes)
+{
+	guint timeout_id;
+
+	g_return_if_fail (GS_IS_APPLICATION (self));
+	g_return_if_fail (notification_id != NULL);
+	g_return_if_fail (G_IS_NOTIFICATION (notification));
+	g_return_if_fail (timeout_minutes < G_MAXUINT / 60);
+
+	g_application_send_notification (G_APPLICATION (self), notification_id, notification);
+
+	if (timeout_minutes > 0) {
+		if (self->withdraw_notifications == NULL)
+			self->withdraw_notifications = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+		timeout_id = GPOINTER_TO_UINT (g_hash_table_lookup (self->withdraw_notifications, notification_id));
+		if (timeout_id)
+			g_source_remove (timeout_id);
+		timeout_id = g_timeout_add_seconds_full (G_PRIORITY_DEFAULT, timeout_minutes * 60,
+			gs_application_withdraw_notification_cb, g_strdup (notification_id), g_free);
+		g_hash_table_insert (self->withdraw_notifications, g_strdup (notification_id), GUINT_TO_POINTER (timeout_id));
+	} else if (self->withdraw_notifications != NULL) {
+		timeout_id = GPOINTER_TO_UINT (g_hash_table_lookup (self->withdraw_notifications, notification_id));
+		if (timeout_id) {
+			g_source_remove (timeout_id);
+			g_hash_table_remove (self->withdraw_notifications, notification_id);
+		}
+	}
+}
+
+/**
+ * gs_application_withdraw_notification:
+ * @self: a #GsApplication
+ * @notification_id: a #GNotification ID
+ *
+ * Immediately withdraws the notification @notification_id and
+ * removes any previously scheduled withdraw by gs_application_schedule_withdraw_notification().
+ *
+ * Since: 43
+ **/
+void
+gs_application_withdraw_notification (GsApplication *self,
+				      const gchar *notification_id)
+{
+	g_return_if_fail (GS_IS_APPLICATION (self));
+	g_return_if_fail (notification_id != NULL);
+
+	g_application_withdraw_notification (G_APPLICATION (self), notification_id);
+
+	if (self->withdraw_notifications != NULL) {
+		g_hash_table_remove (self->withdraw_notifications, notification_id);
+		if (g_hash_table_size (self->withdraw_notifications) == 0)
+			g_clear_pointer (&self->withdraw_notifications, g_hash_table_unref);
+	}
 }

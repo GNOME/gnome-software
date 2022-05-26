@@ -23,3 +23,9 @@ void		 gs_application_emit_install_resources_done
 							(GsApplication *application,
 							 const gchar *ident,
 							 const GError *op_error);
+void		 gs_application_send_notification	(GsApplication *self,
+							 const gchar *notification_id,
+							 GNotification *notification,
+							 guint timeout_minutes);
+void		 gs_application_withdraw_notification	(GsApplication *self,
+							 const gchar *notification_id);
