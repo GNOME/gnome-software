@@ -4089,6 +4089,23 @@ gs_flatpak_add_featured (GsFlatpak *self,
 }
 
 gboolean
+gs_flatpak_add_deployment_featured (GsFlatpak *self,
+				    GsAppList *list,
+				    gboolean interactive,
+				    const gchar *const *deployments,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
+	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
+		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
+	return gs_appstream_add_deployment_featured (self->silo, deployments, list, cancellable, error);
+}
+
+gboolean
 gs_flatpak_add_alternates (GsFlatpak *self,
 			   GsApp *app,
 			   GsAppList *list,

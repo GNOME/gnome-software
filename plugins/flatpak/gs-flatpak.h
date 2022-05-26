@@ -146,6 +146,13 @@ gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
 						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_add_deployment_featured
+						(GsFlatpak		*self,
+						 GsAppList		*list,
+						 gboolean		 interactive,
+						 const gchar *const	*deployments,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_add_alternates	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsAppList		*list,

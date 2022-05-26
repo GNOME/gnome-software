@@ -77,6 +77,9 @@ struct _GsAppQuery
 	GsAppQueryTristate is_featured;
 	GsCategory *category;  /* (nullable) (owned) */
 	GsAppQueryTristate is_installed;
+
+	/* This is guaranteed to either be %NULL, or a non-empty array */
+	gchar **deployment_featured;  /* (owned) (nullable) (array zero-terminated=1) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -91,6 +94,7 @@ typedef enum {
 	PROP_FILTER_FUNC,
 	PROP_FILTER_USER_DATA,
 	PROP_FILTER_USER_DATA_NOTIFY,
+	PROP_DEPLOYMENT_FEATURED,
 	PROP_PROVIDES_FILES,
 	PROP_RELEASED_SINCE,
 	PROP_IS_CURATED,
@@ -136,6 +140,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_FILTER_USER_DATA_NOTIFY:
 		g_value_set_pointer (value, self->filter_user_data_notify);
+		break;
+	case PROP_DEPLOYMENT_FEATURED:
+		g_value_set_boxed (value, self->deployment_featured);
 		break;
 	case PROP_PROVIDES_FILES:
 		g_value_set_boxed (value, self->provides_files);
@@ -215,6 +222,16 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->filter_user_data_notify == NULL);
 		self->filter_user_data_notify = g_value_get_pointer (value);
 		break;
+	case PROP_DEPLOYMENT_FEATURED:
+		/* Construct only. */
+		g_assert (self->deployment_featured == NULL);
+		self->deployment_featured = g_value_dup_boxed (value);
+
+		/* Squash empty arrays to %NULL. */
+		if (self->deployment_featured != NULL && self->deployment_featured[0] == NULL)
+			g_clear_pointer (&self->deployment_featured, g_strfreev);
+
+		break;
 	case PROP_PROVIDES_FILES:
 		/* Construct only. */
 		g_assert (self->provides_files == NULL);
@@ -281,6 +298,7 @@ gs_app_query_finalize (GObject *object)
 {
 	GsAppQuery *self = GS_APP_QUERY (object);
 
+	g_clear_pointer (&self->deployment_featured, g_strfreev);
 	g_clear_pointer (&self->provides_files, g_strfreev);
 	g_clear_pointer (&self->released_since, g_date_time_unref);
 
@@ -432,6 +450,29 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				      "A function to free #GsAppQuery:filter-user-data once it is no longer needed.",
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				      G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:deployment-featured: (nullable)
+	 *
+	 * A list of `GnomeSoftware::DeploymentFeatured` app keys.
+	 *
+	 * Search for applications that should be featured in a deployment-specific
+	 * section on the overview page.
+	 * This is expected to be a curated list of applications that are high quality
+	 * and feature-complete. Only apps matching at least one of the keys in this
+	 * list are returned.
+	 *
+	 * This may be %NULL to not filter on it. An empty array is
+	 * considered equivalent to %NULL.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_DEPLOYMENT_FEATURED] =
+		g_param_spec_boxed ("deployment-featured", "Deployment Featured",
+				    "A list of `GnomeSoftware::DeploymentFeatured` app keys.",
+				    G_TYPE_STRV,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	/**
 	 * GsAppQuery:provides-files: (nullable)
@@ -719,6 +760,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 		n++;
 	if (self->is_installed != GS_APP_QUERY_TRISTATE_UNSET)
 		n++;
+	if (self->deployment_featured != NULL)
+		n++;
 
 	return n;
 }
@@ -835,4 +878,25 @@ gs_app_query_get_is_installed (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_TRISTATE_UNSET);
 
 	return self->is_installed;
+}
+
+/**
+ * gs_app_query_get_deployment_featured:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:deployment-featured.
+ *
+ * Returns: (nullable): a list of `GnomeSoftware::DeploymentFeatured` app keys,
+ *   which the apps have set in a custom key, or %NULL to not filter on this
+ * Since: 43
+ */
+const gchar * const *
+gs_app_query_get_deployment_featured (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	/* Always return %NULL or a non-empty array */
+	g_assert (self->deployment_featured == NULL || self->deployment_featured[0] != NULL);
+
+	return (const gchar * const *) self->deployment_featured;
 }

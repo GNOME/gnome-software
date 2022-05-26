@@ -152,6 +152,33 @@
                                 </child>
 
                                 <child>
+                                  <object class="GtkLabel" id="deployment_featured_heading">
+                                    <property name="visible">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label">Available for Deployment</property> <!-- placeholder, set in the code -->
+                                    <property name="margin-top">21</property>
+                                    <property name="margin-bottom">6</property>
+                                    <style>
+                                      <class name="heading"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkFlowBox" id="box_deployment_featured">
+                                    <property name="visible">False</property>
+                                    <property name="row_spacing">14</property>
+                                    <property name="column_spacing">14</property>
+                                    <property name="homogeneous">True</property>
+                                    <property name="min_children_per_line">2</property>
+                                    <property name="max_children_per_line">3</property>
+                                    <property name="selection_mode">none</property>
+                                    <accessibility>
+                                      <relation name="labelled-by">deployment_featured_heading</relation>
+                                    </accessibility>
+                                  </object>
+                                </child>
+
+                                <child>
                                   <object class="GtkLabel" id="iconless_categories_heading">
                                     <property name="xalign">0</property>
                                     <property name="label" translatable="yes" comments="Translators: This is a heading for a list of categories.">Other Categories</property>
