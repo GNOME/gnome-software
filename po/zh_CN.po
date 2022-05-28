@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-20 11:04+0000\n"
-"PO-Revision-Date: 2022-05-22 08:46+0800\n"
+"POT-Creation-Date: 2022-05-25 16:46+0000\n"
+"PO-Revision-Date: 2022-05-28 08:26+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -743,7 +743,7 @@ msgstr "年龄分级"
 msgid "How to add missing information"
 msgstr "如何添加缺失的信息"
 
-#: lib/gs-app.c:6098
+#: lib/gs-app.c:6099
 msgid "Local file"
 msgstr "本地文件"
 
@@ -752,12 +752,12 @@ msgstr "本地文件"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6114 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6115 src/gs-safety-context-dialog.c:419
 #, c-format
 msgid "%s (%s)"
 msgstr "%s（%s）"
 
-#: lib/gs-app.c:6190
+#: lib/gs-app.c:6191
 msgid "Package"
 msgstr "软件包"
 
@@ -1234,7 +1234,7 @@ msgstr "该软件不再受到支持"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:717
+#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
 msgid "; "
 msgstr "；"
 
@@ -1257,7 +1257,7 @@ msgid "Unsafe"
 msgstr "不安全的"
 
 #: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "仅适用移动设备"
 
@@ -1266,8 +1266,8 @@ msgid "Only works on a small screen"
 msgstr "只适用于小屏幕"
 
 #: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:643
-#: src/gs-app-context-bar.c:648 src/gs-hardware-support-context-dialog.c:568
+#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
+#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "仅适用于台式机"
 
@@ -1275,21 +1275,21 @@ msgstr "仅适用于台式机"
 msgid "Only works on a large screen"
 msgstr "只适用于大屏幕"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "屏幕尺寸不匹配"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:607
+#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "不支持您当前的屏幕尺寸"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:659
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "需要触摸屏"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:619
-#: src/gs-hardware-support-context-dialog.c:625
+#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "需要键盘"
 
@@ -1308,30 +1308,30 @@ msgstr "需要使用手柄操作"
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:630
+#: src/gs-app-context-bar.c:640
 msgid "Adaptive"
 msgstr "自适应"
 
-#: src/gs-app-context-bar.c:631
+#: src/gs-app-context-bar.c:641
 msgid "Works on phones, tablets and desktops"
 msgstr "适用于手机、平板电脑和台式机"
 
-#: src/gs-app-context-bar.c:644
+#: src/gs-app-context-bar.c:654
 msgid "Probably requires a keyboard or mouse"
 msgstr "可能需要键盘或鼠标"
 
-#: src/gs-app-context-bar.c:649
+#: src/gs-app-context-bar.c:659
 msgid "Works on desktops and laptops"
 msgstr "适用于台式机和笔记本电脑"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:692
+#: src/gs-app-context-bar.c:702
 msgid "Contains no age-inappropriate content"
 msgstr "不包含不适龄内容。"
 
-#: src/gs-app-context-bar.c:740
+#: src/gs-app-context-bar.c:750
 msgid "No age rating information available"
 msgstr "没有可用的年龄分级信息"
 
@@ -2533,199 +2533,199 @@ msgstr "下一页"
 msgid "Featured Apps List"
 msgstr "特色应用列表"
 
-#: src/gs-hardware-support-context-dialog.c:562
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:577
+#: src/gs-hardware-support-context-dialog.c:586
 msgid "Desktop Support"
 msgstr "桌面支持"
 
-#: src/gs-hardware-support-context-dialog.c:563
-#: src/gs-hardware-support-context-dialog.c:572
+#: src/gs-hardware-support-context-dialog.c:578
+#: src/gs-hardware-support-context-dialog.c:587
 msgid "Supports being used on a large screen"
 msgstr "支持在大屏幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:580
 msgid "Desktop Support Unknown"
 msgstr "桌面支持未知"
 
-#: src/gs-hardware-support-context-dialog.c:566
+#: src/gs-hardware-support-context-dialog.c:581
 msgid "Not enough information to know if large screens are supported"
 msgstr "没有足够信息来得知是否支持大屏幕"
 
-#: src/gs-hardware-support-context-dialog.c:569
+#: src/gs-hardware-support-context-dialog.c:584
 msgid "Requires a large screen"
 msgstr "需要大屏幕"
 
-#: src/gs-hardware-support-context-dialog.c:574
+#: src/gs-hardware-support-context-dialog.c:589
 msgid "Desktop Not Supported"
 msgstr "桌面未支持"
 
-#: src/gs-hardware-support-context-dialog.c:575
+#: src/gs-hardware-support-context-dialog.c:590
 msgid "Cannot be used on a large screen"
 msgstr "无法在大屏幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:597
+#: src/gs-hardware-support-context-dialog.c:606
 msgid "Mobile Support"
 msgstr "移动支持"
 
-#: src/gs-hardware-support-context-dialog.c:583
-#: src/gs-hardware-support-context-dialog.c:592
+#: src/gs-hardware-support-context-dialog.c:598
+#: src/gs-hardware-support-context-dialog.c:607
 msgid "Supports being used on a small screen"
 msgstr "支持在小屏幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:600
 msgid "Mobile Support Unknown"
 msgstr "移动支持未知"
 
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:601
 msgid "Not enough information to know if small screens are supported"
 msgstr "没有足够信息来得知是否支持小屏幕"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:604
 msgid "Requires a small screen"
 msgstr "需要小屏幕"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:609
 msgid "Mobile Not Supported"
 msgstr "移动未支持"
 
-#: src/gs-hardware-support-context-dialog.c:595
+#: src/gs-hardware-support-context-dialog.c:610
 msgid "Cannot be used on a small screen"
 msgstr "无法在小屏幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:618
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:633
+#: src/gs-hardware-support-context-dialog.c:642
 msgid "Keyboard Support"
 msgstr "键盘支持"
 
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-hardware-support-context-dialog.c:636
 msgid "Keyboard Support Unknown"
 msgstr "键盘支持未知"
 
-#: src/gs-hardware-support-context-dialog.c:622
+#: src/gs-hardware-support-context-dialog.c:637
 msgid "Not enough information to know if keyboards are supported"
 msgstr "没有足够信息来得知是否支持键盘"
 
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-hardware-support-context-dialog.c:639
 msgid "Keyboard Required"
 msgstr "需要键盘"
 
-#: src/gs-hardware-support-context-dialog.c:628
+#: src/gs-hardware-support-context-dialog.c:643
 msgid "Supports keyboards"
 msgstr "支持键盘"
 
-#: src/gs-hardware-support-context-dialog.c:630
+#: src/gs-hardware-support-context-dialog.c:645
 msgid "Keyboard Not Supported"
 msgstr "不支持键盘"
 
-#: src/gs-hardware-support-context-dialog.c:631
+#: src/gs-hardware-support-context-dialog.c:646
 msgid "Cannot be used with a keyboard"
 msgstr "无法使用键盘操控"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:653
+#: src/gs-hardware-support-context-dialog.c:662
 msgid "Mouse Support"
 msgstr "鼠标支持"
 
-#: src/gs-hardware-support-context-dialog.c:639
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:654
+#: src/gs-hardware-support-context-dialog.c:660
 msgid "Requires a mouse or pointing device"
 msgstr "需要鼠标或指针设备"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:656
 msgid "Mouse Support Unknown"
 msgstr "鼠标支持未知"
 
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:657
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
 msgstr "没有足够信息来得知是否支持鼠标或指针设备"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:659
 msgid "Mouse Required"
 msgstr "需要鼠标"
 
-#: src/gs-hardware-support-context-dialog.c:648
+#: src/gs-hardware-support-context-dialog.c:663
 msgid "Supports mice and pointing devices"
 msgstr "支持鼠标和指针设备"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:665
 msgid "Mouse Not Supported"
 msgstr "不支持鼠标"
 
-#: src/gs-hardware-support-context-dialog.c:651
+#: src/gs-hardware-support-context-dialog.c:666
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "无法使用鼠标或指针设备操控"
 
-#: src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:673
+#: src/gs-hardware-support-context-dialog.c:682
 msgid "Touchscreen Support"
 msgstr "触摸屏支持"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:676
 msgid "Touchscreen Support Unknown"
 msgstr "触摸屏支持未知"
 
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:677
 msgid "Not enough information to know if touchscreens are supported"
 msgstr "没有足够信息来得知是否支持触摸屏"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:679
 msgid "Touchscreen Required"
 msgstr "需要触摸屏"
 
-#: src/gs-hardware-support-context-dialog.c:668
+#: src/gs-hardware-support-context-dialog.c:683
 msgid "Supports touchscreens"
 msgstr "支持触摸屏"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:685
 msgid "Touchscreen Not Supported"
 msgstr "触摸屏未支持"
 
-#: src/gs-hardware-support-context-dialog.c:671
+#: src/gs-hardware-support-context-dialog.c:686
 msgid "Cannot be used with a touchscreen"
 msgstr "无法使用触摸屏操控"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:699
 msgid "Gamepad Required"
 msgstr "需要手柄"
 
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:700
 msgid "Requires a gamepad"
 msgstr "需要使用手柄操控"
 
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:702
 msgid "Gamepad Support"
 msgstr "手柄支持"
 
-#: src/gs-hardware-support-context-dialog.c:688
+#: src/gs-hardware-support-context-dialog.c:703
 msgid "Supports gamepads"
 msgstr "支持手柄"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:697
+#: src/gs-hardware-support-context-dialog.c:712
 #, c-format
 msgid "%s probably works on this device"
 msgstr "%s 很可能可以工作在这个设备上"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:704
+#: src/gs-hardware-support-context-dialog.c:719
 #, c-format
 msgid "%s works on this device"
 msgstr "%s 可以工作在这个设备上"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:711
+#: src/gs-hardware-support-context-dialog.c:726
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s 不能正常工作在这个设备上"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:718
+#: src/gs-hardware-support-context-dialog.c:733
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s 不能工作在这个设备上"
@@ -2737,7 +2737,7 @@ msgstr "硬件支持"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:736 src/gs-shell.ui:307
+#: src/gs-installed-page.c:761 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "已安装"
@@ -2903,8 +2903,8 @@ msgstr "移除"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:258 src/gs-shell.ui:328 src/gs-updates-page.c:1298
+#: src/gs-os-update-page.c:258
+msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "更新"
 
@@ -2917,12 +2917,12 @@ msgstr "降级"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:680
+#: src/gs-overview-page.c:686
 msgid "selected external sources"
 msgstr "选择的额外来源"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:682
+#: src/gs-overview-page.c:688
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2931,13 +2931,13 @@ msgstr "提供获取来自 %s 的附加软件。也包括一些专有软件。"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:691 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:697 src/gs-repos-dialog.c:170
 msgid "Enable"
 msgstr "启用"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:745 src/gs-shell.ui:294
+#: src/gs-overview-page.c:751 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "浏览"
 
@@ -2958,7 +2958,7 @@ msgstr "其它类别"
 msgid "No Application Data Found"
 msgstr "未找到应用程序数据"
 
-#: lib/gs-plugin-loader.c:3020
+#: lib/gs-plugin-loader.c:3010
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "未知"
@@ -3319,28 +3319,28 @@ msgid "Report"
 msgstr "举报"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:80
+#: src/gs-review-row.ui:84
 msgid "Was this review useful to you?"
 msgstr "这条评论对您有用吗？"
 
-#: src/gs-review-row.ui:96
+#: src/gs-review-row.ui:100
 msgid "Yes"
 msgstr "是"
 
-#: src/gs-review-row.ui:104
+#: src/gs-review-row.ui:108
 msgid "No"
 msgstr "否"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:112
+#: src/gs-review-row.ui:116
 msgid "Meh"
 msgstr "随便"
 
-#: src/gs-review-row.ui:122
+#: src/gs-review-row.ui:128
 msgid "Report…"
 msgstr "举报…"
 
-#: src/gs-review-row.ui:131
+#: src/gs-review-row.ui:137
 msgid "Remove…"
 msgstr "移除…"
 
@@ -4179,6 +4179,12 @@ msgstr "主菜单"
 msgid "Find Out _More"
 msgstr "了解更多(_M)"
 
+#. Translators: A label for a button to show only updates which are available to install.
+#: src/gs-shell.ui:328
+msgctxt "Header bar button for list of apps to be updated"
+msgid "Updates"
+msgstr "更新"
+
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
 #. * bubble is small, so the string should be as short as
@@ -4535,6 +4541,11 @@ msgstr "检查更新需要可访问网络。"
 msgid "Check for updates"
 msgstr "检查更新"
 
+#: src/gs-updates-page.c:1298
+msgctxt "Apps to be updated"
+msgid "Updates"
+msgstr "更新"
+
 #: src/gs-updates-page.ui:6
 msgid "Updates page"
 msgstr "更新页面"
@@ -4721,9 +4732,17 @@ msgstr "%s 更新了新特性和缺陷修复。"
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS 更新服务无法获取和应用更新。"
 
-#: plugins/epiphany/gs-plugin-epiphany.c:462
+#: plugins/epiphany/gs-plugin-epiphany.c:464
 msgid "GNOME Web"
 msgstr "GNOME 浏览器"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
+msgid "Web Apps Support"
+msgstr "Web 应用支持"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
+msgid "Run popular web applications in a browser"
+msgstr "在浏览器里运行流行的网络应用程序"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:257
@@ -4763,12 +4782,12 @@ msgstr "用户安装"
 msgid "System Installation"
 msgstr "系统安装"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1098
+#: plugins/flatpak/gs-plugin-flatpak.c:1038
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "无法将扩展“%s”添加来安装：%s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1112
+#: plugins/flatpak/gs-plugin-flatpak.c:1052
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "无法将扩展“%s”添加来卸载：%s"
@@ -4909,6 +4928,13 @@ msgstr "%s 显示器更新"
 msgid "%s BMC Update"
 msgstr "%s 基板管理控制器（BMC）更新"
 
+#. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
+#. * device that stays in the USB port so the wireless peripheral works
+#: plugins/fwupd/gs-fwupd-app.c:230
+#, c-format
+msgid "%s USB Receiver Update"
+msgstr "%s USB 接收器更新"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
 msgstr "固件"
@@ -4960,7 +4986,7 @@ msgstr ""
 msgid "Packages"
 msgstr "软件包"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2453
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
 msgid "Operating System (OSTree)"
 msgstr "操作系统（OSTree）"
 
@@ -5820,12 +5846,6 @@ msgstr "Snap 是个通用的 Linux 程序包"
 #~ msgctxt "Menu of Add-ons"
 #~ msgid "Shell Extensions"
 #~ msgstr "Shell 扩展"
-
-#~ msgid "Web Apps Support"
-#~ msgstr "Web 应用支持"
-
-#~ msgid "Run popular web applications in a browser"
-#~ msgstr "在浏览器里运行流行的网络应用程序"
 
 #~ msgid "GNOME Shell Extensions Repository"
 #~ msgstr "GNOME Shell 扩展软件源"
