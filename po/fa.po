@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-23 07:04+0000\n"
-"PO-Revision-Date: 2022-05-23 12:19+0430\n"
+"POT-Creation-Date: 2022-05-25 16:46+0000\n"
+"PO-Revision-Date: 2022-05-29 12:28+0430\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -741,7 +741,7 @@ msgstr "رتبه‌بندی سنی"
 msgid "How to add missing information"
 msgstr "چگونگی افزودن اطّلاعات غایب"
 
-#: lib/gs-app.c:6098
+#: lib/gs-app.c:6099
 msgid "Local file"
 msgstr "پروندهٔ محلّی"
 
@@ -750,12 +750,12 @@ msgstr "پروندهٔ محلّی"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6114 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6115 src/gs-safety-context-dialog.c:419
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6190
+#: lib/gs-app.c:6191
 msgid "Package"
 msgstr "بسته"
 
@@ -1224,7 +1224,7 @@ msgstr "نرم‌افزار دیگر پشتیبانی نمی‌شود"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:717
+#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
 msgid "; "
 msgstr "؛ "
 
@@ -1247,7 +1247,7 @@ msgid "Unsafe"
 msgstr "ناامن"
 
 #: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "فقط همراه"
 
@@ -1256,8 +1256,8 @@ msgid "Only works on a small screen"
 msgstr "فقط روی صفحه‌های کوچک کار می‌کند"
 
 #: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:643
-#: src/gs-app-context-bar.c:648 src/gs-hardware-support-context-dialog.c:568
+#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
+#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "فقط میزکار"
 
@@ -1265,21 +1265,21 @@ msgstr "فقط میزکار"
 msgid "Only works on a large screen"
 msgstr "فقط روی صفحه‌های بزرگ کار می‌کند"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "ناهماهنگی در اندازهٔ صفحه"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:607
+#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "اندازهٔ صفحهٔ کنونیتان را پشتیبانی نمی‌کند"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:659
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "نیازمند صفحه‌لمسی"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:619
-#: src/gs-hardware-support-context-dialog.c:625
+#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "نیازمند صفحه‌کلید"
 
@@ -1298,30 +1298,30 @@ msgstr "نیازمند دسته برای بازی"
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:630
+#: src/gs-app-context-bar.c:640
 msgid "Adaptive"
 msgstr "وفق‌پذیر"
 
-#: src/gs-app-context-bar.c:631
+#: src/gs-app-context-bar.c:641
 msgid "Works on phones, tablets and desktops"
 msgstr "کار روی تلفن‌ها، رایانک‌ها و میزکارها"
 
-#: src/gs-app-context-bar.c:644
+#: src/gs-app-context-bar.c:654
 msgid "Probably requires a keyboard or mouse"
 msgstr "احتمالاً نیازمند یک صفحه‌کلید یا موشی"
 
-#: src/gs-app-context-bar.c:649
+#: src/gs-app-context-bar.c:659
 msgid "Works on desktops and laptops"
 msgstr "کار روی میزکارها و لپ‌تاپ‌ها"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:692
+#: src/gs-app-context-bar.c:702
 msgid "Contains no age-inappropriate content"
 msgstr "هیچ محتوای نامرتبط به سنی ندارد"
 
-#: src/gs-app-context-bar.c:740
+#: src/gs-app-context-bar.c:750
 msgid "No age rating information available"
 msgstr "هیچ اطّلاعات رتبه‌بندی‌ای موجود نیست"
 
@@ -2534,198 +2534,198 @@ msgstr "بعدی"
 msgid "Featured Apps List"
 msgstr "فهرست کاره‌های معرّفی‌شده"
 
-#: src/gs-hardware-support-context-dialog.c:562
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:577
+#: src/gs-hardware-support-context-dialog.c:586
 msgid "Desktop Support"
 msgstr "پشتیبانی از میزکار"
 
-#: src/gs-hardware-support-context-dialog.c:563
-#: src/gs-hardware-support-context-dialog.c:572
+#: src/gs-hardware-support-context-dialog.c:578
+#: src/gs-hardware-support-context-dialog.c:587
 msgid "Supports being used on a large screen"
 msgstr "از استفاده روی صفحه‌های بزرگ پشتیبانی می‌کند"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:580
 msgid "Desktop Support Unknown"
 msgstr "پشتیبانی از میزکار نامشخّص"
 
-#: src/gs-hardware-support-context-dialog.c:566
+#: src/gs-hardware-support-context-dialog.c:581
 msgid "Not enough information to know if large screens are supported"
 msgstr "اطّلاعات برای تشخیص پشتیبانی از صفحه‌های بزرگ کافی نیست"
 
-#: src/gs-hardware-support-context-dialog.c:569
+#: src/gs-hardware-support-context-dialog.c:584
 msgid "Requires a large screen"
 msgstr "نیاز به صفحهٔ بزرگ دارد"
 
-#: src/gs-hardware-support-context-dialog.c:574
+#: src/gs-hardware-support-context-dialog.c:589
 msgid "Desktop Not Supported"
 msgstr "میزکار پشتیبانی نمی‌شود"
 
-#: src/gs-hardware-support-context-dialog.c:575
+#: src/gs-hardware-support-context-dialog.c:590
 msgid "Cannot be used on a large screen"
 msgstr "نمی‌تواند روی صفحهٔ بزرگ استفاده شود"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:597
+#: src/gs-hardware-support-context-dialog.c:606
 msgid "Mobile Support"
 msgstr "پشتیبانی از تلفن همراه"
 
-#: src/gs-hardware-support-context-dialog.c:583
-#: src/gs-hardware-support-context-dialog.c:592
+#: src/gs-hardware-support-context-dialog.c:598
+#: src/gs-hardware-support-context-dialog.c:607
 msgid "Supports being used on a small screen"
 msgstr "از استفاده روی صفحه‌های کوچک پشتیبانی می‌کند"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:600
 msgid "Mobile Support Unknown"
 msgstr "پشتیبانی از تلفن همراه نامشخّص"
 
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:601
 msgid "Not enough information to know if small screens are supported"
 msgstr "اطّلاعات برای تشخیص پشتیبانی از صفحه‌های کوچک کافی نیست"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:604
 msgid "Requires a small screen"
 msgstr "نیاز به صفحهٔ کوچک دارد"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:609
 msgid "Mobile Not Supported"
 msgstr "تلفن همراه پشتیبانی نمی‌شود"
 
-#: src/gs-hardware-support-context-dialog.c:595
+#: src/gs-hardware-support-context-dialog.c:610
 msgid "Cannot be used on a small screen"
 msgstr "نمی‌تواند روی صفحهٔ کوچک استفاده شود"
 
-#: src/gs-hardware-support-context-dialog.c:618
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:633
+#: src/gs-hardware-support-context-dialog.c:642
 msgid "Keyboard Support"
 msgstr "پشتیبانی از صفحه‌کلید"
 
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-hardware-support-context-dialog.c:636
 msgid "Keyboard Support Unknown"
 msgstr "پشتیبانی از صفحه‌کلید نامشخّص"
 
-#: src/gs-hardware-support-context-dialog.c:622
+#: src/gs-hardware-support-context-dialog.c:637
 msgid "Not enough information to know if keyboards are supported"
 msgstr "اطّلاعات برای تشخیص پشتیبانی از صفحه‌کلیدها کافی نیست"
 
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-hardware-support-context-dialog.c:639
 msgid "Keyboard Required"
 msgstr "نیازمند صفحه‌کلید"
 
-#: src/gs-hardware-support-context-dialog.c:628
+#: src/gs-hardware-support-context-dialog.c:643
 msgid "Supports keyboards"
 msgstr "از صفحه‌کلید پشتیبانی می‌کند"
 
-#: src/gs-hardware-support-context-dialog.c:630
+#: src/gs-hardware-support-context-dialog.c:645
 msgid "Keyboard Not Supported"
 msgstr "صفحه‌کلید پشتیبانی نمی‌شود"
 
-#: src/gs-hardware-support-context-dialog.c:631
+#: src/gs-hardware-support-context-dialog.c:646
 msgid "Cannot be used with a keyboard"
 msgstr "نمی‌تواند با صفحه‌کلید استفاده شود"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:653
+#: src/gs-hardware-support-context-dialog.c:662
 msgid "Mouse Support"
 msgstr "پشتیبانی از موشی"
 
-#: src/gs-hardware-support-context-dialog.c:639
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:654
+#: src/gs-hardware-support-context-dialog.c:660
 msgid "Requires a mouse or pointing device"
 msgstr "نیازمند موشی یا افزاره‌ای نشانگر"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:656
 msgid "Mouse Support Unknown"
 msgstr "پشتیبانی از موشی نامشخّص"
 
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:657
 msgid "Not enough information to know if mice or pointing devices are supported"
 msgstr "اطّلاعات برای تشخیص پشتیبانی از موشی‌ها یا افزاره‌های نشانگر کافی نیست"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:659
 msgid "Mouse Required"
 msgstr "موشی لازم است"
 
-#: src/gs-hardware-support-context-dialog.c:648
+#: src/gs-hardware-support-context-dialog.c:663
 msgid "Supports mice and pointing devices"
 msgstr "از موشی‌ها و افزاره‌های نشانگر پشتیبانی می‌کند"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:665
 msgid "Mouse Not Supported"
 msgstr "موشی پشتیبانی نمی‌شود"
 
-#: src/gs-hardware-support-context-dialog.c:651
+#: src/gs-hardware-support-context-dialog.c:666
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "نمی‌تواند با موشی یا افزاره‌ای نشانگر استفاده شود"
 
-#: src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:673
+#: src/gs-hardware-support-context-dialog.c:682
 msgid "Touchscreen Support"
 msgstr "پشتیبانی از صفحه‌لمسی"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:676
 msgid "Touchscreen Support Unknown"
 msgstr "پشتیبانی از صفحه‌لمسی نامشخّص"
 
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:677
 msgid "Not enough information to know if touchscreens are supported"
 msgstr "اطّلاعات برای تشخیص پشتیبانی از صفحه‌لمسی‌ها کافی نیست"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:679
 msgid "Touchscreen Required"
 msgstr "صفحه‌لمسی لازم است"
 
-#: src/gs-hardware-support-context-dialog.c:668
+#: src/gs-hardware-support-context-dialog.c:683
 msgid "Supports touchscreens"
 msgstr "از صفحه‌لمسی پشتیبانی می‌کند"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:685
 msgid "Touchscreen Not Supported"
 msgstr "صفحه‌لمسی پشتیبانی نمی‌شود"
 
-#: src/gs-hardware-support-context-dialog.c:671
+#: src/gs-hardware-support-context-dialog.c:686
 msgid "Cannot be used with a touchscreen"
 msgstr "نمی‌تواند با یک صفحه‌لمسی استفاده شود"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:699
 msgid "Gamepad Required"
 msgstr "دستهٔ بازی لازم است"
 
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:700
 msgid "Requires a gamepad"
 msgstr "نیازمند دستهٔ بازی"
 
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:702
 msgid "Gamepad Support"
 msgstr "پشتیبانی از دستهٔ بازی"
 
-#: src/gs-hardware-support-context-dialog.c:688
+#: src/gs-hardware-support-context-dialog.c:703
 msgid "Supports gamepads"
 msgstr "از دستهٔ بازی پشتیبانی می‌کند"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:697
+#: src/gs-hardware-support-context-dialog.c:712
 #, c-format
 msgid "%s probably works on this device"
 msgstr "احتمالاً %s روی این افزاره کار می‌کند"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:704
+#: src/gs-hardware-support-context-dialog.c:719
 #, c-format
 msgid "%s works on this device"
 msgstr "%s روی این افزاره کار می‌کند"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:711
+#: src/gs-hardware-support-context-dialog.c:726
 #, c-format
 msgid "%s will not work properly on this device"
 msgstr "%s به خوبی روی این افزاره کار نخواهد کرد"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:718
+#: src/gs-hardware-support-context-dialog.c:733
 #, c-format
 msgid "%s will not work on this device"
 msgstr "%s روی این افزاره کار نخواهد کرد"
@@ -2921,12 +2921,12 @@ msgstr "پایین‌بری"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:680
+#: src/gs-overview-page.c:686
 msgid "selected external sources"
 msgstr "منبع‌های خارجی گزیده"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:682
+#: src/gs-overview-page.c:688
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2936,13 +2936,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:691 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:697 src/gs-repos-dialog.c:170
 msgid "Enable"
 msgstr "به کار انداختن"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:745 src/gs-shell.ui:294
+#: src/gs-overview-page.c:751 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "کشف"
 
@@ -2963,7 +2963,7 @@ msgstr "دیگر دسته‌ها"
 msgid "No Application Data Found"
 msgstr "هیچ دادهٔ برنامه‌ای پیدا نشد"
 
-#: lib/gs-plugin-loader.c:3020
+#: lib/gs-plugin-loader.c:3010
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "ناشناخته"
@@ -4936,6 +4936,13 @@ msgstr "به‌روز رسانی نمایشگر %s"
 msgid "%s BMC Update"
 msgstr "به‌روز رسانی BMC %s"
 
+#. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
+#. * device that stays in the USB port so the wireless peripheral works
+#: plugins/fwupd/gs-fwupd-app.c:230
+#, c-format
+msgid "%s USB Receiver Update"
+msgstr "به‌روز رسانی گیرندهٔ یواس‌بی %s"
+
 #: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
 msgstr "ثابت‌افزار"
@@ -4990,7 +4997,7 @@ msgstr ""
 msgid "Packages"
 msgstr "بسته‌ها"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2453
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
 msgid "Operating System (OSTree)"
 msgstr "سیستم‌عامل (OSTree)"
 
