@@ -151,18 +151,8 @@ gs_application_init (GsApplication *application)
 		  _("Show version number"), NULL },
 		{ NULL }
 	};
-	GApplication *gapp = G_APPLICATION (application);
 
-	g_application_add_main_option_entries (gapp, options);
-
-	/* Remove possibly obsolete notifications */
-	g_application_withdraw_notification (gapp, "installed");
-	g_application_withdraw_notification (gapp, "restart-required");
-	g_application_withdraw_notification (gapp, "updates-available");
-	g_application_withdraw_notification (gapp, "updates-installed");
-	g_application_withdraw_notification (gapp, "upgrades-available");
-	g_application_withdraw_notification (gapp, "offline-updates");
-	g_application_withdraw_notification (gapp, "eol");
+	g_application_add_main_option_entries (G_APPLICATION (application), options);
 }
 
 static gboolean
@@ -965,10 +955,10 @@ gs_application_startup (GApplication *application)
 	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
 
 #ifdef HAVE_PACKAGEKIT
-	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new (g_application_get_dbus_connection (application));
+	app->dbus_helper = gs_dbus_helper_new (g_application_get_dbus_connection (application));
 #endif
 	settings = g_settings_new ("org.gnome.software");
-	GS_APPLICATION (application)->settings = settings;
+	app->settings = settings;
 	g_signal_connect_swapped (settings, "changed",
 				  G_CALLBACK (gs_application_settings_changed_cb),
 				  application);
@@ -988,6 +978,15 @@ gs_application_startup (GApplication *application)
 	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 
 	gs_application_update_software_sources_presence (application);
+
+	/* Remove possibly obsolete notifications */
+	g_application_withdraw_notification (application, "installed");
+	g_application_withdraw_notification (application, "restart-required");
+	g_application_withdraw_notification (application, "updates-available");
+	g_application_withdraw_notification (application, "updates-installed");
+	g_application_withdraw_notification (application, "upgrades-available");
+	g_application_withdraw_notification (application, "offline-updates");
+	g_application_withdraw_notification (application, "eol");
 
 	/* Set up the plugins. */
 	gs_plugin_loader_setup_async (app->plugin_loader,
