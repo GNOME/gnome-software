@@ -211,7 +211,7 @@ gs_category_get_name (GsCategory *category)
 	if (g_strcmp0 (category_id, "all") == 0) {
 		/* TRANSLATORS: this is a subcategory matching all the
 		 * different apps in the parent category, e.g. "Games" */
-		return _("All");
+		return C_("Category", "All");
 	}
 	if (g_strcmp0 (category_id, "featured") == 0) {
 		/* TRANSLATORS: this is a subcategory of featured apps */

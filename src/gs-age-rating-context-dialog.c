@@ -933,7 +933,7 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	if (content_rating != NULL && age_text == NULL && age == 0)
 		/* Translators: The app is considered suitable to be run by all ages of people.
 		 * This is displayed in a context tile, so the string should be short. */
-		age_text = g_strdup (_("All"));
+		age_text = g_strdup (C_("Age rating", "All"));
 
 	/* We currently only support OARS-1.0 and OARS-1.1 */
 	if (age_text == NULL ||
