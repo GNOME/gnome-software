@@ -57,8 +57,6 @@ struct _GsPluginPackagekit {
 	GMutex			 task_mutex;
 
 	PkControl		*control_refine;
-	PkClient		*client_refine;
-	GMutex			 client_mutex_refine;
 
 	PkTask			*task_local;
 	GMutex			 task_mutex_local;
@@ -78,9 +76,6 @@ struct _GsPluginPackagekit {
 
 	PkTask			*task_refresh;
 	GMutex			 task_mutex_refresh;
-
-	PkClient		*client_refine_repos;
-	GMutex			 client_mutex_refine_repos;
 
 	GFileMonitor		*monitor;
 	GFileMonitor		*monitor_trigger;
@@ -127,14 +122,11 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* refine */
-	g_mutex_init (&self->client_mutex_refine);
-	self->client_refine = pk_client_new ();
 	self->control_refine = pk_control_new ();
 	g_signal_connect (self->control_refine, "updates-changed",
 			  G_CALLBACK (gs_plugin_packagekit_updates_changed_cb), plugin);
 	g_signal_connect (self->control_refine, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* local */
 	g_mutex_init (&self->task_mutex_local);
@@ -181,11 +173,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_background (PK_CLIENT (self->task_refresh), TRUE);
 	pk_client_set_interactive (PK_CLIENT (self->task_refresh), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
-	/* repos refine */
-	g_mutex_init (&self->client_mutex_refine_repos);
-	self->client_refine_repos = pk_client_new ();
-	pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
 	/* offline updates */
 	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -221,7 +208,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	g_clear_object (&self->task);
 
 	/* refine */
-	g_clear_object (&self->client_refine);
 	g_clear_object (&self->control_refine);
 
 	/* local */
@@ -244,9 +230,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* refresh */
 	g_clear_object (&self->task_refresh);
 
-	/* refine repos */
-	g_clear_object (&self->client_refine_repos);
-
 	/* offline updates */
 	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
 	g_clear_object (&self->monitor);
@@ -261,12 +244,10 @@ gs_plugin_packagekit_finalize (GObject *object)
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
 
 	g_mutex_clear (&self->task_mutex);
-	g_mutex_clear (&self->client_mutex_refine);
 	g_mutex_clear (&self->task_mutex_local);
 	g_mutex_clear (&self->client_mutex_url_to_app);
 	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->task_mutex_refresh);
-	g_mutex_clear (&self->client_mutex_refine_repos);
 	g_mutex_clear (&self->prepared_updates_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
@@ -1061,6 +1042,7 @@ static void resolve_packages_with_filter_cb (GObject      *source_object,
 
 static void
 gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *self,
+                                                         PkClient            *client_refine,
                                                          GsAppList           *list,
                                                          PkBitfield           filter,
                                                          GCancellable        *cancellable,
@@ -1109,16 +1091,13 @@ gs_plugin_packagekit_resolve_packages_with_filter_async (GsPluginPackagekit  *se
 	g_ptr_array_add (package_ids, NULL);
 
 	/* resolve them all at once */
-	g_mutex_lock (&self->client_mutex_refine);
-	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	pk_client_resolve_async (self->client_refine,
+	pk_client_resolve_async (client_refine,
 				 filter,
 				 (gchar **) package_ids->pdata,
 				 cancellable,
 				 gs_packagekit_helper_cb, data_unowned->progress_data,
 				 resolve_packages_with_filter_cb,
 				 g_steal_pointer (&task));
-	g_mutex_unlock (&self->client_mutex_refine);
 }
 
 static void
@@ -1337,6 +1316,7 @@ typedef struct {
 	gboolean completed;
 	GError *error;  /* (nullable) (owned) */
 	GPtrArray *progress_datas;  /* (element-type GsPackagekitHelper) (owned) (not nullable) */
+	PkClient *client_refine;  /* (owned) */
 
 	/* Input data for operations. */
 	GsAppList *full_list;  /* (nullable) (owned) */
@@ -1354,6 +1334,7 @@ refine_data_free (RefineData *data)
 
 	g_clear_error (&data->error);
 	g_clear_pointer (&data->progress_datas, g_ptr_array_unref);
+	g_clear_object (&data->client_refine);
 	g_clear_object (&data->full_list);
 	g_clear_object (&data->resolve_list);
 	g_clear_object (&data->app_operating_system);
@@ -1501,6 +1482,8 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 	data->full_list = g_object_ref (list);
 	data->n_pending_operations = 1;  /* to prevent the task being completed before all operations have been started */
 	data->progress_datas = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	data->client_refine = pk_client_new ();
+	pk_client_set_interactive (data->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	g_task_set_task_data (task, g_steal_pointer (&data), (GDestroyNotify) refine_data_free);
 
 	/* Process the @list and work out what information is needed for each
@@ -1585,11 +1568,10 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			data_unowned->app_operating_system = g_object_ref (app);
 
 			/* ask PK to simulate upgrading the system */
-			g_mutex_lock (&self->client_mutex_refine);
-			cache_age_save = pk_client_get_cache_age (self->client_refine);
-			pk_client_set_cache_age (self->client_refine, 60 * 60 * 24 * 7); /* once per week */
-			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-			pk_client_upgrade_system_async (self->client_refine,
+			cache_age_save = pk_client_get_cache_age (data_unowned->client_refine);
+			pk_client_set_cache_age (data_unowned->client_refine, 60 * 60 * 24 * 7); /* once per week */
+			pk_client_set_interactive (data_unowned->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+			pk_client_upgrade_system_async (data_unowned->client_refine,
 							pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 							gs_app_get_version (app),
 							PK_UPGRADE_KIND_ENUM_COMPLETE,
@@ -1597,8 +1579,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 							gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 							upgrade_system_cb,
 							refine_task_add_operation (task));
-			pk_client_set_cache_age (self->client_refine, cache_age_save);
-			g_mutex_unlock (&self->client_mutex_refine);
+			pk_client_set_cache_age (data_unowned->client_refine, cache_age_save);
 
 			/* Only support one operating system. */
 			break;
@@ -1620,6 +1601,7 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			                         -1);
 
 		gs_plugin_packagekit_resolve_packages_with_filter_async (self,
+									 data_unowned->client_refine,
 									 resolve_list,
 									 filter,
 									 cancellable,
@@ -1670,16 +1652,13 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			helper = gs_packagekit_helper_new (plugin);
 			to_array[0] = fn;
 			gs_packagekit_helper_add_app (helper, app);
-			g_mutex_lock (&self->client_mutex_refine);
-			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-			pk_client_search_files_async (self->client_refine,
+			pk_client_search_files_async (data_unowned->client_refine,
 						      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 						      (gchar **) to_array,
 						      cancellable,
 						      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						      search_files_cb,
 						      search_files_data_new_operation (task, app, fn));
-			g_mutex_unlock (&self->client_mutex_refine);
 		}
 	}
 
@@ -1696,16 +1675,14 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		helper = gs_packagekit_helper_new (plugin);
 		to_array[0] = filename;
 		gs_packagekit_helper_add_app (helper, app);
-		g_mutex_lock (&self->client_mutex_refine_repos);
-		pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-		pk_client_search_files_async (self->client_refine_repos,
+
+		pk_client_search_files_async (data_unowned->client_refine,
 					      pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					      (gchar **) to_array,
 					      cancellable,
 					      gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 					      search_files_cb,
 					      search_files_data_new_operation (task, app, filename));
-		g_mutex_unlock (&self->client_mutex_refine_repos);
 	}
 
 	/* any update details missing? */
@@ -1727,15 +1704,12 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 		}
 
 		/* get any update details */
-		g_mutex_lock (&self->client_mutex_refine);
-		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-		pk_client_get_update_detail_async (self->client_refine,
+		pk_client_get_update_detail_async (data_unowned->client_refine,
 						   (gchar **) package_ids,
 						   cancellable,
 						   gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						   get_update_detail_cb,
 						   refine_task_add_operation (task));
-		g_mutex_unlock (&self->client_mutex_refine);
 	}
 
 	/* any package details missing? */
@@ -1755,15 +1729,12 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 			g_ptr_array_add (package_ids, NULL);
 
 			/* get any details */
-			g_mutex_lock (&self->client_mutex_refine);
-			pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-			pk_client_get_details_async (self->client_refine,
+			pk_client_get_details_async (data_unowned->client_refine,
 						     (gchar **) package_ids->pdata,
 						     cancellable,
 						     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 						     get_details_cb,
 						     refine_task_add_operation (task));
-			g_mutex_unlock (&self->client_mutex_refine);
 		}
 	}
 
@@ -1774,15 +1745,12 @@ gs_plugin_packagekit_refine_async (GsPlugin            *plugin,
 
 		/* get the list of updates */
 		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-		g_mutex_lock (&self->client_mutex_refine);
-		pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-		pk_client_get_updates_async (self->client_refine,
+		pk_client_get_updates_async (data_unowned->client_refine,
 					     filter,
 					     cancellable,
 					     gs_packagekit_helper_cb, refine_task_add_progress_data (task, helper),
 					     get_updates_cb,
 					     refine_task_add_operation (task));
-		g_mutex_unlock (&self->client_mutex_refine);
 	}
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -1898,6 +1866,7 @@ resolve_all_packages_with_filter_cb (GObject      *source_object,
 		                         -1);
 
 	gs_plugin_packagekit_resolve_packages_with_filter_async (self,
+								 data->client_refine,
 								 resolve2_list,
 								 filter,
 								 cancellable,
