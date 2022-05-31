@@ -124,8 +124,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	/* core */
 	g_mutex_init (&self->task_mutex);
 	self->task = gs_packagekit_task_new (plugin);
-	pk_client_set_background (PK_CLIENT (self->task), FALSE);
-	pk_client_set_cache_age (PK_CLIENT (self->task), G_MAXUINT);
 	pk_client_set_interactive (PK_CLIENT (self->task), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* refine */
@@ -136,22 +134,17 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 			  G_CALLBACK (gs_plugin_packagekit_updates_changed_cb), plugin);
 	g_signal_connect (self->control_refine, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
-	pk_client_set_background (self->client_refine, FALSE);
-	pk_client_set_cache_age (self->client_refine, G_MAXUINT);
 	pk_client_set_interactive (self->client_refine, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* local */
 	g_mutex_init (&self->task_mutex_local);
 	self->task_local = gs_packagekit_task_new (plugin);
-	pk_client_set_background (PK_CLIENT (self->task_local), FALSE);
 	pk_client_set_interactive (PK_CLIENT (self->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* url-to-app */
 	g_mutex_init (&self->client_mutex_url_to_app);
 	self->client_url_to_app = pk_client_new ();
 
-	pk_client_set_background (self->client_url_to_app, FALSE);
-	pk_client_set_cache_age (self->client_url_to_app, G_MAXUINT);
 	pk_client_set_interactive (self->client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* proxy */
@@ -191,8 +184,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	/* repos refine */
 	g_mutex_init (&self->client_mutex_refine_repos);
 	self->client_refine_repos = pk_client_new ();
-	pk_client_set_background (self->client_refine_repos, FALSE);
-	pk_client_set_cache_age (self->client_refine_repos, G_MAXUINT);
 	pk_client_set_interactive (self->client_refine_repos, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* offline updates */
