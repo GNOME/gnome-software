@@ -65,9 +65,6 @@ struct _GsPluginPackagekit {
 	GSettings		*settings_ftp;
 	GSettings		*settings_socks;
 
-	PkTask			*task_upgrade;
-	GMutex			 task_mutex_upgrade;
-
 	GFileMonitor		*monitor;
 	GFileMonitor		*monitor_trigger;
 	GPermission		*permission;
@@ -138,14 +135,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	g_signal_connect (self->settings_socks, "changed",
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), self);
 
-	/* upgrade */
-	g_mutex_init (&self->task_mutex_upgrade);
-	self->task_upgrade = gs_packagekit_task_new (plugin);
-	pk_task_set_only_download (self->task_upgrade, TRUE);
-	pk_client_set_background (PK_CLIENT (self->task_upgrade), TRUE);
-	pk_client_set_cache_age (PK_CLIENT (self->task_upgrade), 60 * 60 * 24);
-	pk_client_set_interactive (PK_CLIENT (self->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
 	/* offline updates */
 	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -191,9 +180,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	g_clear_object (&self->settings_ftp);
 	g_clear_object (&self->settings_socks);
 
-	/* upgrade */
-	g_clear_object (&self->task_upgrade);
-
 	/* offline updates */
 	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
 	g_clear_object (&self->monitor);
@@ -208,7 +194,6 @@ gs_plugin_packagekit_finalize (GObject *object)
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
 
 	g_mutex_clear (&self->task_mutex);
-	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->prepared_updates_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
@@ -3378,8 +3363,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GCancellable *cancellable,
 				GError **error)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkTask) task_upgrade = NULL;
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -3393,15 +3378,21 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_set_progress_app (helper, app);
-	g_mutex_lock (&self->task_mutex_upgrade);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_upgrade), GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_task_upgrade_system_sync (self->task_upgrade,
+
+	task_upgrade = gs_packagekit_task_new (plugin);
+	pk_task_set_only_download (task_upgrade, TRUE);
+	pk_client_set_background (PK_CLIENT (task_upgrade), TRUE);
+	pk_client_set_cache_age (PK_CLIENT (task_upgrade), 60 * 60 * 24);
+	pk_client_set_interactive (PK_CLIENT (task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_upgrade), GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_task_upgrade_system_sync (task_upgrade,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       error);
-	g_mutex_unlock (&self->task_mutex_upgrade);
+
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
