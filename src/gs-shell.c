@@ -58,6 +58,8 @@ typedef struct {
 	GtkWidget	*focus;
 	GsCategory	*category;
 	gchar		*search;
+	GsApp		*app;
+	gdouble		 vscroll_position;
 } BackEntry;
 
 struct _GsShell
@@ -431,6 +433,7 @@ free_back_entry (BackEntry *entry)
 		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
 		                              (gpointer *) &entry->focus);
 	g_clear_object (&entry->category);
+	g_clear_object (&entry->app);
 	g_free (entry->search);
 	g_free (entry);
 }
@@ -598,8 +601,11 @@ gs_shell_change_mode (GsShell *shell,
 	GsPage *page;
 	gboolean mode_is_main = gs_shell_get_mode_is_main (mode);
 
-	if (gs_shell_get_mode (shell) == mode)
+	if (gs_shell_get_mode (shell) == mode &&
+	    (mode != GS_SHELL_MODE_DETAILS ||
+	     data == gs_details_page_get_app (GS_DETAILS_PAGE (shell->pages[mode])))) {
 		return;
+	}
 
 	/* switch page */
 	if (mode == GS_SHELL_MODE_LOADING) {
@@ -711,6 +717,10 @@ save_back_entry (GsShell *shell)
 		entry->search = g_strdup (gs_search_page_get_text (GS_SEARCH_PAGE (shell->pages[GS_SHELL_MODE_SEARCH])));
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode], entry->search);
+		break;
+	case GS_SHELL_MODE_DETAILS:
+		entry->app = g_object_ref (gs_details_page_get_app (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS])));
+		entry->vscroll_position = gs_details_page_get_vscroll_position (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]));
 		break;
 	default:
 		g_debug ("pushing back entry for %s", page_name[entry->mode]);
@@ -824,6 +834,14 @@ gs_shell_go_back (GsShell *shell)
 		/* set the mode directly */
 		gs_shell_change_mode (shell, entry->mode,
 				      (gpointer) entry->search, FALSE);
+		break;
+	case GS_SHELL_MODE_DETAILS:
+		g_debug ("popping back entry for %s with app %s and vscroll position %f",
+			 page_name[entry->mode],
+			 gs_app_get_unique_id (entry->app),
+			 entry->vscroll_position);
+		gs_shell_change_mode (shell, entry->mode, entry->app, FALSE);
+		gs_details_page_set_vscroll_position (GS_DETAILS_PAGE (shell->pages[GS_SHELL_MODE_DETAILS]), entry->vscroll_position);
 		break;
 	default:
 		g_debug ("popping back entry for %s", page_name[entry->mode]);
@@ -2181,6 +2199,16 @@ category_page_app_clicked_cb (GsCategoryPage *page,
 	gs_shell_show_app (shell, app);
 }
 
+static void
+details_page_app_clicked_cb (GsDetailsPage *page,
+			     GsApp         *app,
+			     gpointer       user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+
+	gs_shell_show_app (shell, app);
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -2642,6 +2670,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_details_page_metainfo_loaded_cb);
+	gtk_widget_class_bind_template_callback (widget_class, details_page_app_clicked_cb);
 
 	gtk_widget_class_add_binding_action (widget_class, GDK_KEY_q, GDK_CONTROL_MASK, "window.close", NULL);
 }

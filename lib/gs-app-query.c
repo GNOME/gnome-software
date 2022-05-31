@@ -80,6 +80,8 @@ struct _GsAppQuery
 
 	/* This is guaranteed to either be %NULL, or a non-empty array */
 	gchar **deployment_featured;  /* (owned) (nullable) (array zero-terminated=1) */
+	/* This is guaranteed to either be %NULL, or a non-empty array */
+	gchar **developers;  /* (owned) (nullable) (array zero-terminated=1) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -95,6 +97,7 @@ typedef enum {
 	PROP_FILTER_USER_DATA,
 	PROP_FILTER_USER_DATA_NOTIFY,
 	PROP_DEPLOYMENT_FEATURED,
+	PROP_DEVELOPERS,
 	PROP_PROVIDES_FILES,
 	PROP_RELEASED_SINCE,
 	PROP_IS_CURATED,
@@ -143,6 +146,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_DEPLOYMENT_FEATURED:
 		g_value_set_boxed (value, self->deployment_featured);
+		break;
+	case PROP_DEVELOPERS:
+		g_value_set_boxed (value, self->developers);
 		break;
 	case PROP_PROVIDES_FILES:
 		g_value_set_boxed (value, self->provides_files);
@@ -232,6 +238,16 @@ gs_app_query_set_property (GObject      *object,
 			g_clear_pointer (&self->deployment_featured, g_strfreev);
 
 		break;
+	case PROP_DEVELOPERS:
+		/* Construct only. */
+		g_assert (self->developers == NULL);
+		self->developers = g_value_dup_boxed (value);
+
+		/* Squash empty arrays to %NULL. */
+		if (self->developers != NULL && self->developers[0] == NULL)
+			g_clear_pointer (&self->developers, g_strfreev);
+
+		break;
 	case PROP_PROVIDES_FILES:
 		/* Construct only. */
 		g_assert (self->provides_files == NULL);
@@ -299,6 +315,7 @@ gs_app_query_finalize (GObject *object)
 	GsAppQuery *self = GS_APP_QUERY (object);
 
 	g_clear_pointer (&self->deployment_featured, g_strfreev);
+	g_clear_pointer (&self->developers, g_strfreev);
 	g_clear_pointer (&self->provides_files, g_strfreev);
 	g_clear_pointer (&self->released_since, g_date_time_unref);
 
@@ -470,6 +487,25 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 	props[PROP_DEPLOYMENT_FEATURED] =
 		g_param_spec_boxed ("deployment-featured", "Deployment Featured",
 				    "A list of `GnomeSoftware::DeploymentFeatured` app keys.",
+				    G_TYPE_STRV,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:developers: (nullable)
+	 *
+	 * A list of developers to search the apps for.
+	 *
+	 * Used to search for apps which are provided by given developer(s).
+	 *
+	 * This may be %NULL to not filter on by them. An empty array is
+	 * considered equivalent to %NULL.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_DEVELOPERS] =
+		g_param_spec_boxed ("developers", "Developers",
+				    "A list of developers who provide the apps.",
 				    G_TYPE_STRV,
 				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
@@ -762,6 +798,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 		n++;
 	if (self->deployment_featured != NULL)
 		n++;
+	if (self->developers != NULL)
+		n++;
 
 	return n;
 }
@@ -899,4 +937,25 @@ gs_app_query_get_deployment_featured (GsAppQuery *self)
 	g_assert (self->deployment_featured == NULL || self->deployment_featured[0] != NULL);
 
 	return (const gchar * const *) self->deployment_featured;
+}
+
+/**
+ * gs_app_query_get_developers:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:developers.
+ *
+ * Returns: (nullable): a list of developers who provide the apps,
+ *   or %NULL to not filter by it
+ * Since: 43
+ */
+const gchar * const *
+gs_app_query_get_developers (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	/* Always return %NULL or a non-empty array */
+	g_assert (self->developers == NULL || self->developers[0] != NULL);
+
+	return (const gchar * const *) self->developers;
 }

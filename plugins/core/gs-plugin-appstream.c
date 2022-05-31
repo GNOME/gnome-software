@@ -1418,6 +1418,7 @@ list_apps_thread_cb (GTask        *task,
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	guint64 age_secs = 0;
 	const gchar * const *deployment_featured = NULL;
+	const gchar * const *developers = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1429,6 +1430,7 @@ list_apps_thread_cb (GTask        *task,
 		category = gs_app_query_get_category (data->query);
 		is_installed = gs_app_query_get_is_installed (data->query);
 		deployment_featured = gs_app_query_get_deployment_featured (data->query);
+		developers = gs_app_query_get_developers (data->query);
 	}
 	if (released_since != NULL) {
 		g_autoptr(GDateTime) now = g_date_time_new_now_utc ();
@@ -1442,7 +1444,8 @@ list_apps_thread_cb (GTask        *task,
 	     is_featured == GS_APP_QUERY_TRISTATE_UNSET &&
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
-	     deployment_featured == NULL) ||
+	     deployment_featured == NULL &&
+	     developers == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1494,6 +1497,12 @@ list_apps_thread_cb (GTask        *task,
 	if (deployment_featured != NULL &&
 	    !gs_appstream_add_deployment_featured (self->silo, deployment_featured, list,
 						   cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (developers != NULL &&
+	    !gs_appstream_search_developer_apps (GS_PLUGIN (self), self->silo, developers, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}

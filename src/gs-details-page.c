@@ -32,12 +32,17 @@
 #include "gs-progress-button.h"
 #include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
+#include "gs-summary-tile.h"
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
 
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4
+
+/* How many other developer apps can be shown; should be divisible by 3 and 2,
+   to catch full width and smaller width without bottom gap */
+#define N_DEVELOPER_APPS 18
 
 #define GS_DETAILS_PAGE_REFINE_FLAGS	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS | \
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES | \
@@ -147,12 +152,16 @@ struct _GsDetailsPage
 	GsLicenseTile		*license_tile;
 	GtkInfoBar		*translation_infobar;
 	GtkButton		*translation_infobar_button;
+	GtkWidget		*developer_apps_heading;
+	GtkWidget		*box_developer_apps;
+	gchar			*last_developer_name;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 enum {
 	SIGNAL_METAINFO_LOADED,
+	SIGNAL_APP_CLICKED,
 	SIGNAL_LAST
 };
 
@@ -954,6 +963,84 @@ update_action_row_from_link (AdwActionRow *row,
 }
 
 static void
+gs_details_page_app_tile_clicked (GsAppTile *tile,
+				  gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	GsApp *app;
+
+	app = gs_app_tile_get_app (tile);
+	g_signal_emit (self, signals[SIGNAL_APP_CLICKED], 0, app);
+}
+
+/* Consider app IDs with and without the ".desktop" suffix being the same app */
+static gboolean
+gs_details_page_app_id_equal (GsApp *app1,
+			      GsApp *app2)
+{
+	const gchar *id1, *id2;
+
+	id1 = gs_app_get_id (app1);
+	id2 = gs_app_get_id (app2);
+	if (g_strcmp0 (id1, id2) == 0)
+		return TRUE;
+
+	if (id1 == NULL || id2 == NULL)
+		return FALSE;
+
+	if (g_str_has_suffix (id1, ".desktop")) {
+		return !g_str_has_suffix (id2, ".desktop") &&
+			strlen (id1) == strlen (id2) + 8 /* strlen (".desktop") */ &&
+			g_str_has_prefix (id1, id2);
+	}
+
+	return g_str_has_suffix (id2, ".desktop") &&
+		!g_str_has_suffix (id1, ".desktop") &&
+		strlen (id2) == strlen (id1) + 8 /* strlen (".desktop") */ &&
+		g_str_has_prefix (id2, id1);
+}
+
+static void
+gs_details_page_search_developer_apps_cb (GObject *source_object,
+					  GAsyncResult *result,
+					  gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GError) local_error = NULL;
+	guint n_added = 0;
+
+	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (source_object), result, &local_error);
+	if (list == NULL) {
+		if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+		    g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_debug ("search cancelled");
+			return;
+		}
+		g_warning ("failed to get other apps: %s", local_error->message);
+		return;
+	}
+
+	if (!self->app || !gs_page_is_active (GS_PAGE (self)))
+		return;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (app != self->app && !gs_details_page_app_id_equal (app, self->app)) {
+			GtkWidget *tile = gs_summary_tile_new (app);
+			g_signal_connect (tile, "clicked", G_CALLBACK (gs_details_page_app_tile_clicked), self);
+			gtk_flow_box_insert (GTK_FLOW_BOX (self->box_developer_apps), tile, -1);
+
+			n_added++;
+			if (n_added == N_DEVELOPER_APPS)
+				break;
+		}
+	}
+
+	gtk_widget_set_visible (self->box_developer_apps, n_added > 0);
+}
+
+static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	g_autoptr(GIcon) icon = NULL;
@@ -1033,8 +1120,47 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_developer_name (self->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_project_group (self->app);
-	if (tmp != NULL)
+	if (tmp != NULL) {
 		gtk_label_set_label (GTK_LABEL (self->developer_name_label), tmp);
+
+		if (g_strcmp0 (tmp, self->last_developer_name) != 0) {
+			g_autoptr(GsAppQuery) query = NULL;
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			g_autofree gchar *heading = NULL;
+			const gchar *names[2] = { NULL, NULL };
+
+			/* Hide the section, it will be shown only if any other app had been found */
+			gtk_widget_set_visible (self->box_developer_apps, FALSE);
+
+			g_clear_pointer (&self->last_developer_name, g_free);
+			self->last_developer_name = g_strdup (tmp);
+
+			/* Translators: the '%s' is replaced with a developer name or a project group */
+			heading = g_strdup_printf (_("Other Apps by %s"), self->last_developer_name);
+			gtk_label_set_label (GTK_LABEL (self->developer_apps_heading), heading);
+			gs_widget_remove_all (self->box_developer_apps, (GsRemoveFunc) gtk_flow_box_remove);
+
+			names[0] = self->last_developer_name;
+			query = gs_app_query_new ("developers", names,
+						  "max-results", N_DEVELOPER_APPS * 3, /* Ask for more, some can be skipped */
+						  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+						  NULL);
+
+			plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
+			g_debug ("searching other apps for: '%s'", names[0]);
+			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+							    self->cancellable,
+							    gs_details_page_search_developer_apps_cb,
+							    self);
+		}
+	} else if (tmp == NULL) {
+		g_clear_pointer (&self->last_developer_name, g_free);
+		gs_widget_remove_all (self->box_developer_apps, (GsRemoveFunc) gtk_flow_box_remove);
+		gtk_widget_set_visible (self->box_developer_apps, FALSE);
+	}
+
 	gtk_widget_set_visible (GTK_WIDGET (self->developer_name_label), tmp != NULL);
 	gtk_widget_set_visible (GTK_WIDGET (self->developer_verified_image), gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED));
 
@@ -2159,6 +2285,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->odrs_provider);
 	g_clear_object (&self->app_info_monitor);
+	g_clear_pointer (&self->last_developer_name, g_free);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
@@ -2230,6 +2357,21 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
+	/**
+	 * GsDetailsPage::app-clicked:
+	 * @app: the #GsApp which was clicked on
+	 *
+	 * Emitted when one of the app tiles is clicked. Typically the caller
+	 * should display the details of the given app in the callback.
+	 *
+	 * Since: 43
+	 */
+	signals[SIGNAL_APP_CLICKED] =
+		g_signal_new ("app-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_icon);
@@ -2287,6 +2429,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar_button);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_apps_heading);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_developer_apps);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
@@ -2611,4 +2755,28 @@ gs_details_page_set_metainfo (GsDetailsPage *self,
 	g_task_set_source_tag (task, gs_details_page_set_metainfo);
 	g_task_set_task_data (task, g_object_ref (file), g_object_unref);
 	g_task_run_in_thread (task, gs_details_page_metainfo_thread);
+}
+
+gdouble
+gs_details_page_get_vscroll_position (GsDetailsPage *self)
+{
+	GtkAdjustment *adj;
+
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), -1);
+
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
+	return gtk_adjustment_get_value (adj);
+}
+
+void
+gs_details_page_set_vscroll_position (GsDetailsPage *self,
+				      gdouble value)
+{
+	GtkAdjustment *adj;
+
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
+
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
+	if (value >= 0.0)
+		gtk_adjustment_set_value (adj, value);
 }

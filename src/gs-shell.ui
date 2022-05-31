@@ -474,6 +474,7 @@
                               <object class="GsDetailsPage" id="details_page">
                                 <property name="is-narrow" bind-source="GsShell" bind-property="is-narrow" bind-flags="sync-create"/>
                                 <signal name="metainfo-loaded" handler="gs_shell_details_page_metainfo_loaded_cb"/>
+                                <signal name="app-clicked" handler="details_page_app_clicked_cb"/>
                               </object>
                             </child>
                           </object>

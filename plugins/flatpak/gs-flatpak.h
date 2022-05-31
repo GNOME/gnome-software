@@ -125,6 +125,12 @@ gboolean	gs_flatpak_search		(GsFlatpak		*self,
 						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_search_developer_apps(GsFlatpak		*self,
+						 const gchar * const	*values,
+						 GsAppList		*list,
+						 gboolean		 interactive,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_add_categories	(GsFlatpak		*self,
 						 GPtrArray		*list,
 						 gboolean		 interactive,

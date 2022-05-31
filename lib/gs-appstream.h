@@ -29,6 +29,12 @@ gboolean	 gs_appstream_search			(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_search_developer_apps	(GsPlugin	*plugin,
+							 XbSilo		*silo,
+							 const gchar * const *values,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_appstream_add_categories		(XbSilo		*silo,
 							 GPtrArray	*list,
 							 GCancellable	*cancellable,
