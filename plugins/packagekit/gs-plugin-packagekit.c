@@ -58,9 +58,6 @@ struct _GsPluginPackagekit {
 
 	PkControl		*control_refine;
 
-	PkTask			*task_local;
-	GMutex			 task_mutex_local;
-
 	PkControl		*control_proxy;
 	GSettings		*settings_proxy;
 	GSettings		*settings_http;
@@ -121,11 +118,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 			  G_CALLBACK (gs_plugin_packagekit_updates_changed_cb), plugin);
 	g_signal_connect (self->control_refine, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
-
-	/* local */
-	g_mutex_init (&self->task_mutex_local);
-	self->task_local = gs_packagekit_task_new (plugin);
-	pk_client_set_interactive (PK_CLIENT (self->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* proxy */
 	self->control_proxy = pk_control_new ();
@@ -191,9 +183,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* refine */
 	g_clear_object (&self->control_refine);
 
-	/* local */
-	g_clear_object (&self->task_local);
-
 	/* proxy */
 	g_clear_object (&self->control_proxy);
 	g_clear_object (&self->settings_proxy);
@@ -219,7 +208,6 @@ gs_plugin_packagekit_finalize (GObject *object)
 	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (object);
 
 	g_mutex_clear (&self->task_mutex);
-	g_mutex_clear (&self->task_mutex_local);
 	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->prepared_updates_mutex);
 
@@ -2591,6 +2579,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPluginPackagekit  *self,
 	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_auto(GStrv) files = NULL;
+	g_autoptr(PkTask) task_local = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GString) basename_best = g_string_new (NULL);
@@ -2598,14 +2587,17 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPluginPackagekit  *self,
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
 	gs_packagekit_helper_add_app (helper, app);
-	g_mutex_lock (&self->task_mutex_local);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_files_local (PK_CLIENT (self->task_local),
+
+	task_local = gs_packagekit_task_new (plugin);
+	pk_client_set_interactive (PK_CLIENT (task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_client_get_files_local (PK_CLIENT (task_local),
 					     files,
 					     cancellable,
 					     gs_packagekit_helper_cb, helper,
 					     error);
-	g_mutex_unlock (&self->task_mutex_local);
+
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
@@ -2663,6 +2655,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 
 static gboolean
 gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
+                                            PkTask              *task_local,
                                             GsApp               *app,
                                             GCancellable        *cancellable,
                                             GError             **error)
@@ -2676,7 +2669,7 @@ gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
 					 PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_INSTALLED,
 					 -1);
-	results = pk_client_resolve (PK_CLIENT (self->task_local), filter, (gchar **) names,
+	results = pk_client_resolve (PK_CLIENT (task_local), filter, (gchar **) names,
 				     cancellable, NULL, NULL, error);
 	if (results == NULL) {
 		gs_plugin_packagekit_error_convert (error);
@@ -2705,6 +2698,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	const gchar *package_id;
 	PkDetails *item;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkTask) task_local = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
@@ -2731,15 +2725,18 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* get details */
 	filename = g_file_get_path (file);
 	files = g_strsplit (filename, "\t", -1);
-	g_mutex_lock (&self->task_mutex_local);
-	pk_client_set_cache_age (PK_CLIENT (self->task_local), G_MAXUINT);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_details_local (PK_CLIENT (self->task_local),
+
+	task_local = gs_packagekit_task_new (plugin);
+	pk_client_set_interactive (PK_CLIENT (task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	pk_client_set_cache_age (PK_CLIENT (task_local), G_MAXUINT);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_local), GS_PLUGIN_ACTION_FILE_TO_APP, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_client_get_details_local (PK_CLIENT (task_local),
 					       files,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       error);
-	g_mutex_unlock (&self->task_mutex_local);
+
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
 
@@ -2797,6 +2794,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* is already installed? */
 	if (!gs_plugin_packagekit_local_check_installed (self,
+							 task_local,
 							 app,
 							 cancellable,
 							 error))
