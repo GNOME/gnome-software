@@ -71,9 +71,6 @@ struct _GsPluginPackagekit {
 	PkTask			*task_upgrade;
 	GMutex			 task_mutex_upgrade;
 
-	PkTask			*task_refresh;
-	GMutex			 task_mutex_refresh;
-
 	GFileMonitor		*monitor;
 	GFileMonitor		*monitor_trigger;
 	GPermission		*permission;
@@ -157,13 +154,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	pk_client_set_cache_age (PK_CLIENT (self->task_upgrade), 60 * 60 * 24);
 	pk_client_set_interactive (PK_CLIENT (self->task_upgrade), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
-	/* refresh */
-	g_mutex_init (&self->task_mutex_refresh);
-	self->task_refresh = gs_packagekit_task_new (plugin);
-	pk_task_set_only_download (self->task_refresh, TRUE);
-	pk_client_set_background (PK_CLIENT (self->task_refresh), TRUE);
-	pk_client_set_interactive (PK_CLIENT (self->task_refresh), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
 	/* offline updates */
 	g_mutex_init (&self->prepared_updates_mutex);
 	self->prepared_updates = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -215,9 +205,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* upgrade */
 	g_clear_object (&self->task_upgrade);
 
-	/* refresh */
-	g_clear_object (&self->task_refresh);
-
 	/* offline updates */
 	g_clear_pointer (&self->prepared_updates, g_hash_table_unref);
 	g_clear_object (&self->monitor);
@@ -234,7 +221,6 @@ gs_plugin_packagekit_finalize (GObject *object)
 	g_mutex_clear (&self->task_mutex);
 	g_mutex_clear (&self->task_mutex_local);
 	g_mutex_clear (&self->task_mutex_upgrade);
-	g_mutex_clear (&self->task_mutex_refresh);
 	g_mutex_clear (&self->prepared_updates_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_packagekit_parent_class)->finalize (object);
@@ -3582,6 +3568,7 @@ _download_only (GsPluginPackagekit  *self,
 	GsPlugin *plugin = GS_PLUGIN (self);
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkTask) task_refresh = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -3589,18 +3576,21 @@ _download_only (GsPluginPackagekit  *self,
 	/* get the list of packages to update */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
-	g_mutex_lock (&self->task_mutex_refresh);
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
-	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), G_MAXUINT);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_get_updates (PK_CLIENT (self->task_refresh),
+	task_refresh = gs_packagekit_task_new (plugin);
+	pk_task_set_only_download (task_refresh, TRUE);
+	pk_client_set_background (PK_CLIENT (task_refresh), TRUE);
+	pk_client_set_interactive (PK_CLIENT (task_refresh), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_client_get_updates (PK_CLIENT (task_refresh),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
 					 gs_packagekit_helper_cb, helper,
 					 error);
-	g_mutex_unlock (&self->task_mutex_refresh);
+
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		return FALSE;
 	}
@@ -3615,18 +3605,16 @@ _download_only (GsPluginPackagekit  *self,
 		gs_packagekit_helper_add_app (helper, app);
 	}
 	gs_packagekit_helper_set_progress_list (helper, progress_list);
-	g_mutex_lock (&self->task_mutex_refresh);
+
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
-	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), G_MAXUINT);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_DOWNLOAD, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results2 = pk_task_update_packages_sync (self->task_refresh,
+	results2 = pk_task_update_packages_sync (task_refresh,
 						 package_ids,
 						 cancellable,
 						 gs_packagekit_helper_cb, helper,
 						 error);
-	g_mutex_unlock (&self->task_mutex_refresh);
+
 	gs_app_list_override_progress (progress_list, GS_APP_PROGRESS_UNKNOWN);
 	if (results2 == NULL) {
 		gs_plugin_packagekit_error_convert (error);
@@ -3717,11 +3705,11 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
                                              GAsyncReadyCallback           callback,
                                              gpointer                      user_data)
 {
-	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	gboolean interactive = (flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(PkTask) task_refresh = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_refresh_metadata_async);
@@ -3730,17 +3718,19 @@ gs_plugin_packagekit_refresh_metadata_async (GsPlugin                     *plugi
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
-	g_mutex_lock (&self->task_mutex_refresh);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (self->task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
-	pk_client_set_cache_age (PK_CLIENT (self->task_refresh), cache_age_secs);
+	task_refresh = gs_packagekit_task_new (plugin);
+	pk_task_set_only_download (task_refresh, TRUE);
+	pk_client_set_background (PK_CLIENT (task_refresh), TRUE);
+	pk_client_set_interactive (PK_CLIENT (task_refresh), interactive);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_refresh), GS_PLUGIN_ACTION_UNKNOWN, interactive);
+	pk_client_set_cache_age (PK_CLIENT (task_refresh), cache_age_secs);
 
 	/* refresh the metadata */
-	pk_client_refresh_cache_async (PK_CLIENT (self->task_refresh),
+	pk_client_refresh_cache_async (PK_CLIENT (task_refresh),
 				       FALSE /* force */,
 				       cancellable,
 				       gs_packagekit_helper_cb, helper,
 				       refresh_metadata_cb, g_steal_pointer (&task));
-	g_mutex_unlock (&self->task_mutex_refresh);
 }
 
 static void
