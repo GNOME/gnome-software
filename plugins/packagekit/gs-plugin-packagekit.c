@@ -61,9 +61,6 @@ struct _GsPluginPackagekit {
 	PkTask			*task_local;
 	GMutex			 task_mutex_local;
 
-	PkClient		*client_url_to_app;
-	GMutex			 client_mutex_url_to_app;
-
 	PkControl		*control_proxy;
 	GSettings		*settings_proxy;
 	GSettings		*settings_http;
@@ -132,12 +129,6 @@ gs_plugin_packagekit_init (GsPluginPackagekit *self)
 	g_mutex_init (&self->task_mutex_local);
 	self->task_local = gs_packagekit_task_new (plugin);
 	pk_client_set_interactive (PK_CLIENT (self->task_local), gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	/* url-to-app */
-	g_mutex_init (&self->client_mutex_url_to_app);
-	self->client_url_to_app = pk_client_new ();
-
-	pk_client_set_interactive (self->client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* proxy */
 	self->control_proxy = pk_control_new ();
@@ -213,9 +204,6 @@ gs_plugin_packagekit_dispose (GObject *object)
 	/* local */
 	g_clear_object (&self->task_local);
 
-	/* url-to-app */
-	g_clear_object (&self->client_url_to_app);
-
 	/* proxy */
 	g_clear_object (&self->control_proxy);
 	g_clear_object (&self->settings_proxy);
@@ -245,7 +233,6 @@ gs_plugin_packagekit_finalize (GObject *object)
 
 	g_mutex_clear (&self->task_mutex);
 	g_mutex_clear (&self->task_mutex_local);
-	g_mutex_clear (&self->client_mutex_url_to_app);
 	g_mutex_clear (&self->task_mutex_upgrade);
 	g_mutex_clear (&self->task_mutex_refresh);
 	g_mutex_clear (&self->prepared_updates_mutex);
@@ -3021,6 +3008,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autoptr(GPtrArray) packages = NULL;
 	g_autoptr(GPtrArray) details = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkClient) client_url_to_app = NULL;
 
 	path = gs_utils_get_url_path (url);
 
@@ -3049,15 +3037,15 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	package_ids = g_new0 (gchar *, 2);
 	package_ids[0] = g_strdup (path);
 
-	g_mutex_lock (&self->client_mutex_url_to_app);
-	pk_client_set_interactive (self->client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-	results = pk_client_resolve (self->client_url_to_app,
+	client_url_to_app = pk_client_new ();
+	pk_client_set_interactive (client_url_to_app, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+
+	results = pk_client_resolve (client_url_to_app,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,
 				     cancellable,
 				     gs_packagekit_helper_cb, helper,
 				     error);
-	g_mutex_unlock (&self->client_mutex_url_to_app);
 
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to resolve package_ids: ");
