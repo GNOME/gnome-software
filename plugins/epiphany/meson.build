@@ -76,7 +76,10 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
-      dependency('glib-testing-0', fallback: ['libglib-testing', 'libglib_testing_dep']),
+      dependency(
+        'glib-testing-0',
+        fallback: ['libglib-testing', 'libglib_testing_dep'],
+        version: '>= 0.1.1'),
     ],
     link_with : [
       libgnomesoftware,
