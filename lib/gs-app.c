@@ -1422,9 +1422,13 @@ gs_app_set_kind (GsApp *app, AsComponentKind kind)
  * @app: a #GsApp
  *
  * Gets the unique application ID used for de-duplication.
- * If nothing has been set the value from gs_app_get_id() will be used.
  *
- * Returns: The unique ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master`, or %NULL
+ * The format is "<scope>/<kind>/<origin>/<id>/<branch>". Any unset fields will
+ * appear as "*". This string can be used with libappstream's functions for
+ * handling data IDs, e.g.
+ * https://www.freedesktop.org/software/appstream/docs/api/appstream-as-utils.html#as-utils-data-id-valid
+ *
+ * Returns: The unique ID, e.g. `user/fedora/\*\/gimp.desktop/\*`, or %NULL
  *
  * Since: 3.22
  **/
@@ -1441,11 +1445,12 @@ gs_app_get_unique_id (GsApp *app)
 /**
  * gs_app_set_unique_id:
  * @app: a #GsApp
- * @unique_id: a unique application ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master`
+ * @unique_id: a unique application ID, e.g. `user/fedora/\*\/gimp.desktop/\*`
  *
- * Sets the unique application ID. Any #GsApp using the same ID will be
- * deduplicated. This means that applications that can exist from more than
- * one plugin should use this method.
+ * Sets the unique application ID used for de-duplication. See
+ * gs_app_get_unique_id() for information about the format. Normally you should
+ * not have to use this function since the unique ID can be constructed from
+ * other fields, but it can be useful for unit tests.
  */
 void
 gs_app_set_unique_id (GsApp *app, const gchar *unique_id)
