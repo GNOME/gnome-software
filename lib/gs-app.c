@@ -1423,12 +1423,12 @@ gs_app_set_kind (GsApp *app, AsComponentKind kind)
  *
  * Gets the unique application ID used for de-duplication.
  *
- * The format is "<scope>/<kind>/<origin>/<id>/<branch>". Any unset fields will
+ * The format is "&lt;scope&gt;/&lt;kind&gt;/&lt;origin&gt;/&lt;id&gt;/&lt;branch&gt;". Any unset fields will
  * appear as "*". This string can be used with libappstream's functions for
  * handling data IDs, e.g.
  * https://www.freedesktop.org/software/appstream/docs/api/appstream-as-utils.html#as-utils-data-id-valid
  *
- * Returns: The unique ID, e.g. `user/fedora/\*\/gimp.desktop/\*`, or %NULL
+ * Returns: The unique ID, e.g. `system/flatpak/flathub/org.gnome.Notes/stable`, or %NULL
  *
  * Since: 3.22
  **/
