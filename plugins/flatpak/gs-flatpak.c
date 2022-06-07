@@ -466,10 +466,18 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 }
 
 static void
+gs_flatpak_invalidate_silo (GsFlatpak *self)
+{
+	g_rw_lock_writer_lock (&self->silo_lock);
+	if (self->silo != NULL)
+		xb_silo_invalidate (self->silo);
+	g_rw_lock_writer_unlock (&self->silo_lock);
+}
+
+static void
 gs_flatpak_internal_data_changed (GsFlatpak *self)
 {
 	g_autoptr(GMutexLocker) locker = NULL;
-	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 
 	/* drop the installed refs cache */
 	locker = g_mutex_locker_new (&self->installed_refs_mutex);
@@ -486,10 +494,7 @@ gs_flatpak_internal_data_changed (GsFlatpak *self)
 	g_hash_table_remove_all (self->broken_remotes);
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
-	writer_locker = g_rw_lock_writer_locker_new (&self->silo_lock);
-	if (self->silo)
-		xb_silo_invalidate (self->silo);
-	g_clear_pointer (&writer_locker, g_rw_lock_writer_locker_free);
+	gs_flatpak_invalidate_silo (self);
 
 	self->requires_full_rescan = TRUE;
 }
@@ -2007,10 +2012,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* manually do this in case we created the first appstream file */
-	g_rw_lock_reader_lock (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
-	g_rw_lock_reader_unlock (&self->silo_lock);
+	gs_flatpak_invalidate_silo (self);
 
 	/* update AppStream metadata */
 	if (!gs_flatpak_refresh_appstream (self, cache_age_secs, interactive, cancellable, error))
@@ -3489,10 +3491,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 	}
 
 	/* invalidate cache */
-	g_rw_lock_reader_lock (&self->silo_lock);
-	if (self->silo != NULL)
-		xb_silo_invalidate (self->silo);
-	g_rw_lock_reader_unlock (&self->silo_lock);
+	gs_flatpak_invalidate_silo (self);
 
 	gs_app_set_state (app, is_remove ? GS_APP_STATE_UNAVAILABLE : GS_APP_STATE_AVAILABLE);
 
