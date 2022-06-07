@@ -45,6 +45,25 @@ struct _GsScreenshotImage
 
 G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_WIDGET)
 
+enum {
+	SIGNAL_CLICKED,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
+
+static void
+gs_screenshot_image_clicked_cb (GtkGestureClick *gesture,
+				gint n_press,
+				gdouble x,
+				gdouble y,
+				gpointer user_data)
+{
+	GsScreenshotImage *self = user_data;
+	if (n_press == 1)
+		g_signal_emit (self, signals[SIGNAL_CLICKED], 0);
+}
+
 AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 {
@@ -769,10 +788,17 @@ gs_screenshot_image_dispose (GObject *object)
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
+	GtkGesture *gesture;
+
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
+
+	gesture = gtk_gesture_click_new ();
+	g_signal_connect_object (gesture, "released",
+		G_CALLBACK (gs_screenshot_image_clicked_cb), ssimg, 0);
+	gtk_widget_add_controller (GTK_WIDGET (ssimg), GTK_EVENT_CONTROLLER (gesture));
 }
 
 static void
@@ -812,6 +838,20 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image2);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, box_error);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, label_error);
+
+	/**
+	 * GsScreenshotImage::clicked:
+	 *
+	 * Emitted when the screenshot is clicked.
+	 *
+	 * Since: 43
+	 */
+	signals [SIGNAL_CLICKED] =
+		g_signal_new ("clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 }
 
 GtkWidget *
