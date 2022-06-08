@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-31 14:55+0000\n"
-"PO-Revision-Date: 2022-06-01 16:14+0300\n"
+"POT-Creation-Date: 2022-06-08 11:23+0000\n"
+"PO-Revision-Date: 2022-06-08 22:20+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -763,7 +763,7 @@ msgstr "Віковий рейтинг"
 msgid "How to add missing information"
 msgstr "Як додати відомості, яких не вистачає"
 
-#: lib/gs-app.c:6099
+#: lib/gs-app.c:6104
 msgid "Local file"
 msgstr "Локальний файл"
 
@@ -772,12 +772,12 @@ msgstr "Локальний файл"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6115 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6120 src/gs-safety-context-dialog.c:419
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6191
+#: lib/gs-app.c:6196
 msgid "Package"
 msgstr "Пакунок"
 
@@ -983,7 +983,7 @@ msgstr "SEARCH"
 msgid "Show application details (using application ID)"
 msgstr "Показувати подробиці програм (через ідентифікатор програми)"
 
-#: src/gs-application.c:128 src/gs-application.c:132
+#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
 msgid "ID"
 msgstr "Ідентифікатор"
 
@@ -1000,14 +1000,19 @@ msgid "Install the application (using application ID)"
 msgstr "Встановити програму (через ідентифікатор програми)"
 
 #: src/gs-application.c:134
+#| msgid "Install the application (using application ID)"
+msgid "Uninstall the application (using application ID)"
+msgstr "Вилучити програму (через ідентифікатор програми)"
+
+#: src/gs-application.c:136
 msgid "Open a local package file"
 msgstr "Відкрити локальний файл пакунку"
 
-#: src/gs-application.c:134 src/gs-application.c:139
+#: src/gs-application.c:136 src/gs-application.c:141
 msgid "FILENAME"
 msgstr "НАЗВАФАЙЛА"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1015,55 +1020,55 @@ msgstr ""
 "Тип взаємодії, які очікується від цієї дії: або «none», або «notify», або "
 "«full»"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:141
 msgid "Show a local metainfo or appdata file"
 msgstr "Показати локальну метаінформацію або файл appdata"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "Show verbose debugging information"
 msgstr "Показати розширену зневаджувальну інформацію"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
 msgstr "Встановлює будь-які оновлення з черги у фоновому режимі"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Show update preferences"
 msgstr "Показати налаштування оновлення"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Quit the running instance"
 msgstr "Вийти із запущеного зразку "
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Prefer local file sources to AppStream"
 msgstr "Віддавати перевагу локальним джерелам файлів для AppStream"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Show version number"
 msgstr "Показати номер версії"
 
-#: src/gs-application.c:244
+#: src/gs-application.c:246
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "© Учасники розробки «Програм GNOME», 2016–2022"
 
-#: src/gs-application.c:247
+#: src/gs-application.c:249
 msgid "translator-credits"
 msgstr "Daniel Korostil <ted.korostiled@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:260 src/gs-shell.c:2167
+#: src/gs-application.c:262 src/gs-shell.c:2167
 msgid "About Software"
 msgstr "Про «Програми»"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:263
+#: src/gs-application.c:265
 msgid "A nice way to manage the software on your system."
 msgstr "Гарний спосіб керуванням програмами на вашій системі."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:452
+#: src/gs-application.c:454
 msgid "Sorry! There are no details for that application."
 msgstr "Вибачте! Не маємо подробиць щодо цієї програми."
 
@@ -2240,7 +2245,6 @@ msgstr "_Встановити…"
 #. Translators: the '%s' is replaced with a developer name or a project group
 #: src/gs-details-page.c:1139
 #, c-format
-#| msgid "Other Apps"
 msgid "Other Apps by %s"
 msgstr "Інші програми %s"
 
@@ -3081,7 +3085,7 @@ msgstr "Інші категорії"
 msgid "No Application Data Found"
 msgstr "Не знайдено даних про програму"
 
-#: lib/gs-plugin-loader.c:3010
+#: lib/gs-plugin-loader.c:3012
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Невідома"
@@ -5205,7 +5209,7 @@ msgstr ""
 "особи. Оновлення програм буде вимкнено, аж доки непідписані оновлення не "
 "буде вилучено або оновлено до підписаних."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:457
+#: plugins/packagekit/gs-plugin-packagekit.c:367
 msgid "Packages"
 msgstr "Пакунки"
 
