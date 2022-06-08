@@ -463,6 +463,10 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GtkWidget *remove_button;
 	GtkStyleContext *context;
 
+	/* Is the app actually removable? */
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY))
+		return;
+
 	/* pending install */
 	helper = g_slice_new0 (GsPageHelper);
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
