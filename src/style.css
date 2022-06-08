@@ -484,7 +484,10 @@ window.narrow .app-developer {
 	font-size: small;
 }
 
-.install-progress-label { font-size: smaller; }
+.install-progress-label {
+	font-size: smaller;
+	font-feature-settings: "tnum";
+}
 
 /* FIXME: These are needed in the updates page until we can use AdwStatusPage
  * again. See the note in gs-updates-page.ui. */
