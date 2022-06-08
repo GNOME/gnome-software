@@ -2324,6 +2324,14 @@ gs_shell_install (GsShell *shell, GsApp *app, GsShellInteraction interaction)
 }
 
 void
+gs_shell_uninstall (GsShell *shell, GsApp *app)
+{
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, (gpointer) app, TRUE);
+	gs_page_remove_app (shell->pages[GS_SHELL_MODE_DETAILS], app, shell->cancellable);
+}
+
+void
 gs_shell_show_installed_updates (GsShell *shell)
 {
 	GtkWidget *dialog;
