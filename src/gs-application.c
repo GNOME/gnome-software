@@ -130,6 +130,8 @@ gs_application_init (GsApplication *application)
 		  _("Show application details (using package name)"), _("PKGNAME") },
 		{ "install", '\0', 0, G_OPTION_ARG_STRING, NULL,
 		  _("Install the application (using application ID)"), _("ID") },
+		{ "uninstall", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("Uninstall the application (using application ID)"), _("ID") },
 		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Open a local package file"), _("FILENAME") },
 		{ "interaction", '\0', 0, G_OPTION_ARG_STRING, NULL,
@@ -630,6 +632,68 @@ install_activated (GSimpleAction *action,
 		gs_application_app_to_install_created_cb, helper);
 }
 
+typedef struct {
+	GWeakRef gs_application_weakref;
+	gchar *data_id;
+} UninstallActivatedHelper;
+
+static void
+gs_application_app_to_uninstall_created_cb (GObject *source_object,
+					    GAsyncResult *result,
+					    gpointer user_data)
+{
+	UninstallActivatedHelper *helper = user_data;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr (GsApplication) self = g_weak_ref_get (&helper->gs_application_weakref);
+
+	app = gs_plugin_loader_app_create_finish (GS_PLUGIN_LOADER (source_object), result, &error);
+
+	if (app == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+			g_warning ("Failed to create application '%s': %s", helper->data_id, error->message);
+		}
+	} else {
+		if (self != NULL) {
+			gs_shell_reset_state (self->shell);
+			gs_shell_uninstall (self->shell, app);
+		}
+	}
+
+	g_weak_ref_clear (&helper->gs_application_weakref);
+	g_free (helper->data_id);
+}
+
+
+static void
+uninstall_activated (GSimpleAction *action,
+		     GVariant	   *parameter,
+		     gpointer	   data)
+{
+	GsApplication *self = GS_APPLICATION (data);
+	const gchar *id;
+	g_autofree gchar *data_id = NULL;
+	UninstallActivatedHelper *helper;
+
+	g_variant_get (parameter, "&s", &id);
+
+	data_id = gs_utils_unique_id_compat_convert (id);
+	if (data_id == NULL) {
+		g_warning ("Need to use a valid unique-id: %s", id);
+		return;
+	}
+
+	gs_application_present_window (self, NULL);
+
+	helper = g_slice_new0 (UninstallActivatedHelper);
+	g_weak_ref_init (&helper->gs_application_weakref, self);
+	helper->data_id = g_strdup (data_id);
+
+	gs_plugin_loader_app_create_async (self->plugin_loader, data_id, self->cancellable,
+		gs_application_app_to_uninstall_created_cb, helper);
+}
+
 static GFile *
 _copy_file_to_cache (GFile *file_src, GError **error)
 {
@@ -831,6 +895,7 @@ static GActionEntry actions_after_loading[] = {
 	{ "details-pkg", details_pkg_activated, "(ss)", NULL, NULL },
 	{ "details-url", details_url_activated, "(s)", NULL, NULL },
 	{ "install", install_activated, "(su)", NULL, NULL },
+	{ "uninstall", uninstall_activated, "s", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "install-resources", install_resources_activated, "(sassss)", NULL, NULL },
 	{ "show-metainfo", show_metainfo_activated, "(ay)", NULL, NULL },
@@ -1200,6 +1265,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						"install",
 						g_variant_new ("(su)", id,
 							       interaction));
+		rc = 0;
+	} else if (g_variant_dict_lookup (options, "uninstall", "&s", &id)) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"uninstall",
+						g_variant_new_string (id));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_autoptr(GFile) file = NULL;
