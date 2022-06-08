@@ -78,6 +78,14 @@ _set_state (GsScreenshotCarousel *self, guint length, gboolean allow_fallback, g
 	}
 }
 
+static void
+gs_screenshot_carousel_img_clicked_cb (GtkWidget *ssimg,
+				       gpointer user_data)
+{
+	GsScreenshotCarousel *self = user_data;
+	adw_carousel_scroll_to (ADW_CAROUSEL (self->carousel), ssimg, TRUE);
+}
+
 /**
  * gs_screenshot_carousel_load_screenshots:
  * @self: a #GsScreenshotCarousel
@@ -147,6 +155,9 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 			g_object_unref (ssimg);
 			continue;
 		}
+
+		g_signal_connect_object (ssimg, "clicked",
+			G_CALLBACK (gs_screenshot_carousel_img_clicked_cb), self, 0);
 
 		adw_carousel_append (ADW_CAROUSEL (self->carousel), ssimg);
 		gtk_widget_show (ssimg);
