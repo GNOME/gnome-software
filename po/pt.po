@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-31 14:55+0000\n"
-"PO-Revision-Date: 2022-06-01 12:02+0100\n"
+"POT-Creation-Date: 2022-06-08 11:23+0000\n"
+"PO-Revision-Date: 2022-06-10 00:00+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.1\n"
 "X-DamnedLies-Scope: partial\n"
 "X-Project-Style: gnome\n"
 "X-DL-Team: pt\n"
@@ -793,7 +793,7 @@ msgstr "Classificação Etária"
 msgid "How to add missing information"
 msgstr "Como adicionar informação em falta"
 
-#: lib/gs-app.c:6099
+#: lib/gs-app.c:6104
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -802,12 +802,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6115 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6120 src/gs-safety-context-dialog.c:419
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6191
+#: lib/gs-app.c:6196
 msgid "Package"
 msgstr "Pacote"
 
@@ -1015,7 +1015,7 @@ msgstr "PROCURA"
 msgid "Show application details (using application ID)"
 msgstr "Mostrar detalhes da aplicação (utilizando o ID da aplicação)"
 
-#: src/gs-application.c:128 src/gs-application.c:132
+#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
 msgid "ID"
 msgstr "ID"
 
@@ -1032,14 +1032,18 @@ msgid "Install the application (using application ID)"
 msgstr "Instalar aplicação (utilizando o seu ID)"
 
 #: src/gs-application.c:134
+msgid "Uninstall the application (using application ID)"
+msgstr "Desinstalar a aplicação (usando o ID da aplicação)"
+
+#: src/gs-application.c:136
 msgid "Open a local package file"
 msgstr "Abrir um ficheiro de pacote local"
 
-#: src/gs-application.c:134 src/gs-application.c:139
+#: src/gs-application.c:136 src/gs-application.c:141
 msgid "FILENAME"
 msgstr "NOMEFICHEIRO"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:138
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -1047,39 +1051,39 @@ msgstr ""
 "O tipo de interação esperada para esta ação: 'nenhuma', 'notificar', ou "
 "'completa'"
 
-#: src/gs-application.c:139
+#: src/gs-application.c:141
 msgid "Show a local metainfo or appdata file"
 msgstr "Mostra um ficheiro metainfo ou appdata local"
 
-#: src/gs-application.c:141
+#: src/gs-application.c:143
 msgid "Show verbose debugging information"
 msgstr "Mostra informação de depuração detalhada"
 
-#: src/gs-application.c:143
+#: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
 msgstr "Instala qualquer atualização pendente em segundo plano"
 
-#: src/gs-application.c:145
+#: src/gs-application.c:147
 msgid "Show update preferences"
 msgstr "Mostrar definições de atualização"
 
-#: src/gs-application.c:147
+#: src/gs-application.c:149
 msgid "Quit the running instance"
 msgstr "Sair da instância atual"
 
-#: src/gs-application.c:149
+#: src/gs-application.c:151
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferir ficheiros locais de origens à AppStream"
 
-#: src/gs-application.c:151
+#: src/gs-application.c:153
 msgid "Show version number"
 msgstr "Mostrar número da versão"
 
-#: src/gs-application.c:244
+#: src/gs-application.c:246
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "Direitos de autor © 2016-2022 Colaboradores do GNOME Software"
 
-#: src/gs-application.c:247
+#: src/gs-application.c:249
 msgid "translator-credits"
 msgstr ""
 "Hugo Carvalho <hugokarvalho@hotmail.com>\n"
@@ -1090,17 +1094,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:260 src/gs-shell.c:2167
+#: src/gs-application.c:262 src/gs-shell.c:2167
 msgid "About Software"
 msgstr "Acerca do Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:263
+#: src/gs-application.c:265
 msgid "A nice way to manage the software on your system."
 msgstr "Um modo agradável de gerir as aplicações no sistema."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:452
+#: src/gs-application.c:454
 msgid "Sorry! There are no details for that application."
 msgstr "Ups! Não foram encontrados detalhes sobre a aplicação."
 
@@ -3084,7 +3088,7 @@ msgstr "Outras categorias"
 msgid "No Application Data Found"
 msgstr "Nenhuns dados de aplicação encontrados"
 
-#: lib/gs-plugin-loader.c:3010
+#: lib/gs-plugin-loader.c:3012
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconhecida"
@@ -5199,7 +5203,7 @@ msgstr ""
 "atualizações de software serão desativadas até que as atualizações não "
 "assinadas sejam removidas ou atualizadas."
 
-#: plugins/packagekit/gs-plugin-packagekit.c:457
+#: plugins/packagekit/gs-plugin-packagekit.c:367
 msgid "Packages"
 msgstr "Pacotes"
 
