@@ -30,6 +30,7 @@
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-list-apps.h>
 #include <gs-plugin-job-list-distro-upgrades.h>
+#include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
 #include <gs-plugin-job-refresh-metadata.h>
 #include <gs-plugin-vfuncs.h>
