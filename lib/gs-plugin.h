@@ -63,6 +63,22 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @list_distro_upgrades_finish: (nullable): Finish method for
  *   @list_distro_upgrades_async. Must be implemented if
  *   @list_distro_upgrades_async is implemented.
+ * @install_repository_async: (nullable): Install repository.
+ * @install_repository_finish: (nullable): Finish method for
+ *   @install_repository_async. Must be implemented if
+ *   @install_repository_async is implemented.
+ * @remove_repository_async: (nullable): Remove repository.
+ * @remove_repository_finish: (nullable): Finish method for
+ *   @remove_repository_async. Must be implemented if
+ *   @remove_repository_async is implemented.
+ * @enable_repository_async: (nullable): Enable repository.
+ * @enable_repository_finish: (nullable): Finish method for
+ *   @enable_repository_async. Must be implemented if
+ *   @enable_repository_async is implemented.
+ * @disable_repository_async: (nullable): Disable repository.
+ * @disable_repository_finish: (nullable): Finish method for
+ *   @disable_repository_async. Must be implemented if
+ *   @disable_repository_async is implemented.
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -145,6 +161,43 @@ struct _GsPluginClass
 								 GAsyncReadyCallback	 callback,
 								 gpointer		 user_data);
 	GsAppList *		(*list_distro_upgrades_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+
+	void			(*install_repository_async)	(GsPlugin		*plugin,
+								 GsApp			*repository,
+								 GsPluginManageRepositoryFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*install_repository_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+	void			(*remove_repository_async)	(GsPlugin		*plugin,
+								 GsApp			*repository,
+								 GsPluginManageRepositoryFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*remove_repository_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+	void			(*enable_repository_async)	(GsPlugin		*plugin,
+								 GsApp			*repository,
+								 GsPluginManageRepositoryFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*enable_repository_finish)	(GsPlugin		*plugin,
+								 GAsyncResult		*result,
+								 GError			**error);
+	void			(*disable_repository_async)	(GsPlugin		*plugin,
+								 GsApp			*repository,
+								 GsPluginManageRepositoryFlags flags,
+								 GCancellable		*cancellable,
+								 GAsyncReadyCallback	 callback,
+								 gpointer		 user_data);
+	gboolean		(*disable_repository_finish)	(GsPlugin		*plugin,
 								 GAsyncResult		*result,
 								 GError			**error);
 
