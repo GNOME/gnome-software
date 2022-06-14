@@ -1037,26 +1037,19 @@ gs_plugin_rpm_ostree_refresh_metadata_async (GsPlugin                     *plugi
 				refresh_metadata_thread_cb, g_steal_pointer (&task));
 }
 
-static void
-refresh_metadata_thread_cb (GTask        *task,
-                            gpointer      source_object,
-                            gpointer      task_data,
-                            GCancellable *cancellable)
+static gboolean
+gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
+						 GsPluginRefreshMetadataData *data,
+						 GsRPMOSTreeOS *os_proxy,
+						 GsRPMOSTreeSysroot *sysroot_proxy,
+						 GCancellable *cancellable,
+						 GError **error)
 {
-	GsPlugin *plugin = GS_PLUGIN (source_object);
-	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	GsPluginRefreshMetadataData *data = task_data;
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	GsPlugin *plugin = GS_PLUGIN (self);
 	g_autoptr(GError) local_error = NULL;
 	gboolean done;
 
 	assert_in_worker (self);
-
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
-		g_task_return_error (task, g_steal_pointer (&local_error));
-		return;
-	}
 
 	{
 		g_autofree gchar *transaction_address = NULL;
@@ -1064,10 +1057,8 @@ refresh_metadata_thread_cb (GTask        *task,
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = NULL;
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
 
 		progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		tp = transaction_progress_new ();
@@ -1085,17 +1076,15 @@ refresh_metadata_thread_cb (GTask        *task,
 								   &local_error)) {
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
-					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						g_task_return_error (task, g_steal_pointer (&local_error));
-						return;
-					}
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+						return FALSE;
 					done = FALSE;
 					continue;
 				}
 
-				gs_rpmostree_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				gs_rpmostree_error_convert (error);
+				return FALSE;
 			}
 		}
 
@@ -1103,17 +1092,14 @@ refresh_metadata_thread_cb (GTask        *task,
 								 transaction_address,
 								 tp,
 								 cancellable,
-								 &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+								 error)) {
+			gs_rpmostree_error_convert (error);
+			return FALSE;
 		}
 	}
 
-	if (data->cache_age_secs == G_MAXUINT64) {
-		g_task_return_boolean (task, TRUE);
-		return;
-	}
+	if (data->cache_age_secs == G_MAXUINT64)
+		return TRUE;
 
 	{
 		g_autofree gchar *transaction_address = NULL;
@@ -1121,10 +1107,8 @@ refresh_metadata_thread_cb (GTask        *task,
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1149,16 +1133,14 @@ refresh_metadata_thread_cb (GTask        *task,
 								&local_error)) {
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
-					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						g_task_return_error (task, g_steal_pointer (&local_error));
-						return;
-					}
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+						return FALSE;
 					done = FALSE;
 					continue;
 				}
-				gs_rpmostree_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				gs_rpmostree_error_convert (error);
+				return FALSE;
 			}
 		}
 
@@ -1166,10 +1148,9 @@ refresh_metadata_thread_cb (GTask        *task,
 		                                                 transaction_address,
 		                                                 tp,
 		                                                 cancellable,
-		                                                 &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+		                                                 error)) {
+			gs_rpmostree_error_convert (error);
+			return FALSE;
 		}
 	}
 
@@ -1180,10 +1161,8 @@ refresh_metadata_thread_cb (GTask        *task,
 		GVariantDict dict;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
-		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+			return FALSE;
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1203,16 +1182,14 @@ refresh_metadata_thread_cb (GTask        *task,
 										 &local_error)) {
 				if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
 					g_clear_error (&local_error);
-					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
-						g_task_return_error (task, g_steal_pointer (&local_error));
-						return;
-					}
+					if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
+						return FALSE;
 					done = FALSE;
 					continue;
 				}
-				gs_rpmostree_error_convert (&local_error);
-				g_task_return_error (task, g_steal_pointer (&local_error));
-				return;
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				gs_rpmostree_error_convert (error);
+				return FALSE;
 			}
 		}
 
@@ -1220,17 +1197,42 @@ refresh_metadata_thread_cb (GTask        *task,
 		                                                 transaction_address,
 		                                                 tp,
 		                                                 cancellable,
-		                                                 &local_error)) {
-			gs_rpmostree_error_convert (&local_error);
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
+		                                                 error)) {
+			gs_rpmostree_error_convert (error);
+			return FALSE;
 		}
 	}
 
 	/* update UI */
 	gs_plugin_updates_changed (plugin);
 
-	g_task_return_boolean (task, TRUE);
+	return TRUE;
+}
+
+static void
+refresh_metadata_thread_cb (GTask        *task,
+                            gpointer      source_object,
+                            gpointer      task_data,
+                            GCancellable *cancellable)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	GsPluginRefreshMetadataData *data = task_data;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (gs_plugin_rpm_ostree_refresh_metadata_in_worker (self, data, os_proxy, sysroot_proxy, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
 }
 
 static gboolean
