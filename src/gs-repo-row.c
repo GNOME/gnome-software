@@ -207,10 +207,16 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 	                         self, 0);
 
 	plugin = gs_app_dup_management_plugin (repo);
-	priv->supports_remove = plugin != NULL && gs_plugin_get_action_supported (plugin, GS_PLUGIN_ACTION_REMOVE_REPO);
-	priv->supports_enable_disable = plugin != NULL &&
-		gs_plugin_get_action_supported (plugin, GS_PLUGIN_ACTION_ENABLE_REPO) &&
-		gs_plugin_get_action_supported (plugin, GS_PLUGIN_ACTION_DISABLE_REPO);
+	if (plugin) {
+		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
+		priv->supports_remove = plugin_class != NULL && plugin_class->remove_repository_async != NULL;
+		priv->supports_enable_disable = plugin_class != NULL &&
+			plugin_class->enable_repository_async != NULL &&
+			plugin_class->disable_repository_async != NULL;
+	} else {
+		priv->supports_remove = FALSE;
+		priv->supports_enable_disable = FALSE;
+	}
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label), gs_app_get_name (repo));
 
