@@ -2680,27 +2680,70 @@ gs_plugin_rpm_ostree_enable_repository_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_disable_repo (GsPlugin *plugin,
-			GsApp *repo,
-			GCancellable *cancellable,
-			GError **error)
+static void disable_repository_thread_cb (GTask        *task,
+					  gpointer      source_object,
+					  gpointer      task_data,
+					  GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_disable_repository_async (GsPlugin                     *plugin,
+					       GsApp			    *repository,
+                                               GsPluginManageRepositoryFlags flags,
+                                               GCancellable	 	    *cancellable,
+                                               GAsyncReadyCallback	     callback,
+                                               gpointer			     user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_disable_repository_async);
 
 	/* only process this app if it was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	/* disable repo */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				disable_repository_thread_cb, g_steal_pointer (&task));
+}
 
-	return gs_rpmostree_repo_enable (plugin, repo, FALSE, os_proxy, sysroot_proxy, cancellable, error);
+/* Run in @worker. */
+static void
+disable_repository_thread_cb (GTask        *task,
+			      gpointer      source_object,
+			      gpointer      task_data,
+			      GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	GsPluginManageRepositoryData *data = task_data;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, FALSE, os_proxy, sysroot_proxy, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static gboolean
+gs_plugin_rpm_ostree_disable_repository_finish (GsPlugin      *plugin,
+					        GAsyncResult  *result,
+					        GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -2722,6 +2765,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_rpm_ostree_refresh_metadata_finish;
 	plugin_class->enable_repository_async = gs_plugin_rpm_ostree_enable_repository_async;
 	plugin_class->enable_repository_finish = gs_plugin_rpm_ostree_enable_repository_finish;
+	plugin_class->disable_repository_async = gs_plugin_rpm_ostree_disable_repository_async;
+	plugin_class->disable_repository_finish = gs_plugin_rpm_ostree_disable_repository_finish;
 }
 
 GType
