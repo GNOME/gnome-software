@@ -945,7 +945,7 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 
 			/* caption is required */
 			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
-			as_screenshot_set_caption (ss, NULL, fwupd_device_get_update_message (dev));
+			as_screenshot_set_caption (ss, fwupd_device_get_update_message (dev), NULL);
 			gs_app_set_action_screenshot (app, ss);
 
 			/* require the dialog */
