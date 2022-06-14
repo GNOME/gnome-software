@@ -448,10 +448,17 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 		return;
 
 	g_debug ("uninstall %s", gs_app_get_id (helper->app));
-	plugin_job = gs_plugin_job_newv (helper->action,
-					 "interactive", TRUE,
-					 "app", helper->app,
-					 NULL);
+	if (gs_app_get_kind (helper->app) == AS_COMPONENT_KIND_REPOSITORY) {
+		helper->action = GS_PLUGIN_ACTION_REMOVE_REPO;
+		plugin_job = gs_plugin_job_manage_repository_new (helper->app,
+								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE |
+								  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+	} else {
+		plugin_job = gs_plugin_job_newv (helper->action,
+						 "interactive", TRUE,
+						 "app", helper->app,
+						 NULL);
+	}
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
 					    gs_page_app_removed_cb,
@@ -476,10 +483,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	/* pending install */
 	helper = g_slice_new0 (GsPageHelper);
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY)
-		helper->action = GS_PLUGIN_ACTION_REMOVE_REPO;
-	else
-		helper->action = GS_PLUGIN_ACTION_REMOVE;
+	helper->action = GS_PLUGIN_ACTION_REMOVE;
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = cancellable != NULL ? g_object_ref (cancellable) : NULL;
