@@ -236,7 +236,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
-	case GS_PLUGIN_ACTION_REMOVE_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
@@ -633,7 +632,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
-	case GS_PLUGIN_ACTION_REMOVE_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
@@ -3491,7 +3489,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_UPDATE:
-	case GS_PLUGIN_ACTION_REMOVE_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		if (!helper->anything_ran) {
@@ -3542,7 +3539,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_REMOVE_REPO:
 		gs_plugin_job_add_refine_flags (helper->plugin_job,
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
 		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
