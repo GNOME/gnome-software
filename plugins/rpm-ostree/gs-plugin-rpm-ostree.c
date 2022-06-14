@@ -2601,69 +2601,83 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void enable_repository_thread_cb (GTask        *task,
+					 gpointer      source_object,
+					 gpointer      task_data,
+					 GCancellable *cancellable);
+
 static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
-{
-	GAsyncResult **result_out = user_data;
-
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
-
-	g_main_context_wakeup (g_main_context_get_thread_default ());
-}
-
-gboolean
-gs_plugin_enable_repo (GsPlugin *plugin,
-		       GsApp *repo,
-		       GCancellable *cancellable,
-		       GError **error)
+gs_plugin_rpm_ostree_enable_repository_async (GsPlugin                     *plugin,
+					      GsApp			   *repository,
+                                              GsPluginManageRepositoryFlags flags,
+                                              GCancellable	 	   *cancellable,
+                                              GAsyncReadyCallback	    callback,
+                                              gpointer			    user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	g_autoptr(GMainContext) context = NULL;
-	g_autoptr(GAsyncResult) result = NULL;
-	GsPluginRefreshMetadataFlags flags = GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_enable_repository_async);
 
 	/* only process this app if it was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	/* enable repo */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				enable_repository_thread_cb, g_steal_pointer (&task));
+}
 
-	if (!gs_rpmostree_repo_enable (plugin, repo, TRUE, os_proxy, sysroot_proxy, cancellable, error))
-		return FALSE;
+/* Run in @worker. */
+static void
+enable_repository_thread_cb (GTask        *task,
+			     gpointer      source_object,
+			     gpointer      task_data,
+			     GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	GsPluginManageRepositoryData *data = task_data;
+	GsPluginRefreshMetadataData refresh_data = { 0 };
+	gboolean interactive = (data->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GError) local_error = NULL;
 
-	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
-		flags |= GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE;
+	assert_in_worker (self);
+
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (!gs_rpmostree_repo_enable (GS_PLUGIN (self), data->repository, TRUE, os_proxy, sysroot_proxy, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	refresh_data.flags = interactive ? GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE : GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
+	refresh_data.cache_age_secs = 1;
+
+	if (!gs_plugin_rpm_ostree_refresh_metadata_in_worker (self, &refresh_data, os_proxy, sysroot_proxy, cancellable, &local_error))
+		g_debug ("Failed to refresh after repository enable: %s", local_error->message);
 
 	/* This can fail silently, it's only to update necessary caches, to provide
 	 * up-to-date information after the successful repository enable/install.
-	 *
-	 * FIXME: This has to run synchronously until gs_plugin_enable_repo() is
-	 * ported to be asynchronous. */
-	context = g_main_context_new ();
-	g_main_context_push_thread_default (context);
-	gs_plugin_rpm_ostree_refresh_metadata_async (plugin,
-						     1,  /* cache age */
-						     flags,
-						     cancellable,
-						     async_result_cb,
-						     &result);
+	 */
+	g_task_return_boolean (task, TRUE);
+}
 
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
-
-	g_main_context_pop_thread_default (context);
-	/* ignore the @result */
-
-	return TRUE;
+static gboolean
+gs_plugin_rpm_ostree_enable_repository_finish (GsPlugin      *plugin,
+					       GAsyncResult  *result,
+					       GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2706,6 +2720,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->refine_finish = gs_plugin_rpm_ostree_refine_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_rpm_ostree_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_rpm_ostree_refresh_metadata_finish;
+	plugin_class->enable_repository_async = gs_plugin_rpm_ostree_enable_repository_async;
+	plugin_class->enable_repository_finish = gs_plugin_rpm_ostree_enable_repository_finish;
 }
 
 GType
