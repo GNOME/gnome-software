@@ -2174,24 +2174,72 @@ gs_plugin_flatpak_enable_repository_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_disable_repo (GsPlugin *plugin,
-			GsApp *repo,
-			GCancellable *cancellable,
-			GError **error)
+static void disable_repository_thread_cb (GTask        *task,
+					  gpointer      source_object,
+					  gpointer      task_data,
+					  GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_disable_repository_async (GsPlugin                     *plugin,
+					    GsApp			 *repository,
+                                            GsPluginManageRepositoryFlags flags,
+                                            GCancellable	 	 *cancellable,
+                                            GAsyncReadyCallback		  callback,
+                                            gpointer			  user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	GsFlatpak *flatpak;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	flatpak = gs_plugin_flatpak_get_handler (self, repo);
-	if (flatpak == NULL)
-		return TRUE;
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_disable_repository_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* is a source */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	return gs_flatpak_app_remove_source (flatpak, repo, FALSE, interactive, cancellable, error);
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				disable_repository_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+disable_repository_thread_cb (GTask        *task,
+			      gpointer      source_object,
+			      gpointer      task_data,
+			      GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsFlatpak *flatpak;
+	GsPluginManageRepositoryData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	flatpak = gs_plugin_flatpak_get_handler (self, data->repository);
+	if (flatpak == NULL) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	if (gs_flatpak_app_remove_source (flatpak, data->repository, FALSE, interactive, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static gboolean
+gs_plugin_flatpak_disable_repository_finish (GsPlugin      *plugin,
+					     GAsyncResult  *result,
+					     GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -2218,6 +2266,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->remove_repository_finish = gs_plugin_flatpak_remove_repository_finish;
 	plugin_class->enable_repository_async = gs_plugin_flatpak_enable_repository_async;
 	plugin_class->enable_repository_finish = gs_plugin_flatpak_enable_repository_finish;
+	plugin_class->disable_repository_async = gs_plugin_flatpak_disable_repository_async;
+	plugin_class->disable_repository_finish = gs_plugin_flatpak_disable_repository_finish;
 }
 
 GType
