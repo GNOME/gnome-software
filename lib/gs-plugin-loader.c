@@ -3217,12 +3217,18 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 	}
 	for (guint i = 0; i < gs_app_list_length (queue); i++) {
 		GsApp *app = gs_app_list_index (queue, i);
-		GsPluginAction action = gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY ? GS_PLUGIN_ACTION_INSTALL_REPO : GS_PLUGIN_ACTION_INSTALL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (action,
-						 "app", app,
-						 "interactive", TRUE, /* needed for credentials prompt, otherwise it just fails */
-						 NULL);
+		/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+			plugin_job = gs_plugin_job_manage_repository_new (app,
+									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE |
+									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
+		} else {
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+							 "app", app,
+							 "interactive", TRUE,
+							 NULL);
+		}
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 						    NULL,
 						    gs_plugin_loader_app_installed_cb,
@@ -3888,6 +3894,11 @@ run_job_cb (GObject      *source_object,
 		 * they don’t use its contents. It’s just used to distinguish
 		 * against returning an error. This will go away when
 		 * job_process_async() does. */
+		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
+		return;
+	} else if (GS_IS_PLUGIN_JOB_MANAGE_REPOSITORY (plugin_job)) {
+		/* FIXME: The gs_plugin_loader_job_action_finish() expects a #GsAppList
+		 * pointer on success, thus return it. */
 		g_task_return_pointer (task, gs_app_list_new (), g_object_unref);
 		return;
 	}
