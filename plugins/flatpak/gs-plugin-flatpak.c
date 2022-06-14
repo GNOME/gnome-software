@@ -1960,33 +1960,82 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_install_repo (GsPlugin *plugin,
-			GsApp *repo,
-			GCancellable *cancellable,
-			GError **error)
+static void install_repository_thread_cb (GTask        *task,
+					  gpointer      source_object,
+					  gpointer      task_data,
+					  GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_install_repository_async (GsPlugin                     *plugin,
+					    GsApp			 *repository,
+                                            GsPluginManageRepositoryFlags flags,
+                                            GCancellable		 *cancellable,
+                                            GAsyncReadyCallback		  callback,
+                                            gpointer			  user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	GsFlatpak *flatpak;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 
-	/* queue for install if installation needs the network */
-	if (!app_has_local_source (repo) &&
-	    !gs_plugin_get_network_available (plugin)) {
-		gs_app_set_state (repo, GS_APP_STATE_QUEUED_FOR_INSTALL);
-		return TRUE;
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_install_repository_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
 
-	gs_plugin_flatpak_ensure_scope (plugin, repo);
-
-	flatpak = gs_plugin_flatpak_get_handler (self, repo);
-	if (flatpak == NULL)
-		return TRUE;
-
 	/* is a source */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	return gs_flatpak_app_install_source (flatpak, repo, TRUE, interactive, cancellable, error);
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				install_repository_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+install_repository_thread_cb (GTask        *task,
+			      gpointer      source_object,
+			      gpointer      task_data,
+			      GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsFlatpak *flatpak;
+	GsPluginManageRepositoryData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	/* queue for install if installation needs the network */
+	if (!app_has_local_source (data->repository) &&
+	    !gs_plugin_get_network_available (GS_PLUGIN (self))) {
+		gs_app_set_state (data->repository, GS_APP_STATE_QUEUED_FOR_INSTALL);
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	gs_plugin_flatpak_ensure_scope (GS_PLUGIN (self), data->repository);
+
+	flatpak = gs_plugin_flatpak_get_handler (self, data->repository);
+	if (flatpak == NULL) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	if (gs_flatpak_app_install_source (flatpak, data->repository, TRUE, interactive, cancellable, &local_error))
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
+}
+
+static gboolean
+gs_plugin_flatpak_install_repository_finish (GsPlugin      *plugin,
+					     GAsyncResult  *result,
+					     GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -2067,6 +2116,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->list_apps_finish = gs_plugin_flatpak_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_flatpak_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_flatpak_refresh_metadata_finish;
+	plugin_class->install_repository_async = gs_plugin_flatpak_install_repository_async;
+	plugin_class->install_repository_finish = gs_plugin_flatpak_install_repository_finish;
 }
 
 GType
