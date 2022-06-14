@@ -283,7 +283,7 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
 		as_screenshot_add_image (ss, im);
 		if (fwupd_release_get_detach_caption (rel) != NULL)
-			as_screenshot_set_caption (ss, NULL, fwupd_release_get_detach_caption (rel));
+			as_screenshot_set_caption (ss, fwupd_release_get_detach_caption (rel), NULL);
 		gs_app_set_action_screenshot (app, ss);
 	}
 }
