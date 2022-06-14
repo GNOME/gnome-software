@@ -507,39 +507,6 @@ gboolean	 gs_plugin_add_langpacks		(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_install_repo:
- * @plugin: a #GsPlugin
- * @repo: a #GsApp representing a repository
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Install the repository. This is a voluntary function, the plugin implements
- * it only if it supports it. If implemented, its pair function gs_plugin_remove_repo()
- * should be implemented as well.
- *
- * Plugins are expected to send progress notifications to the UI using
- * gs_app_set_progress() using the passed in @repo.
- *
- * All functions can block, but should sent progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * On failure the error message returned will usually only be shown on the
- * console, but they can also be retrieved using gs_plugin_loader_get_events().
- *
- * NOTE: Once the action is complete, the plugin must set the new state of @repo
- * to either %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE.
- *
- * Returns: %TRUE for success or if not relevant
- *
- * Since: 41
- **/
-gboolean	 gs_plugin_install_repo			(GsPlugin	*plugin,
-							 GsApp		*repo,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_remove_repo:
  * @plugin: a #GsPlugin
  * @repo: a #GsApp representing a repository
