@@ -1471,8 +1471,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
-	if (action == GS_PLUGIN_ACTION_ENABLE_REPO)
-		return "gs_plugin_enable_repo";
 	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
 		return "gs_plugin_disable_repo";
 	return NULL;

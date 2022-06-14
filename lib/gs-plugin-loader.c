@@ -236,7 +236,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
-	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
 			GsApp *app;
@@ -632,7 +631,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
-	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		{
 			GsPluginActionFunc plugin_func = func;
@@ -3489,7 +3487,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_UPDATE:
-	case GS_PLUGIN_ACTION_ENABLE_REPO:
 	case GS_PLUGIN_ACTION_DISABLE_REPO:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
