@@ -56,6 +56,7 @@ struct _GsPluginLoader
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
 
 	GThreadPool		*queued_ops_pool;
+	gint			 active_jobs;
 
 	GSettings		*settings;
 
@@ -3911,6 +3912,19 @@ cancellable_data_free (CancellableData *data)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (CancellableData, cancellable_data_free)
 
+static void
+plugin_loader_task_freed_cb (gpointer user_data,
+			     GObject *freed_object)
+{
+	g_autoptr(GsPluginLoader) plugin_loader = user_data;
+	if (g_atomic_int_dec_and_test (&plugin_loader->active_jobs)) {
+		/* if the plugin used updates-changed during its job, actually schedule
+		 * the signal emission now */
+		if (plugin_loader->updates_changed_cnt > 0)
+			gs_plugin_loader_updates_changed (plugin_loader);
+	}
+}
+
 static gboolean job_process_setup_complete_cb (GCancellable *cancellable,
                                                gpointer      user_data);
 static void job_process_cb (GTask *task);
@@ -3976,6 +3990,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
 	g_task_set_task_data (task, g_object_ref (plugin_job), (GDestroyNotify) g_object_unref);
+
+	g_atomic_int_inc (&plugin_loader->active_jobs);
+	g_object_weak_ref (G_OBJECT (task),
+		plugin_loader_task_freed_cb, g_object_ref (plugin_loader));
 
 	/* Wait until the plugin has finished setting up.
 	 *
