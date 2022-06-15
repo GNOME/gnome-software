@@ -6656,3 +6656,35 @@ gs_app_set_has_translations (GsApp    *app,
 	priv->has_translations = has_translations;
 	gs_app_queue_notify (app, obj_props[PROP_HAS_TRANSLATIONS]);
 }
+
+/**
+ * gs_app_is_downloaded:
+ * @app: a #GsApp
+ *
+ * Returns whether the @app is downloaded for updates or not,
+ * considering also its dependencies.
+ *
+ * Returns: %TRUE, when the @app is downloaded, %FALSE otherwise
+ *
+ * Since: 43
+ **/
+gboolean
+gs_app_is_downloaded (GsApp *app)
+{
+	GsSizeType size_type;
+	guint64 size_bytes = 0;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY)) {
+		size_type = gs_app_get_size_download (app, &size_bytes);
+		if (size_type != GS_SIZE_TYPE_VALID || size_bytes != 0)
+			return FALSE;
+	}
+
+	size_type = gs_app_get_size_download_dependencies (app, &size_bytes);
+	if (size_type != GS_SIZE_TYPE_VALID || size_bytes != 0)
+		return FALSE;
+
+	return TRUE;
+}

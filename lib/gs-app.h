@@ -516,5 +516,6 @@ void		 gs_app_set_relations		(GsApp		*app,
 gboolean	 gs_app_get_has_translations	(GsApp		*app);
 void		 gs_app_set_has_translations	(GsApp		*app,
 						 gboolean	 has_translations);
+gboolean	 gs_app_is_downloaded		(GsApp		*app);
 
 G_END_DECLS
