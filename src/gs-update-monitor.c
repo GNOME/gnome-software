@@ -109,17 +109,15 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(WithAppData, with_app_data_free);
 static void
 check_updates_kind (GsAppList *apps,
 		    gboolean *out_has_important,
-		    gboolean *out_any_important_downloaded,
 		    gboolean *out_all_downloaded,
 		    gboolean *out_any_downloaded)
 {
-	gboolean has_important, any_important_downloaded, all_downloaded, any_downloaded;
+	gboolean has_important, all_downloaded, any_downloaded;
 	guint ii, len;
 	GsApp *app;
 
 	len = gs_app_list_length (apps);
 	has_important = FALSE;
-	any_important_downloaded = FALSE;
 	all_downloaded = len > 0;
 	any_downloaded = FALSE;
 
@@ -131,17 +129,13 @@ check_updates_kind (GsAppList *apps,
 		is_important = gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
 		has_important = has_important || is_important;
 
-		if (gs_app_is_downloaded (app)) {
+		if (gs_app_is_downloaded (app))
 			any_downloaded = TRUE;
-			if (is_important)
-				any_important_downloaded = TRUE;
-		} else {
+		else
 			all_downloaded = FALSE;
-		}
 	}
 
 	*out_has_important = has_important;
-	*out_any_important_downloaded = any_important_downloaded;
 	*out_all_downloaded = all_downloaded;
 	*out_any_downloaded = any_downloaded;
 }
@@ -193,14 +187,15 @@ should_download_updates (GsUpdateMonitor *monitor)
 #endif
 }
 
-/* The days below are discussed at https://gitlab.gnome.org/GNOME/gnome-software/-/issues/947 */
+/* The days below are discussed at https://gitlab.gnome.org/GNOME/gnome-software/-/issues/947
+   and https://wiki.gnome.org/Design/Apps/Software/Updates#Tentative_Design */
 static gboolean
 should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				     GsAppList *apps,
 				     const gchar **out_title,
 				     const gchar **out_body)
 {
-	gboolean has_important = FALSE, any_important_downloaded = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
+	gboolean has_important = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
 	gboolean should_download, res = FALSE;
 	gint64 timestamp_days;
 
@@ -210,7 +205,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 	}
 
 	should_download = should_download_updates (monitor);
-	check_updates_kind (apps, &has_important, &any_important_downloaded, &all_downloaded, &any_downloaded);
+	check_updates_kind (apps, &has_important, &all_downloaded, &any_downloaded);
 
 	if (!gs_app_list_length (apps)) {
 		/* Notify only when the download is disabled and it's the 4th day or it's more than 7 days */
@@ -221,7 +216,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 		}
 	} else if (has_important) {
 		if (timestamp_days >= 1) {
-			if (any_important_downloaded) {
+			if (all_downloaded) {
 				*out_title = _("Critical Software Update Ready to Install");
 				*out_body = _("An important software update is ready to be installed.");
 				res = TRUE;
@@ -231,24 +226,23 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				res = TRUE;
 			}
 		}
-		/* When automatic updates are on and there are things ready to be installed, then rather claim
-		 * about things to be installed, than things to be downloaded. */
-	} else if (all_downloaded || (any_downloaded && should_download)) {
+	} else if (all_downloaded) {
 		if (timestamp_days >= 3) {
 			*out_title = _("Software Updates Ready to Install");
 			*out_body = _("Software updates are waiting and ready to be installed.");
 			res = TRUE;
 		}
-	/* To not hide downloaded updates for 14 days when new updates were discovered meanwhile */
-	} else if (timestamp_days >= (any_downloaded ? 3 : 14)) {
+	/* To not hide downloaded updates for 14 days when new updates were discovered meanwhile.
+	   Never show "Available to Download" when it's supposed to download the updates. */
+	} else if (!should_download && timestamp_days >= 14) {
 		*out_title = _("Software Updates Available to Download");
 		*out_body = _("Please download waiting software updates.");
 		res = TRUE;
 	}
 
-	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d has_important:%d any_important_downloaded:%d "
+	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d has_important:%d "
 		"all_downloaded:%d any_downloaded:%d res:%d%s%s%s%s", G_STRFUNC,
-		timestamp_days, gs_app_list_length (apps), should_download, has_important, any_important_downloaded,
+		timestamp_days, gs_app_list_length (apps), should_download, has_important,
 		all_downloaded, any_downloaded, res,
 		res ? " reason:" : "",
 		res ? *out_title : "",
