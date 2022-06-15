@@ -4462,3 +4462,26 @@ gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader)
 
 	return plugin_loader->category_manager;
 }
+
+/**
+ * gs_plugin_loader_emit_updates_changed:
+ * @self: a #GsPluginLoader
+ *
+ * Emits the #GsPluginLoader:updates-changed signal in the nearest
+ * idle in the main thread.
+ *
+ * Since: 43
+ **/
+void
+gs_plugin_loader_emit_updates_changed (GsPluginLoader *self)
+{
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (self));
+
+	if (self->updates_changed_id != 0)
+		g_source_remove (self->updates_changed_id);
+
+	self->updates_changed_id =
+		g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+				 gs_plugin_loader_job_updates_changed_delay_cb,
+				 g_object_ref (self), g_object_unref);
+}
