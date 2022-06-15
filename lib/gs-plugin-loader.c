@@ -1775,12 +1775,6 @@ gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 }
 
 static void
-gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin, GsPluginLoader *plugin_loader)
-{
-	plugin_loader->updates_changed_cnt++;
-}
-
-static void
 gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 {
 	if (plugin_loader->updates_changed_id != 0)
@@ -1789,6 +1783,20 @@ gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
 				       gs_plugin_loader_job_actions_changed_delay_cb,
 				       g_object_ref (plugin_loader));
+}
+
+static void
+gs_plugin_loader_job_updates_changed_cb (GsPlugin *plugin,
+					 GsPluginLoader *plugin_loader)
+{
+	plugin_loader->updates_changed_cnt++;
+
+	/* Schedule emit of updates changed when no job is active.
+	   This helps to avoid a race condition when a plugin calls
+	   updates-changed at the end of the job, but the job is
+	   finished before the callback gets called in the main thread. */
+	if (!g_atomic_int_get (&plugin_loader->active_jobs))
+		gs_plugin_loader_updates_changed (plugin_loader);
 }
 
 static gboolean
@@ -1849,7 +1857,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 		return;
 	}
 	g_signal_connect (plugin, "updates-changed",
-			  G_CALLBACK (gs_plugin_loader_job_actions_changed_cb),
+			  G_CALLBACK (gs_plugin_loader_job_updates_changed_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "reload",
 			  G_CALLBACK (gs_plugin_loader_reload_cb),
