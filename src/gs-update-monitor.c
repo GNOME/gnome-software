@@ -125,22 +125,18 @@ check_updates_kind (GsAppList *apps,
 
 	for (ii = 0; ii < len && (!has_important || all_downloaded || !any_downloaded); ii++) {
 		gboolean is_important;
-		guint64 size_download_bytes;
 
 		app = gs_app_list_index (apps, ii);
 
 		is_important = gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL;
 		has_important = has_important || is_important;
 
-		/* took from gs-updates-section.c: _all_offline_updates_downloaded();
-		   the app is considered downloaded, when its download size is 0 */
-		if (gs_app_get_size_download (app, &size_download_bytes) != GS_SIZE_TYPE_VALID ||
-		    size_download_bytes != 0) {
-			all_downloaded = FALSE;
-		} else {
+		if (gs_app_is_downloaded (app)) {
 			any_downloaded = TRUE;
 			if (is_important)
 				any_important_downloaded = TRUE;
+		} else {
+			all_downloaded = FALSE;
 		}
 	}
 
