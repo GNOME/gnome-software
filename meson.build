@@ -2,7 +2,7 @@ project('gnome-software', 'c',
   version : '43.alpha',
   license : 'GPL-2.0+',
   default_options : ['warning_level=1', 'c_std=c11'],
-  meson_version : '>=0.55.0'
+  meson_version : '>=0.58.0'
 )
 
 conf = configuration_data()
@@ -235,7 +235,7 @@ if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.9.1')
   ostree = dependency('ostree-1')
 
-  flatpak_soupapiversion = flatpak.get_pkgconfig_variable('soupapiversion')
+  flatpak_soupapiversion = flatpak.get_variable('soupapiversion')
   if flatpak_soupapiversion == ''
     flatpak_soupapiversion = '2.4' # Pre libsoup3 support
   endif
@@ -317,7 +317,7 @@ add_project_arguments('-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE',
 test_env = [
   'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
   'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
-  'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.build_root()),
+  'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.project_build_root()),
   'GSETTINGS_BACKEND=memory',
   'MALLOC_CHECK_=2',
 

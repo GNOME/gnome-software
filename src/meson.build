@@ -196,7 +196,7 @@ i18n.merge_file(
     ),
   output: application_id + '.desktop',
   type: 'desktop',
-  po_dir: join_paths(meson.source_root(), 'po'),
+  po_dir: join_paths(meson.project_source_root(), 'po'),
   install: true,
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
@@ -205,7 +205,7 @@ i18n.merge_file(
   input: 'gnome-software-local-file.desktop.in',
   output: 'gnome-software-local-file.desktop',
   type: 'desktop',
-  po_dir: join_paths(meson.source_root(), 'po'),
+  po_dir: join_paths(meson.project_source_root(), 'po'),
   install: true,
   install_dir: join_paths(get_option('datadir'), 'applications')
 )

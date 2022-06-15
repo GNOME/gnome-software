@@ -1,6 +1,6 @@
 gnome.gtkdoc(
   'gnome-software',
-  src_dir : join_paths(meson.source_root(), 'lib'),
+  src_dir : join_paths(meson.project_source_root(), 'lib'),
   main_xml : 'gnome-software-docs.xml',
   html_assets : [
     'gs-example-details.png',
