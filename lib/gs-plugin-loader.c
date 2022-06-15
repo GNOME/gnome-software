@@ -1760,7 +1760,7 @@ gs_plugin_loader_ask_untrusted_cb (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
+gs_plugin_loader_job_updates_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 
@@ -1770,7 +1770,6 @@ gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 	plugin_loader->updates_changed_id = 0;
 	plugin_loader->updates_changed_cnt = 0;
 
-	g_object_unref (plugin_loader);
 	return FALSE;
 }
 
@@ -1780,9 +1779,11 @@ gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 	if (plugin_loader->updates_changed_id != 0)
 		return;
 	plugin_loader->updates_changed_id =
-		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
-				       gs_plugin_loader_job_actions_changed_delay_cb,
-				       g_object_ref (plugin_loader));
+		g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
+					    GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
+					    gs_plugin_loader_job_updates_changed_delay_cb,
+					    g_object_ref (plugin_loader),
+					    g_object_unref);
 }
 
 static void
