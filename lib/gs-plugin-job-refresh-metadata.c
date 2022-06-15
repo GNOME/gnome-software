@@ -387,7 +387,6 @@ finish_op (GTask  *task,
            GError *error)
 {
 	GsPluginJobRefreshMetadata *self = g_task_get_source_object (task);
-	GsPluginLoader *plugin_loader = g_task_get_task_data (task);
 	g_autoptr(GError) error_owned = g_steal_pointer (&error);
 	g_autofree gchar *job_debug = NULL;
 
@@ -407,10 +406,6 @@ finish_op (GTask  *task,
 	g_assert (g_main_context_is_owner (g_task_get_context (task)));
 	progress_cb (self);
 	g_source_destroy (self->progress_source);
-
-	/* If any plugin emitted updates-changed, actually schedule it to be
-	 * emitted now (even if the overall operation failed). */
-	gs_plugin_loader_hint_job_finished (plugin_loader);
 
 	/* Get the results of the parallel ops. */
 	if (self->saved_error != NULL) {
