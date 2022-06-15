@@ -288,6 +288,10 @@ notify_about_pending_updates (GsUpdateMonitor *monitor,
 		return;
 	}
 
+	/* To force reload of the Updates page, thus it reflects what
+	   the update-monitor notifies about */
+	gs_plugin_loader_emit_updates_changed (monitor->plugin_loader);
+
 	monitor->last_notification_time_usec = g_get_real_time ();
 
 	g_debug ("Notify about update: '%s'", title);
