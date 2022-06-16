@@ -319,6 +319,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	g_debug ("update %s", gs_app_get_id (helper->app));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "interactive", TRUE,
+					 "propagate-error", helper->propagate_error,
 					 "app", helper->app,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
@@ -402,6 +403,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
+	helper->propagate_error = TRUE;
 
 	/* tell the user what they have to do */
 	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE &&
@@ -416,6 +418,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* generic fallback */
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "interactive", TRUE,
+					 "propagate-error", helper->propagate_error,
 					 "app", app,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
