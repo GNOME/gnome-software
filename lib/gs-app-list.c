@@ -424,20 +424,10 @@ typedef enum {
 static void
 gs_app_list_add_safe (GsAppList *list, GsApp *app, GsAppListAddFlag flag)
 {
-	const gchar *id;
-
 	/* check for duplicate */
 	if ((flag & GS_APP_LIST_ADD_FLAG_CHECK_FOR_DUPE) > 0 &&
 	    !gs_app_list_check_for_duplicate (list, app))
 		return;
-
-	/* if we're lazy-loading the ID then we can't use the ID hash */
-	id = gs_app_get_unique_id (app);
-	if (id == NULL) {
-		gs_app_list_maybe_watch_app (list, app);
-		g_ptr_array_add (list->array, g_object_ref (app));
-		return;
-	}
 
 	/* just use the ref */
 	gs_app_list_maybe_watch_app (list, app);
@@ -485,23 +475,29 @@ gs_app_list_add (GsAppList *list, GsApp *app)
  * Removes an application from the list. If the application does not exist the
  * request is ignored.
  *
- * Since: 3.22
+ * Returns: %TRUE if the app was removed, %FALSE if it did not exist in the @list
+ * Since: 43
  **/
-void
+gboolean
 gs_app_list_remove (GsAppList *list, GsApp *app)
 {
 	g_autoptr(GMutexLocker) locker = NULL;
+	gboolean removed;
 
-	g_return_if_fail (GS_IS_APP_LIST (list));
-	g_return_if_fail (GS_IS_APP (app));
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
 	locker = g_mutex_locker_new (&list->mutex);
-	g_ptr_array_remove (list->array, app);
-	gs_app_list_maybe_unwatch_app (list, app);
+	removed = g_ptr_array_remove (list->array, app);
+	if (removed) {
+		gs_app_list_maybe_unwatch_app (list, app);
 
-	/* recalculate global state */
-	gs_app_list_invalidate_state (list);
-	gs_app_list_invalidate_progress (list);
+		/* recalculate global state */
+		gs_app_list_invalidate_state (list);
+		gs_app_list_invalidate_progress (list);
+	}
+
+	return removed;
 }
 
 /**
