@@ -256,7 +256,7 @@ update_safety_tile (GsAppContextBar *self)
 	const gchar *icon_name, *title, *css_class;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autofree gchar *description = NULL;
-	GsAppPermissions permissions;
+	GsAppPermissionsFlags permissions;
 	GtkStyleContext *context;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
@@ -266,19 +266,19 @@ update_safety_tile (GsAppContextBar *self)
 	g_assert (self->app != NULL);
 
 	permissions = gs_app_get_permissions (self->app);
-	for (GsAppPermissions i = GS_APP_PERMISSIONS_NONE; i < GS_APP_PERMISSIONS_LAST; i <<= 1) {
+	for (GsAppPermissionsFlags i = GS_APP_PERMISSIONS_FLAGS_NONE; i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
 		if (!(permissions & i))
 			continue;
 
 		switch (i) {
-		case GS_APP_PERMISSIONS_NONE:
+		case GS_APP_PERMISSIONS_FLAGS_NONE:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_SAFE,
 					      /* Translators: This indicates an app requires no permissions to run.
 					       * It’s used in a context tile, so should be short. */
 					      _("No permissions"));
 			break;
-		case GS_APP_PERMISSIONS_NETWORK:
+		case GS_APP_PERMISSIONS_FLAGS_NETWORK:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      /* This isn’t actually safe (network access can expand a local
 					       * vulnerability into a remotely exploitable one), but it’s
@@ -289,31 +289,31 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Has network access"));
 			break;
-		case GS_APP_PERMISSIONS_SYSTEM_BUS:
+		case GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app uses D-Bus system services.
 					       * It’s used in a context tile, so should be short. */
 					      _("Uses system services"));
 			break;
-		case GS_APP_PERMISSIONS_SESSION_BUS:
+		case GS_APP_PERMISSIONS_FLAGS_SESSION_BUS:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_UNSAFE,
 					      /* Translators: This indicates an app uses D-Bus session services.
 					       * It’s used in a context tile, so should be short. */
 					      _("Uses session services"));
 			break;
-		case GS_APP_PERMISSIONS_DEVICES:
+		case GS_APP_PERMISSIONS_FLAGS_DEVICES:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can access arbitrary hardware devices.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access hardware devices"));
 			break;
-		case GS_APP_PERMISSIONS_HOME_FULL:
-		case GS_APP_PERMISSIONS_FILESYSTEM_FULL:
+		case GS_APP_PERMISSIONS_FLAGS_HOME_FULL:
+		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL:
 			/* Don’t add twice. */
-			if (i == GS_APP_PERMISSIONS_HOME_FULL && (permissions & GS_APP_PERMISSIONS_FILESYSTEM_FULL))
+			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_FULL && (permissions & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL))
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
@@ -322,10 +322,10 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read/write all your data"));
 			break;
-		case GS_APP_PERMISSIONS_HOME_READ:
-		case GS_APP_PERMISSIONS_FILESYSTEM_READ:
+		case GS_APP_PERMISSIONS_FLAGS_HOME_READ:
+		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ:
 			/* Don’t add twice. */
-			if (i == GS_APP_PERMISSIONS_HOME_READ && (permissions & GS_APP_PERMISSIONS_FILESYSTEM_READ))
+			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_READ && (permissions & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
@@ -334,42 +334,42 @@ update_safety_tile (GsAppContextBar *self)
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read all your data"));
 			break;
-		case GS_APP_PERMISSIONS_DOWNLOADS_FULL:
+		case GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can read/write to the user’s Downloads directory.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read/write your downloads"));
 			break;
-		case GS_APP_PERMISSIONS_DOWNLOADS_READ:
+		case GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can read your downloads"));
 			break;
-		case GS_APP_PERMISSIONS_FILESYSTEM_OTHER:
+		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can access data in the system unknown to the Software.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access arbitrary files"));
 			break;
-		case GS_APP_PERMISSIONS_SETTINGS:
+		case GS_APP_PERMISSIONS_FLAGS_SETTINGS:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_POTENTIALLY_UNSAFE,
 					      /* Translators: This indicates an app can access or change user settings.
 					       * It’s used in a context tile, so should be short. */
 					      _("Can access and change user settings"));
 			break;
-		case GS_APP_PERMISSIONS_X11:
+		case GS_APP_PERMISSIONS_FLAGS_X11:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_UNSAFE,
 					      /* Translators: This indicates an app uses the X11 windowing system.
 					       * It’s used in a context tile, so should be short. */
 					      _("Uses a legacy windowing system"));
 			break;
-		case GS_APP_PERMISSIONS_ESCAPE_SANDBOX:
+		case GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      SAFETY_UNSAFE,
 					      /* Translators: This indicates an app can escape its sandbox.
@@ -393,7 +393,7 @@ update_safety_tile (GsAppContextBar *self)
 	 * FIXME: We could do better by potentially adding a ‘trusted’ state
 	 * to indicate that something is probably safe, but isn’t sandboxed.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
-	if (permissions == GS_APP_PERMISSIONS_UNKNOWN &&
+	if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN &&
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
@@ -401,7 +401,7 @@ update_safety_tile (GsAppContextBar *self)
 				       * by the user’s distribution and is safe.
 				       * It’s used in a context tile, so should be short. */
 				      _("Reviewed by your distribution"));
-	else if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
+	else if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,
 				      /* Translators: This indicates that an application has been packaged

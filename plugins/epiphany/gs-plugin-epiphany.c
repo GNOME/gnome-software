@@ -487,7 +487,7 @@ refine_app (GsPluginEpiphany    *self,
 
 	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
-	gs_app_set_permissions (app, GS_APP_PERMISSIONS_NETWORK);
+	gs_app_set_permissions (app, GS_APP_PERMISSIONS_FLAGS_NETWORK);
 
 	if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);

@@ -61,28 +61,28 @@ struct _GsAppDetailsPage
 G_DEFINE_TYPE (GsAppDetailsPage, gs_app_details_page, GTK_TYPE_BOX)
 
 static const struct {
-        GsAppPermissions permission;
+        GsAppPermissionsFlags permission;
         const char *title;
         const char *subtitle;
 } permission_display_data[] = {
-  { GS_APP_PERMISSIONS_NETWORK, N_("Network"), N_("Can communicate over the network") },
-  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
-  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
-  { GS_APP_PERMISSIONS_DEVICES, N_("Devices"), N_("Can access system device files") },
-  { GS_APP_PERMISSIONS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_OTHER, N_("File system"), N_("Can access arbitrary files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
-  { GS_APP_PERMISSIONS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
-  { GS_APP_PERMISSIONS_ESCAPE_SANDBOX, N_("Sandbox escape"), N_("Can escape the sandbox and circumvent any other restrictions") },
+  { GS_APP_PERMISSIONS_FLAGS_NETWORK, N_("Network"), N_("Can communicate over the network") },
+  { GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
+  { GS_APP_PERMISSIONS_FLAGS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
+  { GS_APP_PERMISSIONS_FLAGS_DEVICES, N_("Devices"), N_("Can access system device files") },
+  { GS_APP_PERMISSIONS_FLAGS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_HOME_READ, N_("Home folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER, N_("File system"), N_("Can access arbitrary files") },
+  { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FLAGS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
+  { GS_APP_PERMISSIONS_FLAGS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
+  { GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX, N_("Sandbox escape"), N_("Can escape the sandbox and circumvent any other restrictions") },
 };
 
 static void
-populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissions)
+populate_permissions_section (GsAppDetailsPage *page, GsAppPermissionsFlags permissions)
 {
 	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 

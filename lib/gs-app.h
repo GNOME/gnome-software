@@ -209,31 +209,31 @@ typedef enum {
 } GsAppQuality;
 
 typedef enum {
-	GS_APP_PERMISSIONS_UNKNOWN 		= 0,
-	GS_APP_PERMISSIONS_NONE			= 1 << 0,
-	GS_APP_PERMISSIONS_NETWORK 		= 1 << 1,
-	GS_APP_PERMISSIONS_SYSTEM_BUS   	= 1 << 2,
-	GS_APP_PERMISSIONS_SESSION_BUS		= 1 << 3,
-	GS_APP_PERMISSIONS_DEVICES 		= 1 << 4,
-	GS_APP_PERMISSIONS_HOME_FULL 		= 1 << 5,
-	GS_APP_PERMISSIONS_HOME_READ		= 1 << 6,
-	GS_APP_PERMISSIONS_FILESYSTEM_FULL	= 1 << 7,
-	GS_APP_PERMISSIONS_FILESYSTEM_READ	= 1 << 8,
-	GS_APP_PERMISSIONS_DOWNLOADS_FULL 	= 1 << 9,
-	GS_APP_PERMISSIONS_DOWNLOADS_READ	= 1 << 10,
-	GS_APP_PERMISSIONS_SETTINGS		= 1 << 11,
-	GS_APP_PERMISSIONS_X11			= 1 << 12,
-	GS_APP_PERMISSIONS_ESCAPE_SANDBOX	= 1 << 13,
-	GS_APP_PERMISSIONS_FILESYSTEM_OTHER	= 1 << 14,
-	GS_APP_PERMISSIONS_LAST  /*< skip >*/
-} GsAppPermissions;
+	GS_APP_PERMISSIONS_FLAGS_UNKNOWN 		= 0,
+	GS_APP_PERMISSIONS_FLAGS_NONE			= 1 << 0,
+	GS_APP_PERMISSIONS_FLAGS_NETWORK 		= 1 << 1,
+	GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS   		= 1 << 2,
+	GS_APP_PERMISSIONS_FLAGS_SESSION_BUS		= 1 << 3,
+	GS_APP_PERMISSIONS_FLAGS_DEVICES 		= 1 << 4,
+	GS_APP_PERMISSIONS_FLAGS_HOME_FULL 		= 1 << 5,
+	GS_APP_PERMISSIONS_FLAGS_HOME_READ		= 1 << 6,
+	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL	= 1 << 7,
+	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ	= 1 << 8,
+	GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL 	= 1 << 9,
+	GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ		= 1 << 10,
+	GS_APP_PERMISSIONS_FLAGS_SETTINGS		= 1 << 11,
+	GS_APP_PERMISSIONS_FLAGS_X11			= 1 << 12,
+	GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX		= 1 << 13,
+	GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER	= 1 << 14,
+	GS_APP_PERMISSIONS_FLAGS_LAST  /*< skip >*/
+} GsAppPermissionsFlags;
 
-#define LIMITED_PERMISSIONS (GS_APP_PERMISSIONS_SETTINGS | \
-			GS_APP_PERMISSIONS_NETWORK | \
-			GS_APP_PERMISSIONS_DOWNLOADS_READ | \
-			GS_APP_PERMISSIONS_DOWNLOADS_FULL)
+#define LIMITED_PERMISSIONS (GS_APP_PERMISSIONS_FLAGS_SETTINGS | \
+			GS_APP_PERMISSIONS_FLAGS_NETWORK | \
+			GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ | \
+			GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL)
 #define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS | \
-			GS_APP_PERMISSIONS_X11)
+			GS_APP_PERMISSIONS_FLAGS_X11)
 
 /**
  * GS_APP_PROGRESS_UNKNOWN:
@@ -516,12 +516,14 @@ gchar		*gs_app_get_packaging_format	(GsApp		*app);
 const gchar	*gs_app_get_packaging_format_raw(GsApp *app);
 void		 gs_app_subsume_metadata	(GsApp		*app,
 						 GsApp		*donor);
-GsAppPermissions gs_app_get_permissions		(GsApp		*app);
+GsAppPermissionsFlags
+		 gs_app_get_permissions		(GsApp		*app);
 void		 gs_app_set_permissions		(GsApp		*app,
-						 GsAppPermissions permissions);
-GsAppPermissions gs_app_get_update_permissions	(GsApp		*app);
+						 GsAppPermissionsFlags permissions);
+GsAppPermissionsFlags
+		 gs_app_get_update_permissions	(GsApp		*app);
 void		 gs_app_set_update_permissions	(GsApp		*app,
-						 GsAppPermissions update_permissions);
+						 GsAppPermissionsFlags update_permissions);
 GPtrArray	*gs_app_get_version_history	(GsApp		*app);
 void		 gs_app_set_version_history	(GsApp		*app,
 						 GPtrArray	*version_history);

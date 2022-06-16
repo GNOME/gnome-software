@@ -93,7 +93,7 @@ typedef struct
 	gchar			*update_version_ui;
 	gchar			*update_details_markup;
 	AsUrgencyKind		 update_urgency;
-	GsAppPermissions         update_permissions;
+	GsAppPermissionsFlags    update_permissions;
 	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
 	guint			 match_value;
 	guint			 priority;
@@ -135,7 +135,7 @@ typedef struct
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
-	GsAppPermissions         permissions;
+	GsAppPermissionsFlags    permissions;
 	gboolean		 is_update_downloaded;
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
@@ -5929,13 +5929,13 @@ gs_app_class_init (GsAppClass *klass)
 	 *
 	 * The permissions the app requires to run.
 	 *
-	 * This is %GS_APP_PERMISSIONS_UNKNOWN if the permissions are unknown.
+	 * This is %GS_APP_PERMISSIONS_FLAGS_UNKNOWN if the permissions are unknown.
 	 *
 	 * Since: 41
 	 */
 	obj_props[PROP_PERMISSIONS] =
 		g_param_spec_flags ("permissions", NULL, NULL,
-				    GS_TYPE_APP_PERMISSIONS, GS_APP_PERMISSIONS_UNKNOWN,
+				    GS_TYPE_APP_PERMISSIONS_FLAGS, GS_APP_PERMISSIONS_FLAGS_UNKNOWN,
 				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
@@ -6315,16 +6315,17 @@ gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 	}
 }
 
-GsAppPermissions
+GsAppPermissionsFlags
 gs_app_get_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
 	return priv->permissions;
 }
 
 void
-gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
+gs_app_set_permissions (GsApp *app,
+			GsAppPermissionsFlags permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
@@ -6335,16 +6336,17 @@ gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
 	gs_app_queue_notify (app, obj_props[PROP_PERMISSIONS]);
 }
 
-GsAppPermissions
+GsAppPermissionsFlags
 gs_app_get_update_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
 	return priv->update_permissions;
 }
 
 void
-gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
+gs_app_set_update_permissions (GsApp *app,
+			       GsAppPermissionsFlags update_permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
