@@ -254,9 +254,10 @@ static void
 update_safety_tile (GsAppContextBar *self)
 {
 	const gchar *icon_name, *title, *css_class;
-	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autofree gchar *description = NULL;
-	GsAppPermissionsFlags permissions;
+	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
+	g_autoptr(GsAppPermissions) permissions = NULL;
+	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
 	GtkStyleContext *context;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
@@ -265,9 +266,11 @@ update_safety_tile (GsAppContextBar *self)
 
 	g_assert (self->app != NULL);
 
-	permissions = gs_app_get_permissions (self->app);
+	permissions = gs_app_dup_permissions (self->app);
+	if (permissions != NULL)
+		perm_flags = gs_app_permissions_get_flags (permissions);
 	for (GsAppPermissionsFlags i = GS_APP_PERMISSIONS_FLAGS_NONE; i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
-		if (!(permissions & i))
+		if (!(perm_flags & i))
 			continue;
 
 		switch (i) {
@@ -313,7 +316,7 @@ update_safety_tile (GsAppContextBar *self)
 		case GS_APP_PERMISSIONS_FLAGS_HOME_FULL:
 		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL:
 			/* Don’t add twice. */
-			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_FULL && (permissions & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL))
+			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_FULL && (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL))
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
@@ -325,7 +328,7 @@ update_safety_tile (GsAppContextBar *self)
 		case GS_APP_PERMISSIONS_FLAGS_HOME_READ:
 		case GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ:
 			/* Don’t add twice. */
-			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_READ && (permissions & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))
+			if (i == GS_APP_PERMISSIONS_FLAGS_HOME_READ && (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))
 				break;
 
 			add_to_safety_rating (&chosen_rating, descriptions,
@@ -393,7 +396,7 @@ update_safety_tile (GsAppContextBar *self)
 	 * FIXME: We could do better by potentially adding a ‘trusted’ state
 	 * to indicate that something is probably safe, but isn’t sandboxed.
 	 * See https://gitlab.gnome.org/GNOME/gnome-software/-/issues/1451 */
-	if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN &&
+	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN &&
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
@@ -401,7 +404,7 @@ update_safety_tile (GsAppContextBar *self)
 				       * by the user’s distribution and is safe.
 				       * It’s used in a context tile, so should be short. */
 				      _("Reviewed by your distribution"));
-	else if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
+	else if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,
 				      /* Translators: This indicates that an application has been packaged

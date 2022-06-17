@@ -491,10 +491,10 @@ gchar		*gs_app_get_packaging_format	(GsApp		*app);
 const gchar	*gs_app_get_packaging_format_raw(GsApp *app);
 void		 gs_app_subsume_metadata	(GsApp		*app,
 						 GsApp		*donor);
-GsAppPermissionsFlags
-		 gs_app_get_permissions		(GsApp		*app);
+GsAppPermissions *
+		 gs_app_dup_permissions		(GsApp		*app);
 void		 gs_app_set_permissions		(GsApp		*app,
-						 GsAppPermissionsFlags permissions);
+						 GsAppPermissions *permissions);
 GsAppPermissions *
 		 gs_app_dup_update_permissions	(GsApp		*app);
 void		 gs_app_set_update_permissions	(GsApp		*app,

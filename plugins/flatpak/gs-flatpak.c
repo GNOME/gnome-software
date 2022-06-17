@@ -2638,8 +2638,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	}
 
 	permissions = perms_from_metadata (kf);
-	/* Use only flags, until the GsApp holds the GsAppPermissions */
-	gs_app_set_permissions (app, gs_app_permissions_get_flags (permissions));
+	gs_app_set_permissions (app, permissions);
 	/* this is actually quite hard to achieve */
 	if (secure)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);

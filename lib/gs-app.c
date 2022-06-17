@@ -135,7 +135,7 @@ typedef struct
 	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
-	GsAppPermissionsFlags    permissions;
+	GsAppPermissions        *permissions;
 	gboolean		 is_update_downloaded;
 	GPtrArray		*version_history; /* (element-type AsRelease) (nullable) (owned) */
 	GPtrArray		*relations;  /* (nullable) (element-type AsRelation) (owned) */
@@ -5328,7 +5328,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		break;
 	}
 	case PROP_PERMISSIONS:
-		g_value_set_flags (value, priv->permissions);
+		g_value_take_object (value, gs_app_dup_permissions (app));
 		break;
 	case PROP_RELATIONS:
 		g_value_take_boxed (value, gs_app_get_relations (app));
@@ -5456,7 +5456,7 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_size_user_data (app, priv->size_user_data_type, g_value_get_uint64 (value));
 		break;
 	case PROP_PERMISSIONS:
-		gs_app_set_permissions (app, g_value_get_flags (value));
+		gs_app_set_permissions (app, g_value_get_object (value));
 		break;
 	case PROP_RELATIONS:
 		gs_app_set_relations (app, g_value_get_boxed (value));
@@ -5538,6 +5538,7 @@ gs_app_finalize (GObject *object)
 	g_clear_object (&priv->content_rating);
 	g_clear_object (&priv->action_screenshot);
 	g_clear_object (&priv->update_permissions);
+	g_clear_object (&priv->permissions);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
@@ -5928,16 +5929,16 @@ gs_app_class_init (GsAppClass *klass)
 	/**
 	 * GsApp:permissions
 	 *
-	 * The permissions the app requires to run.
+	 * The permissions the app requires to run, as a #GsAppPermissions object.
 	 *
-	 * This is %GS_APP_PERMISSIONS_FLAGS_UNKNOWN if the permissions are unknown.
+	 * This is %NULL, if the permissions are unknown.
 	 *
-	 * Since: 41
+	 * Since: 43
 	 */
 	obj_props[PROP_PERMISSIONS] =
-		g_param_spec_flags ("permissions", NULL, NULL,
-				    GS_TYPE_APP_PERMISSIONS_FLAGS, GS_APP_PERMISSIONS_FLAGS_UNKNOWN,
-				    G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+		g_param_spec_object ("permissions", NULL, NULL,
+				     GS_TYPE_APP_PERMISSIONS,
+				     G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
 	/**
 	 * GsApp:relations: (nullable) (element-type AsRelation)
@@ -6316,24 +6317,56 @@ gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 	}
 }
 
-GsAppPermissionsFlags
-gs_app_get_permissions (GsApp *app)
+/**
+ * gs_app_dup_permissions:
+ * @app: a #GsApp
+ *
+ * Get a reference to the @app permissions. The returned value can
+ * be %NULL, when the app's permissions are unknown. Free the returned pointer,
+ * if not %NULL, with g_object_unref(), when no longer needed.
+ *
+ * Returns: (nullable) (transfer full): referenced #GsAppPermissions,
+ *    or %NULL
+ *
+ * Since: 43
+ **/
+GsAppPermissions *
+gs_app_dup_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
-	return priv->permissions;
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
+	return priv->permissions ? g_object_ref (priv->permissions) : NULL;
 }
 
+/**
+ * gs_app_set_permissions:
+ * @app: a #GsApp
+ * @permissions: (nullable) (transfer none): a #GsAppPermissions, or %NULL
+ *
+ * Set permissions for the @app. The @permissions is referenced,
+ * if not %NULL.
+ *
+ * Note the @permissions need to be sealed.
+ *
+ * Since: 43
+ **/
 void
 gs_app_set_permissions (GsApp *app,
-			GsAppPermissionsFlags permissions)
+			GsAppPermissions *permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (permissions == NULL || gs_app_permissions_is_sealed (permissions));
 
+	locker = g_mutex_locker_new (&priv->mutex);
 	if (priv->permissions == permissions)
 		return;
-	priv->permissions = permissions;
+	g_clear_object (&priv->permissions);
+	if (permissions != NULL)
+		priv->permissions = g_object_ref (permissions);
 	gs_app_queue_notify (app, obj_props[PROP_PERMISSIONS]);
 }
 

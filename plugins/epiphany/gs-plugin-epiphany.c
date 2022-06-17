@@ -455,6 +455,7 @@ refine_app (GsPluginEpiphany    *self,
 	{ "stackedit.io", "Apache-2.0" },
 	{ "squoosh.app", "Apache-2.0" },
 	};
+	g_autoptr(GsAppPermissions) permissions = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (uri != NULL);
@@ -487,7 +488,10 @@ refine_app (GsPluginEpiphany    *self,
 
 	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
-	gs_app_set_permissions (app, GS_APP_PERMISSIONS_FLAGS_NETWORK);
+	permissions = gs_app_permissions_new ();
+	gs_app_permissions_set_flags (permissions, GS_APP_PERMISSIONS_FLAGS_NETWORK);
+	gs_app_permissions_seal (permissions);
+	gs_app_set_permissions (app, permissions);
 
 	if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
