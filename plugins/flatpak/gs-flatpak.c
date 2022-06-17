@@ -212,32 +212,47 @@ gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 	}
 }
 
-static GsAppPermissionsFlags
+static guint
+gs_get_strv_index (const gchar * const *strv,
+		   const gchar *value)
+{
+	guint ii;
+
+	for (ii = 0; strv[ii]; ii++) {
+		if (g_str_equal (strv[ii], value))
+			break;
+	}
+
+	return ii;
+}
+
+static GsAppPermissions *
 perms_from_metadata (GKeyFile *keyfile)
 {
 	char **strv;
 	char *str;
-	GsAppPermissionsFlags permissions = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
+	GsAppPermissions *permissions = gs_app_permissions_new ();
+	GsAppPermissionsFlags flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS;
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "session-bus"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SESSION_BUS;
 	if (strv != NULL &&
 	    !g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
 	    g_strv_contains ((const gchar * const*)strv, "x11"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_X11;
+		flags |= GS_APP_PERMISSIONS_FLAGS_X11;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "all"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
+		flags |= GS_APP_PERMISSIONS_FLAGS_DEVICES;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "shared", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "network"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_NETWORK;
+		flags |= GS_APP_PERMISSIONS_FLAGS_NETWORK;
 	g_strfreev (strv);
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "filesystems", NULL, NULL);
@@ -250,6 +265,9 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "home", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
 			{ "home:rw", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
 			{ "home:ro", GS_APP_PERMISSIONS_FLAGS_HOME_READ },
+			{ "~", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "~:rw", GS_APP_PERMISSIONS_FLAGS_HOME_FULL },
+			{ "~:ro", GS_APP_PERMISSIONS_FLAGS_HOME_READ },
 			{ "host", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
 			{ "host:rw", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL },
 			{ "host:ro", GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ },
@@ -259,48 +277,142 @@ perms_from_metadata (GKeyFile *keyfile)
 			{ "xdg-data/flatpak/overrides:create", GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX }
 		};
 		guint filesystems_hits = 0;
+		guint strv_len = g_strv_length (strv);
 
 		for (guint i = 0; i < G_N_ELEMENTS (filesystems_access); i++) {
-			if (g_strv_contains ((const gchar * const *) strv, filesystems_access[i].key)) {
-				permissions |= filesystems_access[i].perm;
+			guint index = gs_get_strv_index ((const gchar * const *) strv, filesystems_access[i].key);
+			if (index < strv_len) {
+				flags |= filesystems_access[i].perm;
 				filesystems_hits++;
+				/* Mark it as used */
+				strv[index][0] = '\0';
 			}
 		}
 
-		if ((permissions & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0)
-			permissions = permissions & ~GS_APP_PERMISSIONS_FLAGS_HOME_READ;
-		if ((permissions & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0)
-			permissions = permissions & ~GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ;
-		if ((permissions & GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL) != 0)
-			permissions = permissions & ~GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ;
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_HOME_READ;
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ;
+		if ((flags & GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL) != 0)
+			flags = flags & ~GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ;
 
-		if (g_strv_length (strv) > filesystems_hits)
-			permissions |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER;
+		if (strv_len > filesystems_hits) {
+			/* Cover those not being part of the above filesystem_access array */
+			const struct {
+				const gchar *prefix;
+				const gchar *title;
+				const gchar *title_subdir;
+			} filesystems_other[] = {
+				/* Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264 */
+				{ "/",			NULL,					   N_("System folder %s") },
+				{ "home/",		NULL,					   N_("Home subfolder %s") },
+				{ "~/",			NULL,					   N_("Home subfolder %s") },
+				{ "host-os",		N_("Host system folders"),		   NULL },
+				{ "host-etc",		N_("Host system configuration from /etc"), NULL },
+				{ "xdg-desktop",	N_("Desktop folder"),			   N_("Desktop subfolder %s") },
+				{ "xdg-documents",	N_("Documents folder"),			   N_("Documents subfolder %s") },
+				{ "xdg-music",		N_("Music folder"),			   N_("Music subfolder %s") },
+				{ "xdg-pictures",	N_("Pictures folder"),			   N_("Pictures subfolder %s") },
+				{ "xdg-public-share",	N_("Public Share folder"),		   N_("Public Share subfolder %s") },
+				{ "xdg-videos",		N_("Videos folder"),			   N_("Videos subfolder %s") },
+				{ "xdg-templates",	N_("Templates folder"),			   N_("Templates subfolder %s") },
+				{ "xdg-cache",		N_("User cache folder"),		   N_("User cache subfolder %s") },
+				{ "xdg-config",		N_("User configuration folder"),	   N_("User configuration subfolder %s") },
+				{ "xdg-data",		N_("User data folder"),			   N_("User data subfolder %s") },
+				{ "xdg-run",		N_("User runtime folder"),		   N_("User runtime subfolder %s") }
+			};
+
+			flags |= GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER;
+
+			for (guint j = 0; strv[j]; j++) {
+				gchar *perm = strv[j];
+				gboolean is_readonly;
+				gchar *colon;
+				guint i;
+
+				/* Already handled by the flags */
+				if (!perm[0])
+					continue;
+
+				is_readonly = g_str_has_suffix (perm, ":ro");
+				colon = strrchr (perm, ':');
+				/* modifiers are ":ro", ":rw", ":create", where ":create" is ":rw" + create
+				   and ":rw" is default; treat ":create" as ":rw" */
+				if (colon) {
+					/* Completeness check */
+					if (!g_str_equal (colon, ":ro") &&
+					    !g_str_equal (colon, ":rw") &&
+					    !g_str_equal (colon, ":create"))
+						g_debug ("Unknown filesystem permission modifier '%s' from '%s'", colon, perm);
+					/* cut it off */
+					*colon = '\0';
+				}
+
+				for (i = 0; i < G_N_ELEMENTS (filesystems_other); i++) {
+					if (g_str_has_prefix (perm, filesystems_other[i].prefix)) {
+						g_autofree gchar *title_tmp = NULL;
+						const gchar *slash, *title = NULL;
+						slash = strchr (perm, '/');
+						/* Catch and ignore invalid permission definitions */
+						if (slash && filesystems_other[i].title_subdir != NULL) {
+							#pragma GCC diagnostic push
+							#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+							title_tmp = g_strdup_printf (
+								_(filesystems_other[i].title_subdir),
+								slash + (slash == perm ? 0 : 1));
+							#pragma GCC diagnostic pop
+							title = title_tmp;
+						} else if (!slash && filesystems_other[i].title != NULL) {
+							title = _(filesystems_other[i].title);
+						}
+						if (title != NULL) {
+							if (is_readonly)
+								gs_app_permissions_add_filesystem_read (permissions, title);
+							else
+								gs_app_permissions_add_filesystem_full (permissions, title);
+						}
+						break;
+					}
+				}
+
+				/* Nothing matched, use a generic entry */
+				if (i == G_N_ELEMENTS (filesystems_other)) {
+					g_autofree gchar *title = g_strdup_printf (_("Filesystem access to %s"), perm);
+					if (is_readonly)
+						gs_app_permissions_add_filesystem_read (permissions, title);
+					else
+						gs_app_permissions_add_filesystem_full (permissions, title);
+				}
+			}
+		}
 	}
 	g_strfreev (strv);
 
 	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
 	if (str != NULL && g_str_equal (str, "talk"))
-		permissions |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
+		flags |= GS_APP_PERMISSIONS_FLAGS_SETTINGS;
 	g_free (str);
 
-	if (!(permissions & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
+	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
 		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
 		if (str != NULL && g_str_equal (str, "talk"))
-			permissions |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		g_free (str);
 	}
 
-	if (!(permissions & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
+	if (!(flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX)) {
 		str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.impl.portal.PermissionStore", NULL);
 		if (str != NULL && g_str_equal (str, "talk"))
-			permissions |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
+			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		g_free (str);
 	}
 
 	/* no permissions set */
-	if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
-		return GS_APP_PERMISSIONS_FLAGS_NONE;
+	if (flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
+		flags = GS_APP_PERMISSIONS_FLAGS_NONE;
+
+	gs_app_permissions_set_flags (permissions, flags);
+	gs_app_permissions_seal (permissions);
 
 	return permissions;
 }
@@ -316,7 +428,7 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 	g_autoptr(GKeyFile) old_keyfile = NULL;
 	g_autoptr(GBytes) bytes = NULL;
 	g_autoptr(GKeyFile) keyfile = NULL;
-	GsAppPermissionsFlags permissions;
+	g_autoptr(GsAppPermissions) additional_permissions = gs_app_permissions_new ();
 	g_autoptr(GError) error_local = NULL;
 
 	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
@@ -335,23 +447,49 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 		g_debug ("Failed to get metadata for remote ‘%s’: %s",
 			 gs_app_get_origin (app), error_local->message);
 		g_clear_error (&error_local);
-		permissions = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
+		gs_app_permissions_set_flags (additional_permissions, GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
 	} else {
+		g_autoptr(GsAppPermissions) old_permissions = NULL;
+		g_autoptr(GsAppPermissions) new_permissions = NULL;
+		const GPtrArray *new_paths;
+
 		keyfile = g_key_file_new ();
 		g_key_file_load_from_data (keyfile,
 			                   g_bytes_get_data (bytes, NULL),
 			                   g_bytes_get_size (bytes),
 			                   0, NULL);
-		permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
+
+		old_permissions = perms_from_metadata (old_keyfile);
+		new_permissions = perms_from_metadata (keyfile);
+
+		gs_app_permissions_set_flags (additional_permissions,
+					      gs_app_permissions_get_flags (new_permissions) &
+					     ~gs_app_permissions_get_flags (old_permissions));
+
+		new_paths = gs_app_permissions_get_filesystem_read (new_permissions);
+		for (guint i = 0; new_paths && i < new_paths->len; i++) {
+			const gchar *new_path = g_ptr_array_index (new_paths, i);
+			if (!gs_app_permissions_contains_filesystem_read (old_permissions, new_path))
+				gs_app_permissions_add_filesystem_read (additional_permissions, new_path);
+		}
+
+		new_paths = gs_app_permissions_get_filesystem_full (new_permissions);
+		for (guint i = 0; new_paths && i < new_paths->len; i++) {
+			const gchar *new_path = g_ptr_array_index (new_paths, i);
+			if (!gs_app_permissions_contains_filesystem_full (old_permissions, new_path))
+				gs_app_permissions_add_filesystem_full (additional_permissions, new_path);
+		}
 	}
 
 	/* no new permissions set */
-	if (permissions == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
-		permissions = GS_APP_PERMISSIONS_FLAGS_NONE;
+	if (gs_app_permissions_get_flags (additional_permissions) == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
+		gs_app_permissions_set_flags (additional_permissions, GS_APP_PERMISSIONS_FLAGS_NONE);
 
-	gs_app_set_update_permissions (app, permissions);
+	gs_app_permissions_seal (additional_permissions);
+	/* Use only flags, until the GsApp holds the GsAppPermissions */
+	gs_app_set_update_permissions (app, gs_app_permissions_get_flags (additional_permissions));
 
-	if (permissions != GS_APP_PERMISSIONS_FLAGS_NONE)
+	if (gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 }
 
@@ -2459,6 +2597,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	g_autofree gchar *runtime = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app_runtime = NULL;
+	g_autoptr(GsAppPermissions) permissions = NULL;
 	g_auto(GStrv) shared = NULL;
 	g_auto(GStrv) sockets = NULL;
 	g_auto(GStrv) filesystems = NULL;
@@ -2499,7 +2638,9 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 			secure = FALSE;
 	}
 
-	gs_app_set_permissions (app, perms_from_metadata (kf));
+	permissions = perms_from_metadata (kf);
+	/* Use only flags, until the GsApp holds the GsAppPermissions */
+	gs_app_set_permissions (app, gs_app_permissions_get_flags (permissions));
 	/* this is actually quite hard to achieve */
 	if (secure)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);
