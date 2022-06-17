@@ -52,7 +52,6 @@ librarydeps = [
   libsoup,
   libsysprof_capture_dep,
   libxmlb,
-  valgrind,
 ]
 
 if get_option('mogwai')
@@ -163,7 +162,6 @@ executable(
     libgnomesoftware_dep,
     libm,
     libsoup,
-    valgrind,
   ],
   c_args : cargs,
   install : true,

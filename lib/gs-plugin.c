@@ -36,10 +36,6 @@
 #include <gdk/gdk.h>
 #include <string.h>
 
-#ifdef USE_VALGRIND
-#include <valgrind.h>
-#endif
-
 #include "gs-app-list-private.h"
 #include "gs-download-utils.h"
 #include "gs-enums.h"
@@ -262,10 +258,8 @@ gs_plugin_finalize (GObject *object)
 	g_mutex_clear (&priv->interactive_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	g_mutex_clear (&priv->vfuncs_mutex);
-#ifndef RUNNING_ON_VALGRIND
 	if (priv->module != NULL)
 		g_module_close (priv->module);
-#endif
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
 }

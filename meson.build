@@ -182,14 +182,6 @@ if get_option('mogwai')
   conf.set('HAVE_MOGWAI', 1)
 endif
 
-if get_option('valgrind')
-  valgrind = dependency('valgrind')
-  conf.set('USE_VALGRIND', 1)
-else
-  message('Valgrind integration disabled')
-  valgrind = []
-endif
-
 gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0', required: get_option('gsettings_desktop_schemas'))
 if gsettings_desktop_schemas.found()
   conf.set('HAVE_GSETTINGS_DESKTOP_SCHEMAS', 1)
