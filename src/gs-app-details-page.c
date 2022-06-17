@@ -82,30 +82,42 @@ static const struct {
 };
 
 static void
-populate_permissions_section (GsAppDetailsPage *page, GsAppPermissionsFlags permissions)
+add_permissions_row (GsAppDetailsPage *page,
+		     const gchar *title,
+		     const gchar *subtitle,
+		     gboolean is_warning_row)
+{
+	GtkWidget *row, *image;
+
+	row = adw_action_row_new ();
+	if (is_warning_row)
+		gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+
+	image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
+	if (!is_warning_row)
+		gtk_widget_set_opacity (image, 0);
+
+	adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
+	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title);
+	adw_action_row_set_subtitle (ADW_ACTION_ROW (row), subtitle);
+
+	gtk_list_box_append (GTK_LIST_BOX (page->permissions_section_list), row);
+}
+
+static void
+populate_permissions_section (GsAppDetailsPage *page,
+			      GsAppPermissionsFlags permissions)
 {
 	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-		GtkWidget *row, *image;
-
 		if ((permissions & permission_display_data[i].permission) == 0)
 			continue;
 
-		row = adw_action_row_new ();
-		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
-			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
-		}
-
-		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
-		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
-			gtk_widget_set_opacity (image, 0);
-
-		adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
-		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _(permission_display_data[i].title));
-		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _(permission_display_data[i].subtitle));
-
-		gtk_list_box_append (GTK_LIST_BOX (page->permissions_section_list), row);
+		add_permissions_row (page,
+			_(permission_display_data[i].title),
+			_(permission_display_data[i].subtitle),
+			(permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0);
 	}
 }
 
