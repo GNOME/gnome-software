@@ -495,10 +495,10 @@ GsAppPermissionsFlags
 		 gs_app_get_permissions		(GsApp		*app);
 void		 gs_app_set_permissions		(GsApp		*app,
 						 GsAppPermissionsFlags permissions);
-GsAppPermissionsFlags
-		 gs_app_get_update_permissions	(GsApp		*app);
+GsAppPermissions *
+		 gs_app_dup_update_permissions	(GsApp		*app);
 void		 gs_app_set_update_permissions	(GsApp		*app,
-						 GsAppPermissionsFlags update_permissions);
+						 GsAppPermissions *update_permissions);
 GPtrArray	*gs_app_get_version_history	(GsApp		*app);
 void		 gs_app_set_version_history	(GsApp		*app,
 						 GPtrArray	*version_history);

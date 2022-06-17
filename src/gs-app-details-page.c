@@ -73,7 +73,7 @@ static const struct {
   { GS_APP_PERMISSIONS_FLAGS_HOME_READ, N_("Home folder"), N_("Can view files") },
   { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
   { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER, N_("File system"), N_("Can access arbitrary files") },
+  /* The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists */
   { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
   { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
   { GS_APP_PERMISSIONS_FLAGS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
@@ -105,13 +105,30 @@ add_permissions_row (GsAppDetailsPage *page,
 }
 
 static void
-populate_permissions_section (GsAppDetailsPage *page,
-			      GsAppPermissionsFlags permissions)
+populate_permissions_filesystem (GsAppDetailsPage *page,
+				 const GPtrArray *titles, /* (element-type utf-8) */
+				 const gchar *subtitle,
+				 gboolean is_warning_row)
 {
+	if (titles == NULL)
+		return;
+
+	for (guint i = 0; i < titles->len; i++) {
+		const gchar *title = g_ptr_array_index (titles, i);
+		add_permissions_row (page, title, subtitle, is_warning_row);
+	}
+}
+
+static void
+populate_permissions_section (GsAppDetailsPage *page,
+			      GsAppPermissions *permissions)
+{
+	GsAppPermissionsFlags flags = gs_app_permissions_get_flags (permissions);
+
 	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-		if ((permissions & permission_display_data[i].permission) == 0)
+		if ((flags & permission_display_data[i].permission) == 0)
 			continue;
 
 		add_permissions_row (page,
@@ -119,6 +136,16 @@ populate_permissions_section (GsAppDetailsPage *page,
 			_(permission_display_data[i].subtitle),
 			(permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0);
 	}
+
+	populate_permissions_filesystem (page,
+		gs_app_permissions_get_filesystem_read (permissions),
+		_("Can view files"),
+		(GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ & ~MEDIUM_PERMISSIONS) != 0);
+
+	populate_permissions_filesystem (page,
+		gs_app_permissions_get_filesystem_full (permissions),
+		_("Can view, edit and create files"),
+		(GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL & ~MEDIUM_PERMISSIONS) != 0);
 }
 
 static void
@@ -204,8 +231,9 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	adw_status_page_set_paintable (ADW_STATUS_PAGE (page->status_page), GDK_PAINTABLE (paintable));
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+		g_autoptr(GsAppPermissions) permissions = gs_app_dup_update_permissions (app);
 		gtk_widget_show (page->permissions_section);
-		populate_permissions_section (page, gs_app_get_update_permissions (app));
+		populate_permissions_section (page, permissions);
 	} else {
 		gtk_widget_hide (page->permissions_section);
 	}

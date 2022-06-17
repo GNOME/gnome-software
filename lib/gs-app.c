@@ -93,7 +93,7 @@ typedef struct
 	gchar			*update_version_ui;
 	gchar			*update_details_markup;
 	AsUrgencyKind		 update_urgency;
-	GsAppPermissionsFlags    update_permissions;
+	GsAppPermissions        *update_permissions;
 	GWeakRef		 management_plugin_weak;  /* (element-type GsPlugin) */
 	guint			 match_value;
 	guint			 priority;
@@ -5537,6 +5537,7 @@ gs_app_finalize (GObject *object)
 	g_clear_object (&priv->local_file);
 	g_clear_object (&priv->content_rating);
 	g_clear_object (&priv->action_screenshot);
+	g_clear_object (&priv->update_permissions);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
@@ -6336,21 +6337,57 @@ gs_app_set_permissions (GsApp *app,
 	gs_app_queue_notify (app, obj_props[PROP_PERMISSIONS]);
 }
 
-GsAppPermissionsFlags
-gs_app_get_update_permissions (GsApp *app)
+/**
+ * gs_app_dup_update_permissions:
+ * @app: a #GsApp
+ *
+ * Get a reference to the update permissions. The returned value can
+ * be %NULL, when no update permissions had been set. Free
+ * the returned pointer, if not %NULL, with g_object_unref(), when
+ * no longer needed.
+ *
+ * Returns: (nullable) (transfer full): referenced #GsAppPermissions,
+ *    or %NULL
+ *
+ * Since: 43
+ **/
+GsAppPermissions *
+gs_app_dup_update_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
-	return priv->update_permissions;
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
+	return priv->update_permissions ? g_object_ref (priv->update_permissions) : NULL;
 }
 
+/**
+ * gs_app_set_update_permissions:
+ * @app: a #GsApp
+ * @update_permissions: (nullable) (transfer none): a #GsAppPermissions, or %NULL
+ *
+ * Set update permissions for the @app, that is, the permissions, which change
+ * in an update or similar reasons. The @update_permissions is referenced,
+ * if not %NULL.
+ *
+ * Note the @update_permissions need to be sealed.
+ *
+ * Since: 43
+ **/
 void
 gs_app_set_update_permissions (GsApp *app,
-			       GsAppPermissionsFlags update_permissions)
+			       GsAppPermissions *update_permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
-	priv->update_permissions = update_permissions;
+	g_return_if_fail (update_permissions == NULL || gs_app_permissions_is_sealed (update_permissions));
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (priv->update_permissions != update_permissions) {
+		g_clear_object (&priv->update_permissions);
+		if (update_permissions != NULL)
+			priv->update_permissions = g_object_ref (update_permissions);
+	}
 }
 
 /**

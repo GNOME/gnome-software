@@ -486,8 +486,7 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 		gs_app_permissions_set_flags (additional_permissions, GS_APP_PERMISSIONS_FLAGS_NONE);
 
 	gs_app_permissions_seal (additional_permissions);
-	/* Use only flags, until the GsApp holds the GsAppPermissions */
-	gs_app_set_update_permissions (app, gs_app_permissions_get_flags (additional_permissions));
+	gs_app_set_update_permissions (app, additional_permissions);
 
 	if (gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
