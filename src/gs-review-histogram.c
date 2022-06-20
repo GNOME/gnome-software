@@ -35,6 +35,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_WID
 
 void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
+				 gint rating_percent,
 				 GArray *review_ratings)
 {
 	GsReviewHistogramPrivate *priv = gs_review_histogram_get_instance_private (histogram);
@@ -42,7 +43,6 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	gdouble fraction[6] = { 0.0f };
 	guint32 max = 0;
 	guint32 total = 0;
-	guint32 star_count = 0;
 
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
 
@@ -56,7 +56,6 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 	for (guint i = 1; i < review_ratings->len; i++) {
 		guint32 c = g_array_index (review_ratings, guint32, i);
 		max = MAX (c, max);
-		star_count += i * c;
 	}
 	for (guint i = 1; i < review_ratings->len; i++) {
 		guint32 c = g_array_index (review_ratings, guint32, i);
@@ -77,7 +76,7 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 
 	/* Round explicitly, to avoid rounding inside the printf() call and to use
 	   the same value also for the stars fraction. */
-	fraction[0] = total > 0 ? round (((gdouble) star_count / (gdouble) total) * 10.0) / 10.0 : 0.0;
+	fraction[0] = total > 0 ? round (((gdouble) rating_percent ) * 50.0 / 100.0) / 10.0 : 0.0;
 	text = g_strdup_printf ("%.01f", fraction[0]);
 	gtk_label_set_text (GTK_LABEL (priv->label_value), text);
 
