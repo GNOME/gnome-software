@@ -1303,6 +1303,28 @@ gs_plugin_app_install (GsPlugin *plugin,
 				already_installed = TRUE;
 				g_clear_error (&error_local);
 			} else {
+				if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_REF_NOT_FOUND)) {
+					const gchar *origin = gs_app_get_origin (app);
+					if (origin != NULL) {
+						g_autoptr(FlatpakRemote) remote = NULL;
+						remote = flatpak_installation_get_remote_by_name (gs_flatpak_get_installation (flatpak, interactive),
+												  origin, cancellable, NULL);
+						if (remote != NULL) {
+							g_autofree gchar *filter = flatpak_remote_get_filter (remote);
+							if (filter != NULL && *filter != '\0') {
+								/* It's a filtered remote, create a user friendly error message for it */
+								g_autoptr(GError) error_tmp = NULL;
+								g_set_error (&error_tmp, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+									     _("Remote “%s” doesn't allow install of “%s”, possibly due to its filter. Remove the filter and repeat the install. Detailed error: %s"),
+									     flatpak_remote_get_title (remote),
+									     gs_app_get_name (app),
+									     error_local->message);
+								g_clear_error (&error_local);
+								error_local = g_steal_pointer (&error_tmp);
+							}
+						}
+					}
+				}
 				g_propagate_error (error, g_steal_pointer (&error_local));
 				gs_flatpak_error_convert (error);
 				gs_app_set_state_recover (app);
