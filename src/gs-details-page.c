@@ -1454,6 +1454,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		review_ratings = gs_app_get_review_ratings (self->app);
 		if (review_ratings != NULL) {
 			gs_review_histogram_set_ratings (GS_REVIEW_HISTOGRAM (self->histogram),
+							 gs_app_get_rating (self->app),
 						         review_ratings);
 		}
 		if (review_ratings != NULL) {

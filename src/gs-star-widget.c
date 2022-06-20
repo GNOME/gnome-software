@@ -84,6 +84,9 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
 }
 
+/* Round to one digit, the same as the GsReviewHistogram */
+#define GS_ROUND(x) (round (((gdouble) (x)) * 10.0) / 10.0)
+
 /* Update the star styles to display the new rating */
 static void
 gs_star_widget_refresh_rating (GsStarWidget *star)
@@ -100,9 +103,9 @@ gs_star_widget_refresh_rating (GsStarWidget *star)
 		if (priv->rating >= rate_to_star[i])
 			fraction = 1.0;
 		else if (!i)
-			fraction = priv->rating / 20.0;
+			fraction = GS_ROUND (priv->rating / 20.0);
 		else if (priv->rating > rate_to_star[i - 1])
-			fraction = (priv->rating - rate_to_star[i - 1]) / 20.0;
+			fraction = GS_ROUND ((priv->rating - rate_to_star[i - 1]) / 20.0);
 		else
 			fraction = 0.0;
 
