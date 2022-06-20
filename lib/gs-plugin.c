@@ -36,10 +36,6 @@
 #include <gdk/gdk.h>
 #include <string.h>
 
-#ifdef USE_VALGRIND
-#include <valgrind.h>
-#endif
-
 #include "gs-app-list-private.h"
 #include "gs-download-utils.h"
 #include "gs-enums.h"
@@ -207,6 +203,12 @@ gs_plugin_create (const gchar      *filename,
 		return NULL;
 	}
 
+	/* Make the module resident so it can’t be unloaded: without using a
+	 * full #GTypePlugin implementation for the modules, it’s not safe to
+	 * re-load a module and re-register its types with GObject, as that will
+	 * confuse the GType system. */
+	g_module_make_resident (module);
+
 	plugin_type = query_type_function ();
 	g_assert (g_type_is_a (plugin_type, GS_TYPE_PLUGIN));
 
@@ -256,10 +258,8 @@ gs_plugin_finalize (GObject *object)
 	g_mutex_clear (&priv->interactive_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	g_mutex_clear (&priv->vfuncs_mutex);
-#ifndef RUNNING_ON_VALGRIND
 	if (priv->module != NULL)
 		g_module_close (priv->module);
-#endif
 
 	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
 }

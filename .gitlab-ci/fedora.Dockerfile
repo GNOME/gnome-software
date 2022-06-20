@@ -72,7 +72,6 @@ RUN dnf -y install \
     sysprof-capture-devel \
     unzip \
     valgrind \
-    valgrind-devel \
     wayland-protocols-devel \
     wget \
     xz \
