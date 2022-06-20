@@ -2831,8 +2831,8 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 								   &error_local);
 
 		if (!ret) {
-			g_warning ("libflatpak failed to return application "
-				   "size: %s", error_local->message);
+			/* This can happen when the remote is filtered */
+			g_debug ("libflatpak failed to return application size: %s", error_local->message);
 			g_clear_error (&error_local);
 		}
 	}
