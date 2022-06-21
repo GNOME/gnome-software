@@ -899,11 +899,9 @@ gs_utils_reboot_call_done_cb (GObject *source,
 			      gpointer user_data)
 {
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
-	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (retval != NULL)
+	if (gs_utils_invoke_reboot_finish (source, res, &error))
 		return;
 	if (error != NULL) {
 		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
@@ -917,9 +915,8 @@ gs_utils_reboot_call_done_cb (GObject *source,
  * @ready_callback: (nullable): a callback to be called after the call is finished, or %NULL
  * @user_data: user data for the @ready_callback
  *
- * Asynchronously invokes a reboot request using D-Bus. The @ready_callback should
- * use g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
- * to get the result of the operation.
+ * Asynchronously invokes a reboot request. Finish the operation
+ * with gs_utils_invoke_reboot_finish().
  *
  * When the @ready_callback is %NULL, a default callback is used, which shows
  * a runtime warning (using g_warning) on the console when the call fails.
@@ -946,6 +943,28 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 				G_MAXINT, cancellable,
 				ready_callback,
 				user_data);
+}
+
+/**
+ * gs_utils_invoke_reboot_finish:
+ * @source_object: the source object provided in the ready callback
+ * @result: the result object provided in the ready callback
+ * @error: a #GError, or %NULL
+ *
+ * Finishes gs_utils_invoke_reboot_async() call.
+ *
+ * Returns: Whether succeeded. If failed, the @error is set.
+ *
+ * Since: 43
+ **/
+gboolean
+gs_utils_invoke_reboot_finish (GObject *source_object,
+			       GAsyncResult *result,
+			       GError **error)
+{
+	g_autoptr(GVariant) res = NULL;
+	res = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, error);
+	return res != NULL;
 }
 
 /**
