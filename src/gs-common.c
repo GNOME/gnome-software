@@ -903,10 +903,10 @@ gs_utils_reboot_call_done_cb (GObject *source,
 	/* get result */
 	if (gs_utils_invoke_reboot_finish (source, res, &local_error))
 		return;
-	if (local_error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   local_error->message);
-	}
+	if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		g_debug ("Calling reboot had been cancelled");
+	else if (local_error != NULL)
+		g_warning ("Calling reboot failed: %s", local_error->message);
 }
 
 static void
@@ -919,10 +919,13 @@ gs_utils_invoke_reboot_ready_cb (GObject *source_object,
 	g_autoptr(GError) local_error = NULL;
 
 	ret_val = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, &local_error);
-	if (ret_val != NULL)
+	if (ret_val != NULL) {
 		g_task_return_boolean (task, TRUE);
-	else
+	} else {
+		const gchar *method_name = g_task_get_task_data (task);
+		g_prefix_error (&local_error, "Failed to call %s: ", method_name);
 		g_task_return_error (task, g_steal_pointer (&local_error));
+	}
 }
 
 /**
@@ -953,6 +956,7 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 
 	task = g_task_new (NULL, cancellable, ready_callback, user_data);
 	g_task_set_source_tag (task, gs_utils_invoke_reboot_async);
+	g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.Reboot", NULL);
 
 	bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, &local_error);
 	if (bus == NULL) {
