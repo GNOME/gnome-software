@@ -910,9 +910,9 @@ gs_utils_reboot_call_done_cb (GObject *source,
 }
 
 static void
-gs_utils_invoke_reboot_ready_cb (GObject *source_object,
-				 GAsyncResult *result,
-				 gpointer user_data)
+gs_utils_invoke_reboot_ready3_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
 {
 	g_autoptr(GTask) task = user_data;
 	g_autoptr(GVariant) ret_val = NULL;
@@ -923,8 +923,170 @@ gs_utils_invoke_reboot_ready_cb (GObject *source_object,
 		g_task_return_boolean (task, TRUE);
 	} else {
 		const gchar *method_name = g_task_get_task_data (task);
+		g_dbus_error_strip_remote_error (local_error);
 		g_prefix_error (&local_error, "Failed to call %s: ", method_name);
 		g_task_return_error (task, g_steal_pointer (&local_error));
+	}
+}
+
+static void
+gs_utils_invoke_reboot_ready2_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GVariant) ret_val = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	ret_val = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, &local_error);
+	if (ret_val != NULL) {
+		g_task_return_boolean (task, TRUE);
+	} else {
+		g_autoptr(GDBusConnection) bus = NULL;
+		GCancellable *cancellable;
+		const gchar *method_name = g_task_get_task_data (task);
+
+		g_dbus_error_strip_remote_error (local_error);
+		g_prefix_error (&local_error, "Failed to call %s: ", method_name);
+
+		if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		g_debug ("%s", local_error->message);
+		g_clear_error (&local_error);
+
+		cancellable = g_task_get_cancellable (task);
+
+		bus = g_bus_get_sync (G_BUS_TYPE_SESSION, cancellable, &local_error);
+		if (bus == NULL) {
+			g_dbus_error_strip_remote_error (local_error);
+			g_prefix_error_literal (&local_error, "Failed to get D-Bus session bus: ");
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.Reboot", NULL);
+		g_dbus_connection_call (bus,
+					"org.gnome.SessionManager",
+					"/org/gnome/SessionManager",
+					"org.gnome.SessionManager",
+					"Reboot",
+					NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+					G_MAXINT, cancellable,
+					gs_utils_invoke_reboot_ready3_cb,
+					g_steal_pointer (&task));
+	}
+}
+
+static void
+gs_utils_invoke_reboot_ready1_cb (GObject *source_object,
+				  GAsyncResult *result,
+				  gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GVariant) ret_val = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	ret_val = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, &local_error);
+	if (ret_val != NULL) {
+		g_task_return_boolean (task, TRUE);
+	} else {
+		g_autoptr(GDBusConnection) bus = NULL;
+		GCancellable *cancellable;
+		const gchar *method_name = g_task_get_task_data (task);
+		const gchar *xdg_desktop;
+		gboolean call_session_manager = FALSE;
+
+		g_dbus_error_strip_remote_error (local_error);
+		g_prefix_error (&local_error, "Failed to call %s: ", method_name);
+
+		if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		g_debug ("%s", local_error->message);
+		g_clear_error (&local_error);
+
+		cancellable = g_task_get_cancellable (task);
+
+		bus = g_bus_get_sync (G_BUS_TYPE_SESSION, cancellable, &local_error);
+		if (bus == NULL) {
+			g_dbus_error_strip_remote_error (local_error);
+			g_prefix_error_literal (&local_error, "Failed to get D-Bus session bus: ");
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		xdg_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
+		if (xdg_desktop != NULL) {
+			if (strstr (xdg_desktop, "KDE")) {
+				g_task_set_task_data (task, (gpointer) "org.kde.Shutdown.logoutAndReboot", NULL);
+				g_dbus_connection_call (bus,
+							"org.kde.Shutdown",
+							"/Shutdown",
+							"org.kde.Shutdown",
+							"logoutAndReboot",
+							NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+							G_MAXINT, cancellable,
+							gs_utils_invoke_reboot_ready2_cb,
+							g_steal_pointer (&task));
+			} else if (strstr (xdg_desktop, "LXDE")) {
+				g_task_set_task_data (task, (gpointer) "org.lxde.SessionManager.RequestReboot", NULL);
+				g_dbus_connection_call (bus,
+							"org.lxde.SessionManager",
+							"/org/lxde/SessionManager",
+							"org.lxde.SessionManager",
+							"RequestReboot",
+							NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+							G_MAXINT, cancellable,
+							gs_utils_invoke_reboot_ready2_cb,
+							g_steal_pointer (&task));
+			} else if (strstr (xdg_desktop, "MATE")) {
+				g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.RequestReboot", NULL);
+				g_dbus_connection_call (bus,
+							"org.gnome.SessionManager",
+							"/org/gnome/SessionManager",
+							"org.gnome.SessionManager",
+							"RequestReboot",
+							NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+							G_MAXINT, cancellable,
+							gs_utils_invoke_reboot_ready2_cb,
+							g_steal_pointer (&task));
+			} else if (strstr (xdg_desktop, "XFCE")) {
+				g_task_set_task_data (task, (gpointer) "org.xfce.Session.Manager.Restart", NULL);
+				g_dbus_connection_call (bus,
+							"org.xfce.SessionManager",
+							"/org/xfce/SessionManager",
+							"org.xfce.Session.Manager",
+							"Restart",
+							g_variant_new ("(b)", TRUE), /* allow_save */
+							NULL, G_DBUS_CALL_FLAGS_NONE,
+							G_MAXINT, cancellable,
+							gs_utils_invoke_reboot_ready2_cb,
+							g_steal_pointer (&task));
+			} else {
+				/* Let the "GNOME" and "X-Cinnamon" be the default */
+				call_session_manager = TRUE;
+			}
+		} else {
+			call_session_manager = TRUE;
+		}
+
+		if (call_session_manager) {
+			g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.Reboot", NULL);
+			g_dbus_connection_call (bus,
+						"org.gnome.SessionManager",
+						"/org/gnome/SessionManager",
+						"org.gnome.SessionManager",
+						"Reboot",
+						NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+						G_MAXINT, cancellable,
+						gs_utils_invoke_reboot_ready3_cb,
+						g_steal_pointer (&task));
+		}
 	}
 }
 
@@ -956,23 +1118,25 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 
 	task = g_task_new (NULL, cancellable, ready_callback, user_data);
 	g_task_set_source_tag (task, gs_utils_invoke_reboot_async);
-	g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.Reboot", NULL);
+	g_task_set_task_data (task, (gpointer) "org.freedesktop.login1.Manager.Reboot", NULL);
 
 	bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, &local_error);
 	if (bus == NULL) {
+		g_dbus_error_strip_remote_error (local_error);
 		g_prefix_error_literal (&local_error, "Failed to get D-Bus system bus: ");
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
 	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
+				"org.freedesktop.login1",
+				"/org/freedesktop/login1",
+				"org.freedesktop.login1.Manager",
 				"Reboot",
-				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				g_variant_new ("(b)", TRUE), /* interactive */
+				NULL, G_DBUS_CALL_FLAGS_NONE,
 				G_MAXINT, cancellable,
-				gs_utils_invoke_reboot_ready_cb,
+				gs_utils_invoke_reboot_ready1_cb,
 				g_steal_pointer (&task));
 }
 
