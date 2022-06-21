@@ -898,15 +898,31 @@ gs_utils_reboot_call_done_cb (GObject *source,
 			      GAsyncResult *res,
 			      gpointer user_data)
 {
-	g_autoptr(GError) error = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* get result */
-	if (gs_utils_invoke_reboot_finish (source, res, &error))
+	if (gs_utils_invoke_reboot_finish (source, res, &local_error))
 		return;
-	if (error != NULL) {
+	if (local_error != NULL) {
 		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
+			   local_error->message);
 	}
+}
+
+static void
+gs_utils_invoke_reboot_ready_cb (GObject *source_object,
+				 GAsyncResult *result,
+				 gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GVariant) ret_val = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	ret_val = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, &local_error);
+	if (ret_val != NULL)
+		g_task_return_boolean (task, TRUE);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
 }
 
 /**
@@ -929,10 +945,21 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 			      gpointer user_data)
 {
 	g_autoptr(GDBusConnection) bus = NULL;
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	if (!ready_callback)
 		ready_callback = gs_utils_reboot_call_done_cb;
+
+	task = g_task_new (NULL, cancellable, ready_callback, user_data);
+	g_task_set_source_tag (task, gs_utils_invoke_reboot_async);
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SYSTEM, cancellable, &local_error);
+	if (bus == NULL) {
+		g_prefix_error_literal (&local_error, "Failed to get D-Bus system bus: ");
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	g_dbus_connection_call (bus,
 				"org.gnome.SessionManager",
@@ -941,8 +968,8 @@ gs_utils_invoke_reboot_async (GCancellable *cancellable,
 				"Reboot",
 				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
 				G_MAXINT, cancellable,
-				ready_callback,
-				user_data);
+				gs_utils_invoke_reboot_ready_cb,
+				g_steal_pointer (&task));
 }
 
 /**
@@ -962,9 +989,11 @@ gs_utils_invoke_reboot_finish (GObject *source_object,
 			       GAsyncResult *result,
 			       GError **error)
 {
-	g_autoptr(GVariant) res = NULL;
-	res = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source_object), result, error);
-	return res != NULL;
+	g_return_val_if_fail (G_IS_TASK (result), FALSE);
+	g_return_val_if_fail (g_task_is_valid (result, source_object), FALSE);
+	g_return_val_if_fail (g_task_get_source_tag (G_TASK (result)) == gs_utils_invoke_reboot_async, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /**
