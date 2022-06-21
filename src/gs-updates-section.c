@@ -259,17 +259,15 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	g_autoptr(GError) error = NULL;
 	GsApp *app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
-	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (retval != NULL)
+	if (gs_utils_invoke_reboot_finish (source, res, &error))
 		return;
 
-	if (error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
-	}
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		g_debug ("Calling reboot had been cancelled");
+	else if (error != NULL)
+		g_warning ("Calling reboot failed: %s", error->message);
 
 	/* cancel trigger */
 	app = gs_app_list_index (self->list, 0);
@@ -358,17 +356,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 
 	/* trigger reboot if any application was not updatable live */
 	if (helper->do_reboot) {
-		g_autoptr(GDBusConnection) bus = NULL;
-		bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-		g_dbus_connection_call (bus,
-					"org.gnome.SessionManager",
-					"/org/gnome/SessionManager",
-					"org.gnome.SessionManager",
-					"Reboot",
-					NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
-					G_MAXINT, NULL,
-					_reboot_failed_cb,
-					self);
+		gs_utils_invoke_reboot_async (NULL, _reboot_failed_cb, self);
 
 	/* when we are not doing an offline update, show a notification
 	 * if any application requires a reboot */
