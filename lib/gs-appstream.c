@@ -20,7 +20,13 @@ GsApp *
 gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GError **error)
 {
 	GsApp *app;
-	g_autoptr(GsApp) app_new = gs_app_new (NULL);
+	g_autoptr(GsApp) app_new = NULL;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	g_return_val_if_fail (XB_IS_SILO (silo), NULL);
+	g_return_val_if_fail (XB_IS_NODE (component), NULL);
+
+	app_new = gs_app_new (NULL);
 
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
@@ -972,6 +978,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	g_autoptr(GPtrArray) launchables = NULL;
 	g_autoptr(XbNode) req = NULL;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (XB_IS_NODE (component), FALSE);
+
 	/* is compatible */
 	req = xb_node_query_first (component,
 				   "requires/id[@type='id']"
@@ -1408,6 +1419,11 @@ gs_appstream_do_search (GsPlugin *plugin,
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (values != NULL, FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	/* add some weighted queries */
 	for (guint i = 0; queries[i].xpath != NULL; i++) {
 		g_autoptr(GError) error_query = NULL;
@@ -1524,6 +1540,11 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 {
 	GPtrArray *desktop_groups;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
 		g_warning ("no desktop_groups for %s", gs_category_get_id (category));
@@ -1614,6 +1635,9 @@ gs_appstream_add_categories (XbSilo *silo,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (list != NULL, FALSE);
+
 	for (guint j = 0; j < list->len; j++) {
 		GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
 		GPtrArray *children = gs_category_get_children (parent);
@@ -1649,6 +1673,10 @@ gs_appstream_add_installed (GsPlugin      *plugin,
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GError) local_error = NULL;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	/* get all installed appdata files (notice no 'components/' prefix...) */
 	components = xb_silo_query (silo, "component/description/..", 0, NULL);
 	if (components == NULL)
@@ -1679,6 +1707,9 @@ gs_appstream_add_popular (XbSilo *silo,
 {
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
 
 	/* find out how many packages are in each category */
 	array = xb_silo_query (silo,
@@ -1717,6 +1748,10 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	/* use predicate conditions to the max */
 	xpath = g_strdup_printf ("components/component/releases/"
 				 "release[@timestamp>%" G_GUINT64_FORMAT "]/../..",
@@ -1754,6 +1789,10 @@ gs_appstream_add_alternates (XbSilo *silo,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) ids = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
+
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
 
 	/* probably a package we know nothing about */
 	if (gs_app_get_id (app) == NULL)
@@ -1813,6 +1852,9 @@ gs_appstream_add_featured_with_query (XbSilo *silo,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	/* find out how many packages are in each category */
 	array = xb_silo_query (silo, query, 0, &error_local);
 	if (array == NULL) {
@@ -1855,7 +1897,9 @@ gs_appstream_add_deployment_featured (XbSilo *silo,
 				      GError **error)
 {
 	g_autoptr(GString) query = g_string_new (NULL);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (deployments != NULL, FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
 	for (guint ii = 0; deployments[ii] != NULL; ii++) {
 		g_autofree gchar *escaped = xb_string_escape (deployments[ii]);
 		if (escaped != NULL && *escaped != '\0') {
@@ -1881,6 +1925,11 @@ gs_appstream_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *scheme = NULL;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GPtrArray) components = NULL;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+	g_return_val_if_fail (url != NULL, FALSE);
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
@@ -1912,6 +1961,9 @@ gs_appstream_component_add_keyword (XbBuilderNode *component, const gchar *str)
 	g_autoptr(XbBuilderNode) keyword = NULL;
 	g_autoptr(XbBuilderNode) keywords = NULL;
 
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+	g_return_if_fail (str != NULL);
+
 	/* create <keywords> if it does not already exist */
 	keywords = xb_builder_node_get_child (component, "keywords", NULL);
 	if (keywords == NULL)
@@ -1930,6 +1982,9 @@ gs_appstream_component_add_provide (XbBuilderNode *component, const gchar *str)
 {
 	g_autoptr(XbBuilderNode) provide = NULL;
 	g_autoptr(XbBuilderNode) provides = NULL;
+
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+	g_return_if_fail (str != NULL);
 
 	/* create <provides> if it does not already exist */
 	provides = xb_builder_node_get_child (component, "provides", NULL);
@@ -1950,6 +2005,9 @@ gs_appstream_component_add_category (XbBuilderNode *component, const gchar *str)
 	g_autoptr(XbBuilderNode) category = NULL;
 	g_autoptr(XbBuilderNode) categories = NULL;
 
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+	g_return_if_fail (str != NULL);
+
 	/* create <categories> if it does not already exist */
 	categories = xb_builder_node_get_child (component, "categories", NULL);
 	if (categories == NULL)
@@ -1968,6 +2026,9 @@ gs_appstream_component_add_icon (XbBuilderNode *component, const gchar *str)
 {
 	g_autoptr(XbBuilderNode) icon = NULL;
 
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+	g_return_if_fail (str != NULL);
+
 	/* create <icon>str</icon> if it does not already exist */
 	icon = xb_builder_node_get_child (component, "icon", NULL);
 	if (icon == NULL) {
@@ -1981,7 +2042,11 @@ gs_appstream_component_add_icon (XbBuilderNode *component, const gchar *str)
 void
 gs_appstream_component_add_extra_info (XbBuilderNode *component)
 {
-	const gchar *kind = xb_builder_node_get_attr (component, "type");
+	const gchar *kind;
+
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+
+	kind = xb_builder_node_get_attr (component, "type");
 
 	/* add the gnome-software-specific 'Addon' group and ensure they
 	 * all have an icon set */
@@ -2027,8 +2092,13 @@ gs_appstream_component_add_extra_info (XbBuilderNode *component)
 void
 gs_appstream_component_fix_url (XbBuilderNode *component, const gchar *baseurl)
 {
-	const gchar *text = xb_builder_node_get_text (component);
+	const gchar *text;
 	g_autofree gchar *url = NULL;
+
+	g_return_if_fail (XB_IS_BUILDER_NODE (component));
+	g_return_if_fail (baseurl != NULL);
+
+	text = xb_builder_node_get_text (component);
 
 	if (text == NULL)
 		return;
