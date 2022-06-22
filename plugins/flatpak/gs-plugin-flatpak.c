@@ -605,7 +605,7 @@ refine_app (GsPluginFlatpak      *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
 		GsApp *runtime = gs_app_get_runtime (app);
 		if (runtime != NULL) {
-			if (!gs_plugin_flatpak_refine_app (self, app,
+			if (!gs_plugin_flatpak_refine_app (self, runtime,
 							   flags,
 							   interactive,
 							   cancellable,

@@ -2369,21 +2369,32 @@ gs_flatpak_create_runtime (GsFlatpak   *self,
 
 	/* search in the cache */
 	app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
-	if (app_cache != NULL) {
+	if (app_cache != NULL &&
+	    g_strcmp0 (gs_flatpak_app_get_ref_name (app_cache), split[0]) == 0 &&
+	    g_strcmp0 (gs_flatpak_app_get_ref_arch (app_cache), split[1]) == 0 &&
+	    g_strcmp0 (gs_app_get_branch (app_cache), split[2]) == 0) {
 		/* since the cached runtime can have been created somewhere else
 		 * (we're using a global cache), we need to make sure that a
 		 * source is set */
 		if (gs_app_get_source_default (app_cache) == NULL)
 			gs_app_add_source (app_cache, source);
 		return g_steal_pointer (&app_cache);
+	} else {
+		g_clear_object (&app_cache);
 	}
 
 	/* if the app is per-user we can also use the installed system runtime */
 	if (gs_app_get_scope (parent) == AS_COMPONENT_SCOPE_USER) {
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
 		app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
-		if (app_cache != NULL)
+		if (app_cache != NULL &&
+		    g_strcmp0 (gs_flatpak_app_get_ref_name (app_cache), split[0]) == 0 &&
+		    g_strcmp0 (gs_flatpak_app_get_ref_arch (app_cache), split[1]) == 0 &&
+		    g_strcmp0 (gs_app_get_branch (app_cache), split[2]) == 0) {
 			return g_steal_pointer (&app_cache);
+		} else {
+			g_clear_object (&app_cache);
+		}
 	}
 
 	/* set superclassed app properties */
@@ -2831,8 +2842,8 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 								   &error_local);
 
 		if (!ret) {
-			g_warning ("libflatpak failed to return application "
-				   "size: %s", error_local->message);
+			/* This can happen when the remote is filtered */
+			g_debug ("libflatpak failed to return application size: %s", error_local->message);
 			g_clear_error (&error_local);
 		}
 	}
