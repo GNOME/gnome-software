@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-06-08 11:23+0000\n"
-"PO-Revision-Date: 2022-06-10 00:00+0100\n"
+"POT-Creation-Date: 2022-06-22 13:25+0000\n"
+"PO-Revision-Date: 2022-06-22 14:39+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -793,7 +793,7 @@ msgstr "Classificação Etária"
 msgid "How to add missing information"
 msgstr "Como adicionar informação em falta"
 
-#: lib/gs-app.c:6104
+#: lib/gs-app.c:6155
 msgid "Local file"
 msgstr "Ficheiro local"
 
@@ -802,12 +802,12 @@ msgstr "Ficheiro local"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6120 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6171 src/gs-safety-context-dialog.c:419
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6196
+#: lib/gs-app.c:6247
 msgid "Package"
 msgstr "Pacote"
 
@@ -1410,7 +1410,7 @@ msgstr "Cancelar"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:366
+#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:367
 msgid "Install"
 msgstr "Instalar"
 
@@ -1425,7 +1425,7 @@ msgstr "Atualizar"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:276
-#: src/gs-page.c:525
+#: src/gs-page.c:532
 msgid "Uninstall"
 msgstr "Desinstalar"
 
@@ -2268,11 +2268,11 @@ msgid "Other Apps by %s"
 msgstr "Outras aplicações por %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1521
+#: src/gs-details-page.c:1522
 msgid "You need internet access to write a review"
 msgstr "É necessário conexão à Internet para escrever uma avaliação"
 
-#: src/gs-details-page.c:1669 src/gs-details-page.c:1685
+#: src/gs-details-page.c:1670 src/gs-details-page.c:1686
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossível encontrar «%s»"
@@ -3088,7 +3088,7 @@ msgstr "Outras categorias"
 msgid "No Application Data Found"
 msgstr "Nenhuns dados de aplicação encontrados"
 
-#: lib/gs-plugin-loader.c:3012
+#: lib/gs-plugin-loader.c:3069
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconhecida"
@@ -3099,20 +3099,20 @@ msgstr "O utilizador recusou a instalação"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:357
+#: src/gs-page.c:358
 #, c-format
 msgid "Prepare %s"
 msgstr "Preparar %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:494
+#: src/gs-page.c:501
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Tem certeza que quer remover %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:498
+#: src/gs-page.c:505
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -3123,13 +3123,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:506
+#: src/gs-page.c:513
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Tem certeza que deseja desinstalar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:509
+#: src/gs-page.c:516
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3427,7 +3427,7 @@ msgstr ""
 "privacy\">política de privacidade</a>. O nome completo anexado à sua conta "
 "será mostrado publicamente."
 
-#: src/gs-review-histogram.c:73
+#: src/gs-review-histogram.c:72
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
@@ -3772,35 +3772,35 @@ msgstr "Sem capturas de ecrã"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:336 src/gs-screenshot-image.c:393
+#: src/gs-screenshot-image.c:355 src/gs-screenshot-image.c:412
 msgid "Screenshot not found"
 msgstr "Impossível encontrar captura de ecrã"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:431
 msgid "Failed to load image"
 msgstr "Falha ao carregar imagem"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:563
+#: src/gs-screenshot-image.c:582
 msgid "Screenshot size not found"
 msgstr "Impossível encontrar tamanho da captura de ecrã"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:644
+#: src/gs-screenshot-image.c:663
 msgid "Could not create cache"
 msgstr "Impossível criar cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:658
+#: src/gs-screenshot-image.c:677
 msgid "Screenshot not valid"
 msgstr "Captura de ecrã inválida"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:690
+#: src/gs-screenshot-image.c:709
 msgid "Screenshot not available"
 msgstr "Captura de ecrã indisponível"
 
@@ -4983,7 +4983,7 @@ msgstr ""
 msgid "Getting flatpak metadata for %s…"
 msgstr "A obter metadados flatpak para %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3344
+#: plugins/flatpak/gs-flatpak.c:3355
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Falha ao refinar o complemento ‘%s’: %s"
@@ -5005,6 +5005,15 @@ msgstr "Falha ao adicionar para instalação o complemento ‘%s’: %s"
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "Falha ao adicionar para desinstalação o complemento ‘%s’: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:1318
+#, c-format
+msgid ""
+"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
+"Remove the filter and repeat the install. Detailed error: %s"
+msgstr ""
+"O \"%s\" remoto não permite a instalação de \"%s\", possivelmente devido ao "
+"seu filtro. Remova o filtro e repita a instalação. Erro detalhado: %s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
