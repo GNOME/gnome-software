@@ -3626,7 +3626,9 @@ gs_app_set_size_download (GsApp      *app,
  * @out_bytes will silently be clamped to %G_MAXUINT64.
  */
 static gboolean
-add_sizes (GsSizeType  a_type,
+add_sizes (GsApp      *app,
+           GHashTable *covered_uids,
+           GsSizeType  a_type,
            guint64     a_bytes,
            GsSizeType  b_type,
            guint64     b_bytes,
@@ -3635,6 +3637,15 @@ add_sizes (GsSizeType  a_type,
 {
 	g_return_val_if_fail (out_type != NULL, FALSE);
 	g_return_val_if_fail (out_bytes != NULL, FALSE);
+
+	if (app != NULL && covered_uids != NULL) {
+		const gchar *id = gs_app_get_unique_id (app);
+		if (id != NULL) {
+			if (g_hash_table_contains (covered_uids, id))
+				return TRUE;
+			g_hash_table_add (covered_uids, g_strdup (id));
+		}
+	}
 
 	if (a_type == GS_SIZE_TYPE_VALID && b_type == GS_SIZE_TYPE_VALID) {
 		*out_type = GS_SIZE_TYPE_VALID;
@@ -3647,6 +3658,71 @@ add_sizes (GsSizeType  a_type,
 	*out_bytes = 0;
 
 	return FALSE;
+}
+
+static GsSizeType
+get_size_download_dependencies (GsApp *app,
+				guint64 *size_bytes_out,
+				GHashTable *covered_uids)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	GsSizeType size_type = GS_SIZE_TYPE_VALID;
+	guint64 size_bytes = 0;
+
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
+
+	/* add the runtime if this is not installed */
+	if (priv->runtime != NULL &&
+	    gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE) {
+		GsSizeType runtime_size_download_type, runtime_size_download_dependencies_type;
+		guint64 runtime_size_download_bytes, runtime_size_download_dependencies_bytes;
+
+		runtime_size_download_type = gs_app_get_size_download (priv->runtime, &runtime_size_download_bytes);
+
+		if (add_sizes (priv->runtime, covered_uids,
+			       size_type, size_bytes,
+			       runtime_size_download_type, runtime_size_download_bytes,
+			       &size_type, &size_bytes)) {
+			runtime_size_download_dependencies_type = get_size_download_dependencies (priv->runtime,
+												  &runtime_size_download_dependencies_bytes,
+												  covered_uids);
+
+			add_sizes (NULL, NULL,
+				   size_type, size_bytes,
+				   runtime_size_download_dependencies_type, runtime_size_download_dependencies_bytes,
+				   &size_type, &size_bytes);
+		}
+	}
+
+	/* add related apps */
+	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
+		GsApp *app_related = gs_app_list_index (priv->related, i);
+		GsSizeType related_size_download_type, related_size_download_dependencies_type;
+		guint64 related_size_download_bytes, related_size_download_dependencies_bytes;
+
+		related_size_download_type = gs_app_get_size_download (app_related, &related_size_download_bytes);
+
+		if (!add_sizes (app_related, covered_uids,
+				size_type, size_bytes,
+				related_size_download_type, related_size_download_bytes,
+				&size_type, &size_bytes))
+			break;
+
+		related_size_download_dependencies_type = get_size_download_dependencies (app_related,
+											  &related_size_download_dependencies_bytes,
+											  covered_uids);
+
+		if (!add_sizes (NULL, NULL,
+				size_type, size_bytes,
+				related_size_download_dependencies_type, related_size_download_dependencies_bytes,
+				&size_type, &size_bytes))
+			break;
+	}
+
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
+
+	return size_type;
 }
 
 /**
@@ -3669,56 +3745,13 @@ GsSizeType
 gs_app_get_size_download_dependencies (GsApp   *app,
                                        guint64 *size_bytes_out)
 {
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	GsSizeType size_type = GS_SIZE_TYPE_VALID;
-	guint64 size_bytes = 0;
+	g_autoptr(GHashTable) covered_uids = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	/* add the runtime if this is not installed */
-	if (priv->runtime != NULL &&
-	    gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE) {
-		GsSizeType runtime_size_download_type, runtime_size_download_dependencies_type;
-		guint64 runtime_size_download_bytes, runtime_size_download_dependencies_bytes;
+	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, g_free, NULL);
 
-		runtime_size_download_type = gs_app_get_size_download (priv->runtime, &runtime_size_download_bytes);
-
-		if (add_sizes (size_type, size_bytes,
-			       runtime_size_download_type, runtime_size_download_bytes,
-			       &size_type, &size_bytes)) {
-			runtime_size_download_dependencies_type = gs_app_get_size_download_dependencies (priv->runtime, &runtime_size_download_dependencies_bytes);
-
-			add_sizes (size_type, size_bytes,
-				   runtime_size_download_dependencies_type, runtime_size_download_dependencies_bytes,
-				   &size_type, &size_bytes);
-		}
-	}
-
-	/* add related apps */
-	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
-		GsApp *app_related = gs_app_list_index (priv->related, i);
-		GsSizeType related_size_download_type, related_size_download_dependencies_type;
-		guint64 related_size_download_bytes, related_size_download_dependencies_bytes;
-
-		related_size_download_type = gs_app_get_size_download (app_related, &related_size_download_bytes);
-
-		if (!add_sizes (size_type, size_bytes,
-				related_size_download_type, related_size_download_bytes,
-				&size_type, &size_bytes))
-			break;
-
-		related_size_download_dependencies_type = gs_app_get_size_download_dependencies (app_related, &related_size_download_dependencies_bytes);
-
-		if (!add_sizes (size_type, size_bytes,
-				related_size_download_dependencies_type, related_size_download_dependencies_bytes,
-				&size_type, &size_bytes))
-			break;
-	}
-
-	if (size_bytes_out != NULL)
-		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
-
-	return size_type;
+	return get_size_download_dependencies (app, size_bytes_out, covered_uids);
 }
 
 /**
@@ -3784,6 +3817,48 @@ gs_app_set_size_installed (GsApp      *app,
 	}
 }
 
+static GsSizeType
+get_size_installed_dependencies (GsApp *app,
+				 guint64 *size_bytes_out,
+				 GHashTable *covered_uids)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	GsSizeType size_type = GS_SIZE_TYPE_VALID;
+	guint64 size_bytes = 0;
+
+	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
+
+	/* add related apps */
+	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
+		GsApp *app_related = gs_app_list_index (priv->related, i);
+		GsSizeType related_size_installed_type, related_size_installed_dependencies_type;
+		guint64 related_size_installed_bytes, related_size_installed_dependencies_bytes;
+
+		related_size_installed_type = gs_app_get_size_installed (app_related, &related_size_installed_bytes);
+
+		if (!add_sizes (app_related, covered_uids,
+				size_type, size_bytes,
+				related_size_installed_type, related_size_installed_bytes,
+				&size_type, &size_bytes))
+			break;
+
+		related_size_installed_dependencies_type = get_size_installed_dependencies (app_related,
+											    &related_size_installed_dependencies_bytes,
+											    covered_uids);
+
+		if (!add_sizes (NULL, NULL,
+				size_type, size_bytes,
+				related_size_installed_dependencies_type, related_size_installed_dependencies_bytes,
+				&size_type, &size_bytes))
+			break;
+	}
+
+	if (size_bytes_out != NULL)
+		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
+
+	return size_type;
+}
+
 /**
  * gs_app_get_size_installed_dependencies:
  * @app: a #GsApp
@@ -3804,37 +3879,13 @@ GsSizeType
 gs_app_get_size_installed_dependencies (GsApp   *app,
                                         guint64 *size_bytes_out)
 {
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	GsSizeType size_type = GS_SIZE_TYPE_VALID;
-	guint64 size_bytes = 0;
+	g_autoptr(GHashTable) covered_uids = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	/* add related apps */
-	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
-		GsApp *app_related = gs_app_list_index (priv->related, i);
-		GsSizeType related_size_installed_type, related_size_installed_dependencies_type;
-		guint64 related_size_installed_bytes, related_size_installed_dependencies_bytes;
+	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, g_free, NULL);
 
-		related_size_installed_type = gs_app_get_size_installed (app_related, &related_size_installed_bytes);
-
-		if (!add_sizes (size_type, size_bytes,
-				related_size_installed_type, related_size_installed_bytes,
-				&size_type, &size_bytes))
-			break;
-
-		related_size_installed_dependencies_type = gs_app_get_size_installed_dependencies (app_related, &related_size_installed_dependencies_bytes);
-
-		if (!add_sizes (size_type, size_bytes,
-				related_size_installed_dependencies_type, related_size_installed_dependencies_bytes,
-				&size_type, &size_bytes))
-			break;
-	}
-
-	if (size_bytes_out != NULL)
-		*size_bytes_out = (size_type == GS_SIZE_TYPE_VALID) ? size_bytes : 0;
-
-	return size_type;
+	return get_size_installed_dependencies (app, size_bytes_out, covered_uids);
 }
 
 /**
