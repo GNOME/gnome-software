@@ -3624,6 +3624,9 @@ gs_app_set_size_download (GsApp      *app,
  *
  * If the sum of @a_bytes and @b_bytes exceeds %G_MAXUINT64, the result in
  * @out_bytes will silently be clamped to %G_MAXUINT64.
+ *
+ * The lifetime of @app must be at least as long as the lifetime of
+ * @covered_uids, which allows us to avoid some string copies.
  */
 static gboolean
 add_sizes (GsApp      *app,
@@ -3640,11 +3643,9 @@ add_sizes (GsApp      *app,
 
 	if (app != NULL && covered_uids != NULL) {
 		const gchar *id = gs_app_get_unique_id (app);
-		if (id != NULL) {
-			if (g_hash_table_contains (covered_uids, id))
-				return TRUE;
-			g_hash_table_add (covered_uids, g_strdup (id));
-		}
+		if (id != NULL &&
+		    !g_hash_table_add (covered_uids, (gpointer) id))
+			return TRUE;
 	}
 
 	if (a_type == GS_SIZE_TYPE_VALID && b_type == GS_SIZE_TYPE_VALID) {
@@ -3749,7 +3750,7 @@ gs_app_get_size_download_dependencies (GsApp   *app,
 
 	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, g_free, NULL);
+	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, NULL, NULL);
 
 	return get_size_download_dependencies (app, size_bytes_out, covered_uids);
 }
@@ -3883,7 +3884,7 @@ gs_app_get_size_installed_dependencies (GsApp   *app,
 
 	g_return_val_if_fail (GS_IS_APP (app), GS_SIZE_TYPE_UNKNOWN);
 
-	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, g_free, NULL);
+	covered_uids = g_hash_table_new_full ((GHashFunc) as_utils_data_id_hash, (GEqualFunc) as_utils_data_id_equal, NULL, NULL);
 
 	return get_size_installed_dependencies (app, size_bytes_out, covered_uids);
 }
