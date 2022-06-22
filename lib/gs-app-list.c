@@ -718,6 +718,9 @@ gs_app_list_randomize (GsAppList *list)
 
 	locker = g_mutex_locker_new (&list->mutex);
 
+	if (!gs_app_list_length (list))
+		return;
+
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
 	g_rand_set_seed (rand, (guint32) g_date_time_get_day_of_year (date));
