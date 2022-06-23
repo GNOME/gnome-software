@@ -923,6 +923,20 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
 }
 
+static gboolean
+plugin_packagekit_pick_rpm_desktop_file_cb (GsPlugin *plugin,
+					    GsApp *app,
+					    const gchar *filename,
+					    GKeyFile *key_file)
+{
+	return strstr (filename, "/snapd/") == NULL &&
+	       strstr (filename, "/snap/") == NULL &&
+	       strstr (filename, "/flatpak/") == NULL &&
+	       g_key_file_has_group (key_file, "Desktop Entry") &&
+	       !g_key_file_has_key (key_file, "Desktop Entry", "X-Flatpak", NULL) &&
+	       !g_key_file_has_key (key_file, "Desktop Entry", "X-SnapInstanceName", NULL);
+}
+
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
@@ -933,7 +947,7 @@ gs_plugin_launch (GsPlugin *plugin,
 	if (!gs_app_has_management_plugin (app, plugin))
 		return TRUE;
 
-	return gs_plugin_app_launch (plugin, app, error);
+	return gs_plugin_app_launch_filtered (plugin, app, plugin_packagekit_pick_rpm_desktop_file_cb, NULL, error);
 }
 
 static void
