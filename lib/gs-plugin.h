@@ -208,6 +208,30 @@ void		 gs_plugin_status_update		(GsPlugin	*plugin,
 gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GError		**error);
+typedef gboolean (* GsPluginPickDesktopFileCallback)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 const gchar	*filename,
+							 GKeyFile	*key_file);
+/**
+ * GsPluginPickDesktopFileCallback:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ * @filename: a .desktop file name
+ * @key_file: a #GKeyFile with @filename loaded
+ *
+ * A callback used by gs_plugin_app_launch_filtered() to filter which
+ * of the candidate .desktop files should be used to launch the @app.
+ *
+ * Returns: %TRUE, when the @key_file should be used, %FALSE to continue
+ *    searching.
+ *
+ * Since: 43
+ **/
+gboolean	 gs_plugin_app_launch_filtered		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsPluginPickDesktopFileCallback cb,
+							 gpointer	user_data,
+							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 void		 gs_plugin_reload			(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
