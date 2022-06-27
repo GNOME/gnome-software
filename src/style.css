@@ -53,9 +53,11 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 }
 
 .category-tile.category-tile-iconless {
+	/* We have to remove the padding: 160px - 2*15px = 130px */
+	min-width: 130px;
+	padding: 10px 15px;
 	font-size: 105%;
 	font-weight: normal;
-	padding: 10px 15px;
 }
 
 /* Styling for specific category buttons. */
