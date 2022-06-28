@@ -257,7 +257,7 @@ update_safety_tile (GsAppContextBar *self)
 	g_autofree gchar *description = NULL;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
-	GsAppPermissionsFlags perm_flags = 0;
+	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
 	 * based on app properties. */
@@ -268,18 +268,20 @@ update_safety_tile (GsAppContextBar *self)
 	permissions = gs_app_dup_permissions (self->app);
 	if (permissions != NULL)
 		perm_flags = gs_app_permissions_get_flags (permissions);
-	for (GsAppPermissionsFlags i = GS_APP_PERMISSIONS_FLAGS_NONE; i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
+
+	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) {
+		add_to_safety_rating (&chosen_rating, descriptions,
+				      SAFETY_SAFE,
+				      /* Translators: This indicates an app requires no permissions to run.
+				       * It’s used in a context tile, so should be short. */
+				      _("No permissions"));
+	}
+
+	for (GsAppPermissionsFlags i = (1 << 0); i < GS_APP_PERMISSIONS_FLAGS_LAST; i <<= 1) {
 		if (!(perm_flags & i))
 			continue;
 
 		switch (i) {
-		case GS_APP_PERMISSIONS_FLAGS_NONE:
-			add_to_safety_rating (&chosen_rating, descriptions,
-					      SAFETY_SAFE,
-					      /* Translators: This indicates an app requires no permissions to run.
-					       * It’s used in a context tile, so should be short. */
-					      _("No permissions"));
-			break;
 		case GS_APP_PERMISSIONS_FLAGS_NETWORK:
 			add_to_safety_rating (&chosen_rating, descriptions,
 					      /* This isn’t actually safe (network access can expand a local

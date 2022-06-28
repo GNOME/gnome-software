@@ -111,7 +111,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	g_autofree gchar *description = NULL;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
-	GsAppPermissionsFlags perm_flags = 0;
+	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 	GsContextDialogRowImportance chosen_rating;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
@@ -151,7 +151,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		filesystem_full = gs_app_permissions_get_filesystem_full (permissions);
 
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_NONE) != 0 &&
+				    (perm_flags == GS_APP_PERMISSIONS_FLAGS_NONE) &&
 				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 				    "folder-documents-symbolic",

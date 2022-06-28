@@ -240,7 +240,7 @@ perms_from_metadata (GKeyFile *keyfile)
 	char **strv;
 	char *str;
 	GsAppPermissions *permissions = gs_app_permissions_new ();
-	GsAppPermissionsFlags flags = 0;
+	GsAppPermissionsFlags flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
@@ -417,10 +417,6 @@ perms_from_metadata (GKeyFile *keyfile)
 			flags |= GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX;
 		g_free (str);
 	}
-
-	/* no permissions set */
-	if (flags == 0)
-		flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 
 	gs_app_permissions_set_flags (permissions, flags);
 	gs_app_permissions_seal (permissions);
