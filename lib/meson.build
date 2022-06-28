@@ -6,6 +6,7 @@ libgnomesoftware_public_headers = [
   'gs-app.h',
   'gs-app-collation.h',
   'gs-app-list.h',
+  'gs-app-permissions.h',
   'gs-app-query.h',
   'gs-appstream.h',
   'gs-category.h',
@@ -83,6 +84,7 @@ libgnomesoftware = library(
   sources : [
     'gs-app.c',
     'gs-app-list.c',
+    'gs-app-permissions.c',
     'gs-app-query.c',
     'gs-appstream.c',
     'gs-category.c',

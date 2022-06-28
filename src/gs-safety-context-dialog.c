@@ -108,9 +108,10 @@ update_permissions_list (GsSafetyContextDialog *self)
 {
 	const gchar *icon_name, *css_class;
 	g_autofree gchar *title = NULL;
-	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autofree gchar *description = NULL;
-	GsAppPermissions permissions;
+	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
+	g_autoptr(GsAppPermissions) permissions = NULL;
+	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
 	GtkStyleContext *context;
 	GsContextDialogRowImportance chosen_rating;
 
@@ -124,15 +125,17 @@ update_permissions_list (GsSafetyContextDialog *self)
 	if (self->app == NULL)
 		return;
 
-	permissions = gs_app_get_permissions (self->app);
+	permissions = gs_app_dup_permissions (self->app);
+	if (permissions != NULL)
+		perm_flags = gs_app_permissions_get_flags (permissions);
 
 	/* Handle unknown permissions. This means the application isn’t
 	 * sandboxed, so we can only really base decisions on whether it was
 	 * packaged by an organisation we trust or not.
 	 *
-	 * FIXME: See the comment for GS_APP_PERMISSIONS_UNKNOWN in
+	 * FIXME: See the comment for GS_APP_PERMISSIONS_FLAGS_UNKNOWN in
 	 * gs-app-context-bar.c. */
-	if (permissions == GS_APP_PERMISSIONS_UNKNOWN) {
+	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN) {
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
@@ -143,8 +146,14 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Reviewed by your distribution"),
 				    _("Application isn’t sandboxed but the distribution has checked that it is not malicious"));
 	} else {
+		const GPtrArray *filesystem_read, *filesystem_full;
+
+		filesystem_read = gs_app_permissions_get_filesystem_read (permissions);
+		filesystem_full = gs_app_permissions_get_filesystem_full (permissions);
+
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_NONE) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_NONE) != 0 &&
+				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -152,7 +161,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("App is fully sandboxed"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_NETWORK) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_NETWORK) != 0,
 				    /* This isn’t actually unimportant (network access can expand a local
 				     * vulnerability into a remotely exploitable one), but it’s
 				     * needed commonly enough that marking it as
@@ -167,7 +176,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("No Network Access"),
 				    _("Cannot access the internet"));
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_SYSTEM_BUS) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "emblem-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -175,7 +184,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can request data from system services"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_SESSION_BUS) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SESSION_BUS) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "emblem-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -183,7 +192,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can request data from session services"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_DEVICES) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_DEVICES) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "camera-photo-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -194,7 +203,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("No Device Access"),
 				    _("Cannot access devices such as webcams or gaming controllers"));
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_X11) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_X11) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "desktop-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -202,7 +211,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Uses a legacy windowing system"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_ESCAPE_SANDBOX) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "dialog-warning-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -210,7 +219,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can acquire arbitrary permissions"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_SETTINGS) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_SETTINGS) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "preferences-system-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -222,7 +231,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 		 * varying scopes of what’s readable/writable, and a difference between
 		 * read-only and writable access. */
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    (permissions & GS_APP_PERMISSIONS_FILESYSTEM_FULL) != 0,
+				    (perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL) != 0,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -230,8 +239,8 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can read and write all data on the file system"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_HOME_FULL) != 0 &&
-				     !(permissions & GS_APP_PERMISSIONS_FILESYSTEM_FULL)),
+				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_FULL) != 0 &&
+				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -239,8 +248,8 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can read and write all data in your home directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_FILESYSTEM_READ) != 0 &&
-				     !(permissions & GS_APP_PERMISSIONS_FILESYSTEM_FULL)),
+				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ) != 0 &&
+				     !(perm_flags & GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL)),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -248,9 +257,9 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can read all data on the file system"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_HOME_READ) != 0 &&
-				     !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
-						      GS_APP_PERMISSIONS_FILESYSTEM_READ))),
+				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_HOME_READ) != 0 &&
+				     !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
+						     GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ))),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_IMPORTANT,
 				    "user-home-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -258,9 +267,9 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can read all data in your home directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_DOWNLOADS_FULL) != 0 &&
-				     !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
-						      GS_APP_PERMISSIONS_HOME_FULL))),
+				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL) != 0 &&
+				     !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
+						     GS_APP_PERMISSIONS_FLAGS_HOME_FULL))),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-download-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
@@ -268,38 +277,49 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    _("Can read and write all data in your downloads directory"),
 				    NULL, NULL, NULL);
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_DOWNLOADS_READ) != 0 &&
-				     !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
-						      GS_APP_PERMISSIONS_FILESYSTEM_READ |
-						      GS_APP_PERMISSIONS_HOME_FULL |
-						      GS_APP_PERMISSIONS_HOME_READ))),
+				    ((perm_flags & GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ) != 0 &&
+				     !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
+						     GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ |
+						     GS_APP_PERMISSIONS_FLAGS_HOME_FULL |
+						     GS_APP_PERMISSIONS_FLAGS_HOME_READ))),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "folder-download-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 				    _("Download Folder Read Access"),
 				    _("Can read all data in your downloads directory"),
 				    NULL, NULL, NULL);
-		add_permission_row (self->permissions_list, &chosen_rating,
-				    ((permissions & GS_APP_PERMISSIONS_FILESYSTEM_OTHER) != 0 &&
-				     !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
-						      GS_APP_PERMISSIONS_FILESYSTEM_READ |
-						      GS_APP_PERMISSIONS_HOME_FULL |
-						      GS_APP_PERMISSIONS_HOME_READ))),
-				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
-				    "folder-documents-symbolic",
-				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
-				    _("Access arbitrary files"),
-				    _("Can access arbitrary files on the file system"),
-				    NULL, NULL, NULL);
+
+		for (guint i = 0; filesystem_full != NULL && i < filesystem_full->len; i++) {
+			const gchar *fs_title = g_ptr_array_index (filesystem_full, i);
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+					    "folder-documents-symbolic",
+					    fs_title,
+					    _("Can read and write all data in the directory"),
+					    NULL, NULL, NULL);
+		}
+
+		for (guint i = 0; filesystem_read != NULL && i < filesystem_read->len; i++) {
+			const gchar *fs_title = g_ptr_array_index (filesystem_read, i);
+			add_permission_row (self->permissions_list, &chosen_rating,
+					    TRUE,
+					    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
+					    "folder-documents-symbolic",
+					    fs_title,
+					    _("Can read all data in the directory"),
+					    NULL, NULL, NULL);
+		}
 
 		add_permission_row (self->permissions_list, &chosen_rating,
-				    !(permissions & (GS_APP_PERMISSIONS_FILESYSTEM_FULL |
-						     GS_APP_PERMISSIONS_FILESYSTEM_READ |
-						     GS_APP_PERMISSIONS_FILESYSTEM_OTHER |
-						     GS_APP_PERMISSIONS_HOME_FULL |
-						     GS_APP_PERMISSIONS_HOME_READ |
-						     GS_APP_PERMISSIONS_DOWNLOADS_FULL |
-						     GS_APP_PERMISSIONS_DOWNLOADS_READ)),
+				    !(perm_flags & (GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL |
+						    GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ |
+						    GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER |
+						    GS_APP_PERMISSIONS_FLAGS_HOME_FULL |
+						    GS_APP_PERMISSIONS_FLAGS_HOME_READ |
+						    GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL |
+						    GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ)) &&
+				    filesystem_read == NULL && filesystem_full == NULL,
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
 				    "folder-documents-symbolic",
 				    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */

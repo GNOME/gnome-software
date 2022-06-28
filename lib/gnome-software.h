@@ -15,6 +15,7 @@
 #include <gs-app.h>
 #include <gs-app-list.h>
 #include <gs-app-collation.h>
+#include <gs-app-permissions.h>
 #include <gs-app-query.h>
 #include <gs-category.h>
 #include <gs-category-manager.h>

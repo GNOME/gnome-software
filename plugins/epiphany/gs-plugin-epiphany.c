@@ -61,6 +61,9 @@ struct _GsPluginEpiphany
 	/* installed_apps_cached: whether the plugin cache has all installed apps */
 	gboolean installed_apps_cached;
 	GHashTable *url_id_map; /* (owned) (not nullable) (element-type utf8 utf8) */
+
+	/* default permissions, shared between all applications */
+	GsAppPermissions *permissions; /* (owned) (not nullable) */
 };
 
 G_DEFINE_TYPE (GsPluginEpiphany, gs_plugin_epiphany, GS_TYPE_PLUGIN)
@@ -312,6 +315,12 @@ gs_plugin_epiphany_shutdown_finish (GsPlugin      *plugin,
 static void
 gs_plugin_epiphany_init (GsPluginEpiphany *self)
 {
+	/* Re-used permissions by all GsApp instances; do not modify it out
+	   of this place. */
+	self->permissions = gs_app_permissions_new ();
+	gs_app_permissions_set_flags (self->permissions, GS_APP_PERMISSIONS_FLAGS_NETWORK);
+	gs_app_permissions_seal (self->permissions);
+
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (GS_PLUGIN (self), "org.gnome.Software.Plugin.Epiphany");
 
@@ -347,6 +356,7 @@ gs_plugin_epiphany_finalize (GObject *object)
 	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (object);
 
 	g_mutex_clear (&self->installed_apps_mutex);
+	g_clear_object (&self->permissions);
 
 	G_OBJECT_CLASS (gs_plugin_epiphany_parent_class)->finalize (object);
 }
@@ -487,7 +497,8 @@ refine_app (GsPluginEpiphany    *self,
 
 	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
-	gs_app_set_permissions (app, GS_APP_PERMISSIONS_NETWORK);
+	/* Use the default permissions */
+	gs_app_set_permissions (app, self->permissions);
 
 	if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);

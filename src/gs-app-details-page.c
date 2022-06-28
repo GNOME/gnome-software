@@ -61,52 +61,91 @@ struct _GsAppDetailsPage
 G_DEFINE_TYPE (GsAppDetailsPage, gs_app_details_page, GTK_TYPE_BOX)
 
 static const struct {
-        GsAppPermissions permission;
+        GsAppPermissionsFlags permission;
         const char *title;
         const char *subtitle;
 } permission_display_data[] = {
-  { GS_APP_PERMISSIONS_NETWORK, N_("Network"), N_("Can communicate over the network") },
-  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
-  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
-  { GS_APP_PERMISSIONS_DEVICES, N_("Devices"), N_("Can access system device files") },
-  { GS_APP_PERMISSIONS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_FILESYSTEM_OTHER, N_("File system"), N_("Can access arbitrary files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
-  { GS_APP_PERMISSIONS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
-  { GS_APP_PERMISSIONS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
-  { GS_APP_PERMISSIONS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
-  { GS_APP_PERMISSIONS_ESCAPE_SANDBOX, N_("Sandbox escape"), N_("Can escape the sandbox and circumvent any other restrictions") },
+  { GS_APP_PERMISSIONS_FLAGS_NETWORK, N_("Network"), N_("Can communicate over the network") },
+  { GS_APP_PERMISSIONS_FLAGS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
+  { GS_APP_PERMISSIONS_FLAGS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
+  { GS_APP_PERMISSIONS_FLAGS_DEVICES, N_("Devices"), N_("Can access system device files") },
+  { GS_APP_PERMISSIONS_FLAGS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_HOME_READ, N_("Home folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
+  /* The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists */
+  { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FLAGS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FLAGS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
+  { GS_APP_PERMISSIONS_FLAGS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
+  { GS_APP_PERMISSIONS_FLAGS_ESCAPE_SANDBOX, N_("Sandbox escape"), N_("Can escape the sandbox and circumvent any other restrictions") },
 };
 
 static void
-populate_permissions_section (GsAppDetailsPage *page, GsAppPermissions permissions)
+add_permissions_row (GsAppDetailsPage *page,
+		     const gchar *title,
+		     const gchar *subtitle,
+		     gboolean is_warning_row)
 {
+	GtkWidget *row, *image;
+
+	row = adw_action_row_new ();
+	if (is_warning_row)
+		gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+
+	image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
+	if (!is_warning_row)
+		gtk_widget_set_opacity (image, 0);
+
+	adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
+	adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title);
+	adw_action_row_set_subtitle (ADW_ACTION_ROW (row), subtitle);
+
+	gtk_list_box_append (GTK_LIST_BOX (page->permissions_section_list), row);
+}
+
+static void
+populate_permissions_filesystem (GsAppDetailsPage *page,
+				 const GPtrArray *titles, /* (element-type utf-8) */
+				 const gchar *subtitle,
+				 gboolean is_warning_row)
+{
+	if (titles == NULL)
+		return;
+
+	for (guint i = 0; i < titles->len; i++) {
+		const gchar *title = g_ptr_array_index (titles, i);
+		add_permissions_row (page, title, subtitle, is_warning_row);
+	}
+}
+
+static void
+populate_permissions_section (GsAppDetailsPage *page,
+			      GsAppPermissions *permissions)
+{
+	GsAppPermissionsFlags flags = gs_app_permissions_get_flags (permissions);
+
 	gs_widget_remove_all (page->permissions_section_list, (GsRemoveFunc) gtk_list_box_remove);
 
 	for (gsize i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
-		GtkWidget *row, *image;
-
-		if ((permissions & permission_display_data[i].permission) == 0)
+		if ((flags & permission_display_data[i].permission) == 0)
 			continue;
 
-		row = adw_action_row_new ();
-		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
-			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
-		}
-
-		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
-		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
-			gtk_widget_set_opacity (image, 0);
-
-		adw_action_row_add_prefix (ADW_ACTION_ROW (row), image);
-		adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _(permission_display_data[i].title));
-		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _(permission_display_data[i].subtitle));
-
-		gtk_list_box_append (GTK_LIST_BOX (page->permissions_section_list), row);
+		add_permissions_row (page,
+			_(permission_display_data[i].title),
+			_(permission_display_data[i].subtitle),
+			(permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0);
 	}
+
+	populate_permissions_filesystem (page,
+		gs_app_permissions_get_filesystem_read (permissions),
+		_("Can view files"),
+		(GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_READ & ~MEDIUM_PERMISSIONS) != 0);
+
+	populate_permissions_filesystem (page,
+		gs_app_permissions_get_filesystem_full (permissions),
+		_("Can view, edit and create files"),
+		(GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_FULL & ~MEDIUM_PERMISSIONS) != 0);
 }
 
 static void
@@ -192,8 +231,9 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	adw_status_page_set_paintable (ADW_STATUS_PAGE (page->status_page), GDK_PAINTABLE (paintable));
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+		g_autoptr(GsAppPermissions) permissions = gs_app_dup_update_permissions (app);
 		gtk_widget_show (page->permissions_section);
-		populate_permissions_section (page, gs_app_get_update_permissions (app));
+		populate_permissions_section (page, permissions);
 	} else {
 		gtk_widget_hide (page->permissions_section);
 	}
