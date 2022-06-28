@@ -111,7 +111,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	g_autofree gchar *description = NULL;
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
-	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
+	GsAppPermissionsFlags perm_flags = 0;
 	GsContextDialogRowImportance chosen_rating;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
@@ -134,7 +134,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	 *
 	 * FIXME: See the comment for GS_APP_PERMISSIONS_FLAGS_UNKNOWN in
 	 * gs-app-context-bar.c. */
-	if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN) {
+	if (permissions == NULL) {
 		add_permission_row (self->permissions_list, &chosen_rating,
 				    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE),
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,

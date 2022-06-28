@@ -240,7 +240,7 @@ perms_from_metadata (GKeyFile *keyfile)
 	char **strv;
 	char *str;
 	GsAppPermissions *permissions = gs_app_permissions_new ();
-	GsAppPermissionsFlags flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
+	GsAppPermissionsFlags flags = 0;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
@@ -419,7 +419,7 @@ perms_from_metadata (GKeyFile *keyfile)
 	}
 
 	/* no permissions set */
-	if (flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
+	if (flags == 0)
 		flags = GS_APP_PERMISSIONS_FLAGS_NONE;
 
 	gs_app_permissions_set_flags (permissions, flags);
@@ -458,7 +458,9 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 		g_debug ("Failed to get metadata for remote ‘%s’: %s",
 			 gs_app_get_origin (app), error_local->message);
 		g_clear_error (&error_local);
-		gs_app_permissions_set_flags (additional_permissions, GS_APP_PERMISSIONS_FLAGS_UNKNOWN);
+
+		/* Permissions are unknown */
+		g_clear_object (&additional_permissions);
 	} else {
 		g_autoptr(GsAppPermissions) old_permissions = NULL;
 		g_autoptr(GsAppPermissions) new_permissions = NULL;
@@ -493,13 +495,13 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 	}
 
 	/* no new permissions set */
-	if (gs_app_permissions_get_flags (additional_permissions) == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
-		gs_app_permissions_set_flags (additional_permissions, GS_APP_PERMISSIONS_FLAGS_NONE);
+	if (additional_permissions != NULL)
+		gs_app_permissions_seal (additional_permissions);
 
-	gs_app_permissions_seal (additional_permissions);
 	gs_app_set_update_permissions (app, additional_permissions);
 
-	if (gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
+	if (additional_permissions != NULL &&
+	    gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 	else
 		gs_app_remove_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
