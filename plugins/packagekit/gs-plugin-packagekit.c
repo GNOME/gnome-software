@@ -3403,142 +3403,201 @@ static void gs_plugin_packagekit_refresh_metadata_async (GsPlugin               
                                                          gpointer                      user_data);
 
 static void
-async_result_cb (GObject      *source_object,
-                 GAsyncResult *result,
-                 gpointer      user_data)
+gs_plugin_packagekit_enable_repository_refresh_ready_cb (GObject *source_object,
+							 GAsyncResult *result,
+							 gpointer user_data)
 {
-	GAsyncResult **result_out = user_data;
+	g_autoptr(GTask) task = user_data;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (task));
+	GsPluginManageRepositoryData *data = g_task_get_task_data (task);
 
-	g_assert (*result_out == NULL);
-	*result_out = g_object_ref (result);
+	gs_plugin_repository_changed (GS_PLUGIN (self), data->repository);
 
-	g_main_context_wakeup (g_main_context_get_thread_default ());
+	/* Ignore refresh errors */
+	g_task_return_boolean (task, TRUE);
 }
 
-gboolean
-gs_plugin_enable_repo (GsPlugin *plugin,
-		       GsApp *repo,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_packagekit_enable_repository_ready_cb (GObject *source_object,
+						 GAsyncResult *result,
+						 gpointer user_data)
 {
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_enable_repo = NULL;
+	g_autoptr(GTask) task = user_data;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(PkError) error_code = NULL;
-	g_autoptr(GMainContext) context = NULL;
-	g_autoptr(GAsyncResult) result = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (task));
+	GsPluginManageRepositoryData *data = g_task_get_task_data (task);
+	GsPluginRefreshMetadataFlags metadata_flags;
+	GCancellable *cancellable = g_task_get_cancellable (task);
+
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (&local_error);
+	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, &local_error)) {
+		gs_app_set_state_recover (data->repository);
+		gs_utils_error_add_origin_id (&local_error, data->repository);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	/* state is known */
+	gs_app_set_state (data->repository, GS_APP_STATE_INSTALLED);
+
+	metadata_flags = (data->flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0 ?
+			 GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE :
+			 GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE;
+
+	gs_plugin_packagekit_refresh_metadata_async (GS_PLUGIN (self),
+						     1,  /* cache age */
+						     metadata_flags,
+						     cancellable,
+						     gs_plugin_packagekit_enable_repository_refresh_ready_cb,
+						     g_steal_pointer (&task));
+}
+
+static void
+gs_plugin_packagekit_enable_repository_async (GsPlugin                     *plugin,
+					      GsApp			   *repository,
+                                              GsPluginManageRepositoryFlags flags,
+                                              GCancellable		   *cancellable,
+                                              GAsyncReadyCallback	    callback,
+                                              gpointer			    user_data)
+{
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_enable_repo = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_enable_repository_async);
 
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* is repo */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
 
-	/* do sync call */
-	gs_plugin_status_update (plugin, repo, GS_PLUGIN_STATUS_WAITING);
-	gs_app_set_state (repo, GS_APP_STATE_INSTALLING);
-	gs_packagekit_helper_add_app (helper, repo);
+	/* do the call */
+	gs_plugin_status_update (plugin, repository, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (repository, GS_APP_STATE_INSTALLING);
+
+	helper = gs_packagekit_helper_new (plugin);
+	gs_packagekit_helper_add_app (helper, repository);
 
 	task_enable_repo = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_enable_repo), GS_PLUGIN_ACTION_ENABLE_REPO, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_enable_repo), GS_PLUGIN_ACTION_ENABLE_REPO,
+				  (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_enable_repo), helper);
 
-	results = pk_client_repo_enable (PK_CLIENT (task_enable_repo),
-					 gs_app_get_id (repo),
-					 TRUE,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
-	if (results != NULL &&
-	    (error_code = pk_results_get_error_code (results)) != NULL &&
-	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_app_set_state_recover (repo);
-		gs_utils_error_add_origin_id (error, repo);
-		return FALSE;
-	}
-
-	/* state is known */
-	gs_app_set_state (repo, GS_APP_STATE_INSTALLED);
-
-	/* This can fail silently, it's only to update necessary caches, to provide
-	 * up-to-date information after the successful repository enable/install.
-	 *
-	 * FIXME: This has to run synchronously until gs_plugin_enable_repo() is
-	 * ported to be asynchronous. */
-	context = g_main_context_new ();
-	g_main_context_push_thread_default (context);
-	gs_plugin_packagekit_refresh_metadata_async (plugin,
-						     1,  /* cache age */
-						     gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE) ? GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE : GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE,
-						     cancellable,
-						     async_result_cb,
-						     &result);
-
-	while (result == NULL)
-		g_main_context_iteration (context, TRUE);
-
-	g_main_context_pop_thread_default (context);
-	/* ignore the @result */
-
-	gs_plugin_repository_changed (plugin, repo);
-
-	return TRUE;
+	pk_client_repo_enable_async (PK_CLIENT (task_enable_repo),
+				     gs_app_get_id (repository),
+				     TRUE,
+				     cancellable,
+				     gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				     gs_plugin_packagekit_enable_repository_ready_cb,
+				     g_steal_pointer (&task));
 }
 
-gboolean
-gs_plugin_disable_repo (GsPlugin *plugin,
-			GsApp *repo,
-			GCancellable *cancellable,
-			GError **error)
+static gboolean
+gs_plugin_packagekit_enable_repository_finish (GsPlugin      *plugin,
+					       GAsyncResult  *result,
+					       GError       **error)
 {
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_disable_repo = NULL;
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_packagekit_disable_repository_ready_cb (GObject *source_object,
+						  GAsyncResult *result,
+						  gpointer user_data)
+{
+	g_autoptr(GTask) task = user_data;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (g_task_get_source_object (task));
+	GsPluginManageRepositoryData *data = g_task_get_task_data (task);
 
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
+	results = pk_client_generic_finish (PK_CLIENT (source_object), result, &local_error);
 
-	/* is repo */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, repo, GS_PLUGIN_STATUS_WAITING);
-	gs_app_set_state (repo, GS_APP_STATE_REMOVING);
-	gs_packagekit_helper_add_app (helper, repo);
-
-	task_disable_repo = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_disable_repo), GS_PLUGIN_ACTION_DISABLE_REPO, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_repo_enable (PK_CLIENT (task_disable_repo),
-					 gs_app_get_id (repo),
-					 FALSE,
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-
-	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	/* pk_client_repo_enable() returns an error if the repo is already disabled. */
 	if (results != NULL &&
 	    (error_code = pk_results_get_error_code (results)) != NULL &&
 	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
-		g_clear_error (error);
-	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_app_set_state_recover (repo);
-		gs_utils_error_add_origin_id (error, repo);
-		return FALSE;
+		g_clear_error (&local_error);
+	} else if (local_error != NULL || !gs_plugin_packagekit_results_valid (results, &local_error)) {
+		gs_app_set_state_recover (data->repository);
+		gs_utils_error_add_origin_id (&local_error, data->repository);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
 	}
 
 	/* state is known */
-	gs_app_set_state (repo, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (data->repository, GS_APP_STATE_AVAILABLE);
 
-	gs_plugin_repository_changed (plugin, repo);
+	gs_plugin_repository_changed (GS_PLUGIN (self), data->repository);
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_packagekit_disable_repository_async (GsPlugin                     *plugin,
+					       GsApp			    *repository,
+                                               GsPluginManageRepositoryFlags flags,
+                                               GCancellable		    *cancellable,
+                                               GAsyncReadyCallback	     callback,
+                                               gpointer			     user_data)
+{
+	g_autoptr(GsPackagekitHelper) helper = NULL;
+	g_autoptr(PkTask) task_disable_repo = NULL;
+	g_autoptr(GTask) task = NULL;
+
+	task = gs_plugin_manage_repository_data_new_task (plugin, repository, flags, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_disable_repository_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* is repo */
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
+
+	/* do the call */
+	gs_plugin_status_update (plugin, repository, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (repository, GS_APP_STATE_REMOVING);
+
+	helper = gs_packagekit_helper_new (plugin);
+	gs_packagekit_helper_add_app (helper, repository);
+
+	task_disable_repo = gs_packagekit_task_new (plugin);
+	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_disable_repo), GS_PLUGIN_ACTION_DISABLE_REPO,
+				  (flags & GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE) != 0);
+	gs_packagekit_task_take_helper (GS_PACKAGEKIT_TASK (task_disable_repo), helper);
+
+	pk_client_repo_enable_async (PK_CLIENT (task_disable_repo),
+				     gs_app_get_id (repository),
+				     FALSE,
+				     cancellable,
+				     gs_packagekit_helper_cb, g_steal_pointer (&helper),
+				     gs_plugin_packagekit_disable_repository_ready_cb,
+				     g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_packagekit_disable_repository_finish (GsPlugin      *plugin,
+						GAsyncResult  *result,
+						GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static gboolean
@@ -4002,6 +4061,10 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_packagekit_refresh_metadata_finish;
 	plugin_class->list_apps_async = gs_plugin_packagekit_list_apps_async;
 	plugin_class->list_apps_finish = gs_plugin_packagekit_list_apps_finish;
+	plugin_class->enable_repository_async = gs_plugin_packagekit_enable_repository_async;
+	plugin_class->enable_repository_finish = gs_plugin_packagekit_enable_repository_finish;
+	plugin_class->disable_repository_async = gs_plugin_packagekit_disable_repository_async;
+	plugin_class->disable_repository_finish = gs_plugin_packagekit_disable_repository_finish;
 }
 
 GType

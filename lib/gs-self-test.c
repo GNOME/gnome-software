@@ -219,8 +219,15 @@ gs_plugin_func (void)
 	}
 	for (guint i = 1; i < GS_PLUGIN_ACTION_LAST; i++) {
 		const gchar *tmp = gs_plugin_action_to_function_name (i);
-		if (tmp == NULL)
+		if (tmp == NULL) {
+			/* These do not have function, they exist only for better error messages. */
+			if (i == GS_PLUGIN_ACTION_INSTALL_REPO ||
+			    i == GS_PLUGIN_ACTION_REMOVE_REPO ||
+			    i == GS_PLUGIN_ACTION_ENABLE_REPO ||
+			    i == GS_PLUGIN_ACTION_DISABLE_REPO)
+				continue;
 			g_critical ("failed to convert %u", i);
+		}
 	}
 
 	/* add a couple of duplicate IDs */

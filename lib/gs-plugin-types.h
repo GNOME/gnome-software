@@ -213,6 +213,28 @@ typedef enum {
 } GsPluginListDistroUpgradesFlags;
 
 /**
+ * GsPluginManageRepositoryFlags:
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL: Install the repository.
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE: Remove the repository.
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE: Enable the repository.
+ * @GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE: Disable the repository.
+ *
+ * Flags for an operation on a repository.
+ *
+ * Since: 42
+ */
+typedef enum {
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_NONE		= 0,
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE	= 1 << 0,
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL	= 1 << 1,
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE	= 1 << 2,
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE	= 1 << 3,
+	GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE	= 1 << 4,
+} GsPluginManageRepositoryFlags;
+
+/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another

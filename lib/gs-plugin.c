@@ -1471,14 +1471,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
-	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
-		return "gs_plugin_install_repo";
-	if (action == GS_PLUGIN_ACTION_REMOVE_REPO)
-		return "gs_plugin_remove_repo";
-	if (action == GS_PLUGIN_ACTION_ENABLE_REPO)
-		return "gs_plugin_enable_repo";
-	if (action == GS_PLUGIN_ACTION_DISABLE_REPO)
-		return "gs_plugin_disable_repo";
 	return NULL;
 }
 
@@ -2007,32 +1999,6 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 			gs_app_set_state (app, repo_state == GS_APP_STATE_INSTALLED ? GS_APP_STATE_AVAILABLE : GS_APP_STATE_UNAVAILABLE);
 		}
 	}
-}
-
-/**
- * gs_plugin_get_action_supported:
- * @plugin: a #GsPlugin
- * @action: a #GsPluginAction
- *
- * Checks whether the @plugin supports @action, meaning whether
- * the @plugin can execute the @action.
- *
- * Returns: Whether the @plugin supports the @action
- *
- * Since: 41
- **/
-gboolean
-gs_plugin_get_action_supported (GsPlugin *plugin,
-				GsPluginAction action)
-{
-	const gchar *function_name;
-
-	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
-
-	function_name = gs_plugin_action_to_function_name (action);
-	g_return_val_if_fail (function_name != NULL, FALSE);
-
-	return gs_plugin_get_symbol (plugin, function_name) != NULL;
 }
 
 /**

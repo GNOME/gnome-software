@@ -957,39 +957,81 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_fwupd_modify_source (GsPluginFwupd  *self,
-                               GsApp          *app,
-                               gboolean        enabled,
-                               GCancellable   *cancellable,
-                               GError        **error)
+static void
+gs_plugin_fwupd_modify_source_ready_cb (GObject *source_object,
+					GAsyncResult *result,
+					gpointer user_data)
 {
-	const gchar *remote_id = gs_app_get_metadata_item (app, "fwupd::remote-id");
+	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GTask) task = user_data;
+	GsPluginFwupd *self = g_task_get_source_object (task);
+	GsApp *repository = g_task_get_task_data (task);
+
+	if (!fwupd_client_modify_remote_finish (FWUPD_CLIENT (source_object), result, &local_error)) {
+		gs_app_set_state_recover (repository);
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (gs_app_get_state (repository) == GS_APP_STATE_INSTALLING)
+		gs_app_set_state (repository, GS_APP_STATE_INSTALLED);
+	else if (gs_app_get_state (repository) == GS_APP_STATE_REMOVING)
+		gs_app_set_state (repository, GS_APP_STATE_AVAILABLE);
+
+	gs_plugin_repository_changed (GS_PLUGIN (self), repository);
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_fwupd_modify_source_async (GsPluginFwupd      *self,
+				     GsApp              *repository,
+				     gboolean            enabled,
+				     GCancellable       *cancellable,
+				     GAsyncReadyCallback callback,
+				     gpointer            user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	const gchar *remote_id;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_task_data (task, g_object_ref (repository), g_object_unref);
+	g_task_set_source_tag (task, gs_plugin_fwupd_modify_source_async);
+
+	if (!gs_app_has_management_plugin (repository, GS_PLUGIN (self))) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* source -> remote */
+	g_assert (gs_app_get_kind (repository) == AS_COMPONENT_KIND_REPOSITORY);
+
+	remote_id = gs_app_get_metadata_item (repository, "fwupd::remote-id");
 	if (remote_id == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd %s",
-			     gs_app_get_unique_id (app));
-		return FALSE;
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_FAILED,
+					 "not enough data for fwupd %s",
+					 gs_app_get_unique_id (repository));
+		return;
 	}
-	gs_app_set_state (app, enabled ?
+	gs_app_set_state (repository, enabled ?
 	                  GS_APP_STATE_INSTALLING : GS_APP_STATE_REMOVING);
-	if (!fwupd_client_modify_remote (self->client,
-	                                 remote_id,
-	                                 "Enabled",
-	                                 enabled ? "true" : "false",
-	                                 cancellable,
-	                                 error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-	gs_app_set_state (app, enabled ?
-	                  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
+	fwupd_client_modify_remote_async (self->client,
+	                                  remote_id,
+	                                  "Enabled",
+	                                  enabled ? "true" : "false",
+	                                  cancellable,
+					  gs_plugin_fwupd_modify_source_ready_cb,
+					  g_steal_pointer (&task));
+}
 
-	gs_plugin_repository_changed (GS_PLUGIN (self), app);
-
-	return TRUE;
+static gboolean
+gs_plugin_fwupd_modify_source_finish (GsPluginFwupd *self,
+				      GAsyncResult  *result,
+				      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -1202,89 +1244,150 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_fwupd_refresh_single_remote (GsPluginFwupd *self,
-				       GsApp *repo,
-				       guint cache_age,
-				       GCancellable *cancellable,
-				       GError **error)
+static void
+gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb (GObject      *source_object,
+							   GAsyncResult *result,
+							   gpointer      user_data)
 {
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
+
+	if (!fwupd_client_refresh_remote_finish (FWUPD_CLIENT (source_object), result, &local_error))
+		g_debug ("Failed to refresh remote after enable: %s", local_error ? local_error->message : "Unknown error");
+
+	/* Silently ignore refresh errors */
+	g_task_return_boolean (task, TRUE);
+}
+
+static void
+gs_plugin_fwupd_enable_repository_get_remotes_ready_cb (GObject      *source_object,
+							GAsyncResult *result,
+							gpointer      user_data)
+{
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GPtrArray) remotes = NULL;
-	g_autoptr(GError) error_local = NULL;
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (g_task_get_source_object (task));
+	GsApp *repository = g_task_get_task_data (task);
 	const gchar *remote_id;
+	guint cache_age = 1;
 
-	remote_id = gs_app_get_metadata_item (repo, "fwupd::remote-id");
-	g_return_val_if_fail (remote_id != NULL, FALSE);
-
-	remotes = fwupd_client_get_remotes (self->client, cancellable, &error_local);
+	remotes = fwupd_client_get_remotes_finish (FWUPD_CLIENT (source_object), result, &local_error);
 	if (remotes == NULL) {
-		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
-		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
-		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
-		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND))
-			return TRUE;
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
+		g_debug ("No remotes found after remote enable: %s", local_error ? local_error->message : "Unknown error");
+		/* Silently ignore refresh errors */
+		g_task_return_boolean (task, TRUE);
+		return;
 	}
+
+	remote_id = gs_app_get_metadata_item (repository, "fwupd::remote-id");
+	g_assert (remote_id != NULL);
+
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (g_strcmp0 (remote_id, fwupd_remote_get_id (remote)) == 0) {
 			if (fwupd_remote_get_enabled (remote) &&
 			    fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_LOCAL &&
-			    !remote_cache_is_expired (remote, cache_age) &&
-			    !fwupd_client_refresh_remote (self->client, remote, cancellable, error)) {
-				gs_plugin_fwupd_error_convert (error);
-				return FALSE;
+			    !remote_cache_is_expired (remote, cache_age)) {
+				GCancellable *cancellable = g_task_get_cancellable (task);
+				fwupd_client_refresh_remote_async (self->client, remote, cancellable,
+								   gs_plugin_fwupd_enable_repository_remote_refresh_ready_cb,
+								   g_steal_pointer (&task));
+				return;
 			}
 			break;
 		}
 	}
 
-	return TRUE;
+	g_task_return_boolean (task, TRUE);
 }
 
-gboolean
-gs_plugin_enable_repo (GsPlugin *plugin,
-		       GsApp *repo,
-		       GCancellable *cancellable,
-		       GError **error)
+static void
+gs_plugin_fwupd_enable_repository_ready_cb (GObject	 *source_object,
+					    GAsyncResult *result,
+					    gpointer	  user_data)
 {
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	g_autoptr(GTask) task = user_data;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (g_task_get_source_object (task));
+	GCancellable *cancellable = g_task_get_cancellable (task);
 
-	/* only process this app if it was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
-
-	/* source -> remote */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
-
-	if (!gs_plugin_fwupd_modify_source (self, repo, TRUE, cancellable, error))
-		return FALSE;
+	if (!gs_plugin_fwupd_modify_source_finish (self, result, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	/* This can fail silently, it's only to update necessary caches, to provide
 	 * up-to-date information after the successful repository enable/install. */
-	gs_plugin_fwupd_refresh_single_remote (self, repo, 1, cancellable, NULL);
-
-	return TRUE;
+	fwupd_client_get_remotes_async (self->client,
+					cancellable,
+					gs_plugin_fwupd_enable_repository_get_remotes_ready_cb,
+					g_steal_pointer (&task));
 }
 
-gboolean
-gs_plugin_disable_repo (GsPlugin *plugin,
-			GsApp *repo,
-			GCancellable *cancellable,
-			GError **error)
+static void
+gs_plugin_fwupd_enable_repository_async (GsPlugin                     *plugin,
+					 GsApp			      *repository,
+                                         GsPluginManageRepositoryFlags flags,
+                                         GCancellable		      *cancellable,
+                                         GAsyncReadyCallback	       callback,
+                                         gpointer		       user_data)
+{
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	g_autoptr(GTask) task = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_task_data (task, g_object_ref (repository), g_object_unref);
+	g_task_set_source_tag (task, gs_plugin_fwupd_enable_repository_async);
+
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	gs_plugin_fwupd_modify_source_async (self, repository, TRUE, cancellable,
+		gs_plugin_fwupd_enable_repository_ready_cb, g_steal_pointer (&task));
+}
+
+static gboolean
+gs_plugin_fwupd_enable_repository_finish (GsPlugin      *plugin,
+					  GAsyncResult  *result,
+					  GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+gs_plugin_fwupd_disable_repository_async (GsPlugin                     *plugin,
+					  GsApp			      *repository,
+                                          GsPluginManageRepositoryFlags flags,
+                                          GCancellable		      *cancellable,
+                                          GAsyncReadyCallback	       callback,
+                                          gpointer		       user_data)
 {
 	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 
-	/* only process this app if it was created by this plugin */
-	if (!gs_app_has_management_plugin (repo, plugin))
-		return TRUE;
+	/* only process this app if was created by this plugin */
+	if (!gs_app_has_management_plugin (repository, plugin)) {
+		g_autoptr(GTask) task = NULL;
 
-	/* source -> remote */
-	g_return_val_if_fail (gs_app_get_kind (repo) == AS_COMPONENT_KIND_REPOSITORY, FALSE);
+		task = g_task_new (self, cancellable, callback, user_data);
+		g_task_set_source_tag (task, gs_plugin_fwupd_disable_repository_async);
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
-	return gs_plugin_fwupd_modify_source (self, repo, FALSE, cancellable, error);
+	gs_plugin_fwupd_modify_source_async (self, repository, FALSE, cancellable, callback, user_data);
+}
+
+static gboolean
+gs_plugin_fwupd_disable_repository_finish (GsPlugin      *plugin,
+					   GAsyncResult  *result,
+					   GError       **error)
+{
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
+	return gs_plugin_fwupd_modify_source_finish (self, result, error);
 }
 
 static void
@@ -1299,6 +1402,10 @@ gs_plugin_fwupd_class_init (GsPluginFwupdClass *klass)
 	plugin_class->setup_finish = gs_plugin_fwupd_setup_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_fwupd_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_fwupd_refresh_metadata_finish;
+	plugin_class->enable_repository_async = gs_plugin_fwupd_enable_repository_async;
+	plugin_class->enable_repository_finish = gs_plugin_fwupd_enable_repository_finish;
+	plugin_class->disable_repository_async = gs_plugin_fwupd_disable_repository_async;
+	plugin_class->disable_repository_finish = gs_plugin_fwupd_disable_repository_finish;
 }
 
 GType

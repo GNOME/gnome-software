@@ -42,10 +42,10 @@ G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, ADW_TYPE_WINDOW)
 static void reload_third_party_repos (GsReposDialog *dialog);
 
 typedef struct {
-	GsReposDialog	*dialog;
-	GsApp		*repo;
-	GWeakRef	 row_weakref;
-	GsPluginAction	 action;
+	GsReposDialog		     *dialog;
+	GsApp			     *repo;
+	GWeakRef		      row_weakref;
+	GsPluginManageRepositoryFlags operation;
 } InstallRemoveData;
 
 static void
@@ -68,9 +68,14 @@ repo_enabled_cb (GObject *source,
 	g_autoptr(InstallRemoveData) install_remove_data = (InstallRemoveData *) user_data;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsRepoRow) row = NULL;
-	const gchar *action_str;
+	const gchar *operation_str;
 
-	action_str = gs_plugin_action_to_string (install_remove_data->action);
+	operation_str = install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL ? "install" :
+			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE ? "remove" :
+			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE ? "enable" :
+			install_remove_data->operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? "disable" : NULL;
+	g_assert (operation_str != NULL);
+
 	row = g_weak_ref_get (&install_remove_data->row_weakref);
 	if (row)
 		gs_repo_row_unmark_busy (row);
@@ -78,15 +83,15 @@ repo_enabled_cb (GObject *source,
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
 		    g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_debug ("repo %s cancelled", action_str);
+			g_debug ("repo %s cancelled", operation_str);
 			return;
 		}
 
-		g_warning ("failed to %s repo: %s", action_str, error->message);
+		g_warning ("failed to %s repo: %s", operation_str, error->message);
 		return;
 	}
 
-	g_debug ("finished %s repo %s", action_str, gs_app_get_id (install_remove_data->repo));
+	g_debug ("finished %s repo %s", operation_str, gs_app_get_id (install_remove_data->repo));
 }
 
 static void
@@ -95,10 +100,8 @@ _enable_repo (InstallRemoveData *install_data)
 	GsReposDialog *dialog = install_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
-	plugin_job = gs_plugin_job_newv (install_data->action,
-					 "interactive", TRUE,
-	                                 "app", install_data->repo,
-	                                 NULL);
+	plugin_job = gs_plugin_job_manage_repository_new (install_data->repo,
+							  install_data->operation | GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
 	                                    repo_enabled_cb,
@@ -134,7 +137,7 @@ enable_repo (GsReposDialog *dialog,
 	g_autoptr(InstallRemoveData) install_data = NULL;
 
 	install_data = g_slice_new0 (InstallRemoveData);
-	install_data->action = GS_PLUGIN_ACTION_ENABLE_REPO;
+	install_data->operation = GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_ENABLE;
 	install_data->dialog = g_object_ref (dialog);
 	install_data->repo = g_object_ref (repo);
 	g_weak_ref_init (&install_data->row_weakref, row);
@@ -205,10 +208,9 @@ remove_repo_response_cb (GtkDialog *confirm_dialog,
 	}
 
 	g_debug ("removing repo %s", gs_app_get_id (remove_data->repo));
-	plugin_job = gs_plugin_job_newv (remove_data->action,
-					 "interactive", TRUE,
-					 "app", remove_data->repo,
-					 NULL);
+	plugin_job = gs_plugin_job_manage_repository_new (remove_data->repo,
+							  remove_data->operation |
+							  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    repo_enabled_cb,
@@ -219,7 +221,7 @@ static void
 remove_confirm_repo (GsReposDialog *dialog,
 		     GsRepoRow *row,
 		     GsApp *repo,
-		     GsPluginAction action)
+		     GsPluginManageRepositoryFlags operation)
 {
 	InstallRemoveData *remove_data;
 	GtkWidget *confirm_dialog;
@@ -228,7 +230,7 @@ remove_confirm_repo (GsReposDialog *dialog,
 	GtkStyleContext *context;
 
 	remove_data = g_slice_new0 (InstallRemoveData);
-	remove_data->action = action;
+	remove_data->operation = operation;
 	remove_data->dialog = g_object_ref (dialog);
 	remove_data->repo = g_object_ref (repo);
 	g_weak_ref_init (&remove_data->row_weakref, row);
@@ -243,11 +245,11 @@ remove_confirm_repo (GsReposDialog *dialog,
 	                                         GTK_MESSAGE_QUESTION,
 	                                         GTK_BUTTONS_CANCEL,
 	                                         "%s",
-						 action == GS_PLUGIN_ACTION_DISABLE_REPO ? _("Disable Repository?") : _("Remove Repository?"));
+						 operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE ? _("Disable Repository?") : _("Remove Repository?"));
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (confirm_dialog),
 						  "%s", message);
 
-	if (action == GS_PLUGIN_ACTION_DISABLE_REPO) {
+	if (operation == GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE) {
 		/* TRANSLATORS: this is button text to disable a repo */
 		button = gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("_Disable"), GTK_RESPONSE_OK);
 	} else {
@@ -282,7 +284,7 @@ repo_section_switch_clicked_cb (GsReposSection *section,
 		enable_repo (dialog, row, repo);
 		break;
 	case GS_APP_STATE_INSTALLED:
-		remove_confirm_repo (dialog, row, repo, GS_PLUGIN_ACTION_DISABLE_REPO);
+		remove_confirm_repo (dialog, row, repo, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_DISABLE);
 		break;
 	default:
 		g_warning ("repo %s button clicked in unexpected state %s",
@@ -298,7 +300,7 @@ repo_section_remove_clicked_cb (GsReposSection *section,
 				GsReposDialog *dialog)
 {
 	GsApp *repo = gs_repo_row_get_repo (row);
-	remove_confirm_repo (dialog, row, repo, GS_PLUGIN_ACTION_REMOVE_REPO);
+	remove_confirm_repo (dialog, row, repo, GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_REMOVE);
 }
 
 static void
