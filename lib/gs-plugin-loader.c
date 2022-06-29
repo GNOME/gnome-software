@@ -742,7 +742,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	}
 
 	/* add app to the pending installation queue if necessary */
-	if ((action == GS_PLUGIN_ACTION_INSTALL || action == GS_PLUGIN_ACTION_INSTALL_REPO) &&
+	if (action == GS_PLUGIN_ACTION_INSTALL &&
 	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 	        add_app_to_install_queue (plugin_loader, app);
 	}
@@ -4046,7 +4046,7 @@ job_process_cb (GTask *task)
 	}
 
 	/* deal with the install queue */
-	if (action == GS_PLUGIN_ACTION_REMOVE || action == GS_PLUGIN_ACTION_REMOVE_REPO) {
+	if (action == GS_PLUGIN_ACTION_REMOVE) {
 		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
 			g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
