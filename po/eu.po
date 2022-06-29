@@ -9,8 +9,8 @@
 msgid ""
 msgstr "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-06-22 13:25+0000\n"
-"PO-Revision-Date: 2022-06-22 16:00+0100\n"
+"POT-Creation-Date: 2022-06-28 11:50+0000\n"
+"PO-Revision-Date: 2022-06-29 16:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asiersarasua@ni.eus>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -715,7 +715,7 @@ msgstr "Balorazioa adinaren arabera"
 msgid "How to add missing information"
 msgstr "Nola gehitu falta den informazioa"
 
-#: lib/gs-app.c:6155
+#: lib/gs-app.c:6158
 msgid "Local file"
 msgstr "Fitxategi lokala"
 
@@ -724,12 +724,12 @@ msgstr "Fitxategi lokala"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6171 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6174 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6247
+#: lib/gs-app.c:6250
 msgid "Package"
 msgstr "Paketea"
 
@@ -802,26 +802,20 @@ msgid "Home folder"
 msgstr "Karpeta nagusia"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "Fitxategiak ikusi, editatu eta sortu ditzake"
 
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "Fitxategiak ikusi ditzake"
 
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "Fitxategi-sistema"
 
-#. Translators: This indicates an app can access data in the system unknown to the Software.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:356
-msgid "Can access arbitrary files"
-msgstr "Fitxategiak ausaz atzitu ditzake"
-
+#. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
 msgid "Downloads folder"
 msgstr "Deskargen karpeta"
@@ -856,14 +850,14 @@ msgstr "Isolamendutik ihes egin dezake eta beste muga batzuk saihestu ditzake"
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
+#: src/gs-app-details-page.c:177
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:157
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "Ez dago eguneratzearen azalpenik eskuragarri."
 
@@ -1075,111 +1069,117 @@ msgstr "Tamaina ezezaguna da"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:279
+#: src/gs-app-context-bar.c:282
 msgid "No permissions"
 msgstr "Baimenik ez"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:290
+#: src/gs-app-context-bar.c:293
 msgid "Has network access"
 msgstr "Sarea atzitu dezake"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:300
 msgid "Uses system services"
 msgstr "Sistema-zerbitzuak erabiltzen ditu"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:304
+#: src/gs-app-context-bar.c:307
 msgid "Uses session services"
 msgstr "Saio-zerbitzuak erabiltzen ditu"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
 msgstr "Hardware-gailuak atzitu ditzake"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:323
+#: src/gs-app-context-bar.c:326
 msgid "Can read/write all your data"
 msgstr "Zure datu guztiak irakurri/idatzi ditzake"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:335
+#: src/gs-app-context-bar.c:338
 msgid "Can read all your data"
 msgstr "Zure datu guztiak irakurri ditzake"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:342
+#: src/gs-app-context-bar.c:345
 msgid "Can read/write your downloads"
 msgstr "Zure deskargak irakurri/idatzi ditzake"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:349
+#: src/gs-app-context-bar.c:352
 msgid "Can read your downloads"
 msgstr "Zure deskargak irakurri ditzake"
 
+#. Translators: This indicates an app can access data in the system unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:359
+msgid "Can access arbitrary files"
+msgstr "Fitxategiak ausaz atzitu ditzake"
+
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:363 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
 msgid "Can access and change user settings"
 msgstr "Erabiltzaile-ezarpenak atzitu eta aldatu ditzake"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
 msgstr "Leiho-sisema zaharkitua erabiltzen du"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:377 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
 msgid "Can acquire arbitrary permissions"
 msgstr "Ausazko baimenak eskuratu ditzake"
 
 #. Translators: This indicates that an application has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:403 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
 msgid "Reviewed by your distribution"
 msgstr "Zure banaketak berrikusia"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:410 src/gs-safety-context-dialog.c:140
+#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
 msgstr "Hirugarren batek eskainia"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:422
+#: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
 msgstr "Kode jabeduna"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:428
+#: src/gs-app-context-bar.c:431
 msgid "Auditable code"
 msgstr "Kode ikuskagarria"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:435
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "Softwarearen garatzailea egiaztatuta dago"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:444
+#: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
 msgstr "Software hau ez da mantentzen jadanik"
 
@@ -1197,104 +1197,104 @@ msgstr "Software hau ez da mantentzen jadanik"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:464
+#: src/gs-app-context-bar.c:467
 msgid "Safe"
 msgstr "Segurua"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:471
+#: src/gs-app-context-bar.c:474
 msgid "Potentially Unsafe"
 msgstr "Arriskutsua izan daiteke"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:478
+#: src/gs-app-context-bar.c:481
 msgid "Unsafe"
 msgstr "Arriskutsua"
 
-#: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
+#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
 #: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "Mugikorra soilik"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:561
 msgid "Only works on a small screen"
 msgstr "Pantaila txikietan soilik funtzionatzen du"
 
-#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
+#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "Mahaigaina soilik"
 
-#: src/gs-app-context-bar.c:564
+#: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
 msgstr "Pantaila handi batean soilik funtzionatzen du"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "Pantaila-tamaina ez dator bat"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
+#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "Ez du zure uneko pantaila-tamaina onartzen"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
 #: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "Ukipen-pantaila behar du"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
 #: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "Teklatua behar du"
 
-#: src/gs-app-context-bar.c:604
+#: src/gs-app-context-bar.c:607
 msgid "Requires a mouse"
 msgstr "Sagua behar du"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
 msgstr "Joko-agintea behar du"
 
-#: src/gs-app-context-bar.c:616
+#: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
 msgstr "Joko-agintea behar du jokatzeko"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:643
 msgid "Adaptive"
 msgstr "Moldakorra"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
 msgstr "Telefonoetan, tabletetan eta mahaigainetan funtzionatzen du"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
 msgstr "Ziur aski teklatua edo sagua beharko du"
 
-#: src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
 msgstr "Mahaigainekoetan eta eramangarrietan funtzionatzen du"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:705
 msgid "Contains no age-inappropriate content"
 msgstr "Ez dauka adinagatik desegokia izan daitekeen edukirik"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:753
 msgid "No age rating information available"
 msgstr "Ez dago adinaren informaziorik eskuragarri"
 
@@ -3328,183 +3328,182 @@ msgstr "Eman berri…"
 msgid "Remove…"
 msgstr "Kendu…"
 
-#: src/gs-safety-context-dialog.c:141
+#: src/gs-safety-context-dialog.c:144
 msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgstr "Egiaztatu hornitzaileaz fidatzen zarela, aplikazio hau ez baitago isolatuta"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:147
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
 msgstr "Aplikazioa ez dago isolatuta baina banaketak egiaztatu du ez dela maltzurra"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:160
 msgid "No Permissions"
 msgstr "Baimenik ez"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:161
 msgid "App is fully sandboxed"
 msgstr "Aplikazioa osorik isolatuta dago"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:172
 msgid "Network Access"
 msgstr "Sareko sarbidea"
 
-#: src/gs-safety-context-dialog.c:164
+#: src/gs-safety-context-dialog.c:173
 msgid "Can access the internet"
 msgstr "Ezin da internetera sartu"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:176
 msgid "No Network Access"
 msgstr "Ez dago sareko sarbiderik"
 
-#: src/gs-safety-context-dialog.c:168
+#: src/gs-safety-context-dialog.c:177
 msgid "Cannot access the internet"
 msgstr "Ezin da internetera sartu"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:183
 msgid "Uses System Services"
 msgstr "Erabili sistema-zerbitzuak"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:184
 msgid "Can request data from system services"
 msgstr "Datuak sistema-zerbitzuei eskatu dakizkieke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:191
 msgid "Uses Session Services"
 msgstr "Saio-zerbitzuak darabiltza"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:192
 msgid "Can request data from session services"
 msgstr "Datuak saio-zerbitzuei eskatu dakizkieke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:199
 msgid "Device Access"
 msgstr "Gailuaren atzipena"
 
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:200
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Web-kamerak eta jokoetarako kontrolak bezalako gailuak atzitu daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:203
 msgid "No Device Access"
 msgstr "Ez dago gailuen atzipenik"
 
-#: src/gs-safety-context-dialog.c:195
+#: src/gs-safety-context-dialog.c:204
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "Ezin dira web-kamerak eta jokoetarako kontrolak bezalako gailuak"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
 msgstr "Leiho-sistema zaharra"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:218
 msgid "Arbitrary Permissions"
 msgstr "Ausazko baimenak"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:226
 msgid "User Settings"
 msgstr "Erabiltzaile-ezarpenak"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:229
+#: src/gs-safety-context-dialog.c:238
 msgid "Full File System Read/Write Access"
 msgstr "Fitxategi-sistema irakurtzeko/idazteko sarbide osoa"
 
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:239
 msgid "Can read and write all data on the file system"
 msgstr "Ezin dira fitxategi-sistemako datu guztiak irakurri eta idatzi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:247
 msgid "Home Folder Read/Write Access"
 msgstr "Karpeta nagusia irakurtzeko/idazteko sarbidea"
 
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:248
 msgid "Can read and write all data in your home directory"
 msgstr "Zure karpeta nagusiko datu guztiak irakurri eta idatzi daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:256
 msgid "Full File System Read Access"
 msgstr "Fitxategi-sistema osoa irakurtzeko sarbidea"
 
-#: src/gs-safety-context-dialog.c:248
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data on the file system"
 msgstr "Fitxategi-sistemako datu guztiak irakurri daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:257
+#: src/gs-safety-context-dialog.c:266
 msgid "Home Folder Read Access"
 msgstr "Karpeta nagusia irakurtzeko sarbidea"
 
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read all data in your home directory"
 msgstr "Zure karpeta nagusiko datu guztiak irakurri daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:276
 msgid "Download Folder Read/Write Access"
 msgstr "Deskargen karpeta irakurtzeko/idazteko sarbidea"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:277
 msgid "Can read and write all data in your downloads directory"
 msgstr "Zure deskargen karpetako datu guztiak irakurri eta idatzi daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:279
+#: src/gs-safety-context-dialog.c:288
 msgid "Download Folder Read Access"
 msgstr "Deskargen karpeta irakurtzeko sarbidea"
 
-#: src/gs-safety-context-dialog.c:280
+#: src/gs-safety-context-dialog.c:289
 msgid "Can read all data in your downloads directory"
 msgstr "Zure deskargen karpetako datu guztiak irakurri daitezke"
 
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:291
-msgid "Access arbitrary files"
-msgstr "Atzitu ausazko fitxategiak"
+#: src/gs-safety-context-dialog.c:299
+msgid "Can read and write all data in the directory"
+msgstr "Direktorioko datu guztiak irakurri eta idatzi daitezke"
 
-#: src/gs-safety-context-dialog.c:292
-msgid "Can access arbitrary files on the file system"
-msgstr "Fitxategiak ausaz atzitu ditzake fitxategi-sisteman"
+#: src/gs-safety-context-dialog.c:310
+msgid "Can read all data in the directory"
+msgstr "Direktorioko datu guztiak irakurri daitezke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:326
 msgid "No File System Access"
 msgstr "Fitxategi-sistemaren sarbiderik ez"
 
-#: src/gs-safety-context-dialog.c:307
+#: src/gs-safety-context-dialog.c:327
 msgid "Cannot access the file system at all"
 msgstr "Ezin da fitxategi-sistemara sartu"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:341
 msgid "Proprietary Code"
 msgstr "Kode jabeduna"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:342
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr "Iturburu-kodea ez da publikoa, eta beraz, ezin da modu independentean ikuskatu eta ez segurua izan daiteke"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:345
 msgid "Auditable Code"
 msgstr "Kode ikuskagarria"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:346
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3512,42 +3511,42 @@ msgstr "Iturburu-kodea publikoa da eta modu independentean ikuskatu daiteke, eta
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:334
+#: src/gs-safety-context-dialog.c:354
 msgid "App developer is verified"
 msgstr "Aplikazioaren garatzailea egiaztatuta dago"
 
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:355
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "Aplikazio honen garatzailea esaten duena dela egiaztatu da"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:366
 msgid "Insecure Dependencies"
 msgstr "Mendekotasun ez seguruak"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:367
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr "Softwarea edo bere mendekotasunak ez dira jadanik mantentzen eta agian ez dira seguruak"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:356
+#: src/gs-safety-context-dialog.c:376
 #, c-format
 msgid "%s is safe"
 msgstr "%s segurua da"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:363
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s agian ez da segurua"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:370
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s ez da segurua"
@@ -4718,7 +4717,7 @@ msgstr "Eginbide berriak eta konponketak dituen eguneratze %s."
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS eguneratze-zerbitzuak ezin izan du eguneratzea atzitu eta aplikatu."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:464
+#: plugins/epiphany/gs-plugin-epiphany.c:474
 msgid "GNOME Web"
 msgstr "GNOME Web"
 
@@ -4749,13 +4748,136 @@ msgstr "Flatpak euskarria"
 msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak Linuxeko mahaigaineko aplikazioen lan-marko bat da"
 
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak.c:307
+#, c-format
+msgid "System folder %s"
+msgstr "%s sistemaren karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:308 plugins/flatpak/gs-flatpak.c:309
+#, c-format
+msgid "Home subfolder %s"
+msgstr "%s azpikarpeta nagusia"
+
+#: plugins/flatpak/gs-flatpak.c:310
+msgid "Host system folders"
+msgstr "Ostalariaren sistemaren karpetak"
+
+#: plugins/flatpak/gs-flatpak.c:311
+msgid "Host system configuration from /etc"
+msgstr "Ostalariaren sistemaren konfigurazioa /etc direktoriotik"
+
+#: plugins/flatpak/gs-flatpak.c:312
+msgid "Desktop folder"
+msgstr "Mahaigainaren karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:312
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "Mahaigainaren %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:313
+msgid "Documents folder"
+msgstr "Dokumentuen karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:313
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "Dokumentuen %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:314
+msgid "Music folder"
+msgstr "Musikaren karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:314
+#, c-format
+msgid "Music subfolder %s"
+msgstr "Musikaren %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:315
+msgid "Pictures folder"
+msgstr "Irudien karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:315
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "Irudien %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:316
+msgid "Public Share folder"
+msgstr "Partekatze publikoko karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:316
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "Partekatze publikoko %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:317
+msgid "Videos folder"
+msgstr "Bideoen karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:317
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "Bideoen %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:318
+msgid "Templates folder"
+msgstr "Txantiloien karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "Txantiloien %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:319
+msgid "User cache folder"
+msgstr "Erabiltzaile-cachearen karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:319
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "Erabiltzaile-cachearen %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:320
+msgid "User configuration folder"
+msgstr "Erabiltzaile-konfigurazioaren karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "Erabiltzaile-konfigurazioaren %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:321
+msgid "User data folder"
+msgstr "Erabiltzaile-datuen karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#, c-format
+msgid "User data subfolder %s"
+msgstr "Erabiltzaile-datuen %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:322
+msgid "User runtime folder"
+msgstr "Erabiltzailearen exekuzio-denboraren karpeta"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "Erabiltzailearen exekuzio-denboraren %s azpikarpeta"
+
+#: plugins/flatpak/gs-flatpak.c:380
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "Fitxategi-sistemaren sarbidea %s(e)ra"
+
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1218
+#: plugins/flatpak/gs-flatpak.c:1395
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-eko %s(r)en metadatuak eskuratzen…"
 
-#: plugins/flatpak/gs-flatpak.c:3355
+#: plugins/flatpak/gs-flatpak.c:3532
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Huts egin du ‘%s’ gehigarria fintzeak: %s"
@@ -4994,6 +5116,12 @@ msgstr "Snap euskarria"
 msgid "A snap is a universal Linux package"
 msgstr "Snap Linuxeko pakete unibertsal bat da"
 
+#~ msgid "Access arbitrary files"
+#~ msgstr "Atzitu ausazko fitxategiak"
+
+#~ msgid "Can access arbitrary files on the file system"
+#~ msgstr "Fitxategiak ausaz atzitu ditzake fitxategi-sisteman"
+
 #~ msgid "A list of popular applications"
 #~ msgstr "Aplikazio ospetsuen zerrenda"
 
@@ -5050,9 +5178,6 @@ msgstr "Snap Linuxeko pakete unibertsal bat da"
 
 #~ msgid "_Browse Software"
 #~ msgstr "_Arakatu softwarea"
-
-#~ msgid "Picture"
-#~ msgstr "Irudia"
 
 #~ msgid "OS Updates"
 #~ msgstr "SEren eguneratzeak"
