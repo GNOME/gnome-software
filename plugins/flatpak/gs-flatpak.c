@@ -490,6 +490,8 @@ gs_flatpak_set_update_permissions (GsFlatpak           *self,
 
 	if (gs_app_permissions_get_flags (additional_permissions) != GS_APP_PERMISSIONS_FLAGS_NONE)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
+	else
+		gs_app_remove_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 }
 
 static void
