@@ -1,3 +1,66 @@
+Version 43.alpha
+~~~~~~~~~~~~~~~~
+Released: 2022-06-30
+
+This is the first unstable release for GNOME 43.
+ * Various improvements to notifications
+ * Fix several crashes when handling flatpak apps
+ * Add ‘Other Apps by Author’ section in the app details page
+ * Improve styling of app context lozenges
+ * Add ‘Available for Distro’ section to the overview page (if configured by your distribution)
+ * Show more details about file system permissions requested by flatpak apps
+ * Show more types of URI from app metainfo
+ * Fix a few issues when using a dark mode theme
+ * Fix some issues with arrows in right-to-left locales
+ * Fix language pack installation for certain locales
+ * Improve debug output to make user bug reports more useful
+ * Add `--uninstall=ID` command line option
+ * Allow scrolling screenshots by clicking on next and previous screenshots
+ * Add support for webapps
+ * Allow swiping back in the shell using touch gestures
+ * Improved caching of downloaded metadata
+ * Many internal architectural changes to make the code more maintainable
+ * The popular-overrides GSettings key has been removed; distribution vendors wishing to mark
+   their apps as popular should see `doc/vendor-customisation.md` for examples of how to do this
+   now
+ * The hardcoded_popular Meson option has been renamed to hardcoded_curated.
+
+This release also updates translations:
+ * Basque
+ * Bulgarian
+ * Catalan
+ * Chinese (China)
+ * Chinese (Taiwan)
+ * Croatian
+ * Czech
+ * Danish
+ * Dutch
+ * English (United Kingdom)
+ * Finnish
+ * French
+ * Friulian
+ * Galician
+ * Georgian
+ * German
+ * Hebrew
+ * Hungarian
+ * Indonesian
+ * Lithuanian
+ * Nepali
+ * Occitan (post 1500)
+ * Persian
+ * Polish
+ * Portuguese
+ * Portuguese (Brazil)
+ * Russian
+ * Serbian
+ * Slovenian
+ * Spanish
+ * Swedish
+ * Turkish
+ * Ukrainian
+ * Vietnamese
+
 Version 42.0
 ~~~~~~~~~~~~
 Released: 2022-03-18

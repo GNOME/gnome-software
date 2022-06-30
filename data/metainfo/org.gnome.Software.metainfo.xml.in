@@ -66,10 +66,27 @@
    Validate with `appstreamcli validate *.metainfo.xml`
   -->
   <releases>
-    <release date="2022-05-06" version="43.alpha" type="development">
+    <release date="2022-06-30" version="43.alpha" type="development">
       <description>
-        <p>NOT YET RELEASED. Here are the in-progress release notes:</p>
+        <p>This is the first unstable release for GNOME 43.</p>
         <ul>
+          <li>Various improvements to notifications</li>
+          <li>Fix several crashes when handling flatpak apps</li>
+          <li>Add ‘Other Apps by Author’ section in the app details page</li>
+          <li>Improve styling of app context lozenges</li>
+          <li>Add ‘Available for Distro’ section to the overview page (if configured by your distribution)</li>
+          <li>Show more details about file system permissions requested by flatpak apps</li>
+          <li>Show more types of URI from app metainfo</li>
+          <li>Fix a few issues when using a dark mode theme</li>
+          <li>Fix some issues with arrows in right-to-left locales</li>
+          <li>Fix language pack installation for certain locales</li>
+          <li>Improve debug output to make user bug reports more useful</li>
+          <li>Add `--uninstall=ID` command line option</li>
+          <li>Allow scrolling screenshots by clicking on next and previous screenshots</li>
+          <li>Add support for webapps</li>
+          <li>Allow swiping back in the shell using touch gestures</li>
+          <li>Improved caching of downloaded metadata</li>
+          <li>Many internal architectural changes to make the code more maintainable</li>
           <li>
             The <code>popular-overrides</code> GSettings key has been removed;
             distribution vendors wishing to mark their apps as popular should
@@ -79,6 +96,43 @@
             The <code>hardcoded_popular</code> Meson option has been renamed to
             <code>hardcoded_curated</code>.
           </li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Basque</li>
+          <li>Bulgarian</li>
+          <li>Catalan</li>
+          <li>Chinese (China)</li>
+          <li>Chinese (Taiwan)</li>
+          <li>Croatian</li>
+          <li>Czech</li>
+          <li>Danish</li>
+          <li>Dutch</li>
+          <li>English (United Kingdom)</li>
+          <li>Finnish</li>
+          <li>French</li>
+          <li>Friulian</li>
+          <li>Galician</li>
+          <li>Georgian</li>
+          <li>German</li>
+          <li>Hebrew</li>
+          <li>Hungarian</li>
+          <li>Indonesian</li>
+          <li>Lithuanian</li>
+          <li>Nepali</li>
+          <li>Occitan (post 1500)</li>
+          <li>Persian</li>
+          <li>Polish</li>
+          <li>Portuguese</li>
+          <li>Portuguese (Brazil)</li>
+          <li>Russian</li>
+          <li>Serbian</li>
+          <li>Slovenian</li>
+          <li>Spanish</li>
+          <li>Swedish</li>
+          <li>Turkish</li>
+          <li>Ukrainian</li>
+          <li>Vietnamese</li>
         </ul>
       </description>
     </release>
