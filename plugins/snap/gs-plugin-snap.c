@@ -578,6 +578,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 	GsAppQueryTristate is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	const gchar * const *keywords = NULL;
 	const gchar * const *sections = NULL;
 	const gchar * const curated_sections[] = { "featured", NULL };
 	g_autoptr(GError) local_error = NULL;
@@ -597,13 +598,15 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		is_curated = gs_app_query_get_is_curated (query);
 		category = gs_app_query_get_category (query);
 		is_installed = gs_app_query_get_is_installed (query);
+		keywords = gs_app_query_get_keywords (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
 	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
 	if ((is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
 	     category == NULL &&
-	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
+	     keywords == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
@@ -620,6 +623,18 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 		data->n_pending_ops++;
 		snapd_client_get_snaps_async (client, SNAPD_GET_SNAPS_FLAGS_NONE, NULL,
 					      cancellable, list_installed_apps_cb, g_steal_pointer (&task));
+		return;
+	}
+
+	/* Querying with keywords also requires calling the method differently.
+	 * snapd will tokenise and stem @query internally. */
+	if (keywords != NULL) {
+		g_autofree gchar *query_str = NULL;
+
+		query_str = g_strjoinv (" ", (gchar **) keywords);
+		data->n_pending_ops++;
+		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, NULL, query_str,
+						 cancellable, list_apps_cb, g_steal_pointer (&task));
 		return;
 	}
 
@@ -770,39 +785,6 @@ gs_plugin_snap_list_apps_finish (GsPlugin      *plugin,
                                  GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginSnap *self = GS_PLUGIN_SNAP (plugin);
-	g_autoptr(SnapdClient) client = NULL;
-	g_autofree gchar *query = NULL;
-	g_autoptr(GPtrArray) snaps = NULL;
-	guint i;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	/* Create client. */
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
-
-	query = g_strjoinv (" ", values);
-	snaps = find_snaps (self, client, SNAPD_FIND_FLAGS_SCOPE_WIDE, NULL,
-			    query, cancellable, error);
-	if (snaps == NULL)
-		return FALSE;
-
-	for (i = 0; i < snaps->len; i++) {
-		g_autoptr(GsApp) app = snap_to_app (self, g_ptr_array_index (snaps, i), NULL);
-		gs_app_list_add (list, app);
-	}
-
-	return TRUE;
 }
 
 static SnapdSnap *
