@@ -166,7 +166,7 @@ _css_parsing_error_cb (GtkCssProvider *provider,
 		const GtkCssLocation *start_location;
 
 		start_location = gtk_css_section_get_start_location (section);
-		g_warning ("ignoring parse error %lu:%lu: %s",
+		g_warning ("ignoring parse error %" G_GSIZE_FORMAT ":%" G_GSIZE_FORMAT ": %s",
 			   start_location->lines + 1,
 			   start_location->line_chars,
 			   error->message);
