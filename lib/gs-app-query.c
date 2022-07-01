@@ -82,6 +82,8 @@ struct _GsAppQuery
 	gchar **deployment_featured;  /* (owned) (nullable) (array zero-terminated=1) */
 	/* This is guaranteed to either be %NULL, or a non-empty array */
 	gchar **developers;  /* (owned) (nullable) (array zero-terminated=1) */
+
+	gchar **keywords;  /* (owned) (nullable) (array zero-terminated=1) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -104,9 +106,10 @@ typedef enum {
 	PROP_IS_FEATURED,
 	PROP_CATEGORY,
 	PROP_IS_INSTALLED,
+	PROP_KEYWORDS,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_IS_INSTALLED + 1] = { NULL, };
+static GParamSpec *props[PROP_KEYWORDS + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -167,6 +170,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_IS_INSTALLED:
 		g_value_set_enum (value, self->is_installed);
+		break;
+	case PROP_KEYWORDS:
+		g_value_set_boxed (value, self->keywords);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -283,6 +289,16 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->is_installed == GS_APP_QUERY_TRISTATE_UNSET);
 		self->is_installed = g_value_get_enum (value);
 		break;
+	case PROP_KEYWORDS:
+		/* Construct only. */
+		g_assert (self->keywords == NULL);
+		self->keywords = g_value_dup_boxed (value);
+
+		/* Squash empty arrays to %NULL. */
+		if (self->keywords != NULL && self->keywords[0] == NULL)
+			g_clear_pointer (&self->keywords, g_strfreev);
+
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -318,6 +334,7 @@ gs_app_query_finalize (GObject *object)
 	g_clear_pointer (&self->developers, g_strfreev);
 	g_clear_pointer (&self->provides_files, g_strfreev);
 	g_clear_pointer (&self->released_since, g_date_time_unref);
+	g_clear_pointer (&self->keywords, g_strfreev);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->finalize (object);
 }
@@ -629,6 +646,28 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:keywords:
+	 *
+	 * A set of search keywords which apps must match.
+	 *
+	 * Search matches may be done against multiple properties of the app,
+	 * such as its name, description, supported content types, defined
+	 * keywords, etc. The keywords in this property may be stemmed in an
+	 * undefined way after being retrieved from #GsAppQuery.
+	 *
+	 * If this is %NULL, apps are not filtered by matches to this set of
+	 * keywords. An empty array is considered equivalent to %NULL.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_KEYWORDS] =
+		g_param_spec_boxed ("keywords", "Keywords",
+				    "A set of search keywords which apps must match.",
+				    G_TYPE_STRV,
+				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -800,6 +839,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 		n++;
 	if (self->developers != NULL)
 		n++;
+	if (self->keywords != NULL)
+		n++;
 
 	return n;
 }
@@ -958,4 +999,25 @@ gs_app_query_get_developers (GsAppQuery *self)
 	g_assert (self->developers == NULL || self->developers[0] != NULL);
 
 	return (const gchar * const *) self->developers;
+}
+
+/**
+ * gs_app_query_get_keywords:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:keywords.
+ *
+ * Returns: a set of search keywords which apps must match, or %NULL to not
+ *   filter by it
+ * Since: 43
+ */
+const gchar * const *
+gs_app_query_get_keywords (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	/* Always return %NULL or a non-empty array */
+	g_assert (self->keywords == NULL || self->keywords[0] != NULL);
+
+	return (const gchar * const *) self->keywords;
 }
