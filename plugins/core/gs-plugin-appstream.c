@@ -1336,28 +1336,6 @@ refine_wildcard (GsPluginAppstream    *self,
 }
 
 gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_search (plugin,
-				    self->silo,
-				    (const gchar * const *) values,
-				    list,
-				    cancellable,
-				    error);
-}
-
-gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,
 			  GCancellable *cancellable,
@@ -1419,6 +1397,7 @@ list_apps_thread_cb (GTask        *task,
 	guint64 age_secs = 0;
 	const gchar * const *deployment_featured = NULL;
 	const gchar * const *developers = NULL;
+	const gchar * const *keywords = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1431,6 +1410,7 @@ list_apps_thread_cb (GTask        *task,
 		is_installed = gs_app_query_get_is_installed (data->query);
 		deployment_featured = gs_app_query_get_deployment_featured (data->query);
 		developers = gs_app_query_get_developers (data->query);
+		keywords = gs_app_query_get_keywords (data->query);
 	}
 	if (released_since != NULL) {
 		g_autoptr(GDateTime) now = g_date_time_new_now_utc ();
@@ -1445,7 +1425,8 @@ list_apps_thread_cb (GTask        *task,
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     deployment_featured == NULL &&
-	     developers == NULL) ||
+	     developers == NULL &&
+	     keywords == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1503,6 +1484,12 @@ list_apps_thread_cb (GTask        *task,
 
 	if (developers != NULL &&
 	    !gs_appstream_search_developer_apps (GS_PLUGIN (self), self->silo, developers, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	if (keywords != NULL &&
+	    !gs_appstream_search (GS_PLUGIN (self), self->silo, keywords, list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
