@@ -75,15 +75,7 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
 	if (priv->timeout > 0)
-		switch (priv->action) {
-		case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		case GS_PLUGIN_ACTION_SEARCH:
-		case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-			g_string_append_printf (str, " with timeout=%u", priv->timeout);
-			break;
-		default:
-			break;
-	}
+		g_string_append_printf (str, " with timeout=%u", priv->timeout);
 
 	if (priv->max_results > 0)
 		g_string_append_printf (str, " with max-results=%u", priv->max_results);
