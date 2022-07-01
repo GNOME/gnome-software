@@ -500,6 +500,9 @@ details_activated (GSimpleAction *action,
 	} else {
 		g_autofree gchar *data_id = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		g_autoptr(GsAppQuery) query = NULL;
+		const gchar *keywords[] = { id, NULL };
+
 		data_id = gs_utils_unique_id_compat_convert (id);
 		if (data_id != NULL) {
 			gs_plugin_loader_app_create_async (app->plugin_loader, data_id, app->cancellable,
@@ -508,12 +511,13 @@ details_activated (GSimpleAction *action,
 		}
 
 		/* find by launchable */
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-						 "search", id,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-						 NULL);
+		query = gs_app_query_new ("keywords", keywords,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+					  "sort-func", gs_utils_app_sort_match_value,
+					  NULL);
+		plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 		gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 						    app->cancellable,
 						    _search_launchable_details_cb,
@@ -781,15 +785,20 @@ launch_activated (GSimpleAction *action,
 	g_autoptr(GError) error = NULL;
 	guint ii, len;
 	GsPlugin *management_plugin;
+	g_autoptr(GsAppQuery) query = NULL;
+	const gchar *keywords[2] = { NULL, };
 
 	g_variant_get (parameter, "(&s&s)", &id, &management_plugin_name);
 
-	search_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", id,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
-					 NULL);
+	keywords[0] = id;
+	query = gs_app_query_new ("keywords", keywords,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
+				  NULL);
+	search_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
 	if (!list) {
 		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin_name, error ? error->message : "Unknown error");
