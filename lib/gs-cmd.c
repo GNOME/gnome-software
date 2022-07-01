@@ -202,21 +202,29 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) list_filtered = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gboolean show_installed = TRUE;
+	const gchar * const keywords[] = { name, NULL };
+	GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
 
 	/* ensure set */
 	self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
 	self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
 
 	/* do search */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", name,
-					 "refine-flags", self->refine_flags,
-					 "max-results", self->max_results,
-					 "interactive", self->interactive,
-					 NULL);
+	query = gs_app_query_new ("keywords", keywords,
+				  "refine-flags", self->refine_flags,
+				  "max-results", self->max_results,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
+				  NULL);
+
+	if (self->interactive)
+		flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+	plugin_job = gs_plugin_job_list_apps_new (query, flags);
 	list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, error);
 	if (list == NULL)
 		return FALSE;
@@ -437,15 +445,25 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		for (i = 0; i < repeat; i++) {
+			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+			const gchar *keywords[2] = { argv[2], NULL };
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-							 "search", argv[2],
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
+
+			query = gs_app_query_new ("keywords", keywords,
+						  "refine-flags", self->refine_flags,
+						  "max-results", self->max_results,
+						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "sort-func", gs_utils_app_sort_match_value,
+						  NULL);
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
