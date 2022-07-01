@@ -683,7 +683,7 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 
 	for (gsize i = 0; sections != NULL && sections[i] != NULL; i++) {
 		data->n_pending_ops++;
-		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL,
+		snapd_client_find_section_async (client, SNAPD_FIND_FLAGS_SCOPE_WIDE, sections[i], NULL,
 						 cancellable, list_apps_cb, g_object_ref (task));
 	}
 
