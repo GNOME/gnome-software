@@ -64,26 +64,6 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
 /**
- * gs_plugin_add_search:
- * @plugin: a #GsPlugin
- * @values: a NULL terminated list of search terms, e.g. [ "gnome", "software" ]
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get search results for a specific query.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
-							 gchar		**values,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_search_what_provides
  * @plugin: a list of tags, e.g. [ "text/rtf" ]
  * @values: a #GStrv

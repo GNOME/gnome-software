@@ -1461,8 +1461,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_updates_historical";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "gs_plugin_add_updates";
-	if (action == GS_PLUGIN_ACTION_SEARCH)
-		return "gs_plugin_add_search";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "gs_plugin_add_search_what_provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
@@ -1507,8 +1505,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-updates";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "get-sources";
-	if (action == GS_PLUGIN_ACTION_SEARCH)
-		return "search";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "search-provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
@@ -1567,8 +1563,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
 	if (g_strcmp0 (action, "get-sources") == 0)
 		return GS_PLUGIN_ACTION_GET_SOURCES;
-	if (g_strcmp0 (action, "search") == 0)
-		return GS_PLUGIN_ACTION_SEARCH;
 	if (g_strcmp0 (action, "search-provides") == 0)
 		return GS_PLUGIN_ACTION_SEARCH_PROVIDES;
 	if (g_strcmp0 (action, "get-categories") == 0)

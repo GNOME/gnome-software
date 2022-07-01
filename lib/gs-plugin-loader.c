@@ -643,13 +643,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, list, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_SEARCH:
-		{
-			GsPluginSearchFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->tokens, list,
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
@@ -3465,7 +3458,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_UPDATE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
@@ -3613,7 +3605,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -4065,7 +4056,6 @@ job_process_cb (GTask *task)
 
 	/* check required args */
 	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		if (gs_plugin_job_get_search (plugin_job) == NULL) {
@@ -4082,12 +4072,6 @@ job_process_cb (GTask *task)
 
 	/* sorting fallbacks */
 	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_utils_app_sort_match_value, NULL);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
@@ -4110,23 +4094,9 @@ job_process_cb (GTask *task)
 	if (plugin_loader->as_pool == NULL)
 		plugin_loader->as_pool = as_pool_new ();
 
-	/* pre-tokenize search */
-	if (action == GS_PLUGIN_ACTION_SEARCH) {
-		const gchar *search = gs_plugin_job_get_search (plugin_job);
-		helper->tokens = as_pool_build_search_tokens (plugin_loader->as_pool, search);
-		if (helper->tokens == NULL) {
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "failed to tokenize %s", search);
-			return;
-		}
-	}
-
 	/* set up a hang handler */
 	switch (action) {
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
 			helper->timeout_id =
