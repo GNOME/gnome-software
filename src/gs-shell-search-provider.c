@@ -148,10 +148,8 @@ execute_search (GsShellSearchProvider  *self,
 		gchar		 **terms)
 {
 	PendingSearch *pending_search;
-	g_autofree gchar *value = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	value = g_strjoinv (" ", terms);
+	g_autoptr(GsAppQuery) query = NULL;
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
@@ -170,15 +168,17 @@ execute_search (GsShellSearchProvider  *self,
 	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", value,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
-					 "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
-					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
-							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
-					 NULL);
-	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb, self);
+	query = gs_app_query_new ("keywords", terms,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
+				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+						  GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+				  "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
+				  "sort-func", gs_shell_search_provider_sort_cb,
+				  "sort-user-data", self,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    search_done_cb,
