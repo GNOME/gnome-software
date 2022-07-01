@@ -31,6 +31,8 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
+	const gchar *keywords[2] = { NULL, };
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -43,17 +45,20 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_tmp, GS_APP_STATE_INSTALLED);
 
 	/* get search result based on addon keyword */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "yellow",
-					 NULL);
-	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	keywords[0] = "yellow";
+	query = gs_app_query_new ("keywords", keywords,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert_nonnull (list);
 
-	/* make sure there is one entry, the parent app */
-	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	/* make sure there is at least one entry, the parent app */
+	g_assert_cmpint (gs_app_list_length (list), >=, 1);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "arachne.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);

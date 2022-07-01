@@ -267,6 +267,8 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	GsSizeType size_installed_type, size_download_type;
 	guint64 size_installed_bytes, size_download_bytes;
+	const gchar *keywords[] = { NULL, };
+	g_autoptr(GsAppQuery) query = NULL;
 
 	/* no snap, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "snap")) {
@@ -274,10 +276,13 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 		return;
 	}
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "snap",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON | GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
-					 NULL);
+	keywords[0] = "snap";
+	query = gs_app_query_new ("keywords", keywords,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	apps = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (apps != NULL);
