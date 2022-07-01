@@ -1771,16 +1771,6 @@ gs_plugin_flatpak_do_search (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	return gs_plugin_flatpak_do_search (plugin, values, list, cancellable, error);
-}
-
-gboolean
 gs_plugin_add_search_what_provides (GsPlugin *plugin,
 				    gchar **search,
 				    GsAppList *list,
@@ -1870,6 +1860,7 @@ list_apps_thread_cb (GTask        *task,
 	guint64 age_secs = 0;
 	const gchar * const *deployment_featured = NULL;
 	const gchar *const *developers = NULL;
+	const gchar * const *keywords = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1882,6 +1873,7 @@ list_apps_thread_cb (GTask        *task,
 		is_installed = gs_app_query_get_is_installed (data->query);
 		deployment_featured = gs_app_query_get_deployment_featured (data->query);
 		developers = gs_app_query_get_developers (data->query);
+		keywords = gs_app_query_get_keywords (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1897,7 +1889,8 @@ list_apps_thread_cb (GTask        *task,
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     deployment_featured == NULL &&
-	     developers == NULL) ||
+	     developers == NULL &&
+	     keywords == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1948,6 +1941,12 @@ list_apps_thread_cb (GTask        *task,
 
 		if (developers != NULL &&
 		    !gs_flatpak_search_developer_apps (flatpak, developers, list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		if (keywords != NULL &&
+		    !gs_flatpak_search (flatpak, keywords, list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
