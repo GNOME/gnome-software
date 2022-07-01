@@ -307,62 +307,52 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-typedef struct {
-	GMainLoop	*loop;
-	GCancellable	*cancellable;
-	guint		 timer_id;
-	gulong		 cancellable_id;
-} GsPluginDummyTimeoutHelper;
+static gboolean timeout_cb (gpointer user_data);
+
+/* Simulate a cancellable delay */
+static void
+gs_plugin_dummy_timeout_async (GsPluginDummy       *self,
+                               guint                timeout_ms,
+                               GCancellable        *cancellable,
+                               GAsyncReadyCallback  callback,
+                               gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GSource) source = NULL;
+
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_timeout_async);
+
+	source = g_timeout_source_new (timeout_ms);
+
+	if (cancellable != NULL) {
+		g_autoptr(GSource) cancellable_source = NULL;
+
+		cancellable_source = g_cancellable_source_new (cancellable);
+		g_source_set_dummy_callback (cancellable_source);
+		g_source_add_child_source (source, cancellable_source);
+	}
+
+	g_task_attach_source (task, source, timeout_cb);
+}
 
 static gboolean
-gs_plugin_dummy_timeout_hang_cb (gpointer user_data)
+timeout_cb (gpointer user_data)
 {
-	GsPluginDummyTimeoutHelper *helper = (GsPluginDummyTimeoutHelper *) user_data;
-	helper->timer_id = 0;
-	g_debug ("timeout hang");
-	g_main_loop_quit (helper->loop);
-	return FALSE;
+	GTask *task = G_TASK (user_data);
+
+	if (!g_task_return_error_if_cancelled (task))
+		g_task_return_boolean (task, TRUE);
+
+	return G_SOURCE_REMOVE;
 }
 
-static void
-gs_plugin_dummy_timeout_cancelled_cb (GCancellable *cancellable, gpointer user_data)
+static gboolean
+gs_plugin_dummy_timeout_finish (GsPluginDummy  *self,
+                                GAsyncResult   *result,
+                                GError        **error)
 {
-	GsPluginDummyTimeoutHelper *helper = (GsPluginDummyTimeoutHelper *) user_data;
-	g_debug ("calling cancel");
-	g_main_loop_quit (helper->loop);
-}
-
-static void
-gs_plugin_dummy_timeout_helper_free (GsPluginDummyTimeoutHelper *helper)
-{
-	if (helper->cancellable_id != 0)
-		g_signal_handler_disconnect (helper->cancellable, helper->cancellable_id);
-	if (helper->timer_id != 0)
-		g_source_remove (helper->timer_id);
-	if (helper->cancellable != NULL)
-		g_object_unref (helper->cancellable);
-	g_main_loop_unref (helper->loop);
-	g_free (helper);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginDummyTimeoutHelper, gs_plugin_dummy_timeout_helper_free)
-
-static void
-gs_plugin_dummy_timeout_add (guint timeout_ms, GCancellable *cancellable)
-{
-	g_autoptr(GsPluginDummyTimeoutHelper) helper = g_new0 (GsPluginDummyTimeoutHelper, 1);
-	helper->loop = g_main_loop_new (NULL, TRUE);
-	if (cancellable != NULL) {
-		helper->cancellable = g_object_ref (cancellable);
-		helper->cancellable_id =
-			g_signal_connect (cancellable, "cancelled",
-					  G_CALLBACK (gs_plugin_dummy_timeout_cancelled_cb),
-					  helper);
-	}
-	helper->timer_id = g_timeout_add (timeout_ms,
-					  gs_plugin_dummy_timeout_hang_cb,
-					  helper);
-	g_main_loop_run (helper->loop);
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 gboolean
@@ -376,66 +366,6 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 		g_autoptr(GsApp) app2 = gs_app_new ("chiron.desktop");
 		gs_app_list_add (list, app2);
 	}
-	return TRUE;
-}
-
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GIcon) ic = NULL;
-
-	/* hang the plugin for 5 seconds */
-	if (g_strcmp0 (values[0], "hang") == 0) {
-		gs_plugin_dummy_timeout_add (5000, cancellable);
-		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-		return TRUE;
-	}
-
-	/* we're very specific */
-	if (g_strcmp0 (values[0], "chiron") != 0)
-		return TRUE;
-
-	/* does the app already exist? */
-	app = gs_plugin_cache_lookup (plugin, "chiron");
-	if (app != NULL) {
-		g_debug ("using %s fom the cache", gs_app_get_id (app));
-		gs_app_list_add (list, app);
-		return TRUE;
-	}
-
-	/* set up a timeout to emulate getting a GFileMonitor callback */
-	self->quirk_id =
-		g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
-
-	/* use a generic stock icon */
-	ic = g_themed_icon_new ("drive-harddisk");
-
-	/* add a live updatable normal application */
-	app = gs_app_new ("chiron.desktop");
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
-	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
-	gs_app_add_icon (app, ic);
-	gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 42 * 1024 * 1024);
-	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 50 * 1024 * 1024);
-	gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-	gs_app_set_management_plugin (app, plugin);
-	gs_app_set_metadata (app, "GnomeSoftware::Creator",
-			     gs_plugin_get_name (plugin));
-	gs_app_list_add (list, app);
-
-	/* add to cache so it can be found by the flashing callback */
-	gs_plugin_cache_add (plugin, NULL, app);
-
 	return TRUE;
 }
 
@@ -789,6 +719,10 @@ gs_plugin_dummy_refine_finish (GsPlugin      *plugin,
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
+static void list_apps_timeout_cb (GObject      *object,
+                                  GAsyncResult *result,
+                                  gpointer      user_data);
+
 static void
 gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
                                  GsAppQuery            *query,
@@ -797,6 +731,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
                                  GAsyncReadyCallback    callback,
                                  gpointer               user_data)
 {
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GDateTime *released_since = NULL;
@@ -804,6 +739,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	guint max_results = 0;
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	const gchar * const *keywords = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
@@ -814,6 +750,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		max_results = gs_app_query_get_max_results (query);
 		category = gs_app_query_get_category (query);
 		is_installed = gs_app_query_get_is_installed (query);
+		keywords = gs_app_query_get_keywords (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
@@ -821,7 +758,8 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	if ((released_since == NULL &&
 	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
 	     category == NULL &&
-	     is_installed == GS_APP_QUERY_TRISTATE_UNSET) ||
+	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
+	     keywords == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
@@ -907,7 +845,69 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		}
 	}
 
+	if (keywords != NULL) {
+		if (g_strcmp0 (keywords[0], "hang") == 0) {
+			/* hang the plugin for 5 seconds */
+			gs_plugin_dummy_timeout_async (self, 5000, cancellable,
+						       list_apps_timeout_cb, g_steal_pointer (&task));
+			return;
+		} else if (g_strcmp0 (keywords[0], "chiron") == 0) {
+			g_autoptr(GsApp) app = NULL;
+
+			/* does the app already exist? */
+			app = gs_plugin_cache_lookup (plugin, "chiron");
+			if (app != NULL) {
+				g_debug ("using %s fom the cache", gs_app_get_id (app));
+				gs_app_list_add (list, app);
+			} else {
+				g_autoptr(GIcon) icon = NULL;
+
+				/* set up a timeout to emulate getting a GFileMonitor callback */
+				self->quirk_id =
+					g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
+
+				/* use a generic stock icon */
+				icon = g_themed_icon_new ("drive-harddisk");
+
+				/* add a live updatable normal application */
+				app = gs_app_new ("chiron.desktop");
+				gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+				gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
+				gs_app_add_icon (app, icon);
+				gs_app_set_size_installed (app, GS_SIZE_TYPE_VALID, 42 * 1024 * 1024);
+				gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 50 * 1024 * 1024);
+				gs_app_set_kind (app, AS_COMPONENT_KIND_DESKTOP_APP);
+				gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+				gs_app_set_management_plugin (app, plugin);
+				gs_app_set_metadata (app, "GnomeSoftware::Creator",
+						     gs_plugin_get_name (plugin));
+				gs_app_list_add (list, app);
+
+				/* add to cache so it can be found by the flashing callback */
+				gs_plugin_cache_add (plugin, NULL, app);
+			}
+		} else {
+			/* Don’t do anything */
+		}
+	}
+
 	g_task_return_pointer (task, g_steal_pointer (&list), (GDestroyNotify) g_object_unref);
+}
+
+static void
+list_apps_timeout_cb (GObject      *object,
+                      GAsyncResult *result,
+                      gpointer      user_data)
+{
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	/* Return a cancelled error, or an empty app list after hanging. */
+	if (gs_plugin_dummy_timeout_finish (self, result, &local_error))
+		g_task_return_pointer (task, gs_app_list_new (), (GDestroyNotify) g_object_unref);
+	else
+		g_task_return_error (task, g_steal_pointer (&local_error));
 }
 
 static GsAppList *
