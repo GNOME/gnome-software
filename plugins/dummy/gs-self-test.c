@@ -493,30 +493,6 @@ gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
-{
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GsAppQuery) query = NULL;
-	const gchar *keywords[2] = { NULL, };
-
-	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
-
-	/* get search result based on addon keyword */
-	keywords[0] = "hang";
-	query = gs_app_query_new ("keywords", keywords, NULL);
-	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, cancellable, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT);
-	g_assert (list == NULL);
-}
-
-static void
 gs_plugins_dummy_search_invalid_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
@@ -969,9 +945,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/search-alternate",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_search_alternate_func);
-	g_test_add_data_func ("/gnome-software/plugins/dummy/hang",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_dummy_hang_func);
 	g_test_add_data_func ("/gnome-software/plugins/dummy/search{invalid}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_search_invalid_func);

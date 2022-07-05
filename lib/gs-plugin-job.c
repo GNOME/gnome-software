@@ -22,7 +22,6 @@ typedef struct
 	gboolean		 interactive;
 	gboolean		 propagate_error;
 	guint			 max_results;
-	guint			 timeout;
 	GsPlugin		*plugin;
 	GsPluginAction		 action;
 	GsAppListSortFunc	 sort_func;
@@ -45,7 +44,6 @@ enum {
 	PROP_LIST,
 	PROP_FILE,
 	PROP_MAX_RESULTS,
-	PROP_TIMEOUT,
 	PROP_PROPAGATE_ERROR,
 	PROP_LAST
 };
@@ -74,8 +72,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_string_append_printf (str, " with interactive=True");
 	if (priv->propagate_error)
 		g_string_append_printf (str, " with propagate-error=True");
-	if (priv->timeout > 0)
-		g_string_append_printf (str, " with timeout=%u", priv->timeout);
 
 	if (priv->max_results > 0)
 		g_string_append_printf (str, " with max-results=%u", priv->max_results);
@@ -207,22 +203,6 @@ gs_plugin_job_get_max_results (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
 	return priv->max_results;
-}
-
-void
-gs_plugin_job_set_timeout (GsPluginJob *self, guint timeout)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->timeout = timeout;
-}
-
-guint
-gs_plugin_job_get_timeout (GsPluginJob *self)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return priv->timeout;
 }
 
 void
@@ -381,9 +361,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, priv->max_results);
 		break;
-	case PROP_TIMEOUT:
-		g_value_set_uint (value, priv->timeout);
-		break;
 	case PROP_PROPAGATE_ERROR:
 		g_value_set_boolean (value, priv->propagate_error);
 		break;
@@ -425,9 +402,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_MAX_RESULTS:
 		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
-		break;
-	case PROP_TIMEOUT:
-		gs_plugin_job_set_timeout (self, g_value_get_uint (value));
 		break;
 	case PROP_PROPAGATE_ERROR:
 		gs_plugin_job_set_propagate_error (self, g_value_get_boolean (value));
@@ -507,11 +481,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   0, G_MAXUINT, 0,
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_MAX_RESULTS, pspec);
-
-	pspec = g_param_spec_uint ("timeout", NULL, NULL,
-				   0, G_MAXUINT, 60,
-				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_TIMEOUT, pspec);
 
 	pspec = g_param_spec_boolean ("propagate-error", NULL, NULL,
 				      FALSE,

@@ -192,8 +192,6 @@ typedef struct {
 	GPtrArray			*catlist;
 	GsPluginJob			*plugin_job;
 	gboolean			 anything_ran;
-	guint				 timeout_id;
-	gboolean			 timeout_triggered;
 	gchar				**tokens;
 } GsPluginLoaderHelper;
 
@@ -255,8 +253,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	}
 
 	g_object_unref (helper->plugin_loader);
-	if (helper->timeout_id != 0)
-		g_source_remove (helper->timeout_id);
 	if (helper->plugin_job != NULL)
 		g_object_unref (helper->plugin_job);
 	if (helper->catlist != NULL)
@@ -705,20 +701,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* failed */
 	if (!ret) {
-		/* we returned cancelled, but this was because of a timeout,
-		 * so re-create error, throwing the plugin under the bus */
-		if (helper->timeout_triggered &&
-		    (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
-		     g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED))) {
-			g_debug ("converting cancelled to timeout");
-			g_clear_error (&error_local);
-			g_set_error (&error_local,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_TIMED_OUT,
-				     "Timeout was reached as %s took "
-				     "too long to return results",
-				     gs_plugin_get_name (plugin));
-		}
 		return gs_plugin_error_handle_failure (helper,
 							plugin,
 							error_local,
@@ -3695,75 +3677,6 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 	g_object_unref (task);
 }
 
-/* This needs to err on the side of being fast, rather than perfectly accurate.
- * False positives (saying the program is running under gdb when it isn’t) are
- * not OK. False negatives (saying the program is not running under gdb when it
- * is) are OK. */
-static gboolean
-is_running_under_gdb (void)
-{
-	g_autofree gchar *status = NULL;
-	gsize status_len = 0;
-	const gchar *tracer_pid, *end;
-
-	/* Look for a line of the form:
-	 * ```
-	 * TracerPid:	748899
-	 * ```
-	 * or
-	 * ```
-	 * TracerPid:	0
-	 * ```
-	 * in `/proc/self/status`. If it’s 0, the process is not being traced. */
-	if (!g_file_get_contents ("/proc/self/status", &status, &status_len, NULL))
-		return FALSE;
-
-	tracer_pid = g_strstr_len (status, status_len, "TracerPid:");
-	if (tracer_pid == NULL)
-		return FALSE;
-
-	end = status + status_len;
-
-	/* Find the number. */
-	for (tracer_pid += strlen ("TracerPid:");
-	     tracer_pid < end &&
-	     g_ascii_isspace (*tracer_pid);
-	     tracer_pid++);
-
-	if (tracer_pid >= end)
-		return FALSE;
-
-	return (*tracer_pid != '0');
-}
-
-static gboolean
-gs_plugin_loader_job_timeout_cb (gpointer user_data)
-{
-	GTask *task = G_TASK (user_data);
-	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
-
-	/* Don’t impose timeouts if running under gdb. */
-	if (is_running_under_gdb ()) {
-		g_debug ("Not cancelling job %s even though it took longer "
-			 "than %u seconds, as running under gdb",
-			 helper->function_name,
-			 gs_plugin_job_get_timeout (helper->plugin_job));
-		helper->timeout_id = 0;
-		return G_SOURCE_REMOVE;
-	}
-
-	/* call the cancellable */
-	g_debug ("cancelling job %s as it took longer than %u seconds",
-		 helper->function_name,
-		 gs_plugin_job_get_timeout (helper->plugin_job));
-	g_cancellable_cancel (g_task_get_cancellable (task));
-
-	/* failed */
-	helper->timeout_triggered = TRUE;
-	helper->timeout_id = 0;
-	return G_SOURCE_REMOVE;
-}
-
 static void
 gs_plugin_loader_cancelled_cb (GCancellable *cancellable,
                                gpointer      user_data)
@@ -4087,21 +4000,6 @@ job_process_cb (GTask *task)
 	/* let the task cancel itself */
 	g_task_set_check_cancellable (task, FALSE);
 	g_task_set_return_on_cancel (task, FALSE);
-
-	/* set up a hang handler */
-	switch (action) {
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
-			helper->timeout_id =
-				g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
-						       gs_plugin_loader_job_timeout_cb,
-						       task);
-		}
-		break;
-	default:
-		break;
-	}
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
