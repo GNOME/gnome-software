@@ -50,7 +50,6 @@ struct _GsPluginLoader
 	gboolean		 plugin_dir_dirty;
 	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
-	AsPool			*as_pool;
 
 	GMutex			 pending_apps_mutex;
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
@@ -2804,7 +2803,6 @@ gs_plugin_loader_finalize (GObject *object)
 	g_ptr_array_unref (plugin_loader->file_monitors);
 	g_hash_table_unref (plugin_loader->events_by_id);
 	g_hash_table_unref (plugin_loader->disallow_updates);
-	g_clear_object (&plugin_loader->as_pool);
 
 	g_mutex_clear (&plugin_loader->pending_apps_mutex);
 	g_mutex_clear (&plugin_loader->events_by_id_mutex);
@@ -4089,10 +4087,6 @@ job_process_cb (GTask *task)
 	/* let the task cancel itself */
 	g_task_set_check_cancellable (task, FALSE);
 	g_task_set_return_on_cancel (task, FALSE);
-
-	/* AppStream metadata pool, we only need it to create good search tokens */
-	if (plugin_loader->as_pool == NULL)
-		plugin_loader->as_pool = as_pool_new ();
 
 	/* set up a hang handler */
 	switch (action) {
