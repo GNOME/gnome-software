@@ -1490,6 +1490,8 @@ gs_appstream_do_search (GsPlugin *plugin,
 	return TRUE;
 }
 
+/* This tokenises and stems @values internally for comparison against the
+ * already-stemmed tokens in the libxmlb silo */
 gboolean
 gs_appstream_search (GsPlugin *plugin,
 		     XbSilo *silo,
