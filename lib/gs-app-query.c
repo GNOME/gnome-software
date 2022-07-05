@@ -84,6 +84,7 @@ struct _GsAppQuery
 	gchar **developers;  /* (owned) (nullable) (array zero-terminated=1) */
 
 	gchar **keywords;  /* (owned) (nullable) (array zero-terminated=1) */
+	GsApp *alternate_of;  /* (nullable) (owned) */
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -107,9 +108,10 @@ typedef enum {
 	PROP_CATEGORY,
 	PROP_IS_INSTALLED,
 	PROP_KEYWORDS,
+	PROP_ALTERNATE_OF,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_KEYWORDS + 1] = { NULL, };
+static GParamSpec *props[PROP_ALTERNATE_OF + 1] = { NULL, };
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -173,6 +175,9 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_KEYWORDS:
 		g_value_set_boxed (value, self->keywords);
+		break;
+	case PROP_ALTERNATE_OF:
+		g_value_set_object (value, self->alternate_of);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -299,6 +304,11 @@ gs_app_query_set_property (GObject      *object,
 			g_clear_pointer (&self->keywords, g_strfreev);
 
 		break;
+	case PROP_ALTERNATE_OF:
+		/* Construct only. */
+		g_assert (self->alternate_of == NULL);
+		self->alternate_of = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -321,6 +331,7 @@ gs_app_query_dispose (GObject *object)
 	}
 
 	g_clear_object (&self->category);
+	g_clear_object (&self->alternate_of);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->dispose (object);
 }
@@ -668,6 +679,27 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				    G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:alternate-of: (nullable)
+	 *
+	 * An app which apps must be related to.
+	 *
+	 * The definition of ‘related to’ depends on the code consuming
+	 * #GsAppQuery, but it will typically be other applications which
+	 * implement the same feature, or other applications which are packaged
+	 * together with this one.
+	 *
+	 * If this is %NULL, apps are not filtered by alternatives.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_ALTERNATE_OF] =
+		g_param_spec_object ("alternate-of", "Alternate Of",
+				     "An app which apps must be related to.",
+				     GS_TYPE_APP,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -840,6 +872,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 	if (self->developers != NULL)
 		n++;
 	if (self->keywords != NULL)
+		n++;
+	if (self->alternate_of != NULL)
 		n++;
 
 	return n;
@@ -1020,4 +1054,22 @@ gs_app_query_get_keywords (GsAppQuery *self)
 	g_assert (self->keywords == NULL || self->keywords[0] != NULL);
 
 	return (const gchar * const *) self->keywords;
+}
+
+/**
+ * gs_app_query_get_alternate_of:
+ * @self: a #GsAppQuery
+ *
+ * Get the value of #GsAppQuery:alternate-of.
+ *
+ * Returns: (nullable) (transfer none): an app which apps must be related to,
+ *   or %NULL to not filter on alternates
+ * Since: 43
+ */
+GsApp *
+gs_app_query_get_alternate_of (GsAppQuery *self)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
+
+	return self->alternate_of;
 }
