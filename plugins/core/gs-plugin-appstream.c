@@ -1398,6 +1398,7 @@ list_apps_thread_cb (GTask        *task,
 	const gchar * const *deployment_featured = NULL;
 	const gchar * const *developers = NULL;
 	const gchar * const *keywords = NULL;
+	GsApp *alternate_of = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1411,6 +1412,7 @@ list_apps_thread_cb (GTask        *task,
 		deployment_featured = gs_app_query_get_deployment_featured (data->query);
 		developers = gs_app_query_get_developers (data->query);
 		keywords = gs_app_query_get_keywords (data->query);
+		alternate_of = gs_app_query_get_alternate_of (data->query);
 	}
 	if (released_since != NULL) {
 		g_autoptr(GDateTime) now = g_date_time_new_now_utc ();
@@ -1426,7 +1428,8 @@ list_apps_thread_cb (GTask        *task,
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     deployment_featured == NULL &&
 	     developers == NULL &&
-	     keywords == NULL) ||
+	     keywords == NULL &&
+	     alternate_of == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1494,6 +1497,12 @@ list_apps_thread_cb (GTask        *task,
 		return;
 	}
 
+	if (alternate_of != NULL &&
+	    !gs_appstream_add_alternates (self->silo, alternate_of, list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
 
@@ -1503,24 +1512,6 @@ gs_plugin_appstream_list_apps_finish (GsPlugin      *plugin,
                                       GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_alternates (GsPlugin *plugin,
-			  GsApp *app,
-			  GsAppList *list,
-			  GCancellable *cancellable,
-			  GError **error)
-{
-	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
-
-	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_alternates (self->silo, app, list,
-					    cancellable, error);
 }
 
 static void refresh_metadata_thread_cb (GTask        *task,
