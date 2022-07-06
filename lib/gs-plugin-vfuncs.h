@@ -85,27 +85,6 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_alternates
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Called when trying to find alternates to a specific app, for instance
- * finding a flatpak version of an existing distro packaged application.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_alternates		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_updates:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
