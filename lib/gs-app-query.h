@@ -41,6 +41,39 @@ typedef enum
 	GS_APP_QUERY_TRISTATE_TRUE = 1,
 } GsAppQueryTristate;
 
+/**
+ * GsAppQueryProvidesType:
+ * @GS_APP_QUERY_PROVIDES_UNKNOWN: Format is unknown and value is unset.
+ * @GS_APP_QUERY_PROVIDES_PACKAGE_NAME: A package name in whatever ID format is
+ *   used natively by the current distro.
+ * @GS_APP_QUERY_PROVIDES_GSTREAMER: A GStreamer plugin name which the app must
+ *   provide.
+ * @GS_APP_QUERY_PROVIDES_FONT: A font name which the app must provide.
+ * @GS_APP_QUERY_PROVIDES_MIME_HANDLER: A MIME type/content type which the app
+ *   must support.
+ * @GS_APP_QUERY_PROVIDES_PS_DRIVER: A printer/PostScript driver which the app
+ *   must provide.
+ * @GS_APP_QUERY_PROVIDES_PLASMA: A Plasma ID which the app must provide.
+ *   (FIXME: It’s not really clear what this means, but it’s historically been
+ *   supported.)
+ *
+ * A type for identifying the format or meaning of #GsAppQuery:provides-tag.
+ *
+ * This allows querying for apps which provide various types of functionality,
+ * such as printer drivers or fonts.
+ *
+ * Since: 43
+ */
+typedef enum {
+	GS_APP_QUERY_PROVIDES_UNKNOWN = 0,
+	GS_APP_QUERY_PROVIDES_PACKAGE_NAME,
+	GS_APP_QUERY_PROVIDES_GSTREAMER,
+	GS_APP_QUERY_PROVIDES_FONT,
+	GS_APP_QUERY_PROVIDES_MIME_HANDLER,
+	GS_APP_QUERY_PROVIDES_PS_DRIVER,
+	GS_APP_QUERY_PROVIDES_PLASMA,
+} GsAppQueryProvidesType;
+
 #define GS_TYPE_APP_QUERY (gs_app_query_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsAppQuery, gs_app_query, GS, APP_QUERY, GObject)
@@ -69,5 +102,7 @@ const gchar * const	*gs_app_query_get_deployment_featured
 const gchar * const	*gs_app_query_get_developers	 (GsAppQuery *self);
 const gchar * const	*gs_app_query_get_keywords	 (GsAppQuery *self);
 GsApp			*gs_app_query_get_alternate_of	 (GsAppQuery *self);
+GsAppQueryProvidesType	 gs_app_query_get_provides	 (GsAppQuery *self,
+							  const gchar **out_provides_tag);
 
 G_END_DECLS
