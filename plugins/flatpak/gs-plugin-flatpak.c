@@ -1797,24 +1797,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_alternates (GsPlugin *plugin,
-			  GsApp *app,
-			  GsAppList *list,
-			  GCancellable *cancellable,
-			  GError **error)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_add_alternates (flatpak, app, list, interactive, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
-}
-
 static void list_apps_thread_cb (GTask        *task,
                                  gpointer      source_object,
                                  gpointer      task_data,
@@ -1861,6 +1843,7 @@ list_apps_thread_cb (GTask        *task,
 	const gchar * const *deployment_featured = NULL;
 	const gchar *const *developers = NULL;
 	const gchar * const *keywords = NULL;
+	GsApp *alternate_of = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1874,6 +1857,7 @@ list_apps_thread_cb (GTask        *task,
 		deployment_featured = gs_app_query_get_deployment_featured (data->query);
 		developers = gs_app_query_get_developers (data->query);
 		keywords = gs_app_query_get_keywords (data->query);
+		alternate_of = gs_app_query_get_alternate_of (data->query);
 	}
 
 	if (released_since != NULL) {
@@ -1890,7 +1874,8 @@ list_apps_thread_cb (GTask        *task,
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
 	     deployment_featured == NULL &&
 	     developers == NULL &&
-	     keywords == NULL) ||
+	     keywords == NULL &&
+	     alternate_of == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1947,6 +1932,12 @@ list_apps_thread_cb (GTask        *task,
 
 		if (keywords != NULL &&
 		    !gs_flatpak_search (flatpak, keywords, list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		if (alternate_of != NULL &&
+		    !gs_flatpak_add_alternates (flatpak, alternate_of, list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
