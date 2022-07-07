@@ -64,27 +64,6 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 
 /**
- * gs_plugin_add_search_what_provides
- * @plugin: a list of tags, e.g. [ "text/rtf" ]
- * @values: a #GStrv
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Called when searching for an application that provides specific defined tags,
- * for instance a codec string or mime-type.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
-							 gchar		**values,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_add_updates:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
