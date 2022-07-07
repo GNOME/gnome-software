@@ -56,6 +56,7 @@ struct _GsPluginLoader
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
 
 	GThreadPool		*queued_ops_pool;
+	gint			 active_jobs;
 
 	GSettings		*settings;
 
@@ -1759,7 +1760,7 @@ gs_plugin_loader_ask_untrusted_cb (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
+gs_plugin_loader_job_updates_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 
@@ -1769,14 +1770,7 @@ gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 	plugin_loader->updates_changed_id = 0;
 	plugin_loader->updates_changed_cnt = 0;
 
-	g_object_unref (plugin_loader);
 	return FALSE;
-}
-
-static void
-gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin, GsPluginLoader *plugin_loader)
-{
-	plugin_loader->updates_changed_cnt++;
 }
 
 static void
@@ -1785,9 +1779,25 @@ gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 	if (plugin_loader->updates_changed_id != 0)
 		return;
 	plugin_loader->updates_changed_id =
-		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
-				       gs_plugin_loader_job_actions_changed_delay_cb,
-				       g_object_ref (plugin_loader));
+		g_timeout_add_seconds_full (G_PRIORITY_DEFAULT,
+					    GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
+					    gs_plugin_loader_job_updates_changed_delay_cb,
+					    g_object_ref (plugin_loader),
+					    g_object_unref);
+}
+
+static void
+gs_plugin_loader_job_updates_changed_cb (GsPlugin *plugin,
+					 GsPluginLoader *plugin_loader)
+{
+	plugin_loader->updates_changed_cnt++;
+
+	/* Schedule emit of updates changed when no job is active.
+	   This helps to avoid a race condition when a plugin calls
+	   updates-changed at the end of the job, but the job is
+	   finished before the callback gets called in the main thread. */
+	if (!g_atomic_int_get (&plugin_loader->active_jobs))
+		gs_plugin_loader_updates_changed (plugin_loader);
 }
 
 static gboolean
@@ -1848,7 +1858,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 		return;
 	}
 	g_signal_connect (plugin, "updates-changed",
-			  G_CALLBACK (gs_plugin_loader_job_actions_changed_cb),
+			  G_CALLBACK (gs_plugin_loader_job_updates_changed_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "reload",
 			  G_CALLBACK (gs_plugin_loader_reload_cb),
@@ -3675,9 +3685,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper->plugin_job, list);
 
-	/* Hint that the job has finished. */
-	gs_plugin_loader_hint_job_finished (plugin_loader);
-
 #ifdef HAVE_SYSPROF
 	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
@@ -3848,9 +3855,6 @@ run_job_cb (GObject      *source_object,
 	}
 #endif  /* HAVE_SYSPROF */
 
-	/* Hint that the job has finished. */
-	gs_plugin_loader_hint_job_finished (plugin_loader);
-
 	/* FIXME: This will eventually go away when
 	 * gs_plugin_loader_job_process_finish() is removed. */
 	job_class = GS_PLUGIN_JOB_GET_CLASS (plugin_job);
@@ -3910,6 +3914,19 @@ cancellable_data_free (CancellableData *data)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (CancellableData, cancellable_data_free)
+
+static void
+plugin_loader_task_freed_cb (gpointer user_data,
+			     GObject *freed_object)
+{
+	g_autoptr(GsPluginLoader) plugin_loader = user_data;
+	if (g_atomic_int_dec_and_test (&plugin_loader->active_jobs)) {
+		/* if the plugin used updates-changed during its job, actually schedule
+		 * the signal emission now */
+		if (plugin_loader->updates_changed_cnt > 0)
+			gs_plugin_loader_updates_changed (plugin_loader);
+	}
+}
 
 static gboolean job_process_setup_complete_cb (GCancellable *cancellable,
                                                gpointer      user_data);
@@ -3976,6 +3993,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
 	g_task_set_task_data (task, g_object_ref (plugin_job), (GDestroyNotify) g_object_unref);
+
+	g_atomic_int_inc (&plugin_loader->active_jobs);
+	g_object_weak_ref (G_OBJECT (task),
+		plugin_loader_task_freed_cb, g_object_ref (plugin_loader));
 
 	/* Wait until the plugin has finished setting up.
 	 *
@@ -4443,23 +4464,24 @@ gs_plugin_loader_get_category_manager (GsPluginLoader *plugin_loader)
 }
 
 /**
- * gs_plugin_loader_hint_job_finished:
- * @plugin_loader: a #GsPluginLoader
+ * gs_plugin_loader_emit_updates_changed:
+ * @self: a #GsPluginLoader
  *
- * Hint to the @plugin_loader that the set of changes caused by the current
- * #GsPluginJob is likely to be finished.
+ * Emits the #GsPluginLoader:updates-changed signal in the nearest
+ * idle in the main thread.
  *
- * The @plugin_loader may emit queued-up signals as a result.
- *
- * Since: 42
- */
+ * Since: 43
+ **/
 void
-gs_plugin_loader_hint_job_finished (GsPluginLoader *plugin_loader)
+gs_plugin_loader_emit_updates_changed (GsPluginLoader *self)
 {
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (self));
 
-	/* if the plugin used updates-changed during its job, actually schedule
-	 * the signal emission now */
-	if (plugin_loader->updates_changed_cnt > 0)
-		gs_plugin_loader_updates_changed (plugin_loader);
+	if (self->updates_changed_id != 0)
+		g_source_remove (self->updates_changed_id);
+
+	self->updates_changed_id =
+		g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+				 gs_plugin_loader_job_updates_changed_delay_cb,
+				 g_object_ref (self), g_object_unref);
 }
