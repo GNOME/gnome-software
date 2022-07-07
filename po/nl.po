@@ -8,12 +8,13 @@
 # Justin van Steijn <jvs@fsfe.org> 2015, 2016, 2017, 2018, 2019, 2022.
 # Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2016, 2018, 2019, 2020, 2021.
 # Reinout van Schouwen <reinouts@gnome.org>, 2016 (review).
+# Philip Goto, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-16\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-06-22 15:32+0000\n"
-"PO-Revision-Date: 2022-06-24 12:10+0200\n"
+"POT-Creation-Date: 2022-07-04 07:51+0000\n"
+"PO-Revision-Date: 2022-07-07 11:31+0200\n"
 "Last-Translator: Nathan Follens <nfollens@gnome.org>\n"
 "Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
 "Language: nl\n"
@@ -74,7 +75,7 @@ msgstr "Tabblad met updates"
 msgid "The update details"
 msgstr "Details van de update"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1895
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1949
 msgid "The GNOME Project"
 msgstr "Het Gnome-project"
 
@@ -779,7 +780,7 @@ msgstr "Leeftijdsbeoordeling"
 msgid "How to add missing information"
 msgstr "Hoe ontbrekende informatie toevoegen"
 
-#: lib/gs-app.c:6156
+#: lib/gs-app.c:6158
 msgid "Local file"
 msgstr "Lokaal bestand"
 
@@ -788,12 +789,12 @@ msgstr "Lokaal bestand"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6172 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6174 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:6248
+#: lib/gs-app.c:6250
 msgid "Package"
 msgstr "Pakket"
 
@@ -866,26 +867,20 @@ msgid "Home folder"
 msgstr "Persoonlijke map"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "Kan bestanden lezen, bewerken en aanmaken"
 
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "Kan bestanden lezen"
 
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "Bestandssysteem"
 
-#. Translators: This indicates an app can access data in the system unknown to the Software.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:356
-msgid "Can access arbitrary files"
-msgstr "Heeft toegang tot alle bestanden"
-
+#. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
 msgid "Downloads folder"
 msgstr "Downloadmap"
@@ -920,14 +915,14 @@ msgstr "Kan de zandbak en andere beperkingen omzeilen"
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
+#: src/gs-app-details-page.c:177
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:157
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "Geen updatebeschrijving beschikbaar."
 
@@ -936,7 +931,7 @@ msgstr "Geen updatebeschrijving beschikbaar."
 msgid "Go back"
 msgstr "Ga terug"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:506
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:506
 msgid "Requires additional permissions"
 msgstr "Vereist extra rechten"
 
@@ -1074,6 +1069,7 @@ msgstr ""
 "Nathan Follens <nfollens@gnome.org>\n"
 "Justin van Steijn\n"
 "Hannie Dumoleyn\n"
+"Philip Goto\n"
 "\n"
 "Meer info over Gnome-NL https://nl.gnome.org"
 
@@ -1148,87 +1144,93 @@ msgstr "Grootte is onbekend"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:279
+#: src/gs-app-context-bar.c:282
 msgid "No permissions"
 msgstr "Geen toegangsrechten"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:290
+#: src/gs-app-context-bar.c:293
 msgid "Has network access"
 msgstr "Heeft netwerktoegang"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:300
 msgid "Uses system services"
 msgstr "Gebruikt systeemdiensten"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:304
+#: src/gs-app-context-bar.c:307
 msgid "Uses session services"
 msgstr "Gebruikt sessiediensten"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
 msgstr "Heeft toegang tot hardware-apparaten"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:323
+#: src/gs-app-context-bar.c:326
 msgid "Can read/write all your data"
 msgstr "Kan al uw gegevens lezen/schrijven"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:335
+#: src/gs-app-context-bar.c:338
 msgid "Can read all your data"
 msgstr "Kan al uw gegevens lezen"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:342
+#: src/gs-app-context-bar.c:345
 msgid "Can read/write your downloads"
 msgstr "Kan uw downloads lezen/schrijven"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:349
+#: src/gs-app-context-bar.c:352
 msgid "Can read your downloads"
 msgstr "Kan uw downloads lezen"
 
+#. Translators: This indicates an app can access data in the system unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:359
+msgid "Can access arbitrary files"
+msgstr "Heeft toegang tot alle bestanden"
+
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:363 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
 msgid "Can access and change user settings"
 msgstr "Heeft toegang tot gebruikersinstellingen en kan die wijzigen"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
 msgstr "Gebruikt een verouderd venstersysteem"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:377 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
 msgid "Can acquire arbitrary permissions"
 msgstr "Kan willekeurige toegangsrechten verkrijgen"
 
 #. Translators: This indicates that an application has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:403 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
 msgid "Reviewed by your distribution"
 msgstr "Nagekeken door uw distributie"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:410 src/gs-safety-context-dialog.c:140
+#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
 msgstr "Geleverd door een derde partij"
 
@@ -1236,25 +1238,25 @@ msgstr "Geleverd door een derde partij"
 # ‘Proprietary’ is het tegenovergestelde van ‘free’ en is dus een synoniem van ‘nonfree’; in dit geval is het het meest logisch om in het Nederlands te kiezen voor ‘niet-vrij’. Niet-vrije software hoeft niet door een bedrijf ontwikkeld te zijn. - Justin
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:422
+#: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
 msgstr "Propriëtaire code"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:428
+#: src/gs-app-context-bar.c:431
 msgid "Auditable code"
 msgstr "Controleerbare code"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:435
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "Softwareontwikkelaar is geverifieerd"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:444
+#: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
 msgstr "Deze software wordt niet meer ondersteund"
 
@@ -1272,104 +1274,104 @@ msgstr "Deze software wordt niet meer ondersteund"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr "; "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:464
+#: src/gs-app-context-bar.c:467
 msgid "Safe"
 msgstr "Veilig"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:471
+#: src/gs-app-context-bar.c:474
 msgid "Potentially Unsafe"
 msgstr "Mogelijk onveilig"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:478
+#: src/gs-app-context-bar.c:481
 msgid "Unsafe"
 msgstr "Onveilig"
 
-#: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
+#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
 #: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "Alleen mobiel"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:561
 msgid "Only works on a small screen"
 msgstr "Werkt alleen op een klein scherm"
 
-#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
+#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "Alleen bureaublad"
 
-#: src/gs-app-context-bar.c:564
+#: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
 msgstr "Werkt alleen op een groot scherm"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "Schermgrootte komt niet overeen"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
+#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "Biedt geen ondersteuning voor uw huidige schermgrootte"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
 #: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "Vereist een aanraakscherm"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
 #: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "Vereist een toetsenbord"
 
-#: src/gs-app-context-bar.c:604
+#: src/gs-app-context-bar.c:607
 msgid "Requires a mouse"
 msgstr "Vereist een muis"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
 msgstr "Gamepad vereist"
 
-#: src/gs-app-context-bar.c:616
+#: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
 msgstr "Vereist een gamepad om te spelen"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:643
 msgid "Adaptive"
 msgstr "Adaptief"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
 msgstr "Werkt op smartphones, tablets en bureaubladen"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
 msgstr "Vereist waarschijnlijk een toetsenbord of muis"
 
-#: src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
 msgstr "Werkt op bureaubladen en laptops"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:705
 msgid "Contains no age-inappropriate content"
 msgstr "Bevat geen leeftijd-ongepaste inhoud"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:753
 msgid "No age rating information available"
 msgstr "Geen leeftijdsbeoordeling beschikbaar"
 
@@ -1396,7 +1398,7 @@ msgstr "Annuleren"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:367
+#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "Installeren"
 
@@ -1411,7 +1413,7 @@ msgstr "Bijwerken"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:276
-#: src/gs-page.c:532
+#: src/gs-page.c:543
 msgid "Uninstall"
 msgstr "Verwijderen"
 
@@ -1966,7 +1968,7 @@ msgid "Install Third-Party Software?"
 msgstr "Software van derden installeren?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222 src/gs-repos-dialog.c:165
+#: src/gs-common.c:222 src/gs-repos-dialog.c:168
 msgid "Enable Third-Party Software Repository?"
 msgstr "Softwarebron van derden inschakelen?"
 
@@ -2233,7 +2235,7 @@ msgstr "Wordt verwijderd…"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #: src/gs-details-page.c:828 src/gs-details-page.c:854
-#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:148
+#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Installeren"
 
@@ -2290,7 +2292,7 @@ msgstr "Help mee ver_talen"
 msgid "_Open"
 msgstr "_Openen"
 
-#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:158
+#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "_Bijwerken"
 
@@ -3055,7 +3057,7 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "Inschakelen"
 
@@ -3082,7 +3084,7 @@ msgstr "Overige categorieën"
 msgid "No Application Data Found"
 msgstr "Geen toepassingsgegevens gevonden"
 
-#: lib/gs-plugin-loader.c:3069
+#: lib/gs-plugin-loader.c:3061
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Onbekend"
@@ -3093,20 +3095,20 @@ msgstr "Gebruikt heeft installatie afgewezen"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:358
+#: src/gs-page.c:365
 #, c-format
 msgid "Prepare %s"
 msgstr "%s voorbereiden"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:501
+#: src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Weet u zeker dat u de softwarebron %s wilt verwijderen?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:505
+#: src/gs-page.c:516
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -3117,13 +3119,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:513
+#: src/gs-page.c:524
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "Weet u zeker dat u %s wilt verwijderen?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:516
+#: src/gs-page.c:527
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3183,66 +3185,66 @@ msgid "_Continue"
 msgstr "_Doorgaan"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:237
+#: src/gs-repos-dialog.c:239
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr ""
 "Software die vanuit ‘%s’ is geïnstalleerd zal geen updates meer ontvangen."
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Disable Repository?"
 msgstr "Softwarebron uitschakelen?"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Remove Repository?"
 msgstr "Softwarebron verwijderen?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:252
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "_Uitschakelen"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:257
 msgid "_Remove"
 msgstr "_Verwijderen"
 
-#: src/gs-repos-dialog.c:503
+#: src/gs-repos-dialog.c:505
 msgid "Enable New Repositories"
 msgstr "Nieuwe softwarebronnen inschakelen"
 
-#: src/gs-repos-dialog.c:504
+#: src/gs-repos-dialog.c:506
 msgid "Turn on new repositories when they are added."
 msgstr "Schakel nieuwe softwarebronnen in wanneer ze toegevoegd worden."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:513
+#: src/gs-repos-dialog.c:515
 msgid "more information"
 msgstr "meer informatie"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:518
+#: src/gs-repos-dialog.c:520
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "Aanvullende softwarebronnen van geselecteerde derde partijen — %s."
 
-#: src/gs-repos-dialog.c:523
+#: src/gs-repos-dialog.c:525
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora-softwarebronnen van derden"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:665
+#: src/gs-repos-dialog.c:667
 msgid "the operating system"
 msgstr "het besturingssysteem"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:723
+#: src/gs-repos-dialog.c:725
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Deze softwarebronnen leveren de standaardsoftware vanuit %s."
@@ -3307,7 +3309,7 @@ msgstr[1] "%s en %s geïnstalleerd"
 
 #. Translators: The first '%s' is replaced with a text like '10 applications installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:237
+#: src/gs-repo-row.c:243
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
@@ -3491,13 +3493,13 @@ msgstr "Rapporteren…"
 msgid "Remove…"
 msgstr "Verwijderen…"
 
-#: src/gs-safety-context-dialog.c:141
+#: src/gs-safety-context-dialog.c:144
 msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgstr ""
 "Kijk na of u de leverancier vertrouwt, want de toepassing bevindt zich niet "
 "in een zandbak"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:147
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
@@ -3506,165 +3508,164 @@ msgstr ""
 "nagekeken dat deze niet kwaadwillend is"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:160
 msgid "No Permissions"
 msgstr "Geen toegangsrechten"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:161
 msgid "App is fully sandboxed"
 msgstr "Toepassing bevindt zich volledig in een zandbak"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:172
 msgid "Network Access"
 msgstr "Netwerktoegang"
 
-#: src/gs-safety-context-dialog.c:164
+#: src/gs-safety-context-dialog.c:173
 msgid "Can access the internet"
 msgstr "Heeft toegang tot het internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:176
 msgid "No Network Access"
 msgstr "Geen netwerktoegang"
 
-#: src/gs-safety-context-dialog.c:168
+#: src/gs-safety-context-dialog.c:177
 msgid "Cannot access the internet"
 msgstr "Heeft geen toegang tot het internet"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:183
 msgid "Uses System Services"
 msgstr "Gebruikt systeemdiensten"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:184
 msgid "Can request data from system services"
 msgstr "Kan gegevens opvragen van systeemdiensten"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:191
 msgid "Uses Session Services"
 msgstr "Gebruikt sessiediensten"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:192
 msgid "Can request data from session services"
 msgstr "Kan gegevens opvragen van sessiediensten"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:199
 msgid "Device Access"
 msgstr "Apparaattoegang"
 
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:200
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "Kan toegang verkrijgen tot apparaten zoals webcams of spelcontrollers"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:203
 msgid "No Device Access"
 msgstr "Geen apparaattoegang"
 
-#: src/gs-safety-context-dialog.c:195
+#: src/gs-safety-context-dialog.c:204
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr ""
 "Kan geen toegang verkrijgen tot apparaten zoals webcams of spelcontrollers"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
 msgstr "Verouderd venstersysteem"
 
 # Kan beter - Nathan
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:218
 msgid "Arbitrary Permissions"
 msgstr "Willekeurige toegangsrechten"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:226
 msgid "User Settings"
 msgstr "Gebruikersinstellingen"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:229
+#: src/gs-safety-context-dialog.c:238
 msgid "Full File System Read/Write Access"
 msgstr "Lees- en schrijftoegang tot volledig bestandssysteem"
 
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:239
 msgid "Can read and write all data on the file system"
 msgstr "Kan alle gegevens op het bestandssysteem lezen en schrijven"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:247
 msgid "Home Folder Read/Write Access"
 msgstr "Lees- en schrijftoegang tot persoonlijke map"
 
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:248
 msgid "Can read and write all data in your home directory"
 msgstr "Kan alle gegevens in uw persoonlijke map lezen en schrijven"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:256
 msgid "Full File System Read Access"
 msgstr "Leestoegang tot volledig bestandssysteem"
 
-#: src/gs-safety-context-dialog.c:248
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data on the file system"
 msgstr "Kan alle gegevens op het bestandssysteem lezen"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:257
+#: src/gs-safety-context-dialog.c:266
 msgid "Home Folder Read Access"
 msgstr "Leestoegang tot persoonlijke map"
 
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read all data in your home directory"
 msgstr "Kan alle gegevens in uw persoonlijke map lezen"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:276
 msgid "Download Folder Read/Write Access"
 msgstr "Lees- en schrijftoegang tot downloadmap"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:277
 msgid "Can read and write all data in your downloads directory"
 msgstr "Kan alle gegevens in uw downloadmap lezen en schrijven"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:279
+#: src/gs-safety-context-dialog.c:288
 msgid "Download Folder Read Access"
 msgstr "Leestoegang tot downloadmap"
 
-#: src/gs-safety-context-dialog.c:280
+#: src/gs-safety-context-dialog.c:289
 msgid "Can read all data in your downloads directory"
 msgstr "Kan alle gegevens in uw downloadmap lezen"
 
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:291
-msgid "Access arbitrary files"
-msgstr "Toegang tot alle bestanden"
+#: src/gs-safety-context-dialog.c:299
+msgid "Can read and write all data in the directory"
+msgstr "Kan alle gegevens in de map lezen en schrijven"
 
-#: src/gs-safety-context-dialog.c:292
-msgid "Can access arbitrary files on the file system"
-msgstr "Heeft toegang tot alle bestanden op het bestandssysteem"
+#: src/gs-safety-context-dialog.c:310
+msgid "Can read all data in the directory"
+msgstr "Kan alle gegevens in de map lezen"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:326
 msgid "No File System Access"
 msgstr "Geen toegang tot bestandssysteem"
 
-#: src/gs-safety-context-dialog.c:307
+#: src/gs-safety-context-dialog.c:327
 msgid "Cannot access the file system at all"
 msgstr "Heeft geen enkele toegang tot het bestandssysteem"
 
 # Ik heb toch maar gekozen voor Bedrijfseigen i.p.v. proriëtair. - Hannie
 # ‘Proprietary’ is het tegenovergestelde van ‘free’ en is dus een synoniem van ‘nonfree’; in dit geval is het het meest logisch om in het Nederlands te kiezen voor ‘niet-vrij’. Niet-vrije software hoeft niet door een bedrijf ontwikkeld te zijn. - Justin
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:341
 msgid "Proprietary Code"
 msgstr "Propriëtaire code"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:342
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3673,11 +3674,11 @@ msgstr ""
 "worden en is mogelijk onveilig"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:345
 msgid "Auditable Code"
 msgstr "Controleerbare code"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:346
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3687,22 +3688,22 @@ msgstr ""
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:334
+#: src/gs-safety-context-dialog.c:354
 msgid "App developer is verified"
 msgstr "Toepassingsontwikkelaar is geverifieerd"
 
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:355
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr ""
 "De ontwikkelaar van deze toepassing is geverifieerd en is geen imitator"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:366
 msgid "Insecure Dependencies"
 msgstr "Onveilige afhankelijkheden"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:367
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr ""
@@ -3711,21 +3712,21 @@ msgstr ""
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:356
+#: src/gs-safety-context-dialog.c:376
 #, c-format
 msgid "%s is safe"
 msgstr "%s is veilig"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:363
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s is mogelijk onveilig"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:370
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s is onveilig"
@@ -4839,7 +4840,7 @@ msgid "Device Firmware"
 msgstr "Apparaatfirmware"
 
 #: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
-#: plugins/packagekit/gs-packagekit-task.c:153
+#: plugins/packagekit/gs-packagekit-task.c:155
 msgid "_Download"
 msgstr "_Downloaden"
 
@@ -4940,7 +4941,7 @@ msgstr "%s-update met nieuwe functies en verbeteringen."
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS-updateservice kan de update niet ophalen en toepassen."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:464
+#: plugins/epiphany/gs-plugin-epiphany.c:474
 msgid "GNOME Web"
 msgstr "Gnome Web"
 
@@ -4973,13 +4974,136 @@ msgstr "Flatpak-ondersteuning"
 msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak is een raamwerk voor bureaubladtoepassingen op Linux"
 
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak.c:307
+#, c-format
+msgid "System folder %s"
+msgstr "Systeemmap %s"
+
+#: plugins/flatpak/gs-flatpak.c:308 plugins/flatpak/gs-flatpak.c:309
+#, c-format
+msgid "Home subfolder %s"
+msgstr "Persoonlijke submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:310
+msgid "Host system folders"
+msgstr "Systeemmappen van host"
+
+#: plugins/flatpak/gs-flatpak.c:311
+msgid "Host system configuration from /etc"
+msgstr "Systeemconfiguratie van host in /etc"
+
+#: plugins/flatpak/gs-flatpak.c:312
+msgid "Desktop folder"
+msgstr "Bureaublad-map"
+
+#: plugins/flatpak/gs-flatpak.c:312
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "Bureaublad-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:313
+msgid "Documents folder"
+msgstr "Documenten-map"
+
+#: plugins/flatpak/gs-flatpak.c:313
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "Documenten-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:314
+msgid "Music folder"
+msgstr "Muziek-map"
+
+#: plugins/flatpak/gs-flatpak.c:314
+#, c-format
+msgid "Music subfolder %s"
+msgstr "Muziek-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:315
+msgid "Pictures folder"
+msgstr "Afbeeldingen-map"
+
+#: plugins/flatpak/gs-flatpak.c:315
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "Afbeeldingen-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:316
+msgid "Public Share folder"
+msgstr "Openbaar-map"
+
+#: plugins/flatpak/gs-flatpak.c:316
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "Openbaar-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:317
+msgid "Videos folder"
+msgstr "Video’s-map"
+
+#: plugins/flatpak/gs-flatpak.c:317
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "Video’s-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:318
+msgid "Templates folder"
+msgstr "Sjablonen-map"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "Sjablonen-submap %s"
+
+#: plugins/flatpak/gs-flatpak.c:319
+msgid "User cache folder"
+msgstr "Cachemap van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:319
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "Cache-submap %s van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:320
+msgid "User configuration folder"
+msgstr "Configuratiemap van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "Configuratie-submap %s van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:321
+msgid "User data folder"
+msgstr "Gegevensmap van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#, c-format
+msgid "User data subfolder %s"
+msgstr "Gegevens-submap %s van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:322
+msgid "User runtime folder"
+msgstr "Runtime-map van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "Runtime-submap %s van gebruiker"
+
+#: plugins/flatpak/gs-flatpak.c:380
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "Toegang tot %s in bestandssysteem"
+
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1258
+#: plugins/flatpak/gs-flatpak.c:1397
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-metadata voor %s worden opgehaald…"
 
-#: plugins/flatpak/gs-flatpak.c:3393
+#: plugins/flatpak/gs-flatpak.c:3534
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Add-on ‘%s’ kan niet verfijnd worden: %s"
@@ -5155,7 +5279,7 @@ msgstr "Update voor BMC %s"
 msgid "%s USB Receiver Update"
 msgstr "Update van USB-ontvanger voor %s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1199
+#: plugins/fwupd/gs-plugin-fwupd.c:1241
 msgid "Firmware"
 msgstr "Firmware"
 
@@ -5167,11 +5291,11 @@ msgstr "Ondersteuning voor opwaarderen van firmware"
 msgid "Provides support for firmware upgrades"
 msgstr "Biedt ondersteuning voor het opwaarderen van firmware"
 
-#: plugins/packagekit/gs-packagekit-task.c:146
+#: plugins/packagekit/gs-packagekit-task.c:148
 msgid "Install Unsigned Software?"
 msgstr "Niet-ondertekende software installeren?"
 
-#: plugins/packagekit/gs-packagekit-task.c:147
+#: plugins/packagekit/gs-packagekit-task.c:149
 msgid ""
 "Software that is to be installed is not signed. It will not be possible to "
 "verify the origin of updates to this software, or whether updates have been "
@@ -5181,11 +5305,11 @@ msgstr ""
 "om de oorsprong van updates aan deze software te verifiëren, of na te gaan "
 "of er met de updates geknoeid is."
 
-#: plugins/packagekit/gs-packagekit-task.c:151
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid "Download Unsigned Software?"
 msgstr "Niet-ondertekende software downloaden?"
 
-#: plugins/packagekit/gs-packagekit-task.c:152
+#: plugins/packagekit/gs-packagekit-task.c:154
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with."
@@ -5194,11 +5318,11 @@ msgstr ""
 "onmogelijk te oorsprong van de update te verifiëren, of na te gaan of er met "
 "de update geknoeid is."
 
-#: plugins/packagekit/gs-packagekit-task.c:156
+#: plugins/packagekit/gs-packagekit-task.c:158
 msgid "Update Unsigned Software?"
 msgstr "Niet-ondertekende software bijwerken?"
 
-#: plugins/packagekit/gs-packagekit-task.c:157
+#: plugins/packagekit/gs-packagekit-task.c:159
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with. "
@@ -5214,7 +5338,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Pakketten"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2596
 msgid "Operating System (OSTree)"
 msgstr "Besturingssysteem (OSTree)"
 
@@ -5230,6 +5354,12 @@ msgstr "Snap-ondersteuning"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Een snap is een universeel Linux-pakket"
+
+#~ msgid "Access arbitrary files"
+#~ msgstr "Toegang tot alle bestanden"
+
+#~ msgid "Can access arbitrary files on the file system"
+#~ msgstr "Heeft toegang tot alle bestanden op het bestandssysteem"
 
 #~ msgid "A list of popular applications"
 #~ msgstr "Lijst van populaire toepassingen"
@@ -5284,9 +5414,6 @@ msgstr "Een snap is een universeel Linux-pakket"
 
 #~ msgid "Downloading application ratings…"
 #~ msgstr "Toepassingswaarderingen worden gedownload…"
-
-#~ msgid "Picture"
-#~ msgstr "Afbeelding"
 
 #~ msgid "OS Updates"
 #~ msgstr "OS-updates"
