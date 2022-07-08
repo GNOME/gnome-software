@@ -76,14 +76,6 @@ top_carousel_app_clicked_cb (GsFeaturedCarousel *carousel,
 }
 
 static gint
-app_sort_name_cb (GsApp    *app1,
-                  GsApp    *app2,
-                  gpointer  user_data)
-{
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-}
-
-static gint
 _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	gint name_sort = gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
@@ -443,7 +435,7 @@ gs_category_page_load_category (GsCategoryPage *self)
 
 		featured_query = gs_app_query_new ("category", featured_subcat,
 						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS,
-						   "sort-func", app_sort_name_cb,
+						   "sort-func", gs_utils_app_sort_name,
 						   NULL);
 		featured_plugin_job = gs_plugin_job_list_apps_new (featured_query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 		gs_plugin_loader_job_process_async (self->plugin_loader,

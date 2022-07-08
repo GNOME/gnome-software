@@ -39,6 +39,7 @@
 #endif
 
 #include "gs-app.h"
+#include "gs-app-private.h"
 #include "gs-utils.h"
 #include "gs-plugin.h"
 
@@ -1626,4 +1627,69 @@ gs_utils_get_upgrade_background (const gchar *version)
 	g_clear_pointer (&filename, g_free);
 
 	return NULL;
+}
+
+/**
+ * gs_utils_app_sort_name:
+ * @app1: a #GsApp
+ * @app2: another #GsApp
+ * @user_data: data passed to the sort function
+ *
+ * Comparison function to sort apps in increasing alphabetical order of name.
+ *
+ * This is suitable for passing to gs_app_list_sort().
+ *
+ * Returns: a strcmp()-style sort value comparing @app1 to @app2
+ * Since: 43
+ */
+gint
+gs_utils_app_sort_name (GsApp    *app1,
+                        GsApp    *app2,
+                        gpointer  user_data)
+{
+	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
+}
+
+/**
+ * gs_utils_app_sort_match_value:
+ * @app1: a #GsApp
+ * @app2: another #GsApp
+ * @user_data: data passed to the sort function
+ *
+ * Comparison function to sort apps in decreasing order of match value
+ * (#GsApp:match-value).
+ *
+ * This is suitable for passing to gs_app_list_sort().
+ *
+ * Returns: a strcmp()-style sort value comparing @app1 to @app2
+ * Since: 43
+ */
+gint
+gs_utils_app_sort_match_value (GsApp    *app1,
+                               GsApp    *app2,
+                               gpointer  user_data)
+{
+	return gs_app_get_match_value (app2) - gs_app_get_match_value (app1);
+}
+
+/**
+ * gs_utils_app_sort_priority:
+ * @app1: a #GsApp
+ * @app2: another #GsApp
+ * @user_data: data passed to the sort function
+ *
+ * Comparison function to sort apps in increasing order of their priority
+ * (#GsApp:priority).
+ *
+ * This is suitable for passing to gs_app_list_sort().
+ *
+ * Returns: a strcmp()-style sort value comparing @app1 to @app2
+ * Since: 43
+ */
+gint
+gs_utils_app_sort_priority (GsApp    *app1,
+                            GsApp    *app2,
+                            gpointer  user_data)
+{
+	return gs_app_compare_priority (app1, app2);
 }

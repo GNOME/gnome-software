@@ -142,4 +142,14 @@ gboolean	 gs_utils_set_file_etag		(GFile			*file,
 
 gchar		*gs_utils_get_upgrade_background (const gchar		*version);
 
+gint		 gs_utils_app_sort_name		(GsApp			*app1,
+						 GsApp			*app2,
+						 gpointer		 user_data);
+gint		 gs_utils_app_sort_match_value	(GsApp			*app1,
+						 GsApp			*app2,
+						 gpointer		 user_data);
+gint		 gs_utils_app_sort_priority	(GsApp			*app1,
+						 GsApp			*app2,
+						 gpointer		 user_data);
+
 G_END_DECLS

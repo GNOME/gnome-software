@@ -286,14 +286,6 @@ gs_cmd_self_free (GsCmdSelf *self)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
 
 static gint
-app_sort_name_cb (GsApp    *app1,
-                  GsApp    *app2,
-                  gpointer  user_data)
-{
-	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
-}
-
-static gint
 app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	if (gs_app_get_kind (app1) == AS_COMPONENT_KIND_DESKTOP_APP)
@@ -770,7 +762,7 @@ main (int argc, char **argv)
 			query = gs_app_query_new ("category", category,
 						  "refine-flags", self->refine_flags,
 						  "max-results", self->max_results,
-						  "sort-func", app_sort_name_cb,
+						  "sort-func", gs_utils_app_sort_name,
 						  NULL);
 
 			if (self->interactive)
