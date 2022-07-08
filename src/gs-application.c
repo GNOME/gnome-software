@@ -224,7 +224,7 @@ about_activated (GSimpleAction *action,
 		 gpointer       user_data)
 {
 	GsApplication *app = GS_APPLICATION (user_data);
-	const gchar *authors[] = {
+	const gchar *developers[] = {
 		"Richard Hughes",
 		"Matthias Clasen",
 		"Kalev Lember",
@@ -237,26 +237,30 @@ about_activated (GSimpleAction *action,
 		"Philip Withnall",
 		NULL
 	};
-	GtkAboutDialog *dialog;
-	g_autofree gchar *program_name_alloc = NULL;
-	const gchar *program_name;
 
+#if ADW_CHECK_VERSION(1,2,0)
+	adw_show_about_window (app->main_window,
+			       "application-name", g_get_application_name (),
+			       "application-icon", APPLICATION_ID,
+			       "developer-name", _("The GNOME Project"),
+			       "version", get_version(),
+			       "website", "https://wiki.gnome.org/Apps/Software",
+			       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new",
+			       "developers", developers,
+			       "copyright", _("Copyright \xc2\xa9 2016–2022 GNOME Software contributors"),
+			       "license-type", GTK_LICENSE_GPL_2_0,
+			       "translator-credits", _("translator-credits"),
+			       NULL);
+#else
+	GtkAboutDialog *dialog;
 	dialog = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
-	gtk_about_dialog_set_authors (dialog, authors);
+	gtk_about_dialog_set_authors (dialog, developers);
 	gtk_about_dialog_set_copyright (dialog, _("Copyright \xc2\xa9 2016–2022 GNOME Software contributors"));
 	gtk_about_dialog_set_license_type (dialog, GTK_LICENSE_GPL_2_0);
 	gtk_about_dialog_set_logo_icon_name (dialog, APPLICATION_ID);
 	gtk_about_dialog_set_translator_credits (dialog, _("translator-credits"));
-	gtk_about_dialog_set_version (dialog, get_version());
-
-	if (g_strcmp0 (BUILD_PROFILE, "Devel") == 0) {
-		/* This isn’t translated as it’s never released */
-		program_name = program_name_alloc = g_strdup_printf ("%s (Development Snapshot)",
-								     g_get_application_name ());
-	} else {
-		program_name = g_get_application_name ();
-	}
-	gtk_about_dialog_set_program_name (dialog, program_name);
+	gtk_about_dialog_set_version (dialog, get_version ());
+	gtk_about_dialog_set_program_name (dialog, g_get_application_name ());
 
 	/* TRANSLATORS: this is the title of the about window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("About Software"));
@@ -266,6 +270,7 @@ about_activated (GSimpleAction *action,
 						 "software on your system."));
 
 	gs_shell_modal_dialog_present (app->shell, GTK_WINDOW (dialog));
+#endif
 }
 
 static void
