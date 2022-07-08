@@ -1050,6 +1050,10 @@ gs_plugin_appstream_refine_state (GsPluginAppstream  *self,
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(XbNode) component = NULL;
 
+	/* Ignore apps with no ID */
+	if (gs_app_get_id (app) == NULL)
+		return TRUE;
+
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	xpath = g_strdup_printf ("component/id[text()='%s']", gs_app_get_id (app));
