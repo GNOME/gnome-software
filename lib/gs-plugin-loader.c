@@ -647,13 +647,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		{
-			GsPluginAlternatesFunc plugin_func = func;
-			ret = plugin_func (plugin, app, list,
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORIES:
 		{
 			GsPluginCategoriesFunc plugin_func = func;
@@ -3596,7 +3589,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -3979,13 +3971,6 @@ job_process_cb (GTask *task)
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
 
-	/* get alternates is unusual in that it needs an app input and a list
-	 * output -- so undo the helpful app add in gs_plugin_job_set_app() */
-	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES) {
-		GsAppList *list = gs_plugin_job_get_list (plugin_job);
-		gs_app_list_remove_all (list);
-	}
-
 	/* check required args */
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
@@ -3996,18 +3981,6 @@ job_process_cb (GTask *task)
 						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 						 "no valid search terms");
 			return;
-		}
-		break;
-	default:
-		break;
-	}
-
-	/* sorting fallbacks */
-	switch (action) {
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_utils_app_sort_priority, NULL);
 		}
 		break;
 	default:

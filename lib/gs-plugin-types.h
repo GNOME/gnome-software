@@ -271,7 +271,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
- * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
  * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
  * @GS_PLUGIN_ACTION_INSTALL_REPO:		Install a repository (Since: 41)
  * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)
@@ -297,7 +296,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 	GS_PLUGIN_ACTION_DOWNLOAD,
-	GS_PLUGIN_ACTION_GET_ALTERNATES,
 	GS_PLUGIN_ACTION_GET_LANGPACKS,
 	GS_PLUGIN_ACTION_INSTALL_REPO,
 	GS_PLUGIN_ACTION_REMOVE_REPO,

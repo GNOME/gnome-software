@@ -1605,6 +1605,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 			     gboolean continue_loading)
 {
 	g_autofree gchar *tmp = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
 	gboolean is_online = gs_plugin_loader_get_network_available (self->plugin_loader);
@@ -1633,12 +1634,14 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
 							GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE);
-	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
-					  "interactive", TRUE,
-					  "app", self->app,
-					  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
-					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
-					  NULL);
+
+	query = gs_app_query_new ("alternate-of", self->app,
+				  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
+				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
+				  "sort-func", gs_utils_app_sort_priority,
+				  NULL);
+	plugin_job2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job1,
 					    self->cancellable,
 					    gs_details_page_app_refine_cb,

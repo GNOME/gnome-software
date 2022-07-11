@@ -1465,8 +1465,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_search_what_provides";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
 		return "gs_plugin_add_categories";
-	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
-		return "gs_plugin_add_alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
 	return NULL;
@@ -1515,8 +1513,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "url-to-app";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
 		return "get-updates-historical";
-	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
-		return "get-alternates";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "get-langpacks";
 	if (action == GS_PLUGIN_ACTION_INSTALL_REPO)
@@ -1573,8 +1569,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_URL_TO_APP;
 	if (g_strcmp0 (action, "get-updates-historical") == 0)
 		return GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
-	if (g_strcmp0 (action, "get-alternates") == 0)
-		return GS_PLUGIN_ACTION_GET_ALTERNATES;
 	if (g_strcmp0 (action, "get-langpacks") == 0)
 		return GS_PLUGIN_ACTION_GET_LANGPACKS;
 	if (g_strcmp0 (action, "repo-install") == 0)

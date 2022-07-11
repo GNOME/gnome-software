@@ -474,15 +474,24 @@ main (int argc, char **argv)
 		app = gs_app_new (argv[2]);
 		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		for (i = 0; i < repeat; i++) {
+			g_autoptr(GsAppQuery) query = NULL;
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsPluginListAppsFlags flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+
 			if (list != NULL)
 				g_object_unref (list);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
-							 "app", app,
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
+
+			query = gs_app_query_new ("alternate-of", app,
+						  "refine-flags", self->refine_flags,
+						  "max-results", self->max_results,
+						  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+						  "sort-func", gs_utils_app_sort_priority,
+						  NULL);
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_apps_new (query, flags);
 			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;

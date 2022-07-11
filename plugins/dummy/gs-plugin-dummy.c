@@ -356,20 +356,6 @@ gs_plugin_dummy_timeout_finish (GsPluginDummy  *self,
 }
 
 gboolean
-gs_plugin_add_alternates (GsPlugin *plugin,
-			  GsApp *app,
-			  GsAppList *list,
-			  GCancellable *cancellable,
-			  GError **error)
-{
-	if (g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
-		g_autoptr(GsApp) app2 = gs_app_new ("chiron.desktop");
-		gs_app_list_add (list, app2);
-	}
-	return TRUE;
-}
-
-gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
 		       GCancellable *cancellable,
@@ -740,6 +726,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	GsCategory *category = NULL;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
 	const gchar * const *keywords = NULL;
+	GsApp *alternate_of = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_dummy_list_apps_async);
@@ -751,6 +738,7 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 		category = gs_app_query_get_category (query);
 		is_installed = gs_app_query_get_is_installed (query);
 		keywords = gs_app_query_get_keywords (query);
+		alternate_of = gs_app_query_get_alternate_of (query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
@@ -759,7 +747,8 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 	     is_curated == GS_APP_QUERY_TRISTATE_UNSET &&
 	     category == NULL &&
 	     is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
-	     keywords == NULL) ||
+	     keywords == NULL &&
+	     alternate_of == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (query) != 1) {
@@ -888,6 +877,13 @@ gs_plugin_dummy_list_apps_async (GsPlugin              *plugin,
 			}
 		} else {
 			/* Don’t do anything */
+		}
+	}
+
+	if (alternate_of != NULL) {
+		if (g_strcmp0 (gs_app_get_id (alternate_of), "zeus.desktop") == 0) {
+			g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+			gs_app_list_add (list, app);
 		}
 	}
 

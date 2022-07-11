@@ -281,6 +281,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	apps = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
