@@ -355,6 +355,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -376,6 +377,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -607,6 +609,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1126,6 +1129,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1248,6 +1252,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1336,6 +1341,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1455,6 +1461,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1708,6 +1715,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
@@ -1843,6 +1851,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	query = gs_app_query_new ("keywords", keywords,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
 				  NULL);
 	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	g_clear_object (&query);
