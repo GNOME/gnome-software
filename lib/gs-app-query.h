@@ -67,5 +67,6 @@ GsAppQueryTristate	 gs_app_query_get_is_installed	 (GsAppQuery *self);
 const gchar * const	*gs_app_query_get_deployment_featured
 							 (GsAppQuery *self);
 const gchar * const	*gs_app_query_get_developers	 (GsAppQuery *self);
+const gchar * const	*gs_app_query_get_keywords	 (GsAppQuery *self);
 
 G_END_DECLS

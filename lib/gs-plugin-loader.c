@@ -50,7 +50,6 @@ struct _GsPluginLoader
 	gboolean		 plugin_dir_dirty;
 	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
-	AsPool			*as_pool;
 
 	GMutex			 pending_apps_mutex;
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
@@ -194,8 +193,6 @@ typedef struct {
 	GPtrArray			*catlist;
 	GsPluginJob			*plugin_job;
 	gboolean			 anything_ran;
-	guint				 timeout_id;
-	gboolean			 timeout_triggered;
 	gchar				**tokens;
 } GsPluginLoaderHelper;
 
@@ -257,8 +254,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	}
 
 	g_object_unref (helper->plugin_loader);
-	if (helper->timeout_id != 0)
-		g_source_remove (helper->timeout_id);
 	if (helper->plugin_job != NULL)
 		g_object_unref (helper->plugin_job);
 	if (helper->catlist != NULL)
@@ -644,13 +639,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, list, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_SEARCH:
-		{
-			GsPluginSearchFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->tokens, list,
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
@@ -714,20 +702,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* failed */
 	if (!ret) {
-		/* we returned cancelled, but this was because of a timeout,
-		 * so re-create error, throwing the plugin under the bus */
-		if (helper->timeout_triggered &&
-		    (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
-		     g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED))) {
-			g_debug ("converting cancelled to timeout");
-			g_clear_error (&error_local);
-			g_set_error (&error_local,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_TIMED_OUT,
-				     "Timeout was reached as %s took "
-				     "too long to return results",
-				     gs_plugin_get_name (plugin));
-		}
 		return gs_plugin_error_handle_failure (helper,
 							plugin,
 							error_local,
@@ -1077,24 +1051,6 @@ gs_plugin_loader_get_app_is_compatible (GsApp    *app,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 
 	return gs_plugin_loader_app_is_compatible (plugin_loader, app);
-}
-
-/******************************************************************************/
-
-static gint
-gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	if (gs_app_get_match_value (app1) > gs_app_get_match_value (app2))
-		return -1;
-	if (gs_app_get_match_value (app1) < gs_app_get_match_value (app2))
-		return 1;
-	return 0;
-}
-
-static gint
-gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return gs_app_compare_priority (app1, app2);
 }
 
 /******************************************************************************/
@@ -2839,7 +2795,6 @@ gs_plugin_loader_finalize (GObject *object)
 	g_ptr_array_unref (plugin_loader->file_monitors);
 	g_hash_table_unref (plugin_loader->events_by_id);
 	g_hash_table_unref (plugin_loader->disallow_updates);
-	g_clear_object (&plugin_loader->as_pool);
 
 	g_mutex_clear (&plugin_loader->pending_apps_mutex);
 	g_mutex_clear (&plugin_loader->events_by_id_mutex);
@@ -3493,7 +3448,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_UPDATE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
@@ -3641,7 +3595,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
@@ -3729,75 +3682,6 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 		gs_app_set_pending_action (app, GS_PLUGIN_ACTION_UNKNOWN);
 
 	g_object_unref (task);
-}
-
-/* This needs to err on the side of being fast, rather than perfectly accurate.
- * False positives (saying the program is running under gdb when it isn’t) are
- * not OK. False negatives (saying the program is not running under gdb when it
- * is) are OK. */
-static gboolean
-is_running_under_gdb (void)
-{
-	g_autofree gchar *status = NULL;
-	gsize status_len = 0;
-	const gchar *tracer_pid, *end;
-
-	/* Look for a line of the form:
-	 * ```
-	 * TracerPid:	748899
-	 * ```
-	 * or
-	 * ```
-	 * TracerPid:	0
-	 * ```
-	 * in `/proc/self/status`. If it’s 0, the process is not being traced. */
-	if (!g_file_get_contents ("/proc/self/status", &status, &status_len, NULL))
-		return FALSE;
-
-	tracer_pid = g_strstr_len (status, status_len, "TracerPid:");
-	if (tracer_pid == NULL)
-		return FALSE;
-
-	end = status + status_len;
-
-	/* Find the number. */
-	for (tracer_pid += strlen ("TracerPid:");
-	     tracer_pid < end &&
-	     g_ascii_isspace (*tracer_pid);
-	     tracer_pid++);
-
-	if (tracer_pid >= end)
-		return FALSE;
-
-	return (*tracer_pid != '0');
-}
-
-static gboolean
-gs_plugin_loader_job_timeout_cb (gpointer user_data)
-{
-	GTask *task = G_TASK (user_data);
-	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
-
-	/* Don’t impose timeouts if running under gdb. */
-	if (is_running_under_gdb ()) {
-		g_debug ("Not cancelling job %s even though it took longer "
-			 "than %u seconds, as running under gdb",
-			 helper->function_name,
-			 gs_plugin_job_get_timeout (helper->plugin_job));
-		helper->timeout_id = 0;
-		return G_SOURCE_REMOVE;
-	}
-
-	/* call the cancellable */
-	g_debug ("cancelling job %s as it took longer than %u seconds",
-		 helper->function_name,
-		 gs_plugin_job_get_timeout (helper->plugin_job));
-	g_cancellable_cancel (g_task_get_cancellable (task));
-
-	/* failed */
-	helper->timeout_triggered = TRUE;
-	helper->timeout_id = 0;
-	return G_SOURCE_REMOVE;
 }
 
 static void
@@ -4104,7 +3988,6 @@ job_process_cb (GTask *task)
 
 	/* check required args */
 	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		if (gs_plugin_job_get_search (plugin_job) == NULL) {
@@ -4121,16 +4004,10 @@ job_process_cb (GTask *task)
 
 	/* sorting fallbacks */
 	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH:
-		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
-			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_match_value_cb, NULL);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		if (gs_plugin_job_get_sort_func (plugin_job, NULL) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
-						     gs_plugin_loader_app_sort_prio_cb, NULL);
+						     gs_utils_app_sort_priority, NULL);
 		}
 		break;
 	default:
@@ -4144,39 +4021,6 @@ job_process_cb (GTask *task)
 	/* let the task cancel itself */
 	g_task_set_check_cancellable (task, FALSE);
 	g_task_set_return_on_cancel (task, FALSE);
-
-	/* AppStream metadata pool, we only need it to create good search tokens */
-	if (plugin_loader->as_pool == NULL)
-		plugin_loader->as_pool = as_pool_new ();
-
-	/* pre-tokenize search */
-	if (action == GS_PLUGIN_ACTION_SEARCH) {
-		const gchar *search = gs_plugin_job_get_search (plugin_job);
-		helper->tokens = as_pool_build_search_tokens (plugin_loader->as_pool, search);
-		if (helper->tokens == NULL) {
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "failed to tokenize %s", search);
-			return;
-		}
-	}
-
-	/* set up a hang handler */
-	switch (action) {
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-		if (gs_plugin_job_get_timeout (plugin_job) > 0) {
-			helper->timeout_id =
-				g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
-						       gs_plugin_loader_job_timeout_cb,
-						       task);
-		}
-		break;
-	default:
-		break;
-	}
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:

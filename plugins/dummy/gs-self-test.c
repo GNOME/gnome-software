@@ -439,19 +439,24 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppQuery) query = NULL;
+	const gchar *keywords[2] = { NULL, };
 
 	/* get search result based on addon keyword */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "zeus",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	keywords[0] = "zeus";
+	query = gs_app_query_new ("keywords", keywords,
+				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				  "dedupe-flags", GS_PLUGIN_JOB_DEDUPE_FLAGS_DEFAULT,
+				  "sort-func", gs_utils_app_sort_match_value,
+				  NULL);
+	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
-	/* make sure there is one entry, the parent app */
-	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	/* make sure there is at least one entry, the parent app, which must be first */
+	g_assert_cmpint (gs_app_list_length (list), >=, 1);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_COMPONENT_KIND_DESKTOP_APP);
@@ -485,46 +490,6 @@ gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
 	app_tmp = gs_app_list_index (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "zeus.desktop");
 	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_COMPONENT_KIND_DESKTOP_APP);
-}
-
-static void
-gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
-{
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* drop all caches */
-	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
-	gs_test_reinitialise_plugin_loader (plugin_loader, allowlist, NULL);
-
-	/* get search result based on addon keyword */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "hang",
-					 "timeout", 1, /* seconds */
-					 NULL);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, cancellable, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT);
-	g_assert (list == NULL);
-}
-
-static void
-gs_plugins_dummy_search_invalid_func (GsPluginLoader *plugin_loader)
-{
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* get search result based on addon keyword */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "X",
-					 NULL);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
-	g_assert (list == NULL);
 }
 
 static void
@@ -959,12 +924,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/search-alternate",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_search_alternate_func);
-	g_test_add_data_func ("/gnome-software/plugins/dummy/hang",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_dummy_hang_func);
-	g_test_add_data_func ("/gnome-software/plugins/dummy/search{invalid}",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_dummy_search_invalid_func);
 	g_test_add_data_func ("/gnome-software/plugins/dummy/url-to-app",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_url_to_app_func);

@@ -265,7 +265,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
- * @GS_PLUGIN_ACTION_SEARCH:			Get the search results for a query
  * @GS_PLUGIN_ACTION_SEARCH_PROVIDES:		Get the search results for a provide query
  * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
@@ -292,7 +291,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_UPDATE_CANCEL,
 	GS_PLUGIN_ACTION_GET_UPDATES,
 	GS_PLUGIN_ACTION_GET_SOURCES,
-	GS_PLUGIN_ACTION_SEARCH,
 	GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	GS_PLUGIN_ACTION_GET_CATEGORIES,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
