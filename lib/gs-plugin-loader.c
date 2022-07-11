@@ -3710,13 +3710,11 @@ run_job_cb (GObject      *source_object,
 	GsPluginJob *plugin_job = GS_PLUGIN_JOB (source_object);
 	GsPluginJobClass *job_class;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec = GPOINTER_TO_SIZE (g_task_get_task_data (task));
-#endif  /* HAVE_SYSPROF */
 	g_autoptr(GError) local_error = NULL;
-
 #ifdef HAVE_SYSPROF
+	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
+	gint64 begin_time_nsec = GPOINTER_TO_SIZE (g_task_get_task_data (task));
+
 	if (plugin_loader->sysprof_writer != NULL) {
 		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", G_OBJECT_TYPE_NAME (plugin_job), NULL);
 		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (plugin_job);
