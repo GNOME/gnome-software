@@ -639,14 +639,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			ret = plugin_func (plugin, list, cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-		{
-			GsPluginSearchFunc plugin_func = func;
-			const gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
-			ret = plugin_func (plugin, (gchar **) search, list,
-					   cancellable, &error_local);
-		}
-		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORIES:
 		{
 			GsPluginCategoriesFunc plugin_func = func;
@@ -985,38 +977,6 @@ gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
 		(gs_app_is_updatable (app) || gs_app_get_state (app) == GS_APP_STATE_INSTALLING);
 }
 
-static gboolean
-gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
-{
-	/* hide the QT versions in preference to the GTK ones */
-	if (g_strcmp0 (gs_app_get_id (app), "transmission-qt.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_qt.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "gimagereader-qt4.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "gimagereader-qt5.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_server_qt.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "hotot-qt.desktop") == 0) {
-		g_debug ("removing QT version of %s",
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-	}
-
-	/* hide the KDE version in preference to the GTK one */
-	if (g_strcmp0 (gs_app_get_id (app), "qalculate_kde.desktop") == 0) {
-		g_debug ("removing KDE version of %s",
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-	}
-
-	/* hide the KDE version in preference to the Qt one */
-	if (g_strcmp0 (gs_app_get_id (app), "kid3.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "kchmviewer.desktop") == 0) {
-		g_debug ("removing KDE version of %s",
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-	}
-	return TRUE;
-}
-
 gboolean
 gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
                                     GsApp          *app)
@@ -1035,15 +995,6 @@ gs_plugin_loader_app_is_compatible (GsPluginLoader *plugin_loader,
 	g_debug ("removing incompatible %s from project group %s",
 		 gs_app_get_id (app), gs_app_get_project_group (app));
 	return FALSE;
-}
-
-static gboolean
-gs_plugin_loader_get_app_is_compatible (GsApp    *app,
-                                        gpointer  user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-
-	return gs_plugin_loader_app_is_compatible (plugin_loader, app);
 }
 
 /******************************************************************************/
@@ -3588,11 +3539,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
 		break;
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_filter, helper);
-		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
 		break;
@@ -3971,7 +3917,6 @@ job_process_cb (GTask *task)
 
 	/* check required args */
 	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		if (gs_plugin_job_get_search (plugin_job) == NULL) {
 			g_task_return_new_error (task,

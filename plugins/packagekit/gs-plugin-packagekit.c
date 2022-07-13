@@ -831,6 +831,7 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GTask) task = NULL;
+	const gchar *provides_tag = NULL;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_packagekit_list_apps_async);
@@ -852,6 +853,19 @@ gs_plugin_packagekit_list_apps_async (GsPlugin              *plugin,
 					      cancellable,
 					      gs_packagekit_helper_cb, helper,
 					      list_apps_cb, g_steal_pointer (&task));
+	} else if (gs_app_query_get_provides (query, &provides_tag) != GS_APP_QUERY_PROVIDES_UNKNOWN) {
+		const gchar * const provides_tag_strv[2] = { provides_tag, NULL };
+
+		filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+						 PK_FILTER_ENUM_ARCH,
+						 -1);
+
+		pk_client_what_provides_async (PK_CLIENT (task_list_apps),
+					       filter,
+					       (gchar **) provides_tag_strv,
+					       cancellable,
+					       gs_packagekit_helper_cb, helper,
+					       list_apps_cb, g_steal_pointer (&task));
 	} else {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 					 "Unsupported query");
@@ -886,41 +900,6 @@ gs_plugin_packagekit_list_apps_finish (GsPlugin      *plugin,
                                        GError       **error)
 {
 	return g_task_propagate_pointer (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_add_search_what_provides (GsPlugin *plugin,
-                                    gchar **search,
-                                    GsAppList *list,
-                                    GCancellable *cancellable,
-                                    GError **error)
-{
-	PkBitfield filter;
-	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkTask) task_search = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
-					 PK_FILTER_ENUM_ARCH,
-					 -1);
-
-	task_search = gs_packagekit_task_new (plugin);
-	gs_packagekit_task_setup (GS_PACKAGEKIT_TASK (task_search), GS_PLUGIN_ACTION_SEARCH_PROVIDES, gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
-
-	results = pk_client_what_provides (PK_CLIENT (task_search),
-	                                   filter,
-	                                   search,
-	                                   cancellable,
-	                                   gs_packagekit_helper_cb, helper,
-	                                   error);
-
-	if (!gs_plugin_packagekit_results_valid (results, error))
-		return FALSE;
-
-	/* add results */
-	return gs_plugin_packagekit_add_results (plugin, list, results, error);
 }
 
 static gboolean

@@ -1749,37 +1749,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_flatpak_do_search (GsPlugin *plugin,
-			     gchar **values,
-			     GsAppList *list,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
-
-	for (guint i = 0; i < self->installations->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_search (flatpak, (const gchar * const *) values, list,
-					interactive, cancellable, error)) {
-			return FALSE;
-		}
-	}
-
-	return TRUE;
-}
-
-gboolean
-gs_plugin_add_search_what_provides (GsPlugin *plugin,
-				    gchar **search,
-				    GsAppList *list,
-				    GCancellable *cancellable,
-				    GError **error)
-{
-	return gs_plugin_flatpak_do_search (plugin, search, list, cancellable, error);
-}
-
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,
@@ -1844,6 +1813,8 @@ list_apps_thread_cb (GTask        *task,
 	const gchar *const *developers = NULL;
 	const gchar * const *keywords = NULL;
 	GsApp *alternate_of = NULL;
+	const gchar *provides_tag = NULL;
+	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
@@ -1858,6 +1829,7 @@ list_apps_thread_cb (GTask        *task,
 		developers = gs_app_query_get_developers (data->query);
 		keywords = gs_app_query_get_keywords (data->query);
 		alternate_of = gs_app_query_get_alternate_of (data->query);
+		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
 	}
 
 	if (released_since != NULL) {
@@ -1875,7 +1847,8 @@ list_apps_thread_cb (GTask        *task,
 	     deployment_featured == NULL &&
 	     developers == NULL &&
 	     keywords == NULL &&
-	     alternate_of == NULL) ||
+	     alternate_of == NULL &&
+	     provides_tag == NULL) ||
 	    is_curated == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_featured == GS_APP_QUERY_TRISTATE_FALSE ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
@@ -1887,6 +1860,7 @@ list_apps_thread_cb (GTask        *task,
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+		const gchar * const provides_tag_strv[2] = { provides_tag, NULL };
 
 		if (released_since != NULL &&
 		    !gs_flatpak_add_recent (flatpak, list, age_secs, interactive, cancellable, &local_error)) {
@@ -1938,6 +1912,16 @@ list_apps_thread_cb (GTask        *task,
 
 		if (alternate_of != NULL &&
 		    !gs_flatpak_add_alternates (flatpak, alternate_of, list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		/* The @provides_type is deliberately ignored here, as flatpak
+		 * wants to try and match anything. This could be changed in
+		 * future. */
+		if (provides_tag != NULL &&
+		    provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN &&
+		    !gs_flatpak_search (flatpak, provides_tag_strv, list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}

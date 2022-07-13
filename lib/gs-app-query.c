@@ -85,6 +85,8 @@ struct _GsAppQuery
 
 	gchar **keywords;  /* (owned) (nullable) (array zero-terminated=1) */
 	GsApp *alternate_of;  /* (nullable) (owned) */
+	gchar *provides_tag;  /* (owned) (nullable) */
+	GsAppQueryProvidesType provides_type;
 };
 
 G_DEFINE_TYPE (GsAppQuery, gs_app_query, G_TYPE_OBJECT)
@@ -109,9 +111,21 @@ typedef enum {
 	PROP_IS_INSTALLED,
 	PROP_KEYWORDS,
 	PROP_ALTERNATE_OF,
+	PROP_PROVIDES_TAG,
+	PROP_PROVIDES_TYPE,
 } GsAppQueryProperty;
 
-static GParamSpec *props[PROP_ALTERNATE_OF + 1] = { NULL, };
+static GParamSpec *props[PROP_PROVIDES_TYPE + 1] = { NULL, };
+
+static void
+gs_app_query_constructed (GObject *object)
+{
+	GsAppQuery *self = GS_APP_QUERY (object);
+
+	G_OBJECT_CLASS (gs_app_query_parent_class)->constructed (object);
+
+	g_assert ((self->provides_tag != NULL) == (self->provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN));
+}
 
 static void
 gs_app_query_get_property (GObject    *object,
@@ -178,6 +192,12 @@ gs_app_query_get_property (GObject    *object,
 		break;
 	case PROP_ALTERNATE_OF:
 		g_value_set_object (value, self->alternate_of);
+		break;
+	case PROP_PROVIDES_TAG:
+		g_value_set_string (value, self->provides_tag);
+		break;
+	case PROP_PROVIDES_TYPE:
+		g_value_set_enum (value, self->provides_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -309,6 +329,16 @@ gs_app_query_set_property (GObject      *object,
 		g_assert (self->alternate_of == NULL);
 		self->alternate_of = g_value_dup_object (value);
 		break;
+	case PROP_PROVIDES_TAG:
+		/* Construct only. */
+		g_assert (self->provides_tag == NULL);
+		self->provides_tag = g_value_dup_string (value);
+		break;
+	case PROP_PROVIDES_TYPE:
+		/* Construct only. */
+		g_assert (self->provides_type == GS_APP_QUERY_PROVIDES_UNKNOWN);
+		self->provides_type = g_value_get_enum (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -346,6 +376,7 @@ gs_app_query_finalize (GObject *object)
 	g_clear_pointer (&self->provides_files, g_strfreev);
 	g_clear_pointer (&self->released_since, g_date_time_unref);
 	g_clear_pointer (&self->keywords, g_strfreev);
+	g_clear_pointer (&self->provides_tag, g_free);
 
 	G_OBJECT_CLASS (gs_app_query_parent_class)->finalize (object);
 }
@@ -355,6 +386,7 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = gs_app_query_constructed;
 	object_class->get_property = gs_app_query_get_property;
 	object_class->set_property = gs_app_query_set_property;
 	object_class->dispose = gs_app_query_dispose;
@@ -700,6 +732,45 @@ gs_app_query_class_init (GsAppQueryClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
 				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
+	/**
+	 * GsAppQuery:provides-tag: (nullable)
+	 *
+	 * A tag which apps must provide.
+	 *
+	 * The interpretation of the tag depends on #GsAppQuery:provides-type,
+	 * which must not be %GS_APP_QUERY_PROVIDES_UNKNOWN if this is
+	 * non-%NULL. Typically a tag will be a content type which the app
+	 * implements, or the name of a printer which the app provides the
+	 * driver for, etc.
+	 *
+	 * If this is %NULL, apps are not filtered by what they provide.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_PROVIDES_TAG] =
+		g_param_spec_string ("provides-tag", "Provides Tag",
+				     "A tag which apps must provide.",
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				     G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsAppQuery:provides-type:
+	 *
+	 * The type of #GsAppQuery:provides-tag.
+	 *
+	 * If this is %GS_APP_QUERY_PROVIDES_UNKNOWN, apps are not filtered by
+	 * what they provide.
+	 *
+	 * Since: 43
+	 */
+	props[PROP_PROVIDES_TYPE] =
+		g_param_spec_enum ("provides-type", "Provides Type",
+				   "The type of #GsAppQuery:provides-tag.",
+				   GS_TYPE_APP_QUERY_PROVIDES_TYPE, GS_APP_QUERY_PROVIDES_UNKNOWN,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
+				   G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (props), props);
 }
 
@@ -709,6 +780,7 @@ gs_app_query_init (GsAppQuery *self)
 	self->is_curated = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_featured = GS_APP_QUERY_TRISTATE_UNSET;
 	self->is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	self->provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 }
 
 /**
@@ -874,6 +946,8 @@ gs_app_query_get_n_properties_set (GsAppQuery *self)
 	if (self->keywords != NULL)
 		n++;
 	if (self->alternate_of != NULL)
+		n++;
+	if (self->provides_tag != NULL)
 		n++;
 
 	return n;
@@ -1072,4 +1146,28 @@ gs_app_query_get_alternate_of (GsAppQuery *self)
 	g_return_val_if_fail (GS_IS_APP_QUERY (self), NULL);
 
 	return self->alternate_of;
+}
+
+/**
+ * gs_app_query_get_provides:
+ * @self: a #GsAppQuery
+ * @out_provides_tag: (transfer none) (optional) (nullable) (out): return
+ *   location for the value of #GsAppQuery:provides-tag, or %NULL to ignore
+ *
+ * Get the value of #GsAppQuery:provides-type and #GsAppQuery:provides-tag.
+ *
+ * Returns: the type of tag to filter on, or %GS_APP_QUERY_PROVIDES_UNKNOWN to
+ *   not filter on provides
+ * Since: 43
+ */
+GsAppQueryProvidesType
+gs_app_query_get_provides (GsAppQuery   *self,
+                           const gchar **out_provides_tag)
+{
+	g_return_val_if_fail (GS_IS_APP_QUERY (self), GS_APP_QUERY_PROVIDES_UNKNOWN);
+
+	if (out_provides_tag != NULL)
+		*out_provides_tag = self->provides_tag;
+
+	return self->provides_type;
 }

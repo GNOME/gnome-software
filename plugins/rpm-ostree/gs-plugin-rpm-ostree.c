@@ -2498,52 +2498,118 @@ out:
 }
 
 static gchar **
-what_provides_decompose (gchar **values)
+what_provides_decompose (GsAppQueryProvidesType  provides_type,
+                         const gchar            *provides_tag)
 {
-	GPtrArray *array = g_ptr_array_new ();
+	g_autoptr(GPtrArray) array = g_ptr_array_new ();
 
-	/* iter on each provide string, and wrap it with the Fedora prefix */
-	for (guint i = 0; values[i] != NULL; i++) {
-		g_ptr_array_add (array, g_strdup (values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("gstreamer0.10(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("gstreamer1(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("font(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("mimehandler(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("postscriptdriver(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("plasma4(%s)", values[i]));
-		g_ptr_array_add (array, g_strdup_printf ("plasma5(%s)", values[i]));
+	/* Wrap the @provides_tag with the appropriate Fedora prefix */
+	switch (provides_type) {
+	case GS_APP_QUERY_PROVIDES_PACKAGE_NAME:
+		g_ptr_array_add (array, g_strdup (provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_GSTREAMER:
+		g_ptr_array_add (array, g_strdup_printf ("gstreamer0.10(%s)", provides_tag));
+		g_ptr_array_add (array, g_strdup_printf ("gstreamer1(%s)", provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_FONT:
+		g_ptr_array_add (array, g_strdup_printf ("font(%s)", provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_MIME_HANDLER:
+		g_ptr_array_add (array, g_strdup_printf ("mimehandler(%s)", provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_PS_DRIVER:
+		g_ptr_array_add (array, g_strdup_printf ("postscriptdriver(%s)", provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_PLASMA:
+		g_ptr_array_add (array, g_strdup_printf ("plasma4(%s)", provides_tag));
+		g_ptr_array_add (array, g_strdup_printf ("plasma5(%s)", provides_tag));
+		break;
+	case GS_APP_QUERY_PROVIDES_UNKNOWN:
+	default:
+		g_assert_not_reached ();
 	}
+
 	g_ptr_array_add (array, NULL);
-	return (gchar **) g_ptr_array_free (array, FALSE);
+
+	return (gchar **) g_ptr_array_free (g_steal_pointer (&array), FALSE);
 }
 
-gboolean
-gs_plugin_add_search_what_provides (GsPlugin *plugin,
-                                    gchar **search,
-                                    GsAppList *list,
-                                    GCancellable *cancellable,
-                                    GError **error)
+static void list_apps_thread_cb (GTask        *task,
+                                 gpointer      source_object,
+                                 gpointer      task_data,
+                                 GCancellable *cancellable);
+
+static void
+gs_plugin_rpm_ostree_list_apps_async (GsPlugin              *plugin,
+                                      GsAppQuery            *query,
+                                      GsPluginListAppsFlags  flags,
+                                      GCancellable          *cancellable,
+                                      GAsyncReadyCallback    callback,
+                                      gpointer               user_data)
 {
 	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_list_apps_data_new_task (plugin, query, flags,
+						  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_rpm_ostree_list_apps_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				list_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+list_apps_thread_cb (GTask        *task,
+                     gpointer      source_object,
+                     gpointer      task_data,
+                     GCancellable *cancellable)
+{
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (source_object);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	GsPluginListAppsData *data = task_data;
+	const gchar *provides_tag = NULL;
+	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
+	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(DnfContext) dnf_context = NULL;
 	g_auto(GStrv) provides = NULL;
 
+	assert_in_worker (self);
+
+	if (data->query != NULL) {
+		provides_type = gs_app_query_get_provides (data->query, &provides_tag);
+	}
+
+	/* Currently only support a subset of query properties, and only one set at once. */
+	if (provides_tag == NULL ||
+	    gs_app_query_get_n_properties_set (data->query) != 1) {
+		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+					 "Unsupported query");
+		return;
+	}
+
+	/* Prepare a dnf context */
 	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_dnf_context_locked (self, NULL, NULL, &dnf_context, cancellable, error))
-		return FALSE;
+	if (!gs_rpmostree_ref_dnf_context_locked (self, NULL, NULL, &dnf_context, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
-	provides = what_provides_decompose (search);
+	provides = what_provides_decompose (provides_type, provides_tag);
 	pkglist = find_packages_by_provides (dnf_context_get_sack (dnf_context), provides);
 	for (guint i = 0; i < pkglist->len; i++) {
 		DnfPackage *pkg = g_ptr_array_index (pkglist, i);
 		g_autoptr(GsApp) app = NULL;
 
-		app = gs_plugin_cache_lookup (plugin, dnf_package_get_nevra (pkg));
+		app = gs_plugin_cache_lookup (GS_PLUGIN (self), dnf_package_get_nevra (pkg));
 		if (app != NULL) {
 			gs_app_list_add (list, app);
 			continue;
@@ -2551,8 +2617,8 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 
 		/* create new app */
 		app = gs_app_new (NULL);
-		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
-		gs_app_set_management_plugin (app, plugin);
+		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (GS_PLUGIN (self)));
+		gs_app_set_management_plugin (app, GS_PLUGIN (self));
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 		app_set_rpm_ostree_packaging_format (app);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
@@ -2560,11 +2626,19 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
 		gs_app_add_source (app, dnf_package_get_name (pkg));
 
-		gs_plugin_cache_add (plugin, dnf_package_get_nevra (pkg), app);
+		gs_plugin_cache_add (GS_PLUGIN (self), dnf_package_get_nevra (pkg), app);
 		gs_app_list_add (list, app);
 	}
 
-	return TRUE;
+	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+}
+
+static GsAppList *
+gs_plugin_rpm_ostree_list_apps_finish (GsPlugin      *plugin,
+                                       GAsyncResult  *result,
+                                       GError       **error)
+{
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 gboolean
@@ -2782,6 +2856,8 @@ gs_plugin_rpm_ostree_class_init (GsPluginRpmOstreeClass *klass)
 	plugin_class->enable_repository_finish = gs_plugin_rpm_ostree_enable_repository_finish;
 	plugin_class->disable_repository_async = gs_plugin_rpm_ostree_disable_repository_async;
 	plugin_class->disable_repository_finish = gs_plugin_rpm_ostree_disable_repository_finish;
+	plugin_class->list_apps_async = gs_plugin_rpm_ostree_list_apps_async;
+	plugin_class->list_apps_finish = gs_plugin_rpm_ostree_list_apps_finish;
 }
 
 GType
