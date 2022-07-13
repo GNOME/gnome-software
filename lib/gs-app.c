@@ -538,6 +538,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	GList *keys;
 	const gchar *tmp;
 	guint i;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsPlugin) management_plugin = NULL;
 	GsSizeType size_download_dependencies_type, size_installed_dependencies_type;
 	guint64 size_download_dependencies_bytes, size_installed_dependencies_bytes;
@@ -546,6 +547,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	g_return_if_fail (str != NULL);
 
 	klass = GS_APP_GET_CLASS (app);
+
+	locker = g_mutex_locker_new (&priv->mutex);
 
 	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_component_kind_to_string (priv->kind));
@@ -561,7 +564,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	if (priv->id != NULL)
 		gs_app_kv_lpad (str, "id", priv->id);
 	if (priv->unique_id != NULL)
-		gs_app_kv_lpad (str, "unique-id", gs_app_get_unique_id (app));
+		gs_app_kv_lpad (str, "unique-id", priv->unique_id);
 	if (priv->scope != AS_COMPONENT_SCOPE_UNKNOWN)
 		gs_app_kv_lpad (str, "scope", as_component_scope_to_string (priv->scope));
 	if (priv->bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
@@ -643,9 +646,11 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "content-rating",
 				as_content_rating_get_kind (priv->content_rating));
 	}
-	tmp = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
-	if (tmp != NULL)
-		gs_app_kv_lpad (str, "url{homepage}", tmp);
+	if (priv->urls != NULL) {
+		tmp = g_hash_table_lookup (priv->urls, GINT_TO_POINTER (AS_URL_KIND_HOMEPAGE));
+		if (tmp != NULL)
+			gs_app_kv_lpad (str, "url{homepage}", tmp);
+	}
 	keys = g_hash_table_get_keys (priv->launchables);
 	for (GList *l = keys; l != NULL; l = l->next) {
 		g_autofree gchar *key = NULL;
