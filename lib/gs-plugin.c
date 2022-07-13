@@ -892,6 +892,131 @@ gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
 	return TRUE;
 }
 
+static GDesktopAppInfo *
+check_directory_for_desktop_file (GsPlugin *plugin,
+				  GsApp *app,
+				  GsPluginPickDesktopFileCallback cb,
+				  gpointer user_data,
+				  const gchar *desktop_id,
+				  const gchar *data_dir)
+{
+	g_autofree gchar *filename = NULL;
+	g_autoptr(GKeyFile) key_file = NULL;
+
+	filename = g_build_filename (data_dir, "applications", desktop_id, NULL);
+	key_file = g_key_file_new ();
+
+	if (g_key_file_load_from_file (key_file, filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL) &&
+	    cb (plugin, app, filename, key_file)) {
+		g_autoptr(GDesktopAppInfo) appinfo = NULL;
+		appinfo = g_desktop_app_info_new_from_keyfile (key_file);
+		if (appinfo != NULL)
+			return g_steal_pointer (&appinfo);
+		g_debug ("Failed to load '%s' as a GDesktopAppInfo", filename);
+		return NULL;
+	}
+
+	if (!g_str_has_suffix (desktop_id, ".desktop")) {
+		g_autofree gchar *desktop_filename = g_strconcat (filename, ".desktop", NULL);
+		if (g_key_file_load_from_file (key_file, desktop_filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL) &&
+		    cb (plugin, app, desktop_filename, key_file)) {
+			g_autoptr(GDesktopAppInfo) appinfo = NULL;
+			appinfo = g_desktop_app_info_new_from_keyfile (key_file);
+			if (appinfo != NULL)
+				return g_steal_pointer (&appinfo);
+			g_debug ("Failed to load '%s' as a GDesktopAppInfo", desktop_filename);
+			return NULL;
+		}
+	}
+
+	return NULL;
+}
+
+/**
+ * gs_plugin_app_launch_filtered:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp to launch
+ * @cb: a callback to pick the correct .desktop file
+ * @user_data: (closure cb) (scope call): user data for the @cb
+ * @error: a #GError, or %NULL
+ *
+ * Launches application @app, using the .desktop file picked by the @cb.
+ * This can help in case multiple versions of the @app are installed
+ * in the system (like a Flatpak and RPM versions).
+ *
+ * Returns: %TRUE on success
+ *
+ * Since: 43
+ **/
+gboolean
+gs_plugin_app_launch_filtered (GsPlugin *plugin,
+			       GsApp *app,
+			       GsPluginPickDesktopFileCallback cb,
+			       gpointer user_data,
+			       GError **error)
+{
+	const gchar *desktop_id;
+	g_autoptr(GDesktopAppInfo) appinfo = NULL;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (cb != NULL, FALSE);
+
+	desktop_id = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	if (desktop_id == NULL)
+		desktop_id = gs_app_get_id (app);
+	if (desktop_id == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no desktop file for app: %s",
+			     gs_app_get_name (app));
+		return FALSE;
+	}
+
+	/* First, the configs.  Highest priority: the user's ~/.config */
+	appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, g_get_user_config_dir ());
+
+	if (appinfo == NULL) {
+		/* Next, the system configs (/etc/xdg, and so on). */
+		const gchar * const *dirs;
+		dirs = g_get_system_config_dirs ();
+		for (guint i = 0; dirs[i] && appinfo == NULL; i++) {
+			appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, dirs[i]);
+		}
+	}
+
+	if (appinfo == NULL) {
+		/* Now the data.  Highest priority: the user's ~/.local/share/applications */
+		appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, g_get_user_data_dir ());
+	}
+
+	if (appinfo == NULL) {
+		/* Following that, XDG_DATA_DIRS/applications, in order */
+		const gchar * const *dirs;
+		dirs = g_get_system_data_dirs ();
+		for (guint i = 0; dirs[i] && appinfo == NULL; i++) {
+			appinfo = check_directory_for_desktop_file (plugin, app, cb, user_data, desktop_id, dirs[i]);
+		}
+	}
+
+	if (appinfo == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no appropriate desktop file found: %s",
+			     desktop_id);
+		return FALSE;
+	}
+
+	g_idle_add_full (G_PRIORITY_DEFAULT,
+			 gs_plugin_app_launch_cb,
+			 g_object_ref (appinfo),
+			 (GDestroyNotify) g_object_unref);
+
+	return TRUE;
+}
+
 static void
 weak_ref_free (GWeakRef *weak)
 {
