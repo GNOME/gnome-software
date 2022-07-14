@@ -364,12 +364,27 @@ category_tile_clicked (GsCategoryTile *tile, gpointer data)
 	gs_shell_show_category (self->shell, category);
 }
 
+typedef struct {
+	GsOverviewPage *page;  /* (unowned) */
+	GsPluginJobListCategories *job;  /* (owned) */
+} GetCategoriesData;
+
+static void
+get_categories_data_free (GetCategoriesData *data)
+{
+	g_clear_object (&data->job);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GetCategoriesData, get_categories_data_free)
+
 static void
 gs_overview_page_get_categories_cb (GObject *source_object,
                                     GAsyncResult *res,
                                     gpointer user_data)
 {
-	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	g_autoptr(GetCategoriesData) data = g_steal_pointer (&user_data);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (data->page);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsCategory *cat;
@@ -377,15 +392,16 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 	GtkWidget *tile;
 	guint added_cnt = 0;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GPtrArray) list = NULL;
+	GPtrArray *list = NULL;  /* (element-type GsCategory) */
 
-	list = gs_plugin_loader_job_get_categories_finish (plugin_loader, res, &error);
-	if (list == NULL) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
 		goto out;
 	}
+
+	list = gs_plugin_job_list_categories_get_result_list (data->job);
 
 	gs_widget_remove_all (self->flowbox_categories, (GsRemoveFunc) gtk_flow_box_remove);
 	gs_widget_remove_all (self->flowbox_iconless_categories, (GsRemoveFunc) gtk_flow_box_remove);
@@ -744,12 +760,19 @@ gs_overview_page_load (GsOverviewPage *self)
 
 	if (!self->loading_categories) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+		GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE;
+		g_autoptr(GetCategoriesData) data = NULL;
+
 		self->loading_categories = TRUE;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES, NULL);
-		gs_plugin_loader_job_get_categories_async (self->plugin_loader, plugin_job,
-							  self->cancellable,
-							  gs_overview_page_get_categories_cb,
-							  self);
+		plugin_job = gs_plugin_job_list_categories_new (flags);
+
+		data = g_new0 (GetCategoriesData, 1);
+		data->page = self;
+		data->job = g_object_ref (GS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job));
+
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    self->cancellable, gs_overview_page_get_categories_cb,
+						    g_steal_pointer (&data));
 		self->action_cnt++;
 	}
 
