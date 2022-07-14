@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-06-14 21:28+0000\n"
-"PO-Revision-Date: 2022-06-16 13:43+0300\n"
+"POT-Creation-Date: 2022-07-09 18:28+0000\n"
+"PO-Revision-Date: 2022-07-14 14:08+0300\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
@@ -70,7 +70,7 @@ msgstr "דף עדכונים"
 msgid "The update details"
 msgstr "פרטי עדכון"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1895
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1949
 msgid "The GNOME Project"
 msgstr "מיזם GNOME"
 
@@ -749,7 +749,7 @@ msgstr "דירוג גיל מומלץ"
 msgid "How to add missing information"
 msgstr "איך להוסיף מידע חסר"
 
-#: lib/gs-app.c:6104
+#: lib/gs-app.c:6158
 msgid "Local file"
 msgstr "קובץ מקומי"
 
@@ -758,12 +758,12 @@ msgstr "קובץ מקומי"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6120 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6174 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "‏%s ‏(%s)"
 
-#: lib/gs-app.c:6196
+#: lib/gs-app.c:6250
 msgid "Package"
 msgstr "חבילה"
 
@@ -836,26 +836,20 @@ msgid "Home folder"
 msgstr "תיקיית הבית"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "ניתן לצפות, לערוך וליצור קבצים"
 
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "ניתן לצפות בקבצים"
 
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "מערכת קבצים"
 
-#. Translators: This indicates an app can access data in the system unknown to the Software.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:356
-msgid "Can access arbitrary files"
-msgstr "רשאי לגשת לקבצים שרירותיים"
-
+#. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
 msgid "Downloads folder"
 msgstr "תיקיית הורדות"
@@ -890,14 +884,14 @@ msgstr "יכול לצאת מארגז החול ולעקוף הגבלות אחרו
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
+#: src/gs-app-details-page.c:177
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:157
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "אין תיאור זמין לעדכון."
 
@@ -906,7 +900,7 @@ msgstr "אין תיאור זמין לעדכון."
 msgid "Go back"
 msgstr "חזרה"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:506
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:506
 msgid "Requires additional permissions"
 msgstr "נדרשות הרשאות נוספות"
 
@@ -985,7 +979,6 @@ msgid "Install the application (using application ID)"
 msgstr "Install the application (using application ID)"
 
 #: src/gs-application.c:134
-#| msgid "Install the application (using application ID)"
 msgid "Uninstall the application (using application ID)"
 msgstr "Uninstall the application (using application ID)"
 
@@ -1115,111 +1108,117 @@ msgstr "הגודל לא ידוע"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:279
+#: src/gs-app-context-bar.c:282
 msgid "No permissions"
 msgstr "אין הרשאות"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:290
+#: src/gs-app-context-bar.c:293
 msgid "Has network access"
 msgstr "יש גישה לרשת"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:300
 msgid "Uses system services"
 msgstr "משתמש בשירותי מערכת"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:304
+#: src/gs-app-context-bar.c:307
 msgid "Uses session services"
 msgstr "משתמש בשירותי הפעלה"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
 msgstr "רשאי לגשת להתקני חומרה"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:323
+#: src/gs-app-context-bar.c:326
 msgid "Can read/write all your data"
 msgstr "יכול לקרוא/לכתוב את כל הנתונים שלך"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:335
+#: src/gs-app-context-bar.c:338
 msgid "Can read all your data"
 msgstr "יכול לקרוא את כל הנתונים שלך"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:342
+#: src/gs-app-context-bar.c:345
 msgid "Can read/write your downloads"
 msgstr "יכול לקרוא/לכתוב את ההורדות שלך"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:349
+#: src/gs-app-context-bar.c:352
 msgid "Can read your downloads"
 msgstr "יכול לקרוא את ההורדות שלך"
 
+#. Translators: This indicates an app can access data in the system unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:359
+msgid "Can access arbitrary files"
+msgstr "רשאי לגשת לקבצים שרירותיים"
+
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:363 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
 msgid "Can access and change user settings"
 msgstr "רשאי לגשת ולשנות הגדרות משתמש"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
 msgstr "משתמש במערכת חלונאית מיושנת"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:377 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
 msgid "Can acquire arbitrary permissions"
 msgstr "רשאי לקבל הרשאות שרירותיות"
 
 #. Translators: This indicates that an application has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:403 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
 msgid "Reviewed by your distribution"
 msgstr "נסקר על ידי ההפצה שלך"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:410 src/gs-safety-context-dialog.c:140
+#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
 msgstr "מסופק על ידי צד־שלישי"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:422
+#: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
 msgstr "קוד קנייני"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:428
+#: src/gs-app-context-bar.c:431
 msgid "Auditable code"
 msgstr "קוד שניתן לפקח עליו"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:435
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "גוף פיתוח התכנה מאומת"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:444
+#: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
 msgstr "התכנית לא נתמכת עוד"
 
@@ -1237,104 +1236,104 @@ msgstr "התכנית לא נתמכת עוד"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr ", "
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:464
+#: src/gs-app-context-bar.c:467
 msgid "Safe"
 msgstr "בטוח"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:471
+#: src/gs-app-context-bar.c:474
 msgid "Potentially Unsafe"
 msgstr "כנראה לא בטוח"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:478
+#: src/gs-app-context-bar.c:481
 msgid "Unsafe"
 msgstr "לא בטוח"
 
-#: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
+#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
 #: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "נייד בלבד"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:561
 msgid "Only works on a small screen"
 msgstr "עובד על מסך קטן בלבד"
 
-#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
+#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "שולחן עבודה בלבד"
 
-#: src/gs-app-context-bar.c:564
+#: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
 msgstr "עובד על מסך גדול בלבד"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "אין התאמה בגודל המסך"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
+#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "לא תומך בגודל המסך הנוכחי שלך"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
 #: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "דורש מסך מגע"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
 #: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "דורש מקלדת"
 
-#: src/gs-app-context-bar.c:604
+#: src/gs-app-context-bar.c:607
 msgid "Requires a mouse"
 msgstr "דורש עכבר"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
 msgstr "דרוש בקר משחקים"
 
-#: src/gs-app-context-bar.c:616
+#: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
 msgstr "דורש בקר משחקים כדי לשחק"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:643
 msgid "Adaptive"
 msgstr "מסתגל"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
 msgstr "עובד על טלפונים, מחשבי לוח ושולחנות עבודה"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
 msgstr "כנראה דורש מקלדת או עכבר"
 
-#: src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
 msgstr "עובד על שולחנות עבודה ומחשבים ניידים"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:705
 msgid "Contains no age-inappropriate content"
 msgstr "מכיל תוכן ראוי לכל גיל"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:753
 msgid "No age rating information available"
 msgstr "אין פירוט דירוג גיל זמין"
 
@@ -1361,7 +1360,7 @@ msgstr "ביטול"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:366
+#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "התקנה"
 
@@ -1376,7 +1375,7 @@ msgstr "עדכון"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:276
-#: src/gs-page.c:529
+#: src/gs-page.c:543
 msgid "Uninstall"
 msgstr "הסרת התקנה"
 
@@ -1932,7 +1931,7 @@ msgid "Install Third-Party Software?"
 msgstr "להתקין תכנית צד־שלישי?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222 src/gs-repos-dialog.c:165
+#: src/gs-common.c:222 src/gs-repos-dialog.c:168
 msgid "Enable Third-Party Software Repository?"
 msgstr "לאפשר מקורות תכנה מצד־שלישי?"
 
@@ -2211,7 +2210,7 @@ msgstr "מתבצעת הסרה…"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #: src/gs-details-page.c:828 src/gs-details-page.c:854
-#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:148
+#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "ה_תקנה"
 
@@ -2230,16 +2229,15 @@ msgstr "ה_תקנה…"
 #. Translators: the '%s' is replaced with a developer name or a project group
 #: src/gs-details-page.c:1139
 #, c-format
-#| msgid "Other Apps"
 msgid "Other Apps by %s"
 msgstr "יישומים נוספים מאת %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1521
+#: src/gs-details-page.c:1522
 msgid "You need internet access to write a review"
 msgstr "נדרשת גישה לרשת אל מנת לכתוב ביקורת"
 
-#: src/gs-details-page.c:1669 src/gs-details-page.c:1685
+#: src/gs-details-page.c:1670 src/gs-details-page.c:1686
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "לא ניתן למצוא את „%s”"
@@ -2267,7 +2265,7 @@ msgstr "_עזרה בתרגום"
 msgid "_Open"
 msgstr "_פתיחה"
 
-#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:158
+#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "_עדכון"
 
@@ -2997,7 +2995,7 @@ msgstr "מספק גישה לתכניות נוספות דרך %s. יש שם גם 
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "לאפשר"
 
@@ -3024,7 +3022,7 @@ msgstr "קטגוריות אחרות"
 msgid "No Application Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
-#: lib/gs-plugin-loader.c:3012
+#: lib/gs-plugin-loader.c:3071
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "לא ידועה"
@@ -3035,20 +3033,20 @@ msgstr "המשתמש דחה את ההתקנה"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:357
+#: src/gs-page.c:365
 #, c-format
 msgid "Prepare %s"
 msgstr "מכין את %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:498
+#: src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "להסיר את המקור %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:502
+#: src/gs-page.c:516
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -3059,13 +3057,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:510
+#: src/gs-page.c:524
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "להסיר את %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:513
+#: src/gs-page.c:527
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3120,65 +3118,65 @@ msgid "_Continue"
 msgstr "המ_שך"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:237
+#: src/gs-repos-dialog.c:239
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr "תכניות שהותקנו דרך „%s” תפסקנה לקבל עדכונים."
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Disable Repository?"
 msgstr "להשבית מאגר?"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Remove Repository?"
 msgstr "להסיר מאגר?"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:252
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "ה_שבתה"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:257
 msgid "_Remove"
 msgstr "ה_סרה"
 
-#: src/gs-repos-dialog.c:503
+#: src/gs-repos-dialog.c:505
 msgid "Enable New Repositories"
 msgstr "הפעלת מאגרים חדשים"
 
-#: src/gs-repos-dialog.c:504
+#: src/gs-repos-dialog.c:506
 msgid "Turn on new repositories when they are added."
 msgstr "להפעיל מאגרים חדשים ברגע הוספתם."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:513
+#: src/gs-repos-dialog.c:515
 msgid "more information"
 msgstr "מידע נוסף"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:518
+#: src/gs-repos-dialog.c:520
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "מאגרים נוספים ממקורות צד־שלישי נבחרים — %s."
 
-#: src/gs-repos-dialog.c:523
+#: src/gs-repos-dialog.c:525
 msgid "Fedora Third Party Repositories"
 msgstr "מאגרי צד־שלישי של פדורה"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:665
+#: src/gs-repos-dialog.c:667
 msgid "the operating system"
 msgstr "מערכת ההפעלה"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:723
+#: src/gs-repos-dialog.c:725
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "מקור זה משלים את התכנה המסופקת על ידי %s."
@@ -3253,7 +3251,7 @@ msgstr[3] "‏‫%s ו%s הותקנו"
 
 #. Translators: The first '%s' is replaced with a text like '10 applications installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:237
+#: src/gs-repo-row.c:243
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
@@ -3363,7 +3361,7 @@ msgstr ""
 "privacy\">מדיניות הפרטיות</a> שלנו. השם המלא מהחשבון שלך יוצג באופן גלוי "
 "לציבור."
 
-#: src/gs-review-histogram.c:73
+#: src/gs-review-histogram.c:72
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
@@ -3433,172 +3431,173 @@ msgstr "דיווח…"
 msgid "Remove…"
 msgstr "הסרה…"
 
-#: src/gs-safety-context-dialog.c:141
+#: src/gs-safety-context-dialog.c:144
 msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgstr "נא לוודא שהספק הזה מהימן כיוון שהיישום אינו מבודד"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:147
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
 msgstr "היישום אינו מבודד אך ההפצה בדקה שאינו זדוני"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:160
 msgid "No Permissions"
 msgstr "אין הרשאות"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:161
 msgid "App is fully sandboxed"
 msgstr "היישום מבודד לחלוטין"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:172
 msgid "Network Access"
 msgstr "גישה לרשת"
 
-#: src/gs-safety-context-dialog.c:164
+#: src/gs-safety-context-dialog.c:173
 msgid "Can access the internet"
 msgstr "יכול לגשת לאינטרנט"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:176
 msgid "No Network Access"
 msgstr "אין גישה לרשת"
 
-#: src/gs-safety-context-dialog.c:168
+#: src/gs-safety-context-dialog.c:177
 msgid "Cannot access the internet"
 msgstr "ניתן לגשת לאינטרנט"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:183
 msgid "Uses System Services"
 msgstr "משתמש בשירותי מערכת"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:184
 msgid "Can request data from system services"
 msgstr "יכול לבקש נתונים משירותי המערכת"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:191
 msgid "Uses Session Services"
 msgstr "משתמש בשירותי הפעלה"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:192
 msgid "Can request data from session services"
 msgstr "יכול לבקש נתונים משירותי ההפעלה"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:199
 msgid "Device Access"
 msgstr "גישה להתקנים"
 
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:200
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "יכול לגשת להתקנים כגון מצלמות או בקרי משחקים"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:203
 msgid "No Device Access"
 msgstr "אין גישה להתקנים"
 
-#: src/gs-safety-context-dialog.c:195
+#: src/gs-safety-context-dialog.c:204
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "לא יכול לגשת להתקנים כגון מצלמות או בקרי משחקים"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
 msgstr "מערכת חלונאית מיושנת"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:218
 msgid "Arbitrary Permissions"
 msgstr "הרשאות שרירותיות"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:226
 msgid "User Settings"
 msgstr "הגדרות משתמש"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:229
+#: src/gs-safety-context-dialog.c:238
 msgid "Full File System Read/Write Access"
 msgstr "גישת קריאה/כתיבה מלאה למערכת הקבצים"
 
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:239
 msgid "Can read and write all data on the file system"
 msgstr "יכול לקרוא ולכתוב את כל הנתונים במערכת הקבצים"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:247
 msgid "Home Folder Read/Write Access"
 msgstr "גישת קריאה/כתיבה לתיקיית הבית"
 
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:248
 msgid "Can read and write all data in your home directory"
 msgstr "יכול לקרוא ולכתוב את כל הנתונים בתיקיית הבית שלך"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:256
 msgid "Full File System Read Access"
 msgstr "גישה מלאה לקרוא ממערכת הקבצים"
 
-#: src/gs-safety-context-dialog.c:248
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data on the file system"
 msgstr "יכול לקרוא את כל הנתונים ממערכת הקבצים"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:257
+#: src/gs-safety-context-dialog.c:266
 msgid "Home Folder Read Access"
 msgstr "גישה לקריאת תיקיית הבית"
 
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read all data in your home directory"
 msgstr "יכול לקרוא את כל הנתונים בתיקיית הבית שלך"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:276
 msgid "Download Folder Read/Write Access"
 msgstr "גישת קריאה/כתיבה לתיקיית ההורדות"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:277
 msgid "Can read and write all data in your downloads directory"
 msgstr "יכול לקרוא ולכתוב את כל הנתונים בתיקיית ההורדות שלך"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:279
+#: src/gs-safety-context-dialog.c:288
 msgid "Download Folder Read Access"
 msgstr "גישה לקריאה מתיקיית ההורדות"
 
-#: src/gs-safety-context-dialog.c:280
+#: src/gs-safety-context-dialog.c:289
 msgid "Can read all data in your downloads directory"
 msgstr "יכול לקרוא את כל הנתונים בתיקיית ההורדות שלך"
 
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:291
-msgid "Access arbitrary files"
-msgstr "גישה לקבצים שרירותית"
+#: src/gs-safety-context-dialog.c:299
+#| msgid "Can read and write all data in your home directory"
+msgid "Can read and write all data in the directory"
+msgstr "יכול לקרוא ולכתוב את כל הנתונים בתיקייה"
 
-#: src/gs-safety-context-dialog.c:292
-msgid "Can access arbitrary files on the file system"
-msgstr "יכול לגשת לקבצים שרירותיים במערכת הקבצים"
+#: src/gs-safety-context-dialog.c:310
+#| msgid "Can read all data in your home directory"
+msgid "Can read all data in the directory"
+msgstr "יכול לקרוא את כל הנתונים בתיקייה"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:326
 msgid "No File System Access"
 msgstr "אין גישה למערכת הקבצים"
 
-#: src/gs-safety-context-dialog.c:307
+#: src/gs-safety-context-dialog.c:327
 msgid "Cannot access the file system at all"
 msgstr "אין גישה כלל למערכת הקבצים"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:341
 msgid "Proprietary Code"
 msgstr "קוד קנייני"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:342
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
@@ -3607,11 +3606,11 @@ msgstr ""
 "לא בטוח"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:345
 msgid "Auditable Code"
 msgstr "קוד שניתן לפקח עליו"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:346
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3621,42 +3620,42 @@ msgstr ""
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:334
+#: src/gs-safety-context-dialog.c:354
 msgid "App developer is verified"
 msgstr "גוף פיתוח היישום מאומת"
 
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:355
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "גוף הפיתוח של היישום הזה אומת והוא אכן מי שהוא טוען שהוא"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:366
 msgid "Insecure Dependencies"
 msgstr "תלויות מפוקפקות"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:367
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr "התמיכה בתכנית או בתלויות שלה נגמרה והן עלולות להיות מפוקפקות"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:356
+#: src/gs-safety-context-dialog.c:376
 #, c-format
 msgid "%s is safe"
 msgstr "‫%s בטוח"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:363
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "‫%s עשוי להזיק"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:370
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is unsafe"
 msgstr "‫%s אינו בטוח"
@@ -4376,48 +4375,48 @@ msgstr "מותקן על %s"
 msgid "No updates have been installed on this system."
 msgstr "לא הותקנו עדכונים על מערכת זו."
 
-#: src/gs-update-monitor.c:222
+#: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
 msgstr "עדכוני המערכת אינם בתוקף"
 
-#: src/gs-update-monitor.c:223
+#: src/gs-update-monitor.c:214
 msgid "Please check for software updates."
 msgstr "יש לבדוק עבור עדכוני תכנה."
 
-#: src/gs-update-monitor.c:229
+#: src/gs-update-monitor.c:220
 msgid "Critical Software Update Ready to Install"
 msgstr "עדכון תכנה קריטי מוכן להתקנה"
 
-#: src/gs-update-monitor.c:230
+#: src/gs-update-monitor.c:221
 msgid "An important software update is ready to be installed."
 msgstr "עדכון תכנה חשוב מוכן להתקנה."
 
-#: src/gs-update-monitor.c:233
+#: src/gs-update-monitor.c:224
 msgid "Critical Software Updates Available to Download"
 msgstr "עדכוני תכנה קריטיים מוכנים להורדה"
 
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:225
 msgid "Important: critical software updates are waiting."
 msgstr "חשוב: עדכוני תכנה קריטיים בהמתנה."
 
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:231
 msgid "Software Updates Ready to Install"
 msgstr "עדכוני תכנה מוכנים להתקנה"
 
-#: src/gs-update-monitor.c:243
+#: src/gs-update-monitor.c:232
 msgid "Software updates are waiting and ready to be installed."
 msgstr "עדכוני תכנה מוכנים וממתינים להתקנה."
 
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:238
 msgid "Software Updates Available to Download"
 msgstr "עדכוני תכנה זמינים להורדה"
 
-#: src/gs-update-monitor.c:249
+#: src/gs-update-monitor.c:239
 msgid "Please download waiting software updates."
 msgstr "נא להוריד עדכוני תכנה שבהמתנה."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:361
+#: src/gs-update-monitor.c:355
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -4427,7 +4426,7 @@ msgstr[2] "‫‏%u יישומים עודכנו - נדרשת הפעלה מחדש
 msgstr[3] "‫‏%u יישומים עודכנו - נדרשת הפעלה מחדש"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:367
+#: src/gs-update-monitor.c:361
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -4437,24 +4436,24 @@ msgstr[2] "‫‏%u יישומים עודכנו"
 msgstr[3] "‫‏%u יישומים עודכנו"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:378
+#: src/gs-update-monitor.c:372
 #, c-format
 msgid "%s has been updated."
 msgstr "‏%s עודכן."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:381
+#: src/gs-update-monitor.c:375
 msgid "Please restart the application."
 msgstr "יש להפעיל את היישום מחדש."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:389
+#: src/gs-update-monitor.c:383
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "‏%s ו־%s עודכנו."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:395 src/gs-update-monitor.c:414
+#: src/gs-update-monitor.c:389 src/gs-update-monitor.c:408
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -4464,62 +4463,62 @@ msgstr[2] "‫%u יישומים דורשים הפעלה מחדש."
 msgstr[3] "‫%u יישומים דורשים הפעלה מחדש."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:407
+#: src/gs-update-monitor.c:401
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "כולל ‏%s, ‏%s ו־%s."
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:677 src/gs-updates-page.ui:20
+#: src/gs-update-monitor.c:671 src/gs-updates-page.ui:20
 msgid "Operating System Updates Unavailable"
 msgstr "עדכוני מערכת הפעלה לא זמינים"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:679
+#: src/gs-update-monitor.c:673
 msgid "Upgrade to continue receiving security updates."
 msgstr "יש לשדרג כדי להמשיך לקבל עדכוני אבטחה."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:734
+#: src/gs-update-monitor.c:728
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "גרסה חדשה של %s זמינה להתקנה"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:738
+#: src/gs-update-monitor.c:732
 msgid "Software Upgrade Available"
 msgstr "שדרוג תכנה זמין"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1143
+#: src/gs-update-monitor.c:1137
 msgid "Software Updates Failed"
 msgstr "עדכון התכנה נכשל"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1145
+#: src/gs-update-monitor.c:1139
 msgid "An important operating system update failed to be installed."
 msgstr "התקנת עדכוני מערכת חשובים נכשלה."
 
-#: src/gs-update-monitor.c:1146
+#: src/gs-update-monitor.c:1140
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1168
+#: src/gs-update-monitor.c:1162
 msgid "System Upgrade Complete"
 msgstr "עדכון המערכת הושלם"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1173
+#: src/gs-update-monitor.c:1167
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "ברוך בואך אל %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1179
+#: src/gs-update-monitor.c:1173
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "הותקן עדכון תכנה"
@@ -4528,7 +4527,7 @@ msgstr[2] "הותקנו עדכוני תכנה"
 msgstr[3] "הותקנו עדכוני תכנה"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1183
+#: src/gs-update-monitor.c:1177
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "הותקן עדכון חשוב למערכת הפעלה."
@@ -4541,30 +4540,30 @@ msgstr[3] "הותקנו עדכונים חשובים למערכת הפעלה."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1194
+#: src/gs-update-monitor.c:1188
 msgctxt "updates"
 msgid "Review"
 msgstr "ביקורת"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1243
+#: src/gs-update-monitor.c:1237
 msgid "Failed To Update"
 msgstr "העדכון נכשל"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1248
+#: src/gs-update-monitor.c:1242
 msgid "The system was already up to date."
 msgstr "המערכת כבר היתה עדכנית."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1253
+#: src/gs-update-monitor.c:1247
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1258
+#: src/gs-update-monitor.c:1252
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -4573,20 +4572,20 @@ msgstr ""
 "ואחר כך לנסות שוב."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1263
+#: src/gs-update-monitor.c:1257
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "היתה בעיית אבטחה עם העדכון. נא להתייעץ עם ספק התכנה שלך למידע נוסף."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1268
+#: src/gs-update-monitor.c:1262
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "לא היה מספיק מקום פנוי בכונן הקשיח שלך. נא לפנות מקום ולנסות שוב."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1272
+#: src/gs-update-monitor.c:1266
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4716,42 +4715,42 @@ msgstr "עדכונים מנוהלים אוטומטית."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:328
+#: src/gs-updates-section.c:320
 msgid "Restart & Update"
 msgstr "הפעלה מחדש ועדכון"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:334
+#: src/gs-updates-section.c:326
 msgid "Update All"
 msgstr "עדכון של הכול"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:476
+#: src/gs-updates-section.c:468
 msgid "Integrated Firmware"
 msgstr "קושחה מוטמעת"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:481
+#: src/gs-updates-section.c:473
 msgid "Requires Restart"
 msgstr "נדרשת הפעלה מחדש"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:486
+#: src/gs-updates-section.c:478
 msgid "Application Updates"
 msgstr "עדכוני יישומים"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:491
+#: src/gs-updates-section.c:483
 msgid "Device Firmware"
 msgstr "קושחת התקן"
 
 #: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
-#: plugins/packagekit/gs-packagekit-task.c:153
+#: plugins/packagekit/gs-packagekit-task.c:155
 msgid "_Download"
 msgstr "הו_רדה"
 
@@ -4846,7 +4845,7 @@ msgstr "עדכון עבור %s, עם תכונות חדשות ותיקונים נ
 msgid "EOS update service could not fetch and apply the update."
 msgstr "שירות העדכון של EOS לא הצליח לקבל ולהחיל את העדכון."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:464
+#: plugins/epiphany/gs-plugin-epiphany.c:474
 msgid "GNOME Web"
 msgstr "דפדפן GNOME"
 
@@ -4878,13 +4877,156 @@ msgstr "תמיכת Flatpak"
 msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "‏Flatpak זוהי מסגרת עבור יישומים שולחניים על לינוקס"
 
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak.c:307
+#, c-format
+#| msgid "System Updates"
+msgid "System folder %s"
+msgstr "תיקיית מערכת %s"
+
+#: plugins/flatpak/gs-flatpak.c:308 plugins/flatpak/gs-flatpak.c:309
+#, c-format
+#| msgid "Home folder"
+msgid "Home subfolder %s"
+msgstr "תת־תיקיית הבית %s"
+
+#: plugins/flatpak/gs-flatpak.c:310
+#| msgid "Home folder"
+msgid "Host system folders"
+msgstr "תיקיות מערכת אירוח"
+
+#: plugins/flatpak/gs-flatpak.c:311
+msgid "Host system configuration from /etc"
+msgstr "הגדרות מערכת מארחת מ־‎/etc"
+
+#: plugins/flatpak/gs-flatpak.c:312
+#| msgid "Desktop Only"
+msgid "Desktop folder"
+msgstr "תיקיית שולחן עבודה"
+
+#: plugins/flatpak/gs-flatpak.c:312
+#, c-format
+#| msgid "Desktop Support"
+msgid "Desktop subfolder %s"
+msgstr "תת־תיקיית שולחן עבודה %s"
+
+#: plugins/flatpak/gs-flatpak.c:313
+#| msgid "Home folder"
+msgid "Documents folder"
+msgstr "תיקיית מסמכים"
+
+#: plugins/flatpak/gs-flatpak.c:313
+#, c-format
+#| msgid "Home folder"
+msgid "Documents subfolder %s"
+msgstr "תת־תיקיית מסמכים %s"
+
+#: plugins/flatpak/gs-flatpak.c:314
+#| msgctxt "Menu of Audio & Video"
+#| msgid "Music Players"
+msgid "Music folder"
+msgstr "תיקיית מוזיקה"
+
+#: plugins/flatpak/gs-flatpak.c:314
+#, c-format
+#| msgctxt "Menu of Audio & Video"
+#| msgid "Music Players"
+msgid "Music subfolder %s"
+msgstr "תת־תיקיית מוזיקה %s"
+
+#: plugins/flatpak/gs-flatpak.c:315
+#| msgid "Picture"
+msgid "Pictures folder"
+msgstr "תיקיית תמונות"
+
+#: plugins/flatpak/gs-flatpak.c:315
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "תת־תיקיית תמונות %s"
+
+#: plugins/flatpak/gs-flatpak.c:316
+msgid "Public Share folder"
+msgstr "תיקיית שיתוף ציבורית"
+
+#: plugins/flatpak/gs-flatpak.c:316
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "תת־תיקיית שיתוף ציבורית %s"
+
+#: plugins/flatpak/gs-flatpak.c:317
+#| msgid "Home folder"
+msgid "Videos folder"
+msgstr "תיקיית וידאו"
+
+#: plugins/flatpak/gs-flatpak.c:317
+#, c-format
+#| msgid "%s is suitable for %s"
+msgid "Videos subfolder %s"
+msgstr "תת־תיקיית וידאו %s"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#| msgid "Home folder"
+msgid "Templates folder"
+msgstr "תיקיית תבניות"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "תת־תיקיית תבניות %s"
+
+#: plugins/flatpak/gs-flatpak.c:319
+msgid "User cache folder"
+msgstr "תיקיית מטמון משתמש"
+
+#: plugins/flatpak/gs-flatpak.c:319
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "תת־תיקיית מטמון משתמש %s"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#| msgid "%s Configuration Update"
+msgid "User configuration folder"
+msgstr "תיקיית הגדרות משתמש"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#, c-format
+#| msgid "%s Configuration Update"
+msgid "User configuration subfolder %s"
+msgstr "תת־תיקיית הגדרות משתמש %s"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#| msgid "User Data"
+msgid "User data folder"
+msgstr "תיקיית נתוני משתמש"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#, c-format
+msgid "User data subfolder %s"
+msgstr "תת־תיקיית נתוני משתמש %s"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#| msgid "Home folder"
+msgid "User runtime folder"
+msgstr "תיקיית זמן ריצת משתמש"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "תת־תיקיית זמן ריצת משתמש %s"
+
+#: plugins/flatpak/gs-flatpak.c:380
+#, c-format
+#| msgid "No File System Access"
+msgid "Filesystem access to %s"
+msgstr "גישה למערכת הקבצים אל %s"
+
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1218
+#: plugins/flatpak/gs-flatpak.c:1397
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "מקבל מידע Flatpak עבור %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3344
+#: plugins/flatpak/gs-flatpak.c:3534
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "כוונון התוסף ‚%s’ נכשל: %s"
@@ -4906,6 +5048,15 @@ msgstr "‫הוספה להתקנה של התוסף ‚%s’ נכשלה: %s"
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‫הוספה להסרה של התוסף ‚%s’ נכשלה: %s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:1318
+#, c-format
+msgid ""
+"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
+"Remove the filter and repeat the install. Detailed error: %s"
+msgstr ""
+"‏„%s” המרוחקת אינה מאפשרת התקנה של „%s”, יתכן בגלל המסנן שלה. יש להסיר את "
+"המסן ולחזור על ההתקנה. פרטי שגיאה: %s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
@@ -5050,7 +5201,7 @@ msgstr "עדכון ל־‏BMC‏ %s"
 msgid "%s USB Receiver Update"
 msgstr "עדכון להתקן USB ‏%s"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1199
+#: plugins/fwupd/gs-plugin-fwupd.c:1241
 msgid "Firmware"
 msgstr "קושחה"
 
@@ -5062,11 +5213,11 @@ msgstr "תמיכה בשדרוג קושחות"
 msgid "Provides support for firmware upgrades"
 msgstr "מספק תמיכה עבור שדרוג קושחות"
 
-#: plugins/packagekit/gs-packagekit-task.c:146
+#: plugins/packagekit/gs-packagekit-task.c:148
 msgid "Install Unsigned Software?"
 msgstr "להתקין תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:147
+#: plugins/packagekit/gs-packagekit-task.c:149
 msgid ""
 "Software that is to be installed is not signed. It will not be possible to "
 "verify the origin of updates to this software, or whether updates have been "
@@ -5075,11 +5226,11 @@ msgstr ""
 "התכנית המיועדת להתקנה אינה חתומה. לא ניתן יהיה לאמת את מקור עדכוני התכנית "
 "הזאת או האם בוצעה חבלה בעדכונים."
 
-#: plugins/packagekit/gs-packagekit-task.c:151
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid "Download Unsigned Software?"
 msgstr "להוריד תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:152
+#: plugins/packagekit/gs-packagekit-task.c:154
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with."
@@ -5087,11 +5238,11 @@ msgstr ""
 "עדכונים לא חתומים זמינים. ללא חתימה, לא ניתן יהיה לוודא את מקור העדכון או "
 "האם בוצעה בהם חבלה."
 
-#: plugins/packagekit/gs-packagekit-task.c:156
+#: plugins/packagekit/gs-packagekit-task.c:158
 msgid "Update Unsigned Software?"
 msgstr "לעדכן תכנית לא חתומה?"
 
-#: plugins/packagekit/gs-packagekit-task.c:157
+#: plugins/packagekit/gs-packagekit-task.c:159
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with. "
@@ -5106,7 +5257,7 @@ msgstr ""
 msgid "Packages"
 msgstr "חבילות"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2596
 msgid "Operating System (OSTree)"
 msgstr "מערכת הפעלה (OSTree)"
 
@@ -5122,6 +5273,12 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "Access arbitrary files"
+#~ msgstr "גישה לקבצים שרירותית"
+
+#~ msgid "Can access arbitrary files on the file system"
+#~ msgstr "יכול לגשת לקבצים שרירותיים במערכת הקבצים"
 
 #~ msgid "A list of popular applications"
 #~ msgstr "A list of popular applications"
@@ -5185,9 +5342,6 @@ msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוק�
 
 #~ msgid "Downloading firmware update metadata…"
 #~ msgstr "נתוני העל של עדכון הקושחה מתקבלים…"
-
-#~ msgid "Picture"
-#~ msgstr "תמונה"
 
 #~ msgid "Show the prompt to install nonfree software repositories"
 #~ msgstr "Show the prompt to install nonfree software repositories"
