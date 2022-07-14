@@ -195,7 +195,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 		 * a description for the update */
 		update_details = _("No update description available.");
 	}
-	gtk_label_set_label (GTK_LABEL (page->label_details), update_details);
+	gtk_label_set_markup (GTK_LABEL (page->label_details), update_details);
 	adw_status_page_set_title (ADW_STATUS_PAGE (page->status_page), gs_app_get_name (app));
 	adw_status_page_set_description (ADW_STATUS_PAGE (page->status_page), gs_app_get_summary (app));
 

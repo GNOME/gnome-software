@@ -77,22 +77,27 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
 
-/**
+/*
  * gs_app_row_get_description:
  *
- * Return value: PangoMarkup
- **/
+ * Return value: PangoMarkup or text
+ */
 static GString *
-gs_app_row_get_description (GsAppRow *app_row)
+gs_app_row_get_description (GsAppRow *app_row,
+			    gboolean *out_is_markup)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	const gchar *tmp = NULL;
 
+	*out_is_markup = FALSE;
+
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update) {
 		tmp = gs_app_get_update_details_markup (priv->app);
-		if (tmp != NULL && tmp[0] != '\0')
+		if (tmp != NULL && tmp[0] != '\0') {
+			*out_is_markup = TRUE;
 			return g_string_new (tmp);
+		}
 	}
 
 	/* if missing summary is set, return it without escaping in order to
@@ -276,6 +281,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	GString *str = NULL;
 	const gchar *tmp;
 	gboolean missing_search_result;
+	gboolean is_markup = FALSE;
 	guint64 size_installed_bytes = 0;
 	GsSizeType size_installed_type = GS_SIZE_TYPE_UNKNOWN;
 	g_autoptr(GIcon) icon = NULL;
@@ -300,10 +306,13 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* join the description lines */
-	str = gs_app_row_get_description (app_row);
+	str = gs_app_row_get_description (app_row, &is_markup);
 	if (str != NULL) {
 		as_gstring_replace (str, "\n", " ");
-		gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
+		if (is_markup)
+			gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
+		else
+			gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
 		g_string_free (str, TRUE);
 	} else {
 		gtk_label_set_text (GTK_LABEL (priv->description_label), NULL);
