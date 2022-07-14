@@ -49,36 +49,36 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   look up and add. Refining certain kinds of data can be very expensive (for
  *   example, requiring network requests), which is why it’s not all loaded by
  *   default. By refining multiple applications at once, data requests can be
- *   batched by the plugin where possible.
+ *   batched by the plugin where possible. (Since: 43)
  * @refine_finish: (nullable): Finish method for @refine_async. Must be
- *   implemented if @refine_async is implemented.
+ *   implemented if @refine_async is implemented. (Since: 43)
  * @list_apps_async: (nullable): List apps matching a given query. (Since: 43)
  * @list_apps_finish: (nullable): Finish method for @list_apps_async. Must be
  *   implemented if @list_apps_async is implemented. (Since: 43)
- * @refresh_metadata_async: (nullable): Refresh plugin metadata.
+ * @refresh_metadata_async: (nullable): Refresh plugin metadata. (Since: 43)
  * @refresh_metadata_finish: (nullable): Finish method for
  *   @refresh_metadata_async. Must be implemented if @refresh_metadata_async is
- *   implemented.
- * @list_distro_upgrades_async: (nullable): List available distro upgrades.
+ *   implemented. (Since: 43)
+ * @list_distro_upgrades_async: (nullable): List available distro upgrades. (Since: 43)
  * @list_distro_upgrades_finish: (nullable): Finish method for
  *   @list_distro_upgrades_async. Must be implemented if
- *   @list_distro_upgrades_async is implemented.
- * @install_repository_async: (nullable): Install repository.
+ *   @list_distro_upgrades_async is implemented. (Since: 43)
+ * @install_repository_async: (nullable): Install repository. (Since: 43)
  * @install_repository_finish: (nullable): Finish method for
  *   @install_repository_async. Must be implemented if
- *   @install_repository_async is implemented.
- * @remove_repository_async: (nullable): Remove repository.
+ *   @install_repository_async is implemented. (Since: 43)
+ * @remove_repository_async: (nullable): Remove repository. (Since: 43)
  * @remove_repository_finish: (nullable): Finish method for
  *   @remove_repository_async. Must be implemented if
- *   @remove_repository_async is implemented.
- * @enable_repository_async: (nullable): Enable repository.
+ *   @remove_repository_async is implemented. (Since: 43)
+ * @enable_repository_async: (nullable): Enable repository. (Since: 43)
  * @enable_repository_finish: (nullable): Finish method for
  *   @enable_repository_async. Must be implemented if
- *   @enable_repository_async is implemented.
- * @disable_repository_async: (nullable): Disable repository.
+ *   @enable_repository_async is implemented. (Since: 43)
+ * @disable_repository_async: (nullable): Disable repository. (Since: 43)
  * @disable_repository_finish: (nullable): Finish method for
  *   @disable_repository_async. Must be implemented if
- *   @disable_repository_async is implemented.
+ *   @disable_repository_async is implemented. (Since: 43)
  * @refine_categories_async: (nullable): Refining looks up and adds data to
  *   #GsCategorys. The categories to refine are provided in a list, and the
  *   flags specify what data to look up and add. Refining certain kinds of data
