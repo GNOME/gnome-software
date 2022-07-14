@@ -1586,8 +1586,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_updates_historical";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
 		return "gs_plugin_add_updates";
-	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
-		return "gs_plugin_add_categories";
 	if (action == GS_PLUGIN_ACTION_GET_LANGPACKS)
 		return "gs_plugin_add_langpacks";
 	return NULL;
@@ -1626,8 +1624,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-updates";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "get-sources";
-	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
-		return "get-categories";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1680,8 +1676,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_GET_UPDATES;
 	if (g_strcmp0 (action, "get-sources") == 0)
 		return GS_PLUGIN_ACTION_GET_SOURCES;
-	if (g_strcmp0 (action, "get-categories") == 0)
-		return GS_PLUGIN_ACTION_GET_CATEGORIES;
 	if (g_strcmp0 (action, "file-to-app") == 0)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
