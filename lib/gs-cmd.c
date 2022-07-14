@@ -742,20 +742,21 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
+			GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE;
+
 			if (categories != NULL)
 				g_ptr_array_unref (categories);
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
-							 "refine-flags", self->refine_flags,
-							 "max-results", self->max_results,
-							 "interactive", self->interactive,
-							 NULL);
-			categories = gs_plugin_loader_job_get_categories (self->plugin_loader,
-									 plugin_job,
-									 NULL, &error);
-			if (categories == NULL) {
+
+			if (self->interactive)
+				flags |= GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE;
+
+			plugin_job = gs_plugin_job_list_categories_new (flags);
+			if (!gs_plugin_loader_job_action (self->plugin_loader, plugin_job, NULL, &error)) {
 				ret = FALSE;
 				break;
 			}
+
+			categories = g_ptr_array_ref (gs_plugin_job_list_categories_get_result_list (GS_PLUGIN_JOB_LIST_CATEGORIES (plugin_job)));
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
 		g_autoptr(GsCategory) category_owned = NULL;
