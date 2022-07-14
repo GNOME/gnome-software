@@ -289,18 +289,16 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GVariant) retval = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get result */
-	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (retval != NULL)
+	if (gs_utils_invoke_reboot_finish (source, res, &error))
 		return;
 
-	if (error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
-	}
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		g_debug ("Calling reboot had been cancelled");
+	else if (error != NULL)
+		g_warning ("Calling reboot failed: %s", error->message);
 
 	/* cancel trigger */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL, NULL);

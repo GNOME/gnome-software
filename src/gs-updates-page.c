@@ -961,17 +961,15 @@ upgrade_reboot_failed_cb (GObject *source,
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
-	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (retval != NULL)
+	if (gs_utils_invoke_reboot_finish (source, res, &error))
 		return;
 
-	if (error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
-	}
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		g_debug ("Calling reboot had been cancelled");
+	else if (error != NULL)
+		g_warning ("Calling reboot failed: %s", error->message);
 
 	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
 	if (app == NULL) {
@@ -995,7 +993,6 @@ upgrade_trigger_finished_cb (GObject *source,
                              gpointer user_data)
 {
 	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
-	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
@@ -1005,16 +1002,7 @@ upgrade_trigger_finished_cb (GObject *source,
 	}
 
 	/* trigger reboot */
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT, NULL,
-				upgrade_reboot_failed_cb,
-				self);
+	gs_utils_invoke_reboot_async (NULL, upgrade_reboot_failed_cb, self);
 }
 
 static void
