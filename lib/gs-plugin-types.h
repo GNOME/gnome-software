@@ -185,6 +185,20 @@ typedef enum {
 } GsPluginListAppsFlags;
 
 /**
+ * GsPluginRefineCategoriesFlags:
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE: User initiated the job.
+ *
+ * Flags for an operation to refine categories.
+ *
+ * Since: 43
+ */
+typedef enum {
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE = 0,
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE = 1 << 0,
+} GsPluginRefineCategoriesFlags;
+
+/**
  * GsPluginRefreshMetadataFlags:
  * @GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE: User initiated the job.

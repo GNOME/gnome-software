@@ -79,6 +79,15 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  * @disable_repository_finish: (nullable): Finish method for
  *   @disable_repository_async. Must be implemented if
  *   @disable_repository_async is implemented.
+ * @refine_categories_async: (nullable): Refining looks up and adds data to
+ *   #GsCategorys. The categories to refine are provided in a list, and the
+ *   flags specify what data to look up and add. Refining certain kinds of data
+ *   can be very expensive (for example, requiring network requests), which is
+ *   why it’s not all loaded by default. By refining multiple categories at
+ *   once, data requests can be batched by the plugin where possible. (Since: 43)
+ * @refine_categories_finish: (nullable): Finish method for
+ *   @refine_categories_async. Must be implemented if @refine_categories_async
+ *   is implemented. (Since: 43)
  *
  * The class structure for a #GsPlugin. Virtual methods here should be
  * implemented by plugin implementations derived from #GsPlugin to provide their
@@ -200,6 +209,16 @@ struct _GsPluginClass
 	gboolean		(*disable_repository_finish)	(GsPlugin		*plugin,
 								 GAsyncResult		*result,
 								 GError			**error);
+
+	void			(*refine_categories_async)	(GsPlugin			*plugin,
+								 GPtrArray			*list,
+								 GsPluginRefineCategoriesFlags	 flags,
+								 GCancellable			*cancellable,
+								 GAsyncReadyCallback		 callback,
+								 gpointer			 user_data);
+	gboolean		(*refine_categories_finish)	(GsPlugin			*plugin,
+								 GAsyncResult			*result,
+								 GError				**error);
 
 	gpointer		 padding[23];
 };
