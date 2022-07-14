@@ -1335,21 +1335,68 @@ refine_wildcard (GsPluginAppstream    *self,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_categories (GsPlugin *plugin,
-			  GPtrArray *list,
-			  GCancellable *cancellable,
-			  GError **error)
+static void refine_categories_thread_cb (GTask        *task,
+                                         gpointer      source_object,
+                                         gpointer      task_data,
+                                         GCancellable *cancellable);
+
+static void
+gs_plugin_appstream_refine_categories_async (GsPlugin                      *plugin,
+                                             GPtrArray                     *list,
+                                             GsPluginRefineCategoriesFlags  flags,
+                                             GCancellable                  *cancellable,
+                                             GAsyncReadyCallback            callback,
+                                             gpointer                       user_data)
 {
 	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (plugin);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
 
-	if (!gs_plugin_appstream_check_silo (self, cancellable, error))
-		return FALSE;
+	task = gs_plugin_refine_categories_data_new_task (plugin, list, flags,
+							  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_appstream_refine_categories_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				refine_categories_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+refine_categories_thread_cb (GTask        *task,
+                             gpointer      source_object,
+                             gpointer      task_data,
+                             GCancellable *cancellable)
+{
+	GsPluginAppstream *self = GS_PLUGIN_APPSTREAM (source_object);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	GsPluginRefineCategoriesData *data = task_data;
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
+
+	/* check silo is valid */
+	if (!gs_plugin_appstream_check_silo (self, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	return gs_appstream_add_categories (self->silo, list,
-					    cancellable, error);
+
+	if (!gs_appstream_add_categories (self->silo, data->list, cancellable, &local_error)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_appstream_refine_categories_finish (GsPlugin      *plugin,
+                                              GAsyncResult  *result,
+                                              GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void list_apps_thread_cb (GTask        *task,
@@ -1584,6 +1631,8 @@ gs_plugin_appstream_class_init (GsPluginAppstreamClass *klass)
 	plugin_class->list_apps_finish = gs_plugin_appstream_list_apps_finish;
 	plugin_class->refresh_metadata_async = gs_plugin_appstream_refresh_metadata_async;
 	plugin_class->refresh_metadata_finish = gs_plugin_appstream_refresh_metadata_finish;
+	plugin_class->refine_categories_async = gs_plugin_appstream_refine_categories_async;
+	plugin_class->refine_categories_finish = gs_plugin_appstream_refine_categories_finish;
 }
 
 GType
