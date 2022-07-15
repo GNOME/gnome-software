@@ -1632,10 +1632,10 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 /* we're not actually adding categories here, we're just setting the number of
  * applications available in each category */
 gboolean
-gs_appstream_add_categories (XbSilo *silo,
-			     GPtrArray *list,
-			     GCancellable *cancellable,
-			     GError **error)
+gs_appstream_refine_category_sizes (XbSilo        *silo,
+                                    GPtrArray     *list,
+                                    GCancellable  *cancellable,
+                                    GError       **error)
 {
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (list != NULL, FALSE);

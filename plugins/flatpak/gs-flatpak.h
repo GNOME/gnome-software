@@ -131,7 +131,7 @@ gboolean	gs_flatpak_search_developer_apps(GsFlatpak		*self,
 						 gboolean		 interactive,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_add_categories	(GsFlatpak		*self,
+gboolean	gs_flatpak_refine_category_sizes(GsFlatpak		*self,
 						 GPtrArray		*list,
 						 gboolean		 interactive,
 						 GCancellable		*cancellable,

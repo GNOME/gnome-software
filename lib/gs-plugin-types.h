@@ -188,6 +188,7 @@ typedef enum {
  * GsPluginRefineCategoriesFlags:
  * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE: Work out the number of apps in each category.
  *
  * Flags for an operation to refine categories.
  *
@@ -196,6 +197,7 @@ typedef enum {
 typedef enum {
 	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE = 0,
 	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE = 1 << 0,
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE = 1 << 1,
 } GsPluginRefineCategoriesFlags;
 
 /**

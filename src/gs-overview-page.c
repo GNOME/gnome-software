@@ -760,7 +760,8 @@ gs_overview_page_load (GsOverviewPage *self)
 
 	if (!self->loading_categories) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE;
+		GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE |
+		                                      GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE;
 		g_autoptr(GetCategoriesData) data = NULL;
 
 		self->loading_categories = TRUE;

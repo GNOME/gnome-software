@@ -742,7 +742,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
-			GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE;
+			GsPluginRefineCategoriesFlags flags = GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE;
 
 			if (categories != NULL)
 				g_ptr_array_unref (categories);

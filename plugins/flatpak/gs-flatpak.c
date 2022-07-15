@@ -4281,19 +4281,18 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_add_categories (GsFlatpak *self,
-			   GPtrArray *list,
-			   gboolean interactive,
-			   GCancellable *cancellable,
-			   GError **error)
+gs_flatpak_refine_category_sizes (GsFlatpak     *self,
+                                  GPtrArray     *list,
+                                  gboolean       interactive,
+                                  GCancellable  *cancellable,
+                                  GError       **error)
 {
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
 	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
 		return FALSE;
 
-	return gs_appstream_add_categories (self->silo,
-					    list, cancellable, error);
+	return gs_appstream_refine_category_sizes (self->silo, list, cancellable, error);
 }
 
 gboolean

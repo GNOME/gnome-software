@@ -1356,6 +1356,13 @@ gs_plugin_appstream_refine_categories_async (GsPlugin                      *plug
 							  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_appstream_refine_categories_async);
 
+	/* All we actually do is add the sizes of each category. If that’s
+	 * not been requested, avoid queueing a worker job. */
+	if (!(flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
 	/* Queue a job to get the apps. */
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
 				refine_categories_thread_cb, g_steal_pointer (&task));
@@ -1383,7 +1390,7 @@ refine_categories_thread_cb (GTask        *task,
 
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
-	if (!gs_appstream_add_categories (self->silo, data->list, cancellable, &local_error)) {
+	if (!gs_appstream_refine_category_sizes (self->silo, data->list, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}

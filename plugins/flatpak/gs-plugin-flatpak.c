@@ -1770,6 +1770,13 @@ gs_plugin_flatpak_refine_categories_async (GsPlugin                      *plugin
 							  cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_refine_categories_async);
 
+	/* All we actually do is add the sizes of each category. If that’s
+	 * not been requested, avoid queueing a worker job. */
+	if (!(flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
 	/* Queue a job to get the apps. */
 	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
 				refine_categories_thread_cb, g_steal_pointer (&task));
@@ -1793,7 +1800,7 @@ refine_categories_thread_cb (GTask        *task,
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_add_categories (flatpak, data->list, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, cancellable, &local_error)) {
 			g_task_return_error (task, g_steal_pointer (&local_error));
 			return;
 		}
