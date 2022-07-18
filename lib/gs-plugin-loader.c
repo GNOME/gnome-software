@@ -1420,7 +1420,6 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
-		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
@@ -3055,6 +3054,7 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 						   &error);
 	remove_app_from_install_queue (plugin_loader, app);
 	if (!ret) {
+		gs_app_set_state_recover (app);
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_unique_id (app), error->message);
 	}
@@ -3131,7 +3131,7 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 							 NULL);
 		}
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-						    NULL,
+						    gs_app_get_cancellable (app),
 						    gs_plugin_loader_app_installed_cb,
 						    g_object_ref (app));
 	}
@@ -3644,6 +3644,9 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 		/* set the pending-action to the app */
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		gs_app_set_pending_action (app, action);
+
+		if (action == GS_PLUGIN_ACTION_INSTALL)
+			add_app_to_install_queue (plugin_loader, app);
 	}
 	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);
 }
