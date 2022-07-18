@@ -32,7 +32,7 @@ struct _GsCategory
 
 	GPtrArray	*desktop_groups;  /* potentially NULL if empty */
 	GsCategory	*parent;
-	guint		 size;
+	guint		 size;  /* (atomic) */
 	GPtrArray	*children;  /* potentially NULL if empty */
 };
 
@@ -119,7 +119,7 @@ gs_category_get_size (GsCategory *category)
 	if (category->parent != NULL && g_str_equal (gs_category_get_id (category), "all"))
 		return gs_category_get_size (category->parent);
 
-	return category->size;
+	return g_atomic_int_get (&category->size);
 }
 
 /**
@@ -137,28 +137,28 @@ gs_category_set_size (GsCategory *category, guint size)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
 
-	if (size == category->size)
-		return;
-
-	category->size = size;
+	g_atomic_int_set (&category->size, size);
 	g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
 }
 
 /**
  * gs_category_increment_size:
  * @category: a #GsCategory
+ * @value: how many to add
  *
- * Adds one to the size count if an application is available
+ * Adds @value to the size count.
  *
  * Since: 3.22
  **/
 void
-gs_category_increment_size (GsCategory *category)
+gs_category_increment_size (GsCategory *category,
+			    guint value)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
 
-	category->size++;
-	g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
+	g_atomic_int_add (&category->size, value);
+	if (value != 0)
+		g_object_notify_by_pspec (G_OBJECT (category), obj_props[PROP_SIZE]);
 }
 
 /**

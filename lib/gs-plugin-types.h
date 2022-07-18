@@ -185,6 +185,22 @@ typedef enum {
 } GsPluginListAppsFlags;
 
 /**
+ * GsPluginRefineCategoriesFlags:
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE: Work out the number of apps in each category.
+ *
+ * Flags for an operation to refine categories.
+ *
+ * Since: 43
+ */
+typedef enum {
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_NONE = 0,
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE = 1 << 0,
+	GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE = 1 << 1,
+} GsPluginRefineCategoriesFlags;
+
+/**
  * GsPluginRefreshMetadataFlags:
  * @GS_PLUGIN_REFRESH_METADATA_FLAGS_NONE: No flags set.
  * @GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE: User initiated the job.
@@ -265,7 +281,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
- * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
@@ -289,7 +304,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_UPDATE_CANCEL,
 	GS_PLUGIN_ACTION_GET_UPDATES,
 	GS_PLUGIN_ACTION_GET_SOURCES,
-	GS_PLUGIN_ACTION_GET_CATEGORIES,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,

@@ -39,6 +39,7 @@ GsCategory	*gs_category_find_child		(GsCategory	*category,
 GPtrArray	*gs_category_get_children	(GsCategory	*category);
 
 guint		 gs_category_get_size		(GsCategory	*category);
-void		 gs_category_increment_size	(GsCategory	*category);
+void		 gs_category_increment_size	(GsCategory	*category,
+						 guint		 value);
 
 G_END_DECLS

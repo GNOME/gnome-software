@@ -77,4 +77,20 @@ GTask *		gs_plugin_manage_repository_data_new_task	(gpointer			 source_object,
 void		gs_plugin_manage_repository_data_free		(GsPluginManageRepositoryData	*data);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginManageRepositoryData, gs_plugin_manage_repository_data_free)
 
+typedef struct {
+	GPtrArray *list;  /* (element-type GsCategory) (owned) (not nullable) */
+	GsPluginRefineCategoriesFlags flags;
+} GsPluginRefineCategoriesData;
+
+GsPluginRefineCategoriesData *gs_plugin_refine_categories_data_new (GPtrArray                     *list,
+                                                                    GsPluginRefineCategoriesFlags  flags);
+GTask *gs_plugin_refine_categories_data_new_task (gpointer                       source_object,
+                                                  GPtrArray                     *list,
+                                                  GsPluginRefineCategoriesFlags  flags,
+                                                  GCancellable                  *cancellable,
+                                                  GAsyncReadyCallback            callback,
+                                                  gpointer                       user_data);
+void gs_plugin_refine_categories_data_free (GsPluginRefineCategoriesData *data);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsPluginRefineCategoriesData, gs_plugin_refine_categories_data_free)
+
 G_END_DECLS

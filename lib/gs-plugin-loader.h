@@ -38,14 +38,6 @@ GsAppList	*gs_plugin_loader_job_process_finish	(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_job_action_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-void		 gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
-							 GsPluginJob	*plugin_job,
-							 GCancellable	*cancellable,
-							 GAsyncReadyCallback callback,
-							 gpointer	 user_data);
-GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
-							 GAsyncResult	*res,
-							 GError		**error);
 void		 gs_plugin_loader_setup_async		(GsPluginLoader	*plugin_loader,
 							 const gchar * const *allowlist,
 							 const gchar * const *blocklist,

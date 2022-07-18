@@ -1749,21 +1749,72 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_categories (GsPlugin *plugin,
-			  GPtrArray *list,
-			  GCancellable *cancellable,
-			  GError **error)
+static void refine_categories_thread_cb (GTask        *task,
+                                         gpointer      source_object,
+                                         gpointer      task_data,
+                                         GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_refine_categories_async (GsPlugin                      *plugin,
+                                           GPtrArray                     *list,
+                                           GsPluginRefineCategoriesFlags  flags,
+                                           GCancellable                  *cancellable,
+                                           GAsyncReadyCallback            callback,
+                                           gpointer                       user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_refine_categories_data_new_task (plugin, list, flags,
+							  cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_refine_categories_async);
+
+	/* All we actually do is add the sizes of each category. If that’s
+	 * not been requested, avoid queueing a worker job. */
+	if (!(flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_SIZE)) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				refine_categories_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+refine_categories_thread_cb (GTask        *task,
+                             gpointer      source_object,
+                             gpointer      task_data,
+                             GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+	GsPluginRefineCategoriesData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	assert_in_worker (self);
 
 	for (guint i = 0; i < self->installations->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
-		if (!gs_flatpak_add_categories (flatpak, list, interactive, cancellable, error))
-			return FALSE;
+
+		if (!gs_flatpak_refine_category_sizes (flatpak, data->list, interactive, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
 	}
-	return TRUE;
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_refine_categories_finish (GsPlugin      *plugin,
+                                            GAsyncResult  *result,
+                                            GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void list_apps_thread_cb (GTask        *task,
@@ -2264,6 +2315,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->enable_repository_finish = gs_plugin_flatpak_enable_repository_finish;
 	plugin_class->disable_repository_async = gs_plugin_flatpak_disable_repository_async;
 	plugin_class->disable_repository_finish = gs_plugin_flatpak_disable_repository_finish;
+	plugin_class->refine_categories_async = gs_plugin_flatpak_refine_categories_async;
+	plugin_class->refine_categories_finish = gs_plugin_flatpak_refine_categories_finish;
 }
 
 GType

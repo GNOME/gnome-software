@@ -124,24 +124,6 @@ gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_categories:
- * @plugin: a #GsPlugin
- * @list: (element-type GsCategory): a #GPtrArray
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get the category tree, for instance Games->Action or Internet->Email.
- *
- * Plugins are expected to add new categories using g_ptr_array_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
-							 GPtrArray	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_launch:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

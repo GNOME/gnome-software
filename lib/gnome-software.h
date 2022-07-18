@@ -30,6 +30,7 @@
 #include <gs-plugin-helpers.h>
 #include <gs-plugin-job.h>
 #include <gs-plugin-job-list-apps.h>
+#include <gs-plugin-job-list-categories.h>
 #include <gs-plugin-job-list-distro-upgrades.h>
 #include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
