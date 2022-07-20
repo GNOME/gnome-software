@@ -986,13 +986,60 @@ gs_plugin_dummy_list_distro_upgrades_finish (GsPlugin      *plugin,
 	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
-gboolean
-gs_plugin_download_app (GsPlugin *plugin,
-			GsApp *app,
-			GCancellable *cancellable,
-			GError **error)
+static void update_apps_cb (GObject      *source_object,
+                            GAsyncResult *result,
+                            gpointer      user_data);
+
+static void
+gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
+                                   GsAppList                          *apps,
+                                   GsPluginUpdateAppsFlags             flags,
+                                   GsPluginProgressCallback            progress_callback,
+                                   gpointer                            progress_user_data,
+                                   GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                   gpointer                            app_needs_user_action_data,
+                                   GCancellable                       *cancellable,
+                                   GAsyncReadyCallback                 callback,
+                                   gpointer                            user_data)
 {
-	return gs_plugin_dummy_delay (plugin, app, 5100, cancellable, error);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_dummy_update_apps_async);
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD))
+		gs_plugin_dummy_delay_async (plugin, NULL, 5100, cancellable, update_apps_cb, g_steal_pointer (&task));
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+		/* TODO */
+	}
+}
+
+static void
+update_apps_cb (GObject      *source_object,
+                GAsyncResult *result,
+                gpointer      user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_dummy_delay_finish (plugin, result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_dummy_update_apps_finish (GsPlugin      *plugin,
+                                    GAsyncResult  *result,
+                                    GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void refresh_metadata_cb (GObject      *source_object,
@@ -1095,6 +1142,8 @@ gs_plugin_dummy_class_init (GsPluginDummyClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_dummy_refresh_metadata_finish;
 	plugin_class->list_distro_upgrades_async = gs_plugin_dummy_list_distro_upgrades_async;
 	plugin_class->list_distro_upgrades_finish = gs_plugin_dummy_list_distro_upgrades_finish;
+	plugin_class->update_apps_async = gs_plugin_dummy_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_dummy_update_apps_finish;
 }
 
 GType
