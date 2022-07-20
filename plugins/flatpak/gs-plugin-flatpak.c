@@ -1945,7 +1945,6 @@ refine_categories_thread_cb (GTask        *task,
                              GCancellable *cancellable)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	GsPluginRefineCategoriesData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_REFINE_CATEGORIES_FLAGS_INTERACTIVE);
 	g_autoptr(GError) local_error = NULL;
