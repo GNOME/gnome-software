@@ -575,10 +575,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		 * whether it’s appropriate to unconditionally download the updates, or
 		 * to schedule the download in accordance with the user’s metered data
 		 * preferences */
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-						 "list", apps,
-						 "propagate-error", TRUE,
-						 NULL);
+		plugin_job = gs_plugin_job_update_apps_new (apps,
+							    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
+		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 		g_debug ("Getting updates");
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
@@ -611,10 +610,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		if (should_download && gs_app_list_length (update_online) > 0) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-							 "list", update_online,
-							 "propagate-error", TRUE,
-							 NULL);
+			plugin_job = gs_plugin_job_update_apps_new (update_online,
+								    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY);
+			gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 			g_debug ("Getting %u online updates", gs_app_list_length (update_online));
 			gs_plugin_loader_job_process_async (monitor->plugin_loader,
 							    plugin_job,

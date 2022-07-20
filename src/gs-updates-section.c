@@ -396,11 +396,8 @@ _button_download_clicked_cb (GsUpdatesSection *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_set_object (&self->cancellable, cancellable);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-					 "list", self->list,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
-					 "interactive", TRUE,
-					 NULL);
+	plugin_job = gs_plugin_job_update_apps_new (self->list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) _download_finished_cb,
