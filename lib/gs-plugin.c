@@ -1586,8 +1586,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_update_cancel";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
 		return "gs_plugin_update";
-	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
-		return "gs_plugin_download";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "gs_plugin_file_to_app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
@@ -1618,8 +1616,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "unknown";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "install";
-	if (action == GS_PLUGIN_ACTION_DOWNLOAD)
-		return "download";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
 		return "remove";
 	if (action == GS_PLUGIN_ACTION_UPDATE)
@@ -1670,8 +1666,6 @@ gs_plugin_action_from_string (const gchar *action)
 {
 	if (g_strcmp0 (action, "install") == 0)
 		return GS_PLUGIN_ACTION_INSTALL;
-	if (g_strcmp0 (action, "download") == 0)
-		return GS_PLUGIN_ACTION_DOWNLOAD;
 	if (g_strcmp0 (action, "remove") == 0)
 		return GS_PLUGIN_ACTION_REMOVE;
 	if (g_strcmp0 (action, "update") == 0)

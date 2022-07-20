@@ -422,15 +422,15 @@ gs_plugin_custom_list_apps_finish (GsPlugin      *plugin,
           but it's a good idea to try any avoid that if at all possible in the
           plugin.
           Once per day the <code>gs_plugin_get_updates()</code> method is called,
-          and then <code>gs_plugin_download_app()</code> may be called if the
+          and then a <code>GsPluginJobUpdateApps</code> job may be run with the
+          <code>GS_PLUGIN_JOB_UPDATE_APPS_FLAGS_NO_APPLY</code> flag if the
           user has configured automatic updates.
           This is where the Flatpak plugin would download any ostree trees (but
           not doing the deploy step) so that the applications can be updated live
           in the details panel without having to wait for the download to complete.
           In a similar way, the fwupd plugin downloads the tiny LVFS metadata with
           <code>refresh_metadata_async()</code> and then downloads the large firmware
-          files themselves when <code>gs_plugin_download()</code> or
-          <code>gs_plugin_download_app()</code> is called.
+          files themselves when <code>update_apps_async()</code> is called.
         </para>
         <para>
           Note, if the downloading fails it's okay to return <code>FALSE</code>;
