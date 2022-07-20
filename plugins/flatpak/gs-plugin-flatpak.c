@@ -1011,94 +1011,146 @@ remove_schedule_entry (gpointer schedule_entry_handle)
 		g_warning ("Failed to remove schedule entry: %s", error_local->message);
 }
 
-gboolean
-gs_plugin_download (GsPlugin *plugin, GsAppList *list,
-		    GCancellable *cancellable, GError **error)
+static void update_apps_thread_cb (GTask        *task,
+                                   gpointer      source_object,
+                                   gpointer      task_data,
+                                   GCancellable *cancellable);
+
+static void
+gs_plugin_flatpak_update_apps_async (GsPlugin                           *plugin,
+                                     GsAppList                          *apps,
+                                     GsPluginUpdateAppsFlags             flags,
+                                     GsPluginProgressCallback            progress_callback,
+                                     gpointer                            progress_user_data,
+                                     GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                     gpointer                            app_needs_user_action_data,
+                                     GCancellable                       *cancellable,
+                                     GAsyncReadyCallback                 callback,
+                                     gpointer                            user_data)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
+	g_autoptr(GTask) task = NULL;
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+
+	task = gs_plugin_update_apps_data_new_task (plugin, apps, flags,
+						    progress_callback, progress_user_data,
+						    app_needs_user_action_callback, app_needs_user_action_data,
+						    cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_flatpak_update_apps_async);
+
+	/* Queue a job to get the apps. */
+	gs_worker_thread_queue (self->worker, get_priority_for_interactivity (interactive),
+				update_apps_thread_cb, g_steal_pointer (&task));
+}
+
+/* Run in @worker. */
+static void
+update_apps_thread_cb (GTask        *task,
+                       gpointer      source_object,
+                       gpointer      task_data,
+                       GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GsPluginUpdateAppsData *data = task_data;
+	gboolean interactive = (data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
 	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
 	GHashTableIter iter;
 	gpointer key, value;
-	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
 
-	/* build and run transaction for each flatpak installation */
-	applist_by_flatpaks = _group_apps_by_installation (self, list);
-	g_hash_table_iter_init (&iter, applist_by_flatpaks);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		GsFlatpak *flatpak = GS_FLATPAK (key);
-		GsAppList *list_tmp = GS_APP_LIST (value);
-		g_autoptr(FlatpakTransaction) transaction = NULL;
-		gpointer schedule_entry_handle = NULL;
+	assert_in_worker (self);
 
-		g_assert (GS_IS_FLATPAK (flatpak));
-		g_assert (list_tmp != NULL);
-		g_assert (gs_app_list_length (list_tmp) > 0);
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		/* build and run transaction for each flatpak installation */
+		applist_by_flatpaks = _group_apps_by_installation (self, data->apps);
+		g_hash_table_iter_init (&iter, applist_by_flatpaks);
+		while (g_hash_table_iter_next (&iter, &key, &value)) {
+			GsFlatpak *flatpak = GS_FLATPAK (key);
+			GsAppList *list_tmp = GS_APP_LIST (value);
+			g_autoptr(FlatpakTransaction) transaction = NULL;
+			gpointer schedule_entry_handle = NULL;
 
-		if (!interactive) {
-			g_autoptr(GError) error_local = NULL;
+			g_assert (GS_IS_FLATPAK (flatpak));
+			g_assert (list_tmp != NULL);
+			g_assert (gs_app_list_length (list_tmp) > 0);
 
-			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
-				g_warning ("Failed to block on download scheduler: %s",
-					   error_local->message);
-				g_clear_error (&error_local);
+			if (!interactive) {
+				if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &local_error)) {
+					g_warning ("Failed to block on download scheduler: %s",
+						   local_error->message);
+					g_clear_error (&local_error);
+				}
 			}
-		}
 
-		/* build and run non-deployed transaction */
-		transaction = _build_transaction (plugin, flatpak, interactive, cancellable, error);
-		if (transaction == NULL) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
-		}
-
-		flatpak_transaction_set_no_deploy (transaction, TRUE);
-
-		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-			GsApp *app = gs_app_list_index (list_tmp, i);
-			g_autofree gchar *ref = NULL;
-			g_autoptr(GError) error_local = NULL;
-
-			ref = gs_flatpak_app_get_ref_display (app);
-			if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &error_local))
-				continue;
-
-			/* Errors about missing remotes are not fatal, as that’s
-			 * a not-uncommon situation. */
-			if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
-				g_autoptr(GsPluginEvent) event = NULL;
-
-				g_warning ("Skipping update for ‘%s’: %s", ref, error_local->message);
-
-				gs_flatpak_error_convert (&error_local);
-
-				event = gs_plugin_event_new ("error", error_local,
-							     NULL);
-				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_report_event (plugin, event);
-			} else {
-				gs_flatpak_error_convert (&error_local);
-				g_propagate_error (error, g_steal_pointer (&error_local));
-				return FALSE;
+			/* build and run non-deployed transaction */
+			transaction = _build_transaction (GS_PLUGIN (self), flatpak, interactive, cancellable, &local_error);
+			if (transaction == NULL) {
+				gs_flatpak_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
 			}
-		}
 
-		if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
-			gs_flatpak_error_convert (error);
+			flatpak_transaction_set_no_deploy (transaction, TRUE);
+
+			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+				GsApp *app = gs_app_list_index (list_tmp, i);
+				g_autofree gchar *ref = NULL;
+
+				ref = gs_flatpak_app_get_ref_display (app);
+				if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &local_error))
+					continue;
+
+				/* Errors about missing remotes are not fatal, as that’s
+				 * a not-uncommon situation. */
+				if (g_error_matches (local_error, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+					g_autoptr(GsPluginEvent) event = NULL;
+
+					g_warning ("Skipping update for ‘%s’: %s", ref, local_error->message);
+
+					gs_flatpak_error_convert (&local_error);
+
+					event = gs_plugin_event_new ("error", local_error,
+								     NULL);
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+					gs_plugin_report_event (GS_PLUGIN (self), event);
+				} else {
+					gs_flatpak_error_convert (&local_error);
+					g_task_return_error (task, g_steal_pointer (&local_error));
+					return;
+				}
+			}
+
+			/* FIXME: Link progress reporting from #FlatpakTransaction
+			 * up to `data->progress_callback`. */
+			if (!gs_flatpak_transaction_run (transaction, cancellable, &local_error)) {
+				gs_flatpak_error_convert (&local_error);
+				remove_schedule_entry (schedule_entry_handle);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+
 			remove_schedule_entry (schedule_entry_handle);
-			return FALSE;
+
+			/* Traverse over the GsAppList again and set that the update has been already downloaded
+			 * for the apps. */
+			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+				GsApp *app = gs_app_list_index (list_tmp, i);
+				gs_app_set_is_update_downloaded (app, TRUE);
+			}
 		}
 
-		remove_schedule_entry (schedule_entry_handle);
-
-		/* Traverse over the GsAppList again and set that the update has been already downloaded
-		 * for the apps. */
-		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-			GsApp *app = gs_app_list_index (list_tmp, i);
-			gs_app_set_is_update_downloaded (app, TRUE);
-		}
+		g_task_return_boolean (task, TRUE);
+	} else {
+		/* TODO */
 	}
+}
 
-	return TRUE;
+static gboolean
+gs_plugin_flatpak_update_apps_finish (GsPlugin      *plugin,
+                                      GAsyncResult  *result,
+                                      GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -2420,6 +2472,8 @@ gs_plugin_flatpak_class_init (GsPluginFlatpakClass *klass)
 	plugin_class->disable_repository_finish = gs_plugin_flatpak_disable_repository_finish;
 	plugin_class->refine_categories_async = gs_plugin_flatpak_refine_categories_async;
 	plugin_class->refine_categories_finish = gs_plugin_flatpak_refine_categories_finish;
+	plugin_class->update_apps_async = gs_plugin_flatpak_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_flatpak_update_apps_finish;
 }
 
 GType
