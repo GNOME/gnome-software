@@ -253,6 +253,65 @@ typedef enum {
 } GsPluginManageRepositoryFlags;
 
 /**
+ * GsPluginUpdateAppsFlags:
+ * @GS_PLUGIN_UPDATE_APPS_FLAGS_NONE: No flags set.
+ * @GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE: User initiated the job.
+ * @GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD: Only use locally cached resources,
+ *   and error if they don’t exist.
+ * @GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY: Only download the resources, and don’t
+ *   apply the updates.
+ *
+ * Flags for an operation to download or update apps.
+ *
+ * Since: 44
+ */
+typedef enum {
+	GS_PLUGIN_UPDATE_APPS_FLAGS_NONE = 0,
+	GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE = 1 << 0,
+	GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD = 1 << 1,
+	GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY = 1 << 2,
+} GsPluginUpdateAppsFlags;
+
+/**
+ * GsPluginProgressCallback:
+ * @plugin: the #GsPlugin reporting its progress
+ * @progress: the percentage completion (0–100 inclusive), or
+ *   %GS_APP_PROGRESS_UNKNOWN for unknown
+ * @user_data: user data passed to the calling function
+ *
+ * Callback to report the progress of a particular @plugin through a particular
+ * operation.
+ *
+ * Since: 44
+ */
+typedef void (* GsPluginProgressCallback)		(GsPlugin	*plugin,
+							 guint		 progress,
+							 gpointer	 user_data);
+
+/**
+ * GsPluginAppNeedsUserActionCallback:
+ * @plugin: the #GsPlugin asking for user action
+ * @app: (nullable) (transfer none): the related #GsApp, or %NULL if no app is
+ *   explicitly related to the necessary user action
+ * @action_screenshot: (nullable) (transfer none): a screenshot (with caption
+ *   set) which gives the user instructions about what action to take, or %NULL
+ *   if no instructions are available
+ * @user_data: user data passed to the calling function
+ *
+ * Callback to ask the user to perform a physical action during a plugin
+ * operation.
+ *
+ * This will typically be something like unplugging and reconnecting a hardware
+ * device, and instructions will be given via @action_screenshot.
+ *
+ * Since: 44
+ */
+typedef void (* GsPluginAppNeedsUserActionCallback)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 AsScreenshot	*action_screenshot,
+							 gpointer	 user_data);
+
+/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another

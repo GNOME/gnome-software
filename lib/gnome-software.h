@@ -36,6 +36,7 @@
 #include <gs-plugin-job-manage-repository.h>
 #include <gs-plugin-job-refine.h>
 #include <gs-plugin-job-refresh-metadata.h>
+#include <gs-plugin-job-update-apps.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-profiler.h>
 #include <gs-remote-icon.h>
