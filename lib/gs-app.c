@@ -1182,8 +1182,9 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 
 	/* this state change was unexpected */
 	if (!state_change_ok) {
-		g_warning ("State change on %s from %s to %s is not OK",
+		g_warning ("State change on %s (%s) from %s to %s is not OK",
 			   gs_app_get_unique_id_unlocked (app),
+			   priv->name,
 			   gs_app_state_to_string (priv->state),
 			   gs_app_state_to_string (state));
 	}
