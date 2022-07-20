@@ -15,7 +15,7 @@
           <object class="AdwPreferencesGroup">
             <property name="description" translatable="yes">To avoid charges and network caps, software updates are not automatically downloaded on mobile or metered connections.</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwActionRow" id="automatic_updates_row">
                 <property name="title" translatable="yes">Automatic Updates</property>
                 <property name="subtitle" translatable="yes">Downloads and installs software updates in the background, when possible.</property>
                 <property name="subtitle_lines">0</property>
@@ -28,7 +28,7 @@
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwActionRow" id="automatic_update_notifications_row">
                 <property name="title" translatable="yes">Automatic Update Notifications</property>
                 <property name="subtitle" translatable="yes">Show notifications when updates have been automatically installed.</property>
                 <property name="subtitle_lines">0</property>

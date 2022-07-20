@@ -953,10 +953,19 @@ update_action_row_from_link (AdwActionRow *row,
                              AsUrlKind     url_kind)
 {
 	const gchar *url = gs_app_get_url (app, url_kind);
+
+#if ADW_CHECK_VERSION(1,2,0)
+	adw_preferences_row_set_use_markup (ADW_PREFERENCES_ROW (row), FALSE);
+
+	if (url != NULL)
+		adw_action_row_set_subtitle (row, url);
+#else
 	if (url != NULL) {
 		g_autofree gchar *escaped_url = g_markup_escape_text (url, -1);
 		adw_action_row_set_subtitle (row, escaped_url);
 	}
+#endif
+
 	gtk_widget_set_visible (GTK_WIDGET (row), url != NULL);
 
 	return (url != NULL);
