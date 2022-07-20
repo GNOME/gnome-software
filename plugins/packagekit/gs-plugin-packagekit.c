@@ -3730,13 +3730,46 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 	return retval;
 }
 
-gboolean
-gs_plugin_download (GsPlugin *plugin,
-                    GsAppList *list,
-                    GCancellable *cancellable,
-                    GError **error)
+static void
+gs_plugin_packagekit_update_apps_async (GsPlugin                           *plugin,
+                                        GsAppList                          *apps,
+                                        GsPluginUpdateAppsFlags             flags,
+                                        GsPluginProgressCallback            progress_callback,
+                                        gpointer                            progress_user_data,
+                                        GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                        gpointer                            app_needs_user_action_data,
+                                        GCancellable                       *cancellable,
+                                        GAsyncReadyCallback                 callback,
+                                        gpointer                            user_data)
 {
-	return gs_plugin_packagekit_download (plugin, list, cancellable, error);
+	GsPluginPackagekit *self = GS_PLUGIN_PACKAGEKIT (plugin);
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_packagekit_update_apps_async);
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		/* FIXME: Make this async and add progress reporting */
+		if (!gs_plugin_packagekit_download (plugin, apps, cancellable, &local_error)) {
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	}
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+		/* TODO */
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_packagekit_update_apps_finish (GsPlugin      *plugin,
+                                         GAsyncResult  *result,
+                                         GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void refresh_metadata_cb (GObject      *source_object,
@@ -4071,6 +4104,8 @@ gs_plugin_packagekit_class_init (GsPluginPackagekitClass *klass)
 	plugin_class->enable_repository_finish = gs_plugin_packagekit_enable_repository_finish;
 	plugin_class->disable_repository_async = gs_plugin_packagekit_disable_repository_async;
 	plugin_class->disable_repository_finish = gs_plugin_packagekit_disable_repository_finish;
+	plugin_class->update_apps_async = gs_plugin_packagekit_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_packagekit_update_apps_finish;
 }
 
 GType
