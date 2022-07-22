@@ -1229,9 +1229,9 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
 	const GError *error = gs_plugin_event_get_error (event);
 	const gchar *more_info = NULL;
-	GsPluginAction action = gs_plugin_event_get_action (event);
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
+	GsPluginJob *job = gs_plugin_event_get_job (event);
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
@@ -1294,7 +1294,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		   g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		/* Do nothing. */
 	} else {
-		if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
+		if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
+		    !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append (str, _("Unable to download updates"));
 		} else {
@@ -1973,18 +1974,20 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	job = gs_plugin_event_get_job (event);
 	if (GS_IS_PLUGIN_JOB_REFRESH_METADATA (job))
 		return gs_shell_show_event_refresh (shell, event);
+	else if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
+		 !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD))
+		return gs_shell_show_event_refresh (shell, event);
+	else if (GS_IS_PLUGIN_JOB_UPDATE_APPS (job) &&
+		 !(gs_plugin_job_update_apps_get_flags (GS_PLUGIN_JOB_UPDATE_APPS (job)) & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY))
+		return gs_shell_show_event_update (shell, event);
 
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);
 	switch (action) {
-	case GS_PLUGIN_ACTION_DOWNLOAD:
-		return gs_shell_show_event_refresh (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_INSTALL_REPO:
 	case GS_PLUGIN_ACTION_ENABLE_REPO:
 		return gs_shell_show_event_install (shell, event);
-	case GS_PLUGIN_ACTION_UPDATE:
-		return gs_shell_show_event_update (shell, event);
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		return gs_shell_show_event_upgrade (shell, event);
 	case GS_PLUGIN_ACTION_REMOVE:
