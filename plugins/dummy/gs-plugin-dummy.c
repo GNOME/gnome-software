@@ -519,39 +519,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
-
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
-
-	if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
-		/* always fail */
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-				     "no network connection is available");
-		gs_utils_error_add_origin_id (error, self->cached_origin);
-		return FALSE;
-	}
-
-	/* simulate an update for 4 seconds */
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-	for (guint i = 1; i <= 4; ++i) {
-		gs_app_set_progress (app, 25 * i);
-		sleep (1);
-	}
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-
-	return TRUE;
-}
-
 static gboolean
 refine_app (GsPluginDummy        *self,
             GsApp                *app,
@@ -1013,10 +980,8 @@ gs_plugin_dummy_update_apps_async (GsPlugin                           *plugin,
 
 	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD))
 		gs_plugin_dummy_delay_async (plugin, NULL, 5100, cancellable, update_apps_cb, g_steal_pointer (&task));
-
-	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
-		/* TODO */
-	}
+	else
+		update_apps_cb (G_OBJECT (plugin), NULL, g_steal_pointer (&task));
 }
 
 static void
@@ -1025,13 +990,58 @@ update_apps_cb (GObject      *source_object,
                 gpointer      user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (source_object);
+	GsPluginDummy *self = GS_PLUGIN_DUMMY (plugin);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginUpdateAppsData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_plugin_dummy_delay_finish (plugin, result, &local_error))
+	if (result != NULL &&
+	    !gs_plugin_dummy_delay_finish (plugin, result, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
-	else
+		return;
+	}
+
+	if (!(data->flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+		for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+			GsApp *app = gs_app_list_index (data->apps, i);
+
+			/* only process this app if was created by this plugin */
+			if (!gs_app_has_management_plugin (app, plugin))
+				continue;
+
+			if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
+				/* always fail */
+				g_set_error_literal (&local_error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+						     "no network connection is available");
+				gs_utils_error_add_origin_id (&local_error, self->cached_origin);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+
+			/* simulate an update for 4 seconds */
+			gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+
+			for (guint j = 1; j <= 4; ++j) {
+				gs_app_set_progress (app, 25 * j);
+				sleep (1); /* FIXME: make this async */
+			}
+
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+
+			/* Simple progress reporting. */
+			if (data->progress_callback != NULL) {
+				data->progress_callback (GS_PLUGIN (self),
+							 100 * ((gdouble) (i + 1) / gs_app_list_length (data->apps)),
+							 data->progress_user_data);
+			}
+		}
+
 		g_task_return_boolean (task, TRUE);
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
 }
 
 static gboolean
