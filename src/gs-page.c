@@ -301,17 +301,21 @@ gs_page_update_app_response_cb (AdwMessageDialog *dialog,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	/* not agreed */
 	if (g_strcmp0 (response, "install") != 0)
 		return;
 
 	g_debug ("update %s", gs_app_get_id (helper->app));
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "interactive", TRUE,
-					 "propagate-error", helper->propagate_error,
-					 "app", helper->app,
-					 NULL);
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, helper->app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list,
+						    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD | GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	gs_plugin_job_set_propagate_error (plugin_job, helper->propagate_error);
+
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
 					    helper->cancellable,
