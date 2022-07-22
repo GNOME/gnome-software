@@ -218,39 +218,6 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_update_app:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Update the app live.
- *
- * Plugins are expected to send progress notifications to the UI using
- * gs_app_set_progress() using the passed in @app.
- *
- * All functions can block, but should sent progress notifications, e.g. using
- * gs_app_set_progress() if they will take more than tens of milliseconds
- * to complete.
- *
- * On failure the error message returned will usually only be shown on the
- * console, but they can also be retrieved using gs_plugin_loader_get_events().
- *
- * NOTE: Once the action is complete, the plugin must set the new state of @app
- * to %GS_APP_STATE_INSTALLED or %GS_APP_STATE_UNKNOWN if not known.
- *
- * If %GS_APP_QUIRK_IS_PROXY is set on the app then the actual #GsApp
- * set in @app will be the related app of the parent. Plugins do not
- * need to manually iterate on the related list of apps.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_COMPONENT_KIND_OPERATING_SYSTEM
@@ -334,22 +301,6 @@ gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
 gboolean	 gs_plugin_url_to_app			(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 const gchar	*url,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_update:
- * @plugin: a #GsPlugin
- * @apps: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Updates a list of apps, typically scheduling them for offline update.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_update			(GsPlugin	*plugin,
-							 GsAppList	*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

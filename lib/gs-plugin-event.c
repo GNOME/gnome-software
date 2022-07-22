@@ -94,7 +94,7 @@ gs_plugin_event_get_origin (GsPluginEvent *event)
  *
  * Gets an action that created the event.
  *
- * Returns: (transfer none): a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_UPDATE
+ * Returns: (transfer none): a #GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
  *
  * Since: 3.22
  **/

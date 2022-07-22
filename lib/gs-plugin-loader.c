@@ -231,7 +231,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	switch (gs_plugin_job_get_action (helper->plugin_job)) {
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_UPDATE:
 		{
 			GsApp *app;
 			GsAppList *list;
@@ -602,19 +601,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
-	case GS_PLUGIN_ACTION_UPDATE:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_update_app") == 0) {
-			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_update") == 0) {
-			GsPluginUpdateFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
-		} else {
-			g_critical ("function_name %s invalid for %s",
-				    helper->function_name,
-				    gs_plugin_action_to_string (action));
-		}
-		break;
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
@@ -3195,17 +3181,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	/* run per-app version */
-	if (action == GS_PLUGIN_ACTION_UPDATE) {
-		helper->function_name = "gs_plugin_update_app";
-		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
-						      cancellable, &error)) {
-			gs_utils_error_convert_gio (&error);
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
 	/* remove from pending list */
 	if (add_to_pending_array) {
 		GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
@@ -3233,7 +3208,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REMOVE:
-	case GS_PLUGIN_ACTION_UPDATE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
 				     GS_PLUGIN_ERROR,
@@ -3755,7 +3729,6 @@ job_process_cb (GTask *task)
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
-	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		/* these actions must be performed by the thread pool because we
 		 * want to limit the number of them running in parallel */
