@@ -1130,8 +1130,46 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 			}
 
 			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
-		} else {
-			/* TODO */
+		}
+
+		if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_APPLY)) {
+			/* locked devices need unlocking, rather than installing */
+			if (gs_fwupd_app_get_is_locked (app)) {
+				const gchar *device_id;
+				device_id = gs_fwupd_app_get_device_id (app);
+				if (device_id == NULL) {
+					g_task_return_new_error (task,
+								 GS_PLUGIN_ERROR,
+								 GS_PLUGIN_ERROR_INVALID_FORMAT,
+								 "not enough data for fwupd unlock");
+					return;
+				}
+
+				/* FIXME: Make this call async */
+				if (!fwupd_client_unlock (self->client, device_id,
+							  cancellable, &local_error)) {
+					gs_plugin_fwupd_error_convert (&local_error);
+					g_task_return_error (task, g_steal_pointer (&local_error));
+					return;
+				}
+
+				continue;
+			}
+
+			/* update means install */
+			/* FIXME: Make this call async */
+			if (!gs_plugin_fwupd_install (self, app, cancellable, &local_error)) {
+				gs_plugin_fwupd_error_convert (&local_error);
+				g_task_return_error (task, g_steal_pointer (&local_error));
+				return;
+			}
+		}
+
+		/* Simple progress reporting. */
+		if (progress_callback != NULL) {
+			progress_callback (GS_PLUGIN (self),
+					   100 * ((gdouble) (i + 1) / gs_app_list_length (apps)),
+					   progress_user_data);
 		}
 	}
 
@@ -1144,44 +1182,6 @@ gs_plugin_fwupd_update_apps_finish (GsPlugin      *plugin,
                                     GError       **error)
 {
 	return g_task_propagate_boolean (G_TASK (result), error);
-}
-
-gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
-	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
-
-	/* locked devices need unlocking, rather than installing */
-	if (gs_fwupd_app_get_is_locked (app)) {
-		const gchar *device_id;
-		device_id = gs_fwupd_app_get_device_id (app);
-		if (device_id == NULL) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
-					     "not enough data for fwupd unlock");
-			return FALSE;
-		}
-		if (!fwupd_client_unlock (self->client, device_id,
-					  cancellable, error)) {
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
-		}
-		return TRUE;
-	}
-
-	/* update means install */
-	if (!gs_plugin_fwupd_install (self, app, cancellable, error)) {
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
-	}
-	return TRUE;
 }
 
 gboolean
