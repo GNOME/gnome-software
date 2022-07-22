@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-06-08 11:23+0000\n"
-"PO-Revision-Date: 2022-06-12 12:15+0800\n"
+"POT-Creation-Date: 2022-07-09 18:28+0000\n"
+"PO-Revision-Date: 2022-07-10 08:47+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -80,7 +80,7 @@ msgstr "更新面板"
 msgid "The update details"
 msgstr "更新详情"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1895
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1949
 msgid "The GNOME Project"
 msgstr "GNOME 项目"
 
@@ -742,7 +742,7 @@ msgstr "年龄分级"
 msgid "How to add missing information"
 msgstr "如何添加缺失的信息"
 
-#: lib/gs-app.c:6104
+#: lib/gs-app.c:6158
 msgid "Local file"
 msgstr "本地文件"
 
@@ -751,12 +751,12 @@ msgstr "本地文件"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6120 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6174 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "%s（%s）"
 
-#: lib/gs-app.c:6196
+#: lib/gs-app.c:6250
 msgid "Package"
 msgstr "软件包"
 
@@ -829,26 +829,20 @@ msgid "Home folder"
 msgstr "主目录"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:147
 msgid "Can view, edit and create files"
 msgstr "可以查看、编辑和创建文件"
 
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:142
 msgid "Can view files"
 msgstr "可以查看文件"
 
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "文件系统"
 
-#. Translators: This indicates an app can access data in the system unknown to the Software.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:356
-msgid "Can access arbitrary files"
-msgstr "可访问任意文件"
-
+#. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
 msgid "Downloads folder"
 msgstr "下载文件夹"
@@ -883,14 +877,14 @@ msgstr "可以逃脱沙箱并绕过任何其他限制"
 #. * ‘deja-dup’ (a package name) or
 #. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
 #. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
+#: src/gs-app-details-page.c:177
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:157
+#: src/gs-app-details-page.c:196
 msgid "No update description available."
 msgstr "没有可用的更新描述。"
 
@@ -899,7 +893,7 @@ msgstr "没有可用的更新描述。"
 msgid "Go back"
 msgstr "返回"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:506
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:506
 msgid "Requires additional permissions"
 msgstr "要求额外的权限"
 
@@ -1115,111 +1109,117 @@ msgstr "大小未知"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:279
+#: src/gs-app-context-bar.c:282
 msgid "No permissions"
 msgstr "无需权限"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:290
+#: src/gs-app-context-bar.c:293
 msgid "Has network access"
 msgstr "需访问网络"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:297
+#: src/gs-app-context-bar.c:300
 msgid "Uses system services"
 msgstr "使用系统服务"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:304
+#: src/gs-app-context-bar.c:307
 msgid "Uses session services"
 msgstr "使用会话服务"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:311
+#: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
 msgstr "可访问硬件设备"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:323
+#: src/gs-app-context-bar.c:326
 msgid "Can read/write all your data"
 msgstr "可读写所有用户数据"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:335
+#: src/gs-app-context-bar.c:338
 msgid "Can read all your data"
 msgstr "允许读取当前用户所有数据"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:342
+#: src/gs-app-context-bar.c:345
 msgid "Can read/write your downloads"
 msgstr "允许读/写下载目录"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:349
+#: src/gs-app-context-bar.c:352
 msgid "Can read your downloads"
 msgstr "允许读取下载目录"
 
+#. Translators: This indicates an app can access data in the system unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:359
+msgid "Can access arbitrary files"
+msgstr "可访问任意文件"
+
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:363 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
 msgid "Can access and change user settings"
 msgstr "可以查看和更改用户设置"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:370 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
 msgstr "使用旧式窗口系统"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:377 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
 msgid "Can acquire arbitrary permissions"
 msgstr "可获取任意额外权限"
 
 #. Translators: This indicates that an application has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:403 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
 msgid "Reviewed by your distribution"
 msgstr "由您的发行版审查"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:410 src/gs-safety-context-dialog.c:140
+#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
 msgstr "由第三方提供"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:422
+#: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
 msgstr "专有软件"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:428
+#: src/gs-app-context-bar.c:431
 msgid "Auditable code"
 msgstr "可审计代码"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:435
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "软件开发者已经过认证"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:444
+#: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
 msgstr "该软件不再受到支持"
 
@@ -1237,104 +1237,104 @@ msgstr "该软件不再受到支持"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:456 src/gs-app-context-bar.c:727
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr "；"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:464
+#: src/gs-app-context-bar.c:467
 msgid "Safe"
 msgstr "安全的"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:471
+#: src/gs-app-context-bar.c:474
 msgid "Potentially Unsafe"
 msgstr "潜在危险"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:478
+#: src/gs-app-context-bar.c:481
 msgid "Unsafe"
 msgstr "不安全的"
 
-#: src/gs-app-context-bar.c:557 src/gs-app-context-bar.c:589
+#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
 #: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
 msgstr "仅适用移动设备"
 
-#: src/gs-app-context-bar.c:558
+#: src/gs-app-context-bar.c:561
 msgid "Only works on a small screen"
 msgstr "只适用于小屏幕"
 
-#: src/gs-app-context-bar.c:563 src/gs-app-context-bar.c:596
-#: src/gs-app-context-bar.c:603 src/gs-app-context-bar.c:653
-#: src/gs-app-context-bar.c:658 src/gs-hardware-support-context-dialog.c:583
+#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
 msgstr "仅适用于台式机"
 
-#: src/gs-app-context-bar.c:564
+#: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
 msgstr "只适用于大屏幕"
 
-#: src/gs-app-context-bar.c:568 src/gs-hardware-support-context-dialog.c:621
+#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
 msgstr "屏幕尺寸不匹配"
 
-#: src/gs-app-context-bar.c:569 src/gs-hardware-support-context-dialog.c:622
+#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
 msgstr "不支持您当前的屏幕尺寸"
 
-#: src/gs-app-context-bar.c:590 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
 #: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "需要触摸屏"
 
-#: src/gs-app-context-bar.c:597 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
 #: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "需要键盘"
 
-#: src/gs-app-context-bar.c:604
+#: src/gs-app-context-bar.c:607
 msgid "Requires a mouse"
 msgstr "需要鼠标"
 
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
 msgstr "需要手柄"
 
-#: src/gs-app-context-bar.c:616
+#: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
 msgstr "需要使用手柄操作"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:640
+#: src/gs-app-context-bar.c:643
 msgid "Adaptive"
 msgstr "自适应"
 
-#: src/gs-app-context-bar.c:641
+#: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
 msgstr "适用于手机、平板电脑和台式机"
 
-#: src/gs-app-context-bar.c:654
+#: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
 msgstr "可能需要键盘或鼠标"
 
-#: src/gs-app-context-bar.c:659
+#: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
 msgstr "适用于台式机和笔记本电脑"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:705
 msgid "Contains no age-inappropriate content"
 msgstr "不包含不适龄内容。"
 
-#: src/gs-app-context-bar.c:750
+#: src/gs-app-context-bar.c:753
 msgid "No age rating information available"
 msgstr "没有可用的年龄分级信息"
 
@@ -1361,7 +1361,7 @@ msgstr "取消"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:366
+#: src/gs-app-row.c:169 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "安装"
 
@@ -1376,7 +1376,7 @@ msgstr "更新"
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:276
-#: src/gs-page.c:525
+#: src/gs-page.c:543
 msgid "Uninstall"
 msgstr "卸载"
 
@@ -1929,7 +1929,7 @@ msgid "Install Third-Party Software?"
 msgstr "安装第三方软件？"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222 src/gs-repos-dialog.c:165
+#: src/gs-common.c:222 src/gs-repos-dialog.c:168
 msgid "Enable Third-Party Software Repository?"
 msgstr "要启用第三方软件仓库吗？"
 
@@ -2181,7 +2181,7 @@ msgstr "正在卸载…"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #: src/gs-details-page.c:828 src/gs-details-page.c:854
-#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:148
+#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "安装(_I)"
 
@@ -2204,11 +2204,11 @@ msgid "Other Apps by %s"
 msgstr "%s 的其它应用"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1521
+#: src/gs-details-page.c:1522
 msgid "You need internet access to write a review"
 msgstr "您需要互联网连接以编写评论"
 
-#: src/gs-details-page.c:1669 src/gs-details-page.c:1685
+#: src/gs-details-page.c:1670 src/gs-details-page.c:1686
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "无法找到“%s”"
@@ -2236,7 +2236,7 @@ msgstr "帮助翻译(_T)"
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:158
+#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "更新(_U)"
 
@@ -2947,7 +2947,7 @@ msgstr "提供获取来自 %s 的附加软件。也包括一些专有软件。"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:864 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "启用"
 
@@ -2974,7 +2974,7 @@ msgstr "其它类别"
 msgid "No Application Data Found"
 msgstr "未找到应用程序数据"
 
-#: lib/gs-plugin-loader.c:3012
+#: lib/gs-plugin-loader.c:3071
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "未知"
@@ -2985,20 +2985,20 @@ msgstr "用户拒绝安装"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:357
+#: src/gs-page.c:365
 #, c-format
 msgid "Prepare %s"
 msgstr "准备 %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:494
+#: src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "您确定要移除 %s 仓库吗？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:498
+#: src/gs-page.c:516
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
@@ -3007,13 +3007,13 @@ msgstr "所有来自 %s 的应用程序将被卸载，想再次使用它们您�
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:506
+#: src/gs-page.c:524
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
 msgstr "您确定要卸载 %s 吗？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:509
+#: src/gs-page.c:527
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
@@ -3066,65 +3066,65 @@ msgid "_Continue"
 msgstr "继续(_C)"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:237
+#: src/gs-repos-dialog.c:239
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
 msgstr "从“%s”安装的软件将停止收到更新。"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Disable Repository?"
 msgstr "禁用仓库？"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Remove Repository?"
 msgstr "移除仓库？"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:252
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "禁用(_D)"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:257
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/gs-repos-dialog.c:503
+#: src/gs-repos-dialog.c:505
 msgid "Enable New Repositories"
 msgstr "启用新仓库"
 
-#: src/gs-repos-dialog.c:504
+#: src/gs-repos-dialog.c:506
 msgid "Turn on new repositories when they are added."
 msgstr "在新仓库添加的同时将其启用。"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:513
+#: src/gs-repos-dialog.c:515
 msgid "more information"
 msgstr "更多信息"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:518
+#: src/gs-repos-dialog.c:520
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
 msgstr "选择的第三方附加仓库 — %s。"
 
-#: src/gs-repos-dialog.c:523
+#: src/gs-repos-dialog.c:525
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora 第三方仓库"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:665
+#: src/gs-repos-dialog.c:667
 msgid "the operating system"
 msgstr "操作系统"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:723
+#: src/gs-repos-dialog.c:725
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "这些仓库内的软件可替代 %s 提供的默认软件。"
@@ -3184,7 +3184,7 @@ msgstr[0] "%s 和 %s 已安装"
 
 #. Translators: The first '%s' is replaced with a text like '10 applications installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:237
+#: src/gs-repo-row.c:243
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
@@ -3293,7 +3293,7 @@ msgstr ""
 "在我们的 <a href=\"https://odrs.gnome.org/privacy\">隐私政策</a> 中查看发送了"
 "什么数据。您账号附加的全名将会公开显示。"
 
-#: src/gs-review-histogram.c:73
+#: src/gs-review-histogram.c:72
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
@@ -3360,183 +3360,182 @@ msgstr "举报…"
 msgid "Remove…"
 msgstr "移除…"
 
-#: src/gs-safety-context-dialog.c:141
+#: src/gs-safety-context-dialog.c:144
 msgid "Check that you trust the vendor, as the application isn’t sandboxed"
 msgstr "因该应用程序未沙盒化，请确认您信任软件提供者"
 
-#: src/gs-safety-context-dialog.c:144
+#: src/gs-safety-context-dialog.c:147
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
 msgstr "应用程序未沙盒化，但发行版已检查并确认其并非恶意程序"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:160
 msgid "No Permissions"
 msgstr "无需权限"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:161
 msgid "App is fully sandboxed"
 msgstr "应用已完全沙盒化"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:172
 msgid "Network Access"
 msgstr "网络访问"
 
-#: src/gs-safety-context-dialog.c:164
+#: src/gs-safety-context-dialog.c:173
 msgid "Can access the internet"
 msgstr "可以访问互联网"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:176
 msgid "No Network Access"
 msgstr "无网络访问"
 
-#: src/gs-safety-context-dialog.c:168
+#: src/gs-safety-context-dialog.c:177
 msgid "Cannot access the internet"
 msgstr "不能访问互联网"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:183
 msgid "Uses System Services"
 msgstr "使用系统服务"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:184
 msgid "Can request data from system services"
 msgstr "可以从系统服务请求数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:191
 msgid "Uses Session Services"
 msgstr "使用会话服务"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:192
 msgid "Can request data from session services"
 msgstr "可以从会话服务请求数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:199
 msgid "Device Access"
 msgstr "设备访问"
 
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:200
 msgid "Can access devices such as webcams or gaming controllers"
 msgstr "可以访问网络摄像头或游戏控制器等设备"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:203
 msgid "No Device Access"
 msgstr "无设备访问"
 
-#: src/gs-safety-context-dialog.c:195
+#: src/gs-safety-context-dialog.c:204
 msgid "Cannot access devices such as webcams or gaming controllers"
 msgstr "不能访问网络摄像头或游戏控制器等设备"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
 msgstr "旧式窗口系统"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:218
 msgid "Arbitrary Permissions"
 msgstr "任意权限"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:226
 msgid "User Settings"
 msgstr "用户设置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:229
+#: src/gs-safety-context-dialog.c:238
 msgid "Full File System Read/Write Access"
 msgstr "完全的文件系统读写权限"
 
-#: src/gs-safety-context-dialog.c:230
+#: src/gs-safety-context-dialog.c:239
 msgid "Can read and write all data on the file system"
 msgstr "可以读写文件系统上的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:238
+#: src/gs-safety-context-dialog.c:247
 msgid "Home Folder Read/Write Access"
 msgstr "主目录读写权限"
 
-#: src/gs-safety-context-dialog.c:239
+#: src/gs-safety-context-dialog.c:248
 msgid "Can read and write all data in your home directory"
 msgstr "可以读写您的用户主目录中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:247
+#: src/gs-safety-context-dialog.c:256
 msgid "Full File System Read Access"
 msgstr "完全的文件系统读取权限"
 
-#: src/gs-safety-context-dialog.c:248
+#: src/gs-safety-context-dialog.c:257
 msgid "Can read all data on the file system"
 msgstr "可以读取文件系统上的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:257
+#: src/gs-safety-context-dialog.c:266
 msgid "Home Folder Read Access"
 msgstr "主目录读权限"
 
-#: src/gs-safety-context-dialog.c:258
+#: src/gs-safety-context-dialog.c:267
 msgid "Can read all data in your home directory"
 msgstr "可以读取您的用户主目录中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:267
+#: src/gs-safety-context-dialog.c:276
 msgid "Download Folder Read/Write Access"
 msgstr "下载文件夹读写权限"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:277
 msgid "Can read and write all data in your downloads directory"
 msgstr "可以读写您的下载文件夹中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:279
+#: src/gs-safety-context-dialog.c:288
 msgid "Download Folder Read Access"
 msgstr "下载文件夹读权限"
 
-#: src/gs-safety-context-dialog.c:280
+#: src/gs-safety-context-dialog.c:289
 msgid "Can read all data in your downloads directory"
 msgstr "可以读取您的下载文件夹中的所有数据"
 
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:291
-msgid "Access arbitrary files"
-msgstr "访问任意文件"
+#: src/gs-safety-context-dialog.c:299
+msgid "Can read and write all data in the directory"
+msgstr "可以读取和写入目录中的所有数据"
 
-#: src/gs-safety-context-dialog.c:292
-msgid "Can access arbitrary files on the file system"
-msgstr "可以访问文件系统上的任意文件"
+#: src/gs-safety-context-dialog.c:310
+msgid "Can read all data in the directory"
+msgstr "可以读取目录中的所有数据"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:326
 msgid "No File System Access"
 msgstr "无文件系统访问"
 
-#: src/gs-safety-context-dialog.c:307
+#: src/gs-safety-context-dialog.c:327
 msgid "Cannot access the file system at all"
 msgstr "完全无法访问文件系统"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:341
 msgid "Proprietary Code"
 msgstr "专有代码"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:342
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr "源代码不是公开的，所以它不能被独立地审计且可能不安全"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:345
 msgid "Auditable Code"
 msgstr "可审计代码"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:346
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
@@ -3544,42 +3543,42 @@ msgstr "源代码是公开的且可以被独立地审计，这使得应用可以
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:334
+#: src/gs-safety-context-dialog.c:354
 msgid "App developer is verified"
 msgstr "应用开发者已验证"
 
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:355
 msgid "The developer of this app has been verified to be who they say they are"
 msgstr "此应用的开发者已经被验证为他们所声称的人"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:366
 msgid "Insecure Dependencies"
 msgstr "不安全的依赖"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:367
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
 msgstr "软件或其依赖不再受到支持因此可能不安全"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:356
+#: src/gs-safety-context-dialog.c:376
 #, c-format
 msgid "%s is safe"
 msgstr "%s 是安全的"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:363
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is potentially unsafe"
 msgstr "%s 可能是安全的"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:370
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is unsafe"
 msgstr "%s 不安全"
@@ -3622,35 +3621,35 @@ msgstr "没有截图"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:336 src/gs-screenshot-image.c:393
+#: src/gs-screenshot-image.c:355 src/gs-screenshot-image.c:412
 msgid "Screenshot not found"
 msgstr "未找到截图"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:431
 msgid "Failed to load image"
 msgstr "加载图片失败"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:563
+#: src/gs-screenshot-image.c:582
 msgid "Screenshot size not found"
 msgstr "未找到截图尺寸"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:644
+#: src/gs-screenshot-image.c:663
 msgid "Could not create cache"
 msgstr "无法创建缓存"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:658
+#: src/gs-screenshot-image.c:677
 msgid "Screenshot not valid"
 msgstr "截图无效"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:690
+#: src/gs-screenshot-image.c:709
 msgid "Screenshot not available"
 msgstr "截图不可用"
 
@@ -4295,147 +4294,147 @@ msgstr "已在 %s 上安装"
 msgid "No updates have been installed on this system."
 msgstr "此系统未安装过更新。"
 
-#: src/gs-update-monitor.c:222
+#: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
 msgstr "软件更新已过时"
 
-#: src/gs-update-monitor.c:223
+#: src/gs-update-monitor.c:214
 msgid "Please check for software updates."
 msgstr "请检查软件更新。"
 
-#: src/gs-update-monitor.c:229
+#: src/gs-update-monitor.c:220
 msgid "Critical Software Update Ready to Install"
 msgstr "关键软件更新已可安装"
 
-#: src/gs-update-monitor.c:230
+#: src/gs-update-monitor.c:221
 msgid "An important software update is ready to be installed."
 msgstr "重要的软件更新已经准备好安装。"
 
-#: src/gs-update-monitor.c:233
+#: src/gs-update-monitor.c:224
 msgid "Critical Software Updates Available to Download"
 msgstr "关键软件更新已可下载"
 
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:225
 msgid "Important: critical software updates are waiting."
 msgstr "重要：关键软件更新正在等待。"
 
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:231
 msgid "Software Updates Ready to Install"
 msgstr "软件更新已可安装"
 
-#: src/gs-update-monitor.c:243
+#: src/gs-update-monitor.c:232
 msgid "Software updates are waiting and ready to be installed."
 msgstr "软件更新正在等待并且已准备好安装。"
 
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:238
 msgid "Software Updates Available to Download"
 msgstr "软件更新已可下载"
 
-#: src/gs-update-monitor.c:249
+#: src/gs-update-monitor.c:239
 msgid "Please download waiting software updates."
 msgstr "请下载等待中的软件更新。"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:361
+#: src/gs-update-monitor.c:355
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
 msgstr[0] "已更新 %u 款应用程序——需要重启"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:367
+#: src/gs-update-monitor.c:361
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "已更新 %u 款应用程序"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:378
+#: src/gs-update-monitor.c:372
 #, c-format
 msgid "%s has been updated."
 msgstr "%s 已经更新。"
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:381
+#: src/gs-update-monitor.c:375
 msgid "Please restart the application."
 msgstr "请重启应用程序。"
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:389
+#: src/gs-update-monitor.c:383
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s 和 %s 已经更新。"
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:395 src/gs-update-monitor.c:414
+#: src/gs-update-monitor.c:389 src/gs-update-monitor.c:408
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u 款应用程序需要重启。"
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:407
+#: src/gs-update-monitor.c:401
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "包括 %s、%s 和 %s。"
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:677 src/gs-updates-page.ui:20
+#: src/gs-update-monitor.c:671 src/gs-updates-page.ui:20
 msgid "Operating System Updates Unavailable"
 msgstr "操作系统更新不再提供"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:679
+#: src/gs-update-monitor.c:673
 msgid "Upgrade to continue receiving security updates."
 msgstr "升级以继续接收安全更新。"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:734
+#: src/gs-update-monitor.c:728
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s 有新版本可用"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:738
+#: src/gs-update-monitor.c:732
 msgid "Software Upgrade Available"
 msgstr "有可用的软件升级"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1143
+#: src/gs-update-monitor.c:1137
 msgid "Software Updates Failed"
 msgstr "软件更新失败"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1145
+#: src/gs-update-monitor.c:1139
 msgid "An important operating system update failed to be installed."
 msgstr "重要的操作系统更新安装失败。"
 
-#: src/gs-update-monitor.c:1146
+#: src/gs-update-monitor.c:1140
 msgid "Show Details"
 msgstr "显示详细信息"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1168
+#: src/gs-update-monitor.c:1162
 msgid "System Upgrade Complete"
 msgstr "系统升级完成"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1173
+#: src/gs-update-monitor.c:1167
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "欢迎使用 %s %s！"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1179
+#: src/gs-update-monitor.c:1173
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "软件更新已安装"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1183
+#: src/gs-update-monitor.c:1177
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "重要的操作系统更新已安装。"
@@ -4445,50 +4444,50 @@ msgstr[0] "重要的操作系统更新已安装。"
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1194
+#: src/gs-update-monitor.c:1188
 msgctxt "updates"
 msgid "Review"
 msgstr "回顾"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1243
+#: src/gs-update-monitor.c:1237
 msgid "Failed To Update"
 msgstr "更新失败"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1248
+#: src/gs-update-monitor.c:1242
 msgid "The system was already up to date."
 msgstr "该系统已是最新的。"
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1253
+#: src/gs-update-monitor.c:1247
 msgid "The update was cancelled."
 msgstr "更新被取消。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1258
+#: src/gs-update-monitor.c:1252
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr "需要互联网连接但是未发现有效连接。请确认您有接入互联网并在此尝试。"
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1263
+#: src/gs-update-monitor.c:1257
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "本次更新有安全性问题。请联系您的软件提供商以获取更多信息。"
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1268
+#: src/gs-update-monitor.c:1262
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "没有足够的磁盘空间。请释放一些空间后再试一次。"
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1272
+#: src/gs-update-monitor.c:1266
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4617,42 +4616,42 @@ msgstr "更新将被自动管理。"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:328
+#: src/gs-updates-section.c:320
 msgid "Restart & Update"
 msgstr "重启并更新"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:334
+#: src/gs-updates-section.c:326
 msgid "Update All"
 msgstr "全部更新"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:476
+#: src/gs-updates-section.c:468
 msgid "Integrated Firmware"
 msgstr "集成固件"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:481
+#: src/gs-updates-section.c:473
 msgid "Requires Restart"
 msgstr "重新启动"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:486
+#: src/gs-updates-section.c:478
 msgid "Application Updates"
 msgstr "应用程序更新"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:491
+#: src/gs-updates-section.c:483
 msgid "Device Firmware"
 msgstr "设备固件"
 
 #: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
-#: plugins/packagekit/gs-packagekit-task.c:153
+#: plugins/packagekit/gs-packagekit-task.c:155
 msgid "_Download"
 msgstr "下载(_D)"
 
@@ -4748,7 +4747,7 @@ msgstr "%s 更新了新特性和缺陷修复。"
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS 更新服务无法获取和应用更新。"
 
-#: plugins/epiphany/gs-plugin-epiphany.c:464
+#: plugins/epiphany/gs-plugin-epiphany.c:474
 msgid "GNOME Web"
 msgstr "GNOME 浏览器"
 
@@ -4779,13 +4778,136 @@ msgstr "Flatpak 支持"
 msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak 是用于 Linux 上桌面应用程序的框架"
 
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak.c:307
+#, c-format
+msgid "System folder %s"
+msgstr "系统文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:308 plugins/flatpak/gs-flatpak.c:309
+#, c-format
+msgid "Home subfolder %s"
+msgstr "主目录子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:310
+msgid "Host system folders"
+msgstr "主机系统文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:311
+msgid "Host system configuration from /etc"
+msgstr "来自 /etc 的主机系统配置"
+
+#: plugins/flatpak/gs-flatpak.c:312
+msgid "Desktop folder"
+msgstr "桌面文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:312
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "桌面子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:313
+msgid "Documents folder"
+msgstr "文档文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:313
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "文档子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:314
+msgid "Music folder"
+msgstr "音乐文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:314
+#, c-format
+msgid "Music subfolder %s"
+msgstr "音乐子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:315
+msgid "Pictures folder"
+msgstr "图片文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:315
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "图片子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:316
+msgid "Public Share folder"
+msgstr "共享文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:316
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "共享子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:317
+msgid "Videos folder"
+msgstr "视频文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:317
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "视频子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:318
+msgid "Templates folder"
+msgstr "模板文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "模板子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:319
+msgid "User cache folder"
+msgstr "用户缓存文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:319
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "用户缓存子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:320
+msgid "User configuration folder"
+msgstr "用户配置文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "用户配置子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:321
+msgid "User data folder"
+msgstr "用户数据文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#, c-format
+msgid "User data subfolder %s"
+msgstr "用户数据子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:322
+msgid "User runtime folder"
+msgstr "用户运行时文件夹"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "用户运行时子文件夹 %s"
+
+#: plugins/flatpak/gs-flatpak.c:380
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "对 %s 的文件系统访问"
+
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1218
+#: plugins/flatpak/gs-flatpak.c:1397
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "正在获取 %s 的 flatpak 元数据…"
 
-#: plugins/flatpak/gs-flatpak.c:3344
+#: plugins/flatpak/gs-flatpak.c:3534
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "无法细化扩展“%s”：%s"
@@ -4807,6 +4929,15 @@ msgstr "无法将扩展“%s”添加来安装：%s"
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "无法将扩展“%s”添加来卸载：%s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:1318
+#, c-format
+msgid ""
+"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
+"Remove the filter and repeat the install. Detailed error: %s"
+msgstr ""
+"远程仓库“%s”不允许安装“%s”，可能是因为它的筛选器。移除筛选器并重复安装。错误"
+"详情：%s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
@@ -4951,7 +5082,7 @@ msgstr "%s 基板管理控制器（BMC）更新"
 msgid "%s USB Receiver Update"
 msgstr "%s USB 接收器更新"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1199
+#: plugins/fwupd/gs-plugin-fwupd.c:1241
 msgid "Firmware"
 msgstr "固件"
 
@@ -4963,32 +5094,32 @@ msgstr "固件升级支持"
 msgid "Provides support for firmware upgrades"
 msgstr "提供固件升级的支持"
 
-#: plugins/packagekit/gs-packagekit-task.c:146
+#: plugins/packagekit/gs-packagekit-task.c:148
 msgid "Install Unsigned Software?"
 msgstr "安装未签名的软件吗？"
 
-#: plugins/packagekit/gs-packagekit-task.c:147
+#: plugins/packagekit/gs-packagekit-task.c:149
 msgid ""
 "Software that is to be installed is not signed. It will not be possible to "
 "verify the origin of updates to this software, or whether updates have been "
 "tampered with."
 msgstr "即将安装的软件未被签名。将无法验证该软件的更新源或更新是否已被篡改。"
 
-#: plugins/packagekit/gs-packagekit-task.c:151
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid "Download Unsigned Software?"
 msgstr "下载未签名的软件吗？"
 
-#: plugins/packagekit/gs-packagekit-task.c:152
+#: plugins/packagekit/gs-packagekit-task.c:154
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with."
 msgstr "未签名的更新已可用。没有签名将无法验证更新源或更新是否已被篡改。"
 
-#: plugins/packagekit/gs-packagekit-task.c:156
+#: plugins/packagekit/gs-packagekit-task.c:158
 msgid "Update Unsigned Software?"
 msgstr "更新未签名的软件吗？"
 
-#: plugins/packagekit/gs-packagekit-task.c:157
+#: plugins/packagekit/gs-packagekit-task.c:159
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with. "
@@ -5002,7 +5133,7 @@ msgstr ""
 msgid "Packages"
 msgstr "软件包"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2594
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2596
 msgid "Operating System (OSTree)"
 msgstr "操作系统（OSTree）"
 
@@ -5018,6 +5149,12 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "Access arbitrary files"
+#~ msgstr "访问任意文件"
+
+#~ msgid "Can access arbitrary files on the file system"
+#~ msgstr "可以访问文件系统上的任意文件"
 
 #~ msgid "A list of popular applications"
 #~ msgstr "热门应用程序列表"
@@ -5079,9 +5216,6 @@ msgstr "Snap 是个通用的 Linux 程序包"
 
 #~ msgid "Downloading firmware update metadata…"
 #~ msgstr "正在下载固件更新元数据……"
-
-#~ msgid "Picture"
-#~ msgstr "图片"
 
 #~ msgid "Software has unknown permissions"
 #~ msgstr "软件所需权限未知"
