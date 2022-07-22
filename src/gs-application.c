@@ -346,6 +346,9 @@ shutdown_activated (GSimpleAction *action,
 	g_application_quit (G_APPLICATION (app));
 }
 
+static void offline_update_get_app_cb (GObject      *source_object,
+                                       GAsyncResult *result,
+                                       gpointer      user_data);
 static void offline_update_cb (GsPluginLoader *plugin_loader,
                                GAsyncResult   *res,
                                GsApplication  *app);
@@ -356,9 +359,35 @@ reboot_and_install (GSimpleAction *action,
 		    gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE, NULL);
+	gs_plugin_loader_get_system_app_async (app->plugin_loader, app->cancellable,
+					       offline_update_get_app_cb, app);
+}
+
+static void
+offline_update_get_app_cb (GObject      *source_object,
+                           GAsyncResult *result,
+                           gpointer      user_data)
+{
+	GsApplication *app = GS_APPLICATION (user_data);
+	g_autoptr(GsApp) system_app = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	system_app = gs_plugin_loader_get_system_app_finish (app->plugin_loader,
+							     result,
+							     &local_error);
+
+	if (system_app == NULL) {
+		g_warning ("Failed to trigger offline update: %s", local_error->message);
+		return;
+	}
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, system_app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
 					    app->cancellable,
 					    (GAsyncReadyCallback) offline_update_cb,
