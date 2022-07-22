@@ -499,10 +499,10 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* install any apps that can be installed LIVE */
 	if (gs_app_list_length (update_online) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-						 "list", update_online,
-						 "propagate-error", TRUE,
-						 NULL);
+
+		plugin_job = gs_plugin_job_update_apps_new (update_online,
+							    GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
+		gs_plugin_job_set_propagate_error (plugin_job, TRUE);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
 						    monitor->update_cancellable,
