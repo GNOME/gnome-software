@@ -103,6 +103,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsPlugin *plugin;
@@ -116,9 +117,11 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "dummy");
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "app", app,
-					 NULL);
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
+
+	plugin_job = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
@@ -681,9 +684,9 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 					    helper2);
 
 	/* update an app */
-	plugin_job3 = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					  "app", app3,
-					  NULL);
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app3);
+	plugin_job3 = gs_plugin_job_update_apps_new (list, GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD);
 	gs_plugin_loader_job_process_async (plugin_loader,
 					    plugin_job3,
 					    NULL,
