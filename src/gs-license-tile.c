@@ -43,7 +43,7 @@ struct _GsLicenseTile
 	GtkWidget	*lozenges[3];
 	GtkLabel	*title_label;
 	GtkLabel	*description_label;
-	GtkListBoxRow	*get_involved_row;
+	GtkLabel	*get_involved_label;
 };
 
 G_DEFINE_TYPE (GsLicenseTile, gs_license_tile, GTK_TYPE_WIDGET)
@@ -84,6 +84,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	const gchar *lozenge_icon_names[3];
 	g_autofree gchar *description = NULL;
 	gboolean get_involved_visible;
+	const gchar *get_involved_label;
 
 	/* Widget behaviour is undefined if the app is unspecified. */
 	if (self->app == NULL)
@@ -101,6 +102,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 #else
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL);
 #endif
+		get_involved_label = _("_Get Involved");
 
 		/* Translators: The placeholder here is the name of a software license. */
 		description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
@@ -113,7 +115,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[0] = "dialog-warning-symbolic";
 		lozenge_icon_names[1] = "face-sad-symbolic";
 		lozenge_icon_names[2] = "padlock-open-symbolic";
-		get_involved_visible = FALSE;
+		get_involved_visible = TRUE;
+		get_involved_label = _("_Learn More");
 
 		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
 					  "\n\n"
@@ -130,7 +133,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 
 	gtk_label_set_label (self->title_label, title);
 	gtk_label_set_label (self->description_label, description);
-	gtk_widget_set_visible (GTK_WIDGET (self->get_involved_row), get_involved_visible);
+	gtk_widget_set_visible (GTK_WIDGET (self->get_involved_label), get_involved_visible);
+	gtk_label_set_label (self->get_involved_label, get_involved_label);
 }
 
 static void
@@ -238,7 +242,7 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	gtk_widget_class_bind_template_child_full (widget_class, "lozenge2", FALSE, G_STRUCT_OFFSET (GsLicenseTile, lozenges[2]));
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, title_label);
 	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, description_label);
-	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_row);
+	gtk_widget_class_bind_template_child (widget_class, GsLicenseTile, get_involved_label);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_license_tile_row_activated_cb);
 
