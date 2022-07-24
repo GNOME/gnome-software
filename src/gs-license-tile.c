@@ -115,9 +115,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		lozenge_icon_names[2] = "padlock-open-symbolic";
 		get_involved_visible = FALSE;
 
-		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. There may be restrictions on its use, and it may be harder to tell if the software is insecure."
+		description = g_strdup (_("This software is not developed in the open, so only its developers know how it works. It may be insecure in ways that are hard to detect, and it may change without oversight."
 					  "\n\n"
-					  "You may not be able to contribute to this software or influence its development."));
+					  "You may not be able to contribute to this software."));
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
