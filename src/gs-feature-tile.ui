@@ -57,16 +57,21 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="subtitle">
-                    <property name="ellipsize">end</property>
-                    <property name="xalign">0.5</property>
-                    <property name="halign">center</property>
-                    <property name="valign">start</property>
-                    <property name="lines">1</property>
-                    <property name="justify">center</property>
-                    <style>
-                      <class name="caption"/>
-                    </style>
+                  <object class="AdwClamp">
+                    <property name="maximum-size">350</property>
+                    <property name="tightening-threshold">350</property>
+                    <child>
+                      <object class="GtkLabel" id="subtitle">
+                        <property name="ellipsize">end</property>
+                        <property name="xalign">0.5</property>
+                        <property name="valign">start</property>
+                        <property name="lines">1</property>
+                        <property name="justify">center</property>
+                        <style>
+                          <class name="caption"/>
+                        </style>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
