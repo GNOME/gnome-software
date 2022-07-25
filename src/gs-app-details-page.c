@@ -154,7 +154,6 @@ populate_permissions_section (GsAppDetailsPage *page,
 static void
 set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 {
-	AsComponentKind kind;
 	g_autoptr(GIcon) icon = NULL;
 	guint icon_size;
 	const gchar *update_details;
@@ -164,31 +163,7 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 	/* FIXME support app == NULL */
 
 	/* set window title */
-	kind = gs_app_get_kind (app);
-	if (kind == AS_COMPONENT_KIND_GENERIC &&
-	    gs_app_get_special_kind (app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
-		adw_window_title_set_title (page->window_title, gs_app_get_name (app));
-	} else if (gs_app_get_source_default (app) != NULL &&
-		   gs_app_get_update_version (app) != NULL) {
-		g_autofree gchar *tmp = NULL;
-		/* Translators: This is the source and upgrade version of an
-		 * application, shown to the user when they view more detailed
-		 * information about pending updates. The source is of the form
-		 * ‘deja-dup’ (a package name) or
-		 * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
-		 * version is of the form ‘40.4-1.fc34’ (a version number). */
-		tmp = g_strdup_printf (_("%s %s"),
-				       gs_app_get_source_default (app),
-				       gs_app_get_update_version (app));
-		adw_window_title_set_title (page->window_title, tmp);
-	} else if (gs_app_get_source_default (app) != NULL) {
-		adw_window_title_set_title (page->window_title,
-					    gs_app_get_source_default (app));
-	} else {
-		adw_window_title_set_title (page->window_title,
-					    gs_app_get_update_version (app));
-	}
-
+	adw_window_title_set_title (page->window_title, _("Update Details"));
 	g_object_notify_by_pspec (G_OBJECT (page), obj_props[PROP_TITLE]);
 
 	/* set update header */
