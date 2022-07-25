@@ -90,6 +90,8 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		return;
 
 	if (gs_app_get_license_is_free (self->app)) {
+		const gchar *license_spdx, *license_url;
+
 		title = _("Community Built");
 		css_class = "green";
 		lozenge_icon_names[0] = "heart-filled-symbolic";
@@ -102,11 +104,23 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		get_involved_visible = (gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE) != NULL);
 #endif
 
-		/* Translators: The placeholder here is the name of a software license. */
-		description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
-						 "\n\n"
-						 "You can contribute and help make it even better."),
-						 gs_app_get_license (self->app));
+		license_spdx = gs_app_get_license (self->app);
+		license_url = as_get_license_url (license_spdx);
+
+		if (license_url != NULL) {
+			/* Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license. */
+			description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the <a href=\"%s\">%s license</a>."
+							 "\n\n"
+							 "You can contribute and help make it even better."),
+							 license_url,
+							 license_spdx);
+		} else {
+			/* Translators: The placeholder here is the name of a software license. */
+			description = g_strdup_printf (_("This software is developed in the open by a community of volunteers, and released under the %s license."
+							 "\n\n"
+							 "You can contribute and help make it even better."),
+							 license_spdx);
+		}
 	} else {
 		title = _("Proprietary");
 		css_class = "grey";
