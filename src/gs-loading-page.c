@@ -53,7 +53,7 @@ gs_loading_page_job_progress_cb (GsPluginJobRefreshMetadata *plugin_job,
 	/* update title */
 	adw_status_page_set_title (ADW_STATUS_PAGE (priv->status_page),
 				   /* TRANSLATORS: initial start */
-				   _("Software catalog is being downloaded"));
+				   _("Downloading software catalog"));
 
 	/* update progressbar */
 	if (priv->progress_pulse_id != 0) {
