@@ -1,16 +1,9 @@
-# Copyright (C) 2022 The Abkhazian language development fund named after Bagrat Shinkuba
-# This file is distributed under the same license as the gnome-software package.
-# Нанба Наала <naala-nanba@rambler.ru>, 2022.
-#
-
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2022-07-20 12:56+0000\n"
-"PO-Revision-Date: 2022-07-22 16:00+0000\n"
 "Last-Translator: Нанба Наала <naala-nanba@rambler.ru>\n"
-"Language-Team: Abkhazian <LL@li.org>\n"
+"Language-Team: Abkhazian <ab@li.org>\n"
 "Language: ab\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -65,7 +58,7 @@ msgstr ""
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:1949
 #: src/gs-application.c:245
 msgid "The GNOME Project"
-msgstr ""
+msgstr "The GNOME Project"
 
 #: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
@@ -355,6 +348,7 @@ msgstr ""
 msgid "No information regarding sexual violence"
 msgstr ""
 
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:184
 msgid "Alcohol"
 msgstr "Арыжәтә"
@@ -445,6 +439,7 @@ msgstr ""
 msgid "No information regarding advertising of any kind"
 msgstr ""
 
+#. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
 #: src/gs-age-rating-context-dialog.c:274
 msgid "Gambling"
 msgstr "Алахаларатә хәмаррақәа"
@@ -637,7 +632,7 @@ msgstr ""
 #: src/gs-age-rating-context-dialog.c:658
 #, c-format
 msgid "%s • %s"
-msgstr ""
+msgstr "%s • %s"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
@@ -646,7 +641,14 @@ msgctxt "Age rating"
 msgid "All"
 msgstr ""
 
-#: src/gs-age-rating-context-dialog.c:949+src/gs-app-context-bar.c:206+src/gs-storage-context-dialog.c:89
+#. Translators: This is displayed for the download size in an
+#. * app’s context tile if the size is unknown. It should be short
+#. * (at most a couple of characters wide).
+#. Translators: This is shown in a bubble if the storage
+#. * size of an application is not known. The bubble is small,
+#. * so the string should be as short as possible.
+#: src/gs-age-rating-context-dialog.c:949 src/gs-app-context-bar.c:206
+#: src/gs-storage-context-dialog.c:89
 msgid "?"
 msgstr "?"
 
@@ -709,7 +711,13 @@ msgstr ""
 msgid "Local file"
 msgstr ""
 
-#: lib/gs-app.c:6174+src/gs-safety-context-dialog.c:439
+#. TRANSLATORS: the first %s is replaced with an origin name;
+#. the second %s is replaced with the packaging format.
+#. Example string: "Local file (RPM)"
+#. Translators: The first placeholder is an app runtime
+#. * name, the second is its version number.
+#: lib/gs-app.c:6180 src/gs-safety-context-dialog.c:439
+#, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
@@ -828,7 +836,14 @@ msgstr ""
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr ""
 
-#: src/gs-app-details-page.c:177
+#. Translators: This is the source and upgrade version of an
+#. * application, shown to the user when they view more detailed
+#. * information about pending updates. The source is of the form
+#. * ‘deja-dup’ (a package name) or
+#. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
+#. * version is of the form ‘40.4-1.fc34’ (a version number).
+#: src/gs-app-details-page.c:180
+#, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
@@ -905,7 +920,7 @@ msgstr ""
 msgid "Show application details (using application ID)"
 msgstr ""
 
-#: src/gs-application.c:128+src/gs-application.c:132+src/gs-application.c:134
+#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
 msgid "ID"
 msgstr "ID"
 
@@ -967,13 +982,13 @@ msgstr ""
 msgid "Show version number"
 msgstr ""
 
-#: src/gs-application.c:246
+#: src/gs-application.c:250 src/gs-application.c:258
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "Аԥҵаҩы изин © 2016-2022 Апрограмматә еиқәыршәара  GNOME аҟаҵаҩцәа"
 
 #: src/gs-application.c:252 src/gs-application.c:261
 msgid "translator-credits"
-msgstr ""
+msgstr "Нанба Наала <naala-nanba@rambler.ru>, 2022"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
@@ -1160,7 +1175,21 @@ msgstr ""
 msgid "Software no longer supported"
 msgstr ""
 
-#: src/gs-app-context-bar.c:459+src/gs-app-context-bar.c:730
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been marked as
+#. * ‘safe’, ‘potentially safe’ or ‘unsafe’. For example:
+#. * “App comes from a trusted source; Auditable code; No permissions”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#. Translators: This string is used to join various other translated
+#. * strings into an inline list of reasons why an app has been given a
+#. * certain content rating. For example:
+#. * “References to alcoholic beverages; Moderated chat functionality between users”
+#. * If concatenating strings as a list using a separator like this is not
+#. * possible in your language, please file an issue against gnome-software:
+#. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr "; "
 
@@ -1892,6 +1921,7 @@ msgstr ""
 msgid "Don’t Warn Again"
 msgstr ""
 
+#. TRANSLATORS: button text
 #: src/gs-common.c:291
 msgid "Enable and Install"
 msgstr "Аҿакреи ашьақәыргылареи"
@@ -2275,7 +2305,8 @@ msgstr ""
 msgid " and "
 msgstr ""
 
-#: src/gs-extras-page.c:144
+#. TRANSLATORS: separator for a list of items
+#: src/gs-extras-page.c:145
 msgid ", "
 msgstr ", "
 
@@ -2471,7 +2502,7 @@ msgstr ""
 
 #: src/gs-featured-carousel.ui:66
 msgid "Next"
-msgstr ""
+msgstr "Ԥхьаҟа"
 
 #: src/gs-featured-carousel.ui:83
 msgid "Featured Apps List"
@@ -2753,7 +2784,7 @@ msgstr ""
 msgid "Starting up…"
 msgstr ""
 
-#: src/gs-metered-data-dialog.ui:5+src/gs-shell.ui:256
+#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:256
 msgid "Automatic Updates Paused"
 msgstr "Автоматикатә рҿыцрақәа аамҭала иаанкылоуп"
 
@@ -3206,9 +3237,9 @@ msgstr ""
 
 #: src/gs-review-dialog.ui:156
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>. The full name attached to your account will be shown "
-"publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
+"privacy\">privacy policy</a>. The full name attached to your account will be "
+"shown publicly."
 msgstr ""
 
 #: src/gs-review-histogram.c:72
@@ -3260,7 +3291,7 @@ msgstr ""
 
 #: src/gs-review-row.ui:100
 msgid "Yes"
-msgstr "_Ааи"
+msgstr "Ааи"
 
 #: src/gs-review-row.ui:108
 msgid "No"
@@ -3502,6 +3533,7 @@ msgstr ""
 msgid "%s is unsafe"
 msgstr ""
 
+#. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:5
 msgid "Safety"
 msgstr "Ашәарҭадара"
@@ -3610,7 +3642,10 @@ msgstr ""
 msgid "“%s”"
 msgstr ""
 
+#. Translators: The '%s' is replaced with an error message, which had been shortened.
+#. The dots at the end are there to highlight that to the user.
 #: src/gs-shell.c:1258
+#, c-format
 msgid "%s…"
 msgstr "%s…"
 
@@ -4494,6 +4529,7 @@ msgstr ""
 msgid "This could take a while."
 msgstr ""
 
+#. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:204
 msgid "Up to Date"
 msgstr "Иактуалу"
@@ -5061,17 +5097,3 @@ msgstr ""
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr ""
-
-#: src/gs-age-rating-context-dialog.c:658
-msgctxt "src/gs-age-rating-context-dialog.c:658"
-msgid "%s • %s"
-msgstr "%s • %s"
-
-#: src/gs-common.c:982
-msgid "%s %s"
-msgstr "%s %s"
-
-#: src/gs-repo-row.c:243
-msgctxt "src/gs-repo-row.c:243"
-msgid "%s • %s"
-msgstr "%s • %s"
