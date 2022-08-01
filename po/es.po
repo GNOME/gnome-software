@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-07-25 18:02+0000\n"
-"PO-Revision-Date: 2022-07-27 11:30+0200\n"
+"POT-Creation-Date: 2022-08-01 10:17+0000\n"
+"PO-Revision-Date: 2022-08-01 13:41+0200\n"
 "Last-Translator: Daniel Mustieles García <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
@@ -2225,12 +2225,12 @@ msgstr "Desinstalando…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:828 src/gs-details-page.c:854
+#: src/gs-details-page.c:840 src/gs-details-page.c:866
 #: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:844
+#: src/gs-details-page.c:856
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -2238,22 +2238,22 @@ msgstr "_Reiniciar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:868
+#: src/gs-details-page.c:880
 msgid "_Install…"
 msgstr "_Instalar…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1148
+#: src/gs-details-page.c:1160
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Otras aplicaciones por %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1531
+#: src/gs-details-page.c:1543
 msgid "You need internet access to write a review"
 msgstr "Necesita acceso a Internet para escribir una opinión"
 
-#: src/gs-details-page.c:1682 src/gs-details-page.c:1698
+#: src/gs-details-page.c:1694 src/gs-details-page.c:1710
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "No se pudo encontrar «%s»"
@@ -2868,12 +2868,16 @@ msgstr "Aplicaciones web"
 msgid "System Applications"
 msgstr "Aplicaciones del sistema"
 
-#: src/gs-license-tile.c:95
+#: src/gs-license-tile.c:96
 msgid "Community Built"
 msgstr "Construido por la comunidad"
 
+#: src/gs-license-tile.c:107 src/gs-license-tile.ui:98
+msgid "_Get Involved"
+msgstr "_Involucrarse"
+
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:112
+#: src/gs-license-tile.c:114
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2887,7 +2891,7 @@ msgstr ""
 "Puede colaborar y ayudar a hacerlo aún mejor."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:119
+#: src/gs-license-tile.c:121
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2900,29 +2904,27 @@ msgstr ""
 "\n"
 "Puede colaborar y ayudar a hacerlo aún mejor."
 
-#: src/gs-license-tile.c:125
+#: src/gs-license-tile.c:127
 msgid "Proprietary"
 msgstr "Propietario"
 
-#: src/gs-license-tile.c:132
+#: src/gs-license-tile.c:133
+msgid "_Learn More"
+msgstr "_Aprender más"
+
+#: src/gs-license-tile.c:135
 msgid ""
 "This software is not developed in the open, so only its developers know how "
-"it works. There may be restrictions on its use, and it may be harder to tell "
-"if the software is insecure.\n"
+"it works. It may be insecure in ways that are hard to detect, and it may "
+"change without oversight.\n"
 "\n"
-"You may not be able to contribute to this software or influence its "
-"development."
+"You may not be able to contribute to this software."
 msgstr ""
 "Este software no se desarrolla en abierto por lo que sólo los "
-"desarrolladores saben cómo funciona. Puede haber restricciones en cuanto a "
-"su uso y puede ser difícil decir si el software es seguro o no.\n"
+"desarrolladores saben cómo funciona. Puede ser difícil decir si el software "
+"es seguro o no.\n"
 "\n"
-"Es posible que no pueda colaborar con este software o influir en su "
-"desarrollo."
-
-#: src/gs-license-tile.ui:97
-msgid "_Get Involved"
-msgstr "_Involucrarse"
+"Es posible que no pueda colaborar con este software."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
@@ -5599,9 +5601,6 @@ msgstr "Un snap es un paquete universal de Linux"
 
 #~ msgid "%s %s Ready to be Installed"
 #~ msgstr "%s %s listo para instalar"
-
-#~ msgid "_Learn More"
-#~ msgstr "_Aprender más"
 
 #~ msgctxt "Menu of Games"
 #~ msgid "All"
