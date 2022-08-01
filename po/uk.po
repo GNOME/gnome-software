@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-07-25 18:02+0000\n"
-"PO-Revision-Date: 2022-07-25 22:42+0300\n"
+"POT-Creation-Date: 2022-08-01 10:17+0000\n"
+"PO-Revision-Date: 2022-08-01 14:25+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -765,7 +765,6 @@ msgstr "Віковий рейтинг"
 #: src/gs-age-rating-context-dialog.ui:68
 #: src/gs-hardware-support-context-dialog.ui:71
 #: src/gs-safety-context-dialog.ui:221
-#| msgid "How to add missing information"
 msgid "How to contribute missing information"
 msgstr "Як надати відомості, яких не вистачає"
 
@@ -2231,12 +2230,12 @@ msgstr "Вилучаємо…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:828 src/gs-details-page.c:854
+#: src/gs-details-page.c:840 src/gs-details-page.c:866
 #: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Встановити"
 
-#: src/gs-details-page.c:844
+#: src/gs-details-page.c:856
 msgid "_Restart"
 msgstr "_Перезапустити"
 
@@ -2244,22 +2243,22 @@ msgstr "_Перезапустити"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:868
+#: src/gs-details-page.c:880
 msgid "_Install…"
 msgstr "_Встановити…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1148
+#: src/gs-details-page.c:1160
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Інші програми %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1531
+#: src/gs-details-page.c:1543
 msgid "You need internet access to write a review"
 msgstr "Щоб написати відгук, потрібен інтернет"
 
-#: src/gs-details-page.c:1682 src/gs-details-page.c:1698
+#: src/gs-details-page.c:1694 src/gs-details-page.c:1710
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Неможливо знайти «%s»"
@@ -2885,18 +2884,17 @@ msgstr "Вебпрограми"
 msgid "System Applications"
 msgstr "Системні програми"
 
-#: src/gs-license-tile.c:95
+#: src/gs-license-tile.c:96
 msgid "Community Built"
 msgstr "Збірка спільноти"
 
+#: src/gs-license-tile.c:107 src/gs-license-tile.ui:98
+msgid "_Get Involved"
+msgstr "Вз_яти участь"
+
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
-#: src/gs-license-tile.c:112
+#: src/gs-license-tile.c:114
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
@@ -2909,7 +2907,7 @@ msgstr ""
 "Ви можете взяти участь у розробці і покращити програму."
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:119
+#: src/gs-license-tile.c:121
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2922,33 +2920,37 @@ msgstr ""
 "\n"
 "Ви можете взяти участь у розробці і покращити програму."
 
-#: src/gs-license-tile.c:125
+#: src/gs-license-tile.c:127
 msgid "Proprietary"
 msgstr "Закритий код"
 
-#: src/gs-license-tile.c:132
+#: src/gs-license-tile.c:133
+msgid "_Learn More"
+msgstr "_Дізнатись більше"
+
+#: src/gs-license-tile.c:135
+#| msgid ""
+#| "This software is not developed in the open, so only its developers know "
+#| "how it works. There may be restrictions on its use, and it may be harder "
+#| "to tell if the software is insecure.\n"
+#| "\n"
+#| "You may not be able to contribute to this software or influence its "
+#| "development."
 msgid ""
 "This software is not developed in the open, so only its developers know how "
-"it works. There may be restrictions on its use, and it may be harder to tell "
-"if the software is insecure.\n"
+"it works. It may be insecure in ways that are hard to detect, and it may "
+"change without oversight.\n"
 "\n"
-"You may not be able to contribute to this software or influence its "
-"development."
+"You may not be able to contribute to this software."
 msgstr ""
 "Розробка цієї програми виконується у закритому режимі, отже лише розробникам "
-"відомі принципи її роботи. Можливості програми може бути певним чином "
-"обмежено, а безпечність користування нею буде складніше визначити.\n"
+"відомі принципи її роботи. У неї можуть бути проблеми із захистом, які важко"
+" виявити і які можуть з'явитися без належного нагляду.\n"
 "\n"
-"Ви не зможете робити внески у розвиток цієї програми або впливати на її "
-"розробку."
-
-#: src/gs-license-tile.ui:97
-msgid "_Get Involved"
-msgstr "Вз_яти участь"
+"Ви не зможете робити внески у розвиток цієї програми."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-#| msgid "Downloading featured images…"
 msgid "Downloading software catalog"
 msgstr "Отримання каталогу програмного забезпечення"
 
@@ -5530,9 +5532,6 @@ msgstr "Snap — універсальний пакунок Linux"
 
 #~ msgid "%s %s Ready to be Installed"
 #~ msgstr "%s %s можна встановлювати"
-
-#~ msgid "_Learn More"
-#~ msgstr "_Дізнатись більше"
 
 #~ msgid "Recently Updated"
 #~ msgstr "Нещодавно оновлені"
