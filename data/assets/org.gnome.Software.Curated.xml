@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <components>
-  <!-- Arbitrary list of popular GNOME apps -->
+  <!-- Arbitrary list of popular GNOME apps. The list should be long enough
+       to show up on the overview page if it’s the only source of curated apps.
+       Distros should not ship this in production releases: they should be
+       providing their own curated list of ‘Editor’s Choice’ apps instead. -->
   <component merge="append">
-    <id>org.gnome.Builder</id>
+    <id>org.gnome.Aisleriot</id>
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
   </component>
   <component merge="append">
-    <id>org.gnome.clocks</id>
+    <id>org.gnome.Boxes.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Builder.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Calendar.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.clocks.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Contacts.desktop</id>
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
@@ -20,25 +47,67 @@
     </kudos>
   </component>
   <component merge="append">
-    <id>org.gnome.Documents</id>
-    <kudos>
-      <kudo>GnomeSoftware::popular</kudo>
-    </kudos>
-  </component>
-  <component merge="append">
     <id>org.gnome.Evince</id>
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
   </component>
   <component merge="append">
-    <id>org.gnome.gedit</id>
+    <id>org.gnome.Evolution.desktop</id>
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
   </component>
   <component merge="append">
-    <id>org.gnome.Maps</id>
+    <id>org.gnome.Geary.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Maps.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Nautilus.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>im.bernard.Nostalgia</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Notes.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Photos.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Polari.desktop</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Todo</id>
+    <kudos>
+      <kudo>GnomeSoftware::popular</kudo>
+    </kudos>
+  </component>
+  <component merge="append">
+    <id>org.gnome.Totem.desktop</id>
     <kudos>
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
