@@ -125,10 +125,10 @@ gs_license_tile_refresh (GsLicenseTile *self)
 		}
 	} else {
 		title = _("Proprietary");
-		css_class = "grey";
-		lozenge_icon_names[0] = "dialog-warning-symbolic";
-		lozenge_icon_names[1] = "face-sad-symbolic";
-		lozenge_icon_names[2] = "padlock-open-symbolic";
+		css_class = "yellow";
+		lozenge_icon_names[0] = "hand-open-symbolic";
+		lozenge_icon_names[1] = "dialog-warning-symbolic";
+		lozenge_icon_names[2] = "community-none-symbolic";
 		get_involved_visible = TRUE;
 		get_involved_label = _("_Learn More");
 
@@ -140,7 +140,7 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
 		GtkStyleContext *context = gtk_widget_get_style_context (self->lozenges[i]);
 		gtk_style_context_remove_class (context, "green");
-		gtk_style_context_remove_class (context, "grey");
+		gtk_style_context_remove_class (context, "yellow");
 		gtk_style_context_add_class (context, css_class);
 		gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenges[i]), lozenge_icon_names[i]);
 	}
