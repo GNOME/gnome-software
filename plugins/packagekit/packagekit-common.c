@@ -577,5 +577,10 @@ gs_plugin_packagekit_set_packaging_format (GsPlugin *plugin, GsApp *app)
 	} else if (gs_plugin_check_distro_id (plugin, "debian") ||
 	           gs_plugin_check_distro_id (plugin, "ubuntu")) {
 		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "deb");
+	} else {
+		return;
 	}
+
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_bg_color");
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "package-x-generic-symbolic");
 }
