@@ -80,7 +80,7 @@ gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
 		return;
 
 	gs_app_set_management_plugin (app, self->plugin);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_flatpak_app_set_packaging_info (app);
 
 	/* only when we have a non-temp object */
 	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0) {
