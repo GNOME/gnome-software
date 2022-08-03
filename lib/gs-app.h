@@ -145,6 +145,7 @@ typedef enum {
  * @GS_APP_QUIRK_HIDE_FROM_SEARCH:	The app should not be shown in search results
  * @GS_APP_QUIRK_HIDE_EVERYWHERE:	The app should not be shown anywhere (it’s blocklisted)
  * @GS_APP_QUIRK_DO_NOT_AUTO_UPDATE:	The app should not be automatically updated
+ * @GS_APP_QUIRK_DEVELOPMENT_SOURCE:	The app is from a development source (Since: 43)
  *
  * The application attributes.
  **/
@@ -168,6 +169,7 @@ typedef enum {
 	GS_APP_QUIRK_HIDE_FROM_SEARCH	= 1 << 15,	/* Since: 3.32 */
 	GS_APP_QUIRK_HIDE_EVERYWHERE	= 1 << 16,	/* Since: 3.36 */
 	GS_APP_QUIRK_DO_NOT_AUTO_UPDATE	= 1 << 17,	/* Since: 3.36 */
+	GS_APP_QUIRK_DEVELOPMENT_SOURCE	= 1 << 18,	/* Since: 43 */
 	GS_APP_QUIRK_LAST  /*< skip >*/
 } GsAppQuirk;
 
