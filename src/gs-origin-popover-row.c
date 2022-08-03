@@ -8,6 +8,8 @@
 
 #include "config.h"
 
+#include "gs-common.h"
+
 #include "gs-origin-popover-row.h"
 
 #include <glib/gi18n.h>
@@ -15,19 +17,15 @@
 typedef struct
 {
 	GsApp		*app;
+	GtkCssProvider	*css_provider;
 	GtkWidget	*name_label;
-	GtkWidget	*url_box;
-	GtkWidget	*url_title;
-	GtkWidget	*url_label;
-	GtkWidget	*installation_box;
-	GtkWidget	*installation_title;
-	GtkWidget	*installation_label;
-	GtkWidget	*branch_box;
-	GtkWidget	*branch_title;
-	GtkWidget	*branch_label;
-	GtkWidget	*version_box;
-	GtkWidget	*version_title;
-	GtkWidget	*version_label;
+	GtkWidget	*info_label;
+	GtkWidget	*installed_image;
+	GtkWidget	*packaging_box;
+	GtkWidget	*packaging_image;
+	GtkWidget	*packaging_label;
+	GtkWidget	*beta_box;
+	GtkWidget	*user_scope_box;
 	GtkWidget	*selected_image;
 } GsOriginPopoverRowPrivate;
 
@@ -37,65 +35,106 @@ static void
 refresh_ui (GsOriginPopoverRow *row)
 {
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
+	const gchar *packaging_base_css_color, *packaging_icon;
+	g_autofree gchar *packaging_format = NULL;
+	g_autofree gchar *info = NULL;
+	g_autofree gchar *css = NULL;
 	g_autofree gchar *origin_ui = NULL;
 	g_autofree gchar *url = NULL;
 
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
 	g_assert (GS_IS_APP (priv->app));
 
-	origin_ui = gs_app_dup_origin_ui (priv->app, TRUE);
-	if (origin_ui != NULL) {
+	origin_ui = gs_app_dup_origin_ui (priv->app, FALSE);
+	if (origin_ui != NULL)
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
-	}
 
 	if (gs_app_get_state (priv->app) == GS_APP_STATE_AVAILABLE_LOCAL) {
 		GFile *local_file = gs_app_get_local_file (priv->app);
 		url = g_file_get_basename (local_file);
-		/* TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm" */
-		gtk_label_set_text (GTK_LABEL (priv->url_title), _("Name"));
 	} else {
 		url = g_strdup (gs_app_get_origin_hostname (priv->app));
 	}
 
-	if (url != NULL) {
-		gtk_label_set_text (GTK_LABEL (priv->url_label), url);
-		gtk_widget_show (priv->url_box);
+	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_SNAP) {
+		const gchar *branch = NULL, *version = NULL;
+		const gchar *order[3];
+		const gchar *items[7] = { NULL, };
+		guint index = 0;
+
+		branch = gs_app_get_branch (priv->app);
+		version = gs_app_get_version (priv->app);
+
+		if (gtk_widget_get_direction (GTK_WIDGET (row)) == GTK_TEXT_DIR_RTL) {
+			order[0] = version;
+			order[1] = branch;
+			order[2] = url;
+		} else {
+			order[0] = url;
+			order[1] = branch;
+			order[2] = version;
+		}
+
+		for (guint ii = 0; ii < G_N_ELEMENTS (order); ii++) {
+			const gchar *value = order[ii];
+
+			if (value != NULL) {
+				if (index > 0) {
+					items[index] = "•";
+					index++;
+				}
+				items[index] = value;
+				index++;
+			}
+		}
+
+		if (index > 0) {
+			g_assert (index + 1 < G_N_ELEMENTS (items));
+			items[index] = NULL;
+
+			info = g_strjoinv (" ", (gchar **) items);
+		}
 	} else {
-		gtk_widget_hide (priv->url_box);
+		info = g_steal_pointer (&url);
 	}
+
+	if (info != NULL)
+		gtk_label_set_text (GTK_LABEL (priv->info_label), info);
+	else
+		gtk_label_set_text (GTK_LABEL (priv->info_label), _("Unknown source"));
+
+	gtk_widget_set_visible (priv->installed_image, gs_app_is_installed (priv->app));
+	gtk_widget_set_visible (priv->beta_box, gs_app_has_quirk (priv->app, GS_APP_QUIRK_DEVELOPMENT_SOURCE));
 
 	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_FLATPAK &&
 	    gs_app_get_scope (priv->app) != AS_COMPONENT_SCOPE_UNKNOWN) {
 		AsComponentScope scope = gs_app_get_scope (priv->app);
-		if (scope == AS_COMPONENT_SCOPE_SYSTEM) {
-			/* TRANSLATORS: the installation location for flatpaks */
-			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("system"));
-		} else if (scope == AS_COMPONENT_SCOPE_USER) {
-			/* TRANSLATORS: the installation location for flatpaks */
-			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("user"));
-		}
-		gtk_widget_show (priv->installation_box);
+		gtk_widget_set_visible (priv->user_scope_box, scope == AS_COMPONENT_SCOPE_USER);
 	} else {
-		gtk_widget_hide (priv->installation_box);
+		gtk_widget_hide (priv->user_scope_box);
 	}
 
-	if (gs_app_get_branch (priv->app) != NULL) {
-		gtk_label_set_text (GTK_LABEL (priv->branch_label), gs_app_get_branch (priv->app));
-		gtk_widget_show (priv->branch_box);
-	} else {
-		gtk_widget_hide (priv->branch_box);
-	}
+	packaging_base_css_color = gs_app_get_metadata_item (priv->app, "GnomeSoftware::PackagingBaseCssColor");
+	packaging_icon = gs_app_get_metadata_item (priv->app, "GnomeSoftware::PackagingIcon");
+	packaging_format = gs_app_get_packaging_format (priv->app);
 
-	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_SNAP) {
-		/* TRANSLATORS: the title for Snap channels */
-		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Channel"));
-		gtk_label_set_text (GTK_LABEL (priv->version_label), gs_app_get_version (priv->app));
-		gtk_widget_show (priv->version_box);
-	} else {
-		/* TRANSLATORS: the title for Flatpak branches */
-		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Branch"));
-		gtk_widget_hide (priv->version_box);
-	}
+	gtk_label_set_text (GTK_LABEL (priv->packaging_label), packaging_format);
+
+	if (packaging_icon != NULL)
+		gtk_image_set_from_icon_name (GTK_IMAGE (priv->packaging_image), packaging_icon);
+	else
+		gtk_widget_hide (priv->packaging_image);
+
+	if (packaging_base_css_color == NULL)
+		packaging_base_css_color = "window_fg_color";
+
+	css = g_strdup_printf (
+		"   color: @%s;\n"
+		"   background-color: alpha(@%s, .15);\n",
+		packaging_base_css_color,
+		packaging_base_css_color);
+
+	gs_utils_widget_set_css (priv->packaging_box, &priv->css_provider, "packaging-color", css);
 }
 
 static void
@@ -124,17 +163,6 @@ gs_origin_popover_row_set_selected (GsOriginPopoverRow *row, gboolean selected)
 	gtk_widget_set_visible (priv->selected_image, selected);
 }
 
-void
-gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *size_group)
-{
-	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
-
-	gtk_size_group_add_widget (size_group, priv->url_title);
-	gtk_size_group_add_widget (size_group, priv->installation_title);
-	gtk_size_group_add_widget (size_group, priv->branch_title);
-	gtk_size_group_add_widget (size_group, priv->version_title);
-}
-
 static void
 gs_origin_popover_row_dispose (GObject *object)
 {
@@ -142,6 +170,7 @@ gs_origin_popover_row_dispose (GObject *object)
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 
 	g_clear_object (&priv->app);
+	g_clear_object (&priv->css_provider);
 
 	G_OBJECT_CLASS (gs_origin_popover_row_parent_class)->dispose (object);
 }
@@ -163,18 +192,13 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-origin-popover-row.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, name_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, info_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installed_image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, packaging_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, packaging_image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, packaging_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, beta_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, user_scope_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, selected_image);
 }
 

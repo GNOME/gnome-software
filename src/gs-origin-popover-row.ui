@@ -5,122 +5,135 @@
       <object class="GtkBox">
         <property name="margin-top">6</property>
         <property name="margin-bottom">6</property>
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
         <property name="orientation">horizontal</property>
-        <property name="spacing">16</property>
+        <property name="spacing">6</property>
         <child>
           <object class="GtkBox" id="vbox">
             <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="spacing">3</property>
             <child>
               <object class="GtkLabel" id="name_label">
                 <property name="halign">start</property>
                 <property name="ellipsize">end</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                </attributes>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="url_box">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="url_title">
-                    <property name="halign">start</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">URL</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="url_label">
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                    </style>
-                  </object>
-                </child>
+              <object class="GtkLabel" id="info_label">
+                <property name="halign">start</property>
+                <property name="ellipsize">end</property>
+                <style>
+                  <class name="app-row-origin-text"/>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkImage" id="installed_image">
+            <property name="visible">False</property>
+            <property name="pixel_size">16</property>
+            <property name="icon_name">app-installed-symbolic</property>
+            <property name="margin-start">6</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="success"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="packaging_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">4</property>
+            <property name="margin-start">6</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="origin-rounded-box"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="packaging_image">
+                <property name="pixel_size">16</property>
+                <property name="icon_name">flatpak-symbolic</property>
+                <property name="valign">center</property>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="installation_box">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="installation_title">
-                    <property name="halign">start</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes" comments="Translators: The installation location for flatpaks, e.g. 'user' or 'system'">Installation</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="installation_label">
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                    </style>
-                  </object>
-                </child>
+              <object class="GtkLabel" id="packaging_label">
+                <property name="halign">start</property>
+                <property name="ellipsize">none</property>
+                <property name="margin-top">1</property>
+                <property name="margin-end">2</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="variant" value="all-small-caps"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="beta_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">4</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="origin-rounded-box"/>
+              <class name="origin-beta"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="beta_image">
+                <property name="pixel_size">16</property>
+                <property name="icon_name">test-symbolic</property>
+                <property name="valign">center</property>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="branch_box">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="branch_title">
-                    <property name="halign">start</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes" comments="Translators: The branch, e.g. 'stable' or '3.32'">Branch</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="branch_label">
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                    </style>
-                  </object>
-                </child>
+              <object class="GtkLabel" id="beta_label">
+                <property name="halign">start</property>
+                <property name="ellipsize">none</property>
+                <property name="label" translatable="yes" comments="Translators: It's like a beta version of the software, a test version">Beta</property>
+                <property name="margin-top">1</property>
+                <property name="margin-end">2</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="variant" value="all-small-caps"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="user_scope_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">4</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="origin-rounded-box"/>
+              <class name="origin-scope-user"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="user_scope_image">
+                <property name="pixel_size">16</property>
+                <property name="icon_name">avatar-default-symbolic</property>
+                <property name="valign">center</property>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="version_box">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="version_title">
-                    <property name="halign">start</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes" comments="Translators: The available version of an app">Version</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                      <class name="dim-label"/>
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="version_label">
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                    </style>
-                  </object>
-                </child>
+              <object class="GtkLabel" id="user_scope_label">
+                <property name="halign">start</property>
+                <property name="ellipsize">none</property>
+                <property name="label" translatable="yes" comments="Translators: It's an origin scope, 'User' or 'System' installation">User</property>
+                <property name="margin-top">1</property>
+                <property name="margin-end">2</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="variant" value="all-small-caps"/>
+                </attributes>
               </object>
             </child>
           </object>

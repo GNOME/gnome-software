@@ -88,7 +88,6 @@ struct _GsDetailsPage
 	GsShell			*shell;
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
-	GtkSizeGroup		*size_group_origin_popover;
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 	GAppInfoMonitor		*app_info_monitor; /* (owned) */
 	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
@@ -717,8 +716,6 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 			}
 			select_row = row;
 		}
-		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
-		                                      self->size_group_origin_popover);
 		gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
 
 		if (origin_by_packaging_format) {
@@ -2307,7 +2304,6 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
-	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->odrs_provider);
 	g_clear_object (&self->app_info_monitor);
 	g_clear_pointer (&self->last_developer_name, g_free);
@@ -2503,7 +2499,6 @@ gs_details_page_init (GsDetailsPage *self)
 	g_signal_connect_swapped (self->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
 				  self);
-	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->app_info_monitor = g_app_info_monitor_get ();
 	g_signal_connect_object (self->app_info_monitor, "changed",
 				 G_CALLBACK (gs_details_page_app_info_changed_cb), self, 0);
