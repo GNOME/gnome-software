@@ -43,7 +43,7 @@ refresh_ui (GsOriginPopoverRow *row)
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
 	g_assert (GS_IS_APP (priv->app));
 
-	origin_ui = gs_app_dup_origin_ui (priv->app);
+	origin_ui = gs_app_dup_origin_ui (priv->app, TRUE);
 	if (origin_ui != NULL) {
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
 	}

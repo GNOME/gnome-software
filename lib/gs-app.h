@@ -484,7 +484,8 @@ void		 gs_app_remove_quirk		(GsApp		*app,
 						 GsAppQuirk	 quirk);
 gboolean	 gs_app_is_installed		(GsApp		*app);
 gboolean	 gs_app_is_updatable		(GsApp		*app);
-gchar		*gs_app_dup_origin_ui		(GsApp		*app);
+gchar		*gs_app_dup_origin_ui		(GsApp		*app,
+						 gboolean	 with_packaging_format);
 void		 gs_app_set_origin_ui		(GsApp		*app,
 						 const gchar	*origin_ui);
 gchar		*gs_app_get_packaging_format	(GsApp		*app);
