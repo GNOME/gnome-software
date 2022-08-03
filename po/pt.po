@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-01 10:17+0000\n"
-"PO-Revision-Date: 2022-08-01 19:07+0100\n"
+"POT-Creation-Date: 2022-08-02 11:37+0000\n"
+"PO-Revision-Date: 2022-08-03 10:42+0100\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -923,20 +923,15 @@ msgstr "Evasão da sandbox"
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Pode sair da sandbox e evitar quaisquer outras restrições à execução"
 
-#. Translators: This is the source and upgrade version of an
-#. * application, shown to the user when they view more detailed
-#. * information about pending updates. The source is of the form
-#. * ‘deja-dup’ (a package name) or
-#. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
-#. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:180
-#, c-format
-msgid "%s %s"
-msgstr "%s %s"
+#. FIXME support app == NULL
+#. set window title
+#: src/gs-app-details-page.c:166
+msgid "Update Details"
+msgstr "Detalhes da atualização"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:199
+#: src/gs-app-details-page.c:174
 msgid "No update description available."
 msgstr "Nenhuma descrição de atualização foi fornecida."
 
@@ -950,7 +945,7 @@ msgid "Requires additional permissions"
 msgstr "Requer permissões adicionais"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:800
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:797
 msgid "Reviews"
 msgstr "Análises"
 
@@ -962,7 +957,7 @@ msgstr "Não foram encontradas análises sobre esta aplicação."
 msgid "No Reviews"
 msgstr "Sem análises"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:478
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:475
 msgid "Version History"
 msgstr "Histórico da versão"
 
@@ -1425,7 +1420,7 @@ msgstr "Atualizar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:276
+#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:273
 #: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "Desinstalar"
@@ -1495,7 +1490,7 @@ msgid "Login Required"
 msgstr "Autenticação necessária"
 
 #: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:612
-#: src/gs-details-page.ui:289 src/gs-removal-dialog.ui:17
+#: src/gs-details-page.ui:286 src/gs-removal-dialog.ui:17
 #: src/gs-review-dialog.ui:18
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -2246,7 +2241,7 @@ msgstr "A desinstalar…"
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
 #: src/gs-details-page.c:840 src/gs-details-page.c:866
-#: src/gs-details-page.ui:223 plugins/packagekit/gs-packagekit-task.c:150
+#: src/gs-details-page.ui:220 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Instalar"
 
@@ -2282,11 +2277,11 @@ msgstr "Impossível encontrar «%s»"
 msgid "Details page"
 msgstr "Página de detalhes"
 
-#: src/gs-details-page.ui:42
+#: src/gs-details-page.ui:39
 msgid "Loading application details…"
 msgstr "A carregar os detalhes das aplicações…"
 
-#: src/gs-details-page.ui:80
+#: src/gs-details-page.ui:77
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
@@ -2294,43 +2289,43 @@ msgstr ""
 "Este software não está disponível no seu idioma e aparecerá em inglês dos "
 "EUA."
 
-#: src/gs-details-page.ui:86
+#: src/gs-details-page.ui:83
 msgid "Help _Translate"
 msgstr "Ajude a _traduzir"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:239
+#: src/gs-details-page.ui:236
 msgid "_Open"
 msgstr "_Abrir"
 
-#: src/gs-details-page.ui:252 plugins/packagekit/gs-packagekit-task.c:160
+#: src/gs-details-page.ui:249 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "_Atualizar"
 
-#: src/gs-details-page.ui:314
+#: src/gs-details-page.ui:311
 msgid "Downloading"
 msgstr "A transferir"
 
-#: src/gs-details-page.ui:401 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:398 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: src/gs-details-page.ui:412
+#: src/gs-details-page.ui:409
 msgid "Selected add-ons will be installed with the application."
 msgstr "Os complementos selecionados serão instalados com a aplicação."
 
-#: src/gs-details-page.ui:512
+#: src/gs-details-page.ui:509
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
 "Esta aplicação só pode ser usada se tiver uma ligação à Internet ativa."
 
-#: src/gs-details-page.ui:532
+#: src/gs-details-page.ui:529
 msgid "Software Repository Included"
 msgstr "Fonte de software incluída"
 
-#: src/gs-details-page.ui:533
+#: src/gs-details-page.ui:530
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -2338,11 +2333,11 @@ msgstr ""
 "Esta aplicação inclui uma fonte de software que fornece atualizações, assim "
 "como acesso a outras aplicações."
 
-#: src/gs-details-page.ui:550
+#: src/gs-details-page.ui:547
 msgid "No Software Repository Included"
 msgstr "Sem fontes de software incluídas"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:548
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -2350,7 +2345,7 @@ msgstr ""
 "Esta aplicação não inclui uma fonte de software. Não será atualizada com "
 "novas versões."
 
-#: src/gs-details-page.ui:569
+#: src/gs-details-page.ui:566
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2359,11 +2354,11 @@ msgstr ""
 "substituída."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:586
+#: src/gs-details-page.ui:583
 msgid "Software Repository Identified"
 msgstr "Fonte de software identificada"
 
-#: src/gs-details-page.ui:587
+#: src/gs-details-page.ui:584
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2371,15 +2366,15 @@ msgstr ""
 "Adicionar esta fonte de software dar-lhe-á acesso a aplicações e "
 "atualizações adicionais."
 
-#: src/gs-details-page.ui:588
+#: src/gs-details-page.ui:585
 msgid "Only use software repositories that you trust."
 msgstr "Utilize apenas fontes de software em que confie."
 
-#: src/gs-details-page.ui:653
+#: src/gs-details-page.ui:650
 msgid "No Metadata"
 msgstr "Sem Metadados"
 
-#: src/gs-details-page.ui:662
+#: src/gs-details-page.ui:659
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2387,33 +2382,33 @@ msgstr ""
 "O software não fornece quaisquer ligações a um website, repositório de "
 "código ou rastreador de problemas."
 
-#: src/gs-details-page.ui:690
+#: src/gs-details-page.ui:687
 msgid "Project _Website"
 msgstr "Página do _Website"
 
-#: src/gs-details-page.ui:707
+#: src/gs-details-page.ui:704
 msgid "_Donate"
 msgstr "_Doar"
 
-#: src/gs-details-page.ui:724
+#: src/gs-details-page.ui:721
 msgid "Contribute _Translations"
 msgstr "_Contribuir com _tradução"
 
-#: src/gs-details-page.ui:741
+#: src/gs-details-page.ui:738
 msgid "_Report an Issue"
 msgstr "_Reportar um problema"
 
-#: src/gs-details-page.ui:758
+#: src/gs-details-page.ui:755
 msgid "_Help"
 msgstr "Ajuda"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:848
+#: src/gs-details-page.ui:845
 msgid "_Write Review"
 msgstr "_Escrever análise"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:885
+#: src/gs-details-page.ui:882
 msgid "All Reviews"
 msgstr "Todas as análises"
 
@@ -3276,7 +3271,7 @@ msgstr "Estas fontes de software suplementam as fontes predefinidas do %s."
 msgid "Software Repositories"
 msgstr "Fontes de Software"
 
-#: src/gs-repos-dialog.ui:56
+#: src/gs-repos-dialog.ui:53
 msgid "No Repositories"
 msgstr "Sem repositórios"
 
@@ -4776,51 +4771,51 @@ msgid "Updates page"
 msgstr "Página das atualizações"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:83
+#: src/gs-updates-page.ui:82
 msgid "Loading Updates…"
 msgstr "A carregar atualizações…"
 
 #. TRANSLATORS: the updates panel is starting up.
-#: src/gs-updates-page.ui:96
+#: src/gs-updates-page.ui:95
 msgid "This could take a while."
 msgstr "Isto pode levar algum tempo."
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
-#: src/gs-updates-page.ui:204
+#: src/gs-updates-page.ui:203
 msgid "Up to Date"
 msgstr "Atualizado"
 
-#: src/gs-updates-page.ui:243
+#: src/gs-updates-page.ui:242
 msgid "Use Mobile Data?"
 msgstr "Usar dados móveis?"
 
-#: src/gs-updates-page.ui:244
+#: src/gs-updates-page.ui:243
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
 msgstr "Procurar atualizações em redes de banda larga pode incorrer em custos."
 
-#: src/gs-updates-page.ui:247
+#: src/gs-updates-page.ui:246
 msgid "_Check Anyway"
 msgstr "Ainda assim pro_curar"
 
-#: src/gs-updates-page.ui:263
+#: src/gs-updates-page.ui:262
 msgid "No Connection"
 msgstr "Sem ligação"
 
-#: src/gs-updates-page.ui:264
+#: src/gs-updates-page.ui:263
 msgid "Go online to check for updates."
 msgstr "Procurar atualizações online."
 
-#: src/gs-updates-page.ui:267
+#: src/gs-updates-page.ui:266
 msgid "_Network Settings"
 msgstr "Defi_nições de rede"
 
-#: src/gs-updates-page.ui:296
+#: src/gs-updates-page.ui:295
 msgid "Error"
 msgstr "Erro"
 
-#: src/gs-updates-page.ui:297
+#: src/gs-updates-page.ui:296
 msgid "Updates are automatically managed."
 msgstr "As atualizações são geridas automaticamente."
 
@@ -5374,6 +5369,10 @@ msgstr "Suporte para Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal para Linux"
+
+#, c-format
+#~ msgid "%s %s"
+#~ msgstr "%s %s"
 
 #~ msgid "Software catalog is being downloaded"
 #~ msgstr "O catálogo de software está a ser transferido"
