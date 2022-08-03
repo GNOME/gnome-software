@@ -167,6 +167,12 @@ gs_flatpak_set_app_origin (GsFlatpak *self,
 		}
 	}
 
+	if (g_strcmp0 (origin, "flathub-beta") == 0 ||
+	    g_strcmp0 (gs_app_get_branch (app), "devel") == 0 ||
+	    g_strcmp0 (gs_app_get_branch (app), "master") == 0 ||
+	    (gs_app_get_branch (app) && g_str_has_suffix (gs_app_get_branch (app), "beta")))
+		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPMENT_SOURCE);
+
 	gs_app_set_origin (app, origin);
 	gs_app_set_origin_ui (app, title);
 }
