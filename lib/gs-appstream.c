@@ -22,7 +22,7 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	GsApp *app;
 	g_autoptr(GsApp) app_new = NULL;
 
-	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	/* The 'plugin' can be NULL, when creating app for --show-metainfo */
 	g_return_val_if_fail (XB_IS_SILO (silo), NULL);
 	g_return_val_if_fail (XB_IS_NODE (component), NULL);
 
@@ -37,6 +37,9 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	/* never add wildcard apps to the plugin cache, and only add to
 	 * the cache if it’s available */
 	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD) || plugin == NULL)
+		return g_steal_pointer (&app_new);
+
+	if (plugin == NULL)
 		return g_steal_pointer (&app_new);
 
 	/* look for existing object */
@@ -978,7 +981,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	g_autoptr(GPtrArray) launchables = NULL;
 	g_autoptr(XbNode) req = NULL;
 
-	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	/* The 'plugin' can be NULL, when creating app for --show-metainfo */
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (XB_IS_SILO (silo), FALSE);
 	g_return_val_if_fail (XB_IS_NODE (component), FALSE);
