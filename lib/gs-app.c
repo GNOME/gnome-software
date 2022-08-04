@@ -4650,7 +4650,8 @@ calculate_key_colors (GsApp *app)
 		return;
 	} else if (G_IS_LOADABLE_ICON (icon_small)) {
 		g_autoptr(GInputStream) icon_stream = g_loadable_icon_load (G_LOADABLE_ICON (icon_small), 32, NULL, NULL, NULL);
-		pb_small = gdk_pixbuf_new_from_stream_at_scale (icon_stream, 32, 32, TRUE, NULL, NULL);
+		if (icon_stream)
+			pb_small = gdk_pixbuf_new_from_stream_at_scale (icon_stream, 32, 32, TRUE, NULL, NULL);
 	} else if (G_IS_THEMED_ICON (icon_small)) {
 		g_autoptr(GtkIconPaintable) icon_paintable = NULL;
 		g_autoptr(GtkIconTheme) theme = NULL;
