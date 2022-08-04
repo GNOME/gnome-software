@@ -88,11 +88,11 @@ struct _GsDetailsPage
 	GsShell			*shell;
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
-	GtkSizeGroup		*size_group_origin_popover;
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 	GAppInfoMonitor		*app_info_monitor; /* (owned) */
 	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
 	GtkWidget		*app_reviews_dialog;
+	GtkCssProvider		*origin_css_provider; /* (nullable) (owned) */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
 								packaging format when the alternatives are found */
 	gboolean		 is_narrow;
@@ -147,7 +147,8 @@ struct _GsDetailsPage
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
-	GtkWidget		*origin_button;
+	GtkWidget		*origin_packaging_image;
+	GtkWidget		*origin_packaging_label;
 	GtkWidget		*box_license;
 	GsLicenseTile		*license_tile;
 	GtkInfoBar		*translation_infobar;
@@ -258,6 +259,7 @@ static void
 gs_details_page_update_origin_button (GsDetailsPage *self,
 				      gboolean sensitive)
 {
+	const gchar *packaging_icon;
 	g_autofree gchar *origin_ui = NULL;
 
 	if (self->app == NULL ||
@@ -266,14 +268,32 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 		return;
 	}
 
-	origin_ui = gs_app_dup_origin_ui (self->app);
-	if (origin_ui != NULL)
-		gtk_menu_button_set_label (GTK_MENU_BUTTON (self->origin_button), origin_ui);
-	else
-		gtk_menu_button_set_label (GTK_MENU_BUTTON (self->origin_button), "");
+	origin_ui = gs_app_dup_origin_ui (self->app, FALSE);
+	gtk_label_set_text (GTK_LABEL (self->origin_packaging_label), origin_ui != NULL ? origin_ui : "");
 
 	gtk_widget_set_sensitive (self->origin_box, sensitive);
 	gtk_widget_show (self->origin_box);
+
+	packaging_icon = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingIcon");
+
+	if (packaging_icon != NULL) {
+		const gchar *packaging_base_css_color;
+		g_autofree gchar *css = NULL;
+
+		packaging_base_css_color = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingBaseCssColor");
+
+		gtk_image_set_from_icon_name (GTK_IMAGE (self->origin_packaging_image), packaging_icon);
+
+		if (packaging_base_css_color == NULL)
+			packaging_base_css_color = "window_fg_color";
+
+		css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
+
+		gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, "packaging-color", css);
+		gtk_widget_show (self->origin_packaging_image);
+	} else {
+		gtk_widget_hide (self->origin_packaging_image);
+	}
 }
 
 static void
@@ -548,8 +568,8 @@ app_origin_equal (GsApp *a,
 	if (a == b)
 		return TRUE;
 
-	a_origin_ui = gs_app_dup_origin_ui (a);
-	b_origin_ui = gs_app_dup_origin_ui (b);
+	a_origin_ui = gs_app_dup_origin_ui (a, TRUE);
+	b_origin_ui = gs_app_dup_origin_ui (b, TRUE);
 
 	a_local_file = gs_app_get_local_file (a);
 	b_local_file = gs_app_get_local_file (b);
@@ -717,8 +737,6 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 			}
 			select_row = row;
 		}
-		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
-		                                      self->size_group_origin_popover);
 		gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
 
 		if (origin_by_packaging_format) {
@@ -1853,8 +1871,8 @@ origin_popover_list_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (a));
 	GsApp *a2 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (b));
-	g_autofree gchar *a1_origin = gs_app_dup_origin_ui (a1);
-	g_autofree gchar *a2_origin = gs_app_dup_origin_ui (a2);
+	g_autofree gchar *a1_origin = gs_app_dup_origin_ui (a1, TRUE);
+	g_autofree gchar *a2_origin = gs_app_dup_origin_ui (a2, TRUE);
 
 	return gs_utils_sort_strcmp (a1_origin, a2_origin);
 }
@@ -2302,12 +2320,12 @@ gs_details_page_dispose (GObject *object)
 		g_hash_table_unref (self->packaging_format_preference);
 		self->packaging_format_preference = NULL;
 	}
+	g_clear_object (&self->origin_css_provider);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app_reviews_dialog);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
-	g_clear_object (&self->size_group_origin_popover);
 	g_clear_object (&self->odrs_provider);
 	g_clear_object (&self->app_info_monitor);
 	g_clear_pointer (&self->last_developer_name, g_free);
@@ -2449,7 +2467,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_button);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_packaging_image);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_packaging_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_license);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
@@ -2503,7 +2522,6 @@ gs_details_page_init (GsDetailsPage *self)
 	g_signal_connect_swapped (self->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
 				  self);
-	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->app_info_monitor = g_app_info_monitor_get ();
 	g_signal_connect_object (self->app_info_monitor, "changed",
 				 G_CALLBACK (gs_details_page_app_info_changed_cb), self, 0);
@@ -2523,8 +2541,6 @@ gs_details_page_init (GsDetailsPage *self)
 
 	g_signal_connect (self->list_box_featured_review, "row-activated",
 			  G_CALLBACK (featured_review_list_row_activated_cb), self);
-
-	gs_page_set_header_end_widget (GS_PAGE (self), self->origin_box);
 
 	gs_details_page_read_packaging_format_preference (self);
 

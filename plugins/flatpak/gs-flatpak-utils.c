@@ -86,7 +86,7 @@ gs_flatpak_app_new_from_remote (GsPlugin *plugin,
 			 flatpak_remote_get_name (xremote));
 	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWABLE, 0);
 	gs_app_set_management_plugin (app, plugin);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_flatpak_app_set_packaging_info (app);
 	gs_app_set_scope (app, is_user ? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM);
 
 	gs_app_set_metadata (app, "GnomeSoftware::SortKey", "100");
@@ -258,4 +258,14 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 
 	/* success */
 	return g_steal_pointer (&app);
+}
+
+void
+gs_flatpak_app_set_packaging_info (GsApp *app)
+{
+	g_return_if_fail (GS_IS_APP (app));
+
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "accent_bg_color");
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "flatpak-symbolic");
 }

@@ -340,7 +340,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 			    _("Proprietary Code"),
 			    _("The source code is not public, so it cannot be independently audited and might be unsafe"),
-			    "test-pass-symbolic",
+			    "app-installed-symbolic",
 			    /* Translators: This refers to permissions (for example, from flatpak) which an app requests from the user. */
 			    _("Auditable Code"),
 			    _("The source code is public and can be independently audited, which makes the app more likely to be safe"));
@@ -348,7 +348,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	add_permission_row (self->permissions_list, &chosen_rating,
 			    gs_app_has_quirk (self->app, GS_APP_QUIRK_DEVELOPER_VERIFIED),
 			    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT,
-			    "test-pass-symbolic",
+			    "app-installed-symbolic",
 			    /* Translators: This indicates an app was written and released by a developer who has been verified.
 			     * It’s used in a context tile, so should be short. */
 			    _("App developer is verified"),

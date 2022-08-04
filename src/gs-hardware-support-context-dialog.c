@@ -713,7 +713,7 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 		css_class = "grey";
 		break;
 	case GS_CONTEXT_DIALOG_ROW_IMPORTANCE_UNIMPORTANT:
-		icon_name = "test-pass-symbolic";
+		icon_name = "app-installed-symbolic";
 		/* Translators: The app will work on the current hardware.
 		 * The placeholder is the app name. */
 		title = g_strdup_printf (_("%s works on this device"), gs_app_get_name (self->app));

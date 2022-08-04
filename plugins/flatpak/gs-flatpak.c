@@ -80,7 +80,7 @@ gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
 		return;
 
 	gs_app_set_management_plugin (app, self->plugin);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_flatpak_app_set_packaging_info (app);
 
 	/* only when we have a non-temp object */
 	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0) {
@@ -166,6 +166,12 @@ gs_flatpak_set_app_origin (GsFlatpak *self,
 			}
 		}
 	}
+
+	if (g_strcmp0 (origin, "flathub-beta") == 0 ||
+	    g_strcmp0 (gs_app_get_branch (app), "devel") == 0 ||
+	    g_strcmp0 (gs_app_get_branch (app), "master") == 0 ||
+	    (gs_app_get_branch (app) && g_str_has_suffix (gs_app_get_branch (app), "beta")))
+		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPMENT_SOURCE);
 
 	gs_app_set_origin (app, origin);
 	gs_app_set_origin_ui (app, title);

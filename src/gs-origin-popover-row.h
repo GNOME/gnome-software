@@ -26,7 +26,5 @@ GtkWidget	*gs_origin_popover_row_new		(GsApp			*app);
 GsApp		*gs_origin_popover_row_get_app		(GsOriginPopoverRow	*row);
 void		 gs_origin_popover_row_set_selected	(GsOriginPopoverRow	*row,
 							 gboolean		 selected);
-void		 gs_origin_popover_row_set_size_group	(GsOriginPopoverRow	*row,
-							 GtkSizeGroup		*size_group);
 
 G_END_DECLS

@@ -5340,7 +5340,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_take_boxed (value, gs_app_get_relations (app));
 		break;
 	case PROP_ORIGIN_UI:
-		g_value_take_string (value, gs_app_dup_origin_ui (app));
+		g_value_take_string (value, gs_app_dup_origin_ui (app, TRUE));
 		break;
 	case PROP_HAS_TRANSLATIONS:
 		g_value_set_boolean (value, gs_app_get_has_translations (app));
@@ -6125,8 +6125,9 @@ gs_app_new_from_unique_id (const gchar *unique_id)
 /**
  * gs_app_dup_origin_ui:
  * @app: a #GsApp
+ * @with_packaging_format: %TRUE, to include also packaging format
  *
- * Gets the package origin that's suitable for UI use. i.e. The value of
+ * Gets the package origin that's suitable for UI use, i.e. the value of
  * #GsApp:origin-ui.
  *
  * Returns: (not nullable) (transfer full): The package origin for UI use
@@ -6134,12 +6135,12 @@ gs_app_new_from_unique_id (const gchar *unique_id)
  * Since: 43
  **/
 gchar *
-gs_app_dup_origin_ui (GsApp *app)
+gs_app_dup_origin_ui (GsApp *app,
+		      gboolean with_packaging_format)
 {
 	GsAppPrivate *priv;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
-	g_autofree gchar *packaging_format = NULL;
 	const gchar *origin_str = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
@@ -6171,13 +6172,17 @@ gs_app_dup_origin_ui (GsApp *app)
 		}
 	}
 
-	packaging_format = gs_app_get_packaging_format (app);
+	if (with_packaging_format) {
+		g_autofree gchar *packaging_format = NULL;
 
-	if (packaging_format) {
-		/* TRANSLATORS: the first %s is replaced with an origin name;
-		   the second %s is replaced with the packaging format.
-		   Example string: "Local file (RPM)" */
-		return g_strdup_printf (_("%s (%s)"), origin_str, packaging_format);
+		packaging_format = gs_app_get_packaging_format (app);
+
+		if (packaging_format) {
+			/* TRANSLATORS: the first %s is replaced with an origin name;
+			   the second %s is replaced with the packaging format.
+			   Example string: "Local file (RPM)" */
+			return g_strdup_printf (_("%s (%s)"), origin_str, packaging_format);
+		}
 	}
 
 	return g_strdup (origin_str);

@@ -19,5 +19,6 @@ GsApp		*gs_flatpak_app_new_from_remote		(GsPlugin	*plugin,
 GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
+void		 gs_flatpak_app_set_packaging_info	(GsApp		*app);
 
 G_END_DECLS
