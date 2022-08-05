@@ -723,8 +723,11 @@ static GsApp *
 gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 {
 	GsApp *app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
-	if (app != NULL)
+	if (app != NULL) {
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		return app;
+	}
 	app = gs_app_new (NULL);
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, pk_package_get_name (package));
