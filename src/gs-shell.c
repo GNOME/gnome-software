@@ -108,6 +108,7 @@ struct _GsShell
 	GtkWidget		*primary_menu;
 	GtkWidget		*sub_page_header_title;
 
+	gboolean		 activate_after_setup;
 	gboolean		 is_narrow;
 	guint			 allocation_changed_cb_id;
 
@@ -166,6 +167,12 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkWindow *window)
 void
 gs_shell_activate (GsShell *shell)
 {
+	/* Waiting for plugin loader to setup first */
+	if (shell->plugin_loader == NULL) {
+		shell->activate_after_setup = TRUE;
+		return;
+	}
+
 	gtk_widget_show (GTK_WIDGET (shell));
 	gtk_window_present (GTK_WINDOW (shell));
 }
@@ -2237,6 +2244,11 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 		if (g_settings_get_boolean (shell->settings, "first-run"))
 			g_settings_set_boolean (shell->settings, "first-run", FALSE);
+	}
+
+	if (shell->activate_after_setup) {
+		shell->activate_after_setup = FALSE;
+		gs_shell_activate (shell);
 	}
 }
 
