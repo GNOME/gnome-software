@@ -122,8 +122,6 @@ refresh_ui (GsOriginPopoverRow *row)
 
 	if (packaging_icon != NULL)
 		gtk_image_set_from_icon_name (GTK_IMAGE (priv->packaging_image), packaging_icon);
-	else
-		gtk_widget_hide (priv->packaging_image);
 
 	if (packaging_base_css_color == NULL)
 		packaging_base_css_color = "window_fg_color";

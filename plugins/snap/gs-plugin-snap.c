@@ -425,6 +425,7 @@ snap_to_app (GsPluginSnap *self, SnapdSnap *snap, const gchar *branch)
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_branch (app, branch);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "snap-symbolic");
 		gs_plugin_cache_add (GS_PLUGIN (self), cache_id, app);
 	}
 
