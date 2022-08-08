@@ -582,5 +582,4 @@ gs_plugin_packagekit_set_packaging_format (GsPlugin *plugin, GsApp *app)
 	}
 
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_bg_color");
-	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "package-x-generic-symbolic");
 }
