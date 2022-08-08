@@ -260,6 +260,8 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 				      gboolean sensitive)
 {
 	const gchar *packaging_icon;
+	const gchar *packaging_base_css_color;
+	g_autofree gchar *css = NULL;
 	g_autofree gchar *origin_ui = NULL;
 
 	if (self->app == NULL ||
@@ -275,25 +277,19 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 	gtk_widget_show (self->origin_box);
 
 	packaging_icon = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingIcon");
+	if (packaging_icon == NULL)
+		packaging_icon = "package-x-generic-symbolic";
 
-	if (packaging_icon != NULL) {
-		const gchar *packaging_base_css_color;
-		g_autofree gchar *css = NULL;
+	packaging_base_css_color = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingBaseCssColor");
 
-		packaging_base_css_color = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingBaseCssColor");
+	gtk_image_set_from_icon_name (GTK_IMAGE (self->origin_packaging_image), packaging_icon);
 
-		gtk_image_set_from_icon_name (GTK_IMAGE (self->origin_packaging_image), packaging_icon);
+	if (packaging_base_css_color == NULL)
+		packaging_base_css_color = "window_fg_color";
 
-		if (packaging_base_css_color == NULL)
-			packaging_base_css_color = "window_fg_color";
+	css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
 
-		css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
-
-		gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, "packaging-color", css);
-		gtk_widget_show (self->origin_packaging_image);
-	} else {
-		gtk_widget_hide (self->origin_packaging_image);
-	}
+	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, "packaging-color", css);
 }
 
 static void
