@@ -391,7 +391,11 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 }
 
 static gboolean
-gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot, GError **error)
+gs_appstream_refine_add_images (GsApp *app,
+				AsScreenshot *ss,
+				XbNode *screenshot,
+				gboolean *out_any_added,
+				GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) images = NULL;
@@ -414,6 +418,8 @@ gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot
 		as_screenshot_add_image (ss, im);
 	}
 
+	*out_any_added = *out_any_added || images->len > 0;
+
 	/* success */
 	return TRUE;
 }
@@ -435,9 +441,11 @@ gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **err
 	for (guint i = 0; i < screenshots->len; i++) {
 		XbNode *screenshot = g_ptr_array_index (screenshots, i);
 		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
-		if (!gs_appstream_refine_add_images (app, ss, screenshot, error))
+		gboolean any_added = FALSE;
+		if (!gs_appstream_refine_add_images (app, ss, screenshot, &any_added, error))
 			return FALSE;
-		gs_app_add_screenshot (app, ss);
+		if (any_added)
+			gs_app_add_screenshot (app, ss);
 	}
 
 	/* FIXME: move into no refine flags section? */
