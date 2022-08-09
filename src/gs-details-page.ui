@@ -214,7 +214,8 @@
                                           <object class="GtkBox" id="box_with_source">
                                             <property name="orientation">vertical</property>
                                             <property name="valign">center</property>
-                                            <property name="spacing">9</property>
+                                            <property name="margin-top">6</property>
+                                            <property name="spacing">6</property>
                                             <child>
                                               <object class="GtkBox" id="box_install_remove">
                                                 <property name="orientation">horizontal</property>
@@ -345,6 +346,7 @@
                                                     <property name="popover">origin_popover</property>
                                                     <style>
                                                       <class name="flat"/>
+                                                      <class name="origin-button"/>
                                                     </style>
                                                     <child>
                                                       <object class="GtkBox" id="origin_menu_btn_box">
