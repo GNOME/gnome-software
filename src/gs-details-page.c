@@ -2767,6 +2767,18 @@ gs_details_page_metainfo_thread (GTask *task,
 		g_autoptr(GIcon) icon = g_file_icon_new (icon_file);
 		gs_icon_set_width (icon, (guint) -1);
 		gs_app_add_icon (app, G_ICON (icon));
+	} else {
+		g_autoptr(SoupSession) soup_session = NULL;
+		guint maximum_icon_size;
+
+		/* Currently a 160px icon is needed for #GsFeatureTile, at most.
+		 * The '2' is to pretend the hiDPI/GDK's scale factor is 2, to
+		 * allow larger icons. The 'icons' plugin uses proper scale factor.
+		 */
+		maximum_icon_size = 160 * 2;
+
+		soup_session = gs_build_soup_session ();
+		gs_app_ensure_icons_downloaded (app, soup_session, maximum_icon_size, cancellable);
 	}
 
 	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
