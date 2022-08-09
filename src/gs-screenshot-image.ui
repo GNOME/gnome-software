@@ -57,6 +57,19 @@
 
             <child>
               <object class="GtkStackPage">
+                <property name="name">video</property>
+                <property name="child">
+                  <object class="GtkVideo" id="video">
+                    <style>
+                      <class name="video"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkStackPage">
                 <property name="name">error</property>
                 <property name="child">
                   <object class="GtkBox" id="box_error">

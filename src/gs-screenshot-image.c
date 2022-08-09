@@ -27,13 +27,12 @@ struct _GsScreenshotImage
 	GtkWidget	*box_error;
 	GtkWidget	*image1;
 	GtkWidget	*image2;
+	GtkWidget	*video;
 	GtkWidget	*label_error;
 	GSettings	*settings;
 	SoupSession	*session;
 	SoupMessage	*message;
-#if SOUP_CHECK_VERSION(3, 0, 0)
 	GCancellable	*cancellable;
-#endif
 	gchar		*filename;
 	const gchar	*current_image;
 	guint		 width;
@@ -104,33 +103,36 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
-
-	/* no need to composite */
-	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
-		pixbuf = gdk_pixbuf_new_from_file (ssimg->filename, NULL);
+	if (as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_VIDEO) {
+		gtk_video_set_filename (GTK_VIDEO (ssimg->video), ssimg->filename);
+		ssimg->current_image = "video";
 	} else {
-		/* this is always going to have alpha */
-		pixbuf = gdk_pixbuf_new_from_file_at_scale (ssimg->filename,
-							    (gint) (ssimg->width * ssimg->scale),
-							    (gint) (ssimg->height * ssimg->scale),
-							    FALSE, NULL);
+		g_autoptr(GdkPixbuf) pixbuf = NULL;
+
+		/* no need to composite */
+		if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
+			pixbuf = gdk_pixbuf_new_from_file (ssimg->filename, NULL);
+		} else {
+			/* this is always going to have alpha */
+			pixbuf = gdk_pixbuf_new_from_file_at_scale (ssimg->filename,
+								    (gint) (ssimg->width * ssimg->scale),
+								    (gint) (ssimg->height * ssimg->scale),
+								    FALSE, NULL);
+		}
+
+		/* show icon */
+		if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
+			if (pixbuf != NULL)
+				gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pixbuf);
+			ssimg->current_image = "image2";
+		} else {
+			if (pixbuf != NULL)
+				gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pixbuf);
+			ssimg->current_image = "image1";
+		}
 	}
 
-	/* show icon */
-	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		if (pixbuf != NULL) {
-			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image2), pixbuf);
-		}
-		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
-		ssimg->current_image = "image2";
-	} else {
-		if (pixbuf != NULL) {
-			gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pixbuf);
-		}
-		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
-		ssimg->current_image = "image1";
-	}
+	gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), ssimg->current_image);
 
 	gtk_widget_show (GTK_WIDGET (ssimg));
 	ssimg->showing_image = TRUE;
@@ -242,6 +244,11 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				 TRUE /* blurred */);
 	if (pb == NULL)
 		return;
+
+	if (g_strcmp0 (ssimg->current_image, "video") == 0) {
+		ssimg->current_image = "image1";
+		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), ssimg->current_image);
+	}
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		gtk_picture_set_pixbuf (GTK_PICTURE (ssimg->image1), pb);
@@ -542,11 +549,84 @@ gs_screenshot_show_spinner_cb (gpointer user_data)
 	return FALSE;
 }
 
+static const gchar *
+gs_screenshot_image_get_url (GsScreenshotImage *ssimg)
+{
+	const gchar *url = NULL;
+
+	/* load an image according to the scale factor */
+	ssimg->scale = (guint) gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
+
+	if (as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_VIDEO) {
+		GPtrArray *videos;
+		AsVideo *best_video = NULL;
+		gint64 best_size = G_MAXINT64;
+		gint64 wh = (gint64) ssimg->width * ssimg->scale * ssimg->height * ssimg->scale;
+
+		videos = as_screenshot_get_videos (ssimg->screenshot);
+		for (guint i = 0; videos != NULL && i < videos->len; i++) {
+			AsVideo *adept = g_ptr_array_index (videos, i);
+			gint64 tmp;
+
+			tmp = ABS (wh - (gint64) (as_video_get_width (adept) * as_video_get_height (adept)));
+			if (tmp < best_size) {
+				best_size = tmp;
+				best_video = adept;
+				if (!tmp)
+					break;
+			}
+		}
+
+		if (best_video)
+			url = as_video_get_url (best_video);
+	} else if (as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_IMAGE) {
+		AsImage *im;
+
+		im = as_screenshot_get_image (ssimg->screenshot,
+					      ssimg->width * ssimg->scale,
+					      ssimg->height * ssimg->scale);
+
+		/* if we've failed to load a HiDPI image, fallback to LoDPI */
+		if (im == NULL && ssimg->scale > 1) {
+			ssimg->scale = 1;
+			im = as_screenshot_get_image (ssimg->screenshot,
+						      ssimg->width,
+						      ssimg->height);
+		}
+
+		if (im)
+			url = as_image_get_url (im);
+	}
+
+	return url;
+}
+
+static void
+gs_screenshot_video_downloaded_cb (GObject *source_object,
+				   GAsyncResult *result,
+				   gpointer user_data)
+{
+	g_autoptr(GsScreenshotImage) ssimg = user_data;
+	g_autoptr(GError) error = NULL;
+
+	if (gs_download_file_finish (ssimg->session, result, &error)) {
+		gs_screenshot_image_stop_spinner (ssimg);
+		as_screenshot_show_image (ssimg);
+
+		g_clear_object (&ssimg->cancellable);
+	} else if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		g_debug ("Failed to download screenshot video: %s", error->message);
+		/* Reset the width request, thus the image shrinks when the window width is small */
+		gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
+		gs_screenshot_image_stop_spinner (ssimg);
+		gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
+	}
+}
+
 void
 gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
 {
-	AsImage *im = NULL;
 	const gchar *url;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *cache_kind = NULL;
@@ -563,20 +643,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* Reset the width request, thus the image shrinks when the window width is small */
 	gtk_widget_set_size_request (ssimg->stack, -1, (gint) ssimg->height);
 
-	/* load an image according to the scale factor */
-	ssimg->scale = (guint) gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
-	im = as_screenshot_get_image (ssimg->screenshot,
-				      ssimg->width * ssimg->scale,
-				      ssimg->height * ssimg->scale);
-
-	/* if we've failed to load a HiDPI image, fallback to LoDPI */
-	if (im == NULL && ssimg->scale > 1) {
-		ssimg->scale = 1;
-		im = as_screenshot_get_image (ssimg->screenshot,
-					      ssimg->width,
-					      ssimg->height);
-	}
-	if (im == NULL) {
+	url = gs_screenshot_image_get_url (ssimg);
+	if (url == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot size not found"));
@@ -584,7 +652,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* check if the URL points to a local file */
-	url = as_image_get_url (im);
 	if (g_str_has_prefix (url, "file://")) {
 		g_free (ssimg->filename);
 		ssimg->filename = g_strdup (url + 7);
@@ -629,11 +696,13 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* if we're not showing a full-size image, we try loading a blurred
 	 * smaller version of it straight away */
 	if (!ssimg->showing_image &&
+	    as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_IMAGE &&
 	    ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
 	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
 		const gchar *url_thumb;
 		g_autofree gchar *basename_thumb = NULL;
 		g_autofree gchar *cache_kind_thumb = NULL;
+		AsImage *im;
 		im = as_screenshot_get_image (ssimg->screenshot,
 					      AS_IMAGE_THUMBNAIL_WIDTH * ssimg->scale,
 					      AS_IMAGE_THUMBNAIL_HEIGHT * ssimg->scale);
@@ -684,16 +753,34 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* cancel any previous messages */
-	if (ssimg->message != NULL) {
-#if SOUP_CHECK_VERSION(3, 0, 0)
+	if (ssimg->cancellable != NULL) {
 		g_cancellable_cancel (ssimg->cancellable);
 		g_clear_object (&ssimg->cancellable);
-#else
+	}
+
+	if (ssimg->message != NULL) {
+#if !SOUP_CHECK_VERSION(3, 0, 0)
 		soup_session_cancel_message (ssimg->session,
 		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
 #endif
 		g_clear_object (&ssimg->message);
+	}
+
+	if (as_screenshot_get_media_kind (ssimg->screenshot) == AS_SCREENSHOT_MEDIA_KIND_VIDEO) {
+		g_autofree gchar *uri_str = g_uri_to_string (base_uri);
+		g_autoptr(GFile) output_file = NULL;
+
+		ssimg->cancellable = g_cancellable_new ();
+		output_file = g_file_new_for_path (ssimg->filename);
+
+		/* Make sure the spinner takes approximately the size the screenshot will use */
+		gtk_widget_set_size_request (ssimg->stack, (gint) ssimg->width, (gint) ssimg->height);
+
+		gs_download_file_async (ssimg->session, uri_str, output_file, G_PRIORITY_DEFAULT, NULL, NULL,
+					ssimg->cancellable, gs_screenshot_video_downloaded_cb, g_object_ref (ssimg));
+
+		return;
 	}
 
 #if SOUP_CHECK_VERSION(3, 0, 0)
@@ -716,9 +803,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		g_autoptr(GFile) file = g_file_new_for_path (ssimg->filename);
 		gs_screenshot_soup_msg_set_modified_request (ssimg->message, file);
 	}
-
-	/* Make sure the spinner takes approximately the size the screenshot will use */
-	gtk_widget_set_size_request (ssimg->stack, (gint) ssimg->width, (gint) ssimg->height);
 
 	ssimg->load_timeout_id = g_timeout_add_seconds (SPINNER_TIMEOUT_SECS,
 		gs_screenshot_show_spinner_cb, ssimg);
@@ -764,11 +848,13 @@ gs_screenshot_image_dispose (GObject *object)
 		ssimg->load_timeout_id = 0;
 	}
 
-	if (ssimg->message != NULL) {
-#if SOUP_CHECK_VERSION(3, 0, 0)
+	if (ssimg->cancellable != NULL) {
 		g_cancellable_cancel (ssimg->cancellable);
 		g_clear_object (&ssimg->cancellable);
-#else
+	}
+
+	if (ssimg->message != NULL) {
+#if !SOUP_CHECK_VERSION(3, 0, 0)
 		soup_session_cancel_message (ssimg->session,
 		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
@@ -836,6 +922,7 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image1);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image2);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, video);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, box_error);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, label_error);
 
