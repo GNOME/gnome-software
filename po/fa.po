@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-05 10:15+0000\n"
-"PO-Revision-Date: 2022-08-07 03:03+0430\n"
+"POT-Creation-Date: 2022-08-10 12:52+0000\n"
+"PO-Revision-Date: 2022-08-11 00:23+0430\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -26,8 +26,8 @@ msgid "Software"
 msgstr "نرم‌افزارها"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-msgid "Application manager for GNOME"
-msgstr "مدیر برنامه برای گنوم"
+msgid "Install and update apps"
+msgstr "نصب و به‌روز رسانی کاره‌ها"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -71,7 +71,7 @@ msgstr "تابلوی به‌روز رسانی‌ها"
 msgid "The update details"
 msgstr "جزییات به‌روز رسانی"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1949 src/gs-application.c:245
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1980 src/gs-application.c:245
 msgid "The GNOME Project"
 msgstr "پروژهٔ گنوم"
 
@@ -762,11 +762,11 @@ msgstr "بسته"
 msgid "Pending"
 msgstr "در انتظار"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "منتظر نصب"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "منتظر برداشتن"
 
@@ -778,7 +778,7 @@ msgstr "نصب شده"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:366
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "نصب کردن"
 
@@ -1465,13 +1465,13 @@ msgstr "ویژه"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:110
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:106
 msgid "Editor’s Choice"
 msgstr "گزینش سردبیر"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:133
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:129
 msgid "New & Updated"
 msgstr "جدید و به‌روز"
 
@@ -2127,37 +2127,37 @@ msgstr "_نمایش بیش‌تر"
 msgid "_Show Less"
 msgstr "_نمایش کم‌تر"
 
-#: src/gs-details-page.c:361
+#: src/gs-details-page.c:357
 msgid "Removing…"
 msgstr "در حال برداشتن…"
 
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:367
 msgid "Requires restart to finish install"
 msgstr "نیازمند آغاز دوباره برای پایان نصب"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:374
 msgid "Requires restart to finish remove"
 msgstr "نیازمند آغاز دوباره برای پایان برداشتن"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:391
 msgid "Pending installation…"
 msgstr "در انتظار نصب…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:398
 msgid "Pending update…"
 msgstr "منتظر به‌روز رسانی…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:418
+#: src/gs-details-page.c:414
 msgid "Preparing…"
 msgstr "در حال آماده‌سازی…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:421
+#: src/gs-details-page.c:417
 msgid "Uninstalling…"
 msgstr "در حال حذف…"
 
@@ -2165,12 +2165,12 @@ msgstr "در حال حذف…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:858 src/gs-details-page.c:884 src/gs-details-page.ui:227
+#: src/gs-details-page.c:854 src/gs-details-page.c:880 src/gs-details-page.ui:227
 #: plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_نصب"
 
-#: src/gs-details-page.c:874
+#: src/gs-details-page.c:870
 msgid "_Restart"
 msgstr "_آغاز دوباره"
 
@@ -2178,22 +2178,22 @@ msgstr "_آغاز دوباره"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:894
 msgid "_Install…"
 msgstr "_نصب…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1178
+#: src/gs-details-page.c:1174
 #, c-format
 msgid "Other Apps by %s"
 msgstr "دیگر کاره‌ها از %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1561
+#: src/gs-details-page.c:1557
 msgid "You need internet access to write a review"
 msgstr "برای نوشتن بازبینی، نیاز به دسترسی به اینترنت دارید"
 
-#: src/gs-details-page.c:1712 src/gs-details-page.c:1728
+#: src/gs-details-page.c:1708 src/gs-details-page.c:1724
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "امکان یافتن «%s» نبود"
@@ -2953,16 +2953,16 @@ msgstr "کشف"
 msgid "Overview page"
 msgstr "صفحهٔ نمای‌کلی"
 
-#: src/gs-overview-page.ui:39
+#: src/gs-overview-page.ui:35
 msgid "Enable Third Party Software Repositories?"
 msgstr "به کار انداختن مخزن‌های نرم‌افزاری سوم‌شخص؟"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:184
+#: src/gs-overview-page.ui:180
 msgid "Other Categories"
 msgstr "دیگر دسته‌ها"
 
-#: src/gs-overview-page.ui:225
+#: src/gs-overview-page.ui:221
 msgid "No Application Data Found"
 msgstr "هیچ دادهٔ برنامه‌ای پیدا نشد"
 
@@ -5131,7 +5131,7 @@ msgstr ""
 msgid "Packages"
 msgstr "بسته‌ها"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
 msgid "Operating System (OSTree)"
 msgstr "سیستم‌عامل (OSTree)"
 
@@ -5147,6 +5147,9 @@ msgstr "پشتیبانی اسنپ"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "اسنپ یک بستهٔ جهانی گنو/لینوکسی است"
+
+#~ msgid "Application manager for GNOME"
+#~ msgstr "مدیر برنامه برای گنوم"
 
 #, c-format
 #~ msgid "%s %s"
