@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-08 10:45+0000\n"
-"PO-Revision-Date: 2022-08-10 19:12+0800\n"
+"POT-Creation-Date: 2022-08-10 15:08+0000\n"
+"PO-Revision-Date: 2022-08-14 13:52+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -39,8 +39,8 @@ msgid "Software"
 msgstr "软件"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-msgid "Application manager for GNOME"
-msgstr "GNOME 应用程序管理器"
+msgid "Install and update apps"
+msgstr "安装和更新应用"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -765,11 +765,11 @@ msgstr "软件包"
 msgid "Pending"
 msgstr "等待中"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "等待安装"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "等待移除"
 
@@ -781,7 +781,7 @@ msgstr "已安装"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:366
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "安装中"
 
@@ -2138,37 +2138,37 @@ msgstr "显示更多(_S)"
 msgid "_Show Less"
 msgstr "显示更少(_S)"
 
-#: src/gs-details-page.c:361
+#: src/gs-details-page.c:357
 msgid "Removing…"
 msgstr "正在移除…"
 
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:367
 msgid "Requires restart to finish install"
 msgstr "需要重新启动以完成安装"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:374
 msgid "Requires restart to finish remove"
 msgstr "需要重新启动以完成移除"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:391
 msgid "Pending installation…"
 msgstr "等待安装…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:398
 msgid "Pending update…"
 msgstr "等待更新…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:418
+#: src/gs-details-page.c:414
 msgid "Preparing…"
 msgstr "正在准备…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:421
+#: src/gs-details-page.c:417
 msgid "Uninstalling…"
 msgstr "正在卸载…"
 
@@ -2176,12 +2176,12 @@ msgstr "正在卸载…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:858 src/gs-details-page.c:884
+#: src/gs-details-page.c:854 src/gs-details-page.c:880
 #: src/gs-details-page.ui:227 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "安装(_I)"
 
-#: src/gs-details-page.c:874
+#: src/gs-details-page.c:870
 msgid "_Restart"
 msgstr "重新启动(_R)"
 
@@ -2189,22 +2189,22 @@ msgstr "重新启动(_R)"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:894
 msgid "_Install…"
 msgstr "安装(_I)…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1178
+#: src/gs-details-page.c:1174
 #, c-format
 msgid "Other Apps by %s"
 msgstr "%s 的其它应用"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1561
+#: src/gs-details-page.c:1557
 msgid "You need internet access to write a review"
 msgstr "您需要互联网连接以编写评论"
 
-#: src/gs-details-page.c:1712 src/gs-details-page.c:1728
+#: src/gs-details-page.c:1708 src/gs-details-page.c:1724
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "无法找到“%s”"
@@ -5119,7 +5119,7 @@ msgstr ""
 msgid "Packages"
 msgstr "软件包"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
 msgid "Operating System (OSTree)"
 msgstr "操作系统（OSTree）"
 
@@ -5135,6 +5135,9 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "Application manager for GNOME"
+#~ msgstr "GNOME 应用程序管理器"
 
 #, c-format
 #~ msgid "%s %s"
