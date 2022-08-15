@@ -1151,10 +1151,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	gtk_stack_set_visible_child_name (self->links_stack, link_rows_visible ? "links" : "empty");
 
-	/* set the developer name, falling back to the project group */
 	tmp = gs_app_get_developer_name (self->app);
-	if (tmp == NULL)
-		tmp = gs_app_get_project_group (self->app);
 	if (tmp != NULL) {
 		gtk_label_set_label (GTK_LABEL (self->developer_name_label), tmp);
 
