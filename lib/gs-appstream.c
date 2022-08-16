@@ -391,7 +391,11 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 }
 
 static gboolean
-gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot, GError **error)
+gs_appstream_refine_add_images (GsApp *app,
+				AsScreenshot *ss,
+				XbNode *screenshot,
+				gboolean *out_any_added,
+				GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) images = NULL;
@@ -414,7 +418,42 @@ gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot
 		as_screenshot_add_image (ss, im);
 	}
 
+	*out_any_added = *out_any_added || images->len > 0;
+
 	/* success */
+	return TRUE;
+}
+
+static gboolean
+gs_appstream_refine_add_videos (GsApp *app,
+				AsScreenshot *ss,
+				XbNode *screenshot,
+				gboolean *out_any_added,
+				GError **error)
+{
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GPtrArray) videos = NULL;
+
+	videos = xb_node_query (screenshot, "video", 0, &error_local);
+	if (videos == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+	for (guint i = 0; i < videos->len; i++) {
+		XbNode *video = g_ptr_array_index (videos, i);
+		g_autoptr(AsVideo) vid = as_video_new ();
+		as_video_set_height (vid, xb_node_get_attr_as_uint (video, "height"));
+		as_video_set_width (vid, xb_node_get_attr_as_uint (video, "width"));
+		as_video_set_codec_kind (vid, as_video_codec_kind_from_string (xb_node_get_attr (video, "codec")));
+		as_video_set_container_kind (vid, as_video_container_kind_from_string (xb_node_get_attr (video, "container")));
+		as_video_set_url (vid, xb_node_get_text (video));
+		as_screenshot_add_video (ss, vid);
+	}
+
+	*out_any_added = *out_any_added || videos->len > 0;
+
 	return TRUE;
 }
 
@@ -435,9 +474,12 @@ gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **err
 	for (guint i = 0; i < screenshots->len; i++) {
 		XbNode *screenshot = g_ptr_array_index (screenshots, i);
 		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
-		if (!gs_appstream_refine_add_images (app, ss, screenshot, error))
+		gboolean any_added = FALSE;
+		if (!gs_appstream_refine_add_images (app, ss, screenshot, &any_added, error) ||
+		    !gs_appstream_refine_add_videos (app, ss, screenshot, &any_added, error))
 			return FALSE;
-		gs_app_add_screenshot (app, ss);
+		if (any_added)
+			gs_app_add_screenshot (app, ss);
 	}
 
 	/* FIXME: move into no refine flags section? */
