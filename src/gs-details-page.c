@@ -144,6 +144,7 @@ struct _GsDetailsPage
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
+	GtkWidget		*box_with_source;
 	GtkWidget		*origin_popover;
 	GtkWidget		*origin_popover_list_box;
 	GtkWidget		*origin_box;
@@ -2461,6 +2462,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_with_source);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_popover_list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_box);
@@ -2507,6 +2509,17 @@ narrow_to_spacing (GBinding *binding, const GValue *from_value, GValue *to_value
 	return TRUE;
 }
 
+static gboolean
+narrow_to_halign (GBinding *binding, const GValue *from_value, GValue *to_value, gpointer user_data)
+{
+	if (g_value_get_boolean (from_value))
+		g_value_set_enum (to_value, GTK_ALIGN_START);
+	else
+		g_value_set_enum (to_value, GTK_ALIGN_FILL);
+
+	return TRUE;
+}
+
 static void
 gs_details_page_init (GsDetailsPage *self)
 {
@@ -2543,6 +2556,8 @@ gs_details_page_init (GsDetailsPage *self)
 
 	g_object_bind_property_full (self, "is-narrow", self->box_details_header, "spacing", G_BINDING_SYNC_CREATE,
 				     narrow_to_spacing, NULL, NULL, NULL);
+	g_object_bind_property_full (self, "is-narrow", self->box_with_source, "halign", G_BINDING_SYNC_CREATE,
+				     narrow_to_halign, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_details_header_not_icon, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
