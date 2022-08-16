@@ -765,7 +765,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		}
 	}
 
-	if (select_row)
+	/* Do not show the "selected" check when there's only one app in the list */
+	if (select_row && gs_app_list_length (list) > 1)
 		gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (select_row), TRUE);
 
 	gs_details_page_update_origin_button (self, TRUE);
