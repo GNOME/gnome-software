@@ -338,6 +338,7 @@
                                                 <property name="spacing">4</property>
                                                 <property name="halign">center</property>
                                                 <property name="valign">center</property>
+                                                <property name="visible" bind-source="button_cancel" bind-property="visible" bind-flags="sync-create|invert-boolean"/>
                                                 <child>
                                                   <object class="GtkMenuButton" id="origin_button">
                                                     <property name="can_focus">True</property>
