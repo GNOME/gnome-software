@@ -88,6 +88,7 @@ struct _GsPluginLoader
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 static void add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
+static gboolean remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
 static void gs_plugin_loader_process_in_thread_pool_cb (gpointer data, gpointer user_data);
 static void gs_plugin_loader_status_changed_cb (GsPlugin       *plugin,
                                                 GsApp          *app,
@@ -1078,17 +1079,22 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 				   GsPluginLoaderHelper *helper)
 {
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->pending_apps_mutex);
-
-	if (plugin_loader->pending_apps == NULL)
-		plugin_loader->pending_apps = gs_app_list_new ();
 
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		gs_app_list_add (plugin_loader->pending_apps, app);
-		/* make sure the progress is properly initialized */
-		gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
+		switch (gs_plugin_job_get_action (helper->plugin_job)) {
+		case GS_PLUGIN_ACTION_INSTALL:
+			add_app_to_install_queue (plugin_loader, app);
+			/* make sure the progress is properly initialized */
+			gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
+			break;
+		case GS_PLUGIN_ACTION_REMOVE:
+			remove_app_from_install_queue (plugin_loader, app);
+			break;
+		default:
+			break;
+		}
 	}
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
@@ -1098,13 +1104,11 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 				      GsPluginLoaderHelper *helper)
 {
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin_loader->pending_apps_mutex);
 
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (plugin_loader->pending_apps != NULL)
-			gs_app_list_remove (plugin_loader->pending_apps, app);
+		remove_app_from_install_queue (plugin_loader, app);
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
@@ -1272,6 +1276,9 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL)
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
