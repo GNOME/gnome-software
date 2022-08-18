@@ -285,10 +285,8 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 
 	gtk_image_set_from_icon_name (GTK_IMAGE (self->origin_packaging_image), packaging_icon);
 
-	if (packaging_base_css_color == NULL)
-		packaging_base_css_color = "window_fg_color";
-
-	css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
+	if (packaging_base_css_color != NULL)
+		css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
 
 	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, "packaging-color", css);
 }

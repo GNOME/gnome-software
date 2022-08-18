@@ -452,7 +452,7 @@ static void
 app_set_rpm_ostree_packaging_format (GsApp *app)
 {
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "RPM");
-	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_bg_color");
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "error_color");
 }
 
 void

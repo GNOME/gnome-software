@@ -35,18 +35,13 @@ screenshot-carousel button,
 }
 
 .origin-rounded-box {
-	border-radius: 14px;
-	padding: 4px 4px;
+	background-color: alpha(currentColor, .15);
+	border-radius: 999px;
+	padding: 4px;
 }
 
 .origin-beta {
-	color: @warning_bg_color;
-	background-color: alpha(@warning_bg_color, .15);
-}
-
-.origin-scope-user {
-	color: @window_fg_color;
-	background-color: alpha(@window_fg_color, .15);
+	color: @warning_color;
 }
 
 .origin-button > button {

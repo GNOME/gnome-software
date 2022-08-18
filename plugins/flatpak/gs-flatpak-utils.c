@@ -266,6 +266,6 @@ gs_flatpak_app_set_packaging_info (GsApp *app)
 	g_return_if_fail (GS_IS_APP (app));
 
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
-	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "accent_bg_color");
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingBaseCssColor", "accent_color");
 	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "flatpak-symbolic");
 }
