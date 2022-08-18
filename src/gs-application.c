@@ -175,10 +175,8 @@ gs_application_dbus_unregister (GApplication    *application,
 {
 	GsApplication *app = GS_APPLICATION (application);
 
-	if (app->search_provider != NULL) {
+	if (app->search_provider != NULL)
 		gs_shell_search_provider_unregister (app->search_provider);
-		g_clear_object (&app->search_provider);
-	}
 }
 
 static void
@@ -1171,6 +1169,7 @@ gs_application_dispose (GObject *object)
 	g_cancellable_cancel (app->cancellable);
 	g_clear_object (&app->cancellable);
 
+	g_clear_object (&app->search_provider);
 	g_clear_object (&app->plugin_loader);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->update_monitor);
