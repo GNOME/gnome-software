@@ -2187,6 +2187,25 @@ gs_details_page_star_pressed_cb (GtkGestureClick *click,
 	gs_details_page_write_review (self);
 }
 
+static void
+gs_details_page_shell_allocation_width_cb (GObject *shell,
+					   GParamSpec *pspec,
+					   GsDetailsPage *self)
+{
+	gint allocation_width = 0;
+	GtkOrientation orientation;
+
+	g_object_get (shell, "allocation-width", &allocation_width, NULL);
+
+	if (allocation_width > 0 && allocation_width < 500)
+		orientation = GTK_ORIENTATION_VERTICAL;
+	else
+		orientation = GTK_ORIENTATION_HORIZONTAL;
+
+	if (orientation != gtk_orientable_get_orientation (GTK_ORIENTABLE (self->box_details_header_not_icon)))
+		gtk_orientable_set_orientation (GTK_ORIENTABLE (self->box_details_header_not_icon), orientation);
+}
+
 static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
@@ -2203,6 +2222,10 @@ gs_details_page_setup (GsPage *page,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_cancellable_new ();
 	g_cancellable_connect (cancellable, G_CALLBACK (gs_details_page_cancel_cb), self, NULL);
+
+	g_signal_connect_object (self->shell, "notify::allocation-width",
+				 G_CALLBACK (gs_details_page_shell_allocation_width_cb),
+				 self, 0);
 
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
@@ -2555,8 +2578,6 @@ gs_details_page_init (GsDetailsPage *self)
 				     narrow_to_spacing, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_with_source, "halign", G_BINDING_SYNC_CREATE,
 				     narrow_to_halign, NULL, NULL, NULL);
-	g_object_bind_property_full (self, "is-narrow", self->box_details_header_not_icon, "orientation", G_BINDING_SYNC_CREATE,
-				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->box_license, "orientation", G_BINDING_SYNC_CREATE,
 				     narrow_to_orientation, NULL, NULL, NULL);
 	g_object_bind_property_full (self, "is-narrow", self->context_bar, "orientation", G_BINDING_SYNC_CREATE,
