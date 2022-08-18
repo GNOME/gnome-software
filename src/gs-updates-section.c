@@ -38,7 +38,7 @@ struct _GsUpdatesSection
 	GsAppList		*list;
 	GsUpdatesSectionKind	 kind;
 	GCancellable		*cancellable;
-	GsPage			*page;
+	GsPage			*page; /* (transfer none) */
 	GsPluginLoader		*plugin_loader;
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -542,7 +542,6 @@ gs_updates_section_dispose (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->list);
 	g_clear_object (&self->plugin_loader);
-	g_clear_object (&self->page);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_button_label);
 	g_clear_object (&self->sizegroup_button_image);
@@ -551,6 +550,7 @@ gs_updates_section_dispose (GObject *object)
 	self->button_update = NULL;
 	self->button_cancel = NULL;
 	self->button_stack = NULL;
+	self->page = NULL;
 
 	G_OBJECT_CLASS (gs_updates_section_parent_class)->dispose (object);
 }
@@ -726,7 +726,7 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self = g_object_new (GS_TYPE_UPDATES_SECTION, NULL);
 	self->kind = kind;
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->page = g_object_ref (page);
+	self->page = page;
 	_setup_section_header (self);
 
 	if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
