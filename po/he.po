@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-08 10:45+0000\n"
-"PO-Revision-Date: 2022-08-09 20:51+0300\n"
+"POT-Creation-Date: 2022-08-10 12:52+0000\n"
+"PO-Revision-Date: 2022-08-18 13:47+0300\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
@@ -26,8 +26,9 @@ msgid "Software"
 msgstr "תכנה"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-msgid "Application manager for GNOME"
-msgstr "מנהל יישומים עבור GNOME"
+#| msgid "Installed Updates"
+msgid "Install and update apps"
+msgstr "התקנה ועדכון יישומים"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -747,7 +748,6 @@ msgstr "דירוג גיל מומלץ"
 #: src/gs-age-rating-context-dialog.ui:68
 #: src/gs-hardware-support-context-dialog.ui:71
 #: src/gs-safety-context-dialog.ui:221
-#| msgid "How to add missing information"
 msgid "How to contribute missing information"
 msgstr "איך לתרום מידע חסר"
 
@@ -773,11 +773,11 @@ msgstr "חבילה"
 msgid "Pending"
 msgstr "בהמתנה"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "בהמתנה להתקנה"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "בהמתנה להסרה"
 
@@ -789,7 +789,7 @@ msgstr "הותקן"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:366
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "בהתקנה"
 
@@ -883,7 +883,6 @@ msgstr "יכול לצאת מארגז החול ולעקוף הגבלות אחרו
 #. FIXME support app == NULL
 #. set window title
 #: src/gs-app-details-page.c:166
-#| msgid "The update details"
 msgid "Update Details"
 msgstr "פרטי עדכון"
 
@@ -2169,37 +2168,37 @@ msgstr "לה_ציג עוד"
 msgid "_Show Less"
 msgstr "לה_ציג פחות"
 
-#: src/gs-details-page.c:361
+#: src/gs-details-page.c:357
 msgid "Removing…"
 msgstr "בהסרה…"
 
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:367
 msgid "Requires restart to finish install"
 msgstr "נדרשת הפעלה מחדש כדי לסיים את ההתקנה"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:374
 msgid "Requires restart to finish remove"
 msgstr "נדרשת הפעלה מחדש כדי לסיים את ההסרה"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:391
 msgid "Pending installation…"
 msgstr "בהמתנה להתקנה…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:398
 msgid "Pending update…"
 msgstr "בהמתנה לעדכון…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:418
+#: src/gs-details-page.c:414
 msgid "Preparing…"
 msgstr "בהכנה…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:421
+#: src/gs-details-page.c:417
 msgid "Uninstalling…"
 msgstr "מתבצעת הסרה…"
 
@@ -2207,12 +2206,12 @@ msgstr "מתבצעת הסרה…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:858 src/gs-details-page.c:884
+#: src/gs-details-page.c:854 src/gs-details-page.c:880
 #: src/gs-details-page.ui:227 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "ה_תקנה"
 
-#: src/gs-details-page.c:874
+#: src/gs-details-page.c:870
 msgid "_Restart"
 msgstr "הפעלה מ_חדש"
 
@@ -2220,22 +2219,22 @@ msgstr "הפעלה מ_חדש"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:894
 msgid "_Install…"
 msgstr "ה_תקנה…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1178
+#: src/gs-details-page.c:1174
 #, c-format
 msgid "Other Apps by %s"
 msgstr "יישומים נוספים מאת %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1561
+#: src/gs-details-page.c:1557
 msgid "You need internet access to write a review"
 msgstr "נדרשת גישה לרשת אל מנת לכתוב ביקורת"
 
-#: src/gs-details-page.c:1712 src/gs-details-page.c:1728
+#: src/gs-details-page.c:1708 src/gs-details-page.c:1724
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "לא ניתן למצוא את „%s”"
@@ -2832,11 +2831,6 @@ msgstr "הי_רתמות"
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:114
 #, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
@@ -2866,18 +2860,10 @@ msgid "Proprietary"
 msgstr "קנייני"
 
 #: src/gs-license-tile.c:133
-#| msgid "_Read More"
 msgid "_Learn More"
 msgstr "_ללמוד עוד"
 
 #: src/gs-license-tile.c:135
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know "
-#| "how it works. There may be restrictions on its use, and it may be harder "
-#| "to tell if the software is insecure.\n"
-#| "\n"
-#| "You may not be able to contribute to this software or influence its "
-#| "development."
 msgid ""
 "This software is not developed in the open, so only its developers know how "
 "it works. It may be insecure in ways that are hard to detect, and it may "
@@ -2892,7 +2878,6 @@ msgstr ""
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-#| msgid "Downloading featured images…"
 msgid "Downloading software catalog"
 msgstr "מוריד קטלוג תכנה"
 
@@ -2939,8 +2924,6 @@ msgid "There are no reviews to moderate"
 msgstr "אין סקירות לפיקוח"
 
 #: src/gs-origin-popover-row.c:104
-#| msgctxt "Distribution name"
-#| msgid "Unknown"
 msgid "Unknown source"
 msgstr "מקור לא ידוע"
 
@@ -2951,7 +2934,6 @@ msgstr "בטא"
 
 #. Translators: It's an origin scope, 'User' or 'System' installation
 #: src/gs-origin-popover-row.ui:130
-#| msgid "_User"
 msgid "User"
 msgstr "משתמש"
 
@@ -5237,7 +5219,7 @@ msgstr ""
 msgid "Packages"
 msgstr "חבילות"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
 msgid "Operating System (OSTree)"
 msgstr "מערכת הפעלה (OSTree)"
 
@@ -5253,6 +5235,9 @@ msgstr "תמיכה ב־Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "‏Snap זו חבילה שנתמכת במגוון הפצות לינוקס"
+
+#~ msgid "Application manager for GNOME"
+#~ msgstr "מנהל יישומים עבור GNOME"
 
 #, c-format
 #~ msgid "%s %s"
