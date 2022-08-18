@@ -82,7 +82,7 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	/* time header */
 	if (debug->use_time) {
 		g_autoptr(GDateTime) dt = g_date_time_new_now_utc ();
-		tmp = g_strdup_printf ("%02i:%02i:%02i:%04i",
+		tmp = g_strdup_printf ("%02i:%02i:%02i:%03i",
 				       g_date_time_get_hour (dt),
 				       g_date_time_get_minute (dt),
 				       g_date_time_get_second (dt),
