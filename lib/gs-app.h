@@ -213,6 +213,24 @@ typedef enum {
 } GsAppQuality;
 
 /**
+ * GsAppIconsState:
+ * @GS_APP_ICONS_STATE_UNKNOWN:		The state of the icons is unknown
+ * @GS_APP_ICONS_STATE_PENDING_DOWNLOAD:	Icons are in queue to be downloaded
+ * @GS_APP_ICONS_STATE_DOWNLOADING:	Icons are downloading
+ * @GS_APP_ICONS_STATE_AVAILABLE:	Icons are available
+ *
+ * State of the icons of the application.
+ *
+ * Since: 44
+ **/
+typedef enum {
+	GS_APP_ICONS_STATE_UNKNOWN,
+	GS_APP_ICONS_STATE_PENDING_DOWNLOAD,
+	GS_APP_ICONS_STATE_DOWNLOADING,
+	GS_APP_ICONS_STATE_AVAILABLE,
+} GsAppIconsState;
+
+/**
  * GS_APP_PROGRESS_UNKNOWN:
  *
  * A value returned by gs_app_get_progress() if the app’s progress is unknown
@@ -520,5 +538,7 @@ gboolean	 gs_app_get_has_translations	(GsApp		*app);
 void		 gs_app_set_has_translations	(GsApp		*app,
 						 gboolean	 has_translations);
 gboolean	 gs_app_is_downloaded		(GsApp		*app);
+
+GsAppIconsState	 gs_app_get_icons_state		(GsApp		*app);
 
 G_END_DECLS
