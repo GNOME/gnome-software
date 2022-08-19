@@ -41,6 +41,10 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
+#ifdef HAVE_SYSPROF
+#include <sysprof-capture.h>
+#endif
+
 #include "gs-enums.h"
 #include "gs-external-appstream-utils.h"
 #include "gs-plugin-job-private.h"
@@ -76,6 +80,10 @@ struct _GsPluginJobRefreshMetadata
 		guint n_plugins_complete;
 	} plugins_progress;
 	GSource *progress_source;  /* (owned) (nullable) */
+
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec;
+#endif
 };
 
 G_DEFINE_TYPE (GsPluginJobRefreshMetadata, gs_plugin_job_refresh_metadata, GS_TYPE_PLUGIN_JOB)
@@ -223,6 +231,10 @@ gs_plugin_job_refresh_metadata_run_async (GsPluginJob         *job,
 					     g_object_ref (task));
 #endif
 
+#ifdef HAVE_SYSPROF
+	self->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
@@ -358,9 +370,18 @@ odrs_provider_refresh_ratings_cb (GObject      *source_object,
 	GsOdrsProvider *odrs_provider = GS_ODRS_PROVIDER (source_object);
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
+#ifdef HAVE_SYSPROF
+	GsPluginJobRefreshMetadata *self = g_task_get_source_object (task);
+#endif
 
 	if (!gs_odrs_provider_refresh_ratings_finish (odrs_provider, result, &local_error))
 		g_debug ("Failed to refresh ratings: %s", local_error->message);
+
+	GS_PROFILER_ADD_MARK_TAKE (PluginJobRefreshMetadata,
+				   self->begin_time_nsec,
+				   g_strdup_printf ("%s:odrs", G_OBJECT_TYPE_NAME (self)),
+				   NULL);
+
 	/* Intentionally ignore errors, to not block other plugins */
 	finish_op (task, NULL);
 }
@@ -382,6 +403,13 @@ plugin_refresh_metadata_cb (GObject      *source_object,
 
 	/* Update progress reporting. */
 	self->plugins_progress.n_plugins_complete++;
+
+	GS_PROFILER_ADD_MARK_TAKE (PluginJobRefreshMetadata,
+				   self->begin_time_nsec,
+				   g_strdup_printf ("%s:%s",
+						    G_OBJECT_TYPE_NAME (self),
+						    gs_plugin_get_name (plugin)),
+				   NULL);
 
 	/* Intentionally ignore errors, to not block other plugins */
 	finish_op (task, NULL);
@@ -429,6 +457,11 @@ finish_op (GTask  *task,
 
 	/* success */
 	g_task_return_boolean (task, TRUE);
+
+	GS_PROFILER_ADD_MARK (PluginJobRefreshMetadata,
+			      self->begin_time_nsec,
+			      G_OBJECT_TYPE_NAME (self),
+			      NULL);
 }
 
 static gboolean
