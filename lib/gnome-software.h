@@ -23,6 +23,7 @@
 #include <gs-download-utils.h>
 #include <gs-enums.h>
 #include <gs-icon.h>
+#include <gs-icon-downloader.h>
 #include <gs-metered.h>
 #include <gs-odrs-provider.h>
 #include <gs-os-release.h>
