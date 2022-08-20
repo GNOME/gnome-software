@@ -34,6 +34,7 @@ libgnomesoftware_public_headers = [
   'gs-plugin-loader-sync.h',
   'gs-plugin-types.h',
   'gs-plugin-vfuncs.h',
+  'gs-profiler.h',
   'gs-remote-icon.h',
   'gs-test.h',
   'gs-utils.h',
