@@ -109,6 +109,7 @@ typedef struct {
 	gboolean get_featured_apps_finished;
 	GsAppList *apps;  /* (owned) (nullable) */
 	gboolean get_main_apps_finished;
+	gboolean cancelled;
 } LoadCategoryData;
 
 static void
@@ -140,6 +141,8 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get featured apps for category apps: %s", local_error->message);
+		else
+			data->cancelled = TRUE;
 		data->get_featured_apps_finished = TRUE;
 		load_category_finish (data);
 		return;
@@ -175,6 +178,8 @@ gs_category_page_get_apps_cb (GObject *source_object,
 		if (!g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category apps: %s", local_error->message);
+		else
+			data->cancelled = TRUE;
 		data->get_main_apps_finished = TRUE;
 		load_category_finish (data);
 		return;
@@ -286,6 +291,11 @@ load_category_finish (LoadCategoryData *data)
 	if (!data->get_featured_apps_finished ||
 	    !data->get_main_apps_finished)
 		return;
+
+	if (data->cancelled) {
+		load_category_data_free (data);
+		return;
+	}
 
 	/* Remove the loading tiles. */
 	gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
