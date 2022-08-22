@@ -132,7 +132,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %doc AUTHORS README.md
 %license COPYING
 %{_bindir}/gnome-software
-%{_datadir}/applications/gnome-software-local-file.desktop
+%{_datadir}/applications/gnome-software-local-file-flatpak.desktop
+%{_datadir}/applications/gnome-software-local-file-fwupd.desktop
+%{_datadir}/applications/gnome-software-local-file-packagekit.desktop
 %{_datadir}/applications/org.gnome.Software.desktop
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
