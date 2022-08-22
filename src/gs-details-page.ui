@@ -877,10 +877,16 @@
                                                 <property name="activatable">False</property>
                                                 <property name="visible">False</property>
                                                 <child>
-                                                  <object class="GsReviewHistogram" id="histogram">
+                                                  <object class="AdwClamp">
                                                     <property name="halign">start</property>
+                                                    <property name="maximum-size">500</property>
+                                                    <property name="tightening-threshold">500</property>
                                                     <property name="valign">center</property>
-                                                    <property name="width-request">350</property>
+                                                    <child>
+                                                      <object class="GsReviewHistogram" id="histogram">
+                                                        <property name="valign">center</property>
+                                                      </object>
+                                                    </child>
                                                   </object>
                                                 </child>
                                               </object>
