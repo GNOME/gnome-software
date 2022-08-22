@@ -140,6 +140,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_reviews;
 	GtkWidget		*box_reviews_internal;
 	GtkWidget		*histogram;
+	GtkWidget		*histogram_row;
 	GtkWidget		*button_review;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
@@ -1499,7 +1500,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* enable appropriate widgets */
 	gtk_widget_set_visible (self->star, show_reviews);
-	gtk_widget_set_visible (self->histogram, review_ratings != NULL && review_ratings->len > 0);
+	gtk_widget_set_visible (self->histogram_row, review_ratings != NULL && review_ratings->len > 0);
 	gtk_widget_set_visible (self->label_review_count, n_reviews > 0);
 
 	/* update the review label next to the star widget */
@@ -1559,7 +1560,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	/* Update the overall container. */
 	gtk_widget_set_visible (self->box_reviews,
 				show_reviews &&
-				(gtk_widget_get_visible (self->histogram) ||
+				(gtk_widget_get_visible (self->histogram_row) ||
 				 gtk_widget_get_visible (self->button_review) ||
 				 reviews->len > 0));
 }
@@ -2453,6 +2454,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews_internal);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram_row);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
