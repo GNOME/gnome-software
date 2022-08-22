@@ -873,15 +873,20 @@
                                               <class name="boxed-list"/>
                                             </style>
                                             <child>
-                                              <object class="GtkListBoxRow">
+                                              <object class="GtkListBoxRow" id="histogram_row">
                                                 <property name="activatable">False</property>
-                                                <property name="visible" bind-source="histogram" bind-property="visible" bind-flags="sync-create"/>
+                                                <property name="visible">False</property>
                                                 <child>
-                                                  <object class="GsReviewHistogram" id="histogram">
-                                                    <property name="visible">False</property>
+                                                  <object class="AdwClamp">
                                                     <property name="halign">start</property>
+                                                    <property name="maximum-size">500</property>
+                                                    <property name="tightening-threshold">500</property>
                                                     <property name="valign">center</property>
-                                                    <property name="width-request">350</property>
+                                                    <child>
+                                                      <object class="GsReviewHistogram" id="histogram">
+                                                        <property name="valign">center</property>
+                                                      </object>
+                                                    </child>
                                                   </object>
                                                 </child>
                                               </object>
