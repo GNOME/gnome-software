@@ -376,6 +376,9 @@ gs_category_page_load_category (GsCategoryPage *self)
 
 	g_assert (self->subcategory != NULL);
 
+	if (!gs_page_is_active (GS_PAGE (self)))
+		return;
+
 	featured_subcat = gs_category_find_child (self->category, "featured");
 
 	g_cancellable_cancel (self->cancellable);
