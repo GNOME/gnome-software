@@ -221,7 +221,7 @@ choose_top_carousel_apps (LoadCategoryData *data,
 	top_carousel_rand = g_rand_new_with_seed (top_carousel_seed);
 	g_debug ("Top carousel seed: %u", top_carousel_seed);
 
-	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+	for (guint i = 0; data->apps != NULL && i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
 		gboolean is_featured, is_recently_updated, is_hi_res;
 
@@ -299,7 +299,7 @@ load_category_finish (LoadCategoryData *data)
 	/* Apps to go in the top carousel */
 	top_carousel_apps = choose_top_carousel_apps (data, recently_updated_cutoff_secs);
 
-	for (guint i = 0; i < gs_app_list_length (data->apps); i++) {
+	for (guint i = 0; data->apps != NULL && i < gs_app_list_length (data->apps); i++) {
 		GsApp *app = gs_app_list_index (data->apps, i);
 		gboolean is_featured, is_recently_updated;
 		guint64 release_date;
