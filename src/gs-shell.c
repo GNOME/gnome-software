@@ -1253,6 +1253,26 @@ gs_shell_append_detailed_error (GsShell *shell, GString *str, const GError *erro
 }
 
 static gboolean
+gs_shell_handle_events_more_info (GsShell *self,
+				  GsApp *origin)
+{
+	const gchar *uri;
+
+	g_clear_pointer (&self->events_info_uri, g_free);
+
+	if (origin == NULL)
+		return FALSE;
+
+	uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
+	if (uri != NULL) {
+		self->events_info_uri = g_strdup (uri);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean
 gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *origin = gs_plugin_event_get_origin (event);
@@ -1336,15 +1356,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1456,15 +1469,8 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1623,15 +1629,8 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1725,15 +1724,8 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1796,15 +1788,8 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1861,15 +1846,8 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -2000,15 +1978,8 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	if (str->len == 0)
 		return FALSE;
 
-	/* add more-info button */
-	if (origin != NULL) {
-		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
-		if (uri != NULL) {
-			g_free (shell->events_info_uri);
-			shell->events_info_uri = g_strdup (uri);
-			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
-		}
-	}
+	if (gs_shell_handle_events_more_info (shell, origin))
+		buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
