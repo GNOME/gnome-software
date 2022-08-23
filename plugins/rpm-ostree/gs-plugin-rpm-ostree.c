@@ -1668,6 +1668,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		if (gs_app_get_source_default (app) == NULL) {
 			g_set_error_literal (error,
 			                     GS_PLUGIN_ERROR,
