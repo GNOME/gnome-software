@@ -40,6 +40,10 @@ void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details);
+void		 gs_utils_show_error_dialog_simple
+						(GtkWindow *parent,
+						 const gchar *title,
+						 const gchar *text);
 gboolean	 gs_utils_ask_user_accepts	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,

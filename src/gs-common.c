@@ -13,6 +13,7 @@
 #include <gio/gdesktopappinfo.h>
 
 #ifndef TESTDATADIR
+#include <adwaita.h>
 #include "gs-application.h"
 #endif
 
@@ -565,6 +566,94 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 	                          G_CALLBACK (gtk_window_destroy),
 	                          dialog);
 	gtk_widget_show (dialog);
+}
+
+#ifndef TESTDATADIR
+static void
+copy_error_text_clicked_cb (GtkButton *button,
+			    GtkTextView *text_view)
+{
+	GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (text_view));
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer (text_view);
+	GtkTextIter start, end;
+	g_autofree gchar *text = NULL;
+
+	gtk_text_buffer_get_bounds (buffer, &start, &end);
+	text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+	gdk_clipboard_set_text (clipboard, text);
+}
+#endif
+
+/**
+ * gs_utils_show_error_dialog_simple:
+ * @parent: transient parent, or %NULL for none
+ * @title: the title the dialog
+ * @text: the detailed error text
+ *
+ * Shows a dialog with title @title to display an error
+ * message @text.
+ *
+ * Since: 44
+ */
+void
+gs_utils_show_error_dialog_simple (GtkWindow *parent,
+				   const gchar *title,
+				   const gchar *text)
+{
+#ifndef TESTDATADIR
+	GtkWidget *window, *button, *container, *text_view, *vbox;
+
+	g_return_if_fail (text != NULL);
+
+	window = adw_window_new ();
+	g_object_set (window,
+		      "modal", TRUE,
+		      "title", title,
+		      "destroy-with-parent", TRUE,
+		      "default-width", 500,
+		      "default-height", 350,
+		      "resizable", TRUE,
+		      "transient-for", parent,
+		      NULL);
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	adw_window_set_content (ADW_WINDOW (window), vbox);
+
+	container = gtk_header_bar_new ();
+	gtk_box_append (GTK_BOX (vbox), container);
+
+	button = gtk_button_new_from_icon_name ("edit-copy-symbolic");
+	g_object_set (button,
+		      "focus-on-click", FALSE,
+		      NULL);
+	gtk_header_bar_pack_start (GTK_HEADER_BAR (container), button);
+
+	container = gtk_scrolled_window_new ();
+	g_object_set (container,
+		      "hscrollbar-policy", GTK_POLICY_AUTOMATIC,
+		      "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+		      NULL);
+	gtk_box_append (GTK_BOX (vbox), container);
+
+	text_view = gtk_text_view_new ();
+	g_object_set (text_view,
+		      "can-focus", FALSE,
+		      "editable", FALSE,
+		      "hexpand", TRUE,
+		      "vexpand", TRUE,
+		      "wrap-mode", GTK_WRAP_WORD_CHAR,
+		      "right-margin", 12,
+		      "left-margin", 12,
+		      "top-margin", 12,
+		      "bottom-margin", 12,
+		      NULL);
+	gtk_text_buffer_set_text (gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view)), text, -1);
+	gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (container), text_view);
+
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (copy_error_text_clicked_cb), text_view);
+
+	gtk_widget_show (window);
+#endif /* TESTDATADIR */
 }
 
 /**
