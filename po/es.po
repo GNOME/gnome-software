@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-05 10:15+0000\n"
-"PO-Revision-Date: 2022-08-08 12:42+0200\n"
+"POT-Creation-Date: 2022-08-18 15:16+0000\n"
+"PO-Revision-Date: 2022-08-24 08:15+0200\n"
 "Last-Translator: Daniel Mustieles García <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
@@ -27,8 +27,8 @@ msgid "Software"
 msgstr "Software"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-msgid "Application manager for GNOME"
-msgstr "Gestor de aplicaciones para GNOME"
+msgid "Install and update apps"
+msgstr "Instalar y actualizar aplicaciones"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -72,7 +72,7 @@ msgstr "Panel de actualizaciones"
 msgid "The update details"
 msgstr "Los detalles de la actualización"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1949
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1980
 #: src/gs-application.c:245
 msgid "The GNOME Project"
 msgstr "El proyecto GNOME"
@@ -803,11 +803,11 @@ msgstr "Paquete"
 msgid "Pending"
 msgstr "Pendiente"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:373
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:368
 msgid "Pending install"
 msgstr "Instalación pendiente"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:380
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:375
 msgid "Pending remove"
 msgstr "Eliminación pendiente"
 
@@ -819,7 +819,7 @@ msgstr "Instalado"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:366
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:361
 msgid "Installing"
 msgstr "Instalando"
 
@@ -932,7 +932,7 @@ msgid "Requires additional permissions"
 msgstr "Necesita permisos adicionales"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:852
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:855
 msgid "Reviews"
 msgstr "Opiniones"
 
@@ -944,7 +944,7 @@ msgstr "No se han encontrado opiniones para esa aplicación."
 msgid "No Reviews"
 msgstr "No hay opiniones"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:530
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:533
 msgid "Version History"
 msgstr "Histórico de versiones"
 
@@ -1400,7 +1400,7 @@ msgstr "Actualizar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:280
+#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:281
 #: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "Desinstalar"
@@ -1470,7 +1470,7 @@ msgid "Login Required"
 msgstr "Se necesita iniciar sesión"
 
 #: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:612
-#: src/gs-details-page.ui:293 src/gs-removal-dialog.ui:17
+#: src/gs-details-page.ui:294 src/gs-removal-dialog.ui:17
 #: src/gs-review-dialog.ui:18
 msgid "_Cancel"
 msgstr "_Cancelar"
@@ -1507,13 +1507,13 @@ msgstr "Destacado"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:110
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:106
 msgid "Editor’s Choice"
 msgstr "Selección de los editores"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:133
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:129
 msgid "New & Updated"
 msgstr "Nuevo y actualizado"
 
@@ -2182,37 +2182,37 @@ msgstr "_Mostrar más"
 msgid "_Show Less"
 msgstr "_Mostrar menos"
 
-#: src/gs-details-page.c:361
+#: src/gs-details-page.c:356
 msgid "Removing…"
 msgstr "Quitando…"
 
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:366
 msgid "Requires restart to finish install"
 msgstr "Requiere reiniciar para terminar la instalación"
 
-#: src/gs-details-page.c:378
+#: src/gs-details-page.c:373
 msgid "Requires restart to finish remove"
 msgstr "Requiere reiniciar para terminar la eliminación"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:395
+#: src/gs-details-page.c:390
 msgid "Pending installation…"
 msgstr "Instalación pendiente…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:402
+#: src/gs-details-page.c:397
 msgid "Pending update…"
 msgstr "Actualización pendiente…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:418
+#: src/gs-details-page.c:413
 msgid "Preparing…"
 msgstr "Preparando…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:421
+#: src/gs-details-page.c:416
 msgid "Uninstalling…"
 msgstr "Desinstalando…"
 
@@ -2220,12 +2220,12 @@ msgstr "Desinstalando…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:858 src/gs-details-page.c:884
-#: src/gs-details-page.ui:227 plugins/packagekit/gs-packagekit-task.c:150
+#: src/gs-details-page.c:854 src/gs-details-page.c:880
+#: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Instalar"
 
-#: src/gs-details-page.c:874
+#: src/gs-details-page.c:870
 msgid "_Restart"
 msgstr "_Reiniciar"
 
@@ -2233,22 +2233,22 @@ msgstr "_Reiniciar"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:894
 msgid "_Install…"
 msgstr "_Instalar…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1178
+#: src/gs-details-page.c:1171
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Otras aplicaciones por %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1561
+#: src/gs-details-page.c:1554
 msgid "You need internet access to write a review"
 msgstr "Necesita acceso a Internet para escribir una opinión"
 
-#: src/gs-details-page.c:1712 src/gs-details-page.c:1728
+#: src/gs-details-page.c:1705 src/gs-details-page.c:1721
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "No se pudo encontrar «%s»"
@@ -2274,38 +2274,38 @@ msgid "Help _Translate"
 msgstr "Ayudar a _traducir"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:243
+#: src/gs-details-page.ui:244
 msgid "_Open"
 msgstr "_Abrir"
 
-#: src/gs-details-page.ui:256 plugins/packagekit/gs-packagekit-task.c:160
+#: src/gs-details-page.ui:257 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "_Actualizar"
 
-#: src/gs-details-page.ui:318
+#: src/gs-details-page.ui:319
 msgid "Downloading"
 msgstr "Descargando"
 
-#: src/gs-details-page.ui:453 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:456 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: src/gs-details-page.ui:464
+#: src/gs-details-page.ui:467
 msgid "Selected add-ons will be installed with the application."
 msgstr "Los complementos seleccionados se instalarán con la aplicación."
 
-#: src/gs-details-page.ui:564
+#: src/gs-details-page.ui:567
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
 "Esta aplicación sólo se puede usar cuando hay una conexión activa a Internet."
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:587
 msgid "Software Repository Included"
 msgstr "Repositorio de software incluido"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:588
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -2313,11 +2313,11 @@ msgstr ""
 "Esta aplicación incluye un repositorio de software que proporciona "
 "actualizaciones, así como acceso a otro software."
 
-#: src/gs-details-page.ui:602
+#: src/gs-details-page.ui:605
 msgid "No Software Repository Included"
 msgstr "Ningún repositorio de software incluido"
 
-#: src/gs-details-page.ui:603
+#: src/gs-details-page.ui:606
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -2325,7 +2325,7 @@ msgstr ""
 "Esta aplicación no incluye un repositorio de software. No se actualizará con "
 "versiones nuevas."
 
-#: src/gs-details-page.ui:621
+#: src/gs-details-page.ui:624
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -2333,11 +2333,11 @@ msgstr ""
 "Este software ya lo proporciona su distribución y no se debe reemplazar."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:638
+#: src/gs-details-page.ui:641
 msgid "Software Repository Identified"
 msgstr "Repositorio de software identificado"
 
-#: src/gs-details-page.ui:639
+#: src/gs-details-page.ui:642
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -2345,15 +2345,15 @@ msgstr ""
 "Añadir este repositorio de software le dará acceso a software y "
 "actualizaciones adicionales."
 
-#: src/gs-details-page.ui:640
+#: src/gs-details-page.ui:643
 msgid "Only use software repositories that you trust."
 msgstr "Use sólo repositorios de software en las que confíe."
 
-#: src/gs-details-page.ui:705
+#: src/gs-details-page.ui:708
 msgid "No Metadata"
 msgstr "No hay metadatos"
 
-#: src/gs-details-page.ui:714
+#: src/gs-details-page.ui:717
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
@@ -2361,33 +2361,33 @@ msgstr ""
 "Este software no proporciona enlaces a un sitio web, repositorio de código o "
 "gestor de incidencias."
 
-#: src/gs-details-page.ui:742
+#: src/gs-details-page.ui:745
 msgid "Project _Website"
 msgstr "Página _web del proyecto"
 
-#: src/gs-details-page.ui:759
+#: src/gs-details-page.ui:762
 msgid "_Donate"
 msgstr "_Donar"
 
-#: src/gs-details-page.ui:776
+#: src/gs-details-page.ui:779
 msgid "Contribute _Translations"
 msgstr "_Colaborar con las traducciones"
 
-#: src/gs-details-page.ui:793
+#: src/gs-details-page.ui:796
 msgid "_Report an Issue"
 msgstr "Infor_mar de un problema"
 
-#: src/gs-details-page.ui:810
+#: src/gs-details-page.ui:813
 msgid "_Help"
 msgstr "Ay_uda"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:900
+#: src/gs-details-page.ui:903
 msgid "_Write Review"
 msgstr "_Escribir una opinión"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:937
+#: src/gs-details-page.ui:940
 msgid "All Reviews"
 msgstr "Todas las opiniones"
 
@@ -2971,12 +2971,12 @@ msgid "Unknown source"
 msgstr "fuente desconocida"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:99
+#: src/gs-origin-popover-row.ui:107
 msgid "Beta"
 msgstr "Beta"
 
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-origin-popover-row.ui:130
+#: src/gs-origin-popover-row.ui:137
 msgid "User"
 msgstr "Usuario"
 
@@ -3038,20 +3038,20 @@ msgstr "Explorar"
 msgid "Overview page"
 msgstr "Página de vista general"
 
-#: src/gs-overview-page.ui:39
+#: src/gs-overview-page.ui:35
 msgid "Enable Third Party Software Repositories?"
 msgstr "¿Activar el repositorio de software de terceros?"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:184
+#: src/gs-overview-page.ui:180
 msgid "Other Categories"
 msgstr "Otras categorías"
 
-#: src/gs-overview-page.ui:225
+#: src/gs-overview-page.ui:221
 msgid "No Application Data Found"
 msgstr "No se han encontrado datos sobre las aplicaciones"
 
-#: lib/gs-plugin-loader.c:2821
+#: lib/gs-plugin-loader.c:2828
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Desconocido"
@@ -3734,35 +3734,36 @@ msgstr "No se ha proporcionado una captura de pantalla"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:355 src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
+#: src/gs-screenshot-image.c:622
 msgid "Screenshot not found"
 msgstr "Captura de pantalla no encontrada"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:431
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "Falló al cargar la imagen"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:582
+#: src/gs-screenshot-image.c:650
 msgid "Screenshot size not found"
 msgstr "Tamaño de la captura de pantalla no encontrado"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:663
+#: src/gs-screenshot-image.c:732
 msgid "Could not create cache"
 msgstr "No se pudo crear la caché"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:677
+#: src/gs-screenshot-image.c:746
 msgid "Screenshot not valid"
 msgstr "Captura de pantalla no válida"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:709
+#: src/gs-screenshot-image.c:796
 msgid "Screenshot not available"
 msgstr "Captura de pantalla no disponible"
 
@@ -5308,7 +5309,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paquetes"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
 msgid "Operating System (OSTree)"
 msgstr "Sistema operativo (OSTree)"
 
@@ -5324,6 +5325,9 @@ msgstr "Soporte de Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Un snap es un paquete universal de Linux"
+
+#~ msgid "Application manager for GNOME"
+#~ msgstr "Gestor de aplicaciones para GNOME"
 
 #, c-format
 #~ msgid "%s %s"
