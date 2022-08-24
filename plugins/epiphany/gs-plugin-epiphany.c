@@ -130,10 +130,15 @@ gs_plugin_epiphany_changed_cb (GFileMonitor      *monitor,
 	gs_plugin_reload (GS_PLUGIN (self));
 }
 
-static void setup_thread_cb (GTask        *task,
-                             gpointer      source_object,
-                             gpointer      task_data,
-                             GCancellable *cancellable);
+static void
+epiphany_web_app_provider_proxy_created_cb (GObject      *source_object,
+                                            GAsyncResult *result,
+                                            gpointer      user_data);
+
+static void
+dynamic_launcher_portal_proxy_created_cb (GObject      *source_object,
+                                          GAsyncResult *result,
+                                          gpointer      user_data);
 
 static void
 gs_plugin_epiphany_setup_async (GsPlugin            *plugin,
@@ -146,6 +151,7 @@ gs_plugin_epiphany_setup_async (GsPlugin            *plugin,
 	g_autoptr(GError) local_error = NULL;
 	g_autofree char *portal_apps_path = NULL;
 	g_autoptr(GFile) portal_apps_file = NULL;
+	GDBusConnection *connection;
 
 	task = g_task_new (plugin, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_epiphany_setup_async);
@@ -179,42 +185,36 @@ gs_plugin_epiphany_setup_async (GsPlugin            *plugin,
 	self->changed_id = g_signal_connect (self->monitor, "changed",
 					     G_CALLBACK (gs_plugin_epiphany_changed_cb), self);
 
-	/* Start up a worker thread to process all the plugin’s function calls. */
-	self->worker = gs_worker_thread_new ("gs-plugin-epiphany");
-
-	/* Queue a job to set up D-Bus proxies */
-	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
-				setup_thread_cb, g_steal_pointer (&task));
-}
-
-/* Run in @worker */
-static void
-setup_thread_cb (GTask        *task,
-		 gpointer      source_object,
-		 gpointer      task_data,
-		 GCancellable *cancellable)
-{
-	GsPluginEpiphany *self = GS_PLUGIN_EPIPHANY (source_object);
-	g_autofree gchar *name_owner = NULL;
-	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GVariant) version = NULL;
-	GDBusConnection *connection;
-
-	assert_in_worker (self);
-
 	connection = gs_plugin_get_session_bus_connection (GS_PLUGIN (self));
 	g_assert (connection != NULL);
+
+	gs_ephy_web_app_provider_proxy_new (connection,
+					    G_DBUS_PROXY_FLAGS_NONE,
+					    "org.gnome.Epiphany.WebAppProvider",
+					    "/org/gnome/Epiphany/WebAppProvider",
+					    cancellable,
+					    epiphany_web_app_provider_proxy_created_cb,
+					    g_steal_pointer (&task));
+}
+
+static void
+epiphany_web_app_provider_proxy_created_cb (GObject      *source_object,
+                                            GAsyncResult *result,
+                                            gpointer      user_data)
+{
+	g_autoptr(GTask) task = G_TASK (user_data);
+	g_autofree gchar *name_owner = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginEpiphany *self = g_task_get_source_object (task);
+	GDBusConnection *connection;
+	GCancellable *cancellable;
 
 	/* Check that the proxy exists (and is owned; it should auto-start) so
 	 * we can disable the plugin for systems which don’t have new enough
 	 * Epiphany.
 	 */
-	self->epiphany_proxy = gs_ephy_web_app_provider_proxy_new_sync (connection,
-									G_DBUS_PROXY_FLAGS_NONE,
-									"org.gnome.Epiphany.WebAppProvider",
-									"/org/gnome/Epiphany/WebAppProvider",
-									g_task_get_cancellable (task),
-									&local_error);
+	self->epiphany_proxy = gs_ephy_web_app_provider_proxy_new_finish (result, &local_error);
+
 	if (self->epiphany_proxy == NULL) {
 		gs_epiphany_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -228,15 +228,36 @@ setup_thread_cb (GTask        *task,
 		return;
 	}
 
-	/* Check if the dynamic launcher portal is available and disable otherwise */
-	self->launcher_portal_proxy = g_dbus_proxy_new_sync (connection,
-							     G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-							     NULL,
-							     "org.freedesktop.portal.Desktop",
-							     "/org/freedesktop/portal/desktop",
-							     "org.freedesktop.portal.DynamicLauncher",
-							     g_task_get_cancellable (task),
-							     &local_error);
+	connection = g_dbus_proxy_get_connection (G_DBUS_PROXY (self->epiphany_proxy));
+	cancellable = g_task_get_cancellable (task);
+
+	g_dbus_proxy_new (connection,
+			  G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
+			  NULL,
+			  "org.freedesktop.portal.Desktop",
+			  "/org/freedesktop/portal/desktop",
+			  "org.freedesktop.portal.DynamicLauncher",
+			  cancellable,
+			  dynamic_launcher_portal_proxy_created_cb,
+			  g_steal_pointer (&task));
+}
+
+static void
+dynamic_launcher_portal_proxy_created_cb (GObject      *source_object,
+                                          GAsyncResult *result,
+                                          gpointer      user_data)
+{
+	g_autoptr(GTask) task = G_TASK (user_data);
+	g_autoptr(GVariant) version = NULL;
+	g_autoptr(GError) local_error = NULL;
+	GsPluginEpiphany *self = g_task_get_source_object (task);
+
+	/* Check that the proxy exists (and is owned; it should auto-start) so
+	 * we can disable the plugin for systems which don’t have new enough
+	 * Epiphany.
+	 */
+	self->launcher_portal_proxy = g_dbus_proxy_new_finish (result, &local_error);
+
 	if (self->launcher_portal_proxy == NULL) {
 		gs_epiphany_error_convert (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
@@ -252,6 +273,9 @@ setup_thread_cb (GTask        *task,
 		g_debug ("Found version %" G_GUINT32_FORMAT " of the dynamic launcher portal",
 			 g_variant_get_uint32 (version));
 	}
+
+	/* Start up a worker thread to process all the plugin’s function calls. */
+	self->worker = gs_worker_thread_new ("gs-plugin-epiphany");
 
 	g_task_return_boolean (task, TRUE);
 }

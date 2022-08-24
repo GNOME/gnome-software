@@ -454,7 +454,6 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	g_autoptr(GError) error_local_copy = NULL;
 	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *origin_id = NULL;
-	g_autoptr(GsPluginEvent) event = NULL;
 
 	/* badly behaved plugin */
 	if (error_local == NULL) {
@@ -1945,7 +1944,6 @@ gs_plugin_loader_setup_async (GsPluginLoader      *plugin_loader,
 	SetupData *setup_data;
 	g_autoptr(SetupData) setup_data_owned = NULL;
 	g_autoptr(GTask) task = NULL;
-	g_autoptr(GError) local_error = NULL;
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif
@@ -2037,8 +2035,6 @@ finish_setup_get_bus (GTask *task)
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
-	g_autoptr(GsPluginLoaderHelper) helper = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GPtrArray) locations = NULL;
 	g_autoptr(GError) local_error = NULL;
 

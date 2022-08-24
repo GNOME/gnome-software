@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #include "gnome-software-private.h"
 
@@ -16,11 +16,11 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_UPGRADE_BANNER (gs_upgrade_banner_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsUpgradeBanner, gs_upgrade_banner, GS, UPGRADE_BANNER, GtkWidget)
+G_DECLARE_DERIVABLE_TYPE (GsUpgradeBanner, gs_upgrade_banner, GS, UPGRADE_BANNER, AdwBin)
 
 struct _GsUpgradeBannerClass
 {
-	GtkWidgetClass	 parent_class;
+	AdwBinClass	 parent_class;
 
 	void		(*download_clicked)	(GsUpgradeBanner	*self);
 	void		(*install_clicked)	(GsUpgradeBanner	*self);

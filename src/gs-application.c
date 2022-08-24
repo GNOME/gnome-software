@@ -175,10 +175,21 @@ gs_application_dbus_unregister (GApplication    *application,
 {
 	GsApplication *app = GS_APPLICATION (application);
 
-	if (app->search_provider != NULL) {
+	if (app->search_provider != NULL)
 		gs_shell_search_provider_unregister (app->search_provider);
-		g_clear_object (&app->search_provider);
-	}
+}
+
+static void
+gs_application_shutdown (GApplication *application)
+{
+	GsApplication *app = GS_APPLICATION (application);
+
+	g_cancellable_cancel (app->cancellable);
+	g_clear_object (&app->cancellable);
+
+	g_clear_object (&app->shell);
+
+	G_APPLICATION_CLASS (gs_application_parent_class)->shutdown (application);
 }
 
 static void
@@ -1168,11 +1179,8 @@ gs_application_dispose (GObject *object)
 {
 	GsApplication *app = GS_APPLICATION (object);
 
-	g_cancellable_cancel (app->cancellable);
-	g_clear_object (&app->cancellable);
-
+	g_clear_object (&app->search_provider);
 	g_clear_object (&app->plugin_loader);
-	g_clear_object (&app->shell);
 	g_clear_object (&app->update_monitor);
 #ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
@@ -1345,6 +1353,7 @@ gs_application_class_init (GsApplicationClass *klass)
 	application_class->open = gs_application_open;
 	application_class->dbus_register = gs_application_dbus_register;
 	application_class->dbus_unregister = gs_application_dbus_unregister;
+	application_class->shutdown = gs_application_shutdown;
 
 	/**
 	 * GsApplication:debug: (nullable)

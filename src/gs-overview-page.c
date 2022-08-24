@@ -549,7 +549,6 @@ fedora_third_party_disable (GsOverviewPage *self)
 static gchar *
 gs_overview_page_dup_deployment_featured_filename (void)
 {
-	g_autoptr(GPtrArray) dirs = NULL;
 	g_autofree gchar *filename = NULL;
 	const gchar * const *sys_dirs;
 
