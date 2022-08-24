@@ -49,6 +49,7 @@ typedef struct
 	gboolean	 show_installed_size;
 	gboolean	 show_installed;
 	guint		 pending_refresh_id;
+	guint		 unreveal_in_idle_id;
 	gboolean	 is_narrow;
 } GsAppRowPrivate;
 
@@ -553,6 +554,19 @@ child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
 }
 
+static gboolean
+child_unrevealed_unmapped_cb (gpointer user_data)
+{
+	GsAppRow *app_row = user_data;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->unreveal_in_idle_id = 0;
+
+	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+
+	return G_SOURCE_REMOVE;
+}
+
 void
 gs_app_row_unreveal (GsAppRow *app_row)
 {
@@ -563,6 +577,14 @@ gs_app_row_unreveal (GsAppRow *app_row)
 
 	child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (app_row));
 	gtk_widget_set_sensitive (child, FALSE);
+
+	/* Revealer does not animate when the widget is not mapped */
+	if (!gtk_widget_get_mapped (GTK_WIDGET (app_row))) {
+		GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+		if (priv->unreveal_in_idle_id == 0)
+			priv->unreveal_in_idle_id = g_idle_add_full (G_PRIORITY_HIGH, child_unrevealed_unmapped_cb, app_row, NULL);
+		return;
+	}
 
 	revealer = gtk_revealer_new ();
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
@@ -734,10 +756,8 @@ gs_app_row_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
 
 	g_clear_object (&priv->app);
-	if (priv->pending_refresh_id != 0) {
-		g_source_remove (priv->pending_refresh_id);
-		priv->pending_refresh_id = 0;
-	}
+	g_clear_handle_id (&priv->pending_refresh_id, g_source_remove);
+	g_clear_handle_id (&priv->unreveal_in_idle_id, g_source_remove);
 
 	G_OBJECT_CLASS (gs_app_row_parent_class)->dispose (object);
 }
