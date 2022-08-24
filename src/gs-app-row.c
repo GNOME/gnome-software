@@ -576,6 +576,11 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 
 	child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (app_row));
+
+	/* This means the row is already hiding */
+	if (GTK_IS_REVEALER (child))
+		return;
+
 	gtk_widget_set_sensitive (child, FALSE);
 
 	/* Revealer does not animate when the widget is not mapped */
