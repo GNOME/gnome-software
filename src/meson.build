@@ -201,14 +201,49 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
 
-i18n.merge_file(
-  input: 'gnome-software-local-file.desktop.in',
-  output: 'gnome-software-local-file.desktop',
-  type: 'desktop',
-  po_dir: join_paths(meson.project_source_root(), 'po'),
-  install: true,
-  install_dir: join_paths(get_option('datadir'), 'applications')
-)
+if get_option('flatpak')
+  i18n.merge_file(
+    input: 'gnome-software-local-file-flatpak.desktop.in',
+    output: 'gnome-software-local-file-flatpak.desktop',
+    type: 'desktop',
+    po_dir: join_paths(meson.project_source_root(), 'po'),
+    install: true,
+    install_dir: join_paths(get_option('datadir'), 'applications')
+  )
+endif
+
+if get_option('fwupd')
+  i18n.merge_file(
+    input: 'gnome-software-local-file-fwupd.desktop.in',
+    output: 'gnome-software-local-file-fwupd.desktop',
+    type: 'desktop',
+    po_dir: join_paths(meson.project_source_root(), 'po'),
+    install: true,
+    install_dir: join_paths(get_option('datadir'), 'applications')
+  )
+endif
+
+if get_option('packagekit') or get_option('rpm_ostree')
+  i18n.merge_file(
+    input: 'gnome-software-local-file-packagekit.desktop.in',
+    output: 'gnome-software-local-file-packagekit.desktop',
+    type: 'desktop',
+    po_dir: join_paths(meson.project_source_root(), 'po'),
+    install: true,
+    install_dir: join_paths(get_option('datadir'), 'applications')
+  )
+endif
+
+if get_option('snap')
+  i18n.merge_file(
+    input: 'gnome-software-local-file-snap.desktop.in',
+    output: 'gnome-software-local-file-snap.desktop',
+    type: 'desktop',
+    po_dir: join_paths(meson.project_source_root(), 'po'),
+    install: true,
+    install_dir: join_paths(get_option('datadir'), 'applications')
+  )
+endif
 
 install_data('org.gnome.Software-search-provider.ini',
              install_dir : 'share/gnome-shell/search-providers')
