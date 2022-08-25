@@ -575,6 +575,19 @@ child_unrevealed_unmapped_cb (gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
+/**
+ * gs_app_row_unreveal:
+ * @app_row: a #GsAppRow
+ *
+ * Hide the row with an animation. Once the animation is done
+ * the GsAppRow:unrevealed signal is emitted. This handles
+ * the case when the widget is not mapped as well, in which case
+ * the GsAppRow:unrevealed signal is emitted from an idle
+ * callback, to ensure async nature of the function call and
+ * the signal emission.
+ *
+ * Calling the function multiple times has no effect.
+ **/
 void
 gs_app_row_unreveal (GsAppRow *app_row)
 {
