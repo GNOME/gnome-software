@@ -109,9 +109,9 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 static void
 _unreveal_row (GsAppRow *app_row)
 {
-	gs_app_row_unreveal (app_row);
 	g_signal_connect (app_row, "unrevealed",
 	                  G_CALLBACK (_row_unrevealed_cb), NULL);
+	gs_app_row_unreveal (app_row);
 }
 
 static void
