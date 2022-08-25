@@ -184,17 +184,9 @@ gs_installed_page_unreveal_row (GsAppRow *app_row)
 						      G_CALLBACK (gs_installed_page_notify_state_changed_cb), NULL);
 	}
 
-	/* This check is required, because GsAppRow does not emit
-	 * the signal when the row is not realized. This can happen
-	 * when installing/uninstalling an app without visiting
-	 * the Installed page. */
-	if (!gtk_widget_get_mapped (GTK_WIDGET (app_row))) {
-		row_unrevealed (G_OBJECT (app_row), NULL, NULL);
-	} else {
-		g_signal_connect (app_row, "unrevealed",
-				  G_CALLBACK (row_unrevealed), NULL);
-		gs_app_row_unreveal (app_row);
-	}
+	g_signal_connect (app_row, "unrevealed",
+			  G_CALLBACK (row_unrevealed), NULL);
+	gs_app_row_unreveal (app_row);
 }
 
 static GsAppRow *  /* (transfer none) */
