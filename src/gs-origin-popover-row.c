@@ -49,7 +49,8 @@ refresh_ui (GsOriginPopoverRow *row)
 	if (origin_ui != NULL)
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
 
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_AVAILABLE_LOCAL) {
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+	    gs_app_get_local_file (priv->app) != NULL) {
 		GFile *local_file = gs_app_get_local_file (priv->app);
 		url = g_file_get_basename (local_file);
 	} else {
