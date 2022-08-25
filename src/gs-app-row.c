@@ -539,6 +539,14 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 }
 
 static void
+finish_unreveal (GsAppRow *app_row)
+{
+	gtk_widget_hide (GTK_WIDGET (app_row));
+
+	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+}
+
+static void
 child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
@@ -551,7 +559,7 @@ child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 	if (priv->app == NULL || !gtk_widget_get_mapped (GTK_WIDGET (app_row)))
 		return;
 
-	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+	finish_unreveal (app_row);
 }
 
 static gboolean
@@ -562,7 +570,7 @@ child_unrevealed_unmapped_cb (gpointer user_data)
 
 	priv->unreveal_in_idle_id = 0;
 
-	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+	finish_unreveal (app_row);
 
 	return G_SOURCE_REMOVE;
 }
