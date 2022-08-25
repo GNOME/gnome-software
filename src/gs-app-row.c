@@ -49,6 +49,7 @@ typedef struct
 	gboolean	 show_installed_size;
 	gboolean	 show_installed;
 	guint		 pending_refresh_id;
+	guint		 unreveal_in_idle_id;
 	gboolean	 is_narrow;
 } GsAppRowPrivate;
 
@@ -538,6 +539,14 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 }
 
 static void
+finish_unreveal (GsAppRow *app_row)
+{
+	gtk_widget_hide (GTK_WIDGET (app_row));
+
+	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+}
+
+static void
 child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
@@ -550,9 +559,35 @@ child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
 	if (priv->app == NULL || !gtk_widget_get_mapped (GTK_WIDGET (app_row)))
 		return;
 
-	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+	finish_unreveal (app_row);
 }
 
+static gboolean
+child_unrevealed_unmapped_cb (gpointer user_data)
+{
+	GsAppRow *app_row = user_data;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->unreveal_in_idle_id = 0;
+
+	finish_unreveal (app_row);
+
+	return G_SOURCE_REMOVE;
+}
+
+/**
+ * gs_app_row_unreveal:
+ * @app_row: a #GsAppRow
+ *
+ * Hide the row with an animation. Once the animation is done
+ * the GsAppRow:unrevealed signal is emitted. This handles
+ * the case when the widget is not mapped as well, in which case
+ * the GsAppRow:unrevealed signal is emitted from an idle
+ * callback, to ensure async nature of the function call and
+ * the signal emission.
+ *
+ * Calling the function multiple times has no effect.
+ **/
 void
 gs_app_row_unreveal (GsAppRow *app_row)
 {
@@ -562,7 +597,20 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 
 	child = gtk_list_box_row_get_child (GTK_LIST_BOX_ROW (app_row));
+
+	/* This means the row is already hiding */
+	if (GTK_IS_REVEALER (child))
+		return;
+
 	gtk_widget_set_sensitive (child, FALSE);
+
+	/* Revealer does not animate when the widget is not mapped */
+	if (!gtk_widget_get_mapped (GTK_WIDGET (app_row))) {
+		GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+		if (priv->unreveal_in_idle_id == 0)
+			priv->unreveal_in_idle_id = g_idle_add_full (G_PRIORITY_HIGH, child_unrevealed_unmapped_cb, app_row, NULL);
+		return;
+	}
 
 	revealer = gtk_revealer_new ();
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
@@ -734,10 +782,8 @@ gs_app_row_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
 
 	g_clear_object (&priv->app);
-	if (priv->pending_refresh_id != 0) {
-		g_source_remove (priv->pending_refresh_id);
-		priv->pending_refresh_id = 0;
-	}
+	g_clear_handle_id (&priv->pending_refresh_id, g_source_remove);
+	g_clear_handle_id (&priv->unreveal_in_idle_id, g_source_remove);
 
 	G_OBJECT_CLASS (gs_app_row_parent_class)->dispose (object);
 }

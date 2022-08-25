@@ -94,13 +94,7 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 	if (widget == NULL)
 		return;
 
-	/* Traverse the widget structure up to the GsUpdatesSection */
-	while (widget != NULL) {
-		if (GS_IS_UPDATES_SECTION (widget))
-			break;
-		widget = gtk_widget_get_parent (widget);
-	}
-
+	widget = gtk_widget_get_ancestor (GTK_WIDGET (row), GS_TYPE_UPDATES_SECTION);
 	g_return_if_fail (GS_IS_UPDATES_SECTION (widget));
 	self = GS_UPDATES_SECTION (widget);
 
@@ -115,9 +109,9 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 static void
 _unreveal_row (GsAppRow *app_row)
 {
-	gs_app_row_unreveal (app_row);
 	g_signal_connect (app_row, "unrevealed",
 	                  G_CALLBACK (_row_unrevealed_cb), NULL);
+	gs_app_row_unreveal (app_row);
 }
 
 static void
