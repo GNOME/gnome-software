@@ -226,14 +226,6 @@ endif
 if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.9.1')
   ostree = dependency('ostree-1')
-
-  flatpak_soupapiversion = flatpak.get_variable('soupapiversion')
-  if flatpak_soupapiversion == ''
-    flatpak_soupapiversion = '2.4' # Pre libsoup3 support
-  endif
-  if flatpak_soupapiversion != libsoupapiversion
-    error('flatpak was built against a different API of libsoup. @0@ instead of @1@.'.format(flatpak_soupapiversion, libsoupapiversion))
-  endif
 endif
 
 if get_option('malcontent')
