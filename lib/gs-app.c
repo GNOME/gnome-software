@@ -6170,7 +6170,8 @@ gs_app_dup_origin_ui (GsApp *app,
 
 		if (origin_str == NULL || origin_str[0] == '\0') {
 			/* use "Local file" rather than the filename for local files */
-			if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
+			if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+			    gs_app_get_local_file (app) != NULL)
 				origin_str = _("Local file");
 			else if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0)
 				origin_str = "Flathub";
