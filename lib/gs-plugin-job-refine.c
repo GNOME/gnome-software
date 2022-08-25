@@ -87,7 +87,6 @@
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
 #include "gs-enums.h"
-#include "gs-plugin-private.h"
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-refine.h"
 #include "gs-utils.h"
@@ -240,7 +239,6 @@ typedef struct {
 	guint n_pending_ops;
 	guint n_pending_recursions;
 	guint next_plugin_index;
-	guint next_plugin_order;
 
 	/* Output data. */
 	GError *error;  /* (nullable) (owned) */
@@ -277,7 +275,6 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	g_autoptr(GTask) task = NULL;
 	RefineInternalData *data;
 	g_autoptr(RefineInternalData) data_owned = NULL;
-	gboolean anything_ran = FALSE;
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, run_refine_internal_async);
@@ -292,7 +289,6 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
 	data->n_pending_ops = 0;
-	data->next_plugin_order = 0;
 
 	/* run each plugin
 	 *
@@ -310,20 +306,10 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 
-		if (gs_plugin_get_order (plugin) > data->next_plugin_order) {
-			if (!anything_ran)
-				data->next_plugin_order = gs_plugin_get_order (plugin);
-			else
-				return;
-		}
-
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		if (plugin_class->refine_async == NULL)
 			continue;
-
-		/* at least one plugin supports this vfunc */
-		anything_ran = TRUE;
 
 		/* FIXME: The next refine_async() call is made in
 		 * finish_refine_internal_op(). */
@@ -333,10 +319,11 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 		data->n_pending_ops++;
 		plugin_class->refine_async (plugin, list, flags,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
-	}
 
-	if (!anything_ran)
-		g_debug ("no plugin could handle refining apps");
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
+	}
 
 	data->n_pending_ops++;
 	finish_refine_internal_op (task, NULL);
@@ -390,7 +377,6 @@ finish_refine_internal_op (GTask  *task,
 	GsOdrsProvider *odrs_provider;
 	GsOdrsProviderRefineFlags odrs_refine_flags = 0;
 	GPtrArray *plugins;  /* (element-type GsPlugin) */
-	gboolean anything_ran = FALSE;
 
 	if (data->error == NULL && error_owned != NULL) {
 		data->error = g_steal_pointer (&error_owned);
@@ -401,35 +387,16 @@ finish_refine_internal_op (GTask  *task,
 	g_assert (data->n_pending_ops > 0);
 	data->n_pending_ops--;
 
-	if (data->n_pending_ops > 0)
-		return;
-
-	/* We reach this line after all plugins of a certain order ran, and now
-	 * we need to run the next set of plugins. */
-	data->next_plugin_order++;
-
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
 	for (guint i = data->next_plugin_index; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 
-		if (gs_plugin_get_order (plugin) > data->next_plugin_order) {
-			if (!anything_ran)
-				data->next_plugin_order = gs_plugin_get_order (plugin);
-			else
-				return;
-		}
-
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
 		if (plugin_class->refine_async == NULL)
 			continue;
-		if (gs_plugin_get_order (plugin) < data->next_plugin_order)
-			continue;
-
-		/* at least one plugin supports this vfunc */
-		anything_ran = TRUE;
 
 		/* FIXME: The next refine_async() call is made in
 		 * finish_refine_internal_op(). */
@@ -439,6 +406,10 @@ finish_refine_internal_op (GTask  *task,
 		data->n_pending_ops++;
 		plugin_class->refine_async (plugin, list, flags,
 					    cancellable, plugin_refine_cb, g_object_ref (task));
+
+		/* FIXME: The next refine_async() call is made in
+		 * finish_refine_internal_op(). */
+		return;
 	}
 
 	if (data->next_plugin_index == plugins->len) {
