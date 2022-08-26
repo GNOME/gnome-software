@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-07-09 18:27+0000\n"
-"PO-Revision-Date: 2022-08-18 17:10+0200\n"
+"POT-Creation-Date: 2022-08-23 11:29+0000\n"
+"PO-Revision-Date: 2022-08-26 16:04+0200\n"
 "Last-Translator: gogo <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "Language: hr\n"
@@ -71,7 +71,7 @@ msgstr "Panel nadopuna"
 msgid "The update details"
 msgstr "Pojedinosti nadopune"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1979
+#: data/appdata/org.gnome.Software.appdata.xml.in:1992
 msgid "The GNOME Project"
 msgstr "GNOME projekt"
 
@@ -783,15 +783,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Paket"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:446
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:455
 msgid "Pending"
 msgstr "Na čekanju"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:450 src/gs-details-page.c:346
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:459 src/gs-details-page.c:346
 msgid "Pending install"
 msgstr "Čekanje na instalaciju"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:454 src/gs-details-page.c:353
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:463 src/gs-details-page.c:353
 msgid "Pending remove"
 msgstr "Čekanje na uklanjanje"
 
@@ -804,7 +804,7 @@ msgstr "Instalirano"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:199 src/gs-details-page.c:339
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:339
 msgid "Installing"
 msgstr "Instalacija"
 
@@ -923,7 +923,7 @@ msgstr "Nema dostupnog opisa nadopune."
 msgid "Go back"
 msgstr "Natrag"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:505
+#: src/gs-app-details-page.ui:47 src/gs-app-row.c:514
 msgid "Requires additional permissions"
 msgstr "Zahtijeva dodatne dozvole"
 
@@ -1351,20 +1351,20 @@ msgstr "Nema dostupne informacije dobne ocjene"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:147
+#: src/gs-app-row.c:152
 msgid "Visit Website"
 msgstr "Posjeti web stranicu"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:153
+#: src/gs-app-row.c:158
 msgid "Install…"
 msgstr "Instaliraj…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:161 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:166 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "Odustani"
 
@@ -1372,13 +1372,13 @@ msgstr "Odustani"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:344 src/gs-page.c:367
+#: src/gs-app-row.c:174 src/gs-common.c:344 src/gs-page.c:367
 msgid "Install"
 msgstr "Instaliraj"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:182
 msgid "Update"
 msgstr "Nadopuni"
 
@@ -1386,31 +1386,31 @@ msgstr "Nadopuni"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:273
+#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:273
 #: src/gs-page.c:528
 msgid "Uninstall"
 msgstr "Deinstaliraj"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:206
+#: src/gs-app-row.c:211
 msgid "Uninstalling"
 msgstr "Deinstalacija"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:316
+#: src/gs-app-row.c:325
 msgid "Device cannot be used during update."
 msgstr "Uređaj se ne može koristiti tijekom nadopune."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:326 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:335 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "Repozitorij: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:512
+#: src/gs-app-row.c:521
 #, c-format
 msgid "Renamed from %s"
 msgstr "Preimenovano iz %s"
@@ -2234,7 +2234,7 @@ msgid ""
 "This software is not available in your language and will appear in US "
 "English."
 msgstr ""
-"Ovaj softver nije dostupan na vašem jeziku i biti će prikazana na SAD "
+"Ovaj softver nije dostupan na vašem jeziku i biti će prikazan na SAD "
 "engleskom jeziku."
 
 #: src/gs-details-page.ui:83
