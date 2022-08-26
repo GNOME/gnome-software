@@ -771,7 +771,10 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	else if (select_row)
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (select_row), FALSE);
 
-	gs_details_page_update_origin_button (self, TRUE);
+	if (select_row != NULL)
+		gs_details_page_update_origin_button (self, TRUE);
+	else
+		gtk_widget_hide (self->origin_box);
 
 	if (instance_changed) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
