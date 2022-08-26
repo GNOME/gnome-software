@@ -343,8 +343,10 @@ external_appstream_refresh_cb (GObject      *source_object,
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	gs_external_appstream_refresh_finish (result, &local_error);
-	finish_op (task, g_steal_pointer (&local_error));
+	if (!gs_external_appstream_refresh_finish (result, &local_error))
+		g_debug ("Failed to refresh external appstream: %s", local_error->message);
+	/* Intentionally ignore errors, to not block other plugins */
+	finish_op (task, NULL);
 }
 #endif  /* ENABLE_EXTERNAL_APPSTREAM */
 
@@ -357,8 +359,10 @@ odrs_provider_refresh_ratings_cb (GObject      *source_object,
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
 
-	gs_odrs_provider_refresh_ratings_finish (odrs_provider, result, &local_error);
-	finish_op (task, g_steal_pointer (&local_error));
+	if (!gs_odrs_provider_refresh_ratings_finish (odrs_provider, result, &local_error))
+		g_debug ("Failed to refresh ratings: %s", local_error->message);
+	/* Intentionally ignore errors, to not block other plugins */
+	finish_op (task, NULL);
 }
 
 static void
@@ -372,13 +376,15 @@ plugin_refresh_metadata_cb (GObject      *source_object,
 	GsPluginJobRefreshMetadata *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
 
-	plugin_class->refresh_metadata_finish (plugin, result, &local_error);
+	if (!plugin_class->refresh_metadata_finish (plugin, result, &local_error))
+		g_debug ("Failed to refresh plugin '%s': %s", gs_plugin_get_name (plugin), local_error->message);
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 
 	/* Update progress reporting. */
 	self->plugins_progress.n_plugins_complete++;
 
-	finish_op (task, g_steal_pointer (&local_error));
+	/* Intentionally ignore errors, to not block other plugins */
+	finish_op (task, NULL);
 }
 
 /* @error is (transfer full) if non-%NULL */
