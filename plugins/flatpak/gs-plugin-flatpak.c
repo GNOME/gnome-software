@@ -433,17 +433,15 @@ refresh_metadata_thread_cb (GTask        *task,
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
 	GsPluginRefreshMetadataData *data = task_data;
 	gboolean interactive = (data->flags & GS_PLUGIN_REFRESH_METADATA_FLAGS_INTERACTIVE);
-	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	for (guint i = 0; i < self->installations->len; i++) {
+		g_autoptr(GError) local_error = NULL;
 		GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
 
-		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, cancellable, &local_error)) {
-			g_task_return_error (task, g_steal_pointer (&local_error));
-			return;
-		}
+		if (!gs_flatpak_refresh (flatpak, data->cache_age_secs, interactive, cancellable, &local_error))
+			g_debug ("Failed to refresh metadata for '%s': %s", gs_flatpak_get_id (flatpak), local_error->message);
 	}
 
 	g_task_return_boolean (task, TRUE);
