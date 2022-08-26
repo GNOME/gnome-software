@@ -1829,9 +1829,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 	g_autoptr(GError) error_local = NULL;
 
-	client = get_client (self, interactive, error);
-	if (client == NULL)
-		return FALSE;
+	client = get_client (self, interactive, &error_local);
+	if (client == NULL) {
+		g_debug ("Failed to get client to get updates: %s", error_local->message);
+		return TRUE;
+	}
 
 	/* Get the list of refreshable snaps */
 	apps = snapd_client_find_refreshable_sync (client, cancellable, &error_local);
