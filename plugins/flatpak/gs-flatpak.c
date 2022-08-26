@@ -2830,7 +2830,8 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 	installed_related_refs = flatpak_installation_list_installed_related_refs_sync (installation,
 											gs_app_get_origin (app),
 											ref,
-											NULL, &error_local);
+											cancellable,
+											&error_local);
 	if (installed_related_refs == NULL &&
 	    !g_error_matches (error_local,
 			      FLATPAK_ERROR,
@@ -2847,7 +2848,8 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 	remote_related_refs = flatpak_installation_list_remote_related_refs_for_installed_sync (installation,
 												gs_app_get_origin (app),
 												ref,
-												NULL, &error_local);
+												cancellable,
+												&error_local);
 	if (remote_related_refs == NULL &&
 	    !g_error_matches (error_local,
 			      FLATPAK_ERROR,
@@ -2865,7 +2867,8 @@ gs_flatpak_prune_addons_list (GsFlatpak *self,
 		remote_related_refs = flatpak_installation_list_remote_related_refs_sync (installation,
 											  gs_app_get_origin (app),
 											  ref,
-											  NULL, &error_local);
+											  cancellable,
+											  &error_local);
 		/* don't make the error fatal in case we're offline */
 		if (error_local != NULL)
 			g_debug ("failed to list remote related refs of %s: %s",
@@ -3237,7 +3240,9 @@ static XbNode *
 get_renamed_component (GsFlatpak *self,
 		       GsApp *app,
 		       XbSilo *silo,
-		       gboolean interactive)
+		       gboolean interactive,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	const gchar *origin = gs_app_get_origin (app);
 	const gchar *renamed_to;
@@ -3258,7 +3263,7 @@ get_renamed_component (GsFlatpak *self,
 								 gs_flatpak_app_get_ref_name (app),
 								 gs_flatpak_app_get_ref_arch (app),
 								 gs_app_get_branch (app),
-								 NULL, NULL);
+								 cancellable, error);
 	if (remote_ref == NULL)
 		return NULL;
 
@@ -3288,7 +3293,7 @@ get_renamed_component (GsFlatpak *self,
 									gs_flatpak_app_get_ref_name (app),
 									gs_flatpak_app_get_ref_arch (app),
 									gs_app_get_branch (app),
-									NULL, NULL);
+									cancellable, error);
 		if (installed_ref != NULL)
 			installed_name = flatpak_installed_ref_get_appdata_name (installed_ref);
 		if (installed_name != NULL)
@@ -3296,6 +3301,21 @@ get_renamed_component (GsFlatpak *self,
 	}
 
 	return g_steal_pointer (&component);
+}
+
+/* Returns %TRUE if @error exists and is set to G_IO_ERROR_CANCELLED */
+static inline gboolean
+propagate_cancelled_error (GError **dest,
+                           GError **error)
+{
+	g_assert (error != NULL);
+
+	if (*error && g_error_matches (*error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		g_propagate_error (dest, g_steal_pointer (error));
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static gboolean
@@ -3323,19 +3343,34 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
 
+	if (propagate_cancelled_error (error, &error_local))
+		return FALSE;
+
 	/* Ensure the gs_flatpak_app_get_ref_*() metadata are set */
 	gs_refine_item_metadata (self, app, NULL, NULL);
 
 	/* If the app was renamed, use the appstream data from the new name;
 	 * usually it will not exist under the old name */
-	if (component == NULL && gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_APP)
-		component = get_renamed_component (self, app, silo, interactive);
+	if (component == NULL && gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_APP) {
+		g_autoptr(GError) renamed_component_error = NULL;
+
+		component = get_renamed_component (self, app, silo,
+						   interactive,
+						   cancellable,
+						   &renamed_component_error);
+
+		if (propagate_cancelled_error (error, &renamed_component_error))
+			return FALSE;
+	}
 
 	if (component == NULL) {
 		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
 		g_autoptr(GBytes) appstream_gz = NULL;
 
 		g_debug ("no match for %s: %s", xpath, error_local->message);
+
+		g_clear_error (&error_local);
+
 		/* For apps installed from .flatpak bundles there may not be any remote
 		 * appstream data in @silo for it, so use the appstream data from
 		 * within the app.
@@ -3345,13 +3380,17 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 									gs_flatpak_app_get_ref_name (app),
 									gs_flatpak_app_get_ref_arch (app),
 									gs_app_get_branch (app),
-									NULL, NULL);
-		if (installed_ref == NULL)
-			return TRUE; /* the app may not be installed */
+									cancellable,
+									&error_local);
 
-		appstream_gz = flatpak_installed_ref_load_appdata (installed_ref, NULL, NULL);
+		if (installed_ref == NULL)
+			return !propagate_cancelled_error (error, &error_local); /* the app may not be installed */
+
+		appstream_gz = flatpak_installed_ref_load_appdata (installed_ref,
+								   cancellable,
+								   &error_local);
 		if (appstream_gz == NULL)
-			return TRUE;
+			return !propagate_cancelled_error (error, &error_local);
 
 		g_debug ("using installed appdata for %s", gs_flatpak_app_get_ref_name (app));
 		return gs_flatpak_refine_appstream_from_bytes (self,
