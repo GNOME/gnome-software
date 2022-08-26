@@ -814,7 +814,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	return gs_plugin_packagekit_add_updates (plugin, list, cancellable, error);
+	g_autoptr(GError) local_error = NULL;
+	if (!gs_plugin_packagekit_add_updates (plugin, list, cancellable, &local_error))
+		g_debug ("Failed to get updates: %s", local_error->message);
+	return TRUE;
 }
 
 static void list_apps_cb (GObject      *source_object,
