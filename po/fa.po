@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-23 11:29+0000\n"
-"PO-Revision-Date: 2022-08-25 17:23+0430\n"
+"POT-Creation-Date: 2022-08-26 18:50+0000\n"
+"PO-Revision-Date: 2022-08-27 09:58+0430\n"
 "Last-Translator: Danial Behzadi <dani.behzi@ubuntu.com>\n"
 "Language-Team: \n"
 "Language: fa_IR\n"
@@ -71,7 +71,7 @@ msgstr "تابلوی به‌روز رسانی‌ها"
 msgid "The update details"
 msgstr "جزییات به‌روز رسانی"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:1980 src/gs-application.c:245
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:1980 src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "پروژهٔ گنوم"
 
@@ -326,11 +326,17 @@ msgstr "شکست در تایید گونهٔ محتوا: %s"
 msgid "Failed to move: %s"
 msgstr "شکست در جابه‌جایی: %s"
 
-#: src/gnome-software-local-file.desktop.in:3
+#: src/gnome-software-local-file-flatpak.desktop.in:3
+#: src/gnome-software-local-file-fwupd.desktop.in:3
+#: src/gnome-software-local-file-packagekit.desktop.in:3
+#: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Software Install"
 msgstr "نصب نرم‌افزار"
 
-#: src/gnome-software-local-file.desktop.in:4
+#: src/gnome-software-local-file-flatpak.desktop.in:4
+#: src/gnome-software-local-file-fwupd.desktop.in:4
+#: src/gnome-software-local-file-packagekit.desktop.in:4
+#: src/gnome-software-local-file-snap.desktop.in:4
 msgid "Install selected software on the system"
 msgstr "نصب نرم‌افزارهای گزیده روی سامانه"
 
@@ -758,15 +764,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "بسته"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:456
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:457
 msgid "Pending"
 msgstr "در انتظار"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:369
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:461 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "منتظر نصب"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:376
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:465 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "منتظر برداشتن"
 
@@ -778,7 +784,7 @@ msgstr "نصب شده"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:362
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:205 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "نصب کردن"
 
@@ -886,7 +892,7 @@ msgstr "هیچ توضیحی برای به‌روز رسانی موجود نیس�
 msgid "Go back"
 msgstr "بازگشت"
 
-#: src/gs-app-details-page.ui:48 src/gs-app-row.c:515
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:516
 msgid "Requires additional permissions"
 msgstr "نیاز به اجازه‌های اضافی دارد"
 
@@ -1011,11 +1017,11 @@ msgid "Show version number"
 msgstr "نمایش شماره نسخه"
 
 # در این رشته از نویسه LRM استفاده شده است
-#: src/gs-application.c:250 src/gs-application.c:258
+#: src/gs-application.c:261 src/gs-application.c:269
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "حق رونوشت © ‎۱۳۹۵-۱۴۰۱ مشارکت‌کنندگان نرم‌افزارهای گنوم"
 
-#: src/gs-application.c:252 src/gs-application.c:261
+#: src/gs-application.c:263 src/gs-application.c:272
 msgid "translator-credits"
 msgstr ""
 "آرش موسوی <mousavi.arash@gmail.com>\n"
@@ -1025,17 +1031,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:266 src/gs-shell.c:2147
+#: src/gs-application.c:277 src/gs-shell.c:2147
 msgid "About Software"
 msgstr "دربارهٔ نرم‌افزارها"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:269
+#: src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "راهی خوب برای مدیریت نرم‌افزارهای سامانه‌تان."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:457
+#: src/gs-application.c:468
 msgid "Sorry! There are no details for that application."
 msgstr "متأسفانه هیچ جزییاتی برای این برنامه وجود ندارد."
 
@@ -1325,20 +1331,20 @@ msgstr "هیچ اطّلاعات رتبه‌بندی‌ای موجود نیست"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:152
+#: src/gs-app-row.c:153
 msgid "Visit Website"
 msgstr "مشاهدهٔ پایگاه وب"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:158
+#: src/gs-app-row.c:159
 msgid "Install…"
 msgstr "نصب…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:166 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:167 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "لغو"
 
@@ -1346,13 +1352,13 @@ msgstr "لغو"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:174 src/gs-common.c:286 src/gs-page.c:374
+#: src/gs-app-row.c:175 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "نصب"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:182
+#: src/gs-app-row.c:183
 msgid "Update"
 msgstr "به‌روز رسانی"
 
@@ -1360,31 +1366,31 @@ msgstr "به‌روز رسانی"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:281
+#: src/gs-app-row.c:188 src/gs-app-row.c:198 src/gs-details-page.ui:281
 #: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "حذف"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:211
+#: src/gs-app-row.c:212
 msgid "Uninstalling"
 msgstr "در حال حذف"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:326
+#: src/gs-app-row.c:327
 msgid "Device cannot be used during update."
 msgstr "از دستگاه نمی‌توان در هنگام به‌روز رسانی استفاده کرد."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:336 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "منبع: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:522
+#: src/gs-app-row.c:523
 #, c-format
 msgid "Renamed from %s"
 msgstr "تغییر نام از %s"
@@ -2748,7 +2754,7 @@ msgstr "پشتیبانی از سخت‌افزار"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:820 src/gs-shell.ui:307
+#: src/gs-installed-page.c:812 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "نصب شده"
@@ -2887,12 +2893,12 @@ msgid "Unknown source"
 msgstr "منبع ناشناخته"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:107
+#: src/gs-origin-popover-row.ui:108
 msgid "Beta"
 msgstr "آزمایشی"
 
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-origin-popover-row.ui:137
+#: src/gs-origin-popover-row.ui:138
 msgid "User"
 msgstr "کاربر"
 
@@ -2924,12 +2930,12 @@ msgstr "پایین‌بری"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:877
+#: src/gs-overview-page.c:876
 msgid "selected external sources"
 msgstr "منبع‌های خارجی گزیده"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:879
+#: src/gs-overview-page.c:878
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2939,13 +2945,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:888 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:887 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "به کار انداختن"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:947 src/gs-shell.ui:294
+#: src/gs-overview-page.c:946 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "کشف"
 
@@ -2966,7 +2972,7 @@ msgstr "دیگر دسته‌ها"
 msgid "No Application Data Found"
 msgstr "هیچ دادهٔ برنامه‌ای پیدا نشد"
 
-#: lib/gs-plugin-loader.c:2828
+#: lib/gs-plugin-loader.c:2824
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "ناشناخته"
@@ -4282,8 +4288,8 @@ msgid "Installed on %s"
 msgstr "در %s نصب شده است"
 
 #: src/gs-update-dialog.ui:77
-msgid "No updates have been installed on this system."
-msgstr "هیچ به‌روز رسانی‌ای روی این سامانه نصب نشده است."
+msgid "No Updates Installed"
+msgstr "هیچ به‌روز رسانی‌ای نصب نشده"
 
 #: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
@@ -4612,37 +4618,37 @@ msgstr "به‌روز رسانی‌ها به صورت خودکار مدیریت 
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:318
+#: src/gs-updates-section.c:312
 msgid "Restart & Update"
 msgstr "راه‌اندازی دوباره و به‌روز رسانی"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:324
+#: src/gs-updates-section.c:318
 msgid "Update All"
 msgstr "به‌روز رسانی همه"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:456
+#: src/gs-updates-section.c:450
 msgid "Integrated Firmware"
 msgstr "ثابت‌افزار یکپارچه"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:461
+#: src/gs-updates-section.c:455
 msgid "Requires Restart"
 msgstr "نیاز به راه‌اندازی دوباره دارد"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:466
+#: src/gs-updates-section.c:460
 msgid "Application Updates"
 msgstr "به‌روز رسانی برنامه‌ها"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:471
+#: src/gs-updates-section.c:465
 msgid "Device Firmware"
 msgstr "ثابت‌افزار افزاره"
 
@@ -4744,7 +4750,7 @@ msgstr "به‌روز رسانی %s با امکانات جدید و رفع اش�
 msgid "EOS update service could not fetch and apply the update."
 msgstr "خدمت به‌روز رسانی اندلس نتوانست به‌روز رسانی را گرفته و اعمال کند."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:474
+#: plugins/epiphany/gs-plugin-epiphany.c:498
 msgid "GNOME Web"
 msgstr "وبِ گنوم"
 
@@ -5132,7 +5138,7 @@ msgstr ""
 msgid "Packages"
 msgstr "بسته‌ها"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
 msgid "Operating System (OSTree)"
 msgstr "سیستم‌عامل (OSTree)"
 
@@ -5148,6 +5154,9 @@ msgstr "پشتیبانی اسنپ"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "اسنپ یک بستهٔ جهانی گنو/لینوکسی است"
+
+#~ msgid "No updates have been installed on this system."
+#~ msgstr "هیچ به‌روز رسانی‌ای روی این سامانه نصب نشده است."
 
 #~ msgid "Application manager for GNOME"
 #~ msgstr "مدیر برنامه برای گنوم"
