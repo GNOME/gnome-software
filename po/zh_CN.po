@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 41\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-10 15:08+0000\n"
-"PO-Revision-Date: 2022-08-14 13:52+0800\n"
+"POT-Creation-Date: 2022-08-26 18:50+0000\n"
+"PO-Revision-Date: 2022-08-28 21:09+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese - China <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -81,7 +81,7 @@ msgid "The update details"
 msgstr "更新详情"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:1980
-#: src/gs-application.c:245
+#: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "GNOME 项目"
 
@@ -326,11 +326,17 @@ msgstr "验证内容类型失败：%s"
 msgid "Failed to move: %s"
 msgstr "移动失败：%s"
 
-#: src/gnome-software-local-file.desktop.in:3
+#: src/gnome-software-local-file-flatpak.desktop.in:3
+#: src/gnome-software-local-file-fwupd.desktop.in:3
+#: src/gnome-software-local-file-packagekit.desktop.in:3
+#: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Software Install"
 msgstr "软件安装"
 
-#: src/gnome-software-local-file.desktop.in:4
+#: src/gnome-software-local-file-flatpak.desktop.in:4
+#: src/gnome-software-local-file-fwupd.desktop.in:4
+#: src/gnome-software-local-file-packagekit.desktop.in:4
+#: src/gnome-software-local-file-snap.desktop.in:4
 msgid "Install selected software on the system"
 msgstr "安装选中的软件到系统上"
 
@@ -761,15 +767,15 @@ msgstr "%s（%s）"
 msgid "Package"
 msgstr "软件包"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:456
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:457
 msgid "Pending"
 msgstr "等待中"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:369
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:461 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "等待安装"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:376
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:465 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "等待移除"
 
@@ -781,7 +787,7 @@ msgstr "已安装"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:362
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:205 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "安装中"
 
@@ -889,12 +895,12 @@ msgstr "没有可用的更新描述。"
 msgid "Go back"
 msgstr "返回"
 
-#: src/gs-app-details-page.ui:48 src/gs-app-row.c:515
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:516
 msgid "Requires additional permissions"
 msgstr "要求额外的权限"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:852
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:855
 msgid "Reviews"
 msgstr "评论"
 
@@ -906,7 +912,7 @@ msgstr "未找到对该应用程序的评论。"
 msgid "No Reviews"
 msgstr "没有评论"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:530
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:533
 msgid "Version History"
 msgstr "版本历史"
 
@@ -1013,11 +1019,11 @@ msgstr "对 AppStream 优先使用本地文件源"
 msgid "Show version number"
 msgstr "显示版本号"
 
-#: src/gs-application.c:250 src/gs-application.c:258
+#: src/gs-application.c:261 src/gs-application.c:269
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "版权所有 © 2016–2022 GNOME 软件贡献者"
 
-#: src/gs-application.c:252 src/gs-application.c:261
+#: src/gs-application.c:263 src/gs-application.c:272
 msgid "translator-credits"
 msgstr ""
 "eternalhui <www.eternalhui@gmail.com>, 2013\n"
@@ -1036,17 +1042,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:266 src/gs-shell.c:2147
+#: src/gs-application.c:277 src/gs-shell.c:2147
 msgid "About Software"
 msgstr "关于软件"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:269
+#: src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "一种管理您系统中软件的好方法。"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:457
+#: src/gs-application.c:468
 msgid "Sorry! There are no details for that application."
 msgstr "抱歉！该应用程序没有详细信息。"
 
@@ -1336,20 +1342,20 @@ msgstr "没有可用的年龄分级信息"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:152
+#: src/gs-app-row.c:153
 msgid "Visit Website"
 msgstr "访问网站"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:158
+#: src/gs-app-row.c:159
 msgid "Install…"
 msgstr "安装…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:166 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:167 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "取消"
 
@@ -1357,13 +1363,13 @@ msgstr "取消"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:174 src/gs-common.c:286 src/gs-page.c:374
+#: src/gs-app-row.c:175 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "安装"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:182
+#: src/gs-app-row.c:183
 msgid "Update"
 msgstr "更新"
 
@@ -1371,31 +1377,31 @@ msgstr "更新"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:280
+#: src/gs-app-row.c:188 src/gs-app-row.c:198 src/gs-details-page.ui:281
 #: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "卸载"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:211
+#: src/gs-app-row.c:212
 msgid "Uninstalling"
 msgstr "卸载中"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:326
+#: src/gs-app-row.c:327
 msgid "Device cannot be used during update."
 msgstr "升级期间设备无法被使用。"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:336 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "来源：%s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:522
+#: src/gs-app-row.c:523
 #, c-format
 msgid "Renamed from %s"
 msgstr "从 %s 改名"
@@ -1439,7 +1445,7 @@ msgid "Login Required"
 msgstr "需要登录"
 
 #: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:612
-#: src/gs-details-page.ui:293 src/gs-removal-dialog.ui:17
+#: src/gs-details-page.ui:294 src/gs-removal-dialog.ui:17
 #: src/gs-review-dialog.ui:18
 msgid "_Cancel"
 msgstr "取消(_C)"
@@ -2176,12 +2182,12 @@ msgstr "正在卸载…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:854 src/gs-details-page.c:880
-#: src/gs-details-page.ui:227 plugins/packagekit/gs-packagekit-task.c:150
+#: src/gs-details-page.c:857 src/gs-details-page.c:883
+#: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "安装(_I)"
 
-#: src/gs-details-page.c:870
+#: src/gs-details-page.c:873
 msgid "_Restart"
 msgstr "重新启动(_R)"
 
@@ -2189,7 +2195,7 @@ msgstr "重新启动(_R)"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:894
+#: src/gs-details-page.c:897
 msgid "_Install…"
 msgstr "安装(_I)…"
 
@@ -2228,110 +2234,110 @@ msgid "Help _Translate"
 msgstr "帮助翻译(_T)"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:243
+#: src/gs-details-page.ui:244
 msgid "_Open"
 msgstr "打开(_O)"
 
-#: src/gs-details-page.ui:256 plugins/packagekit/gs-packagekit-task.c:160
+#: src/gs-details-page.ui:257 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "更新(_U)"
 
-#: src/gs-details-page.ui:318
+#: src/gs-details-page.ui:319
 msgid "Downloading"
 msgstr "正在下载"
 
-#: src/gs-details-page.ui:453 src/gs-installed-page.ui:135
+#: src/gs-details-page.ui:456 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "附加组件"
 
-#: src/gs-details-page.ui:464
+#: src/gs-details-page.ui:467
 msgid "Selected add-ons will be installed with the application."
 msgstr "选中的附加组件将随应用程序一起安装。"
 
-#: src/gs-details-page.ui:564
+#: src/gs-details-page.ui:567
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "这个应用只能在联网情况下使用。"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:587
 msgid "Software Repository Included"
 msgstr "包含软件仓库"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:588
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
 msgstr "该应用程序中包含了提供更新和其他软件的软件仓库。"
 
-#: src/gs-details-page.ui:602
+#: src/gs-details-page.ui:605
 msgid "No Software Repository Included"
 msgstr "不含软件仓库"
 
-#: src/gs-details-page.ui:603
+#: src/gs-details-page.ui:606
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr "该应用不包括软件仓库。不会自动更新到新版本。"
 
-#: src/gs-details-page.ui:621
+#: src/gs-details-page.ui:624
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr "该软件已由您的发行版提供，而且不应被替换。"
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:638
+#: src/gs-details-page.ui:641
 msgid "Software Repository Identified"
 msgstr "探测到软件仓库"
 
-#: src/gs-details-page.ui:639
+#: src/gs-details-page.ui:642
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr "添加此软件仓库以获取其他软件和升级。"
 
-#: src/gs-details-page.ui:640
+#: src/gs-details-page.ui:643
 msgid "Only use software repositories that you trust."
 msgstr "仅使用您信任的软件仓库。"
 
-#: src/gs-details-page.ui:705
+#: src/gs-details-page.ui:708
 msgid "No Metadata"
 msgstr "无元数据"
 
-#: src/gs-details-page.ui:714
+#: src/gs-details-page.ui:717
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
 msgstr "此软件未提供任何网站、代码仓库或问题追踪的链接。"
 
-#: src/gs-details-page.ui:742
+#: src/gs-details-page.ui:745
 msgid "Project _Website"
 msgstr "项目网站(_W)"
 
-#: src/gs-details-page.ui:759
+#: src/gs-details-page.ui:762
 msgid "_Donate"
 msgstr "捐赠(_D)"
 
-#: src/gs-details-page.ui:776
+#: src/gs-details-page.ui:779
 msgid "Contribute _Translations"
 msgstr "贡献翻译(_T)"
 
-#: src/gs-details-page.ui:793
+#: src/gs-details-page.ui:796
 msgid "_Report an Issue"
 msgstr "报告问题(_R)"
 
-#: src/gs-details-page.ui:810
+#: src/gs-details-page.ui:813
 msgid "_Help"
 msgstr "帮助(_H)"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:900
+#: src/gs-details-page.ui:908
 msgid "_Write Review"
 msgstr "编写评论(_W)"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:937
+#: src/gs-details-page.ui:945
 msgid "All Reviews"
 msgstr "全部评论"
 
@@ -2749,7 +2755,7 @@ msgstr "硬件支持"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:820 src/gs-shell.ui:307
+#: src/gs-installed-page.c:812 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "已安装"
@@ -2882,12 +2888,12 @@ msgid "Unknown source"
 msgstr "未知源"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:99
+#: src/gs-origin-popover-row.ui:108
 msgid "Beta"
 msgstr "Beta"
 
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-origin-popover-row.ui:130
+#: src/gs-origin-popover-row.ui:138
 msgid "User"
 msgstr "用户"
 
@@ -2919,12 +2925,12 @@ msgstr "降级"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:877
+#: src/gs-overview-page.c:876
 msgid "selected external sources"
 msgstr "选择的额外来源"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:879
+#: src/gs-overview-page.c:878
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2933,13 +2939,13 @@ msgstr "提供获取来自 %s 的附加软件。也包括一些专有软件。"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:888 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:887 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "启用"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:947 src/gs-shell.ui:294
+#: src/gs-overview-page.c:946 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "浏览"
 
@@ -2960,7 +2966,7 @@ msgstr "其它类别"
 msgid "No Application Data Found"
 msgstr "未找到应用程序数据"
 
-#: lib/gs-plugin-loader.c:2821
+#: lib/gs-plugin-loader.c:2824
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "未知"
@@ -3607,35 +3613,36 @@ msgstr "没有截图"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:355 src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
+#: src/gs-screenshot-image.c:622
 msgid "Screenshot not found"
 msgstr "未找到截图"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:431
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "加载图片失败"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:582
+#: src/gs-screenshot-image.c:650
 msgid "Screenshot size not found"
 msgstr "未找到截图尺寸"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:663
+#: src/gs-screenshot-image.c:732
 msgid "Could not create cache"
 msgstr "无法创建缓存"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:677
+#: src/gs-screenshot-image.c:746
 msgid "Screenshot not valid"
 msgstr "截图无效"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:709
+#: src/gs-screenshot-image.c:796
 msgid "Screenshot not available"
 msgstr "截图不可用"
 
@@ -4277,8 +4284,8 @@ msgid "Installed on %s"
 msgstr "已在 %s 上安装"
 
 #: src/gs-update-dialog.ui:77
-msgid "No updates have been installed on this system."
-msgstr "此系统未安装过更新。"
+msgid "No Updates Installed"
+msgstr "未安装更新"
 
 #: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
@@ -4602,37 +4609,37 @@ msgstr "更新将被自动管理。"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:318
+#: src/gs-updates-section.c:312
 msgid "Restart & Update"
 msgstr "重启并更新"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:324
+#: src/gs-updates-section.c:318
 msgid "Update All"
 msgstr "全部更新"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:456
+#: src/gs-updates-section.c:450
 msgid "Integrated Firmware"
 msgstr "集成固件"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:461
+#: src/gs-updates-section.c:455
 msgid "Requires Restart"
 msgstr "重新启动"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:466
+#: src/gs-updates-section.c:460
 msgid "Application Updates"
 msgstr "应用程序更新"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:471
+#: src/gs-updates-section.c:465
 msgid "Device Firmware"
 msgstr "设备固件"
 
@@ -4733,7 +4740,7 @@ msgstr "%s 更新了新特性和缺陷修复。"
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS 更新服务无法获取和应用更新。"
 
-#: plugins/epiphany/gs-plugin-epiphany.c:474
+#: plugins/epiphany/gs-plugin-epiphany.c:498
 msgid "GNOME Web"
 msgstr "GNOME 浏览器"
 
@@ -5119,7 +5126,7 @@ msgstr ""
 msgid "Packages"
 msgstr "软件包"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
 msgid "Operating System (OSTree)"
 msgstr "操作系统（OSTree）"
 
@@ -5135,6 +5142,9 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "No updates have been installed on this system."
+#~ msgstr "此系统未安装过更新。"
 
 #~ msgid "Application manager for GNOME"
 #~ msgstr "GNOME 应用程序管理器"
