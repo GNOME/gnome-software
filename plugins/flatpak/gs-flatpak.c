@@ -2254,9 +2254,9 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self,
 }
 
 static gboolean
-gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
-			 GCancellable *cancellable,
-			 GError **error)
+gs_refine_item_metadata (GsFlatpak  *self,
+                         GsApp      *app,
+                         GError    **error)
 {
 	g_autoptr(FlatpakRef) xref = NULL;
 
@@ -2311,7 +2311,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		return TRUE;
 
 	/* ensure metadata exists */
-	if (!gs_refine_item_metadata (self, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, error))
 		return FALSE;
 
 	/* find list of remotes */
@@ -2400,7 +2400,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		return TRUE;
 
 	/* need broken out metadata */
-	if (!gs_refine_item_metadata (self, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, error))
 		return FALSE;
 
 	/* ensure origin set */
@@ -3347,7 +3347,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 		return FALSE;
 
 	/* Ensure the gs_flatpak_app_get_ref_*() metadata are set */
-	gs_refine_item_metadata (self, app, NULL, NULL);
+	gs_refine_item_metadata (self, app, NULL);
 
 	/* If the app was renamed, use the appstream data from the new name;
 	 * usually it will not exist under the old name */
@@ -3437,7 +3437,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 		return FALSE;
 
 	/* AppStream sets the source to appname/arch/branch */
-	if (!gs_refine_item_metadata (self, app, cancellable, error)) {
+	if (!gs_refine_item_metadata (self, app, error)) {
 		g_prefix_error (error, "failed to get metadata: ");
 		return FALSE;
 	}
