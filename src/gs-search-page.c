@@ -34,6 +34,7 @@ struct _GsSearchPage
 	gchar			*value;
 	guint			 waiting_id;
 	guint			 max_results;
+	guint			 stamp;
 	gboolean		 changed;
 
 	GtkWidget		*list_box_search;
@@ -96,18 +97,28 @@ gs_search_page_app_to_show_created_cb (GObject *source_object,
 	}
 }
 
+typedef struct {
+	GsSearchPage *self;
+	guint stamp;
+} GetSearchData;
+
 static void
 gs_search_page_get_search_cb (GObject *source_object,
                               GAsyncResult *res,
                               gpointer user_data)
 {
 	guint i;
+	g_autofree GetSearchData *search_data = user_data;
 	GsApp *app;
-	GsSearchPage *self = GS_SEARCH_PAGE (user_data);
+	GsSearchPage *self = search_data->self;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *app_row;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+
+	/* different stamps means another search had been started before this one finished */
+	if (search_data->stamp != self->stamp)
+		return;
 
 	/* don't do the delayed spinner */
 	gs_search_page_waiting_cancel (self);
@@ -265,6 +276,7 @@ gs_search_page_load (GsSearchPage *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
 	const gchar *keywords[2] = { NULL, };
+	g_autofree GetSearchData *search_data = NULL;
 
 	self->changed = FALSE;
 
@@ -272,10 +284,15 @@ gs_search_page_load (GsSearchPage *self)
 	g_cancellable_cancel (self->search_cancellable);
 	g_clear_object (&self->search_cancellable);
 	self->search_cancellable = g_cancellable_new ();
+	self->stamp++;
 
 	/* search for apps */
 	gs_search_page_waiting_cancel (self);
 	self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
+
+	search_data = g_new0 (GetSearchData, 1);
+	search_data->self = self;
+	search_data->stamp = self->stamp;
 
 	keywords[0] = self->value;
 	query = gs_app_query_new ("keywords", keywords,
@@ -298,7 +315,7 @@ gs_search_page_load (GsSearchPage *self)
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->search_cancellable,
 					    gs_search_page_get_search_cb,
-					    self);
+					    g_steal_pointer (&search_data));
 }
 
 static void
