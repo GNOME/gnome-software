@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-08-18 14:28+0000\n"
+"POT-Creation-Date: 2022-08-26 18:50+0000\n"
 "PO-Revision-Date: 2022-08-22 05:05+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
@@ -80,7 +80,7 @@ msgid "The update details"
 msgstr "Güncelleme ayrıntıları"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:1980
-#: src/gs-application.c:245
+#: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "GNOME Projesi"
 
@@ -346,11 +346,17 @@ msgstr "İçerik türü doğrulanamıyor: %s"
 msgid "Failed to move: %s"
 msgstr "Taşınamadı: %s"
 
-#: src/gnome-software-local-file.desktop.in:3
+#: src/gnome-software-local-file-flatpak.desktop.in:3
+#: src/gnome-software-local-file-fwupd.desktop.in:3
+#: src/gnome-software-local-file-packagekit.desktop.in:3
+#: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Software Install"
 msgstr "Yazılım Kur"
 
-#: src/gnome-software-local-file.desktop.in:4
+#: src/gnome-software-local-file-flatpak.desktop.in:4
+#: src/gnome-software-local-file-fwupd.desktop.in:4
+#: src/gnome-software-local-file-packagekit.desktop.in:4
+#: src/gnome-software-local-file-snap.desktop.in:4
 msgid "Install selected software on the system"
 msgstr "Seçili yazılımı sisteme kur"
 
@@ -783,15 +789,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Paket"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:456
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:457
 msgid "Pending"
 msgstr "Beklemede"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:460 src/gs-details-page.c:368
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:461 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "Kurulum bekleniyor"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:464 src/gs-details-page.c:375
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:465 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "Kaldırma bekleniyor"
 
@@ -803,7 +809,7 @@ msgstr "Kuruldu"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:361
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:205 src/gs-details-page.c:362
 msgid "Installing"
 msgstr "Kuruluyor"
 
@@ -911,7 +917,7 @@ msgstr "Güncelleme tanımı yok."
 msgid "Go back"
 msgstr "Geri git"
 
-#: src/gs-app-details-page.ui:48 src/gs-app-row.c:515
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:516
 msgid "Requires additional permissions"
 msgstr "Ek yazı tipleri gerektiriyor"
 
@@ -1039,11 +1045,11 @@ msgstr "AppStream yerine yerel dosya kaynaklarını yeğle"
 msgid "Show version number"
 msgstr "Sürüm numarasını göster"
 
-#: src/gs-application.c:250 src/gs-application.c:258
+#: src/gs-application.c:261 src/gs-application.c:269
 msgid "Copyright © 2016–2022 GNOME Software contributors"
 msgstr "Telif Hakkı © 2016–2022 GNOME Yazılımlar katkıcıları"
 
-#: src/gs-application.c:252 src/gs-application.c:261
+#: src/gs-application.c:263 src/gs-application.c:272
 msgid "translator-credits"
 msgstr ""
 "Muhammet Kara <muhammetk@gmail.com>\n"
@@ -1051,17 +1057,17 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:266 src/gs-shell.c:2147
+#: src/gs-application.c:277 src/gs-shell.c:2147
 msgid "About Software"
 msgstr "Yazılımlar Hakkında"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:269
+#: src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:457
+#: src/gs-application.c:468
 msgid "Sorry! There are no details for that application."
 msgstr "Üzgünüz! Bu uygulama için ayrıntı yok."
 
@@ -1351,20 +1357,20 @@ msgstr "Yaş derecelendirme bilgisi yok"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:152
+#: src/gs-app-row.c:153
 msgid "Visit Website"
 msgstr "Web Sitesini Gör"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:158
+#: src/gs-app-row.c:159
 msgid "Install…"
 msgstr "Kur…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:166 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:167 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "İptal"
 
@@ -1372,13 +1378,13 @@ msgstr "İptal"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:174 src/gs-common.c:286 src/gs-page.c:374
+#: src/gs-app-row.c:175 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "Kur"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:182
+#: src/gs-app-row.c:183
 msgid "Update"
 msgstr "Güncelle"
 
@@ -1386,31 +1392,31 @@ msgstr "Güncelle"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:281
+#: src/gs-app-row.c:188 src/gs-app-row.c:198 src/gs-details-page.ui:281
 #: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "Kaldır"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:211
+#: src/gs-app-row.c:212
 msgid "Uninstalling"
 msgstr "Kaldırılıyor"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:326
+#: src/gs-app-row.c:327
 msgid "Device cannot be used during update."
 msgstr "Aygıt güncelleme sırasında kullanılamaz."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:336 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "Kaynak: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:522
+#: src/gs-app-row.c:523
 #, c-format
 msgid "Renamed from %s"
 msgstr "%s yeniden adlandırıldı"
@@ -2156,37 +2162,37 @@ msgstr "Daha Çoğunu Gö_ster"
 msgid "_Show Less"
 msgstr "Daha Az _Göster"
 
-#: src/gs-details-page.c:356
+#: src/gs-details-page.c:357
 msgid "Removing…"
 msgstr "Kaldırılıyor…"
 
-#: src/gs-details-page.c:366
+#: src/gs-details-page.c:367
 msgid "Requires restart to finish install"
 msgstr "Kurulumu bitirmek için yeniden başlatma gerekir"
 
-#: src/gs-details-page.c:373
+#: src/gs-details-page.c:374
 msgid "Requires restart to finish remove"
 msgstr "Kaldırmayı bitirmek için yeniden başlatma gerekir"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:390
+#: src/gs-details-page.c:391
 msgid "Pending installation…"
 msgstr "Kurulum bekleniyor…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:397
+#: src/gs-details-page.c:398
 msgid "Pending update…"
 msgstr "Güncellemeler bekleniyor…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:413
+#: src/gs-details-page.c:414
 msgid "Preparing…"
 msgstr "Hazırlanıyor…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:416
+#: src/gs-details-page.c:417
 msgid "Uninstalling…"
 msgstr "Kaldırılıyor…"
 
@@ -2194,12 +2200,12 @@ msgstr "Kaldırılıyor…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:854 src/gs-details-page.c:880
+#: src/gs-details-page.c:857 src/gs-details-page.c:883
 #: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Kur"
 
-#: src/gs-details-page.c:870
+#: src/gs-details-page.c:873
 msgid "_Restart"
 msgstr "_Yeniden Başlat"
 
@@ -2207,22 +2213,22 @@ msgstr "_Yeniden Başlat"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:894
+#: src/gs-details-page.c:897
 msgid "_Install…"
 msgstr "_Kur…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1171
+#: src/gs-details-page.c:1174
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Diğer %s Uygulamaları"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1554
+#: src/gs-details-page.c:1557
 msgid "You need internet access to write a review"
 msgstr "Değerlendirme yazmanız için İnternet erişimi gerekiyor"
 
-#: src/gs-details-page.c:1705 src/gs-details-page.c:1721
+#: src/gs-details-page.c:1708 src/gs-details-page.c:1724
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "“%s” bulunamıyor"
@@ -2354,12 +2360,12 @@ msgid "_Help"
 msgstr "_Yardım"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:903
+#: src/gs-details-page.ui:908
 msgid "_Write Review"
 msgstr "_İnceleme Yaz"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:940
+#: src/gs-details-page.ui:945
 msgid "All Reviews"
 msgstr "Tüm İncelemeler"
 
@@ -2790,7 +2796,7 @@ msgstr "Donanım Desteği"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gs-installed-page.c:820 src/gs-shell.ui:307
+#: src/gs-installed-page.c:812 src/gs-shell.ui:307
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Kurulu"
@@ -2931,12 +2937,12 @@ msgid "Unknown source"
 msgstr "Bilinmeyen kaynak"
 
 #. Translators: It's like a beta version of the software, a test version
-#: src/gs-origin-popover-row.ui:107
+#: src/gs-origin-popover-row.ui:108
 msgid "Beta"
 msgstr "Beta"
 
 #. Translators: It's an origin scope, 'User' or 'System' installation
-#: src/gs-origin-popover-row.ui:137
+#: src/gs-origin-popover-row.ui:138
 msgid "User"
 msgstr "Kullanıcı"
 
@@ -2968,12 +2974,12 @@ msgstr "Sürüm Düşürmeler"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:877
+#: src/gs-overview-page.c:876
 msgid "selected external sources"
 msgstr "Seçili dış kaynaklardan"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:879
+#: src/gs-overview-page.c:878
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2982,13 +2988,13 @@ msgstr "%s ek yazılıma erişim sağlar. Bazı sahipli yazılımları içerir."
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:888 src/gs-repos-dialog.c:173
+#: src/gs-overview-page.c:887 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "Etkinleştir"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:947 src/gs-shell.ui:294
+#: src/gs-overview-page.c:946 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "Keşfet"
 
@@ -3009,7 +3015,7 @@ msgstr "Diğer Kategoriler"
 msgid "No Application Data Found"
 msgstr "Uygulama Verisi Bulunamadı"
 
-#: lib/gs-plugin-loader.c:2828
+#: lib/gs-plugin-loader.c:2824
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Bilinmeyen"
@@ -4347,8 +4353,8 @@ msgid "Installed on %s"
 msgstr "%s’de kuruldu"
 
 #: src/gs-update-dialog.ui:77
-msgid "No updates have been installed on this system."
-msgstr "Bu sisteme herhangi bir güncelleme kurulmadı."
+msgid "No Updates Installed"
+msgstr "Güncelleme Kurulmadı"
 
 #: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
@@ -4681,37 +4687,37 @@ msgstr "Güncellemeler kendiliğinden yönetilir."
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:318
+#: src/gs-updates-section.c:312
 msgid "Restart & Update"
 msgstr "Yeniden Başlat ve Güncelle"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:324
+#: src/gs-updates-section.c:318
 msgid "Update All"
 msgstr "Tümünü Güncelle"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:456
+#: src/gs-updates-section.c:450
 msgid "Integrated Firmware"
 msgstr "Tümleşik Donanım Yazılımı"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:461
+#: src/gs-updates-section.c:455
 msgid "Requires Restart"
 msgstr "Yeniden Başlatma Gerektirir"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:466
+#: src/gs-updates-section.c:460
 msgid "Application Updates"
 msgstr "Uygulama Güncellemeleri"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:471
+#: src/gs-updates-section.c:465
 msgid "Device Firmware"
 msgstr "Aygıt Donanım Yazılımı"
 
@@ -4814,7 +4820,7 @@ msgstr "Yeni özellikler ve düzeltmeler içeren %s güncellemesi."
 msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS güncelleme servisi güncelleme alamadı ve uygulayamadı."
 
-#: plugins/epiphany/gs-plugin-epiphany.c:474
+#: plugins/epiphany/gs-plugin-epiphany.c:498
 msgid "GNOME Web"
 msgstr "GNOME Web"
 
@@ -5234,7 +5240,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Paketler"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2686
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2687
 msgid "Operating System (OSTree)"
 msgstr "İşletim Sistemi (OSTree)"
 
