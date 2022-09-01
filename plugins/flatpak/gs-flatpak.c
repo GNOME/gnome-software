@@ -1260,7 +1260,7 @@ gs_flatpak_rescan_app_data (GsFlatpak *self,
 			    GError **error)
 {
 	if (self->requires_full_rescan) {
-		gboolean res = gs_flatpak_refresh (self, 0, interactive, cancellable, error);
+		gboolean res = gs_flatpak_refresh (self, 60, interactive, cancellable, error);
 		if (res)
 			self->requires_full_rescan = FALSE;
 		else
