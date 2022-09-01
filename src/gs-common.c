@@ -949,6 +949,9 @@ gs_utils_invoke_reboot_ready2_got_session_bus_cb (GObject *source_object,
 
 	cancellable = g_task_get_cancellable (task);
 
+	/* Make sure file buffers are written to the disk before invoking reboot */
+	sync ();
+
 	g_task_set_task_data (task, (gpointer) "org.gnome.SessionManager.Reboot", NULL);
 	g_dbus_connection_call (bus,
 				"org.gnome.SessionManager",
@@ -1016,6 +1019,9 @@ gs_utils_invoke_reboot_ready1_got_session_bus_cb (GObject *source_object,
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
+
+	/* Make sure file buffers are written to the disk before invoking reboot */
+	sync ();
 
 	cancellable = g_task_get_cancellable (task);
 
@@ -1142,6 +1148,9 @@ gs_utils_invoke_reboot_got_system_bus_cb (GObject *source_object,
 	}
 
 	cancellable = g_task_get_cancellable (task);
+
+	/* Make sure file buffers are written to the disk before invoking reboot */
+	sync ();
 
 	g_dbus_connection_call (bus,
 				"org.freedesktop.login1",
