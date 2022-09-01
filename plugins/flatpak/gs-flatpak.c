@@ -3925,15 +3925,23 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		gs_utils_error_convert_gio (error);
 		return NULL;
 	}
-	ref_branch = g_key_file_get_string (kf, "Flatpak Ref", "Branch", error);
-	if (ref_branch == NULL) {
-		gs_utils_error_convert_gio (error);
-		return NULL;
+	if (g_key_file_has_key (kf, "Flatpak Ref", "Branch", NULL)) {
+		ref_branch = g_key_file_get_string (kf, "Flatpak Ref", "Branch", error);
+		if (ref_branch == NULL) {
+			gs_utils_error_convert_gio (error);
+			return NULL;
+		}
+	} else {
+		ref_branch = g_strdup ("master");
 	}
-	is_runtime = g_key_file_get_boolean (kf, "Flatpak Ref", "IsRuntime", error);
-	if (error != NULL && *error != NULL) {
-		gs_utils_error_convert_gio (error);
-		return NULL;
+	if (g_key_file_has_key (kf, "Flatpak Ref", "IsRuntime", NULL)) {
+		is_runtime = g_key_file_get_boolean (kf, "Flatpak Ref", "IsRuntime", error);
+		if (error != NULL && *error != NULL) {
+			gs_utils_error_convert_gio (error);
+			return NULL;
+		}
+	} else {
+		is_runtime = FALSE;
 	}
 
 	if (unrefined) {
