@@ -110,6 +110,7 @@ struct _GsShell
 
 	gboolean		 activate_after_setup;
 	gboolean		 is_narrow;
+	gint			 allocation_width;
 	guint			 allocation_changed_cb_id;
 
 	GsPage			*pages[GS_SHELL_MODE_LAST];
@@ -119,6 +120,7 @@ G_DEFINE_TYPE (GsShell, gs_shell, ADW_TYPE_APPLICATION_WINDOW)
 
 typedef enum {
 	PROP_IS_NARROW = 1,
+	PROP_ALLOCATION_WIDTH,
 } GsShellProperty;
 
 enum {
@@ -126,7 +128,7 @@ enum {
 	SIGNAL_LAST
 };
 
-static GParamSpec *obj_props[PROP_IS_NARROW + 1] = { NULL, };
+static GParamSpec *obj_props[PROP_ALLOCATION_WIDTH + 1] = { NULL, };
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
@@ -2451,6 +2453,12 @@ gs_shell_get_is_narrow (GsShell *shell)
 	return shell->is_narrow;
 }
 
+static gint
+gs_shell_get_allocation_width (GsShell *self)
+{
+	return self->allocation_width;
+}
+
 static void
 gs_shell_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -2459,6 +2467,9 @@ gs_shell_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec
 	switch ((GsShellProperty) prop_id) {
 	case PROP_IS_NARROW:
 		g_value_set_boolean (value, gs_shell_get_is_narrow (shell));
+		break;
+	case PROP_ALLOCATION_WIDTH:
+		g_value_set_int (value, gs_shell_get_allocation_width (shell));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2471,6 +2482,7 @@ gs_shell_set_property (GObject *object, guint prop_id, const GValue *value, GPar
 {
 	switch ((GsShellProperty) prop_id) {
 	case PROP_IS_NARROW:
+	case PROP_ALLOCATION_WIDTH:
 		/* Read only. */
 		g_assert_not_reached ();
 		break;
@@ -2536,6 +2548,11 @@ allocation_changed_cb (gpointer user_data)
 		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_IS_NARROW]);
 	}
 
+	if (shell->allocation_width != allocation.width) {
+		shell->allocation_width = allocation.width;
+		g_object_notify_by_pspec (G_OBJECT (shell), obj_props[PROP_ALLOCATION_WIDTH]);
+	}
+
 	shell->allocation_changed_cb_id = 0;
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (shell));
@@ -2594,6 +2611,21 @@ gs_shell_class_init (GsShellClass *klass)
 		g_param_spec_boolean ("is-narrow", NULL, NULL,
 				      FALSE,
 				      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+	/**
+	 * GsShell:allocation-width:
+	 *
+	 * The last allocation width for the window.
+	 *
+	 * The pages can track this property, possibly in combination with the #GsShell:is-narrow,
+	 * to adapt its content to the available width.
+	 *
+	 * Since: 43
+	 */
+	obj_props[PROP_ALLOCATION_WIDTH] =
+		g_param_spec_int ("allocation-width", NULL, NULL,
+				  G_MININT, G_MAXINT, 0,
+				  G_PARAM_READABLE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
 	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
