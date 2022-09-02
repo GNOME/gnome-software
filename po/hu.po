@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-07-09 18:27+0000\n"
-"PO-Revision-Date: 2022-09-02 22:48+0200\n"
+"POT-Creation-Date: 2022-09-02 20:50+0000\n"
+"PO-Revision-Date: 2022-09-02 23:07+0200\n"
 "Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
@@ -73,7 +73,7 @@ msgstr "Frissítések panel"
 msgid "The update details"
 msgstr "A frissítés részletei"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1979
+#: data/appdata/org.gnome.Software.appdata.xml.in:1992
 msgid "The GNOME Project"
 msgstr "A GNOME projekt"
 
@@ -734,7 +734,7 @@ msgstr "%s • %s"
 #. * different apps in the parent category, e.g. "Games"
 #: src/gs-age-rating-context-dialog.c:941 lib/gs-category.c:214
 msgid "All"
-msgstr "Mind"
+msgstr "Összes"
 
 #. Translators: This is displayed for the download size in an
 #. * app’s context tile if the size is unknown. It should be short
@@ -820,15 +820,15 @@ msgstr "%s (%s)"
 msgid "Package"
 msgstr "Csomag"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:446
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:455
 msgid "Pending"
 msgstr "Függőben"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:450 src/gs-details-page.c:346
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:459 src/gs-details-page.c:346
 msgid "Pending install"
 msgstr "Függőben lévő telepítés"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:454 src/gs-details-page.c:353
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:463 src/gs-details-page.c:353
 msgid "Pending remove"
 msgstr "Függőben lévő eltávolítás"
 
@@ -841,7 +841,7 @@ msgstr "Telepítve"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:199 src/gs-details-page.c:339
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:204 src/gs-details-page.c:339
 msgid "Installing"
 msgstr "Telepítés"
 
@@ -907,7 +907,6 @@ msgstr "Fájlrendszer"
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:341
-#| msgid "Can access hardware devices"
 msgid "Can access arbitrary files"
 msgstr "Tetszőleges fájlokhoz férhet hozzá"
 
@@ -962,7 +961,7 @@ msgstr "Nem áll rendelkezésre frissítési leírás."
 msgid "Go back"
 msgstr "Vissza"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:505
+#: src/gs-app-details-page.ui:47 src/gs-app-row.c:514
 msgid "Requires additional permissions"
 msgstr "További jogosultságokat igényel"
 
@@ -1393,20 +1392,20 @@ msgstr "Nem áll rendelkezésre korhatár-besorolás"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:147
+#: src/gs-app-row.c:152
 msgid "Visit Website"
 msgstr "Honlap felkeresése"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:153
+#: src/gs-app-row.c:158
 msgid "Install…"
 msgstr "Telepítés…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:161 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:166 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -1414,13 +1413,13 @@ msgstr "Mégse"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:344 src/gs-page.c:367
+#: src/gs-app-row.c:174 src/gs-common.c:344 src/gs-page.c:367
 msgid "Install"
 msgstr "Telepítés"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:182
 msgid "Update"
 msgstr "Frissítés"
 
@@ -1428,31 +1427,31 @@ msgstr "Frissítés"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:273
+#: src/gs-app-row.c:187 src/gs-app-row.c:197 src/gs-details-page.ui:273
 #: src/gs-page.c:528
 msgid "Uninstall"
 msgstr "Eltávolítás"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:206
+#: src/gs-app-row.c:211
 msgid "Uninstalling"
 msgstr "Eltávolítás"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:316
+#: src/gs-app-row.c:325
 msgid "Device cannot be used during update."
 msgstr "Az eszköz nem használható frissítés közben."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:326 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:335 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "Forrás: %s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:512
+#: src/gs-app-row.c:521
 #, c-format
 msgid "Renamed from %s"
 msgstr "Átnevezve erről: %s"
@@ -2995,7 +2994,7 @@ msgstr "Eltávolítandók"
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gs-os-update-page.c:258 src/gs-shell.ui:326 src/gs-updates-page.c:1330
 msgid "Updates"
-msgstr "Frissítendők"
+msgstr "Frissítések"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
@@ -3099,7 +3098,7 @@ msgstr ""
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
-msgstr "Beállítások frissítése"
+msgstr "Frissítési beállítások"
 
 #: src/gs-prefs-dialog.ui:16
 msgid ""
@@ -3615,7 +3614,6 @@ msgid "Access arbitrary files"
 msgstr "Tetszőleges fájlok elérése"
 
 #: src/gs-safety-context-dialog.c:292
-#| msgid "Can read all data on the file system"
 msgid "Can access arbitrary files on the file system"
 msgstr "Tetszőleges fájlokat érhet el a fájlrendszeren"
 
@@ -4942,42 +4940,42 @@ msgstr "Nem sikerült hozzáadni az eltávolításhoz a(z) „%s” bővítmény
 #: plugins/fwupd/gs-fwupd-app.c:134
 #, c-format
 msgid "%s Device Update"
-msgstr "%s eszköz frissítés"
+msgstr "%s eszköz frissítése"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:139
 #, c-format
 msgid "%s System Update"
-msgstr "%s rendszer frissítés"
+msgstr "%s rendszer frissítése"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:144
 #, c-format
 msgid "%s Embedded Controller Update"
-msgstr "%s beágyazott vezérlő frissítés"
+msgstr "%s beágyazott vezérlő frissítése"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:149
 #, c-format
 msgid "%s ME Update"
-msgstr "%s ME frissítés"
+msgstr "%s ME frissítése"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:154
 #, c-format
 msgid "%s Corporate ME Update"
-msgstr "%s vállalati ME frissítés"
+msgstr "%s vállalati ME frissítése"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:159
 #, c-format
 msgid "%s Consumer ME Update"
-msgstr "%s fogyasztói ME frissítés"
+msgstr "%s fogyasztói ME frissítése"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
@@ -4985,7 +4983,7 @@ msgstr "%s fogyasztói ME frissítés"
 #: plugins/fwupd/gs-fwupd-app.c:165
 #, c-format
 msgid "%s Controller Update"
-msgstr "%s vezérlő frissítés"
+msgstr "%s vezérlő frissítése"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
@@ -4993,85 +4991,85 @@ msgstr "%s vezérlő frissítés"
 #: plugins/fwupd/gs-fwupd-app.c:171
 #, c-format
 msgid "%s Thunderbolt Controller Update"
-msgstr "%s Thunderbolt vezérlő frissítés"
+msgstr "%s Thunderbolt vezérlő frissítése"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:176
 #, c-format
 msgid "%s CPU Microcode Update"
-msgstr "%s CPU mikrokód frissítés"
+msgstr "%s CPU mikrokód frissítése"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
 #: plugins/fwupd/gs-fwupd-app.c:181
 #, c-format
 msgid "%s Configuration Update"
-msgstr "%s konfigurációs frissítés"
+msgstr "%s konfigurációs frissítése"
 
 #. TRANSLATORS: battery refers to the system power source
 #: plugins/fwupd/gs-fwupd-app.c:185
 #, c-format
 msgid "%s Battery Update"
-msgstr "%s akkumulátorfrissítés"
+msgstr "%s akkumulátor frissítése"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
 #: plugins/fwupd/gs-fwupd-app.c:190
 #, c-format
 msgid "%s Camera Update"
-msgstr "%s kamerafrissítés"
+msgstr "%s kamera frissítése"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
 #: plugins/fwupd/gs-fwupd-app.c:194
 #, c-format
 msgid "%s TPM Update"
-msgstr "%s TPM-frissítés"
+msgstr "%s TPM frissítése"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
 #: plugins/fwupd/gs-fwupd-app.c:198
 #, c-format
 msgid "%s Touchpad Update"
-msgstr "%s érintőtábla-frissítés"
+msgstr "%s érintőtábla frissítése"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
 #: plugins/fwupd/gs-fwupd-app.c:202
 #, c-format
 msgid "%s Mouse Update"
-msgstr "%s egérfrissítés"
+msgstr "%s egér frissítése"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:206
 #, c-format
 msgid "%s Keyboard Update"
-msgstr "%s billentyűzetfrissítés"
+msgstr "%s billentyűzet frissítése"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
 #: plugins/fwupd/gs-fwupd-app.c:210
 #, c-format
 msgid "%s Storage Controller Update"
-msgstr "%s tárolóvezérlő-frissítés"
+msgstr "%s tárolóvezérlő frissítése"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
 #: plugins/fwupd/gs-fwupd-app.c:215
 #, c-format
 msgid "%s Network Interface Update"
-msgstr "%s hálózaticsatoló-frissítés"
+msgstr "%s hálózati csatoló frissítése"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
 #: plugins/fwupd/gs-fwupd-app.c:220
 #, c-format
 msgid "%s Display Update"
-msgstr "%s kijelzőfrissítés"
+msgstr "%s kijelző frissítése"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
 #: plugins/fwupd/gs-fwupd-app.c:225
 #, c-format
 msgid "%s BMC Update"
-msgstr "%s alaplapkezelővezérlő-frissítés"
+msgstr "%s alaplapkezelő-vezérlő frissítése"
 
 #: plugins/fwupd/gs-plugin-fwupd.c:1199
 msgid "Firmware"
