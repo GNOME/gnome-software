@@ -1084,7 +1084,8 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 		GsApp *app = gs_app_list_index (list, i);
 		switch (gs_plugin_job_get_action (helper->plugin_job)) {
 		case GS_PLUGIN_ACTION_INSTALL:
-			add_app_to_install_queue (plugin_loader, app);
+			if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
+				add_app_to_install_queue (plugin_loader, app);
 			/* make sure the progress is properly initialized */
 			gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 			break;
@@ -3500,7 +3501,8 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		gs_app_set_pending_action (app, action);
 
-		if (action == GS_PLUGIN_ACTION_INSTALL)
+		if (action == GS_PLUGIN_ACTION_INSTALL &&
+		    gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
 			add_app_to_install_queue (plugin_loader, app);
 	}
 	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);

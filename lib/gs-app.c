@@ -727,11 +727,18 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
 			id = gs_app_get_source_default (app_tmp);
-		gs_app_kv_lpad (str, "related", id);
+		/* For example PackageKit can create apps without id */
+		if (id != NULL)
+			gs_app_kv_lpad (str, "related", id);
 	}
 	for (i = 0; i < gs_app_list_length (priv->history); i++) {
 		GsApp *app_tmp = gs_app_list_index (priv->history, i);
-		gs_app_kv_lpad (str, "history", gs_app_get_unique_id (app_tmp));
+		const gchar *id = gs_app_get_unique_id (app_tmp);
+		if (id == NULL)
+			id = gs_app_get_source_default (app_tmp);
+		/* For example PackageKit can create apps without id */
+		if (id != NULL)
+			gs_app_kv_lpad (str, "history", id);
 	}
 	for (i = 0; i < priv->categories->len; i++) {
 		tmp = g_ptr_array_index (priv->categories, i);
@@ -6163,7 +6170,8 @@ gs_app_dup_origin_ui (GsApp *app,
 
 		if (origin_str == NULL || origin_str[0] == '\0') {
 			/* use "Local file" rather than the filename for local files */
-			if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
+			if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+			    gs_app_get_local_file (app) != NULL)
 				origin_str = _("Local file");
 			else if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0)
 				origin_str = "Flathub";

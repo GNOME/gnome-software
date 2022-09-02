@@ -665,13 +665,18 @@ gs_plugin_snap_list_apps_async (GsPlugin              *plugin,
 
 			data->n_pending_ops++;
 			get_store_snap_async (self, client, snap_name, TRUE, cancellable, list_alternate_apps_snap_cb, g_steal_pointer (&task));
-		} else {
+		/* The id can be NULL for example for local package files */
+		} else if (gs_app_get_id (alternate_of) != NULL) {
 			data->n_pending_ops++;
 			snapd_client_find_section_async (client,
 							 SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID,
 							 NULL, gs_app_get_id (alternate_of),
 							 cancellable,
 							 list_alternate_apps_nonsnap_cb, g_steal_pointer (&task));
+		} else {
+			g_clear_object (&data->results_list);
+			g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
+						 "Unsupported app without id");
 		}
 
 		return;

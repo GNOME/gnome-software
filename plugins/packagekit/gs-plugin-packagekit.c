@@ -2654,11 +2654,18 @@ gs_plugin_packagekit_local_check_installed (GsPluginPackagekit  *self,
 	}
 	packages = pk_results_get_package_array (results);
 	if (packages->len > 0) {
-		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gboolean is_higher_version = FALSE;
+		const gchar *app_version = gs_app_get_version (app);
 		for (guint i = 0; i < packages->len; i++){
 			PkPackage *pkg = g_ptr_array_index (packages, i);
 			gs_app_add_source_id (app, pk_package_get_id (pkg));
+			if (!is_higher_version &&
+			    as_vercmp_simple (pk_package_get_version (pkg), app_version) < 0)
+				is_higher_version = TRUE;
+		}
+		if (!is_higher_version) {
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		}
 	}
 	return TRUE;
