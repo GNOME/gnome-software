@@ -609,9 +609,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			g_debug ("no devices (%s)", error_local->message);
 			return TRUE;
 		}
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
+		g_debug ("Failed to get devices: %s", error_local->message);
+		return TRUE;
 	}
 	for (guint i = 0; i < devices->len; i++) {
 		FwupdDevice *dev = g_ptr_array_index (devices, i);
