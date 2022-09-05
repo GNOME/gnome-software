@@ -2,72 +2,78 @@
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Freddy Cheng <freddy4212@gmail.com>, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-05-12 14:46+0000\n"
-"PO-Revision-Date: 2022-05-17 21:54+0800\n"
+"POT-Creation-Date: 2022-09-02 19:39+0000\n"
+"PO-Revision-Date: 2022-09-06 00:48+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
+"Language-Team: Chinese - Taiwan <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-DamnedLies-Scope: partial\n"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:7 src/gs-shell.ui:21
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "軟體"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:8
-msgid "Application manager for GNOME"
-msgstr "為 GNOME 設計的應用程式管理員"
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:8
+#, fuzzy
+#| msgid "Installed Updates"
+msgid "Install and update apps"
+msgstr "已安裝的更新"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:10
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
-"《軟體》讓您可以找尋、安裝新程式與系統擴充套件，以及移除所安裝的應用程式。"
+"《軟體》能讓您尋找及安裝新的應用程式與系統擴充套件，也能對已安裝的應用程式進"
+"行移除動作。"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:14
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:14
 msgid ""
 "Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"《軟體》陳列各種有特色與受歡迎的應用程式，並附上有用的描述與多張螢幕擷圖。您"
-"可以透過瀏覽類別清單，以及搜尋的方式來找出想要的應用程式。此外，它也能讓您採"
-"用離線更新的方式更新系統。"
+"《軟體》中陳列了各式各樣富有特色又受歡迎的應用程式，並提供描述與螢幕快照等實"
+"用訊息讓您能深入瞭解。您可以透過瀏覽分類列表或是使用搜尋功能找出所需的應用程"
+"式，亦可透過離線更新的方式更新系統。"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:25
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:25
 msgid "Overview panel"
 msgstr "概覽面板"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:29
-#: data/appdata/org.gnome.Software.appdata.xml.in:33
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:29
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:33
 msgid "Details panel"
-msgstr "細節面板"
+msgstr "詳細資訊面板"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:37
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:37
 msgid "Installed panel"
 msgstr "已安裝面板"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:41
-#: data/appdata/org.gnome.Software.appdata.xml.in:45
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:41
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:45
 msgid "Updates panel"
 msgstr "更新面板"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:49
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:49
 msgid "The update details"
 msgstr "更新的詳細資訊"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1927
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2018
+#: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "GNOME 專案"
 
@@ -81,25 +87,25 @@ msgstr "正在將 appstream 檔案安裝至系統位置"
 
 #: data/org.gnome.software.gschema.xml:5
 msgid "A list of compatible projects"
-msgstr "相容的專案列表"
+msgstr "相容專案的列表"
 
 #: data/org.gnome.software.gschema.xml:6
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
-msgstr "這是我們應列出的相容專案列表，如 GNOME、KDE 及 XFCE 等。"
+msgstr "這個列表決定要顯示在哪些相容的專案，如《GNOME》、《KDE》、《XFCE》等。"
 
 #: data/org.gnome.software.gschema.xml:10
 msgid "Whether to manage updates and upgrades in GNOME Software"
-msgstr "是否是要以 GNOME《軟體》管理更新與升級"
+msgstr "是否要以《軟體》來管理更新與升級"
 
 #: data/org.gnome.software.gschema.xml:11
 msgid ""
 "If disabled, GNOME Software will hide the updates panel, not perform any "
 "automatic updates actions or prompt for upgrades."
 msgstr ""
-"若停用，則 GNOME《軟體》會隱藏更新面板，且不會執行任何自動更新動作，或提示可"
-"以升級。"
+"若設為「False」，則會於《軟體》中隱藏更新面板，且不會進行任何自動更新動作或是"
+"升級提醒。"
 
 #: data/org.gnome.software.gschema.xml:15
 msgid "Automatically download and install updates"
@@ -110,22 +116,21 @@ msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
 msgstr ""
-"如果啟用此功能，則《GNOME 軟體》將會在背景下載軟體更新，亦安裝不需要重新開機"
-"的更新。"
+"若設為「True」，《軟體》會自動於背景下載軟體更新，並安裝無需重新啟動的更新。"
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
-msgstr "通知使用者關於背景更新程式的資訊"
+msgstr "通知使用者軟體已在背景更新"
 
 #: data/org.gnome.software.gschema.xml:21
 msgid ""
 "If enabled, GNOME Software notifies the user about updates that happened "
 "whilst the user was idle."
-msgstr "如果啟用此功能，GNOME 軟體將會通知使用者關於使用者閒置時執行的更新。"
+msgstr "若設為「True」，《軟體》會在電腦閒置時通知已更新的項目。"
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
-msgstr "是否要在計價連線時自動重新整理"
+msgstr "是否在使用計量連線時自動重新整理"
 
 #: data/org.gnome.software.gschema.xml:26
 msgid ""
@@ -133,12 +138,12 @@ msgid ""
 "when using a metered connection (eventually downloading some metadata, "
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
-"若啟用，則 GNOME《軟體》即使在使用計價連線時仍會自動在背景重新整理（甚至下載"
-"一些中介資料、檢查是否有更新…等，這代表使用者可能必須負擔更多費用）。"
+"若設為「True」，即使正在透過計量連線使用網路，《軟體》仍會在背景自動重新整理"
+"（甚至下載一些中介資料、檢查更新…等，使用者可能需負擔額外費用）。"
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
-msgstr "是否是第一次執行 GNOME《軟體》"
+msgstr "是否為第一次執行《軟體》"
 
 #: data/org.gnome.software.gschema.xml:34
 msgid "Show star ratings next to applications"
@@ -146,158 +151,152 @@ msgstr "在應用程式旁顯示星級評等"
 
 #: data/org.gnome.software.gschema.xml:38
 msgid "Filter applications based on the default branch set for the remote"
-msgstr "根據遠端的預設分支設定過濾應用程式"
+msgstr "根據遠端預設的分支設定過濾應用程式"
 
 #: data/org.gnome.software.gschema.xml:42
 msgid "Non-free applications show a warning dialog before install"
-msgstr "非自由的應用程式會在安裝前顯示警告對話盒"
+msgstr "安裝非自由應用程式前顯示警告對話框"
 
 #: data/org.gnome.software.gschema.xml:43
 msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
-"安裝非自由應用程式之時會顯示警告對話盒。這個選項控制是否要解除該對話盒。"
+"安裝非自由的應用程式時會顯示警告對話框。該設定鍵控制是否停用這個對話框。"
 
 #: data/org.gnome.software.gschema.xml:47
-msgid "A list of popular applications"
-msgstr "熱門應用程式列表"
-
-#: data/org.gnome.software.gschema.xml:48
-msgid "A list of applications to use, overriding the system defined ones."
-msgstr "要使用的應用程式列表，凌駕系統定義的程式列表。"
-
-#: data/org.gnome.software.gschema.xml:52
 msgid "The last update check timestamp"
-msgstr "最近更新檢查時間戳記"
+msgstr "上次檢查更新的時間戳記"
 
-#: data/org.gnome.software.gschema.xml:56
+#: data/org.gnome.software.gschema.xml:51
 msgid "The last upgrade notification timestamp"
-msgstr "最近升級通知時間戳記"
+msgstr "上次彈出升級通知的時間戳記"
 
-#: data/org.gnome.software.gschema.xml:60
+#: data/org.gnome.software.gschema.xml:55
 msgid "The last update notification timestamp"
-msgstr "最近更新檢查時間戳記"
+msgstr "上次彈出更新通知的時間戳記"
 
-#: data/org.gnome.software.gschema.xml:64
+#: data/org.gnome.software.gschema.xml:59
 msgid "The timestamp of the first security update, cleared after update"
-msgstr "第一次安全性更新的時間戳記，會在更新之後清除"
+msgstr "首次進行安全性更新的時間戳記（會在更新之後清除）"
 
-#: data/org.gnome.software.gschema.xml:68
+#: data/org.gnome.software.gschema.xml:63
 msgid "The last update timestamp"
-msgstr "最近更新時間戳記"
+msgstr "上次更新的時間戳記"
+
+#: data/org.gnome.software.gschema.xml:67
+msgid "The last timestamp when the system was online and got any updates"
+msgstr "上次系統連上網路並取得更新的時間戳記"
+
+#: data/org.gnome.software.gschema.xml:71
+msgid "The age in seconds to verify the upstream screenshot is still valid"
+msgstr "用來核驗上游螢幕快照仍否有效的時間秒數"
 
 #: data/org.gnome.software.gschema.xml:72
-msgid "The last timestamp when the system was online and got any updates"
-msgstr "上次系統連線及取得更新的時間戳"
-
-#: data/org.gnome.software.gschema.xml:76
-msgid "The age in seconds to verify the upstream screenshot is still valid"
-msgstr "用來驗證上游螢幕快照仍否有效的時間秒數"
-
-#: data/org.gnome.software.gschema.xml:77
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
-"若採取較大的數值則代表較少從遠端伺服器來回，但是螢幕快照的後續更新可能要花上"
-"較長時間才會顯示給使用者觀看。數值為 0 表示若快取中已有影像存在，則永不檢查伺"
-"服器。"
+"若數值較大，則代表較少與遠端伺服器來回，更新的螢幕快照可能要花上較長時間才能"
+"夠顯示。數值為 0 表示倘若快取中已下載過螢幕快照，則永不從伺服器檢查更新。"
 
-#: data/org.gnome.software.gschema.xml:86
+#: data/org.gnome.software.gschema.xml:81
 msgid "The server to use for application reviews"
-msgstr "用來顯示應用程式評論的伺服器"
+msgstr "用於應用程式評論的伺服器"
 
-#: data/org.gnome.software.gschema.xml:90
+#: data/org.gnome.software.gschema.xml:85
 msgid "The minimum karma score for reviews"
 msgstr "評論的最低業值"
 
-#: data/org.gnome.software.gschema.xml:91
+#: data/org.gnome.software.gschema.xml:86
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "小於這個數字的業值將不會顯示。"
 
-#: data/org.gnome.software.gschema.xml:95
+#: data/org.gnome.software.gschema.xml:90
 msgid "A list of official repositories that should not be considered 3rd party"
-msgstr "不應視為第三方的官方軟體庫列表"
+msgstr "不應視為第三方軟體庫的官方軟體庫列表"
 
-#: data/org.gnome.software.gschema.xml:99
+#: data/org.gnome.software.gschema.xml:94
 msgid "A list of required repositories that cannot be disabled or removed"
-msgstr "無法停用或移除的必須軟體庫列表"
+msgstr "無法停用或移除的必要軟體庫列表"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:98
 msgid "A list of official repositories that should be considered free software"
 msgstr "應視為自由軟體的官方軟體庫列表"
 
-#: data/org.gnome.software.gschema.xml:107
+#: data/org.gnome.software.gschema.xml:102
 msgid ""
 "The licence URL to use when an application should be considered free software"
-msgstr "應用軟體應視為自由軟體時所使用的授權方式網址"
+msgstr "應用程式為自由軟體時所使用的授權條款 URL 位址"
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:106
 msgid "Install bundled applications for all users on the system where possible"
-msgstr "只要可以便為系統上的所有使用者安裝應用程式套組"
+msgstr "允許情況下為系統上所有使用者安裝應用程式組合"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:110
 msgid "Allow access to the Software Repositories dialog"
-msgstr "允許存取《軟體庫》對話盒"
+msgstr "是否允許取用「軟體庫」對話框"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:114
 msgid "Offer upgrades for pre-releases"
 msgstr "提供預先發行版本的升級"
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:118
 msgid "Show some UI elements informing the user that an app is non-free"
-msgstr "顯示一些告知使用者某 App 並非自由軟體的操作介面元素"
+msgstr "透過一些使用者介面元素告知使用者程式授權並非自由軟體"
 
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:122
 msgid "Show the installed size for apps in the list of installed applications"
-msgstr "在已安裝應用程式清單中顯示安裝後程式大小"
+msgstr "在已安裝應用程式的列表中顯示應用程式安裝後的大小"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:126
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://zh.wikipedia.org/zh-tw/%E4%B8%93%E6%9C%89%E8%BD%AF%E4%BB%B6'"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:127
 msgid "The URI that explains nonfree and proprietary software"
-msgstr "闡釋非自由軟體和專有軟體的連結"
+msgstr "解釋何謂非自由軟體和專有軟體的 URL 位址"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:131
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "swcatalog folder"
-msgstr "一份要下載至 swcatalog 資料夾中的 appstream 檔案指向 URL 清單"
+msgstr "一份要下載至「swcatalog」資料夾中的 AppStream 檔案所指向之 URL 清單"
 
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:135
 msgid ""
 "Install the AppStream files to a system-wide location for all users. If "
 "false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
 "directory"
 msgstr ""
-"為所有使用者安裝 AppStream 檔案到系統層級位置上。若為否，則檔案會在非標準的 "
-"$XDG_DATA_HOME/swcatalog/xml 目錄中安裝"
+"將所有使用者的 AppStream 檔案安裝到系統層級位置上。若設為「False」，則檔案會"
+"在非標準的「$XDG_DATA_HOME/swcatalog/xml」目錄中安裝"
 
-#: data/org.gnome.software.gschema.xml:144
+#: data/org.gnome.software.gschema.xml:139
 msgid ""
 "Priority order of packaging formats to prefer, with more important formats "
 "listed first. An empty array means the default order. Omitted formats are "
 "assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
 "snap."
 msgstr ""
+"偏好的軟體包格式優先順序，愈重要的格式愈往前列出。空白陣列表示使用預設順序；"
+"省略的格式則列在後方。軟體包格式範例有：「deb」、「flatpak」、「rpm」、"
+"「snap」等。"
 
-#: data/org.gnome.software.gschema.xml:151
+#: data/org.gnome.software.gschema.xml:146
 msgid "A string storing the gnome-online-account id used to login"
-msgstr "儲存 gnome-online-account id 以用於登入的字串"
+msgstr "儲存用於登入《gnome-online-account》ID 的字串"
 
 #. TRANSLATORS: tool that is used when moving profiles system-wide
 #: gs-install-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
-msgstr "GNOME 軟體 AppStrem 系統域安裝程式"
+msgstr "《軟體》的 AppStrem 系統層級安裝程式"
 
 #: gs-install-appstream/gs-install-appstream.c:145
 msgid "Failed to parse command line arguments"
-msgstr "無法解析指令列引數"
+msgstr "無法解析命令列參數"
 
 #. TRANSLATORS: user did not specify a valid filename
 #: gs-install-appstream/gs-install-appstream.c:152
@@ -307,13 +306,13 @@ msgstr "您需要指定單一個檔名"
 #. TRANSLATORS: only able to install files as root
 #: gs-install-appstream/gs-install-appstream.c:159
 msgid "This program can only be used by the root user"
-msgstr "此程式僅能由 root 使用者使用"
+msgstr "此程式僅能由 Root 使用者使用"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:167
 #, c-format
 msgid "Failed to validate content type: %s"
-msgstr "無法驗證內容類型：%s"
+msgstr "無法核驗內容類型：%s"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:178
@@ -321,357 +320,362 @@ msgstr "無法驗證內容類型：%s"
 msgid "Failed to move: %s"
 msgstr "無法移動：%s"
 
-#: src/gnome-software-local-file.desktop.in:3
+#: src/gnome-software-local-file-flatpak.desktop.in:3
+#: src/gnome-software-local-file-fwupd.desktop.in:3
+#: src/gnome-software-local-file-packagekit.desktop.in:3
+#: src/gnome-software-local-file-snap.desktop.in:3
 msgid "Software Install"
-msgstr "軟體安裝"
+msgstr "安裝軟體"
 
-#: src/gnome-software-local-file.desktop.in:4
+#: src/gnome-software-local-file-flatpak.desktop.in:4
+#: src/gnome-software-local-file-fwupd.desktop.in:4
+#: src/gnome-software-local-file-packagekit.desktop.in:4
+#: src/gnome-software-local-file-snap.desktop.in:4
 msgid "Install selected software on the system"
-msgstr "安裝選取的軟體到系統中"
+msgstr "將所選的軟體安裝至系統"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:135
+#: src/gs-age-rating-context-dialog.c:134
 msgid "Cartoon Violence"
-msgstr "動漫暴力"
+msgstr "漫畫暴力"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:137
+#: src/gs-age-rating-context-dialog.c:136
 msgid "No information regarding cartoon violence"
-msgstr "沒有動漫暴力的相關資訊"
+msgstr "無漫畫暴力資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:145
+#: src/gs-age-rating-context-dialog.c:144
 msgid "Fantasy Violence"
 msgstr "幻想暴力"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:147
+#: src/gs-age-rating-context-dialog.c:146
 msgid "No information regarding fantasy violence"
-msgstr "沒有幻想暴力的相關資訊"
+msgstr "無幻想暴力資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:155
+#: src/gs-age-rating-context-dialog.c:154
 msgid "Realistic Violence"
 msgstr "現實暴力"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:157
+#: src/gs-age-rating-context-dialog.c:156
 msgid "No information regarding realistic violence"
-msgstr "沒有現實暴力的相關資訊"
+msgstr "無現實暴力資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:165
+#: src/gs-age-rating-context-dialog.c:164
 msgid "Violence Depicting Bloodshed"
-msgstr ""
+msgstr "血腥暴力"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:167
+#: src/gs-age-rating-context-dialog.c:166
 msgid "No information regarding bloodshed"
-msgstr ""
+msgstr "無血腥暴力資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:175
+#: src/gs-age-rating-context-dialog.c:174
 msgid "Sexual Violence"
 msgstr "性暴力"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:177
+#: src/gs-age-rating-context-dialog.c:176
 msgid "No information regarding sexual violence"
-msgstr "沒有性暴力的相關資訊"
+msgstr "無性暴力資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:185
+#: src/gs-age-rating-context-dialog.c:184
 msgid "Alcohol"
 msgstr "酒精"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:187
+#: src/gs-age-rating-context-dialog.c:186
 msgid "No information regarding references to alcohol"
-msgstr "沒有涉及酒精的相關資訊"
+msgstr "無涉及酒精資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:195
+#: src/gs-age-rating-context-dialog.c:194
 msgid "Narcotics"
 msgstr "毒品"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:197
+#: src/gs-age-rating-context-dialog.c:196
 msgid "No information regarding references to illicit drugs"
-msgstr "沒有涉及非法藥品的相關資訊"
+msgstr "無涉及毒品資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:205
+#: src/gs-age-rating-context-dialog.c:204
 msgid "Tobacco"
-msgstr "菸草"
+msgstr "香煙"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:207
+#: src/gs-age-rating-context-dialog.c:206
 msgid "No information regarding references to tobacco products"
-msgstr "沒有涉及菸草產品的相關資訊"
+msgstr "無涉及香煙資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:215
-#: src/gs-age-rating-context-dialog.c:544
+#: src/gs-age-rating-context-dialog.c:214
+#: src/gs-age-rating-context-dialog.c:543
 msgid "Nudity"
 msgstr "裸體"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:217
+#: src/gs-age-rating-context-dialog.c:216
 msgid "No information regarding nudity of any sort"
-msgstr "沒有任何形式之裸體的相關資訊"
+msgstr "無任何形式之裸體資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:225
+#: src/gs-age-rating-context-dialog.c:224
 msgid "Sexual Themes"
 msgstr "性事主題"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:227
+#: src/gs-age-rating-context-dialog.c:226
 msgid "No information regarding references to or depictions of sexual nature"
-msgstr "沒有涉及性事或描繪性事的相關資訊"
+msgstr "無涉及性事或描繪性事資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:235
+#: src/gs-age-rating-context-dialog.c:234
 msgid "Profanity"
 msgstr "辱罵"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:237
+#: src/gs-age-rating-context-dialog.c:236
 msgid "No information regarding profanity of any kind"
-msgstr "沒有任何辱駡形式的相關資訊"
+msgstr "無任何形式之辱駡資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:245
+#: src/gs-age-rating-context-dialog.c:244
 msgid "Inappropriate Humor"
 msgstr "不適切之幽默"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:247
+#: src/gs-age-rating-context-dialog.c:246
 msgid "No information regarding inappropriate humor"
-msgstr "沒有不適切之幽默的相關資訊"
+msgstr "無不適切之幽默資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:255
+#: src/gs-age-rating-context-dialog.c:254
 msgid "Discrimination"
 msgstr "歧視"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:257
+#: src/gs-age-rating-context-dialog.c:256
 msgid "No information regarding discriminatory language of any kind"
-msgstr "沒有任何歧視用語的相關資訊"
+msgstr "無任何形式之歧視用語資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:265
+#: src/gs-age-rating-context-dialog.c:264
 msgid "Advertising"
 msgstr "行銷"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:267
+#: src/gs-age-rating-context-dialog.c:266
 msgid "No information regarding advertising of any kind"
-msgstr "沒有任何行銷形式的相關資訊"
+msgstr "無任何形式之行銷資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:275
+#: src/gs-age-rating-context-dialog.c:274
 msgid "Gambling"
 msgstr "賭博"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:277
+#: src/gs-age-rating-context-dialog.c:276
 msgid "No information regarding gambling of any kind"
-msgstr "沒有任何賭博形式的相關資訊"
+msgstr "無任何形式之賭博資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:285
+#: src/gs-age-rating-context-dialog.c:284
 msgid "Purchasing"
 msgstr "購買"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:287
+#: src/gs-age-rating-context-dialog.c:286
 msgid "No information regarding the ability to spend money"
-msgstr "沒有金錢花費之功能的相關資訊"
+msgstr "無金錢花費之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:295
+#: src/gs-age-rating-context-dialog.c:294
 msgid "Chat Between Users"
 msgstr "使用者間聊天"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:297
+#: src/gs-age-rating-context-dialog.c:296
 msgid "No information regarding ways to chat with other users"
-msgstr "沒有和其他使用者聊天方式的相關資訊"
+msgstr "無與其他使用者聊天之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:305
+#: src/gs-age-rating-context-dialog.c:304
 msgid "Audio Chat Between Users"
 msgstr "使用者間語音聊天"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:307
+#: src/gs-age-rating-context-dialog.c:306
 msgid "No information regarding ways to talk with other users"
-msgstr "沒有和其他使用者對談方式的相關資訊"
+msgstr "無與其他使用者進行對談之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:315
+#: src/gs-age-rating-context-dialog.c:314
 msgid "Contact Details"
-msgstr "聯絡資訊細節"
+msgstr "聯絡資訊"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:317
+#: src/gs-age-rating-context-dialog.c:316
 msgid ""
 "No information regarding sharing of social network usernames or email "
 "addresses"
-msgstr "沒有分享社交網路使用者名稱或電子郵件位址的相關資訊"
+msgstr "無分社群網站的使用者名稱或電子郵件位址之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:325
+#: src/gs-age-rating-context-dialog.c:324
 msgid "Identifying Information"
-msgstr "可辨識身分的資訊"
+msgstr "身分辨識資訊"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:327
+#: src/gs-age-rating-context-dialog.c:326
 msgid "No information regarding sharing of user information with third parties"
-msgstr "沒有與第三方單位分享使用者資訊的相關資訊"
+msgstr "無分享使用者資訊給第三方單位之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:335
+#: src/gs-age-rating-context-dialog.c:334
 msgid "Location Sharing"
-msgstr "地理定位分享"
+msgstr "位置資訊分享"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:337
+#: src/gs-age-rating-context-dialog.c:336
 msgid "No information regarding sharing of physical location with other users"
-msgstr "沒有與其他使用者分享實際地理定位的相關資訊"
+msgstr "無分享實體位置給其他使用者之資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:361
+#: src/gs-age-rating-context-dialog.c:360
 msgid "Homosexuality"
 msgstr "同性戀"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:363
+#: src/gs-age-rating-context-dialog.c:362
 msgid "No information regarding references to homosexuality"
-msgstr "沒有涉及同性戀議題的相關資訊"
+msgstr "無涉及同性戀資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:371
+#: src/gs-age-rating-context-dialog.c:370
 msgid "Prostitution"
 msgstr "賣淫"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:373
+#: src/gs-age-rating-context-dialog.c:372
 msgid "No information regarding references to prostitution"
-msgstr "沒有涉及賣淫的相關資訊"
+msgstr "無涉及賣淫資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:381
+#: src/gs-age-rating-context-dialog.c:380
 msgid "Adultery"
 msgstr "通姦"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:383
+#: src/gs-age-rating-context-dialog.c:382
 msgid "No information regarding references to adultery"
-msgstr "沒有涉及通姦的相關資訊"
+msgstr "無涉及通姦資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:391
+#: src/gs-age-rating-context-dialog.c:390
 msgid "Sexualized Characters"
 msgstr "性化角色"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:393
+#: src/gs-age-rating-context-dialog.c:392
 msgid "No information regarding sexualized characters"
-msgstr "沒有性化角色的相關資訊"
+msgstr "無涉及性化角色資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:401
+#: src/gs-age-rating-context-dialog.c:400
 msgid "Desecration"
 msgstr "褻瀆"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:403
+#: src/gs-age-rating-context-dialog.c:402
 msgid "No information regarding references to desecration"
-msgstr "沒有涉及褻瀆的相關資訊"
+msgstr "無涉及褻瀆資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:411
+#: src/gs-age-rating-context-dialog.c:410
 msgid "Human Remains"
-msgstr "人類遺體"
+msgstr "亡者遺體"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:413
+#: src/gs-age-rating-context-dialog.c:412
 msgid "No information regarding visible dead human remains"
-msgstr "沒有看見亡者遺體的相關資訊"
+msgstr "無可見亡者遺體資訊"
 
 #. TRANSLATORS: content rating title, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:421
+#: src/gs-age-rating-context-dialog.c:420
 msgid "Slavery"
 msgstr "奴隸行為"
 
 #. TRANSLATORS: content rating description, see https://hughsie.github.io/oars/
-#: src/gs-age-rating-context-dialog.c:423
+#: src/gs-age-rating-context-dialog.c:422
 msgid "No information regarding references to slavery"
-msgstr "沒有涉及奴隸行為的相關資訊"
+msgstr "無涉及奴隸行為資訊"
 
-#: src/gs-age-rating-context-dialog.c:495
+#: src/gs-age-rating-context-dialog.c:494
 msgid "Does not include references to drugs"
-msgstr "不含涉及藥物"
+msgstr "不涉及藥物"
 
-#: src/gs-age-rating-context-dialog.c:497
+#: src/gs-age-rating-context-dialog.c:496
 msgid ""
 "Does not include swearing, profanity, and other kinds of strong language"
-msgstr "不含詛咒、辱駡，或其他強硬語言"
+msgstr "不含詛咒、辱駡或其他激烈語言"
 
-#: src/gs-age-rating-context-dialog.c:499
+#: src/gs-age-rating-context-dialog.c:498
 msgid "Does not include ads or monetary transactions"
 msgstr "不含廣告或金錢交易功能"
 
-#: src/gs-age-rating-context-dialog.c:501
+#: src/gs-age-rating-context-dialog.c:500
 msgid "Does not include sex or nudity"
 msgstr "不含性事或裸體"
 
-#: src/gs-age-rating-context-dialog.c:503
+#: src/gs-age-rating-context-dialog.c:502
 msgid "Does not include uncontrolled chat functionality"
 msgstr "不含不受控制的聊天功能"
 
-#: src/gs-age-rating-context-dialog.c:505
+#: src/gs-age-rating-context-dialog.c:504
 msgid "Does not include violence"
 msgstr "不含暴力"
 
-#: src/gs-age-rating-context-dialog.c:538
+#: src/gs-age-rating-context-dialog.c:537
 msgid "Drugs"
 msgstr "藥物"
 
-#: src/gs-age-rating-context-dialog.c:540
+#: src/gs-age-rating-context-dialog.c:539
 msgid "Strong Language"
-msgstr "強硬語言"
+msgstr "激烈語言"
 
-#: src/gs-age-rating-context-dialog.c:542
+#: src/gs-age-rating-context-dialog.c:541
 msgid "Money"
 msgstr "金錢"
 
-#: src/gs-age-rating-context-dialog.c:546
+#: src/gs-age-rating-context-dialog.c:545
 msgid "Social"
 msgstr "社交"
 
-#: src/gs-age-rating-context-dialog.c:548
+#: src/gs-age-rating-context-dialog.c:547
 msgid "Violence"
 msgstr "暴力"
 
 #. Translators: This is used to join two list items together in
 #. * a compressed way of displaying a list of descriptions of age
 #. * ratings for apps. The order of the items does not matter.
-#: src/gs-age-rating-context-dialog.c:659
+#: src/gs-age-rating-context-dialog.c:658
 #, c-format
 msgid "%s • %s"
 msgstr "%s • %s"
 
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
-#. TRANSLATORS: this is a subcategory matching all the
-#. * different apps in the parent category, e.g. "Games"
-#: src/gs-age-rating-context-dialog.c:941 lib/gs-category.c:214
+#: src/gs-age-rating-context-dialog.c:936
+msgctxt "Age rating"
 msgid "All"
-msgstr "全部"
+msgstr "所有"
 
 #. Translators: This is displayed for the download size in an
 #. * app’s context tile if the size is unknown. It should be short
@@ -679,67 +683,67 @@ msgstr "全部"
 #. Translators: This is shown in a bubble if the storage
 #. * size of an application is not known. The bubble is small,
 #. * so the string should be as short as possible.
-#: src/gs-age-rating-context-dialog.c:954 src/gs-app-context-bar.c:194
-#: src/gs-storage-context-dialog.c:87
+#: src/gs-age-rating-context-dialog.c:949 src/gs-app-context-bar.c:206
+#: src/gs-storage-context-dialog.c:89
 msgid "?"
 msgstr "？"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for all ages. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1029
+#: src/gs-age-rating-context-dialog.c:1023
 #, c-format
 msgid "%s is suitable for everyone"
-msgstr "%s 適合任何人"
+msgstr "《%s》適合任何人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 3. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1033
+#: src/gs-age-rating-context-dialog.c:1027
 #, c-format
 msgid "%s is suitable for toddlers"
-msgstr "%s 適合學齡前幼童"
+msgstr "《%s》適合學齡前幼童"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for children up to around age 5. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1037
+#: src/gs-age-rating-context-dialog.c:1031
 #, c-format
 msgid "%s is suitable for young children"
-msgstr "%s 適合孩童"
+msgstr "《%s》適合孩童"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people up to around age 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1045
+#: src/gs-age-rating-context-dialog.c:1039
 #, c-format
 msgid "%s is suitable for teenagers"
-msgstr "%s 適合青少年"
+msgstr "《%s》適合青少年"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for people aged up to and over 18. The placeholder is the app name.
-#: src/gs-age-rating-context-dialog.c:1049
+#: src/gs-age-rating-context-dialog.c:1043
 #, c-format
 msgid "%s is suitable for adults"
-msgstr "%s 適合成人"
+msgstr "《%s》適合成人"
 
 #. Translators: This is a dialogue title which indicates that an app is suitable
 #. * for a specified age group. The first placeholder is the app name, the second
 #. * is the age group.
-#: src/gs-age-rating-context-dialog.c:1054
+#: src/gs-age-rating-context-dialog.c:1048
 #, c-format
 msgid "%s is suitable for %s"
-msgstr "%s 適合 %s"
+msgstr "《%s》適合%s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:245
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:211
 msgid "Age Rating"
 msgstr "年齡分級"
 
-#: src/gs-age-rating-context-dialog.ui:78
-#: src/gs-hardware-support-context-dialog.ui:78
-#: src/gs-safety-context-dialog.ui:228
-msgid "How to add missing information"
-msgstr "如何加入缺少的資訊"
+#: src/gs-age-rating-context-dialog.ui:68
+#: src/gs-hardware-support-context-dialog.ui:71
+#: src/gs-safety-context-dialog.ui:221
+msgid "How to contribute missing information"
+msgstr "如何加入遺漏的資訊"
 
-#: lib/gs-app.c:5741
+#: lib/gs-app.c:6175
 msgid "Local file"
 msgstr "本機檔案"
 
@@ -748,43 +752,42 @@ msgstr "本機檔案"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5757 src/gs-safety-context-dialog.c:419
+#: lib/gs-app.c:6194 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5833
+#: lib/gs-app.c:6271
 msgid "Package"
 msgstr "軟體包"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:446
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:457
 msgid "Pending"
 msgstr "待處置"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:450 src/gs-details-page.c:346
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:461 src/gs-details-page.c:369
 msgid "Pending install"
 msgstr "安裝待處置"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:454 src/gs-details-page.c:353
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:465 src/gs-details-page.c:376
 msgid "Pending remove"
 msgstr "移除待處置"
 
-#. Translators: This is in the context of a list of apps which are installed on the system.
-#. Translators: A label for a button to show only software which is already installed.
-#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:198 src/gs-app-tile.ui:50
-#: src/gs-feature-tile.c:547 src/gs-installed-page.c:709 src/gs-shell.ui:305
+#: src/gs-app-addon-row.c:111 src/gs-app-row.ui:197 src/gs-app-tile.ui:50
+#: src/gs-feature-tile.c:535
+msgctxt "Single app"
 msgid "Installed"
 msgstr "已安裝"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:199 src/gs-details-page.c:339
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:205 src/gs-details-page.c:362
 msgid "Installing"
-msgstr "安裝中"
+msgstr "正在安裝"
 
 #: src/gs-app-addon-row.c:119
 msgid "Removing"
-msgstr "移除中"
+msgstr "正在移除"
 
 #: src/gs-app-addon-row.ui:64
 msgid "_Uninstall"
@@ -796,7 +799,7 @@ msgstr "網路"
 
 #: src/gs-app-details-page.c:68
 msgid "Can communicate over the network"
-msgstr "可以透過網路溝通"
+msgstr "可以透過網路通訊"
 
 #: src/gs-app-details-page.c:69
 msgid "System Services"
@@ -804,7 +807,7 @@ msgstr "系統服務"
 
 #: src/gs-app-details-page.c:69
 msgid "Can access D-Bus services on the system bus"
-msgstr "可以存取系統匯流排的 D-Bus 服務"
+msgstr "可以取用系統匯流排的《D-Bus》服務"
 
 #: src/gs-app-details-page.c:70
 msgid "Session Services"
@@ -812,7 +815,7 @@ msgstr "作業階段服務"
 
 #: src/gs-app-details-page.c:70
 msgid "Can access D-Bus services on the session bus"
-msgstr "可以存取作業階段匯流排 D-Bus 服務"
+msgstr "可以取用作業階段匯流排的《D-Bus》服務"
 
 #: src/gs-app-details-page.c:71
 msgid "Devices"
@@ -820,33 +823,27 @@ msgstr "裝置"
 
 #: src/gs-app-details-page.c:71
 msgid "Can access system device files"
-msgstr "可以存取系統裝置檔案"
+msgstr "可以取用系統裝置檔案"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
 msgid "Home folder"
-msgstr "家資料夾"
+msgstr "家目錄"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:74
-#: src/gs-app-details-page.c:77
+#: src/gs-app-details-page.c:77 src/gs-app-details-page.c:150
 msgid "Can view, edit and create files"
-msgstr "可以檢視、編輯、建立檔案"
+msgstr "可以檢視、編輯與建立檔案"
 
 #: src/gs-app-details-page.c:73 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:78
+#: src/gs-app-details-page.c:78 src/gs-app-details-page.c:145
 msgid "Can view files"
 msgstr "可以檢視檔案"
 
 #: src/gs-app-details-page.c:74 src/gs-app-details-page.c:75
-#: src/gs-app-details-page.c:76
 msgid "File system"
 msgstr "檔案系統"
 
-#. Translators: This indicates an app can access data in the system unknown to the Software.
-#. * It’s used in a context tile, so should be short.
-#: src/gs-app-details-page.c:76 src/gs-app-context-bar.c:341
-msgid "Can access arbitrary files"
-msgstr "可以存取任意檔案"
-
+#. The GS_APP_PERMISSIONS_FLAGS_FILESYSTEM_OTHER is used only as a flag, with actual files being part of the read/full lists
 #: src/gs-app-details-page.c:77 src/gs-app-details-page.c:78
 msgid "Downloads folder"
 msgstr "下載資料夾"
@@ -857,11 +854,11 @@ msgstr "設定值"
 
 #: src/gs-app-details-page.c:79
 msgid "Can view and change any settings"
-msgstr "可以檢視並變更任何設定"
+msgstr "可以檢視並更改任何設定"
 
 #: src/gs-app-details-page.c:80
 msgid "Legacy display system"
-msgstr "傳統顯示系統"
+msgstr "舊式顯示系統"
 
 #: src/gs-app-details-page.c:80
 msgid "Uses an old, insecure display system"
@@ -875,53 +872,48 @@ msgstr "沙盒跳脫"
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "可以跳脫沙盒並繞過任何限制"
 
-#. Translators: This is the source and upgrade version of an
-#. * application, shown to the user when they view more detailed
-#. * information about pending updates. The source is of the form
-#. * ‘deja-dup’ (a package name) or
-#. * ‘app/org.gnome.Builder/x86_64/main’ (a flatpak ID), and the
-#. * version is of the form ‘40.4-1.fc34’ (a version number).
-#: src/gs-app-details-page.c:138
-#, c-format
-msgid "%s %s"
-msgstr "%s %s"
+#. FIXME support app == NULL
+#. set window title
+#: src/gs-app-details-page.c:166
+msgid "Update Details"
+msgstr "更新的詳細資訊"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-app-details-page.c:157
+#: src/gs-app-details-page.c:174
 msgid "No update description available."
 msgstr "未提供更新的詳細資訊。"
 
 #: src/gs-app-details-page.ui:25 src/gs-os-update-page.ui:25
-#: src/gs-shell.ui:365 src/gs-shell.ui:456
+#: src/gs-shell.ui:367 src/gs-shell.ui:458
 msgid "Go back"
 msgstr "返回"
 
-#: src/gs-app-details-page.ui:47 src/gs-app-row.c:505
+#: src/gs-app-details-page.ui:48 src/gs-app-row.c:516
 msgid "Requires additional permissions"
 msgstr "需要開通其他取用權"
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:797
+#: src/gs-app-reviews-dialog.ui:6 src/gs-details-page.ui:855
 msgid "Reviews"
 msgstr "評論"
 
 #: src/gs-app-reviews-dialog.ui:25
 msgid "No reviews were found for this application."
-msgstr "找不到此應用程式的評論。"
+msgstr "找不到這個應用程式的評論。"
 
 #: src/gs-app-reviews-dialog.ui:27
 msgid "No Reviews"
 msgstr "沒有評論"
 
-#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:475
+#: src/gs-app-version-history-dialog.ui:6 src/gs-details-page.ui:533
 msgid "Version History"
 msgstr "版本歷史紀錄"
 
 #: src/gs-app-version-history-row.c:71
 #, c-format
 msgid "New in Version %s"
-msgstr "有新版本 %s"
+msgstr "版本 %s 的更新內容"
 
 #: src/gs-app-version-history-row.c:78
 #, c-format
@@ -930,285 +922,296 @@ msgstr "版本 %s"
 
 #: src/gs-app-version-history-row.c:80
 msgid "No details for this release"
-msgstr "沒有這個發行版本的詳細資訊"
+msgstr "沒有此次發行版本的詳細資訊"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
 #: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
-msgstr "%Y年%m月%e日"
+msgstr "%Y年%-m月%-d日"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:121
+#: src/gs-application.c:124
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"初始啟動模式：可以是「updates」(更新)、「updated」(已更新)、「installed」(已"
-"安裝) 或「overview」(概覽)"
+"初始啟動模式：可以是「updates」（更新）、「updated」（已更新）、「installed」"
+"（已安裝）或「overview」（概覽）"
 
-#: src/gs-application.c:121
+#: src/gs-application.c:124
 msgid "MODE"
-msgstr "模式"
+msgstr "MODE"
 
-#: src/gs-application.c:123
+#: src/gs-application.c:126
 msgid "Search for applications"
-msgstr "搜尋用程式"
+msgstr "搜尋應用程式"
 
-#: src/gs-application.c:123
+#: src/gs-application.c:126
 msgid "SEARCH"
-msgstr "搜尋"
+msgstr "SEARCH"
 
-#: src/gs-application.c:125
+#: src/gs-application.c:128
 msgid "Show application details (using application ID)"
-msgstr "顯示應用程式細節（使用應用程式 ID）"
+msgstr "顯示應用程式詳細資訊（使用應用程式 ID）"
 
-#: src/gs-application.c:125 src/gs-application.c:129
+#: src/gs-application.c:128 src/gs-application.c:132 src/gs-application.c:134
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:130
 msgid "Show application details (using package name)"
-msgstr "顯示應用程式細節（使用軟體包名稱）"
+msgstr "顯示應用程式詳細資訊（使用軟體包名稱）"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:130
 msgid "PKGNAME"
 msgstr "PKGNAME"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:132
 msgid "Install the application (using application ID)"
 msgstr "安裝應用程式（使用應用程式 ID）"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:134
+msgid "Uninstall the application (using application ID)"
+msgstr "解除安裝應用程式（使用應用程式 ID）"
+
+#: src/gs-application.c:136
 msgid "Open a local package file"
 msgstr "開啟本機軟體包檔案"
 
-#: src/gs-application.c:131 src/gs-application.c:136
+#: src/gs-application.c:136 src/gs-application.c:141
 msgid "FILENAME"
 msgstr "FILENAME"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:138
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
-"這個動作預期的互動種類：可以是「none」(沒有)、「notify」(通知)或「full」(完"
-"整)"
+"這個動作預期的互動種類：可以是「none」（沒有）、「notify」（通知）或「full」"
+"（完整）"
 
-#: src/gs-application.c:136
+#: src/gs-application.c:141
 msgid "Show a local metainfo or appdata file"
 msgstr "顯示本機中介資料或 appdata 檔案"
 
-#: src/gs-application.c:138
+#: src/gs-application.c:143
 msgid "Show verbose debugging information"
-msgstr "詳細顯示除錯用訊息"
+msgstr "顯示詳細除錯資訊"
 
-#: src/gs-application.c:140
+#: src/gs-application.c:145
 msgid "Installs any pending updates in the background"
 msgstr "在背景安裝任何待處置的更新"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:147
 msgid "Show update preferences"
-msgstr "顯示更新偏好設定"
+msgstr "顯示更新的偏好設定"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:149
 msgid "Quit the running instance"
 msgstr "退出執行中的實體"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:151
 msgid "Prefer local file sources to AppStream"
-msgstr "AppStream 偏好使用本地端檔案來源"
+msgstr "《AppStream》優先使用本機的檔案來源"
 
-#: src/gs-application.c:148
+#: src/gs-application.c:153
 msgid "Show version number"
 msgstr "顯示版本號碼"
 
-#: src/gs-application.c:241
+#: src/gs-application.c:261 src/gs-application.c:269
 msgid "Copyright © 2016–2022 GNOME Software contributors"
-msgstr "Copyright © 2016–2022 GNOME Software 貢獻者"
+msgstr "Copyright © 2016–2022 GNOME《軟體》貢獻者"
 
-#: src/gs-application.c:244
+#: src/gs-application.c:263 src/gs-application.c:272
 msgid "translator-credits"
 msgstr ""
 "Cheng-Chia Tseng <pswo10680@gmail.com>, 2013-2020, 2022.\n"
-"Yi-Jyun Pan <pan93412@gmail.com>, 2020."
+"Yi-Jyun Pan <pan93412@gmail.com>, 2020.\n"
+"Freddy Cheng <freddy4212@gmail.com>, 2022."
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:257 src/gs-shell.c:2149
+#: src/gs-application.c:277 src/gs-shell.c:2149
 msgid "About Software"
-msgstr "關於《軟體》"
+msgstr "關於軟體"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:260
+#: src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "管理系統軟體的絕佳方式。"
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:449
+#: src/gs-application.c:468
 msgid "Sorry! There are no details for that application."
 msgstr "抱歉！沒有該應用程式的詳細資訊。"
 
 #. Translators: The disk usage of an application when installed.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:155 src/gs-storage-context-dialog.c:128
+#: src/gs-app-context-bar.c:162 src/gs-storage-context-dialog.c:133
 msgid "Installed Size"
-msgstr "安裝後大小"
+msgstr "安裝大小"
 
-#: src/gs-app-context-bar.c:158
+#: src/gs-app-context-bar.c:165
 #, c-format
 msgid "Includes %s of data and %s of cache"
 msgstr "包括 %s 的資料與 %s 的快取"
 
-#: src/gs-app-context-bar.c:161
+#: src/gs-app-context-bar.c:168
 #, c-format
 msgid "Includes %s of data"
 msgstr "包括 %s 的資料"
 
-#: src/gs-app-context-bar.c:164
+#: src/gs-app-context-bar.c:171
 #, c-format
 msgid "Includes %s of cache"
 msgstr "包括 %s 的快取"
 
-#: src/gs-app-context-bar.c:167
+#: src/gs-app-context-bar.c:174
 msgid "Cache and data usage unknown"
-msgstr "快取與資料用量未知"
+msgstr "快取與資料使用量未知"
 
 #. Translators: The download size of an application.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:176 src/gs-storage-context-dialog.c:156
+#: src/gs-app-context-bar.c:187 src/gs-storage-context-dialog.c:165
 msgid "Download Size"
 msgstr "下載大小"
 
-#: src/gs-app-context-bar.c:179
+#: src/gs-app-context-bar.c:191
 msgid "Needs no additional system downloads"
-msgstr "不需要額外系統下載"
+msgstr "無需額外的下載"
 
-#: src/gs-app-context-bar.c:181
+#: src/gs-app-context-bar.c:193
 msgid "Needs an unknown size of additional system downloads"
-msgstr "需要未知大小的額外系統下載"
+msgstr "需要未知大小的額外下載"
 
 #. Translators: The placeholder is for a size string,
 #. * such as ‘150 MB’ or ‘1.5 GB’.
-#: src/gs-app-context-bar.c:186
+#: src/gs-app-context-bar.c:198
 #, c-format
 msgid "Needs %s of additional system downloads"
-msgstr "需要 %s 的額外系統下載"
+msgstr "需要 %s 的額外下載"
 
 #. Translators: Displayed if the download or installed size of
 #. * an app could not be determined.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:200
+#: src/gs-app-context-bar.c:212
 msgid "Size is unknown"
-msgstr "大小未知"
+msgstr "未知大小"
 
 #. Translators: This indicates an app requires no permissions to run.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:264
+#: src/gs-app-context-bar.c:282
 msgid "No permissions"
 msgstr "沒有取用權"
 
 #. Translators: This indicates an app uses the network.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:275
+#: src/gs-app-context-bar.c:293
 msgid "Has network access"
-msgstr "有網路存取權"
+msgstr "可以取用網路"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:282
+#: src/gs-app-context-bar.c:300
 msgid "Uses system services"
 msgstr "使用系統服務"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:289
+#: src/gs-app-context-bar.c:307
 msgid "Uses session services"
 msgstr "使用作業階段服務"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:296
+#: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
-msgstr "可以存取硬體裝置"
+msgstr "可以取用硬體裝置"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:308
+#: src/gs-app-context-bar.c:326
 msgid "Can read/write all your data"
 msgstr "可以讀取/寫入所有您的資料"
 
 #. Translators: This indicates an app can read (but not write) from the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:320
+#: src/gs-app-context-bar.c:338
 msgid "Can read all your data"
-msgstr "可以讀取所有您的資料"
+msgstr "可以讀取您的所有資料"
 
 #. Translators: This indicates an app can read/write to the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:327
+#: src/gs-app-context-bar.c:345
 msgid "Can read/write your downloads"
-msgstr "可以讀取/寫入您的下載"
+msgstr "可以讀取/寫入您的下載目錄"
 
 #. Translators: This indicates an app can read (but not write) from the user’s Downloads directory.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:334
+#: src/gs-app-context-bar.c:352
 msgid "Can read your downloads"
-msgstr "可以讀取您的下載"
+msgstr "可以讀取您的下載目錄"
+
+#. Translators: This indicates an app can access data in the system unknown to the Software.
+#. * It’s used in a context tile, so should be short.
+#: src/gs-app-context-bar.c:359
+msgid "Can access arbitrary files"
+msgstr "可以取用任意檔案"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:348 src/gs-safety-context-dialog.c:218
+#: src/gs-app-context-bar.c:366 src/gs-safety-context-dialog.c:227
 msgid "Can access and change user settings"
-msgstr "可以存取並變更使用者設定"
+msgstr "可以取用並更改使用者設定"
 
 #. Translators: This indicates an app uses the X11 windowing system.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:355 src/gs-safety-context-dialog.c:202
+#: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
 msgstr "使用舊式視窗顯示系統"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:362 src/gs-safety-context-dialog.c:210
+#: src/gs-app-context-bar.c:380 src/gs-safety-context-dialog.c:219
 msgid "Can acquire arbitrary permissions"
-msgstr "可以獲得任意取用權"
+msgstr "可以擁有任意取用權"
 
 #. Translators: This indicates that an application has been packaged
 #. * by the user’s distribution and is safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:388 src/gs-safety-context-dialog.c:143
+#: src/gs-app-context-bar.c:406 src/gs-safety-context-dialog.c:146
 msgid "Reviewed by your distribution"
-msgstr "經您的散布版檢閱過"
+msgstr "已由您的散布版檢閱過"
 
 #. Translators: This indicates that an application has been packaged
 #. * by someone other than the user’s distribution, so might not be safe.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:395 src/gs-safety-context-dialog.c:140
+#: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
 msgstr "由第三方提供"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:407
+#: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
-msgstr "專有授權程式碼"
+msgstr "專有授權原始碼"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:413
+#: src/gs-app-context-bar.c:431
 msgid "Auditable code"
-msgstr "可稽核的程式碼"
+msgstr "可稽核原始碼"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:420
+#: src/gs-app-context-bar.c:438
 msgid "Software developer is verified"
 msgstr "軟體開發者已通過核驗"
 
 #. Translators: This indicates an app or its runtime reached its end of life.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-app-context-bar.c:429
+#: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
-msgstr "軟體不再支援"
+msgstr "不再支援的軟體"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1224,123 +1227,123 @@ msgstr "軟體不再支援"
 #. * If concatenating strings as a list using a separator like this is not
 #. * possible in your language, please file an issue against gnome-software:
 #. * https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new
-#: src/gs-app-context-bar.c:441 src/gs-app-context-bar.c:702
+#: src/gs-app-context-bar.c:459 src/gs-app-context-bar.c:730
 msgid "; "
 msgstr "；"
 
 #. Translators: The app is considered safe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:449
+#: src/gs-app-context-bar.c:467
 msgid "Safe"
 msgstr "安全"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:456
+#: src/gs-app-context-bar.c:474
 msgid "Potentially Unsafe"
-msgstr "潛在不安全"
+msgstr "可能不安全"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * This is displayed in a context tile, so the string should be short.
-#: src/gs-app-context-bar.c:463
+#: src/gs-app-context-bar.c:481
 msgid "Unsafe"
 msgstr "不安全"
 
-#: src/gs-app-context-bar.c:542 src/gs-app-context-bar.c:574
-#: src/gs-hardware-support-context-dialog.c:588
+#: src/gs-app-context-bar.c:560 src/gs-app-context-bar.c:592
+#: src/gs-hardware-support-context-dialog.c:603
 msgid "Mobile Only"
-msgstr "僅行動裝置"
+msgstr "僅適用於行動裝置"
 
-#: src/gs-app-context-bar.c:543
+#: src/gs-app-context-bar.c:561
 msgid "Only works on a small screen"
 msgstr "僅能在小螢幕上運作"
 
-#: src/gs-app-context-bar.c:548 src/gs-app-context-bar.c:581
-#: src/gs-app-context-bar.c:588 src/gs-app-context-bar.c:628
-#: src/gs-app-context-bar.c:633 src/gs-hardware-support-context-dialog.c:568
+#: src/gs-app-context-bar.c:566 src/gs-app-context-bar.c:599
+#: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
+#: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
-msgstr "僅桌面型電腦"
+msgstr "僅適用於桌面環境"
 
-#: src/gs-app-context-bar.c:549
+#: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
 msgstr "僅能在大螢幕上運作"
 
-#: src/gs-app-context-bar.c:553 src/gs-hardware-support-context-dialog.c:606
+#: src/gs-app-context-bar.c:571 src/gs-hardware-support-context-dialog.c:621
 msgid "Screen Size Mismatch"
-msgstr "螢幕大小不符"
+msgstr "螢幕大小不相符"
 
-#: src/gs-app-context-bar.c:554 src/gs-hardware-support-context-dialog.c:607
+#: src/gs-app-context-bar.c:572 src/gs-hardware-support-context-dialog.c:622
 msgid "Doesn’t support your current screen size"
-msgstr "不支援您目前的螢幕大小"
+msgstr "不支援目前的螢幕大小"
 
-#: src/gs-app-context-bar.c:575 src/gs-hardware-support-context-dialog.c:659
-#: src/gs-hardware-support-context-dialog.c:665
+#: src/gs-app-context-bar.c:593 src/gs-hardware-support-context-dialog.c:674
+#: src/gs-hardware-support-context-dialog.c:680
 msgid "Requires a touchscreen"
 msgstr "需要觸控板"
 
-#: src/gs-app-context-bar.c:582 src/gs-hardware-support-context-dialog.c:619
-#: src/gs-hardware-support-context-dialog.c:625
+#: src/gs-app-context-bar.c:600 src/gs-hardware-support-context-dialog.c:634
+#: src/gs-hardware-support-context-dialog.c:640
 msgid "Requires a keyboard"
 msgstr "需要鍵盤"
 
-#: src/gs-app-context-bar.c:589
+#: src/gs-app-context-bar.c:607
 msgid "Requires a mouse"
 msgstr "需要滑鼠"
 
-#: src/gs-app-context-bar.c:600
+#: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
-msgstr "需要遊戲控制器"
+msgstr "需要遊戲手把"
 
-#: src/gs-app-context-bar.c:601
+#: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
-msgstr "需要可以玩的遊戲控制器"
+msgstr "需要遊戲手把才能玩"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
 #. * short and in title case.
-#: src/gs-app-context-bar.c:615
+#: src/gs-app-context-bar.c:643
 msgid "Adaptive"
 msgstr "適應性"
 
-#: src/gs-app-context-bar.c:616
+#: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
-msgstr "可在手機、平板、桌面上運作"
+msgstr "可運作於手機、平板及桌面環境"
 
-#: src/gs-app-context-bar.c:629
+#: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
 msgstr "可能需要鍵盤或滑鼠"
 
-#: src/gs-app-context-bar.c:634
+#: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
-msgstr "可以在桌面電腦與筆電上運作"
+msgstr "可運作於桌上型與筆記型電腦"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
 #. * no objectionable content.
-#: src/gs-app-context-bar.c:677
+#: src/gs-app-context-bar.c:705
 msgid "Contains no age-inappropriate content"
-msgstr "不含年齡不適當內容"
+msgstr "不含不適齡內容"
 
-#: src/gs-app-context-bar.c:726
+#: src/gs-app-context-bar.c:753
 msgid "No age rating information available"
-msgstr "沒有年齡分級資訊"
+msgstr "無年齡分級資訊"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:147
+#: src/gs-app-row.c:153
 msgid "Visit Website"
 msgstr "造訪網站"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:153
+#: src/gs-app-row.c:159
 msgid "Install…"
 msgstr "安裝…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:161 src/gs-updates-section.ui:62
+#: src/gs-app-row.c:167 src/gs-updates-section.ui:62
 msgid "Cancel"
 msgstr "取消"
 
@@ -1348,13 +1351,13 @@ msgstr "取消"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:169 src/gs-common.c:341 src/gs-page.c:366
+#: src/gs-app-row.c:175 src/gs-common.c:286 src/gs-page.c:374
 msgid "Install"
 msgstr "安裝"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:183
 msgid "Update"
 msgstr "更新"
 
@@ -1362,40 +1365,40 @@ msgstr "更新"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:182 src/gs-app-row.c:192 src/gs-details-page.ui:273
-#: src/gs-page.c:525
+#: src/gs-app-row.c:188 src/gs-app-row.c:198 src/gs-details-page.ui:281
+#: src/gs-page.c:549
 msgid "Uninstall"
 msgstr "解除安裝"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-row.c:206
+#: src/gs-app-row.c:212
 msgid "Uninstalling"
 msgstr "正在解除安裝"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:316
+#: src/gs-app-row.c:327
 msgid "Device cannot be used during update."
 msgstr "更新過程中不能使用裝置。"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:326 src/gs-shell-search-provider.c:264
+#: src/gs-app-row.c:337 src/gs-shell-search-provider.c:264
 #, c-format
 msgid "Source: %s"
 msgstr "來源：%s"
 
 #. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
-#: src/gs-app-row.c:512
+#: src/gs-app-row.c:523
 #, c-format
 msgid "Renamed from %s"
-msgstr "由 %s 改名"
+msgstr "由《%s》改名而來"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:67
 #, c-format
 msgid "Help Translate %s"
-msgstr "協助翻譯 %s"
+msgstr "協助翻譯《%s》"
 
 #. Translators: The placeholder is an application name
 #: src/gs-app-translation-dialog.c:70
@@ -1407,12 +1410,15 @@ msgid ""
 "This means that while it’s not yet available in your language, you can get "
 "involved and help translate it yourself."
 msgstr ""
+"《%s》是由世界各地的社群志願者所設計、開發、翻譯的。\n"
+"\n"
+"意味著即便該軟體並未提供您所使用的語言，您仍舊可以參與其中並協助翻譯。"
 
 #: src/gs-app-translation-dialog.ui:5
 msgid "Translations"
 msgstr "翻譯"
 
-#: src/gs-app-translation-dialog.ui:99
+#: src/gs-app-translation-dialog.ui:92
 msgid "_Translation Website"
 msgstr "翻譯網站(_T)"
 
@@ -1420,14 +1426,14 @@ msgstr "翻譯網站(_T)"
 #: src/gs-basic-auth-dialog.c:82
 #, c-format
 msgid "Login required remote %s (realm %s)"
-msgstr "登入需要遠端 %s (領域 %s)"
+msgstr "需登入遠端「%s」（領域 %s）"
 
 #: src/gs-basic-auth-dialog.ui:13
 msgid "Login Required"
-msgstr "需要登入"
+msgstr "登入請求"
 
-#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:667
-#: src/gs-details-page.ui:286 src/gs-removal-dialog.ui:17
+#: src/gs-basic-auth-dialog.ui:21 src/gs-common.c:612
+#: src/gs-details-page.ui:294 src/gs-removal-dialog.ui:17
 #: src/gs-review-dialog.ui:18
 msgid "_Cancel"
 msgstr "取消(_C)"
@@ -1450,36 +1456,48 @@ msgstr "密碼(_P)"
 msgid "Other"
 msgstr "其他"
 
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: lib/gs-category.c:214
+msgctxt "Category"
+msgid "All"
+msgstr "全部"
+
 #. TRANSLATORS: this is a subcategory of featured apps
 #: lib/gs-category.c:218
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #. Heading for featured apps on a category page
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: src/gs-category-page.ui:41 src/gs-overview-page.ui:110
+#: src/gs-category-page.ui:41 src/gs-overview-page.ui:106
 msgid "Editor’s Choice"
 msgstr "編輯精選"
 
 #. Heading for recently updated apps on a category page
 #. Translators: This is a heading for software which has been recently released upstream.
-#: src/gs-category-page.ui:69 src/gs-overview-page.ui:133
+#: src/gs-category-page.ui:69 src/gs-overview-page.ui:129
 msgid "New & Updated"
-msgstr "新增與更新"
+msgstr "新上架與近期更新"
+
+#. Heading for web apps on a category page
+#: src/gs-category-page.ui:97
+msgid "Picks from the Web"
+msgstr "網路應用程式"
 
 #. Heading for the rest of the apps on a category page
-#: src/gs-category-page.ui:97
+#: src/gs-category-page.ui:125
 msgid "Other Software"
-msgstr "其他軟體"
+msgstr "其他"
 
 #. TRANSLATORS: the user isn't reading the question
 #: lib/gs-cmd.c:194
 #, c-format
 msgid "Please enter a number from 1 to %u: "
-msgstr "請輸入 1 到 %u 間的數字："
+msgstr "請輸入 1 至 %u 間的數字："
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:258
+#: lib/gs-cmd.c:266
 msgid "Choose an application:"
 msgstr "選擇應用程式："
 
@@ -1491,7 +1509,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:20
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:24
 msgctxt "Menu of Graphics & Photography"
@@ -1536,7 +1554,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:58
 msgctxt "Menu of Productivity"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:62
 msgctxt "Menu of Productivity"
@@ -1576,7 +1594,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:90
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:93
 msgctxt "Menu of Games"
@@ -1646,7 +1664,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:137
 msgctxt "Menu of Communication & News"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:140
 msgctxt "Menu of Communication & News"
@@ -1661,7 +1679,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:158
 msgctxt "Menu of Education & Science"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:163
 msgctxt "Menu of Education & Science"
@@ -1751,7 +1769,7 @@ msgstr "全部"
 #: lib/gs-desktop-data.c:226
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
-msgstr "特選"
+msgstr "特別推薦"
 
 #: lib/gs-desktop-data.c:229
 msgctxt "Menu of Developer Tools"
@@ -1796,7 +1814,7 @@ msgstr "在地化"
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:285
 msgid "Create"
-msgstr "製作"
+msgstr "創作"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:287
@@ -1806,7 +1824,7 @@ msgstr "工作"
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:289
 msgid "Play"
-msgstr "播放"
+msgstr "遊玩"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:291
@@ -1857,244 +1875,254 @@ msgstr "在地化"
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:130 src/gs-common.c:153
+#: src/gs-common.c:68 src/gs-common.c:91
 #, c-format
 msgid "%s is now installed"
-msgstr "%s 現在已安裝"
+msgstr "已安裝《%s》"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:134 src/gs-common.c:157
+#: src/gs-common.c:72 src/gs-common.c:95
 msgid "A restart is required for the changes to take effect."
-msgstr "必須重新啟動才能讓改變生效。"
+msgstr "需要重新啟動才能使更動生效。"
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:138
+#: src/gs-common.c:76
 msgid "Application is ready to be used."
-msgstr "應用程式已經準備好可供使用。"
+msgstr "應用程式已可使用。"
 
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:146
+#: src/gs-common.c:84
 msgid "System updates are now installed"
-msgstr "系統更新現在已安裝"
+msgstr "系統更新已安裝"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:149
+#: src/gs-common.c:87
 msgid "Recently installed updates are available to review"
-msgstr "最近安裝的更新可供評論"
+msgstr "可以查看近期所安裝的更新"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:168 src/gs-common.c:830
+#: src/gs-common.c:106 src/gs-common.c:775
 msgid "Restart"
 msgstr "重新啟動"
 
-#: src/gs-common.c:174
+#: src/gs-common.c:112
 msgid "Launch"
 msgstr "啟動"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:275
+#: src/gs-common.c:218
 msgid "Install Third-Party Software?"
-msgstr "是否安裝第三方軟體？"
+msgstr "要安裝第三方軟體嗎？"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:279 src/gs-repos-dialog.c:165
+#: src/gs-common.c:222 src/gs-repos-dialog.c:168
 msgid "Enable Third-Party Software Repository?"
-msgstr "啟用第三方軟體庫？"
+msgstr "要啟用第三方軟體庫嗎？"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:295
+#: src/gs-common.c:240
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
 "source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
-"%s 並不是 <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
-"source_software\">自由與開源軟體</a>，此外它是由「%s」提供。"
+"《%s》並非 <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">自由及開源軟體</a>，由「%s」提供。"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:305
+#: src/gs-common.c:250
 #, c-format
 msgid "%s is provided by “%s”."
-msgstr "%s 是由「%s」提供。"
+msgstr "《%s》由「%s」提供。"
 
-#: src/gs-common.c:314
+#: src/gs-common.c:259
 msgid "This software repository must be enabled to continue installation."
-msgstr "必須啟用這個軟體庫才能繼續安裝。"
+msgstr "需啟用該軟體庫才能繼續安裝。"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:324
+#: src/gs-common.c:269
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
-msgstr "在某些國家安裝或使用 %s 可能是違法的。"
+msgstr "在某些國家安裝或使用《%s》可能是違法的。"
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:330
+#: src/gs-common.c:275
 msgid "It may be illegal to install or use this codec in some countries."
-msgstr "在某些國家安裝或使用這個編解碼器可能是違法的。"
+msgstr "在某些國家安裝或使用該編解碼器可能是違法的。"
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:337
+#: src/gs-common.c:282
 msgid "Don’t Warn Again"
-msgstr "不要再警告我"
+msgstr "不再警告"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:346
+#: src/gs-common.c:291
 msgid "Enable and Install"
 msgstr "啟用並安裝"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:548
+#: src/gs-common.c:493
 msgid "Detailed errors from the package manager follow:"
-msgstr "軟體包管理員的詳細錯誤資訊如下："
+msgstr "軟體包管理器的詳細錯誤資訊如下："
 
-#: src/gs-common.c:564 src/gs-safety-context-dialog.ui:79
+#: src/gs-common.c:509 src/gs-safety-context-dialog.ui:72
 msgid "Details"
-msgstr "細節"
+msgstr "詳細資訊"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
-#: src/gs-common.c:655
+#: src/gs-common.c:600
 msgid "_Accept"
 msgstr "接受(_A)"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:805
+#: src/gs-common.c:750
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
-msgstr[0] "更新已安裝"
+msgstr[0] "已安裝更新"
 
 #. TRANSLATORS: we've just removed some apps
-#: src/gs-common.c:815
+#: src/gs-common.c:760
 msgid "An application has been removed"
 msgid_plural "Applications have been removed"
-msgstr[0] "應用程式已移除"
+msgstr[0] "已移除應用程式"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:821
+#: src/gs-common.c:766
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
-msgstr[0] "必須重新啟動才能讓改變生效。"
+msgstr[0] "需重新啟動才能使更動生效。"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:828
+#: src/gs-common.c:773
 msgid "Not Now"
-msgstr "現在不是時候"
+msgstr "現在不要"
 
 #. TRANSLATORS: something happened less than 5 minutes ago
-#: src/gs-common.c:920
+#: src/gs-common.c:869
 msgid "Just now"
 msgstr "就在剛才"
 
-#: src/gs-common.c:922
+#: src/gs-common.c:871
 #, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d 分鐘前"
 
-#: src/gs-common.c:926
+#: src/gs-common.c:875
 #, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d 小時前"
 
-#: src/gs-common.c:930
+#: src/gs-common.c:879
 #, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
-msgstr[0] "%d 日前"
+msgstr[0] "%d 天前"
 
-#: src/gs-common.c:934
+#: src/gs-common.c:883
 #, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d 週前"
 
-#: src/gs-common.c:938
+#: src/gs-common.c:887
 #, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
-msgstr[0] "%d 月前"
+msgstr[0] "%d 個月前"
 
-#: src/gs-common.c:942
+#: src/gs-common.c:891
 #, c-format
 msgid "%d year ago"
 msgid_plural "%d years ago"
 msgstr[0] "%d 年前"
 
+#. Translators: This is to construct a disk size string consisting of the value and its unit, while
+#. * the unit is drawn with a smaller font. If you need to flip the order, then you can use "%2$s %1$s".
+#. * Make sure you'll preserve the no break space between the values.
+#. * Example result: "13.0 MB"
+#: src/gs-common.c:1255
+#, c-format
+msgctxt "format-size"
+msgid "%s %s"
+msgstr "%s %s"
+
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: src/gs-dbus-helper.c:283
+#: src/gs-dbus-helper.c:291
 msgid "An application"
 msgstr "應用程式"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: src/gs-dbus-helper.c:289
+#: src/gs-dbus-helper.c:297
 #, c-format
 msgid "%s is requesting additional file format support."
-msgstr "%s 要求額外的檔案格式支援。"
+msgstr "《%s》要求額外的檔案格式支援。"
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:291
+#: src/gs-dbus-helper.c:299
 msgid "Additional MIME Types Required"
 msgstr "需要額外的 MIME 類型"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: src/gs-dbus-helper.c:295
+#: src/gs-dbus-helper.c:303
 #, c-format
 msgid "%s is requesting additional fonts."
-msgstr "%s 正在要求額外的字型。"
+msgstr "《%s》要求額外的字型。"
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:297
+#: src/gs-dbus-helper.c:305
 msgid "Additional Fonts Required"
 msgstr "需要額外的字型"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: src/gs-dbus-helper.c:301
+#: src/gs-dbus-helper.c:309
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
-msgstr "%s 要求額外的多媒體編解碼器支援。"
+msgstr "《%s》要求額外的多媒體編解碼器支援。"
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:303
+#: src/gs-dbus-helper.c:311
 msgid "Additional Multimedia Codecs Required"
 msgstr "需要額外的多媒體編解碼器"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: src/gs-dbus-helper.c:307
+#: src/gs-dbus-helper.c:315
 #, c-format
 msgid "%s is requesting additional printer drivers."
-msgstr "%s 要求額外的印表機驅動程式支援。"
+msgstr "《%s》要求額外的印表機驅動程式支援。"
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:309
+#: src/gs-dbus-helper.c:317
 msgid "Additional Printer Drivers Required"
 msgstr "需要額外的印表機驅動程式"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: src/gs-dbus-helper.c:313
+#: src/gs-dbus-helper.c:321
 #, c-format
 msgid "%s is requesting additional packages."
-msgstr "%s 要求額外的軟體包。"
+msgstr "《%s》要求額外的軟體包。"
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:315
+#: src/gs-dbus-helper.c:323
 msgid "Additional Packages Required"
 msgstr "需要額外的軟體包"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:324
+#: src/gs-dbus-helper.c:332
 msgid "Find in Software"
-msgstr "在軟體中尋找"
+msgstr "在《軟體》中尋找"
 
 #: src/gs-description-box.c:67 src/gs-description-box.c:269
 msgid "_Show More"
@@ -2102,39 +2130,39 @@ msgstr "顯示更多(_S)"
 
 #: src/gs-description-box.c:67
 msgid "_Show Less"
-msgstr "顯示更少(_S)"
+msgstr "顯示較少(_S)"
 
-#: src/gs-details-page.c:334
+#: src/gs-details-page.c:357
 msgid "Removing…"
-msgstr "移除中…"
+msgstr "正在移除…"
 
-#: src/gs-details-page.c:344
+#: src/gs-details-page.c:367
 msgid "Requires restart to finish install"
-msgstr "必須重新啟動才能完成安裝"
+msgstr "需重新啟動以完成安裝"
 
-#: src/gs-details-page.c:351
+#: src/gs-details-page.c:374
 msgid "Requires restart to finish remove"
-msgstr "必須重新啟動才能完成移除"
+msgstr "需重新啟動以完成移除"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:368
+#: src/gs-details-page.c:391
 msgid "Pending installation…"
 msgstr "安裝待處置…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:375
+#: src/gs-details-page.c:398
 msgid "Pending update…"
 msgstr "更新待處置…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:391
+#: src/gs-details-page.c:414
 msgid "Preparing…"
-msgstr "準備中…"
+msgstr "正在準備…"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:394
+#: src/gs-details-page.c:417
 msgid "Uninstalling…"
 msgstr "正在解除安裝…"
 
@@ -2142,12 +2170,12 @@ msgstr "正在解除安裝…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:813 src/gs-details-page.c:839
-#: src/gs-details-page.ui:220 plugins/packagekit/gs-packagekit-task.c:148
+#: src/gs-details-page.c:860 src/gs-details-page.c:886
+#: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "安裝(_I)"
 
-#: src/gs-details-page.c:829
+#: src/gs-details-page.c:876
 msgid "_Restart"
 msgstr "重新啟動(_R)"
 
@@ -2155,143 +2183,149 @@ msgstr "重新啟動(_R)"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:853
+#: src/gs-details-page.c:900
 msgid "_Install…"
 msgstr "安裝(_I)…"
 
-#. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1389
-msgid "You need internet access to write a review"
-msgstr "您需要網際網路存取才能寫評論"
+#. Translators: the '%s' is replaced with a developer name or a project group
+#: src/gs-details-page.c:1177
+#, c-format
+msgid "Other Apps by %s"
+msgstr "「%s」開發的其他應用程式"
 
-#: src/gs-details-page.c:1537 src/gs-details-page.c:1553
+#. TRANSLATORS: we need a remote server to process
+#: src/gs-details-page.c:1560
+msgid "You need internet access to write a review"
+msgstr "需連接網際網路才能撰寫評論"
+
+#: src/gs-details-page.c:1711 src/gs-details-page.c:1727
 #, c-format
 msgid "Unable to find “%s”"
-msgstr "找不到「%s」"
+msgstr "找不到《%s》"
 
 #: src/gs-details-page.ui:7
 msgid "Details page"
-msgstr "細節頁面"
+msgstr "詳細資訊頁面"
 
 #: src/gs-details-page.ui:39
 msgid "Loading application details…"
-msgstr "載入應用程式細節中…"
+msgstr "正在載入應用程式的詳細資訊…"
 
 #: src/gs-details-page.ui:77
 msgid ""
 "This software is not available in your language and will appear in US "
 "English."
-msgstr "這個軟體沒有您使用的語言，將以美式英語呈現。"
+msgstr "該軟體並未提供您所使用的語言，將以美式英文顯示。"
 
 #: src/gs-details-page.ui:83
 msgid "Help _Translate"
 msgstr "協助翻譯(_T)"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.ui:236
+#: src/gs-details-page.ui:244
 msgid "_Open"
 msgstr "開啟(_O)"
 
-#: src/gs-details-page.ui:249 plugins/packagekit/gs-packagekit-task.c:158
+#: src/gs-details-page.ui:257 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
 msgstr "更新(_U)"
 
-#: src/gs-details-page.ui:311
+#: src/gs-details-page.ui:319
 msgid "Downloading"
-msgstr "下載中"
+msgstr "正在下載"
 
-#: src/gs-details-page.ui:398 src/gs-installed-page.ui:112
+#: src/gs-details-page.ui:456 src/gs-installed-page.ui:135
 msgid "Add-ons"
 msgstr "附加元件"
 
-#: src/gs-details-page.ui:409
+#: src/gs-details-page.ui:467
 msgid "Selected add-ons will be installed with the application."
-msgstr "選取的附加元件會隨該程式一併安裝。"
+msgstr "所選的附加元件會隨應用程式一併安裝。"
 
-#: src/gs-details-page.ui:509
+#: src/gs-details-page.ui:567
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
-msgstr "此類應用程式僅可在有網際網路連線時可以使用。"
+msgstr "該應用程式僅能在連接網際網路後使用。"
 
-#: src/gs-details-page.ui:529
+#: src/gs-details-page.ui:587
 msgid "Software Repository Included"
-msgstr "包含軟體庫"
+msgstr "附帶軟體庫"
 
-#: src/gs-details-page.ui:530
+#: src/gs-details-page.ui:588
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
-msgstr "此應用程式內含可提供更新、並存取其他軟體的軟體庫。"
+msgstr "該應用程式附帶能提供更新及其他軟體的軟體庫。"
 
-#: src/gs-details-page.ui:547
+#: src/gs-details-page.ui:605
 msgid "No Software Repository Included"
-msgstr "未包含軟體庫"
+msgstr "未附帶軟體庫"
 
-#: src/gs-details-page.ui:548
+#: src/gs-details-page.ui:606
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
-msgstr "此應用程式不含軟體庫。它不會有新版本更新。"
+msgstr "該應用程式並未附帶軟體庫，無法提供版本更新。"
 
-#: src/gs-details-page.ui:566
+#: src/gs-details-page.ui:624
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
-msgstr "此軟體已經由您的散布版提供，不應替換。"
+msgstr "該軟體由您的散布版提供，不應將其替換。"
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:583
+#: src/gs-details-page.ui:641
 msgid "Software Repository Identified"
-msgstr "已識明軟體庫"
+msgstr "已識別的軟體庫"
 
-#: src/gs-details-page.ui:584
+#: src/gs-details-page.ui:642
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
-msgstr "加入此軟體庫可讓您存取更多軟體與升級。"
+msgstr "加入該軟體庫便能取得額外的軟體與升級。"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:643
 msgid "Only use software repositories that you trust."
-msgstr "請務必只使用您信任的軟體庫。"
+msgstr "僅使用您所信任的軟體庫。"
 
-#: src/gs-details-page.ui:650
+#: src/gs-details-page.ui:708
 msgid "No Metadata"
 msgstr "沒有中介資料"
 
-#: src/gs-details-page.ui:659
+#: src/gs-details-page.ui:717
 msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
-msgstr "此軟體不提供任何連結至網站、程式碼儲存庫或議題追蹤器。"
+msgstr "該軟體不提供任何網站、原始碼儲存庫或議題追蹤器連結。"
 
-#: src/gs-details-page.ui:687
+#: src/gs-details-page.ui:745
 msgid "Project _Website"
 msgstr "專案網站(_W)"
 
-#: src/gs-details-page.ui:704
+#: src/gs-details-page.ui:762
 msgid "_Donate"
-msgstr "贊助(_D)"
+msgstr "捐款贊助(_D)"
 
-#: src/gs-details-page.ui:721
+#: src/gs-details-page.ui:779
 msgid "Contribute _Translations"
 msgstr "貢獻翻譯(_T)"
 
-#: src/gs-details-page.ui:738
+#: src/gs-details-page.ui:796
 msgid "_Report an Issue"
 msgstr "回報議題(_R)"
 
-#: src/gs-details-page.ui:755
+#: src/gs-details-page.ui:813
 msgid "_Help"
-msgstr "幫助(_H)"
+msgstr "求助資訊(_H)"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:844
+#: src/gs-details-page.ui:908
 msgid "_Write Review"
 msgstr "撰寫評論(_W)"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:881
+#: src/gs-details-page.ui:945
 msgid "All Reviews"
 msgstr "所有評論"
 
@@ -2301,172 +2335,174 @@ msgid "Downloading extra metadata files…"
 msgstr "下載額外的中介資料檔案中…"
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:141
+#: src/gs-extras-page.c:142
 msgid " and "
 msgstr " 與 "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:144
+#: src/gs-extras-page.c:145
 msgid ", "
 msgstr "、"
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:170
+#: src/gs-extras-page.c:171
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "%s 文書的可用字型"
+msgstr[0] "「%s」文書可用的字型"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:178
+#: src/gs-extras-page.c:179
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
-msgstr[0] "%s 有可用的軟體"
+msgstr[0] "「%s」可用的軟體"
 
-#: src/gs-extras-page.c:241
+#: src/gs-extras-page.c:242
 msgid "Requested software not found"
 msgstr "找不到要求的軟體"
 
-#: src/gs-extras-page.c:243
+#: src/gs-extras-page.c:244
 msgid "Failed to find requested software"
-msgstr "無法尋找要求的軟體"
+msgstr "無法找到要求的軟體"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:342
+#: src/gs-extras-page.c:343
 #, c-format
 msgid "%s not found"
-msgstr "找不到 %s"
+msgstr "找不到「%s」"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:346
+#: src/gs-extras-page.c:347
 msgid "on the website"
-msgstr "於網站"
+msgstr "網站"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:353
+#: src/gs-extras-page.c:354
 #, c-format
 msgid "No applications are available that provide the file %s."
-msgstr "沒有應用程式可開啟檔案 %s。"
+msgstr "沒有提供「%s」檔案的應用程式"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:357 src/gs-extras-page.c:368 src/gs-extras-page.c:379
+#: src/gs-extras-page.c:358 src/gs-extras-page.c:369 src/gs-extras-page.c:380
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
 "might be found %s."
-msgstr "%s 的相關資訊，以及該如何取得缺少的應用程式的選項可以在 %s 找到。"
+msgstr "「%s」的相關資訊，以及如何取得遺漏之應用程式的選項可於%s中找到。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:364 src/gs-extras-page.c:386
+#: src/gs-extras-page.c:365 src/gs-extras-page.c:387
 #, c-format
 msgid "No applications are available for %s support."
-msgstr "沒有應用程式可支援 %s。"
+msgstr "沒有應用程式支援「%s」。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:375
+#: src/gs-extras-page.c:376
 #, c-format
 msgid "%s is not available."
-msgstr "%s 無法使用。"
+msgstr "「%s」無法使用。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:390
+#: src/gs-extras-page.c:391
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
 "can support this format might be found %s."
-msgstr "%s 的相關資訊，以及該如何取得支援此格式的程式的選項可在 %s 找到。"
+msgstr ""
+"要瞭解「%s」的相關資訊及如何取得支援此格式之應用程式的選項可於%s中找到。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:397
+#: src/gs-extras-page.c:398
 #, c-format
 msgid "No fonts are available for the %s script support."
-msgstr "沒有可支援 %s 文書的字型。"
+msgstr "沒有「%s」文字系統可用的字型。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:401
+#: src/gs-extras-page.c:402
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
 "might be found %s."
-msgstr "%s 的相關資訊，以及該如何取得額外字型的選項可在 %s 找到。"
+msgstr "要瞭解「%s」的相關資訊及如何取得額外字型的選項可於%s中找到。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:408
+#: src/gs-extras-page.c:409
 #, c-format
 msgid "No addon codecs are available for the %s format."
-msgstr "沒有可用的 %s 格式附加編解碼器。"
+msgstr "沒有「%s」格式可用的附加編解碼器。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:412
+#: src/gs-extras-page.c:413
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format might be found %s."
 msgstr ""
-"%s 的相關資訊，以及該如何取得可播放這個格式的編解碼器的選項可在 %s 找到。"
+"要瞭解「%s」的相關資訊及如何取得可播放該格式之編解碼器的選項可於%s中找到。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:419
+#: src/gs-extras-page.c:420
 #, c-format
 msgid "No Plasma resources are available for %s support."
-msgstr "支援 %s 的 Plasma 資源無法使用。"
+msgstr "沒有「%s」可用的《Plasma》資源。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:423
+#: src/gs-extras-page.c:424
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
 "resources might be found %s."
-msgstr "%s 的相關資訊，以及該如何取得額外 Plasma 資源的選項可在 %s 找到。"
+msgstr ""
+"要瞭解「%s」的相關資訊及如何取得額外之《Plasma》資源的選項可於%s中找到。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:430
+#: src/gs-extras-page.c:431
 #, c-format
 msgid "No printer drivers are available for %s."
-msgstr "沒有 %s 的印表機驅動程式可用。"
+msgstr "沒有「%s」可用的印表機驅動程式。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:434
+#: src/gs-extras-page.c:435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
 "supports this printer might be found %s."
 msgstr ""
-"%s 的相關資訊，以及該如何取得支援這個印表機的驅動程式的選項可在 %s 找到。"
+"要瞭解「%s」的相關資訊及如何取得支援該印表機之驅動程式的選項可於%s中找到。"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:480
+#: src/gs-extras-page.c:481
 msgid "the documentation"
-msgstr "文件說明"
+msgstr "文件"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:486
+#: src/gs-extras-page.c:487
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural ""
 "Unable to find the %s requested by %s. Please see %s for more information."
-msgstr[0] "找不到 %2$s 所要求的 %1$s。請參閱 %3$s 瞭解更多資訊。"
+msgstr[0] "找不到《%2$s》所要求的「%1$s」。請參閱%3$s以深入瞭解資訊。"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:495
+#: src/gs-extras-page.c:496
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2474,19 +2510,19 @@ msgid ""
 msgid_plural ""
 "Unable to find the %s you were searching for. Please see %s for more "
 "information."
-msgstr[0] "找不到您所搜尋的 %s。請參閱 %s 瞭解更多資訊。"
+msgstr[0] "找不到您所搜尋的內容「%s」。請參閱%s深入瞭解資訊。"
 
-#: src/gs-extras-page.c:573 src/gs-extras-page.c:630 src/gs-extras-page.c:670
+#: src/gs-extras-page.c:574 src/gs-extras-page.c:631 src/gs-extras-page.c:671
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "找不到任何搜尋結果：%s"
 
-#: src/gs-extras-page.c:861
+#: src/gs-extras-page.c:874
 #, c-format
 msgid "%s file format"
-msgstr "%s 檔案格式"
+msgstr "「%s」檔案格式"
 
-#: src/gs-extras-page.c:1236
+#: src/gs-extras-page.c:1254
 msgid "Unable to Find Requested Software"
 msgstr "無法尋找要求的軟體"
 
@@ -2504,234 +2540,263 @@ msgstr "下一個"
 
 #: src/gs-featured-carousel.ui:83
 msgid "Featured Apps List"
-msgstr "特選程式列表"
+msgstr "特別推薦的應用程式列表"
 
-#: src/gs-hardware-support-context-dialog.c:562
-#: src/gs-hardware-support-context-dialog.c:571
+#: src/gs-hardware-support-context-dialog.c:577
+#: src/gs-hardware-support-context-dialog.c:586
 msgid "Desktop Support"
 msgstr "桌面支援"
 
-#: src/gs-hardware-support-context-dialog.c:563
-#: src/gs-hardware-support-context-dialog.c:572
+#: src/gs-hardware-support-context-dialog.c:578
+#: src/gs-hardware-support-context-dialog.c:587
 msgid "Supports being used on a large screen"
-msgstr "支援用於大螢幕"
+msgstr "支援在大螢幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:565
+#: src/gs-hardware-support-context-dialog.c:580
 msgid "Desktop Support Unknown"
-msgstr "桌面支援未知"
+msgstr "桌面支援狀況未知"
 
-#: src/gs-hardware-support-context-dialog.c:566
+#: src/gs-hardware-support-context-dialog.c:581
 msgid "Not enough information to know if large screens are supported"
-msgstr "資訊不足以知道是否支援大螢幕"
+msgstr "資訊不足，無法得知是否支援大螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:569
+#: src/gs-hardware-support-context-dialog.c:584
 msgid "Requires a large screen"
-msgstr "需要大螢幕"
+msgstr "需為大螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:574
+#: src/gs-hardware-support-context-dialog.c:589
 msgid "Desktop Not Supported"
-msgstr "桌面不支援"
+msgstr "不支援桌面"
 
-#: src/gs-hardware-support-context-dialog.c:575
+#: src/gs-hardware-support-context-dialog.c:590
 msgid "Cannot be used on a large screen"
-msgstr "無法用於大螢幕"
+msgstr "不適用於大螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:582
-#: src/gs-hardware-support-context-dialog.c:591
+#: src/gs-hardware-support-context-dialog.c:597
+#: src/gs-hardware-support-context-dialog.c:606
 msgid "Mobile Support"
 msgstr "行動裝置支援"
 
-#: src/gs-hardware-support-context-dialog.c:583
-#: src/gs-hardware-support-context-dialog.c:592
+#: src/gs-hardware-support-context-dialog.c:598
+#: src/gs-hardware-support-context-dialog.c:607
 msgid "Supports being used on a small screen"
-msgstr "支援用於小螢幕"
+msgstr "支援在小螢幕上使用"
 
-#: src/gs-hardware-support-context-dialog.c:585
+#: src/gs-hardware-support-context-dialog.c:600
 msgid "Mobile Support Unknown"
-msgstr "行動裝置支援未知"
+msgstr "行動裝置支援狀況未知"
 
-#: src/gs-hardware-support-context-dialog.c:586
+#: src/gs-hardware-support-context-dialog.c:601
 msgid "Not enough information to know if small screens are supported"
-msgstr "資訊不足以知道是否支援小螢幕"
+msgstr "資訊不足，無法得知是否支援小螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:589
+#: src/gs-hardware-support-context-dialog.c:604
 msgid "Requires a small screen"
-msgstr "需要有小螢幕"
+msgstr "需為小螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:594
+#: src/gs-hardware-support-context-dialog.c:609
 msgid "Mobile Not Supported"
-msgstr "行動裝置不支援"
+msgstr "不支援行動裝置"
 
-#: src/gs-hardware-support-context-dialog.c:595
+#: src/gs-hardware-support-context-dialog.c:610
 msgid "Cannot be used on a small screen"
-msgstr "無法用於小螢幕"
+msgstr "不適用於小螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:618
-#: src/gs-hardware-support-context-dialog.c:627
+#: src/gs-hardware-support-context-dialog.c:633
+#: src/gs-hardware-support-context-dialog.c:642
 msgid "Keyboard Support"
 msgstr "鍵盤支援"
 
-#: src/gs-hardware-support-context-dialog.c:621
+#: src/gs-hardware-support-context-dialog.c:636
 msgid "Keyboard Support Unknown"
-msgstr "鍵盤支援未知"
+msgstr "鍵盤支援狀況未知"
 
-#: src/gs-hardware-support-context-dialog.c:622
+#: src/gs-hardware-support-context-dialog.c:637
 msgid "Not enough information to know if keyboards are supported"
-msgstr "資訊不足以知道是否支援鍵盤"
+msgstr "資訊不足，無法得知是否支援鍵盤"
 
-#: src/gs-hardware-support-context-dialog.c:624
+#: src/gs-hardware-support-context-dialog.c:639
 msgid "Keyboard Required"
 msgstr "需要鍵盤"
 
-#: src/gs-hardware-support-context-dialog.c:628
+#: src/gs-hardware-support-context-dialog.c:643
 msgid "Supports keyboards"
 msgstr "支援鍵盤"
 
-#: src/gs-hardware-support-context-dialog.c:630
+#: src/gs-hardware-support-context-dialog.c:645
 msgid "Keyboard Not Supported"
-msgstr "鍵盤不支援"
+msgstr "不支援鍵盤"
 
-#: src/gs-hardware-support-context-dialog.c:631
+#: src/gs-hardware-support-context-dialog.c:646
 msgid "Cannot be used with a keyboard"
 msgstr "無法搭配鍵盤使用"
 
-#: src/gs-hardware-support-context-dialog.c:638
-#: src/gs-hardware-support-context-dialog.c:647
+#: src/gs-hardware-support-context-dialog.c:653
+#: src/gs-hardware-support-context-dialog.c:662
 msgid "Mouse Support"
 msgstr "滑鼠支援"
 
-#: src/gs-hardware-support-context-dialog.c:639
-#: src/gs-hardware-support-context-dialog.c:645
+#: src/gs-hardware-support-context-dialog.c:654
+#: src/gs-hardware-support-context-dialog.c:660
 msgid "Requires a mouse or pointing device"
 msgstr "需要滑鼠或指向裝置"
 
-#: src/gs-hardware-support-context-dialog.c:641
+#: src/gs-hardware-support-context-dialog.c:656
 msgid "Mouse Support Unknown"
-msgstr "滑鼠支援未知"
+msgstr "滑鼠支援狀況未知"
 
-#: src/gs-hardware-support-context-dialog.c:642
+#: src/gs-hardware-support-context-dialog.c:657
 msgid ""
 "Not enough information to know if mice or pointing devices are supported"
-msgstr "資訊不足以知道是否支援滑鼠或指向裝置"
+msgstr "資訊不足，無法得知是否支援滑鼠或指向裝置"
 
-#: src/gs-hardware-support-context-dialog.c:644
+#: src/gs-hardware-support-context-dialog.c:659
 msgid "Mouse Required"
 msgstr "需要滑鼠"
 
-#: src/gs-hardware-support-context-dialog.c:648
+#: src/gs-hardware-support-context-dialog.c:663
 msgid "Supports mice and pointing devices"
 msgstr "支援滑鼠與指向裝置"
 
-#: src/gs-hardware-support-context-dialog.c:650
+#: src/gs-hardware-support-context-dialog.c:665
 msgid "Mouse Not Supported"
-msgstr "滑鼠不支援"
+msgstr "不支援滑鼠"
 
-#: src/gs-hardware-support-context-dialog.c:651
+#: src/gs-hardware-support-context-dialog.c:666
 msgid "Cannot be used with a mouse or pointing device"
 msgstr "無法搭配滑鼠或指向裝置使用"
 
-#: src/gs-hardware-support-context-dialog.c:658
-#: src/gs-hardware-support-context-dialog.c:667
+#: src/gs-hardware-support-context-dialog.c:673
+#: src/gs-hardware-support-context-dialog.c:682
 msgid "Touchscreen Support"
 msgstr "觸控螢幕支援"
 
-#: src/gs-hardware-support-context-dialog.c:661
+#: src/gs-hardware-support-context-dialog.c:676
 msgid "Touchscreen Support Unknown"
-msgstr "觸控螢幕支援未知"
+msgstr "觸控螢幕支援狀況未知"
 
-#: src/gs-hardware-support-context-dialog.c:662
+#: src/gs-hardware-support-context-dialog.c:677
 msgid "Not enough information to know if touchscreens are supported"
-msgstr "資訊不足以知道是否支援觸控螢幕"
+msgstr "資訊不足，無法得知是否支援觸控螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:664
+#: src/gs-hardware-support-context-dialog.c:679
 msgid "Touchscreen Required"
 msgstr "需要觸控螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:668
+#: src/gs-hardware-support-context-dialog.c:683
 msgid "Supports touchscreens"
 msgstr "支援觸控螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:670
+#: src/gs-hardware-support-context-dialog.c:685
 msgid "Touchscreen Not Supported"
-msgstr "觸控螢幕不支援"
+msgstr "不支援觸控螢幕"
 
-#: src/gs-hardware-support-context-dialog.c:671
+#: src/gs-hardware-support-context-dialog.c:686
 msgid "Cannot be used with a touchscreen"
 msgstr "無法搭配觸控螢幕使用"
 
-#: src/gs-hardware-support-context-dialog.c:684
+#: src/gs-hardware-support-context-dialog.c:699
 msgid "Gamepad Required"
-msgstr "需要遊戲控制板"
+msgstr "需要遊戲手把"
 
-#: src/gs-hardware-support-context-dialog.c:685
+#: src/gs-hardware-support-context-dialog.c:700
 msgid "Requires a gamepad"
-msgstr "需要有遊戲控制板"
+msgstr "需要遊戲手把"
 
-#: src/gs-hardware-support-context-dialog.c:687
+#: src/gs-hardware-support-context-dialog.c:702
 msgid "Gamepad Support"
-msgstr "遊戲控制板支援"
+msgstr "遊戲手把支援"
 
-#: src/gs-hardware-support-context-dialog.c:688
+#: src/gs-hardware-support-context-dialog.c:703
 msgid "Supports gamepads"
-msgstr "支援遊戲控制板"
+msgstr "支援遊戲手把"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:697
+#: src/gs-hardware-support-context-dialog.c:712
 #, c-format
 msgid "%s probably works on this device"
-msgstr "%s 或許可以在此裝置上運作"
+msgstr "《%s》或許能運作於此裝置"
 
 #. Translators: The app will work on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:704
+#: src/gs-hardware-support-context-dialog.c:719
 #, c-format
 msgid "%s works on this device"
-msgstr "%s 能在此裝置上運作"
+msgstr "《%s》能運作於此裝置"
 
 #. Translators: The app may not work fully on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:711
+#: src/gs-hardware-support-context-dialog.c:726
 #, c-format
 msgid "%s will not work properly on this device"
-msgstr "%s 無法在此裝置上適當運作"
+msgstr "《%s》無法正常運作於此裝置"
 
 #. Translators: The app will not work properly on the current hardware.
 #. * The placeholder is the app name.
-#: src/gs-hardware-support-context-dialog.c:718
+#: src/gs-hardware-support-context-dialog.c:733
 #, c-format
 msgid "%s will not work on this device"
-msgstr "%s 無法在此裝置上運作"
+msgstr "《%s》無法運作於此裝置"
 
 #. Translators: This is the title of the dialog which contains information about the hardware support/requirements of an app
 #: src/gs-hardware-support-context-dialog.ui:5
 msgid "Hardware Support"
 msgstr "硬體支援"
 
+#. Translators: This is in the context of a list of apps which are installed on the system.
+#. Translators: A label for a button to show only software which is already installed.
+#: src/gs-installed-page.c:812 src/gs-shell.ui:307
+msgctxt "List of installed apps"
+msgid "Installed"
+msgstr "已安裝"
+
 #: src/gs-installed-page.ui:6
 msgid "Installed page"
-msgstr "已安裝頁"
+msgstr "已安裝頁面"
 
-#: src/gs-installed-page.ui:52
+#: src/gs-installed-page.ui:55
 msgid "In Progress"
-msgstr "進行中"
+msgstr "正在進行"
 
 #. origin_ui on a remote is the repo dialogue section name,
 #. * not the remote title
-#: src/gs-installed-page.ui:72 plugins/flatpak/gs-flatpak-utils.c:107
+#: src/gs-installed-page.ui:75 plugins/flatpak/gs-flatpak-utils.c:107
 msgid "Applications"
 msgstr "應用程式"
 
-#: src/gs-installed-page.ui:92
+#: src/gs-installed-page.ui:95
+msgid "Web Applications"
+msgstr "網頁應用程式"
+
+#: src/gs-installed-page.ui:115
 msgid "System Applications"
 msgstr "系統應用程式"
 
-#: src/gs-license-tile.c:93
+#: src/gs-license-tile.c:96
 msgid "Community Built"
-msgstr "社群建置"
+msgstr "由社群建置"
+
+#: src/gs-license-tile.c:107 src/gs-license-tile.ui:98
+msgid "_Get Involved"
+msgstr "參與貢獻(_G)"
+
+#. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
+#: src/gs-license-tile.c:114
+#, c-format
+msgid ""
+"This software is developed in the open by a community of volunteers, and "
+"released under the <a href=\"%s\">%s license</a>.\n"
+"\n"
+"You can contribute and help make it even better."
+msgstr ""
+"該軟體是在開放條件下由社群志願者們所一同開發，並採用 <a href=\"%s\">%s 授權條"
+"款</a>。\n"
+"\n"
+"您可以為該軟體做些貢獻使其更加美好。"
 
 #. Translators: The placeholder here is the name of a software license.
-#: src/gs-license-tile.c:101
+#: src/gs-license-tile.c:121
 #, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
@@ -2739,39 +2804,45 @@ msgid ""
 "\n"
 "You can contribute and help make it even better."
 msgstr ""
+"該軟體是在開放條件下由社群志願者們所一同開發，並採用 %s 授權條款。\n"
+"\n"
+"您可以為該軟體做些貢獻使其更加美好。"
 
-#: src/gs-license-tile.c:106
+#: src/gs-license-tile.c:127
 msgid "Proprietary"
 msgstr "專有授權"
 
-#: src/gs-license-tile.c:113
+#: src/gs-license-tile.c:133
+msgid "_Learn More"
+msgstr "深入瞭解(_L)"
+
+#: src/gs-license-tile.c:135
 msgid ""
 "This software is not developed in the open, so only its developers know how "
-"it works. There may be restrictions on its use, and it may be harder to tell "
-"if the software is insecure.\n"
+"it works. It may be insecure in ways that are hard to detect, and it may "
+"change without oversight.\n"
 "\n"
-"You may not be able to contribute to this software or influence its "
-"development."
+"You may not be able to contribute to this software."
 msgstr ""
-
-#: src/gs-license-tile.ui:117
-msgid "_Get Involved"
-msgstr "參與貢獻(_G)"
+"該軟體並非在開放條件下開發，只有軟體開發者知道它的運作方式。並且由於難以監測"
+"其安全性，無法保證該軟體是否安全。\n"
+"\n"
+"您無法為該軟體做些貢獻或影響其開發。"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-msgid "Software catalog is being downloaded"
+msgid "Downloading software catalog"
 msgstr "正在下載軟體目錄"
 
 #: src/gs-loading-page.ui:6
 msgid "Loading page"
-msgstr "正載入頁面"
+msgstr "正在載入頁面"
 
 #: src/gs-loading-page.ui:11
 msgid "Starting up…"
-msgstr "正在初始啟動…"
+msgstr "正在啟動…"
 
-#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:254
+#: src/gs-metered-data-dialog.ui:5 src/gs-shell.ui:256
 msgid "Automatic Updates Paused"
 msgstr "自動更新已暫停"
 
@@ -2787,12 +2858,12 @@ msgid ""
 "Alternatively, if the current network has been in­correctly identified as "
 "being metered, this setting can be changed."
 msgstr ""
-"目前的網路為計費連線。計費連線有資料傳輸量的限制，或是與其相關的費用。為了節"
-"省數據傳輸量，自動更新已隨之暫停。\n"
+"目前的網路環境為計量連線，因此會有資料傳輸量上限或可能產生額外費用；已暫停自"
+"動更新。\n"
 "\n"
-"自動更新將在可以使用非計費連線時回復。在那之前，您依然可以手動安裝更新。\n"
+"自動更新會在使用非計量連線時恢復，在那之前您仍舊可以手動安裝更新。\n"
 "\n"
-"另外，如果目前的網路被錯誤辨識為計費連線，您也可以修改這個設定。"
+"倘若目前的網路被誤認為計量連線的話，您可以更改該設定值。"
 
 #: src/gs-metered-data-dialog.ui:17
 msgid "Open Network _Settings"
@@ -2800,51 +2871,25 @@ msgstr "開啟網路設定值(_S)"
 
 #: src/gs-moderate-page.ui:6
 msgid "Moderate page"
-msgstr "調解頁面"
+msgstr "審核頁面"
 
-#: src/gs-moderate-page.ui:68
+#: src/gs-moderate-page.ui:71
 msgid "There are no reviews to moderate"
-msgstr "沒有評論需要調解"
+msgstr "沒有評論需要審核"
 
-#. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-origin-popover-row.c:55
-msgid "Name"
-msgstr "名稱"
+#: src/gs-origin-popover-row.c:105
+msgid "Unknown source"
+msgstr "未知來源"
 
-#. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:72
-msgid "system"
-msgstr "系統層級"
-
-#. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:75
-msgid "user"
-msgstr "使用者層級"
-
-#. TRANSLATORS: the title for Snap channels
-#: src/gs-origin-popover-row.c:91
-msgid "Channel"
-msgstr "頻道"
-
-#. TRANSLATORS: the title for Flatpak branches
-#. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:96 src/gs-origin-popover-row.ui:82
-msgid "Branch"
-msgstr "分支"
-
-#: src/gs-origin-popover-row.ui:30
-msgid "URL"
-msgstr "URL"
-
-#. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
-#: src/gs-origin-popover-row.ui:56
-msgid "Installation"
-msgstr "安裝"
-
-#. Translators: The available version of an app
+#. Translators: It's like a beta version of the software, a test version
 #: src/gs-origin-popover-row.ui:108
-msgid "Version"
-msgstr "版本"
+msgid "Beta"
+msgstr "Beta"
+
+#. Translators: It's an origin scope, 'User' or 'System' installation
+#: src/gs-origin-popover-row.ui:138
+msgid "User"
+msgstr "使用者"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
@@ -2860,8 +2905,8 @@ msgstr "移除"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#. Translators: A label for a button to show only updates which are available to install.
-#: src/gs-os-update-page.c:258 src/gs-shell.ui:326 src/gs-updates-page.c:1330
+#: src/gs-os-update-page.c:258
+msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "更新"
 
@@ -2874,102 +2919,103 @@ msgstr "降級"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:658
+#: src/gs-overview-page.c:876
 msgid "selected external sources"
-msgstr "選取額外來源"
+msgstr "已選擇的外部來源"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:660
+#: src/gs-overview-page.c:878
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
 "included."
-msgstr "讓您可以從 %s 存取額外軟體。它內含一些專有軟體。"
+msgstr "您可以自%s取用額外軟體，此處也包含一些專有軟體。"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:669 src/gs-repos-dialog.c:170
+#: src/gs-overview-page.c:887 src/gs-repos-dialog.c:173
 msgid "Enable"
 msgstr "啟用"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:723 src/gs-shell.ui:292
+#: src/gs-overview-page.c:946 src/gs-shell.ui:294
 msgid "Explore"
 msgstr "探索"
 
 #: src/gs-overview-page.ui:7
 msgid "Overview page"
-msgstr "概覽頁"
+msgstr "概覽頁面"
 
-#: src/gs-overview-page.ui:39
+#: src/gs-overview-page.ui:35
 msgid "Enable Third Party Software Repositories?"
 msgstr "啟用第三方軟體庫？"
 
 #. Translators: This is a heading for a list of categories.
-#: src/gs-overview-page.ui:157
+#: src/gs-overview-page.ui:180
 msgid "Other Categories"
 msgstr "其他類別"
 
-#: src/gs-overview-page.ui:198
+#: src/gs-overview-page.ui:221
 msgid "No Application Data Found"
 msgstr "找不到應用程式資料"
 
-#: lib/gs-plugin-loader.c:2878
+#: lib/gs-plugin-loader.c:2825
 msgctxt "Distribution name"
 msgid "Unknown"
-msgstr "不明"
+msgstr "未知"
 
 #: src/gs-page.c:274
 msgid "User declined installation"
-msgstr "使用拒絕安裝"
+msgstr "使用者拒絕安裝"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:357
+#: src/gs-page.c:365
 #, c-format
 msgid "Prepare %s"
-msgstr "準備 %s"
+msgstr "準備《%s》"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:494
+#: src/gs-page.c:518
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
-msgstr "您確定要移除 %s 軟體庫？"
+msgstr "確定要移除「%s」嗎？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:498
+#: src/gs-page.c:522
 #, c-format
 msgid ""
 "All applications from %s will be uninstalled, and you will have to re-"
 "install the repository to use them again."
-msgstr "所有來自 %s 的應用程式都將被移除，若未來您想再次使用時則須重新安裝。"
+msgstr "所有來自「%s」的應用程式都將移除，欲再次使用必須重新安裝軟體庫。"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:506
+#: src/gs-page.c:530
 #, c-format
 msgid "Are you sure you want to uninstall %s?"
-msgstr "您是否想要解除 %s 的安裝？"
+msgstr "確定要解除安裝《%s》嗎？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:509
+#: src/gs-page.c:533
 #, c-format
 msgid ""
 "%s will be uninstalled, and you will have to install it to use it again."
-msgstr "%s 將被解除安裝，將來若您想使用時則須再次安裝。"
+msgstr "《%s》將被解除安裝，欲再次使用必須重新安裝。"
 
 #: src/gs-prefs-dialog.ui:5
 msgid "Update Preferences"
 msgstr "更新偏好設定"
 
 #: src/gs-prefs-dialog.ui:16
-#, fuzzy
 msgid ""
 "To avoid charges and network caps, software updates are not automatically "
 "downloaded on mobile or metered connections."
-msgstr "為了避免費用與網路，在使用行動數據或計費連線時不會自動下載軟體更新。"
+msgstr ""
+"為避免產生額外費用與超過資料傳輸量上限，使用行動網路或計量連線時不會自動下載"
+"軟體更新。"
 
 #: src/gs-prefs-dialog.ui:19
 msgid "Automatic Updates"
@@ -2978,7 +3024,7 @@ msgstr "自動更新"
 #: src/gs-prefs-dialog.ui:20
 msgid ""
 "Downloads and installs software updates in the background, when possible."
-msgstr "可行的時候，在背景下載並安裝軟體更新。"
+msgstr "允許時會在背景下載並安裝軟體更新。"
 
 #: src/gs-prefs-dialog.ui:32
 msgid "Automatic Update Notifications"
@@ -2986,7 +3032,7 @@ msgstr "自動更新通知"
 
 #: src/gs-prefs-dialog.ui:33
 msgid "Show notifications when updates have been automatically installed."
-msgstr "當更新已經自動安裝完成時顯示通知。"
+msgstr "自動更新安裝完成後顯示通知。"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -2995,9 +3041,7 @@ msgstr "當更新已經自動安裝完成時顯示通知。"
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
-msgstr ""
-"目前安裝的軟體有些和 %s 並不相容。若您希望繼續，則下列軟體在升級過程中會自動"
-"移除："
+msgstr "部分已安裝軟體和 %s 不相容。繼續升級會將下列軟體移除："
 
 #: src/gs-removal-dialog.ui:4
 msgid "Incompatible Software"
@@ -3008,68 +3052,68 @@ msgid "_Continue"
 msgstr "繼續(_C)"
 
 #. TRANSLATORS: The '%s' is replaced with a repository name, like "Fedora Modular - x86_64"
-#: src/gs-repos-dialog.c:237
+#: src/gs-repos-dialog.c:239
 #, c-format
 msgid ""
 "Software that has been installed from “%s” will cease to receive updates."
-msgstr "從「%s」安裝的軟體將中止接收更新。"
+msgstr "自「%s」安裝的軟體將無法繼續接收更新。"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Disable Repository?"
-msgstr "是否停用軟體庫？"
+msgstr "要停用軟體庫嗎？"
 
-#: src/gs-repos-dialog.c:246
+#: src/gs-repos-dialog.c:248
 msgid "Remove Repository?"
-msgstr "是否移除軟體庫？"
+msgstr "要移除軟體庫嗎？"
 
 #. TRANSLATORS: this is button text to disable a repo
-#: src/gs-repos-dialog.c:252
+#: src/gs-repos-dialog.c:254
 msgid "_Disable"
 msgstr "停用(_D)"
 
 #. TRANSLATORS: this is button text to remove a repo
-#: src/gs-repos-dialog.c:255
+#: src/gs-repos-dialog.c:257
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/gs-repos-dialog.c:503
+#: src/gs-repos-dialog.c:508
 msgid "Enable New Repositories"
-msgstr "啟用新的軟體庫"
+msgstr "啟用新軟體庫"
 
-#: src/gs-repos-dialog.c:504
+#: src/gs-repos-dialog.c:509
 msgid "Turn on new repositories when they are added."
-msgstr "新增軟體庫時隨即啟用。"
+msgstr "新增的軟體庫會立即啟用。"
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-repos-dialog.c:513
+#: src/gs-repos-dialog.c:518
 msgid "more information"
 msgstr "更多資訊"
 
 #. TRANSLATORS: this is the third party repositories info bar. The '%s' is replaced
 #. with a link consisting a text "more information", which constructs a sentence:
 #. "Additional repositories from selected third parties - more information."
-#: src/gs-repos-dialog.c:518
+#: src/gs-repos-dialog.c:523
 #, c-format
 msgid "Additional repositories from selected third parties — %s."
-msgstr "從選取的第三方來源取用其他軟體庫 — %s。"
+msgstr "從已選擇的第三方來源取用額外軟體庫—%s。"
 
-#: src/gs-repos-dialog.c:523
+#: src/gs-repos-dialog.c:528
 msgid "Fedora Third Party Repositories"
 msgstr "Fedora 第三方軟體庫"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:665
+#: src/gs-repos-dialog.c:670
 msgid "the operating system"
 msgstr "作業系統"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:723
+#: src/gs-repos-dialog.c:728
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
-msgstr "這些軟體庫可補充 %s 提供的預設軟體。"
+msgstr "這些軟體庫可以補充 %s 所預裝軟體。"
 
 #. button in the info bar
 #: src/gs-repos-dialog.ui:8 src/gs-shell.ui:88
@@ -3086,7 +3130,7 @@ msgstr "沒有軟體庫"
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
-msgstr[0] "已安裝 %u 項應用程式"
+msgstr[0] "已安裝 %u 個應用程式"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
@@ -3103,7 +3147,7 @@ msgstr[0] "已安裝 %u 個附加元件"
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
-msgstr[0] "%u 項應用程式"
+msgstr[0] " %u 個應用程式"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
@@ -3112,7 +3156,7 @@ msgstr[0] "%u 項應用程式"
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
-msgstr[0] "%u 個附加元件"
+msgstr[0] " %u 個附加元件"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
@@ -3122,11 +3166,11 @@ msgstr[0] "%u 個附加元件"
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
-msgstr[0] "%s 和 %s 現已安裝"
+msgstr[0] "已安裝%s與%s"
 
 #. Translators: The first '%s' is replaced with a text like '10 applications installed',
 #. the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'.
-#: src/gs-repo-row.c:237
+#: src/gs-repo-row.c:243
 #, c-format
 msgctxt "repo-row"
 msgid "%s • %s"
@@ -3165,12 +3209,12 @@ msgstr "超讚"
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:118
 msgid "Please take more time writing the review"
-msgstr "請花點時間寫一些評論"
+msgstr "麻煩您花點時間寫下評論"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:122
 msgid "Please choose a star rating"
-msgstr "請選擇一個星級評等"
+msgstr "請選擇星級評等"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:126
@@ -3214,7 +3258,7 @@ msgstr "摘要"
 msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
-msgstr "為您的評論下一個簡短的摘要，例如：「很棒的程式，極力推薦」"
+msgstr "為您的評論下一個簡短的摘要，例如：「很棒的程式，極力推薦」。"
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: src/gs-review-dialog.ui:119
@@ -3224,393 +3268,385 @@ msgstr "評論"
 
 #: src/gs-review-dialog.ui:128
 msgid "What do you think of the app? Try to give reasons for your views."
-msgstr "您覺得這個程式如何？請試著以您的觀點提出原因。"
+msgstr "您覺得這個應用程式如何呢？試著以您的觀點提出原因。"
 
 #: src/gs-review-dialog.ui:156
-#, fuzzy
-#| msgid ""
-#| "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
-#| "privacy\">privacy policy</a>."
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/"
 "privacy\">privacy policy</a>. The full name attached to your account will be "
 "shown publicly."
 msgstr ""
-"參見我們的<a href=\"https://odrs.gnome.org/privacy\">隱私政策</a>來瞭解程式會"
-"傳送哪些資料。"
+"參閱我們的<a href=\"https://odrs.gnome.org/privacy\">隱私權政策</a>以瞭解哪些"
+"資料會被傳送。同時，您的帳號全名也會被公開顯示。"
 
-#: src/gs-review-histogram.c:73
+#: src/gs-review-histogram.c:72
 #, c-format
 msgid "%u review total"
 msgid_plural "%u reviews total"
-msgstr[0] "總計 %u 則評論"
+msgstr[0] "共有 %u 則評論"
 
-#: src/gs-review-histogram.ui:92
+#: src/gs-review-histogram.ui:93
 msgid "out of 5 stars"
-msgstr "五星評等"
+msgstr "滿分為 5 顆星"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #: src/gs-review-row.c:56
 msgctxt "Reviewer name"
 msgid "Unknown"
-msgstr "不明"
+msgstr "未知"
 
 #. TRANSLATORS: we explain what the action is going to do
 #: src/gs-review-row.c:220
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
-msgstr "您可以提報侮辱、粗俗、歧視等評論。"
+msgstr "您可以檢舉侮辱、粗俗、歧視等評論。"
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: src/gs-review-row.c:225
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
-msgstr "一旦提報，評論將被隱藏，直到有管理員檢核過為止。"
+msgstr "檢舉後評論會被隱藏，等待管理員進行審核。"
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
 #: src/gs-review-row.c:239
 msgid "Report Review?"
-msgstr "提報評論？"
+msgstr "要檢舉評論嗎？"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: src/gs-review-row.c:243
 msgid "Report"
-msgstr "提報"
+msgstr "檢舉"
 
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: src/gs-review-row.ui:80
+#: src/gs-review-row.ui:84
 msgid "Was this review useful to you?"
-msgstr "這則評論對您有用嗎?"
+msgstr "這則評論對您而言有用嗎？"
 
-#: src/gs-review-row.ui:96
+#: src/gs-review-row.ui:100
 msgid "Yes"
 msgstr "是"
 
-#: src/gs-review-row.ui:104
+#: src/gs-review-row.ui:108
 msgid "No"
 msgstr "否"
 
 #. Translators: Button text for indifference, only used when moderating
-#: src/gs-review-row.ui:112
+#: src/gs-review-row.ui:116
 msgid "Meh"
-msgstr "隨便"
+msgstr "無所謂"
 
-#: src/gs-review-row.ui:122
+#: src/gs-review-row.ui:128
 msgid "Report…"
-msgstr "提報…"
+msgstr "檢舉…"
 
-#: src/gs-review-row.ui:131
+#: src/gs-review-row.ui:137
 msgid "Remove…"
 msgstr "移除…"
 
-#: src/gs-safety-context-dialog.c:141
-msgid "Check that you trust the vendor, as the application isn’t sandboxed"
-msgstr ""
-
 #: src/gs-safety-context-dialog.c:144
+msgid "Check that you trust the vendor, as the application isn’t sandboxed"
+msgstr "由於應用程式並未完全運作於沙盒中，請確保這是您信任的提供者"
+
+#: src/gs-safety-context-dialog.c:147
 msgid ""
 "Application isn’t sandboxed but the distribution has checked that it is not "
 "malicious"
-msgstr ""
+msgstr "雖然應用程式並未完全運作於沙盒中，但您的散布版已確保其安全性"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:151
+#: src/gs-safety-context-dialog.c:160
 msgid "No Permissions"
 msgstr "沒有取用權"
 
-#: src/gs-safety-context-dialog.c:152
+#: src/gs-safety-context-dialog.c:161
 msgid "App is fully sandboxed"
-msgstr "程式完全在沙盒內運行"
+msgstr "應用程式完全運作於沙盒"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:163
+#: src/gs-safety-context-dialog.c:172
 msgid "Network Access"
-msgstr "網路存取"
+msgstr "網路取用權"
 
-#: src/gs-safety-context-dialog.c:164
+#: src/gs-safety-context-dialog.c:173
 msgid "Can access the internet"
-msgstr "可以存取網際網路"
+msgstr "可以取用網際網路"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:167
+#: src/gs-safety-context-dialog.c:176
 msgid "No Network Access"
-msgstr "沒有網路存取"
+msgstr "沒有網路取用權"
 
-#: src/gs-safety-context-dialog.c:168
+#: src/gs-safety-context-dialog.c:177
 msgid "Cannot access the internet"
-msgstr "無法存取網際網路"
+msgstr "無法取用網際網路"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:174
+#: src/gs-safety-context-dialog.c:183
 msgid "Uses System Services"
 msgstr "使用系統服務"
 
-#: src/gs-safety-context-dialog.c:175
+#: src/gs-safety-context-dialog.c:184
 msgid "Can request data from system services"
 msgstr "可以請求系統服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:182
+#: src/gs-safety-context-dialog.c:191
 msgid "Uses Session Services"
 msgstr "使用作業階段服務"
 
-#: src/gs-safety-context-dialog.c:183
+#: src/gs-safety-context-dialog.c:192
 msgid "Can request data from session services"
 msgstr "可以請求作業階段服務的資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:190
+#: src/gs-safety-context-dialog.c:199
 msgid "Device Access"
-msgstr "裝置存取"
+msgstr "裝置取用權"
 
-#: src/gs-safety-context-dialog.c:191
+#: src/gs-safety-context-dialog.c:200
 msgid "Can access devices such as webcams or gaming controllers"
-msgstr "可以存取如網路攝像機、遊戲控制器等裝置"
+msgstr "可以取用如網路攝像機、遊戲控制器之類的裝置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:194
+#: src/gs-safety-context-dialog.c:203
 msgid "No Device Access"
-msgstr "無裝置存取"
+msgstr "沒有裝置取用權"
 
-#: src/gs-safety-context-dialog.c:195
+#: src/gs-safety-context-dialog.c:204
 msgid "Cannot access devices such as webcams or gaming controllers"
-msgstr "無法存取如網路攝像機、遊戲控制器等裝置"
+msgstr "無法取用如網路攝像機、遊戲控制器之類的裝置"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:201
+#: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
 msgstr "舊式視窗顯示系統"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:209
+#: src/gs-safety-context-dialog.c:218
 msgid "Arbitrary Permissions"
-msgstr "任意取用"
+msgstr "任意取用權"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:217
+#: src/gs-safety-context-dialog.c:226
 msgid "User Settings"
 msgstr "使用者設定值"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:229
-msgid "Full File System Read/Write Access"
-msgstr "完整檔案系統讀取/寫入存取"
-
-#: src/gs-safety-context-dialog.c:230
-msgid "Can read and write all data on the file system"
-msgstr "可以讀取與寫入檔案系統上的所有資料"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:238
-msgid "Home Folder Read/Write Access"
-msgstr "家目錄資料夾讀取/寫入存取"
+msgid "Full File System Read/Write Access"
+msgstr "完整的檔案系統/讀取寫入權"
 
 #: src/gs-safety-context-dialog.c:239
-msgid "Can read and write all data in your home directory"
-msgstr "可以讀取與寫入您的家目錄下的所有檔案"
+msgid "Can read and write all data on the file system"
+msgstr "可以讀取與寫入檔案系統中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:247
-msgid "Full File System Read Access"
-msgstr "完整檔案系統讀取存取"
+msgid "Home Folder Read/Write Access"
+msgstr "家目錄的讀取/寫入權"
 
 #: src/gs-safety-context-dialog.c:248
-msgid "Can read all data on the file system"
-msgstr "可以讀取檔案系統上的所有資料"
+msgid "Can read and write all data in your home directory"
+msgstr "可以讀取與寫入家目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:256
+msgid "Full File System Read Access"
+msgstr "完整的檔案系統讀取權"
+
 #: src/gs-safety-context-dialog.c:257
+msgid "Can read all data on the file system"
+msgstr "可以讀取檔案系統中的所有資料"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:266
 msgid "Home Folder Read Access"
-msgstr "家目錄資料夾讀取存取"
+msgstr "家目錄的讀取權"
 
-#: src/gs-safety-context-dialog.c:258
-msgid "Can read all data in your home directory"
-msgstr "可以讀取您的家目錄下的所有資料"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:267
+msgid "Can read all data in your home directory"
+msgstr "可以讀取家目錄中的所有資料"
+
+#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
+#: src/gs-safety-context-dialog.c:276
 msgid "Download Folder Read/Write Access"
-msgstr "下載資料夾讀取/寫入存取"
+msgstr "下載資料夾的讀取/寫入權"
 
-#: src/gs-safety-context-dialog.c:268
+#: src/gs-safety-context-dialog.c:277
 msgid "Can read and write all data in your downloads directory"
-msgstr ""
+msgstr "可以讀取與寫入下載目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:279
+#: src/gs-safety-context-dialog.c:288
 msgid "Download Folder Read Access"
-msgstr "下載資料夾的讀取存取權"
+msgstr "下載資料夾的讀取權"
 
-#: src/gs-safety-context-dialog.c:280
+#: src/gs-safety-context-dialog.c:289
 msgid "Can read all data in your downloads directory"
-msgstr ""
+msgstr "可以讀取下載目錄中的所有資料"
+
+#: src/gs-safety-context-dialog.c:299
+msgid "Can read and write all data in the directory"
+msgstr "可以讀取與寫入該目錄中的所有資料"
+
+#: src/gs-safety-context-dialog.c:310
+msgid "Can read all data in the directory"
+msgstr "可以讀取該目錄中的所有資料"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:291
-msgid "Access arbitrary files"
-msgstr "存取任意檔案"
-
-#: src/gs-safety-context-dialog.c:292
-#, fuzzy
-#| msgid "Can read all data on the file system"
-msgid "Can access arbitrary files on the file system"
-msgstr "可以讀取檔案系統上的所有資料"
-
-#. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:306
+#: src/gs-safety-context-dialog.c:326
 msgid "No File System Access"
-msgstr "沒有檔案系統存取權"
+msgstr "沒有檔案系統取用權"
 
-#: src/gs-safety-context-dialog.c:307
-#, fuzzy
-#| msgid "Can access system device files"
+#: src/gs-safety-context-dialog.c:327
 msgid "Cannot access the file system at all"
-msgstr "可以存取系統裝置檔案"
+msgstr "無法取用檔案系統"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:321
+#: src/gs-safety-context-dialog.c:341
 msgid "Proprietary Code"
-msgstr "專有授權程式碼"
+msgstr "專有授權原始碼"
 
-#: src/gs-safety-context-dialog.c:322
+#: src/gs-safety-context-dialog.c:342
 msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
-msgstr ""
+msgstr "原始碼未開放，無法獨立稽核及確保安全性"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
-#: src/gs-safety-context-dialog.c:325
+#: src/gs-safety-context-dialog.c:345
 msgid "Auditable Code"
-msgstr "可稽核的程式碼"
+msgstr "可稽核原始碼"
 
-#: src/gs-safety-context-dialog.c:326
+#: src/gs-safety-context-dialog.c:346
 msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
-msgstr ""
+msgstr "可以獨立稽核的開放原始碼，使應用程式的安全性較有保障"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:334
+#: src/gs-safety-context-dialog.c:354
 msgid "App developer is verified"
 msgstr "程式開發者已通過核驗"
 
-#: src/gs-safety-context-dialog.c:335
+#: src/gs-safety-context-dialog.c:355
 msgid "The developer of this app has been verified to be who they say they are"
-msgstr ""
+msgstr "應用程式的開發者通過核驗為其所言之人"
 
 #. Translators: This indicates an app uses an outdated SDK.
 #. * It’s used in a context tile, so should be short.
-#: src/gs-safety-context-dialog.c:346
+#: src/gs-safety-context-dialog.c:366
 msgid "Insecure Dependencies"
 msgstr "不安全的依賴關係"
 
-#: src/gs-safety-context-dialog.c:347
+#: src/gs-safety-context-dialog.c:367
 msgid ""
 "Software or its dependencies are no longer supported and may be insecure"
-msgstr "軟體或其依賴關係已不再支援，或是程式行為可能不安全"
+msgstr "軟體本身或其依賴關係已不再被支援，可能造成安全性問題"
 
 #. Translators: The app is considered safe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:356
+#: src/gs-safety-context-dialog.c:376
 #, c-format
 msgid "%s is safe"
-msgstr "%s 安全"
+msgstr "《%s》安全"
 
 #. Translators: The app is considered potentially unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:363
+#: src/gs-safety-context-dialog.c:383
 #, c-format
 msgid "%s is potentially unsafe"
-msgstr "%s 潛在不安全"
+msgstr "《%s》可能不安全"
 
 #. Translators: The app is considered unsafe to install and run.
 #. * The placeholder is the app name.
-#: src/gs-safety-context-dialog.c:370
+#: src/gs-safety-context-dialog.c:390
 #, c-format
 msgid "%s is unsafe"
-msgstr "%s 不安全"
+msgstr "《%s》不安全"
 
 #. Translators: This is the title of the dialog which contains information about the permissions of an app
 #: src/gs-safety-context-dialog.ui:5
 msgid "Safety"
 msgstr "安全"
 
-#: src/gs-safety-context-dialog.ui:108
+#: src/gs-safety-context-dialog.ui:101
 msgid "License"
-msgstr "授權"
+msgstr "授權條款"
 
 #. Translators: This is a heading for a row showing the origin/source of an app (such as ‘flathub’).
-#: src/gs-safety-context-dialog.ui:148
+#: src/gs-safety-context-dialog.ui:141
 msgid "Source"
 msgstr "來源"
 
-#: src/gs-safety-context-dialog.ui:188
+#: src/gs-safety-context-dialog.ui:181
 msgid "SDK"
 msgstr "SDK"
 
-#: src/gs-safety-context-dialog.ui:212
+#: src/gs-safety-context-dialog.ui:205
 msgid "Outdated SDK version"
-msgstr "過期的 SDK 版本"
+msgstr "過時的 SDK 版本"
 
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
 msgid "Previous Screenshot"
-msgstr "上一張螢幕擷圖"
+msgstr "上一張螢幕快照"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:74
 msgid "Next Screenshot"
-msgstr "下一張螢幕擷圖"
+msgstr "下一張螢幕快照"
 
 #: src/gs-screenshot-carousel.ui:127
 msgid "No screenshot provided"
-msgstr "未提供螢幕擷圖"
+msgstr "未提供螢幕快照"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:336 src/gs-screenshot-image.c:393
+#: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
+#: src/gs-screenshot-image.c:622
 msgid "Screenshot not found"
-msgstr "找不到螢幕擷圖"
+msgstr "找不到螢幕快照"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:438
 msgid "Failed to load image"
 msgstr "無法載入影像"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:563
+#: src/gs-screenshot-image.c:650
 msgid "Screenshot size not found"
-msgstr "找不到螢幕擷圖的大小"
+msgstr "找不到螢幕快照的大小"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:644
+#: src/gs-screenshot-image.c:732
 msgid "Could not create cache"
 msgstr "無法建立快取"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:658
+#: src/gs-screenshot-image.c:746
 msgid "Screenshot not valid"
-msgstr "螢幕擷圖無效"
+msgstr "螢幕快照無效"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:690
+#: src/gs-screenshot-image.c:796
 msgid "Screenshot not available"
-msgstr "螢幕擷圖無法使用"
+msgstr "螢幕快照無法使用"
 
 #: src/gs-screenshot-image.ui:6
 msgid "Screenshot"
-msgstr "螢幕擷圖"
+msgstr "螢幕快照"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:169
+#: src/gs-search-page.c:180
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -3618,13 +3654,13 @@ msgstr[0] "其他 %u 項符合"
 
 #: src/gs-search-page.ui:6
 msgid "Search page"
-msgstr "搜尋頁"
+msgstr "搜尋頁面"
 
 #: src/gs-search-page.ui:17
 msgid "Search for Apps"
-msgstr "搜尋程式"
+msgstr "搜尋應用程式"
 
-#: src/gs-search-page.ui:43
+#: src/gs-search-page.ui:46
 msgid "No Application Found"
 msgstr "找不到應用程式"
 
@@ -3640,7 +3676,7 @@ msgstr "找不到應用程式"
 #: src/gs-shell.c:1223
 #, c-format
 msgid "“%s”"
-msgstr "「%s」"
+msgstr "《%s》"
 
 #. Translators: The '%s' is replaced with an error message, which had been shortened.
 #. The dots at the end are there to highlight that to the user.
@@ -3654,14 +3690,14 @@ msgstr "%s…"
 #: src/gs-shell.c:1275
 #, c-format
 msgid "Unable to download firmware updates from %s"
-msgstr "無法從 %s 下載韌體更新"
+msgstr "無法自 %s 下載韌體更新"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
 #: src/gs-shell.c:1281
 #, c-format
 msgid "Unable to download updates from %s"
-msgstr "無法從 %s 下載更新"
+msgstr "無法自 %s 下載更新"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1288 src/gs-shell.c:1328
@@ -3672,14 +3708,14 @@ msgstr "無法下載更新"
 #: src/gs-shell.c:1293
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
-msgstr "無法下載更新：必須要有網際網路存取但卻無法使用"
+msgstr "無法下載更新：需要網際網路連接卻無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
 #: src/gs-shell.c:1301
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
-msgstr "無法從 %s 下載更新：磁碟空間不足"
+msgstr "無法自 %s 下載更新：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1306
@@ -3689,23 +3725,23 @@ msgstr "無法下載更新：磁碟空間不足"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1312
 msgid "Unable to download updates: authentication was required"
-msgstr "無法下載更新：需要核對身份"
+msgstr "無法下載更新：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1316
 msgid "Unable to download updates: authentication was invalid"
-msgstr "無法下載更新：身份核對無效"
+msgstr "無法下載更新：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1320
 msgid ""
 "Unable to download updates: you do not have permission to install software"
-msgstr "無法下載更新：您的權限無法安裝軟體"
+msgstr "無法下載更新：您沒有安裝軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1331
 msgid "Unable to get list of updates"
-msgstr "無法取得更新清單"
+msgstr "無法取得更新列表"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
@@ -3713,14 +3749,14 @@ msgstr "無法取得更新清單"
 #: src/gs-shell.c:1373
 #, c-format
 msgid "Unable to install %s as download failed from %s"
-msgstr "無法安裝 %s，因為從 %s 下載失敗"
+msgstr "無法安裝%s，從 %s 下載時發生錯誤"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1379
 #, c-format
 msgid "Unable to install %s as download failed"
-msgstr "無法安裝 %s，因為下載失敗"
+msgstr "無法安裝%s，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP")
@@ -3729,72 +3765,72 @@ msgstr "無法安裝 %s，因為下載失敗"
 #: src/gs-shell.c:1391
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
-msgstr "無法安裝 %s，因為無法使用 %s 執行時期環境"
+msgstr "無法安裝%s，%s 執行時期無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to install %s as not supported"
-msgstr "無法安裝 %s，因為尚未支援"
+msgstr "無法安裝%s，未提供支援"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1403
 msgid "Unable to install: internet access was required but wasn’t available"
-msgstr "無法安裝：必須要有網際網路存取但卻無法使用"
+msgstr "無法安裝：需要網際網路連接卻無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1408
 msgid "Unable to install: the application has an invalid format"
-msgstr "無法安裝：應用程式內含無效格式"
+msgstr "無法安裝：應用程式包含無效格式"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1412
 #, c-format
 msgid "Unable to install %s: not enough disk space"
-msgstr "無法安裝 %s：磁碟空間不足"
+msgstr "無法安裝%s：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1418
 #, c-format
 msgid "Unable to install %s: authentication was required"
-msgstr "無法安裝 %s：需要核對身份"
+msgstr "無法安裝%s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1424
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
-msgstr "無法安裝 %s：身份核對無效"
+msgstr "無法安裝%s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1430
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
-msgstr "無法安裝 %s：您的權限無法安裝軟體"
+msgstr "無法安裝%s：您沒有安裝軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1437
 #, c-format
 msgid "Unable to install %s: AC power is required"
-msgstr "無法安裝 %s：需要交流電源"
+msgstr "無法安裝%s：需接上交流電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1443
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
-msgstr "無法安裝 %s：電池電量過低"
+msgstr "無法安裝%s：電池電量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1452
 #, c-format
 msgid "Unable to install %s"
-msgstr "無法安裝 %s"
+msgstr "無法安裝%s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
@@ -3803,14 +3839,14 @@ msgstr "無法安裝 %s"
 #: src/gs-shell.c:1497
 #, c-format
 msgid "Unable to update %s from %s as download failed"
-msgstr "無法從 %2$s 更新 %1$s，因為下載失敗"
+msgstr "無法自 %2$s 更新%1$s，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1504
 #, c-format
 msgid "Unable to update %s as download failed"
-msgstr "因為下載失敗而無法更新 %s"
+msgstr "無法更新%s，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
@@ -3818,25 +3854,25 @@ msgstr "因為下載失敗而無法更新 %s"
 #: src/gs-shell.c:1511
 #, c-format
 msgid "Unable to install updates from %s as download failed"
-msgstr "因為下載失敗而無法從 %s 安裝更新"
+msgstr "無法自 %s 安裝更新，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1515
 #, c-format
 msgid "Unable to install updates as download failed"
-msgstr "因為下載失敗而無法安裝更新"
+msgstr "無法安裝更新，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1520
 msgid "Unable to update: internet access was required but wasn’t available"
-msgstr "無法更新：必須要有網際網路存取但卻無法使用"
+msgstr "無法更新：需要網際網路連接卻無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1529
 #, c-format
 msgid "Unable to update %s: not enough disk space"
-msgstr "無法更新 %s：磁碟空間不足"
+msgstr "無法更新%s：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1534
@@ -3849,61 +3885,61 @@ msgstr "無法安裝更新：磁碟空間不足"
 #: src/gs-shell.c:1543
 #, c-format
 msgid "Unable to update %s: authentication was required"
-msgstr "無法更新 %s：需要核對身份"
+msgstr "無法更新%s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1548
 #, c-format
 msgid "Unable to install updates: authentication was required"
-msgstr "無法安裝更新：需要核對身份"
+msgstr "無法安裝更新：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1556
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
-msgstr "無法更新 %s：身份核對無效"
+msgstr "無法更新%s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
-msgstr "無法安裝更新：身份核對無效"
+msgstr "無法安裝更新：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1569
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
-msgstr "無法更新 %s：您的權限無法更新軟體"
+msgstr "無法更新%s：您沒有更新軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1575
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
-msgstr "無法安裝更新：您的權限無法更新軟體"
+msgstr "無法安裝更新：您沒有更新軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1584
 #, c-format
 msgid "Unable to update %s: AC power is required"
-msgstr "無法更新 %s：需要交流電源"
+msgstr "無法更新%s：需接上交流電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1590
 #, c-format
 msgid "Unable to install updates: AC power is required"
-msgstr "無法安裝更新：需要交流電源"
+msgstr "無法安裝更新：需接上交流電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1598
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
-msgstr "無法安裝 %s：電池電量過低"
+msgstr "無法安裝%s：電池電量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
@@ -3917,7 +3953,7 @@ msgstr "無法安裝更新：電池電量過低"
 #: src/gs-shell.c:1615
 #, c-format
 msgid "Unable to update %s"
-msgstr "無法更新 %s"
+msgstr "無法更新%s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1618
@@ -3931,14 +3967,14 @@ msgstr "無法安裝更新"
 #: src/gs-shell.c:1660
 #, c-format
 msgid "Unable to upgrade to %s from %s"
-msgstr "無法升級成 %s，來源為 %s"
+msgstr "無法自 %2$s 升級至 %1$s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
 #: src/gs-shell.c:1665
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
-msgstr "無法升級成 %s，因為下載失敗"
+msgstr "無法升級%s，下載失敗"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -3946,98 +3982,98 @@ msgstr "無法升級成 %s，因為下載失敗"
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
-msgstr "無法升級至 %s：必須要有網際網路存取但卻無法使用"
+msgstr "無法升級 %s：需要網際網路連接卻無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1681
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
-msgstr "無法升級成 %s：磁碟空間不足"
+msgstr "無法升級 %s：磁碟空間不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1688
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
-msgstr "無法升級成 %s：需要核對身份"
+msgstr "無法升級 %s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1694
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
-msgstr "無法升級成 %s：身份核對無效"
+msgstr "無法升級 %s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1700
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
-msgstr "無法升級成 %s：您的權限無法升級"
+msgstr "無法升級 %s：您沒有升級的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1706
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
-msgstr "無法升級成 %s：需要交流電源"
+msgstr "無法升級 %s：需接上交流電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
-msgstr "無法升級成 %s：電池電量過低"
+msgstr "無法升級 %s：電池電量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1721
 #, c-format
 msgid "Unable to upgrade to %s"
-msgstr "無法升級至 %s"
+msgstr "無法升級 %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1758
 #, c-format
 msgid "Unable to remove %s: authentication was required"
-msgstr "無法移除 %s：需要核對身份"
+msgstr "無法移除%s：需要核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1763
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
-msgstr "無法移除 %s：身份核對無效"
+msgstr "無法移除%s：身分核對無效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1768
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
-msgstr "無法移除 %s：您的權限無法移除軟體"
+msgstr "無法移除%s：您沒有移除軟體的許可權"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1774
 #, c-format
 msgid "Unable to remove %s: AC power is required"
-msgstr "無法移除 %s：需要交流電源"
+msgstr "無法移除%s：需接上交流電源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1780
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
-msgstr "無法移除 %s：電池電量過低"
+msgstr "無法移除%s：電池電量過低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1792
 #, c-format
 msgid "Unable to remove %s"
-msgstr "無法移除 %s"
+msgstr "無法移除%s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP")
@@ -4046,39 +4082,39 @@ msgstr "無法移除 %s"
 #: src/gs-shell.c:1833
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
-msgstr "無法啟動 %s：%s 未安裝"
+msgstr "無法啟動%s：未安裝 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1839 src/gs-shell.c:1887 src/gs-shell.c:1925
 #: src/gs-shell.c:1968
 msgid "Not enough disk space — free up some space and try again"
-msgstr "沒有足夠的磁碟空間 — 請空出部分空間後再試一次"
+msgstr "磁碟空間不足—請釋出部分空間後重試"
 
 #. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1850 src/gs-shell.c:1898 src/gs-shell.c:1936
 #: src/gs-shell.c:1989
 msgid "Sorry, something went wrong"
-msgstr "很抱歉，有事情出錯了"
+msgstr "很抱歉，發生問題"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1881
 msgid "Failed to install file: not supported"
-msgstr "無法安裝檔案：尚未支援"
+msgstr "無法安裝檔案：未提供支援"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1884
 msgid "Failed to install file: authentication failed"
-msgstr "無法安裝檔案：核對失敗"
+msgstr "無法安裝檔案：無法核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1919
 msgid "Failed to install: not supported"
-msgstr "無法安裝：尚未支援"
+msgstr "無法安裝：未提供支援"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1922
 msgid "Failed to install: authentication failed"
-msgstr "無法安裝：認證失敗"
+msgstr "無法安裝：無法核對身分"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
@@ -4091,7 +4127,7 @@ msgstr "無法聯絡 %s"
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
 #: src/gs-shell.c:1973
 msgid "Software needs to be restarted to use new plugins."
-msgstr "《軟體》需要重新啟動才能使用新的外掛程式。"
+msgstr "《軟體》需重新啟動才能使用新的外掛元件。"
 
 #. TRANSLATORS: need to be connected to the AC power
 #: src/gs-shell.c:1977
@@ -4114,80 +4150,91 @@ msgstr "更新偏好設定(_U)"
 #. button in the info bar
 #: src/gs-shell.ui:98
 msgid "Examine Disk"
-msgstr "檢視磁碟"
+msgstr "檢查磁碟"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-shell.ui:108 src/gs-updates-page.c:895
+#: src/gs-shell.ui:108 src/gs-updates-page.c:881
 msgid "Network Settings"
 msgstr "網路設定值"
 
 #. button in the info bar
 #: src/gs-shell.ui:118
 msgid "Restart Now"
-msgstr "立刻重新啟動"
+msgstr "立即重新啟動"
 
 #. button in the info bar
 #: src/gs-shell.ui:128
 msgid "More Information"
 msgstr "更多資訊"
 
-#: src/gs-shell.ui:187
+#: src/gs-shell.ui:189
 msgid "Search"
 msgstr "搜尋"
 
-#: src/gs-shell.ui:202
+#: src/gs-shell.ui:204
 msgid "Primary Menu"
-msgstr "主要選單"
+msgstr "主選單"
 
-#: src/gs-shell.ui:272
+#: src/gs-shell.ui:274
 msgid "Find Out _More"
 msgstr "深入瞭解(_M)"
+
+#. Translators: A label for a button to show only updates which are available to install.
+#: src/gs-shell.ui:328
+msgctxt "Header bar button for list of apps to be updated"
+msgid "Updates"
+msgstr "更新"
 
 #. Translators: This is shown in a bubble to represent a 0 byte
 #. * storage size, so its context is “storage size: none”. The
 #. * bubble is small, so the string should be as short as
 #. * possible.
-#: src/gs-storage-context-dialog.c:93
+#: src/gs-storage-context-dialog.c:95
 msgid "None"
 msgstr "無"
 
-#: src/gs-storage-context-dialog.c:132
+#: src/gs-storage-context-dialog.c:139
 msgid "Application Data"
 msgstr "應用程式資料"
 
-#: src/gs-storage-context-dialog.c:133
+#: src/gs-storage-context-dialog.c:140
 msgid "Data needed for the application to run"
-msgstr "應用程式需要資料才能執行"
+msgstr "執行應用程式所需的資料"
 
-#: src/gs-storage-context-dialog.c:137
+#: src/gs-storage-context-dialog.c:145
 msgid "User Data"
 msgstr "使用者資料"
 
-#: src/gs-storage-context-dialog.c:138
+#: src/gs-storage-context-dialog.c:146
 msgid "Data created by you in the application"
-msgstr "您在應用程式中建立的資料"
+msgstr "您在應用程式中所建立的資料"
 
-#: src/gs-storage-context-dialog.c:144
+#: src/gs-storage-context-dialog.c:153
 msgid "Cache Data"
 msgstr "快取資料"
 
-#: src/gs-storage-context-dialog.c:145
+#: src/gs-storage-context-dialog.c:154
 msgid "Temporary cached data"
-msgstr "暫時快取的資料"
+msgstr "暫存的快取資料"
 
-#: src/gs-storage-context-dialog.c:161
+#: src/gs-storage-context-dialog.c:172
 msgid "The application itself"
 msgstr "應用程式本身"
 
-#: src/gs-storage-context-dialog.c:165
+#: src/gs-storage-context-dialog.c:177
 msgid "Required Dependencies"
-msgstr "需要的依賴關係"
+msgstr "所需的依賴關係"
 
-#: src/gs-storage-context-dialog.c:166
+#: src/gs-storage-context-dialog.c:178
 msgid "Shared system components required by this application"
-msgstr "此應用程式需要的系統共享元件"
+msgstr "應用程式所需的系統共享元件"
+
+#: src/gs-storage-context-dialog.c:188
+msgctxt "Download size"
+msgid "Unknown"
+msgstr "未知"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:5
@@ -4195,26 +4242,26 @@ msgid "Storage"
 msgstr "儲存空間"
 
 #. Translators: Please do not translate the markup or link href
-#: src/gs-storage-context-dialog.ui:79
+#: src/gs-storage-context-dialog.ui:69
 msgid ""
 "Cached data can be cleared from the <a href=\"dummy\">_application settings</"
 "a>."
-msgstr "快取資料可以從 <a href=\"dummy\">應用程式設定(_A)</a> 中清除。"
+msgstr "快取資料可以從<a href=\"dummy\">應用程式設定</a>中清除。"
 
-#: src/gs-summary-tile.c:72
+#: src/gs-summary-tile.c:118
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s（已安裝）"
 
-#: src/gs-summary-tile.c:77
+#: src/gs-summary-tile.c:123
 #, c-format
 msgid "%s (Installing)"
-msgstr "%s（安裝中）"
+msgstr "%s（正在安裝）"
 
-#: src/gs-summary-tile.c:82
+#: src/gs-summary-tile.c:128
 #, c-format
 msgid "%s (Removing)"
-msgstr "%s（移除中）"
+msgstr "%s（正在移除）"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: src/gs-update-dialog.c:65 src/gs-update-dialog.c:152
@@ -4228,153 +4275,156 @@ msgstr "已安裝的更新"
 #: src/gs-update-dialog.c:131
 #, c-format
 msgid "Installed on %s"
-msgstr "已安裝於 %s"
+msgstr "安裝於 %s"
 
-#: src/gs-update-dialog.ui:74
-msgid "No updates have been installed on this system."
-msgstr "這個系統沒有安裝過更新。"
+#: src/gs-update-dialog.ui:77
+#, fuzzy
+#| msgid "Software Update Installed"
+#| msgid_plural "Software Updates Installed"
+msgid "No Updates Installed"
+msgstr "軟體更新已安裝"
 
-#: src/gs-update-monitor.c:219
+#: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
-msgstr "軟體更新已過期"
+msgstr "更新資料已過期"
 
-#: src/gs-update-monitor.c:220
+#: src/gs-update-monitor.c:214
 msgid "Please check for software updates."
 msgstr "請檢查軟體更新。"
 
-#: src/gs-update-monitor.c:226
+#: src/gs-update-monitor.c:220
 msgid "Critical Software Update Ready to Install"
 msgstr "重大軟體更新已可安裝"
 
-#: src/gs-update-monitor.c:227
+#: src/gs-update-monitor.c:221
 msgid "An important software update is ready to be installed."
-msgstr "已備妥重大的軟體更新可供安裝。"
+msgstr "重大軟體更新已準備好安裝。"
 
-#: src/gs-update-monitor.c:230
+#: src/gs-update-monitor.c:224
 msgid "Critical Software Updates Available to Download"
-msgstr "有重大軟體更新可供下載"
+msgstr "重大軟體更新已可下載"
 
-#: src/gs-update-monitor.c:231
+#: src/gs-update-monitor.c:225
 msgid "Important: critical software updates are waiting."
 msgstr "重要：重大軟體更新正在等待。"
 
-#: src/gs-update-monitor.c:239
+#: src/gs-update-monitor.c:231
 msgid "Software Updates Ready to Install"
 msgstr "軟體更新已可安裝"
 
-#: src/gs-update-monitor.c:240
+#: src/gs-update-monitor.c:232
 msgid "Software updates are waiting and ready to be installed."
-msgstr "已備妥軟體更新可供安裝。"
+msgstr "軟體更新已準備好安裝。"
 
-#: src/gs-update-monitor.c:245
+#: src/gs-update-monitor.c:238
 msgid "Software Updates Available to Download"
-msgstr "有軟體更新可供下載"
+msgstr "軟體更新已可下載"
 
-#: src/gs-update-monitor.c:246
+#: src/gs-update-monitor.c:239
 msgid "Please download waiting software updates."
-msgstr "請下載等待的軟體更新。"
+msgstr "下載正在等待的軟體更新。"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:358
+#: src/gs-update-monitor.c:355
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
-msgstr[0] "%u 個應用程式已更新 — 需要重開機"
+msgstr[0] "%u 個應用程式已更新—需重新啟動"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:364
+#: src/gs-update-monitor.c:361
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u 個應用程式已更新"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:375
+#: src/gs-update-monitor.c:372
 #, c-format
 msgid "%s has been updated."
-msgstr "%s 已經更新。"
+msgstr "《%s》已更新。"
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:378
+#: src/gs-update-monitor.c:375
 msgid "Please restart the application."
 msgstr "請重新啟動應用程式。"
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:386
+#: src/gs-update-monitor.c:383
 #, c-format
 msgid "%s and %s have been updated."
-msgstr "%s 和 %s 已經更新。"
+msgstr "《%s》與《%s》已更新。"
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:392 src/gs-update-monitor.c:411
+#: src/gs-update-monitor.c:389 src/gs-update-monitor.c:408
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
-msgstr[0] "有 %u 個應用程式必須重新開機。"
+msgstr[0] "有 %u 個應用程式需重新啟動。"
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:404
+#: src/gs-update-monitor.c:401
 #, c-format
 msgid "Includes %s, %s and %s."
-msgstr "包括 %s、%s、%s 等。"
+msgstr "包括《%s》、《%s》以及《%s》。"
 
 #. TRANSLATORS: this is when the current operating system version goes end-of-life
-#: src/gs-update-monitor.c:674 src/gs-updates-page.ui:20
+#: src/gs-update-monitor.c:671 src/gs-updates-page.ui:20
 msgid "Operating System Updates Unavailable"
 msgstr "沒有作業系統更新"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:676
+#: src/gs-update-monitor.c:673
 msgid "Upgrade to continue receiving security updates."
-msgstr "升級以繼續接受安全性更新。"
+msgstr "升級以繼續接收安全性更新。"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:732
+#: src/gs-update-monitor.c:728
 #, c-format
 msgid "A new version of %s is available to install"
-msgstr "有新版本的「%s」可安裝"
+msgstr "新版的 %s 已可安裝"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:736
+#: src/gs-update-monitor.c:732
 msgid "Software Upgrade Available"
 msgstr "有可用的軟體升級"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1141
+#: src/gs-update-monitor.c:1137
 msgid "Software Updates Failed"
 msgstr "軟體更新失敗"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1143
+#: src/gs-update-monitor.c:1139
 msgid "An important operating system update failed to be installed."
-msgstr "重要的作業系統更新無法安裝。"
+msgstr "無法安裝重要的作業系統更新。"
 
-#: src/gs-update-monitor.c:1144
+#: src/gs-update-monitor.c:1140
 msgid "Show Details"
-msgstr "顯示細節"
+msgstr "顯示詳細資訊"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1167
+#: src/gs-update-monitor.c:1162
 msgid "System Upgrade Complete"
-msgstr "系統升級完成"
+msgstr "系統升級已完成"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1172
+#: src/gs-update-monitor.c:1167
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "歡迎使用 %s %s！"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1178
+#: src/gs-update-monitor.c:1173
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "軟體更新已安裝"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1182
+#: src/gs-update-monitor.c:1177
 msgid "An important operating system update has been installed."
 msgid_plural "Important operating system updates have been installed."
 msgstr[0] "重要的作業系統更新已安裝。"
@@ -4384,140 +4434,141 @@ msgstr[0] "重要的作業系統更新已安裝。"
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1193
+#: src/gs-update-monitor.c:1188
 msgctxt "updates"
 msgid "Review"
-msgstr "檢閱"
+msgstr "檢視"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1243
+#: src/gs-update-monitor.c:1237
 msgid "Failed To Update"
 msgstr "無法更新"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1248
+#: src/gs-update-monitor.c:1242
 msgid "The system was already up to date."
-msgstr "該系統已經是最新的。"
+msgstr "系統已是最新狀態。"
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1253
+#: src/gs-update-monitor.c:1247
 msgid "The update was cancelled."
 msgstr "更新已取消。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1258
+#: src/gs-update-monitor.c:1252
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
-msgstr "需要存取網際網路但無法使用。請確定您能使用網際網路後再試一次。"
+msgstr "需要網際網路連接卻無法使用。請確保網際網路連接正常後重試。"
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1263
+#: src/gs-update-monitor.c:1257
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
-msgstr "這次更新中有安全性問題。請詢問您的軟體供應商以瞭解更多資訊。"
+msgstr "本次更新存在安全性問題；請向您的軟體提供者詢問以深入瞭解資訊。"
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1268
+#: src/gs-update-monitor.c:1262
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
-msgstr "沒有足夠的磁碟空間。請空出部分空間後再試一次。"
+msgstr "磁碟空間不足。請釋出部分空間後重試。"
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1272
+#: src/gs-update-monitor.c:1266
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"我們很抱歉：更新無法安裝。請等待下一次更新時再試一次。如果問題持續出現，請連"
-"絡您的軟體供應商。"
+"很抱歉：更新無法安裝；請等待下次更新時重試。倘若問題持續出現，請向您的軟體提"
+"供者詢問。"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:248
+#: src/gs-updates-page.c:247
 #, c-format
 msgid "Last checked: %s"
-msgstr "上次檢查：%s"
+msgstr "上次檢查時間：%s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:573
+#: src/gs-updates-page.c:559
 #, c-format
 msgid "%s %s is no longer supported."
-msgstr "%s %s 已不再有支援。"
+msgstr "%s %s 不再提供支援。"
 
-#: src/gs-updates-page.c:577
+#: src/gs-updates-page.c:563
 msgid "Your operating system is no longer supported."
-msgstr "您的作業系統已不再有支援。"
+msgstr "您的作業系統不再提供支援。"
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:582
+#: src/gs-updates-page.c:568
 msgid "This means that it does not receive security updates."
-msgstr "這代表它無法取得安全性更新。"
+msgstr "這代表它無法接收安全性更新。"
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:586
+#: src/gs-updates-page.c:572
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "建議您升級到較新的版本。"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:863
+#: src/gs-updates-page.c:849
 msgid "Charges May Apply"
 msgstr "可能需要費用"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:867
+#: src/gs-updates-page.c:853
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
-msgstr "使用行動寬頻檢查更新，可能讓您負擔額外的數據傳輸費用。"
+msgstr "使用行動寬頻檢查更新可能會產生額外的資料傳輸費用。"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:871
+#: src/gs-updates-page.c:857
 msgid "Check _Anyway"
 msgstr "無論如何都檢查(_A)"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:887
+#: src/gs-updates-page.c:873
 msgid "No Network"
 msgstr "沒有網路"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:891
+#: src/gs-updates-page.c:877
 msgid "Internet access is required to check for updates."
-msgstr "需要存取網際網路以檢查更新。"
+msgstr "需連接網際網路以檢查更新。"
 
-#: src/gs-updates-page.c:1276
-msgid "Checking…"
-msgstr "正在檢查…"
-
-#: src/gs-updates-page.c:1294
+#: src/gs-updates-page.c:1250
 msgid "Check for updates"
 msgstr "檢查軟體更新"
 
+#: src/gs-updates-page.c:1286
+msgctxt "Apps to be updated"
+msgid "Updates"
+msgstr "更新"
+
 #: src/gs-updates-page.ui:6
 msgid "Updates page"
-msgstr "更新頁"
+msgstr "更新頁面"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:82
 msgid "Loading Updates…"
-msgstr "載入更新中…"
+msgstr "正在載入更新…"
 
 #. TRANSLATORS: the updates panel is starting up.
 #: src/gs-updates-page.ui:95
 msgid "This could take a while."
-msgstr "這可能會花上一段時間。"
+msgstr "可能會花上一段時間。"
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:203
 msgid "Up to Date"
-msgstr "最新狀態"
+msgstr "已是最新狀態"
 
 #: src/gs-updates-page.ui:242
 msgid "Use Mobile Data?"
@@ -4527,7 +4578,7 @@ msgstr "使用行動數據連線？"
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges."
-msgstr "使用行動寬頻檢查更新可能讓您負擔額外的數據傳輸費用。"
+msgstr "使用行動寬頻檢查更新可能會產生額外的資料傳輸費用。"
 
 #: src/gs-updates-page.ui:246
 msgid "_Check Anyway"
@@ -4539,11 +4590,11 @@ msgstr "沒有連線"
 
 #: src/gs-updates-page.ui:263
 msgid "Go online to check for updates."
-msgstr "上線以檢查更新。"
+msgstr "連上網路以檢查更新。"
 
 #: src/gs-updates-page.ui:266
 msgid "_Network Settings"
-msgstr "網路設定值(_N)"
+msgstr "網路設定(_N)"
 
 #: src/gs-updates-page.ui:295
 msgid "Error"
@@ -4551,86 +4602,86 @@ msgstr "錯誤"
 
 #: src/gs-updates-page.ui:296
 msgid "Updates are automatically managed."
-msgstr "更新為自動管理。"
+msgstr "更新為自動化管理。"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:324
+#: src/gs-updates-section.c:312
 msgid "Restart & Update"
 msgstr "重新啟動並更新"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:330
+#: src/gs-updates-section.c:318
 msgid "Update All"
 msgstr "全部更新"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:472
+#: src/gs-updates-section.c:450
 msgid "Integrated Firmware"
 msgstr "整合的韌體"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:477
+#: src/gs-updates-section.c:455
 msgid "Requires Restart"
-msgstr "必須重新啟動"
+msgstr "需要重新啟動"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:482
+#: src/gs-updates-section.c:460
 msgid "Application Updates"
 msgstr "應用程式更新"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:487
+#: src/gs-updates-section.c:465
 msgid "Device Firmware"
 msgstr "裝置韌體"
 
 #: src/gs-updates-section.ui:33 src/gs-upgrade-banner.ui:72
-#: plugins/packagekit/gs-packagekit-task.c:153
+#: plugins/packagekit/gs-packagekit-task.c:155
 msgid "_Download"
 msgstr "下載(_D)"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. The first %s is the distro name
 #. * and the 2nd %s is the version, e.g. "Fedora 35 Available"
-#: src/gs-upgrade-banner.c:88
+#: src/gs-upgrade-banner.c:90
 #, c-format
 msgid "%s %s Available"
-msgstr "%s %s 可用"
+msgstr "%s %s 已推出"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. The %s is the distro name,
 #. * e.g. "GNOME OS Available"
-#: src/gs-upgrade-banner.c:93
+#: src/gs-upgrade-banner.c:95
 #, c-format
 msgid "%s Available"
-msgstr "%s 可用"
+msgstr "%s 已推出新版本"
 
-#: src/gs-upgrade-banner.c:139
+#: src/gs-upgrade-banner.c:143
 msgid "Learn about the new version"
 msgstr "深入瞭解新版本"
 
-#: src/gs-upgrade-banner.c:163
+#: src/gs-upgrade-banner.c:167
 msgid "Downloading…"
-msgstr "下載中…"
+msgstr "正在下載…"
 
 #. Translators: the first '%s' is replaced with the downloaded size, the second '%s'
 #. with the total download size, forming text like "135 MB of 2 GB downloaded"
-#: src/gs-upgrade-banner.c:181
+#: src/gs-upgrade-banner.c:185
 #, c-format
 msgid "%s of %s downloaded"
 msgstr "已下載 %s，共 %s"
 
 #. Translators: the '%u' is replaced with the actual percentage being already
 #. downloaded, forming text like "13% downloaded"
-#: src/gs-upgrade-banner.c:185
+#: src/gs-upgrade-banner.c:189
 #, c-format
 msgid "%u%% downloaded"
-msgstr "%u%% 已下載"
+msgstr "已下載 %u%%"
 
 #: src/gs-upgrade-banner.ui:42
 msgid "A major upgrade, with new features and added polish."
@@ -4642,11 +4693,11 @@ msgstr "重新啟動並升級(_R)"
 
 #: src/gs-upgrade-banner.ui:201
 msgid "Remember to back up data and files before upgrading."
-msgstr "在升級之前，請記得先備份您的資料與檔案。"
+msgstr "升級之前，記得備份您的資料與檔案。"
 
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
-msgstr "在這臺電腦上加入、移除、或更新軟體"
+msgstr "在電腦上加入、移除、或更新軟體"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
@@ -4670,31 +4721,39 @@ msgstr "系統更新"
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
-msgstr "一般系統更新，例如安全性或臭蟲修正，以及效能改善等。"
+msgstr "一般的系統更新，像是安全性問題或錯誤修正、效能改善等。"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-rewrite-resource.c:155
 msgid "Downloading featured images…"
-msgstr "下載特選影像中…"
+msgstr "正在下載精選影像…"
 
-#. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:605
-msgid "Endless OS"
-msgstr "Endless OS"
+#. Translators: The '%s' is replaced with the OS name, like "Endless OS"
+#: plugins/eos-updater/gs-plugin-eos-updater.c:637
+#, c-format
+msgid "%s update with new features and fixes."
+msgstr "%s 的更新，包含新功能與錯誤修正。"
 
-#. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:608
-msgid "An Endless OS update with new features and fixes."
-msgstr "Endless OS 更新，含新功能和錯誤修正。"
-
-#: plugins/eos-updater/gs-plugin-eos-updater.c:934
+#: plugins/eos-updater/gs-plugin-eos-updater.c:970
 msgid "EOS update service could not fetch and apply the update."
 msgstr "無法取得 EOS 更新服務並套用更新。"
+
+#: plugins/epiphany/gs-plugin-epiphany.c:498
+msgid "GNOME Web"
+msgstr "GNOME《網頁》"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
+msgid "Web Apps Support"
+msgstr "網頁應用程式支援"
+
+#: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
+msgid "Run popular web applications in a browser"
+msgstr "在瀏覽器中執行知名的網頁應用程式"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:257
 msgid "Downloading upgrade information…"
-msgstr "下載升級資訊中…"
+msgstr "正在下載升級資訊…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:404
@@ -4708,18 +4767,141 @@ msgstr "Flatpak 支援"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
 msgid "Flatpak is a framework for desktop applications on Linux"
-msgstr "Flatpak 是一個用於 Linux 桌面應用程式框架"
+msgstr "《Flatpak》為一種用於 Linux 的桌面應用程式框架"
+
+#. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
+#: plugins/flatpak/gs-flatpak.c:313
+#, c-format
+msgid "System folder %s"
+msgstr "系統資料夾 %s"
+
+#: plugins/flatpak/gs-flatpak.c:314 plugins/flatpak/gs-flatpak.c:315
+#, c-format
+msgid "Home subfolder %s"
+msgstr "家目錄中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:316
+msgid "Host system folders"
+msgstr "主機系統資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:317
+msgid "Host system configuration from /etc"
+msgstr "/etc 中的主機系統設定值"
+
+#: plugins/flatpak/gs-flatpak.c:318
+msgid "Desktop folder"
+msgstr "桌面資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:318
+#, c-format
+msgid "Desktop subfolder %s"
+msgstr "「桌面」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:319
+msgid "Documents folder"
+msgstr "文件資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:319
+#, c-format
+msgid "Documents subfolder %s"
+msgstr "「文件」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:320
+msgid "Music folder"
+msgstr "音樂資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:320
+#, c-format
+msgid "Music subfolder %s"
+msgstr "「音樂」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:321
+msgid "Pictures folder"
+msgstr "圖片資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:321
+#, c-format
+msgid "Pictures subfolder %s"
+msgstr "「圖片」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:322
+msgid "Public Share folder"
+msgstr "公共資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:322
+#, c-format
+msgid "Public Share subfolder %s"
+msgstr "「公共」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:323
+msgid "Videos folder"
+msgstr "影片資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:323
+#, c-format
+msgid "Videos subfolder %s"
+msgstr "「影片」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:324
+msgid "Templates folder"
+msgstr "模板資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:324
+#, c-format
+msgid "Templates subfolder %s"
+msgstr "「模板」中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:325
+msgid "User cache folder"
+msgstr "使用者快取資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:325
+#, c-format
+msgid "User cache subfolder %s"
+msgstr "使用者快取中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:326
+msgid "User configuration folder"
+msgstr "使用者設定值資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:326
+#, c-format
+msgid "User configuration subfolder %s"
+msgstr "使用者設定值中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:327
+msgid "User data folder"
+msgstr "使用者資料資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:327
+#, c-format
+msgid "User data subfolder %s"
+msgstr "使用者資料中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:328
+msgid "User runtime folder"
+msgstr "使用者執行時期資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:328
+#, c-format
+msgid "User runtime subfolder %s"
+msgstr "使用者執行時期中的 %s 資料夾"
+
+#: plugins/flatpak/gs-flatpak.c:386
+#, c-format
+msgid "Filesystem access to %s"
+msgstr "%s 的檔案系統取用權"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:1219
+#: plugins/flatpak/gs-flatpak.c:1403
 #, c-format
 msgid "Getting flatpak metadata for %s…"
-msgstr "取得 %s 的 flatpak 中介資料…"
+msgstr "正在取得《%s》的 flatpak 中介資料…"
 
-#: plugins/flatpak/gs-flatpak.c:3344
+#: plugins/flatpak/gs-flatpak.c:3579
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
-msgstr "無法完善附加程式 ‘%s’︰%s"
+msgstr "無法將附加元件「%s」最佳化︰%s"
 
 #: plugins/flatpak/gs-flatpak-utils.c:94
 msgid "User Installation"
@@ -4729,57 +4911,66 @@ msgstr "使用者安裝"
 msgid "System Installation"
 msgstr "系統安裝"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1093
+#: plugins/flatpak/gs-plugin-flatpak.c:1037
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
-msgstr "無法加入安裝附加程式 ‘%s’︰%s"
+msgstr "無法將附加元件「%s」加入至安裝︰%s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1107
+#: plugins/flatpak/gs-plugin-flatpak.c:1051
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
-msgstr "無法加入解除安裝附加程式 ‘%s’︰%s"
+msgstr "無法將附加元件「%s」加入至解除安裝︰%s"
+
+#: plugins/flatpak/gs-plugin-flatpak.c:1317
+#, c-format
+msgid ""
+"Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
+"Remove the filter and repeat the install. Detailed error: %s"
+msgstr ""
+"「%s」遠端不允許安裝「%s」，可能是其過濾器所造成的。\n"
+"請移除過濾器並重試。詳細錯誤資訊：%s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:134
 #, c-format
 msgid "%s Device Update"
-msgstr "%s 裝置更新"
+msgstr "「%s」裝置更新"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:139
 #, c-format
 msgid "%s System Update"
-msgstr "%s 系統更新"
+msgstr "「%s」系統更新"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:144
 #, c-format
 msgid "%s Embedded Controller Update"
-msgstr "%s 內嵌控制器更新"
+msgstr "「%s」內嵌控制器更新"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:149
 #, c-format
 msgid "%s ME Update"
-msgstr "%s ME 更新"
+msgstr "「%s」ME 更新"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:154
 #, c-format
 msgid "%s Corporate ME Update"
-msgstr "%s 企業級 ME 更新"
+msgstr "「%s」企業級 ME 更新"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:159
 #, c-format
 msgid "%s Consumer ME Update"
-msgstr "%s 消費者級 ME 更新"
+msgstr "「%s」消費者級 ME 更新"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
@@ -4787,7 +4978,7 @@ msgstr "%s 消費者級 ME 更新"
 #: plugins/fwupd/gs-fwupd-app.c:165
 #, c-format
 msgid "%s Controller Update"
-msgstr "%s 控制器更新"
+msgstr "「%s」控制器更新"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
@@ -4795,87 +4986,94 @@ msgstr "%s 控制器更新"
 #: plugins/fwupd/gs-fwupd-app.c:171
 #, c-format
 msgid "%s Thunderbolt Controller Update"
-msgstr "%s Thunderbolt 控制器更新"
+msgstr "「%s」Thunderbolt 控制器更新"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:176
 #, c-format
 msgid "%s CPU Microcode Update"
-msgstr "%s CPU 微碼更新"
+msgstr "「%s」CPU 微碼更新"
 
 #. TRANSLATORS: configuration refers to hardware state,
 #. * e.g. a security database or a default power value
 #: plugins/fwupd/gs-fwupd-app.c:181
 #, c-format
 msgid "%s Configuration Update"
-msgstr "%s 組態設定更新"
+msgstr "「%s」組態設定更新"
 
 #. TRANSLATORS: battery refers to the system power source
 #: plugins/fwupd/gs-fwupd-app.c:185
 #, c-format
 msgid "%s Battery Update"
-msgstr "%s 電池更新"
+msgstr "「%s」電池更新"
 
 #. TRANSLATORS: camera can refer to the laptop internal
 #. * camera in the bezel or external USB webcam
 #: plugins/fwupd/gs-fwupd-app.c:190
 #, c-format
 msgid "%s Camera Update"
-msgstr "%s 相機更新"
+msgstr "「%s」相機更新"
 
 #. TRANSLATORS: TPM refers to a Trusted Platform Module
 #: plugins/fwupd/gs-fwupd-app.c:194
 #, c-format
 msgid "%s TPM Update"
-msgstr "%s TPM 更新"
+msgstr "「%s」TPM 更新"
 
 #. TRANSLATORS: TouchPad refers to a flat input device
 #: plugins/fwupd/gs-fwupd-app.c:198
 #, c-format
 msgid "%s Touchpad Update"
-msgstr "%s 觸控板更新"
+msgstr "「%s」觸控板更新"
 
 #. TRANSLATORS: Mouse refers to a handheld input device
 #: plugins/fwupd/gs-fwupd-app.c:202
 #, c-format
 msgid "%s Mouse Update"
-msgstr "%s 滑鼠更新"
+msgstr "「%s」滑鼠更新"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:206
 #, c-format
 msgid "%s Keyboard Update"
-msgstr "%s 鍵盤更新"
+msgstr "「%s」鍵盤更新"
 
 #. TRANSLATORS: Storage Controller is typically a RAID or SAS adapter
 #: plugins/fwupd/gs-fwupd-app.c:210
 #, c-format
 msgid "%s Storage Controller Update"
-msgstr "%s 儲存控制器更新"
+msgstr "「%s」儲存控制器更新"
 
 #. TRANSLATORS: Network Interface refers to the physical
 #. * PCI card, not the logical wired connection
 #: plugins/fwupd/gs-fwupd-app.c:215
 #, c-format
 msgid "%s Network Interface Update"
-msgstr "%s 網路介面更新"
+msgstr "「%s」網路介面更新"
 
 #. TRANSLATORS: Video Display refers to the laptop internal display or
 #. * external monitor
 #: plugins/fwupd/gs-fwupd-app.c:220
 #, c-format
 msgid "%s Display Update"
-msgstr "%s 顯示器更新"
+msgstr "「%s」顯示器更新"
 
 #. TRANSLATORS: BMC refers to baseboard management controller which
 #. * is the device that updates all the other firmware on the system
 #: plugins/fwupd/gs-fwupd-app.c:225
 #, c-format
 msgid "%s BMC Update"
-msgstr "%s BMC 更新"
+msgstr "「%s」BMC 更新"
 
-#: plugins/fwupd/gs-plugin-fwupd.c:1199
+#. TRANSLATORS: Receiver refers to a radio device, e.g. a tiny Bluetooth
+#. * device that stays in the USB port so the wireless peripheral works
+#: plugins/fwupd/gs-fwupd-app.c:230
+#, c-format
+msgid "%s USB Receiver Update"
+msgstr "「%s」USB 接收器更新"
+
+#: plugins/fwupd/gs-plugin-fwupd.c:1240
 msgid "Firmware"
 msgstr "韌體"
 
@@ -4885,51 +5083,57 @@ msgstr "韌體升級支援"
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:7
 msgid "Provides support for firmware upgrades"
-msgstr "提供韌體升級的支援"
+msgstr "提供韌體升級支援"
 
-#: plugins/packagekit/gs-packagekit-task.c:146
+#: plugins/packagekit/gs-packagekit-task.c:148
 msgid "Install Unsigned Software?"
-msgstr "是否安裝未簽署的軟體？"
+msgstr "是否要安裝未經簽署的軟體？"
 
-#: plugins/packagekit/gs-packagekit-task.c:147
+#: plugins/packagekit/gs-packagekit-task.c:149
 msgid ""
 "Software that is to be installed is not signed. It will not be possible to "
 "verify the origin of updates to this software, or whether updates have been "
 "tampered with."
 msgstr ""
+"欲安裝的軟體未經簽署。因此無法核驗該軟體的更新來源，也無法得知更新是否曾遭竄"
+"改。"
 
-#: plugins/packagekit/gs-packagekit-task.c:151
+#: plugins/packagekit/gs-packagekit-task.c:153
 msgid "Download Unsigned Software?"
-msgstr "是否下載未簽署的軟體？"
+msgstr "是否要下載未經簽署的軟體？"
 
-#: plugins/packagekit/gs-packagekit-task.c:152
+#: plugins/packagekit/gs-packagekit-task.c:154
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with."
 msgstr ""
+"未經簽署的軟體有更新。但由於沒有簽章，因此無法核驗更新來源，也無法得知更新是"
+"否曾遭竄改。"
 
-#: plugins/packagekit/gs-packagekit-task.c:156
+#: plugins/packagekit/gs-packagekit-task.c:158
 msgid "Update Unsigned Software?"
-msgstr "是否更新未簽署的軟體？"
+msgstr "是否要更新未經簽署的軟體？"
 
-#: plugins/packagekit/gs-packagekit-task.c:157
+#: plugins/packagekit/gs-packagekit-task.c:159
 msgid ""
 "Unsigned updates are available. Without a signature, it is not possible to "
 "verify the origin of the update, or whether it has been tampered with. "
 "Software updates will be disabled until unsigned updates are either removed "
 "or updated."
 msgstr ""
+"未經簽署的軟體有更新。但由於沒有簽章，因此無法核驗更新來源，也無法得知更新是"
+"否曾遭竄改。在未經簽署的軟體移除或更新之前，軟體更新會持續停用。"
 
-#: plugins/packagekit/gs-plugin-packagekit.c:439
+#: plugins/packagekit/gs-plugin-packagekit.c:367
 msgid "Packages"
 msgstr "軟體包"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2450
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2690
 msgid "Operating System (OSTree)"
 msgstr "作業系統 (OSTree)"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:286
+#: plugins/snap/gs-plugin-snap.c:300
 msgid "Snap Store"
 msgstr "Snap 商店"
 
@@ -4939,21 +5143,65 @@ msgstr "Snap 支援"
 
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
-msgstr "Snap 是一種通用的 Linux 軟體包"
+msgstr "《Snap》為一種通用的 Linux 軟體包"
+
+#~ msgid "Application manager for GNOME"
+#~ msgstr "GNOME 的應用程式管理器"
+
+#~ msgid "No updates have been installed on this system."
+#~ msgstr "系統尚未安裝過更新。"
+
+#, c-format
+#~ msgid "%s %s"
+#~ msgstr "%s %s"
+
+#~ msgid "Software catalog is being downloaded"
+#~ msgstr "正在下載軟體目錄"
+
+#~ msgid "Name"
+#~ msgstr "名稱"
+
+#~ msgid "system"
+#~ msgstr "系統層級"
+
+#~ msgid "user"
+#~ msgstr "使用者層級"
+
+#~ msgid "Channel"
+#~ msgstr "頻道"
+
+#~ msgid "Branch"
+#~ msgstr "分支"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Installation"
+#~ msgstr "安裝於"
+
+#~ msgid "Version"
+#~ msgstr "版本"
+
+#~ msgid "Access arbitrary files"
+#~ msgstr "取用任意檔案"
+
+#~ msgid "Can access arbitrary files on the file system"
+#~ msgstr "可以取用檔案系統上的任意資料"
+
+#~ msgid "A list of popular applications"
+#~ msgstr "熱門應用程式列表"
+
+#~ msgid "A list of applications to use, overriding the system defined ones."
+#~ msgstr "要使用的應用程式列表，凌駕系統定義的程式列表。"
+
+#~ msgid "Checking…"
+#~ msgstr "正在檢查…"
+
+#~ msgid "Endless OS"
+#~ msgstr "Endless OS"
 
 #~ msgid "GNOME Software"
 #~ msgstr "GNOME 軟體"
-
-#, fuzzy
-#~| msgctxt "origin"
-#~| msgid "Unknown"
-#~ msgid "Unknown"
-#~ msgstr "不明"
-
-#, fuzzy
-#~| msgid "Other Updates"
-#~ msgid "Other Apps"
-#~ msgstr "其他更新"
 
 #~ msgid "Loading…"
 #~ msgstr "載入中…"
@@ -4983,11 +5231,6 @@ msgstr "Snap 是一種通用的 Linux 軟體包"
 
 #~ msgid "Downloading application ratings…"
 #~ msgstr "下載應用程式評等中…"
-
-#, fuzzy
-#~| msgid "Mature"
-#~ msgid "Picture"
-#~ msgstr "成熟 (17+)"
 
 #~ msgid "Unknown Permissions"
 #~ msgstr "權限不明"
@@ -5087,9 +5330,6 @@ msgstr "Snap 是一種通用的 Linux 軟體包"
 
 #~ msgid "Utilities"
 #~ msgstr "公用程式"
-
-#~ msgid "_Read More"
-#~ msgstr "閱讀更多(_R)"
 
 #~ msgid "_Read Less"
 #~ msgstr "閱讀更少(_R)"
@@ -5614,9 +5854,6 @@ msgstr "Snap 是一種通用的 Linux 軟體包"
 #~ msgid "Shell Extensions"
 #~ msgstr "Shell 擴充套件"
 
-#~ msgid "GNOME"
-#~ msgstr "GNOME"
-
 #~ msgid "GNOME Shell Extensions Repository"
 #~ msgstr "GNOME Shell 擴充套件庫"
 
@@ -5814,12 +6051,6 @@ msgstr "Snap 是一種通用的 Linux 軟體包"
 
 #~ msgid "AppStream;Software;App;"
 #~ msgstr "AppStream;Software;App;軟體;程式;"
-
-#~ msgid "Web Apps Support"
-#~ msgstr "網頁程式支援"
-
-#~ msgid "Run popular web applications in a browser"
-#~ msgstr "在瀏覽器中執行熱門的網頁應用程式"
 
 #~ msgid "To continue, you need to use an Ubuntu One account."
 #~ msgstr "若要繼續，您需要使用 Ubuntu One 帳號。"
