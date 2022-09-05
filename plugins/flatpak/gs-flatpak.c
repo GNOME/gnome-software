@@ -3411,25 +3411,25 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 	return TRUE;
 }
 
-/* the _unlocked() version doesn't call gs_flatpak_rescan_app_data,
- * in order to avoid taking the writer lock on self->silo_lock */
 static gboolean
 gs_flatpak_refine_app_unlocked (GsFlatpak *self,
                                 GsApp *app,
                                 GsPluginRefineFlags flags,
                                 gboolean interactive,
+                                GRWLockReaderLocker **locker,
                                 GCancellable *cancellable,
                                 GError **error)
 {
 	GsAppState old_state = gs_app_get_state (app);
-	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	/* not us */
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_FLATPAK)
 		return TRUE;
 
-	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
+	g_clear_pointer (locker, g_rw_lock_reader_locker_free);
+
+	if (!ensure_flatpak_silo_with_locker (self, locker, interactive, cancellable, error))
 		return FALSE;
 
 	/* always do AppStream properties */
@@ -3554,6 +3554,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 			  gboolean interactive,
 			  GCancellable *cancellable)
 {
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GsAppList) addons = NULL;
 	g_autoptr(GString) errors = NULL;
 	guint ii, sz;
@@ -3571,7 +3572,7 @@ gs_flatpak_refine_addons (GsFlatpak *self,
 		/* To have refined also the state  */
 		gs_app_set_state (addon, GS_APP_STATE_UNKNOWN);
 
-		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, interactive, cancellable, &local_error)) {
+		if (!gs_flatpak_refine_app_unlocked (self, addon, flags, interactive, &locker, cancellable, &local_error)) {
 			if (errors)
 				g_string_append_c (errors, '\n');
 			else
@@ -3601,11 +3602,13 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	/* ensure valid */
 	if (!gs_flatpak_rescan_app_data (self, interactive, cancellable, error))
 		return FALSE;
 
-	return gs_flatpak_refine_app_unlocked (self, app, flags, interactive, cancellable, error);
+	return gs_flatpak_refine_app_unlocked (self, app, flags, interactive, &locker, cancellable, error);
 }
 
 gboolean
@@ -3647,7 +3650,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		if (new == NULL)
 			return FALSE;
 		gs_flatpak_claim_app (self, new);
-		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, cancellable, error))
+		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, &locker, cancellable, error))
 			return FALSE;
 		gs_app_subsume_metadata (new, app);
 		gs_app_list_add (list, new);
