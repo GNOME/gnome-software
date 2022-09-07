@@ -1637,6 +1637,16 @@ _set_app (GsDetailsPage *self, GsApp *app)
 				 self, 0);
 }
 
+static gboolean
+gs_details_page_filter_origin (GsApp *app,
+			       gpointer user_data)
+{
+	/* Keep only local apps or those, which have an origin set */
+	return gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+	       gs_app_get_local_file (app) != NULL ||
+	       gs_app_get_origin (app) != NULL;
+}
+
 /* show the UI and do operations that should not block page load */
 static void
 gs_details_page_load_stage2 (GsDetailsPage *self,
@@ -1676,6 +1686,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 	query = gs_app_query_new ("alternate-of", self->app,
 				  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
+				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
 				  NULL);
 	plugin_job2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
