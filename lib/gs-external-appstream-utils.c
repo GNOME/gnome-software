@@ -99,6 +99,9 @@ gs_external_appstream_install (const gchar   *appstream_file,
 	return g_subprocess_wait_check (subprocess, cancellable, error);
 }
 
+static void download_replace_file_cb (GObject      *source_object,
+				      GAsyncResult *result,
+				      gpointer      user_data);
 static void download_system_cb (GObject      *source_object,
                                 GAsyncResult *result,
                                 gpointer      user_data);
@@ -115,6 +118,34 @@ typedef struct {
 	gsize bytes_downloaded;
 	gsize total_download_size;
 } ProgressTuple;
+
+typedef struct {
+	/* Input data. */
+	gchar *url;  /* (not nullable) (owned) */
+	GTask *task;  /* (not nullable) (owned) */
+	GFile *output_file;  /* (not nullable) (owned) */
+	ProgressTuple *progress_tuple;  /* (not nullable) */
+	SoupSession *soup_session;  /* (not nullable) (owned) */
+	gboolean system_wide;
+
+	/* In-progress data. */
+	gchar *last_etag;  /* (nullable) (owned) */
+	GDateTime *last_modified_date;  /* (nullable) (owned) */
+} DownloadAppStreamData;
+
+static void
+download_appstream_data_free (DownloadAppStreamData *data)
+{
+	g_free (data->url);
+	g_clear_object (&data->task);
+	g_clear_object (&data->output_file);
+	g_clear_object (&data->soup_session);
+	g_free (data->last_etag);
+	g_clear_pointer (&data->last_modified_date, g_date_time_unref);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (DownloadAppStreamData, download_appstream_data_free)
 
 static void
 refresh_url_progress_cb (gsize    bytes_downloaded,
@@ -147,9 +178,11 @@ refresh_url_async (GSettings           *settings,
 	g_autofree gchar *hash = NULL;
 	g_autofree gchar *target_file_path = NULL;
 	g_autoptr(GFile) target_file = NULL;
+	g_autoptr(GFile) tmp_file_parent = NULL;
 	g_autoptr(GFile) tmp_file = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new ("external-appstream");
 	g_autoptr(GError) local_error = NULL;
+	DownloadAppStreamData *data;
 	gboolean system_wide;
 
 	task = g_task_new (NULL, cancellable, callback, user_data);
@@ -209,19 +242,81 @@ refresh_url_async (GSettings           *settings,
 		tmp_file = g_object_ref (target_file);
 	}
 
-	g_task_set_task_data (task, g_object_ref (tmp_file), g_object_unref);
-
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading extra metadata files…"));
 
+	data = g_new0 (DownloadAppStreamData, 1);
+	data->url = g_strdup (url);
+	data->task = g_object_ref (task);
+	data->output_file = g_object_ref (tmp_file);
+	data->progress_tuple = progress_tuple;
+	data->soup_session = g_object_ref (soup_session);
+	data->system_wide = system_wide;
+	g_task_set_task_data (task, data, (GDestroyNotify) download_appstream_data_free);
+
+	/* Create the destination file’s directory.
+	 * FIXME: This should be made async; it hasn’t done for now as it’s
+	 * likely to be fast. */
+	tmp_file_parent = g_file_get_parent (tmp_file);
+
+	if (tmp_file_parent != NULL &&
+	    !g_file_make_directory_with_parents (tmp_file_parent, cancellable, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
+	g_clear_error (&local_error);
+
+	/* Query the ETag and modification date of the target file, if the file already exists. For
+	 * system-wide installations, this is the ETag of the AppStream file installed system-wide.
+	 * For local installations, this is just the local output file. */
+	data->last_etag = gs_utils_get_file_etag (target_file, &data->last_modified_date, cancellable);
+	g_debug ("Queried ETag of file %s: %s", g_file_peek_path (target_file), data->last_etag);
+
+	/* Create the output file */
+	g_file_replace_async (tmp_file,
+			      NULL,  /* ETag */
+			      FALSE,  /* make_backup */
+			      G_FILE_CREATE_PRIVATE | G_FILE_CREATE_REPLACE_DESTINATION,
+			      G_PRIORITY_LOW,
+			      cancellable,
+			      download_replace_file_cb,
+			      g_steal_pointer (&task));
+}
+
+static void
+download_replace_file_cb (GObject      *source_object,
+                          GAsyncResult *result,
+                          gpointer      user_data)
+{
+	GFile *output_file = G_FILE (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	DownloadAppStreamData *data = g_task_get_task_data (task);
+	g_autoptr(GFileOutputStream) output_stream = NULL;
+	g_autoptr(GError) local_error = NULL;
+
+	output_stream = g_file_replace_finish (output_file, result, &local_error);
+
+	if (output_stream == NULL) {
+		g_task_return_error (task, g_steal_pointer (&local_error));
+		return;
+	}
+
 	/* Do the download. */
-	gs_download_file_async (soup_session, url, tmp_file, G_PRIORITY_LOW,
-				refresh_url_progress_cb,
-				progress_tuple,
-				cancellable,
-				system_wide ? download_system_cb : download_user_cb,
-				g_steal_pointer (&task));
+	gs_download_stream_async (data->soup_session,
+				  data->url,
+				  G_OUTPUT_STREAM (output_stream),
+				  data->last_etag,
+				  data->last_modified_date,
+				  G_PRIORITY_LOW,
+				  refresh_url_progress_cb,
+				  data->progress_tuple,
+				  cancellable,
+				  data->system_wide ? download_system_cb : download_user_cb,
+				  g_steal_pointer (&task));
 }
 
 static void
@@ -232,10 +327,11 @@ download_system_cb (GObject      *source_object,
 	SoupSession *soup_session = SOUP_SESSION (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GCancellable *cancellable = g_task_get_cancellable (task);
-	GFile *tmp_file = g_task_get_task_data (task);
+	DownloadAppStreamData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
+	g_autofree gchar *new_etag = NULL;
 
-	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+	if (!gs_download_stream_finish (soup_session, result, &new_etag, NULL, &local_error)) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_task_return_new_error (task,
 						 GS_EXTERNAL_APPSTREAM_ERROR,
@@ -250,13 +346,15 @@ download_system_cb (GObject      *source_object,
 		return;
 	}
 
-	g_debug ("Downloaded appstream file %s", g_file_peek_path (tmp_file));
+	g_debug ("Downloaded appstream file %s", g_file_peek_path (data->output_file));
+
+	gs_utils_set_file_etag (data->output_file, new_etag, cancellable);
 
 	/* install file systemwide */
-	if (gs_external_appstream_install (g_file_peek_path (tmp_file),
+	if (gs_external_appstream_install (g_file_peek_path (data->output_file),
 					   cancellable,
 					   &local_error)) {
-		g_debug ("Installed appstream file %s", g_file_peek_path (tmp_file));
+		g_debug ("Installed appstream file %s", g_file_peek_path (data->output_file));
 		g_task_return_boolean (task, TRUE);
 	} else {
 		g_task_return_new_error (task,
@@ -273,10 +371,12 @@ download_user_cb (GObject      *source_object,
 {
 	SoupSession *soup_session = SOUP_SESSION (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GFile *tmp_file = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	DownloadAppStreamData *data = g_task_get_task_data (task);
 	g_autoptr(GError) local_error = NULL;
+	g_autofree gchar *new_etag = NULL;
 
-	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+	if (!gs_download_stream_finish (soup_session, result, &new_etag, NULL, &local_error)) {
 		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
 			g_task_return_new_error (task,
 						 GS_EXTERNAL_APPSTREAM_ERROR,
@@ -291,8 +391,9 @@ download_user_cb (GObject      *source_object,
 		return;
 	}
 
-	g_debug ("Downloaded appstream file %s", g_file_peek_path (tmp_file));
+	g_debug ("Downloaded appstream file %s", g_file_peek_path (data->output_file));
 
+	gs_utils_set_file_etag (data->output_file, new_etag, cancellable);
 	g_task_return_boolean (task, TRUE);
 }
 
