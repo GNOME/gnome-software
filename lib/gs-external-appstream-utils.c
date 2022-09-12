@@ -102,12 +102,9 @@ gs_external_appstream_install (const gchar   *appstream_file,
 static void download_replace_file_cb (GObject      *source_object,
 				      GAsyncResult *result,
 				      gpointer      user_data);
-static void download_system_cb (GObject      *source_object,
+static void download_stream_cb (GObject      *source_object,
                                 GAsyncResult *result,
                                 gpointer      user_data);
-static void download_user_cb (GObject      *source_object,
-                              GAsyncResult *result,
-                              gpointer      user_data);
 
 /* A tuple to store the last-received progress data for a single download.
  * Each download (refresh_url_async()) has a pointer to the relevant
@@ -315,12 +312,12 @@ download_replace_file_cb (GObject      *source_object,
 				  refresh_url_progress_cb,
 				  data->progress_tuple,
 				  cancellable,
-				  data->system_wide ? download_system_cb : download_user_cb,
+				  download_stream_cb,
 				  g_steal_pointer (&task));
 }
 
 static void
-download_system_cb (GObject      *source_object,
+download_stream_cb (GObject      *source_object,
                     GAsyncResult *result,
                     gpointer      user_data)
 {
@@ -350,50 +347,20 @@ download_system_cb (GObject      *source_object,
 
 	gs_utils_set_file_etag (data->output_file, new_etag, cancellable);
 
-	/* install file systemwide */
-	if (gs_external_appstream_install (g_file_peek_path (data->output_file),
-					   cancellable,
-					   &local_error)) {
+	if (data->system_wide) {
+		/* install file systemwide */
+		if (!gs_external_appstream_install (g_file_peek_path (data->output_file),
+						    cancellable,
+						    &local_error)) {
+			g_task_return_new_error (task,
+						 GS_EXTERNAL_APPSTREAM_ERROR,
+						 GS_EXTERNAL_APPSTREAM_ERROR_INSTALLING_ON_SYSTEM,
+						 "Error installing external AppStream file on system: %s", local_error->message);
+			return;
+		}
 		g_debug ("Installed appstream file %s", g_file_peek_path (data->output_file));
-		g_task_return_boolean (task, TRUE);
-	} else {
-		g_task_return_new_error (task,
-					 GS_EXTERNAL_APPSTREAM_ERROR,
-					 GS_EXTERNAL_APPSTREAM_ERROR_INSTALLING_ON_SYSTEM,
-					 "Error installing external AppStream file on system: %s", local_error->message);
-	}
-}
-
-static void
-download_user_cb (GObject      *source_object,
-                  GAsyncResult *result,
-                  gpointer      user_data)
-{
-	SoupSession *soup_session = SOUP_SESSION (source_object);
-	g_autoptr(GTask) task = g_steal_pointer (&user_data);
-	GCancellable *cancellable = g_task_get_cancellable (task);
-	DownloadAppStreamData *data = g_task_get_task_data (task);
-	g_autoptr(GError) local_error = NULL;
-	g_autofree gchar *new_etag = NULL;
-
-	if (!gs_download_stream_finish (soup_session, result, &new_etag, NULL, &local_error)) {
-		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
-			g_task_return_new_error (task,
-						 GS_EXTERNAL_APPSTREAM_ERROR,
-						 GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK,
-						 "External AppStream could not be downloaded due to being offline");
-		else
-			g_task_return_new_error (task,
-						 GS_EXTERNAL_APPSTREAM_ERROR,
-						 GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING,
-						 "Server returned no data for external AppStream file: %s",
-						 local_error->message);
-		return;
 	}
 
-	g_debug ("Downloaded appstream file %s", g_file_peek_path (data->output_file));
-
-	gs_utils_set_file_etag (data->output_file, new_etag, cancellable);
 	g_task_return_boolean (task, TRUE);
 }
 
