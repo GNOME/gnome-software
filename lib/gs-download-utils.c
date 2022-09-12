@@ -28,6 +28,8 @@
 #include "gs-download-utils.h"
 #include "gs-utils.h"
 
+G_DEFINE_QUARK (gs-download-error-quark, gs_download_error)
+
 /**
  * gs_build_soup_session:
  *
@@ -348,7 +350,11 @@ open_input_stream_cb (GObject      *source_object,
 			data->discard_output_stream = TRUE;
 			data->new_etag = g_strdup (data->last_etag);
 			data->new_last_modified_date = (data->last_modified_date != NULL) ? g_date_time_ref (data->last_modified_date) : NULL;
-			finish_download (task, NULL);
+			finish_download (task,
+					 g_error_new (GS_DOWNLOAD_ERROR,
+						      GS_DOWNLOAD_ERROR_NOT_MODIFIED,
+						      "Skipped downloading ‘%s’: %s",
+						      data->uri, soup_status_get_phrase (status_code)));
 			return;
 		} else if (status_code != SOUP_STATUS_OK) {
 			g_autoptr(GString) str = g_string_new (NULL);
@@ -491,6 +497,12 @@ write_bytes_cb (GObject      *source_object,
 	}
 }
 
+static inline gboolean
+is_not_modidifed_error (GError *error)
+{
+	return g_error_matches (error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED);
+}
+
 /* error is (transfer full) */
 static void
 finish_download (GTask  *task,
@@ -500,7 +512,7 @@ finish_download (GTask  *task,
 	GCancellable *cancellable = g_task_get_cancellable (task);
 
 	/* Final progress update. */
-	if (error == NULL) {
+	if (error == NULL || is_not_modidifed_error (error)) {
 		data->expected_stream_size_bytes = data->total_read_bytes;
 		download_progress (task);
 	}
@@ -520,7 +532,7 @@ finish_download (GTask  *task,
 		 * output stream (perhaps because of a cache hit), close the
 		 * output stream but cancel the close operation so that the old
 		 * output file is not overwritten. */
-		if (data->error != NULL || data->discard_output_stream) {
+		if ((data->error != NULL && !is_not_modidifed_error (data->error)) || data->discard_output_stream) {
 			output_cancellable = g_cancellable_new ();
 			g_cancellable_cancel (output_cancellable);
 		} else if (g_task_get_cancellable (task) != NULL) {
