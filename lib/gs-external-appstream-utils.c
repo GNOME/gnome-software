@@ -329,17 +329,26 @@ download_stream_cb (GObject      *source_object,
 	g_autofree gchar *new_etag = NULL;
 
 	if (!gs_download_stream_finish (soup_session, result, &new_etag, NULL, &local_error)) {
-		if (!g_network_monitor_get_network_available (g_network_monitor_get_default ()))
+		if (data->system_wide && g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
+			g_debug ("External AppStream file not modified, removing temporary download file %s",
+				 g_file_peek_path (data->output_file));
+
+			/* System-wide installs should delete the empty file created when preparing to
+			 * download the external AppStream file. */
+			g_file_delete_async (data->output_file, G_PRIORITY_LOW, NULL, NULL, NULL);
+			g_task_return_boolean (task, TRUE);
+		} else if (!g_network_monitor_get_network_available (g_network_monitor_get_default ())) {
 			g_task_return_new_error (task,
 						 GS_EXTERNAL_APPSTREAM_ERROR,
 						 GS_EXTERNAL_APPSTREAM_ERROR_NO_NETWORK,
 						 "External AppStream could not be downloaded due to being offline");
-		else
+		} else {
 			g_task_return_new_error (task,
 						 GS_EXTERNAL_APPSTREAM_ERROR,
 						 GS_EXTERNAL_APPSTREAM_ERROR_DOWNLOADING,
 						 "Server returned no data for external AppStream file: %s",
 						 local_error->message);
+		}
 		return;
 	}
 
