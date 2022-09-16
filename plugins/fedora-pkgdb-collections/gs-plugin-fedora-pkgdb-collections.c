@@ -278,7 +278,8 @@ download_cb (GObject      *source_object,
 	GsPluginFedoraPkgdbCollections *self = g_task_get_source_object (task);
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+	if (!gs_download_file_finish (soup_session, result, &local_error) &&
+	    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
 		g_autoptr(GError) wrapped_error = NULL;
 
 		/* Wrap in a GsPluginError. */

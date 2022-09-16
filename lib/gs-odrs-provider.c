@@ -1417,12 +1417,15 @@ download_ratings_cb (GObject      *source_object,
 	const gchar *cache_file_path = NULL;
 	g_autoptr(GError) local_error = NULL;
 
-	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+	if (!gs_download_file_finish (soup_session, result, &local_error) &&
+	    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
 		g_task_return_new_error (task, GS_ODRS_PROVIDER_ERROR,
 					 GS_ODRS_PROVIDER_ERROR_DOWNLOADING,
 					 "%s", local_error->message);
 		return;
 	}
+
+	g_clear_error (&local_error);
 
 	cache_file_path = g_file_peek_path (cache_file);
 	if (!gs_odrs_provider_load_ratings (self, cache_file_path, &local_error)) {

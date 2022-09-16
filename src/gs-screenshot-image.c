@@ -609,7 +609,8 @@ gs_screenshot_video_downloaded_cb (GObject *source_object,
 	g_autoptr(GsScreenshotImage) ssimg = user_data;
 	g_autoptr(GError) error = NULL;
 
-	if (gs_download_file_finish (ssimg->session, result, &error)) {
+	if (gs_download_file_finish (ssimg->session, result, &error) ||
+	    g_error_matches (error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
 		gs_screenshot_image_stop_spinner (ssimg);
 		as_screenshot_show_image (ssimg);
 

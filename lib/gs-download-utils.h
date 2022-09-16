@@ -40,6 +40,21 @@ typedef void (*GsDownloadProgressCallback) (gsize    bytes_downloaded,
                                             gsize    total_download_size,
                                             gpointer user_data);
 
+/**
+ * GsExternalAppstreamError:
+ * @GS_DOWNLOAD_ERROR_NOT_MODIFIED: The ETag matches that of the server file.
+ *
+ * Error codes for download operations.
+ *
+ * Since: 44
+ */
+typedef enum {
+	GS_DOWNLOAD_ERROR_NOT_MODIFIED,
+} GsDownloadError;
+
+#define GS_DOWNLOAD_ERROR gs_download_error_quark ()
+GQuark		 gs_download_error_quark (void);
+
 void		gs_download_stream_async	(SoupSession                *soup_session,
 						 const gchar                *uri,
 						 GOutputStream              *output_stream,

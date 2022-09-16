@@ -1181,7 +1181,8 @@ gs_plugin_download_file (GsPlugin *plugin,
 	while (result == NULL)
 		g_main_context_iteration (context, TRUE);
 
-	if (!gs_download_file_finish (soup_session, result, &local_error)) {
+	if (!gs_download_file_finish (soup_session, result, &local_error) &&
+	    !g_error_matches (local_error, GS_DOWNLOAD_ERROR, GS_DOWNLOAD_ERROR_NOT_MODIFIED)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
