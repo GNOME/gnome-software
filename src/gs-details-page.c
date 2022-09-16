@@ -645,6 +645,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GtkWidget *select_row = NULL;
 	GtkWidget *origin_row_by_packaging_format = NULL;
 	gint origin_row_by_packaging_format_index = 0;
+	guint n_rows = 0;
 
 	self->origin_by_packaging_format = FALSE;
 	gs_widget_remove_all (self->origin_popover_list_box, (GsRemoveFunc) gtk_list_box_remove);
@@ -699,7 +700,15 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	/* add the local file to the list so that we can carry it over when
 	 * switching between alternates */
 	if (self->app_local_file != NULL) {
-		gs_app_list_add (list, self->app_local_file);
+		if (gs_app_get_state (self->app_local_file) != GS_APP_STATE_INSTALLED) {
+			GtkWidget *row = gs_origin_popover_row_new (self->app_local_file);
+			gtk_widget_show (row);
+			gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
+			first_row = row;
+			select_row = row;
+			n_rows++;
+		}
+
 		/* Do not allow change of the app by the packaging format when it's a local file */
 		origin_by_packaging_format = FALSE;
 	}
@@ -716,6 +725,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 		GtkWidget *row = gs_origin_popover_row_new (app);
 		gtk_widget_show (row);
+		n_rows++;
 		if (first_row == NULL)
 			first_row = row;
 		if (app == self->app || (
@@ -766,7 +776,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	}
 
 	/* Do not show the "selected" check when there's only one app in the list */
-	if (select_row && gs_app_list_length (list) > 1)
+	if (select_row && n_rows > 1)
 		gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (select_row), TRUE);
 	else if (select_row)
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (select_row), FALSE);
@@ -1637,6 +1647,16 @@ _set_app (GsDetailsPage *self, GsApp *app)
 				 self, 0);
 }
 
+static gboolean
+gs_details_page_filter_origin (GsApp *app,
+			       gpointer user_data)
+{
+	/* Keep only local apps or those, which have an origin set */
+	return gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+	       gs_app_get_local_file (app) != NULL ||
+	       gs_app_get_origin (app) != NULL;
+}
+
 /* show the UI and do operations that should not block page load */
 static void
 gs_details_page_load_stage2 (GsDetailsPage *self,
@@ -1676,6 +1696,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self,
 	query = gs_app_query_new ("alternate-of", self->app,
 				  "refine-flags", GS_DETAILS_PAGE_REFINE_FLAGS,
 				  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
+				  "filter-func", gs_details_page_filter_origin,
 				  "sort-func", gs_utils_app_sort_priority,
 				  NULL);
 	plugin_job2 = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_INTERACTIVE);
