@@ -326,6 +326,12 @@ notify_search_resources (GsExtrasPageMode   mode,
 
 	mode_string = gs_extras_page_mode_to_string (mode);
 
+	/* Make sure non-NULL values are used */
+	if (desktop_id == NULL)
+		desktop_id = "";
+	if (ident == NULL)
+		ident = "";
+
 	n = g_notification_new (title);
 	g_notification_set_body (n, body);
 	/* TRANSLATORS: this is a button that launches gnome-software */
