@@ -77,13 +77,18 @@ ssh master.gnome.org ftpadmin install gnome-software-${new_version}.tar.xz
 ```
 
 Add the release notes to GitLab and close the milestone:
- - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/tags/${new_version}/release/edit
-   and upload the release notes for the new release from the `NEWS` file
- - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/${new_version}/edit
-   and link the milestone to it, then list the new release tarball and
-   `sha256sum` file in the ‘Release Assets’ section as the ’Other’ types.
-   Get the file links from https://download.gnome.org/sources/gnome-software/ and
-   name them ’Release tarball’ and ’Release tarball sha256sum’
+ - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/releases/new?tag_name=${new_version}
+   - set `Release title` to `${new_version}`
+   - set the Milestone of the release, if such exists
+   - copy the Release notes for the new release from the `NEWS` file
+     (replace `~~~~~~~~~~~~` with `===` (only three `=`))
+   - in the Links section add:
+     | URL | Link title | Type |
+     | ------ | ------ | ------ |
+     | `https://download.gnome.org/sources/gnome-software/${new_major_version}/gnome-software-${new_version}.tar.xz` | Release tarball | Other |
+     | `https://download.gnome.org/sources/gnome-software/${new_major_version}/gnome-software-${new_version}.sha256sum` | Release tarball sha256sum | Other |
+   - save the changes with `Create release` button
+   - verify the added links for the release artifacts work
  - Go to https://gitlab.gnome.org/GNOME/gnome-software/-/milestones/
    choose the milestone and close it, as all issues and merge requests tagged
    for this release should now be complete
