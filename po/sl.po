@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2022-09-06 19:57+0000\n"
-"PO-Revision-Date: 2022-09-09 22:45+0200\n"
+"PO-Revision-Date: 2022-09-17 23:32+0200\n"
 "Last-Translator: Matej Urbančič <mateju@src.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -27,10 +27,8 @@ msgid "Software"
 msgstr "Programi GNOME"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-#, fuzzy
-#| msgid "Installed Updates"
 msgid "Install and update apps"
-msgstr "Nameščene posodobitve"
+msgstr "Namesti in posodobi programe"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -702,8 +700,6 @@ msgstr "%s • %s"
 #. Translators: The app is considered suitable to be run by all ages of people.
 #. * This is displayed in a context tile, so the string should be short.
 #: src/gs-age-rating-context-dialog.c:936
-#, fuzzy
-#| msgid "All"
 msgctxt "Age rating"
 msgid "All"
 msgstr "Vse"
@@ -771,8 +767,6 @@ msgstr "Ocena starosti"
 #: src/gs-age-rating-context-dialog.ui:68
 #: src/gs-hardware-support-context-dialog.ui:71
 #: src/gs-safety-context-dialog.ui:221
-#, fuzzy
-#| msgid "How to add missing information"
 msgid "How to contribute missing information"
 msgstr "Kako dodati manjkajoče podrobnosti"
 
@@ -808,8 +802,6 @@ msgstr "Odstranitev na čakanju"
 
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:197 src/gs-app-tile.ui:50
 #: src/gs-feature-tile.c:535
-#, fuzzy
-#| msgid "Installed"
 msgctxt "Single app"
 msgid "Installed"
 msgstr "Nameščeno"
@@ -912,10 +904,8 @@ msgstr ""
 #. FIXME support app == NULL
 #. set window title
 #: src/gs-app-details-page.c:166
-#, fuzzy
-#| msgid "The update details"
 msgid "Update Details"
-msgstr "Podrobnosti posodobitve"
+msgstr "Posodobi podrobnosti"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
@@ -1009,10 +999,8 @@ msgid "Install the application (using application ID)"
 msgstr "Namesti programa (prek številke ID)"
 
 #: src/gs-application.c:134
-#, fuzzy
-#| msgid "Install the application (using application ID)"
 msgid "Uninstall the application (using application ID)"
-msgstr "Namesti programa (prek številke ID)"
+msgstr "Odstrani namestitev programa (z uporabo številke ID)"
 
 #: src/gs-application.c:136
 msgid "Open a local package file"
@@ -1192,10 +1180,8 @@ msgstr "Bere mapo za prejem datotek"
 #. Translators: This indicates an app can access data in the system unknown to the Software.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:359
-#, fuzzy
-#| msgid "Can access hardware devices"
 msgid "Can access arbitrary files"
-msgstr "Uporablja strojno opremo"
+msgstr "Lahko dostopa do poljubnih datotek"
 
 #. Translators: This indicates an app can access or change user settings.
 #. * It’s used in a context tile, so should be short.
@@ -1501,8 +1487,6 @@ msgstr "Drugo"
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
 #: lib/gs-category.c:214
-#, fuzzy
-#| msgid "All"
 msgctxt "Category"
 msgid "All"
 msgstr "Vse"
@@ -1527,7 +1511,7 @@ msgstr "Novo in Posodobljeno"
 #. Heading for web apps on a category page
 #: src/gs-category-page.ui:97
 msgid "Picks from the Web"
-msgstr ""
+msgstr "Izbor s spleta"
 
 #. Heading for the rest of the apps on a category page
 #: src/gs-category-page.ui:125
@@ -2129,7 +2113,7 @@ msgstr[3] "Pred %d leti"
 #, c-format
 msgctxt "format-size"
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
@@ -2261,10 +2245,9 @@ msgstr "_Namesti …"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
 #: src/gs-details-page.c:1177
-#, fuzzy, c-format
-#| msgid "Other Apps"
+#, c-format
 msgid "Other Apps by %s"
-msgstr "Drugi programi"
+msgstr "Drugi programi %s"
 
 #. TRANSLATORS: we need a remote server to process
 #: src/gs-details-page.c:1560
@@ -2864,8 +2847,6 @@ msgstr "Strojna podpora"
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-installed-page.c:812 src/gs-shell.ui:307
-#, fuzzy
-#| msgid "Installed"
 msgctxt "List of installed apps"
 msgid "Installed"
 msgstr "Nameščeno"
@@ -2902,12 +2883,7 @@ msgstr "_Sodelujte"
 
 #. Translators: The first placeholder here is a link to information about the license, and the second placeholder here is the name of a software license.
 #: src/gs-license-tile.c:114
-#, fuzzy, c-format
-#| msgid ""
-#| "This software is developed in the open by a community of volunteers, and "
-#| "released under the %s license.\n"
-#| "\n"
-#| "You can contribute and help make it even better."
+#, c-format
 msgid ""
 "This software is developed in the open by a community of volunteers, and "
 "released under the <a href=\"%s\">%s license</a>.\n"
@@ -2915,7 +2891,7 @@ msgid ""
 "You can contribute and help make it even better."
 msgstr ""
 "Ta programska oprema je odprtokodna in jo razvija skupnost prostovoljcev, "
-"objavljena pa je z dovoljenjem %s.\n"
+"objavljena pa je pod posebnimi <a href=\"%s\">%spogoji</a>..\n"
 "\n"
 "Vsakdo lahko sodeluje pri zasnovi in razvoju, če se za to odloči."
 
@@ -2942,14 +2918,6 @@ msgid "_Learn More"
 msgstr "_Več podrobnosti"
 
 #: src/gs-license-tile.c:135
-#, fuzzy
-#| msgid ""
-#| "This software is not developed in the open, so only its developers know "
-#| "how it works. There may be restrictions on its use, and it may be harder "
-#| "to tell if the software is insecure.\n"
-#| "\n"
-#| "You may not be able to contribute to this software or influence its "
-#| "development."
 msgid ""
 "This software is not developed in the open, so only its developers know how "
 "it works. It may be insecure in ways that are hard to detect, and it may "
@@ -2957,19 +2925,18 @@ msgid ""
 "\n"
 "You may not be able to contribute to this software."
 msgstr ""
-"Razvoj programske kode ni odprt za javnost, zato le razvijalci programa "
+"Razvoj te programske kode ni odprt za javnost, zato le razvijalci programa "
 "vedo, kako deluje. Morda so določene omejitve uporabe, prav tako je težko "
-"ugotoviti, ali je programska oprema zares varna.\n"
+"ugotoviti, ali je programska oprema zares varna. Delovanje programa se lahko "
+"kadarkoli tudi spremeni.\n"
 "\n"
 "K tej programski opremi najverjetneje ni mogoče prispevati, niti ne vplivati "
 "na razvoj."
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:56
-#, fuzzy
-#| msgid "Downloading featured images…"
 msgid "Downloading software catalog"
-msgstr "Poteka prejemanje zaslonskih slik programov …"
+msgstr "Prejemanje programskega kataloga"
 
 #: src/gs-loading-page.ui:6
 msgid "Loading page"
@@ -3046,8 +3013,6 @@ msgstr "Paketi, pripravljeni za odstranitev"
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
 #: src/gs-os-update-page.c:258
-#, fuzzy
-#| msgid "Updates"
 msgctxt "Packages to be updated during a system upgrade"
 msgid "Updates"
 msgstr "Posodobitve"
@@ -3667,16 +3632,12 @@ msgid "Can read all data in your downloads directory"
 msgstr "Bere vse podatke v mapi prejemov"
 
 #: src/gs-safety-context-dialog.c:299
-#, fuzzy
-#| msgid "Can read and write all data in your home directory"
 msgid "Can read and write all data in the directory"
-msgstr "Bere in zapisuje vse podatke v osebni mapi"
+msgstr "Lahko prebere in zapisuje vse podatke v mapi"
 
 #: src/gs-safety-context-dialog.c:310
-#, fuzzy
-#| msgid "Can read all data in your home directory"
 msgid "Can read all data in the directory"
-msgstr "Bere vse podatke v osebni mapi"
+msgstr "Lahko prebere vse podatke v mapi"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:326
@@ -4403,8 +4364,6 @@ msgstr "_Več o tem"
 
 #. Translators: A label for a button to show only updates which are available to install.
 #: src/gs-shell.ui:328
-#, fuzzy
-#| msgid "Updates"
 msgctxt "Header bar button for list of apps to be updated"
 msgid "Updates"
 msgstr "Posodobitve"
@@ -4454,8 +4413,6 @@ msgid "Shared system components required by this application"
 msgstr "Sistemsko dodeljene knjižnice, ki jih program zahteva"
 
 #: src/gs-storage-context-dialog.c:188
-#, fuzzy
-#| msgid "Unknown"
 msgctxt "Download size"
 msgid "Unknown"
 msgstr "Neznano"
@@ -4981,10 +4938,9 @@ msgstr "Poteka prejemanje zaslonskih slik programov …"
 
 #. Translators: The '%s' is replaced with the OS name, like "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:637
-#, fuzzy, c-format
-#| msgid "An Endless OS update with new features and fixes."
+#, c-format
 msgid "%s update with new features and fixes."
-msgstr "Posodobitev Endles OS z novimi zmožnostmi."
+msgstr "Posodobitev %s z novimi zmožnostmi in popravki."
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:970
 msgid "EOS update service could not fetch and apply the update."
@@ -5025,57 +4981,49 @@ msgstr "Flatpak je okolje za podporo namiznim programom sistema Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
 #: plugins/flatpak/gs-flatpak.c:313
-#, fuzzy, c-format
-#| msgid "System Updates"
+#, c-format
 msgid "System folder %s"
-msgstr "Sistemske posodobitve"
+msgstr "Sistemska mapa %s"
 
 #: plugins/flatpak/gs-flatpak.c:314 plugins/flatpak/gs-flatpak.c:315
-#, fuzzy, c-format
-#| msgid "Home folder"
+#, c-format
 msgid "Home subfolder %s"
-msgstr "Osebna mapa"
+msgstr "Podrejena osebna mapa %s"
 
 #: plugins/flatpak/gs-flatpak.c:316
-#, fuzzy
-#| msgid "Home folder"
 msgid "Host system folders"
-msgstr "Osebna mapa"
+msgstr "Sistemske gostiteljske mape"
 
 #: plugins/flatpak/gs-flatpak.c:317
 msgid "Host system configuration from /etc"
-msgstr ""
+msgstr "Nastavitve gostiteljevega sistema iz /etc"
 
 #: plugins/flatpak/gs-flatpak.c:318
 msgid "Desktop folder"
 msgstr "Mapa namizja"
 
 #: plugins/flatpak/gs-flatpak.c:318
-#, fuzzy, c-format
-#| msgid "Desktop Support"
+#, c-format
 msgid "Desktop subfolder %s"
-msgstr "Namizna podpora"
+msgstr "Podrejena mapa namizja %s"
 
 #: plugins/flatpak/gs-flatpak.c:319
 msgid "Documents folder"
 msgstr "Mapa dokumentov"
 
 #: plugins/flatpak/gs-flatpak.c:319
-#, fuzzy, c-format
-#| msgid "Home folder"
+#, c-format
 msgid "Documents subfolder %s"
-msgstr "Osebna mapa"
+msgstr "Podrejena mapa dokumentov %s"
 
 #: plugins/flatpak/gs-flatpak.c:320
 msgid "Music folder"
 msgstr "Glasbena mapa"
 
 #: plugins/flatpak/gs-flatpak.c:320
-#, fuzzy, c-format
-#| msgctxt "Menu of Audio & Video"
-#| msgid "Music Players"
+#, c-format
 msgid "Music subfolder %s"
-msgstr "Predvajalniki glasbe"
+msgstr "Podrejena mapa glasbe %s"
 
 #: plugins/flatpak/gs-flatpak.c:321
 msgid "Pictures folder"
@@ -5084,26 +5032,25 @@ msgstr "Mapa s slikami"
 #: plugins/flatpak/gs-flatpak.c:321
 #, c-format
 msgid "Pictures subfolder %s"
-msgstr ""
+msgstr "Podrejena mapa slik %s"
 
 #: plugins/flatpak/gs-flatpak.c:322
 msgid "Public Share folder"
-msgstr ""
+msgstr "Mapa javne souporabe"
 
 #: plugins/flatpak/gs-flatpak.c:322
 #, c-format
 msgid "Public Share subfolder %s"
-msgstr ""
+msgstr "Podrejena mapa javne souporabe %s"
 
 #: plugins/flatpak/gs-flatpak.c:323
 msgid "Videos folder"
 msgstr "Mapa video posnetkov"
 
 #: plugins/flatpak/gs-flatpak.c:323
-#, fuzzy, c-format
-#| msgid "%s is suitable for %s"
+#, c-format
 msgid "Videos subfolder %s"
-msgstr "Progam %s je primeren za skupino %s"
+msgstr "Podrejena mapa videa %s"
 
 #: plugins/flatpak/gs-flatpak.c:324
 msgid "Templates folder"
@@ -5112,28 +5059,25 @@ msgstr "Mapa predlog"
 #: plugins/flatpak/gs-flatpak.c:324
 #, c-format
 msgid "Templates subfolder %s"
-msgstr ""
+msgstr "Podrejena mapa predlog %s"
 
 #: plugins/flatpak/gs-flatpak.c:325
 msgid "User cache folder"
-msgstr ""
+msgstr "Uporabnikova mapa predpomnilnika"
 
 #: plugins/flatpak/gs-flatpak.c:325
 #, c-format
 msgid "User cache subfolder %s"
-msgstr ""
+msgstr "Podrejena mapa uporabnikovega predpomnilnika %s"
 
 #: plugins/flatpak/gs-flatpak.c:326
-#, fuzzy
-#| msgid "%s Configuration Update"
 msgid "User configuration folder"
-msgstr "Posodobitev nastavitev %s"
+msgstr "Mapa uporabniških nastavitev"
 
 #: plugins/flatpak/gs-flatpak.c:326
-#, fuzzy, c-format
-#| msgid "%s Configuration Update"
+#, c-format
 msgid "User configuration subfolder %s"
-msgstr "Posodobitev nastavitev %s"
+msgstr "Podrejena mapa uporabniških nastavitev %s"
 
 #: plugins/flatpak/gs-flatpak.c:327
 msgid "User data folder"
@@ -5142,7 +5086,7 @@ msgstr "Uporabniška podatkovna mapa"
 #: plugins/flatpak/gs-flatpak.c:327
 #, c-format
 msgid "User data subfolder %s"
-msgstr ""
+msgstr "Podrejena mapa uporabnikovih podatkov %s"
 
 #: plugins/flatpak/gs-flatpak.c:328
 msgid "User runtime folder"
@@ -5151,7 +5095,7 @@ msgstr "Uporabniška izvajalna mapa"
 #: plugins/flatpak/gs-flatpak.c:328
 #, c-format
 msgid "User runtime subfolder %s"
-msgstr ""
+msgstr "Podrejena uporabnikova izvedbena mapa %s"
 
 #: plugins/flatpak/gs-flatpak.c:386
 #, c-format
@@ -5193,6 +5137,8 @@ msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
 "Remove the filter and repeat the install. Detailed error: %s"
 msgstr ""
+"Oddaljeno mesto »%s« ne dovoli namestitve »%s«, najverjetneje zaradi filtra. "
+"Odstranite ga in poskusite znova. Podrobna napaka je: %s"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
