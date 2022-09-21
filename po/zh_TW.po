@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-09-02 19:39+0000\n"
-"PO-Revision-Date: 2022-09-06 00:48+0800\n"
+"POT-Creation-Date: 2022-09-05 16:51+0000\n"
+"PO-Revision-Date: 2022-09-22 00:47+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese - Taiwan <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -26,10 +26,8 @@ msgid "Software"
 msgstr "軟體"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:8
-#, fuzzy
-#| msgid "Installed Updates"
 msgid "Install and update apps"
-msgstr "已安裝的更新"
+msgstr "安裝與更新應用程式"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:10
 msgid ""
@@ -858,7 +856,7 @@ msgstr "可以檢視並更改任何設定"
 
 #: src/gs-app-details-page.c:80
 msgid "Legacy display system"
-msgstr "舊式顯示系統"
+msgstr "舊世代顯示系統"
 
 #: src/gs-app-details-page.c:80
 msgid "Uses an old, insecure display system"
@@ -1167,7 +1165,7 @@ msgstr "可以取用並更改使用者設定"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:373 src/gs-safety-context-dialog.c:211
 msgid "Uses a legacy windowing system"
-msgstr "使用舊式視窗顯示系統"
+msgstr "使用舊世代視窗顯示系統"
 
 #. Translators: This indicates an app can escape its sandbox.
 #. * It’s used in a context tile, so should be short.
@@ -2384,7 +2382,7 @@ msgstr "網站"
 #: src/gs-extras-page.c:354
 #, c-format
 msgid "No applications are available that provide the file %s."
-msgstr "沒有提供「%s」檔案的應用程式"
+msgstr "沒有提供「%s」檔案的應用程式。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -3147,7 +3145,7 @@ msgstr[0] "已安裝 %u 個附加元件"
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
-msgstr[0] " %u 個應用程式"
+msgstr[0] "%u 個應用程式"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
@@ -3156,7 +3154,7 @@ msgstr[0] " %u 個應用程式"
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
-msgstr[0] " %u 個附加元件"
+msgstr[0] "%u 個附加元件"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
@@ -3422,7 +3420,7 @@ msgstr "無法取用如網路攝像機、遊戲控制器之類的裝置"
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:210
 msgid "Legacy Windowing System"
-msgstr "舊式視窗顯示系統"
+msgstr "舊世代視窗顯示系統"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
 #: src/gs-safety-context-dialog.c:218
@@ -4278,11 +4276,8 @@ msgid "Installed on %s"
 msgstr "安裝於 %s"
 
 #: src/gs-update-dialog.ui:77
-#, fuzzy
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Updates Installed"
-msgstr "軟體更新已安裝"
+msgstr "未安裝更新"
 
 #: src/gs-update-monitor.c:213
 msgid "Software Updates Are Out of Date"
