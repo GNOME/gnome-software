@@ -2410,7 +2410,6 @@ gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
                                            GAsyncReadyCallback  callback,
                                            gpointer             user_data)
 {
-	guint i = 0, j;
 	GsApp *app;
 	g_autofree const gchar **package_names = NULL;
 	g_autoptr(GTask) task = NULL;
@@ -2421,9 +2420,9 @@ gs_plugin_packagekit_refine_history_async (GsPluginPackagekit  *self,
 
 	/* get an array of package names */
 	package_names = g_new0 (const gchar *, gs_app_list_length (list) + 1);
-	for (j = 0; j < gs_app_list_length (list); j++) {
-		app = gs_app_list_index (list, j);
-		package_names[i++] = gs_app_get_source_default (app);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
+		package_names[i] = gs_app_get_source_default (app);
 	}
 
 	g_debug ("getting history for %u packages", gs_app_list_length (list));
