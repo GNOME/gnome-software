@@ -16,16 +16,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-10-11 07:42+0000\n"
-"PO-Revision-Date: 2021-10-26 00:59+0200\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"POT-Creation-Date: 2022-06-18 21:31+0000\n"
+"PO-Revision-Date: 2022-09-22 09:14+0200\n"
+"Last-Translator: Philipp Kiemle <philipp.kiemle@gmail.com>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 3.1.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -80,7 +80,7 @@ msgstr "Seite mit Aktualisierungen"
 msgid "The update details"
 msgstr "Details zur Aktualisierung"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1862
+#: data/appdata/org.gnome.Software.appdata.xml.in:1956
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
 
@@ -604,7 +604,7 @@ msgstr "%s ist für %s geeignet"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:302
+#: src/gs-age-rating-context-dialog.ui:9 src/gs-app-context-bar.ui:305
 msgid "Age Rating"
 msgstr "Altersfreigabe"
 
@@ -614,7 +614,7 @@ msgstr "Altersfreigabe"
 msgid "How to add missing information"
 msgstr "So fügen Sie fehlende Informationen hinzu"
 
-#: lib/gs-app.c:5607
+#: lib/gs-app.c:5609
 msgid "Local file"
 msgstr "Lokale Datei"
 
@@ -623,12 +623,12 @@ msgstr "Lokale Datei"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:5623 src/gs-safety-context-dialog.c:391
+#: lib/gs-app.c:5625 src/gs-safety-context-dialog.c:391
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: lib/gs-app.c:5699
+#: lib/gs-app.c:5701
 msgid "Package"
 msgstr "Paket"
 
@@ -636,24 +636,24 @@ msgstr "Paket"
 msgid "Pending"
 msgstr "Ausstehend"
 
-#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:381
+#: src/gs-app-addon-row.c:101 src/gs-app-row.c:439 src/gs-details-page.c:383
 msgid "Pending install"
 msgstr "Ausstehende Installation"
 
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:388
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:443 src/gs-details-page.c:390
 msgid "Pending remove"
 msgstr "Ausstehendes Entfernen"
 
 #. Translators: This is in the context of a list of apps which are installed on the system.
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gs-app-addon-row.c:111 src/gs-app-row.ui:167 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:381 src/gs-installed-page.c:592 src/gs-shell.ui:319
+#: src/gs-feature-tile.c:381 src/gs-installed-page.c:706 src/gs-shell.ui:319
 msgid "Installed"
 msgstr "Installiert"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:374
+#: src/gs-app-addon-row.c:115 src/gs-app-row.c:195 src/gs-details-page.c:376
 msgid "Installing"
 msgstr "Installieren"
 
@@ -1981,37 +1981,37 @@ msgstr "_Mehr anzeigen"
 msgid "_Show Less"
 msgstr "_Weniger anzeigen"
 
-#: src/gs-details-page.c:369
+#: src/gs-details-page.c:371
 msgid "Removing…"
 msgstr "Wird entfernt …"
 
-#: src/gs-details-page.c:379
+#: src/gs-details-page.c:381
 msgid "Requires restart to finish install"
 msgstr "Neustart erforderlich, um die Installation fertigzustellen"
 
-#: src/gs-details-page.c:386
+#: src/gs-details-page.c:388
 msgid "Requires restart to finish remove"
 msgstr "Neustart erforderlich, um das Entfernen fertigzustellen"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:403
+#: src/gs-details-page.c:405
 msgid "Pending installation…"
 msgstr "Ausstehende Installation …"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:410
+#: src/gs-details-page.c:412
 msgid "Pending update…"
 msgstr "Ausstehende Aktualisierung …"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:426
+#: src/gs-details-page.c:428
 msgid "Preparing…"
 msgstr "Wird vorbereitet …"
 
 #. Translators: This string is shown when uninstalling an app.
-#: src/gs-details-page.c:429
+#: src/gs-details-page.c:431
 msgid "Uninstalling…"
 msgstr "Deinstallieren …"
 
@@ -2019,12 +2019,12 @@ msgstr "Deinstallieren …"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:833 src/gs-details-page.c:859
+#: src/gs-details-page.c:851 src/gs-details-page.c:877
 #: src/gs-details-page.ui:240
 msgid "_Install"
 msgstr "_Installieren"
 
-#: src/gs-details-page.c:849
+#: src/gs-details-page.c:867
 msgid "_Restart"
 msgstr "_Neu starten"
 
@@ -2032,25 +2032,25 @@ msgstr "_Neu starten"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:873
+#: src/gs-details-page.c:891
 msgid "_Install…"
 msgstr "_Installieren …"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1413
+#: src/gs-details-page.c:1431
 msgid "You need internet access to write a review"
 msgstr ""
 "Sie brauchen eine Verbindung mit dem Internet, um eine Bewertung abgeben zu "
 "können"
 
-#: src/gs-details-page.c:1559 src/gs-details-page.c:1575
+#: src/gs-details-page.c:1576 src/gs-details-page.c:1592
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "»%s« konnte nicht gefunden werden"
 
 #. TRANSLATORS: This is a title for the app details page,
 #. * shown when it’s loading the details of an app.
-#: src/gs-details-page.c:2131
+#: src/gs-details-page.c:2157
 msgid "Loading…"
 msgstr "Wird geladen …"
 
@@ -2413,17 +2413,17 @@ msgstr[0] "%s wurde nicht gefunden. Besuchen Sie %s für weitere Informationen."
 msgstr[1] ""
 "%s wurden nicht gefunden. Besuchen Sie %s für weitere Informationen."
 
-#: src/gs-extras-page.c:562 src/gs-extras-page.c:618 src/gs-extras-page.c:657
+#: src/gs-extras-page.c:564 src/gs-extras-page.c:620 src/gs-extras-page.c:659
 #, c-format
 msgid "Failed to find any search results: %s"
 msgstr "Keine Suchergebnisse: %s"
 
-#: src/gs-extras-page.c:848
+#: src/gs-extras-page.c:850
 #, c-format
 msgid "%s file format"
 msgstr "%s-Dateiformat"
 
-#: src/gs-extras-page.c:1223
+#: src/gs-extras-page.c:1225
 msgid "Unable to Find Requested Software"
 msgstr "Die angeforderte Software kann nicht gefunden werden"
 
@@ -2864,12 +2864,12 @@ msgstr "Herunterstufungen"
 #. Translators: This is a clickable link on the third party repositories info bar. It's
 #. part of a constructed sentence: "Provides access to additional software from [selected external sources].
 #. Some proprietary software is included."
-#: src/gs-overview-page.c:607
+#: src/gs-overview-page.c:635
 msgid "selected external sources"
 msgstr "ausgewählten externen Softwarequellen"
 
 #. Translators: This is the third party repositories info bar. The %s is replaced with "selected external sources" link.
-#: src/gs-overview-page.c:609
+#: src/gs-overview-page.c:637
 #, c-format
 msgid ""
 "Provides access to additional software from %s. Some proprietary software is "
@@ -2880,13 +2880,13 @@ msgstr ""
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:618 src/gs-repos-dialog.c:198
+#: src/gs-overview-page.c:646 src/gs-repos-dialog.c:198
 msgid "Enable"
 msgstr "Aktivieren"
 
 #. Translators: This is the title of the main page of the UI.
 #. Translators: A label for a button to show all available software.
-#: src/gs-overview-page.c:673 src/gs-shell.ui:306
+#: src/gs-overview-page.c:701 src/gs-shell.ui:306
 msgid "Explore"
 msgstr "Erkunden"
 
@@ -4368,12 +4368,12 @@ msgid "Includes %s, %s and %s."
 msgstr "Beinhaltet %s, %s und %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:654 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:656 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Betriebssystemaktualisierungen sind nicht verfügbar"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:656
+#: src/gs-update-monitor.c:658
 msgid "Upgrade to continue receiving security updates."
 msgstr ""
 "Aktualisieren Sie Ihr System, um weiterhin Sicherheitsaktualisierungen zu "
@@ -4381,53 +4381,53 @@ msgstr ""
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:711
+#: src/gs-update-monitor.c:713
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Eine neue Version von %s steht zur Installation bereit"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:715
+#: src/gs-update-monitor.c:717
 msgid "Software Upgrade Available"
 msgstr "Software-Systemaktualisierung verfügbar"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:1112
+#: src/gs-update-monitor.c:1114
 msgid "Software Updates Failed"
 msgstr "Software-Aktualisierungen fehlgeschlagen"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:1114
+#: src/gs-update-monitor.c:1116
 msgid "An important OS update failed to be installed."
 msgstr ""
 "Eine wichtige Betriebssystemaktualisierung konnte nicht installiert werden."
 
-#: src/gs-update-monitor.c:1115
+#: src/gs-update-monitor.c:1117
 msgid "Show Details"
 msgstr "Details anzeigen"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1138
+#: src/gs-update-monitor.c:1140
 msgid "System Upgrade Complete"
 msgstr "Betriebssystemaktualisierung ist abgeschlossen"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1143
+#: src/gs-update-monitor.c:1145
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Willkommen zu %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1149
+#: src/gs-update-monitor.c:1151
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Software-Aktualisierung installiert"
 msgstr[1] "Software-Aktualisierungen installiert"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1153
+#: src/gs-update-monitor.c:1155
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Eine wichtige Betriebssystemaktualisierung wurde installiert."
@@ -4438,30 +4438,30 @@ msgstr[1] "Wichtige Betriebssystemaktualisierungen wurden installiert."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1164
+#: src/gs-update-monitor.c:1166
 msgctxt "updates"
 msgid "Review"
 msgstr "Ansehen"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1213
+#: src/gs-update-monitor.c:1215
 msgid "Failed To Update"
 msgstr "Aktualisierung fehlgeschlagen"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1219
+#: src/gs-update-monitor.c:1221
 msgid "The system was already up to date."
 msgstr "Das System ist bereits auf dem neusten Stand."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1224
+#: src/gs-update-monitor.c:1226
 msgid "The update was cancelled."
 msgstr "Die Aktualisierung wurde abgebrochen."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1230
+#: src/gs-update-monitor.c:1232
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -4471,7 +4471,7 @@ msgstr ""
 
 # Sollte dann nicht auch gleich auf eine fehlerhafte Signatur hingewiesen werden?
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1236
+#: src/gs-update-monitor.c:1238
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -4480,7 +4480,7 @@ msgstr ""
 "an den Autor bzw. Hersteller des Programms für weitere Einzelheiten."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1242
+#: src/gs-update-monitor.c:1244
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -4488,7 +4488,7 @@ msgstr ""
 "bisschen Platz und versuchen Sie es anschließend erneut."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1247
+#: src/gs-update-monitor.c:1249
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4583,7 +4583,7 @@ msgstr "Das kann einen Moment dauern."
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:222
 msgid "Up to Date"
-msgstr "Auf dem neuestem Stand"
+msgstr "Auf dem neuesten Stand"
 
 #: src/gs-updates-page.ui:263
 msgid "Use Mobile Data?"
@@ -4785,7 +4785,7 @@ msgstr ""
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-Metadaten für %s werden geholt …"
 
-#: plugins/flatpak/gs-flatpak.c:3164
+#: plugins/flatpak/gs-flatpak.c:3168
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Erweiterung »%s« konnte nicht präzisiert werden: %s"
