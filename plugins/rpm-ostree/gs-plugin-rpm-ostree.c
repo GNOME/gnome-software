@@ -749,7 +749,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
-	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
@@ -788,7 +788,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	gs_app_set_management_plugin (app, plugin);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
-	gs_app_set_size_download (app, GS_SIZE_TYPE_UNKNOWN, 0);
+	gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 	gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
