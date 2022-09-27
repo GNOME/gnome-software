@@ -857,6 +857,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		self->button_remove,
 	};
 	GtkWidget *highlighted_button = NULL;
+	gboolean remove_is_destructive = TRUE;
 
 	state = gs_app_get_state (self->app);
 
@@ -970,6 +971,15 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	}
 
+	if (!gtk_widget_get_visible (self->button_details_launch) &&
+	    !gtk_widget_get_visible (self->button_install) &&
+	    !gtk_widget_get_visible (self->button_update)) {
+		remove_is_destructive = FALSE;
+		gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Uninstall"));
+	} else {
+		gtk_button_set_icon_name (GTK_BUTTON (self->button_remove), "user-trash-symbolic");
+	}
+
 	/* Update the styles so that the first visible button gets
 	 * `suggested-action` or `destructive-action` and the rest are
 	 * unstyled. This draws the user’s attention to the most likely
@@ -981,9 +991,12 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		} else if (gtk_widget_get_visible (buttons_in_order[i])) {
 			highlighted_button = buttons_in_order[i];
 
-			if (buttons_in_order[i] == self->button_remove)
-				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
-			else
+			if (buttons_in_order[i] == self->button_remove) {
+				if (remove_is_destructive)
+					gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+				else
+					gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+			} else
 				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
 		}
 	}
