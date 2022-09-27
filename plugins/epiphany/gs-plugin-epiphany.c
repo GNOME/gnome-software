@@ -784,17 +784,20 @@ list_apps_thread_cb (GTask        *task,
 	g_autoptr(GsAppList) list = gs_app_list_new ();
 	GsPluginListAppsData *data = task_data;
 	GsAppQueryTristate is_installed = GS_APP_QUERY_TRISTATE_UNSET;
+	const gchar * const *keywords = NULL;
 	g_autoptr(GError) local_error = NULL;
 
 	assert_in_worker (self);
 
 	if (data->query != NULL) {
 		is_installed = gs_app_query_get_is_installed (data->query);
+		keywords = gs_app_query_get_keywords (data->query);
 	}
 
 	/* Currently only support a subset of query properties, and only one set at once.
 	 * Also don’t currently support GS_APP_QUERY_TRISTATE_FALSE. */
-	if (is_installed == GS_APP_QUERY_TRISTATE_UNSET ||
+	if ((is_installed == GS_APP_QUERY_TRISTATE_UNSET &&
+	     keywords == NULL) ||
 	    is_installed == GS_APP_QUERY_TRISTATE_FALSE ||
 	    gs_app_query_get_n_properties_set (data->query) != 1) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
@@ -810,6 +813,26 @@ list_apps_thread_cb (GTask        *task,
 
 	if (is_installed == GS_APP_QUERY_TRISTATE_TRUE)
 		gs_plugin_cache_lookup_by_state (GS_PLUGIN (self), list, GS_APP_STATE_INSTALLED);
+	else if (keywords != NULL) {
+		for (gsize i = 0; keywords[i]; i++) {
+			GHashTableIter iter;
+			gpointer key, value;
+			g_hash_table_iter_init (&iter, self->url_id_map);
+			while (g_hash_table_iter_next (&iter, &key, &value)) {
+				const gchar *url = key;
+				const gchar *app_id = value;
+				if (g_strcmp0 (app_id, keywords[i]) == 0) {
+					g_autoptr(GsApp) app = NULL;
+					g_autofree gchar *metainfo_app_id = NULL;
+					metainfo_app_id = generate_app_id_for_url (url);
+					app = gs_plugin_cache_lookup (GS_PLUGIN (self), metainfo_app_id);
+					if (app != NULL)
+						gs_app_list_add (list, app);
+					break;
+				}
+			}
+		}
+	}
 
 	g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
 }
