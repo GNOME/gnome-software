@@ -264,8 +264,17 @@ traverse_component_icons (GsApp *app,
 			  XbNode *component,
 			  GPtrArray *icons)
 {
+	const gchar *skip_icon = NULL;
+
 	if (!icons)
 		return;
+
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
+		skip_icon = "application-x-executable";
+	else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_INPUT_METHOD)
+		skip_icon = "system-run-symbolic";
+	else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_CODEC)
+		skip_icon = "application-x-addon";
 
 	/* This code deliberately does *not* check that the icon files or theme
 	 * icons exist, as that would mean doing disk I/O for all the apps in
@@ -280,6 +289,12 @@ traverse_component_icons (GsApp *app,
 
 		if (icon_kind == AS_ICON_KIND_UNKNOWN) {
 			g_debug ("unknown icon kind ‘%s’", icon_kind_str);
+			continue;
+		}
+
+		if (icon_kind == AS_ICON_KIND_STOCK && skip_icon != NULL &&
+		    g_strcmp0 (skip_icon, xb_node_get_text (icon_node)) == 0) {
+			g_debug ("skipping icon ‘%s’ for app '%s'", skip_icon, gs_app_get_unique_id (app));
 			continue;
 		}
 
