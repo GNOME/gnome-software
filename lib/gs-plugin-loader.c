@@ -53,6 +53,7 @@ struct _GsPluginLoader
 
 	GMutex			 pending_apps_mutex;
 	GsAppList		*pending_apps;		/* (nullable) (owned) */
+	GCancellable		*pending_apps_cancellable;  /* (nullable) (owned) */
 
 	GThreadPool		*queued_ops_pool;
 	gint			 active_jobs;
@@ -2535,6 +2536,8 @@ gs_plugin_loader_dispose (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
+	g_cancellable_cancel (plugin_loader->pending_apps_cancellable);
+
 	if (plugin_loader->plugins != NULL) {
 		/* Shut down all the plugins first. */
 		gs_plugin_loader_shutdown (plugin_loader, NULL);
@@ -2572,6 +2575,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->category_manager);
 	g_clear_object (&plugin_loader->odrs_provider);
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
+	g_clear_object (&plugin_loader->pending_apps_cancellable);
 
 #ifdef HAVE_SYSPROF
 	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
@@ -2937,8 +2941,67 @@ gs_plugin_loader_get_network_metered (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_pending_apps_refined_cb (GObject      *source,
+                                          GAsyncResult *res,
+                                          gpointer      user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GsAppList) old_queue = GS_APP_LIST (user_data);
+	g_autoptr(GsAppList) refined_queue = NULL;
+	g_autoptr(GError) error = NULL;
+
+	refined_queue = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+
+	if (refined_queue == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("failed to refine pending apps: %s", error->message);
+
+			g_mutex_lock (&plugin_loader->pending_apps_mutex);
+			g_clear_object (&plugin_loader->pending_apps);
+			g_mutex_unlock (&plugin_loader->pending_apps_mutex);
+
+			save_install_queue (plugin_loader);
+		}
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (old_queue); i++) {
+		GsApp *app = gs_app_list_index (old_queue, i);
+
+		if (gs_app_list_lookup (refined_queue, gs_app_get_unique_id (app)) == NULL)
+			remove_app_from_install_queue (plugin_loader, app);
+	}
+
+	for (guint i = 0; i < gs_app_list_length (refined_queue); i++) {
+		GsApp *app = gs_app_list_index (refined_queue, i);
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
+			plugin_job = gs_plugin_job_manage_repository_new (app,
+									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE |
+									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
+		} else {
+			/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+							 "app", app,
+							 "interactive", TRUE,
+							 NULL);
+		}
+
+		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+						    gs_app_get_cancellable (app),
+						    gs_plugin_loader_app_installed_cb,
+						    g_object_ref (app));
+	}
+
+	g_clear_object (&plugin_loader->pending_apps_cancellable);
+}
+
+static void
 gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loader)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppList) obsolete = NULL;
 	g_autoptr(GsAppList) queue = NULL;
 
@@ -2954,6 +3017,10 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 		g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 		return;
 	}
+
+	/* Already flushing pending queue */
+	if (plugin_loader->pending_apps_cancellable)
+		return;
 
 	queue = gs_app_list_new ();
 	obsolete = gs_app_list_new ();
@@ -2972,25 +3039,14 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 		GsApp *app = gs_app_list_index (obsolete, i);
 		remove_app_from_install_queue (plugin_loader, app);
 	}
-	for (guint i = 0; i < gs_app_list_length (queue); i++) {
-		GsApp *app = gs_app_list_index (queue, i);
-		g_autoptr(GsPluginJob) plugin_job = NULL;
-		/* The 'interactive' is needed for credentials prompt, otherwise it just fails */
-		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_REPOSITORY) {
-			plugin_job = gs_plugin_job_manage_repository_new (app,
-									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INTERACTIVE |
-									  GS_PLUGIN_MANAGE_REPOSITORY_FLAGS_INSTALL);
-		} else {
-			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-							 "app", app,
-							 "interactive", TRUE,
-							 NULL);
-		}
-		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-						    gs_app_get_cancellable (app),
-						    gs_plugin_loader_app_installed_cb,
-						    g_object_ref (app));
-	}
+
+	plugin_loader->pending_apps_cancellable = g_cancellable_new ();
+
+	plugin_job = gs_plugin_job_refine_new (queue, GS_PLUGIN_REFINE_FLAGS_NONE);
+	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+					    plugin_loader->pending_apps_cancellable,
+					    gs_plugin_loader_pending_apps_refined_cb,
+					    g_steal_pointer (&queue));
 }
 
 static void
