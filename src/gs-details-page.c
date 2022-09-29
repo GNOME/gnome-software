@@ -1573,11 +1573,13 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	gtk_widget_set_visible (self->list_box_featured_review, reviews->len > 0);
 
 	/* Update the overall container. */
-	gtk_widget_set_visible (self->box_reviews,
+	gtk_widget_set_visible (self->list_box_reviews_summary,
 				show_reviews &&
 				(gtk_widget_get_visible (self->histogram_row) ||
-				 gtk_widget_get_visible (self->button_review) ||
-				 reviews->len > 0));
+				 gtk_widget_get_visible (self->button_review)));
+	gtk_widget_set_visible (self->box_reviews,
+				reviews->len > 0 ||
+				gtk_widget_get_visible (self->list_box_reviews_summary));
 }
 
 static void
