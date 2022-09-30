@@ -1833,6 +1833,13 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			g_string_append_printf (str, _("Unable to launch %s: %s is not installed"),
 					        str_app,
 					        str_origin);
+		} else {
+			/* non-interactive generic */
+			if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+				return FALSE;
+			/* TRANSLATORS: we failed to get a proper error code */
+			g_string_append (str, _("Sorry, something went wrong"));
+			gs_shell_append_detailed_error (shell, str, error);
 		}
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification */
