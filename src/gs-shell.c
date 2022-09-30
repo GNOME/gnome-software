@@ -1264,7 +1264,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return FALSE;
+		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (origin != NULL) {
@@ -1484,7 +1484,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return FALSE;
+		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (app != NULL && origin != NULL) {
@@ -1786,7 +1786,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
@@ -1852,7 +1852,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1900,7 +1900,7 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1938,7 +1938,7 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1991,7 +1991,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
