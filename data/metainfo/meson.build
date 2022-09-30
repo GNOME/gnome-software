@@ -14,7 +14,7 @@ if get_option('tests') and appstream.version().version_compare('>=0.15.5')
         args: ['validate',
               '--pedantic',
               '--no-net',
-              '--override=releases-not-in-order=info', # 42.rc > 42.0 for AppStream, which clashes with GNOME versioning
+              '--explain',
               'org.gnome.Software.metainfo.xml.in'],
         workdir : meson.current_source_dir(),
         suite: ['lib'],
