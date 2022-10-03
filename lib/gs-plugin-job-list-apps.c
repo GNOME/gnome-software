@@ -137,6 +137,19 @@ gs_plugin_job_list_apps_set_property (GObject      *object,
 }
 
 static gboolean
+filter_valid_apps (GsApp    *app,
+                   gpointer  user_data)
+{
+	GsPluginJobListApps *self = GS_PLUGIN_JOB_LIST_APPS (user_data);
+	GsPluginRefineFlags refine_flags = GS_PLUGIN_REFINE_FLAGS_NONE;
+
+	if (self->query)
+		refine_flags = gs_app_query_get_refine_flags (self->query);
+
+	return gs_plugin_loader_app_is_valid (app, refine_flags);
+}
+
+static gboolean
 app_filter_qt_for_gtk_and_compatible (GsApp    *app,
                                       gpointer  user_data)
 {
@@ -345,6 +358,7 @@ finish_task (GTask     *task,
 	/* Standard filtering.
 	 *
 	 * FIXME: It feels like this filter should be done in a different layer. */
+	gs_app_list_filter (merged_list, filter_valid_apps, self);
 	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
 
 	/* Caller-specified filtering. */
