@@ -49,6 +49,8 @@ struct _GsApplication {
 
 	/* Created/freed on demand */
 	GHashTable *withdraw_notifications; /* gchar *notification_id ~> GUINT_TO_POINTER (timeout_id) */
+
+	GVariantDict *local_options_dict; /* (owned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, ADW_TYPE_APPLICATION);
@@ -1006,6 +1008,8 @@ gs_application_add_wrapper_actions (GApplication *application)
 	}
 }
 
+static int gs_application_real_handle_local_options (GApplication *app,
+						     GVariantDict *options);
 static void startup_cb (GObject      *source_object,
                         GAsyncResult *result,
                         gpointer      user_data);
@@ -1105,6 +1109,11 @@ startup_cb (GObject      *source_object,
 	   thus all plugins are loaded and ready for the jobs. */
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
 	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
+
+	if (app->local_options_dict) {
+		g_autoptr(GVariantDict) local_options_dict = g_steal_pointer (&app->local_options_dict);
+		gs_application_real_handle_local_options (G_APPLICATION (app), local_options_dict);
+	}
 }
 
 static void
@@ -1189,6 +1198,7 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->action_map);
 	g_clear_object (&app->debug);
 	g_clear_pointer (&app->withdraw_notifications, g_hash_table_unref);
+	g_clear_pointer (&app->local_options_dict, g_variant_dict_unref);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
@@ -1204,32 +1214,15 @@ get_page_interaction_from_string (const gchar *interaction)
 }
 
 static int
-gs_application_handle_local_options (GApplication *app, GVariantDict *options)
+gs_application_real_handle_local_options (GApplication *app,
+					  GVariantDict *options)
 {
-	GsApplication *self = GS_APPLICATION (app);
 	const gchar *id;
 	const gchar *pkgname;
 	const gchar *local_filename;
 	const gchar *mode;
 	const gchar *search;
 	gint rc = -1;
-	g_autoptr(GError) error = NULL;
-
-	gs_debug_set_verbose (self->debug, g_variant_dict_contains (options, "verbose"));
-
-	/* prefer local sources */
-	if (g_variant_dict_contains (options, "prefer-local"))
-		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
-
-	if (g_variant_dict_contains (options, "version")) {
-		g_print ("gnome-software %s\n", get_version());
-		return 0;
-	}
-
-	if (!g_application_register (app, NULL, &error)) {
-		g_printerr ("%s\n", error->message);
-		return 1;
-	}
 
 	if (g_variant_dict_contains (options, "autoupdate")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
@@ -1317,6 +1310,40 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	}
 
 	return rc;
+}
+
+static int
+gs_application_handle_local_options (GApplication *app,
+				     GVariantDict *options)
+{
+	GsApplication *self = GS_APPLICATION (app);
+	g_autoptr(GError) error = NULL;
+	gs_debug_set_verbose (self->debug, g_variant_dict_contains (options, "verbose"));
+
+	/* prefer local sources */
+	if (g_variant_dict_contains (options, "prefer-local"))
+		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
+
+	if (g_variant_dict_contains (options, "version")) {
+		g_print ("gnome-software %s\n", get_version());
+		return 0;
+	}
+
+	if (!g_application_register (app, NULL, &error)) {
+		g_printerr ("%s\n", error->message);
+		return 1;
+	}
+
+	/* Still waiting for the plugin loader and the shell to setup, but postpone
+	   only if this is the main application instance, otherwise just pass
+	   the options to the main application. */
+	if (self->update_monitor == NULL && !g_application_get_is_remote (app)) {
+		g_assert (self->local_options_dict == NULL);
+		self->local_options_dict = g_variant_dict_ref (options);
+		return -1;
+	}
+
+	return gs_application_real_handle_local_options (app, options);
 }
 
 static void
