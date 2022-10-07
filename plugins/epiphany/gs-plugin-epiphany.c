@@ -495,7 +495,13 @@ refine_app (GsPluginEpiphany    *self,
 	g_return_if_fail (url != NULL);
 
 	gs_app_set_origin (app, "gnome-web");
-	gs_app_set_origin_ui (app, _("GNOME Web"));
+	if (gs_app_get_name (app) == NULL)
+		gs_app_set_origin_ui (app, _("Web App"));
+	else
+		gs_app_set_origin_ui (app, gs_app_get_name (app));
+	gs_app_set_origin_hostname (app, g_uri_get_host (uri));
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", _("Web App"));
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingIcon", "web-browser-symbolic");
 
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_USER);
 	gs_app_set_launchable (app, AS_LAUNCHABLE_KIND_URL, url);
