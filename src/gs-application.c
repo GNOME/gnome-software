@@ -899,17 +899,17 @@ verbose_activated (GSimpleAction *action,
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
+	{ "verbose", verbose_activated, NULL, NULL, NULL },
+	{ "nop", NULL, NULL, NULL }
+};
+
+static GActionEntry actions_after_loading[] = {
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
 	{ "launch", launch_activated, "(ss)", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "autoupdate", autoupdate_activated, NULL, NULL, NULL },
-	{ "verbose", verbose_activated, NULL, NULL, NULL },
-	{ "nop", NULL, NULL, NULL }
-};
-
-static GActionEntry actions_after_loading[] = {
 	{ "sources", sources_activated, NULL, NULL, NULL },
 	{ "prefs", prefs_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
@@ -1101,10 +1101,11 @@ startup_cb (GObject      *source_object,
 	/* show the priority of each plugin */
 	gs_plugin_loader_dump_state (plugin_loader);
 
+	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
+
 	/* Setup the shell only after the plugin loader finished its setup,
 	   thus all plugins are loaded and ready for the jobs. */
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
-	app->update_monitor = gs_update_monitor_new (app, app->plugin_loader);
 }
 
 static void
