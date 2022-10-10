@@ -155,6 +155,20 @@ filter_valid_apps (GsApp    *app,
 }
 
 static gboolean
+filter_freely_licensed_apps (GsApp    *app,
+			     gpointer  user_data)
+{
+	return (gs_app_get_kind (app) != AS_COMPONENT_KIND_GENERIC &&
+		gs_app_get_kind (app) != AS_COMPONENT_KIND_DESKTOP_APP &&
+		gs_app_get_kind (app) != AS_COMPONENT_KIND_CONSOLE_APP &&
+		gs_app_get_kind (app) != AS_COMPONENT_KIND_WEB_APP) ||
+	       gs_app_get_state (app) == GS_APP_STATE_INSTALLED ||
+	       gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
+	       gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE ||
+	       gs_app_get_license_is_free (app);
+}
+
+static gboolean
 app_filter_qt_for_gtk_and_compatible (GsApp    *app,
                                       gpointer  user_data)
 {
@@ -319,6 +333,12 @@ finish_op (GTask  *task,
 	if (self->query != NULL)
 		refine_flags = gs_app_query_get_refine_flags (self->query);
 
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0 &&
+	    (self->flags & GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED) != 0) {
+		/* Needs the license information when filtering with it */
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE;
+	}
+
 	if (merged_list != NULL &&
 	    gs_app_list_length (merged_list) > 0 &&
 	    refine_flags != GS_PLUGIN_REFINE_FLAGS_NONE) {
@@ -376,6 +396,9 @@ finish_task (GTask     *task,
 	 * FIXME: It feels like this filter should be done in a different layer. */
 	gs_app_list_filter (merged_list, filter_valid_apps, self);
 	gs_app_list_filter (merged_list, app_filter_qt_for_gtk_and_compatible, plugin_loader);
+
+	if ((self->flags & GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED) != 0)
+		gs_app_list_filter (merged_list, filter_freely_licensed_apps, self);
 
 	/* Caller-specified filtering. */
 	if (self->query != NULL)
