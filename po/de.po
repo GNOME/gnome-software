@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-09-06 19:57+0000\n"
-"PO-Revision-Date: 2022-09-22 09:06+0200\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"POT-Creation-Date: 2022-09-22 16:06+0000\n"
+"PO-Revision-Date: 2022-10-08 18:37+0200\n"
+"Last-Translator: Jürgen Benvenuti <gastornis@posteo.org>\n"
 "Language-Team: German - Germany <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +80,7 @@ msgstr "Seite mit Aktualisierungen"
 msgid "The update details"
 msgstr "Details zur Aktualisierung"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2018
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2043
 #: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
@@ -992,7 +992,7 @@ msgstr "Für diese Freigabe sind keine Details verfügbar"
 #. i.e. "25 May 2012"
 #: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
 msgid "%e %B %Y"
-msgstr "%d.%B %Y"
+msgstr "%d. %B %Y"
 
 #. TRANSLATORS: this is a command line option
 #: src/gs-application.c:124
@@ -2216,7 +2216,7 @@ msgid "Additional Packages Required"
 msgstr "Zusätzliche Pakete werden benötigt"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:332
+#: src/gs-dbus-helper.c:338
 msgid "Find in Software"
 msgstr "Software suchen"
 
@@ -2266,12 +2266,12 @@ msgstr "Deinstallieren …"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:860 src/gs-details-page.c:886
+#: src/gs-details-page.c:870 src/gs-details-page.c:896
 #: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Installieren"
 
-#: src/gs-details-page.c:876
+#: src/gs-details-page.c:886
 msgid "_Restart"
 msgstr "_Neu starten"
 
@@ -2279,24 +2279,24 @@ msgstr "_Neu starten"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:900
+#: src/gs-details-page.c:910
 msgid "_Install…"
 msgstr "_Installieren …"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1187
 #, c-format
 msgid "Other Apps by %s"
 msgstr "Andere Anwendungen von %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1560
+#: src/gs-details-page.c:1570
 msgid "You need internet access to write a review"
 msgstr ""
 "Sie brauchen eine Verbindung mit dem Internet, um eine Bewertung abgeben zu "
 "können"
 
-#: src/gs-details-page.c:1711 src/gs-details-page.c:1727
+#: src/gs-details-page.c:1732 src/gs-details-page.c:1748
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "»%s« konnte nicht gefunden werden"
@@ -2441,7 +2441,7 @@ msgid "All Reviews"
 msgstr "Alle Rezensionen"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:216
+#: lib/gs-external-appstream-utils.c:244
 msgid "Downloading extra metadata files…"
 msgstr "Zusätzliche Metadaten-Dateien werden heruntergeladen …"
 
@@ -3447,13 +3447,13 @@ msgstr ""
 
 #: src/gs-review-dialog.ui:156
 msgid ""
-"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
-"\">privacy policy</a>. The full name attached to your account will be shown "
-"publicly."
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/"
+"privacy\">privacy policy</a>. The full name attached to your account will be "
+"shown publicly."
 msgstr ""
-"Informationen zum Umgang mit Ihren Daten finden Sie in unseren <a href="
-"\"https://odrs.gnome.org/privacy\">Datenschutzbestimmungen</a>. Der volle "
-"Name in Ihrem Benutzerkonto wird öffentlich dargestellt."
+"Informationen zum Umgang mit Ihren Daten finden Sie in unseren <a "
+"href=\"https://odrs.gnome.org/privacy\">Datenschutzbestimmungen</a>. Der "
+"volle Name in Ihrem Benutzerkonto wird öffentlich dargestellt."
 
 #: src/gs-review-histogram.c:72
 #, c-format
@@ -3800,7 +3800,7 @@ msgstr "Kein Bildschirmfoto verfügbar"
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
 #: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
-#: src/gs-screenshot-image.c:622
+#: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
 msgstr "Bildschirmfoto nicht gefunden"
 
@@ -3811,24 +3811,24 @@ msgstr "Bild konnte nicht geladen werden"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:650
+#: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
 msgstr "Bildschirmfotogröße nicht gefunden"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:732
+#: src/gs-screenshot-image.c:733
 msgid "Could not create cache"
 msgstr "Zwischenspeicher konnte nicht erstellt werden"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:746
+#: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
 msgstr "Bildschirmfoto nicht gültig"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:796
+#: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
 msgstr "Bildschirmfoto nicht verfügbar"
 
@@ -5027,7 +5027,7 @@ msgid "Downloading upgrade information…"
 msgstr "Systemaktualisierungsinformationen werden heruntergeladen …"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:404
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -5174,7 +5174,7 @@ msgstr "Dateisystemzugriff auf %s"
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-Metadaten für %s werden geholt …"
 
-#: plugins/flatpak/gs-flatpak.c:3579
+#: plugins/flatpak/gs-flatpak.c:3580
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "Erweiterung »%s« konnte nicht präzisiert werden: %s"
