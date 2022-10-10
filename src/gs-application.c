@@ -144,7 +144,7 @@ gs_application_init (GsApplication *application)
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
-		  _("Show update preferences"), NULL },
+		  _("Show preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Quit the running instance"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
