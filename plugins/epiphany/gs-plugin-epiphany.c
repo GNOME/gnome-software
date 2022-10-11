@@ -645,6 +645,20 @@ gs_epiphany_create_app (GsPluginEpiphany *self,
 	return g_steal_pointer (&app);
 }
 
+static gchar * /* (transfer full) */
+generate_app_id_for_url (const gchar *url)
+{
+	/* Generate the app ID used in the AppStream data using the
+	 * same method as pwa-metainfo-generator.py in
+	 * https://gitlab.gnome.org/mwleeds/gnome-pwa-list
+	 * Using this app ID rather than the one provided by Epiphany
+	 * makes it possible for the appstream plugin to refine the
+	 * GsApp we create (see the comment at the top of this file).
+	 */
+	g_autofree gchar *url_hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, url, -1);
+	return g_strconcat ("org.gnome.Software.WebApp_", url_hash, ".desktop", NULL);
+}
+
 /* Run in @worker */
 static gboolean
 ensure_installed_apps_cache (GsPluginEpiphany  *self,
@@ -675,7 +689,6 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 	for (guint i = 0; i < n_webapps; i++) {
 		const gchar *desktop_file_id = webapps[i];
 		const gchar *url = NULL;
-		g_autofree char *url_hash = NULL;
 		g_autofree char *metainfo_app_id = NULL;
 		const gchar *exec;
 		int argc;
@@ -714,15 +727,7 @@ ensure_installed_apps_cache (GsPluginEpiphany  *self,
 		g_hash_table_insert (self->url_id_map, g_strdup (url),
 				     g_strdup (desktop_file_id));
 
-		/* Generate the app ID used in the AppStream data using the
-		 * same method as pwa-metainfo-generator.py in
-		 * https://gitlab.gnome.org/mwleeds/gnome-pwa-list
-		 * Using this app ID rather than the one provided by Epiphany
-		 * makes it possible for the appstream plugin to refine the
-		 * GsApp we create (see the comment at the top of this file).
-		 */
-		url_hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, url, -1);
-		metainfo_app_id = g_strconcat ("org.gnome.Software.WebApp_", url_hash, ".desktop", NULL);
+		metainfo_app_id = generate_app_id_for_url (url);
 		g_debug ("Creating GsApp for webapp with URL %s using app ID %s (desktop file id: %s)",
 			 url, metainfo_app_id, desktop_file_id);
 
