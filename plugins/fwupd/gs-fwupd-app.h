@@ -24,6 +24,7 @@ void			 gs_fwupd_app_set_update_uri		(GsApp		*app,
 void			 gs_fwupd_app_set_is_locked		(GsApp		*app,
 								 gboolean	 is_locked);
 void			 gs_fwupd_app_set_from_device		(GsApp		*app,
+								 FwupdClient	*client,
 								 FwupdDevice	*dev);
 void			 gs_fwupd_app_set_from_release		(GsApp		*app,
 								 FwupdRelease	*rel);
