@@ -400,14 +400,17 @@ gs_app_compare_priority (GsApp *app1, GsApp *app2)
 {
 	GsAppPrivate *priv1 = gs_app_get_instance_private (app1);
 	GsAppPrivate *priv2 = gs_app_get_instance_private (app2);
+	guint prio1, prio2;
 
 	g_return_val_if_fail (GS_IS_APP (app1), 0);
 	g_return_val_if_fail (GS_IS_APP (app2), 0);
 
 	/* prefer prio */
-	if (priv1->priority > priv2->priority)
+	prio1 = gs_app_get_priority (app1);
+	prio2 = gs_app_get_priority (app2);
+	if (prio1 > prio2)
 		return -1;
-	if (priv1->priority < priv2->priority)
+	if (prio1 < prio2)
 		return 1;
 
 	/* fall back to bundle kind */
@@ -5143,7 +5146,7 @@ gs_app_get_priority (GsApp *app)
 	if (priv->priority == 0) {
 		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (app);
 		if (plugin != NULL)
-			return gs_plugin_get_priority (plugin);
+			priv->priority = gs_plugin_get_priority (plugin);
 	}
 
 	return priv->priority;
