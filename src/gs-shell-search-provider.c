@@ -150,6 +150,8 @@ execute_search (GsShellSearchProvider  *self,
 	PendingSearch *pending_search;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppQuery) query = NULL;
+	g_autoptr(GSettings) settings = NULL;
+	GsPluginListAppsFlags flags;
 
 	g_cancellable_cancel (self->cancellable);
 	g_clear_object (&self->cancellable);
@@ -168,6 +170,12 @@ execute_search (GsShellSearchProvider  *self,
 	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
 
+	settings = g_settings_new ("org.gnome.software");
+	if (g_settings_get_boolean (settings, "show-only-free-apps"))
+		flags = GS_PLUGIN_LIST_APPS_FILTER_FREELY_LICENSED;
+	else
+		flags = GS_PLUGIN_LIST_APPS_FLAGS_NONE;
+
 	query = gs_app_query_new ("keywords", terms,
 				  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
@@ -177,7 +185,7 @@ execute_search (GsShellSearchProvider  *self,
 				  "sort-func", gs_shell_search_provider_sort_cb,
 				  "sort-user-data", self,
 				  NULL);
-	plugin_job = gs_plugin_job_list_apps_new (query, GS_PLUGIN_LIST_APPS_FLAGS_NONE);
+	plugin_job = gs_plugin_job_list_apps_new (query, flags);
 
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
