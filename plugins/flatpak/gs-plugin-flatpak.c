@@ -96,6 +96,7 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 
 	/* prioritize over packages */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "rpm-ostree");
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Flatpak");
