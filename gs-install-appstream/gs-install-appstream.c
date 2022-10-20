@@ -22,12 +22,14 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
 #include <xmlb.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 
 #include "gs-external-appstream-utils.h"
 
@@ -35,9 +37,17 @@ static gboolean
 gs_install_appstream_move_file (GFile *file, GError **error)
 {
 	g_autofree gchar *basename = g_file_get_basename (file);
+	g_autofree gchar *legacy_cachefn = gs_external_appstream_utils_get_legacy_file_cache_path (basename);
 	g_autofree gchar *cachefn = gs_external_appstream_utils_get_file_cache_path (basename);
 	g_autoptr(GFile) cachefn_file = g_file_new_for_path (cachefn);
 	g_autoptr(GFile) cachedir_file = g_file_get_parent (cachefn_file);
+
+	/* Try to cleanup the old cache directory, but do not panic, when it fails */
+	if (g_unlink (legacy_cachefn) == -1) {
+		int errn = errno;
+		if (errn != ENOENT)
+			g_debug ("Failed to unlink '%s': %s", legacy_cachefn, g_strerror (errn));
+	}
 
 	/* make sure the parent directory exists, but if not then create with
 	 * the ownership and permissions of the current process */

@@ -38,6 +38,8 @@ GQuark		 gs_external_appstream_error_quark (void);
 
 const gchar	*gs_external_appstream_utils_get_system_dir (void);
 gchar		*gs_external_appstream_utils_get_file_cache_path (const gchar	*file_name);
+gchar		*gs_external_appstream_utils_get_legacy_file_cache_path (const gchar *file_name);
+
 void		 gs_external_appstream_refresh_async (guint64                     cache_age_secs,
 						      GsDownloadProgressCallback  progress_callback,
 						      gpointer                    progress_user_data,

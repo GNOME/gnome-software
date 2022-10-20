@@ -66,6 +66,15 @@ gs_external_appstream_utils_get_file_cache_path (const gchar *file_name)
 	return g_build_filename (APPSTREAM_SYSTEM_DIR, prefixed_file_name, NULL);
 }
 
+/* To be able to delete old files, when the path changed */
+gchar *
+gs_external_appstream_utils_get_legacy_file_cache_path (const gchar *file_name)
+{
+	g_autofree gchar *prefixed_file_name = g_strdup_printf (EXTERNAL_APPSTREAM_PREFIX "-%s",
+								file_name);
+	return g_build_filename (LOCALSTATEDIR "/cache/app-info/xmls", prefixed_file_name, NULL);
+}
+
 const gchar *
 gs_external_appstream_utils_get_system_dir (void)
 {
