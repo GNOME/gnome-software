@@ -48,8 +48,10 @@
  * Since: 42
  */
 
+#include <errno.h>
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <libsoup/soup.h>
 
 #include "gs-external-appstream-utils.h"
@@ -64,6 +66,15 @@ gs_external_appstream_utils_get_file_cache_path (const gchar *file_name)
 	g_autofree gchar *prefixed_file_name = g_strdup_printf (EXTERNAL_APPSTREAM_PREFIX "-%s",
 								file_name);
 	return g_build_filename (APPSTREAM_SYSTEM_DIR, prefixed_file_name, NULL);
+}
+
+/* To be able to delete old files, when the path changed */
+gchar *
+gs_external_appstream_utils_get_legacy_file_cache_path (const gchar *file_name)
+{
+	g_autofree gchar *prefixed_file_name = g_strdup_printf (EXTERNAL_APPSTREAM_PREFIX "-%s",
+								file_name);
+	return g_build_filename (LOCALSTATEDIR "/cache/app-info/xmls", prefixed_file_name, NULL);
 }
 
 const gchar *
@@ -200,14 +211,31 @@ refresh_url_async (GSettings           *settings,
 	system_wide = g_settings_get_boolean (settings, "external-appstream-system-wide");
 
 	/* Check cache file age. */
-	if (system_wide)
+	if (system_wide) {
 		target_file_path = gs_external_appstream_utils_get_file_cache_path (basename);
-	else
+	} else {
+		g_autofree gchar *legacy_file_path = NULL;
+
 		target_file_path = g_build_filename (g_get_user_data_dir (),
 						     "swcatalog",
 						     "xml",
 						     basename,
 						     NULL);
+
+		/* Delete an old file, from a legacy location */
+		legacy_file_path = g_build_filename (g_get_user_data_dir (),
+						     "app-info",
+						     "xmls",
+						     basename,
+						     NULL);
+
+		if (g_unlink (legacy_file_path) == -1) {
+			int errn = errno;
+			if (errn != ENOENT)
+				g_debug ("Failed to unlink '%s': %s", legacy_file_path, g_strerror (errn));
+
+		}
+	}
 
 	target_file = g_file_new_for_path (target_file_path);
 
