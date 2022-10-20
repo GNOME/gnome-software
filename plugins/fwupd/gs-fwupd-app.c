@@ -235,6 +235,24 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 	return g_strdup (name);
 }
 
+static AsUrgencyKind
+gs_fwupd_release_urgency_to_as_urgency_kind (FwupdReleaseUrgency urgency)
+{
+	switch (urgency) {
+	case FWUPD_RELEASE_URGENCY_LOW:
+		return AS_URGENCY_KIND_LOW;
+	case FWUPD_RELEASE_URGENCY_MEDIUM:
+		return AS_URGENCY_KIND_MEDIUM;
+	case FWUPD_RELEASE_URGENCY_HIGH:
+		return AS_URGENCY_KIND_HIGH;
+	case FWUPD_RELEASE_URGENCY_CRITICAL:
+		return AS_URGENCY_KIND_CRITICAL;
+	case FWUPD_RELEASE_URGENCY_UNKNOWN:
+	default:
+		return AS_URGENCY_KIND_UNKNOWN;
+	}
+}
+
 void
 gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 {
@@ -286,4 +304,6 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 			as_screenshot_set_caption (ss, fwupd_release_get_detach_caption (rel), NULL);
 		gs_app_set_action_screenshot (app, ss);
 	}
+
+	gs_app_set_update_urgency (app, gs_fwupd_release_urgency_to_as_urgency_kind (fwupd_release_get_urgency (rel)));
 }
