@@ -60,13 +60,10 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 void
 gs_progress_button_set_show_progress (GsProgressButton *button, gboolean show_progress)
 {
-	GtkStyleContext *context;
-
-	context = gtk_widget_get_style_context (GTK_WIDGET (button));
 	if (show_progress)
-		gtk_style_context_add_class (context, "install-progress");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "install-progress");
 	else
-		gtk_style_context_remove_class (context, "install-progress");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "install-progress");
 }
 
 /**
@@ -188,8 +185,6 @@ gs_progress_button_get_show_icon (GsProgressButton *button)
 void
 gs_progress_button_set_show_icon (GsProgressButton *button, gboolean show_icon)
 {
-	GtkStyleContext *style;
-
 	g_return_if_fail (GS_IS_PROGRESS_BUTTON (button));
 
 	show_icon = !!show_icon;
@@ -199,15 +194,14 @@ gs_progress_button_set_show_icon (GsProgressButton *button, gboolean show_icon)
 
 	button->show_icon = show_icon;
 
-	style = gtk_widget_get_style_context (GTK_WIDGET (button));
 	if (show_icon) {
 		gtk_stack_set_visible_child (GTK_STACK (button->stack), button->image);
-		gtk_style_context_remove_class (style, "text-button");
-		gtk_style_context_add_class (style, "image-button");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "text-button");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "image-button");
 	} else {
 		gtk_stack_set_visible_child (GTK_STACK (button->stack), button->label);
-		gtk_style_context_remove_class (style, "image-button");
-		gtk_style_context_add_class (style, "text-button");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "image-button");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "text-button");
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (button), obj_props[PROP_SHOW_ICON]);

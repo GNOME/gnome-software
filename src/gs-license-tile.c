@@ -138,10 +138,9 @@ gs_license_tile_refresh (GsLicenseTile *self)
 	}
 
 	for (gsize i = 0; i < G_N_ELEMENTS (self->lozenges); i++) {
-		GtkStyleContext *context = gtk_widget_get_style_context (self->lozenges[i]);
-		gtk_style_context_remove_class (context, "green");
-		gtk_style_context_remove_class (context, "yellow");
-		gtk_style_context_add_class (context, css_class);
+		gtk_widget_remove_css_class (self->lozenges[i], "green");
+		gtk_widget_remove_css_class (self->lozenges[i], "yellow");
+		gtk_widget_add_css_class (self->lozenges[i], css_class);
 		gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenges[i]), lozenge_icon_names[i]);
 	}
 

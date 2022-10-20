@@ -143,8 +143,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      AS_IMAGE_NORMAL_WIDTH,
 					      AS_IMAGE_NORMAL_HEIGHT);
-		gtk_style_context_add_class (gtk_widget_get_style_context (ssimg),
-					     "screenshot-image-main");
+		gtk_widget_add_css_class (ssimg, "screenshot-image-main");
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), cancellable);
 
 		/* when we're offline, the load will be immediate, so we

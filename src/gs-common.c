@@ -442,7 +442,7 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 		if (*provider != NULL)
 			gtk_style_context_remove_provider (context, GTK_STYLE_PROVIDER (*provider));
 		g_clear_object (provider);
-		gtk_style_context_remove_class (context, class_name);
+		gtk_widget_remove_css_class (widget, class_name);
 		return;
 	}
 
@@ -459,7 +459,7 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 	}
 
 	/* set the custom CSS class */
-	gtk_style_context_add_class (context, class_name);
+	gtk_widget_add_css_class (widget, class_name);
 
 	/* set up custom provider and store on the widget */
 	gtk_css_provider_load_from_data (*provider, str->str, -1);
@@ -525,8 +525,7 @@ insert_details_widget (AdwMessageDialog *dialog,
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
 	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
-	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
-	                             "update-failed-details");
+	gtk_widget_add_css_class (tv, "update-failed-details");
 	gtk_text_buffer_set_text (buffer, msg ? msg->str : details, -1);
 	gtk_widget_set_visible (tv, TRUE);
 

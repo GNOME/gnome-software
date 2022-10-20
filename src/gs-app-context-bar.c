@@ -258,7 +258,6 @@ update_safety_tile (GsAppContextBar *self)
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
 	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
-	GtkStyleContext *context;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
 	 * based on app properties. */
@@ -489,13 +488,11 @@ update_safety_tile (GsAppContextBar *self)
 	gtk_label_set_text (self->tiles[SAFETY_TILE].title, title);
 	gtk_label_set_text (self->tiles[SAFETY_TILE].description, description);
 
-	context = gtk_widget_get_style_context (self->tiles[SAFETY_TILE].lozenge);
+	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "green");
+	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "yellow");
+	gtk_widget_remove_css_class (self->tiles[SAFETY_TILE].lozenge, "red");
 
-	gtk_style_context_remove_class (context, "green");
-	gtk_style_context_remove_class (context, "yellow");
-	gtk_style_context_remove_class (context, "red");
-
-	gtk_style_context_add_class (context, css_class);
+	gtk_widget_add_css_class (self->tiles[SAFETY_TILE].lozenge, css_class);
 }
 
 typedef struct {
@@ -513,7 +510,6 @@ update_hardware_support_tile (GsAppContextBar *self)
 	gboolean any_control_relations_set;
 	const gchar *icon_name = NULL, *title = NULL, *description = NULL, *css_class = NULL;
 	gboolean has_touchscreen = FALSE, has_keyboard = FALSE, has_mouse = FALSE;
-	GtkStyleContext *context;
 
 	g_assert (self->app != NULL);
 
@@ -673,18 +669,16 @@ update_hardware_support_tile (GsAppContextBar *self)
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].title, title);
 	gtk_label_set_text (self->tiles[HARDWARE_SUPPORT_TILE].description, description);
 
-	context = gtk_widget_get_style_context (self->tiles[HARDWARE_SUPPORT_TILE].lozenge);
+	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "green");
+	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "yellow");
+	gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "red");
 
-	gtk_style_context_remove_class (context, "green");
-	gtk_style_context_remove_class (context, "yellow");
-	gtk_style_context_remove_class (context, "red");
-
-	gtk_style_context_add_class (context, css_class);
+	gtk_widget_add_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, css_class);
 
 	if (g_str_equal (icon_name, "adaptive-symbolic"))
-		gtk_style_context_add_class (context, "wide-image");
+		gtk_widget_add_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "wide-image");
 	else
-		gtk_style_context_remove_class (context, "wide-image");
+		gtk_widget_remove_css_class (self->tiles[HARDWARE_SUPPORT_TILE].lozenge, "wide-image");
 }
 
 static void

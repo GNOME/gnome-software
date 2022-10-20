@@ -1023,18 +1023,18 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	 * action to perform. */
 	for (gsize i = 0; i < G_N_ELEMENTS (buttons_in_order); i++) {
 		if (highlighted_button != NULL) {
-			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
-			gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+			gtk_widget_remove_css_class (buttons_in_order[i], "suggested-action");
+			gtk_widget_remove_css_class (buttons_in_order[i], "destructive-action");
 		} else if (gtk_widget_get_visible (buttons_in_order[i])) {
 			highlighted_button = buttons_in_order[i];
 
 			if (buttons_in_order[i] == self->button_remove) {
 				if (remove_is_destructive)
-					gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+					gtk_widget_add_css_class (buttons_in_order[i], "destructive-action");
 				else
-					gtk_style_context_remove_class (gtk_widget_get_style_context (buttons_in_order[i]), "destructive-action");
+					gtk_widget_remove_css_class (buttons_in_order[i], "destructive-action");
 			} else
-				gtk_style_context_add_class (gtk_widget_get_style_context (buttons_in_order[i]), "suggested-action");
+					gtk_widget_add_css_class (buttons_in_order[i], "suggested-action");
 		}
 	}
 }

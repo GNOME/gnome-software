@@ -524,7 +524,6 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 	GdkRectangle current_screen_size;
 	gboolean any_control_relations_set;
 	gboolean has_touchscreen = FALSE, has_keyboard = FALSE, has_mouse = FALSE;
-	GtkStyleContext *context;
 	GsContextDialogRowImportance chosen_rating;
 
 	/* Treat everything as unknown to begin with, and downgrade its hardware
@@ -740,14 +739,12 @@ update_relations_list (GsHardwareSupportContextDialog *self)
 	gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenge), icon_name);
 	gtk_label_set_text (self->title, title);
 
-	context = gtk_widget_get_style_context (self->lozenge);
+	gtk_widget_remove_css_class (self->lozenge, "green");
+	gtk_widget_remove_css_class (self->lozenge, "yellow");
+	gtk_widget_remove_css_class (self->lozenge, "red");
+	gtk_widget_remove_css_class (self->lozenge, "grey");
 
-	gtk_style_context_remove_class (context, "green");
-	gtk_style_context_remove_class (context, "yellow");
-	gtk_style_context_remove_class (context, "red");
-	gtk_style_context_remove_class (context, "grey");
-
-	gtk_style_context_add_class (context, css_class);
+	gtk_widget_add_css_class (self->lozenge, css_class);
 }
 
 static void

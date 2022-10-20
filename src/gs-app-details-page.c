@@ -91,7 +91,7 @@ add_permissions_row (GsAppDetailsPage *page,
 
 	row = adw_action_row_new ();
 	if (is_warning_row)
-		gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+		gtk_widget_add_css_class (row, "permission-row-warning");
 
 	image = gtk_image_new_from_icon_name ("dialog-warning-symbolic");
 	if (!is_warning_row)
