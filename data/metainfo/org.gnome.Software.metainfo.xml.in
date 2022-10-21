@@ -66,6 +66,39 @@
    Validate with `appstreamcli validate *.metainfo.xml`
   -->
   <releases>
+    <release date="2022-10-21" version="43.1" type="stable">
+      <description>
+        <p>This is a stable release with the following changes:</p>
+        <ul>
+          <li>Fix searches not completing if installing or uninstalling an app at the same time</li>
+          <li>Notify of errors when running a flatpak app whose runtime is missing</li>
+          <li>Fix installing local RPM packages</li>
+          <li>Fix distribution upgrades when package conflicts are present</li>
+          <li>Fix opening web apps from their details page</li>
+          <li>Improve appearance of app ratings if ratings data cannot be downloaded</li>
+          <li>Fix crash when showing offline update errors on startup</li>
+          <li>Highlight priority of firmware updates, making security fixes more obvious</li>
+          <li>Fix installation of pending apps in some situations</li>
+          <li>Fix downloading of rpm-ostree app updates from the Updates page</li>
+        </ul>
+        <p>This release also updates translations:</p>
+        <ul>
+          <li>Abkhazian (Nart Tlisha)</li>
+          <li>Catalan (Jordi Mas)</li>
+          <li>Chinese (Taiwan) (Cheng-Chia Tseng)</li>
+          <li>Croatian (Goran Vidović)</li>
+          <li>French (Claude Paroz)</li>
+          <li>Friulian (Fabio Tomat)</li>
+          <li>Georgian (Zurab Kargareteli)</li>
+          <li>German (Philipp Kiemle, Jürgen Benvenuti)</li>
+          <li>Icelandic (Sveinn í Felli)</li>
+          <li>Italian (Gianvito Cavasoli)</li>
+          <li>Kazakh (Baurzhan Muftakhidinov)</li>
+          <li>Panjabi (A S Alam)</li>
+          <li>Slovenian (Matej Urbančič)</li>
+        </ul>
+      </description>
+    </release>
     <release date="2022-09-16" version="43.0" type="stable">
       <description>
         <p>This is a stable release with translation updates:</p>
