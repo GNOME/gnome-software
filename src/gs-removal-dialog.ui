@@ -1,38 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="GsRemovalDialog" parent="GtkDialog">
-    <property name="title" translatable="yes">Incompatible Software</property>
+  <template class="GsRemovalDialog" parent="AdwWindow">
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
-    <child internal-child="headerbar">
-      <object class="GtkHeaderBar">
-        <property name="show-title-buttons">False</property>
-      </object>
-    </child>
-    <style>
-      <class name="message" />
-    </style>
-    <child type="action">
-      <object class="GtkButton" id="button_cancel">
-        <property name="label" translatable="yes">_Cancel</property>
-        <property name="use_underline">True</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="button_continue">
-        <property name="label" translatable="yes">_Continue</property>
-        <property name="use_underline">True</property>
-        <property name="receives_default">True</property>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="accept" default="true">button_continue</action-widget>
-      <action-widget response="cancel">button_cancel</action-widget>
-    </action-widgets>
-    <child internal-child="content_area">
-      <object class="GtkBox" id="dialog-vbox1">
+    <property name="icon_name">dialog-question</property>
+    <property name="title" translatable="yes">Incompatible Software</property>
+    <property name="default-width">470</property>
+    <property name="default-height">400</property>
+    <property name="content">
+      <object class="GtkBox">
         <property name="orientation">vertical</property>
+        <property name="width-request">360</property>
         <property name="spacing">20</property>
+        <child>
+          <object class="AdwHeaderBar">
+            <property name="show_start_title_buttons">False</property>
+            <property name="show_end_title_buttons">False</property>
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <property name="title" bind-source="GsRemovalDialog" bind-property="title" bind-flags="sync-create"/>
+              </object>
+            </property>
+            <child type="start">
+              <object class="GtkButton" id="button_cancel">
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="label" translatable="yes">_Cancel</property>
+                <property name="use_underline">True</property>
+                <signal name="clicked" handler="cancel_clicked_cb"/>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="button_continue">
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="label" translatable="yes">_Upgrade</property>
+                <property name="use_underline">True</property>
+                <signal name="clicked" handler="upgrade_clicked_cb"/>
+                <style>
+                  <class name="destructive-action" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
         <child>
           <object class="GtkBox" id="box">
             <property name="margin-start">30</property>
@@ -42,24 +53,15 @@
               <object class="GtkBox" id="message_area">
                 <property name="orientation">vertical</property>
                 <property name="spacing">10</property>
-                <property name="hexpand">1</property>
+                <property name="hexpand">True</property>
                 <child>
                   <object class="GtkLabel" id="label">
-                    <property name="halign">center</property>
-                    <property name="valign">start</property>
-                    <property name="wrap">1</property>
-                    <property name="width-chars">40</property>
-                    <property name="max-width-chars">40</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="secondary_label">
-                    <property name="visible">False</property>
                     <property name="margin-bottom">2</property>
-                    <property name="halign">center</property>
+                    <property name="halign">fill</property>
                     <property name="valign">start</property>
-                    <property name="vexpand">1</property>
-                    <property name="wrap">1</property>
+                    <property name="vexpand">False</property>
+                    <property name="justify">center</property>
+                    <property name="wrap">True</property>
                     <property name="width-chars">40</property>
                     <property name="max-width-chars">40</property>
                   </object>
@@ -70,12 +72,20 @@
                     <property name="min_content_height">160</property>
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">automatic</property>
+                    <property name="halign">fill</property>
+                    <property name="hexpand">True</property>
+                    <property name="valign">fill</property>
+                    <property name="vexpand">True</property>
                     <child>
                       <object class="GtkListBox" id="listbox">
                         <property name="halign">fill</property>
                         <property name="valign">start</property>
                         <property name="selection_mode">none</property>
                         <property name="valign">start</property>
+                        <property name="margin-start">4</property>
+                        <property name="margin-end">4</property>
+                        <property name="margin-top">4</property>
+                        <property name="margin-bottom">4</property>
                         <style>
                           <class name="boxed-list" />
                         </style>
@@ -88,6 +98,6 @@
           </object>
         </child>
       </object>
-    </child>
+    </property>
   </template>
 </interface>

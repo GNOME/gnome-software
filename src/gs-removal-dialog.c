@@ -11,18 +11,25 @@
 #include "gs-removal-dialog.h"
 #include "gs-utils.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 struct _GsRemovalDialog
 {
-	GtkDialog		 parent_instance;
+	AdwWindow		 parent_instance;
 	GtkLabel		*label;
 	GtkWidget		*listbox;
-	GtkLabel		*secondary_label;
 };
 
-G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsRemovalDialog, gs_removal_dialog, ADW_TYPE_WINDOW)
+
+enum {
+	SIGNAL_RESPONSE,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
 
 static gint
 list_sort_func (GtkListBoxRow *a,
@@ -78,7 +85,7 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
                                          GsApp *upgrade)
 {
 	GsAppList *removals;
-	g_autofree gchar *secondary_text = NULL;
+	g_autofree gchar *text = NULL;
 	g_autofree gchar *name_version = NULL;
 
 	name_version = g_strdup_printf ("%s %s",
@@ -86,13 +93,11 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 	                                gs_app_get_version (upgrade));
 	/* TRANSLATORS: This is a text displayed during a distro upgrade. %s
 	   will be replaced by the name and version of distro, e.g. 'Fedora 23'. */
-	secondary_text = g_strdup_printf (_("Some of the currently installed software is not compatible with %s. "
-					    "If you continue, the following will be automatically removed during the upgrade:"),
-					  name_version);
+	text = g_strdup_printf (_("Installed software is incompatible with %s, "
+				  "and will be automatically removed during upgrade."),
+				  name_version);
 
-	gtk_widget_add_css_class (GTK_WIDGET (self->label), "title");
-	gtk_widget_show (GTK_WIDGET (self->secondary_label));
-	gtk_label_set_text (self->secondary_label, secondary_text);
+	gtk_label_set_text (self->label, text);
 
 	removals = gs_app_get_related (upgrade);
 	for (guint i = 0; i < gs_app_list_length (removals); i++) {
@@ -108,23 +113,30 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 }
 
 static void
+cancel_clicked_cb (GtkWidget *widget,
+		   GsRemovalDialog *self)
+{
+	g_signal_emit (self, signals[SIGNAL_RESPONSE], 0, GTK_RESPONSE_CANCEL);
+}
+
+static void
+upgrade_clicked_cb (GtkWidget *widget,
+		    GsRemovalDialog *self)
+{
+	g_signal_emit (self, signals[SIGNAL_RESPONSE], 0, GTK_RESPONSE_ACCEPT);
+}
+
+static void
 gs_removal_dialog_init (GsRemovalDialog *self)
 {
-	GtkWidget *action_area;
 	GtkSettings *settings;
 	gboolean use_caret;
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	action_area = gtk_dialog_get_content_area (GTK_DIALOG (self));
-	action_area = gtk_widget_get_next_sibling (action_area);
-	gtk_widget_set_halign (action_area, GTK_ALIGN_FILL);
-	gtk_box_set_homogeneous (GTK_BOX (action_area), TRUE);
-
 	settings = gtk_widget_get_settings (GTK_WIDGET (self));
 	g_object_get (settings, "gtk-keynav-use-caret", &use_caret, NULL);
 	gtk_label_set_selectable (self->label, use_caret);
-	gtk_label_set_selectable (self->secondary_label, use_caret);
 
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->listbox),
 	                            list_sort_func,
@@ -140,7 +152,17 @@ gs_removal_dialog_class_init (GsRemovalDialogClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, label);
 	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, listbox);
-	gtk_widget_class_bind_template_child (widget_class, GsRemovalDialog, secondary_label);
+	gtk_widget_class_bind_template_callback (widget_class, cancel_clicked_cb);
+	gtk_widget_class_bind_template_callback (widget_class, upgrade_clicked_cb);
+
+	signals[SIGNAL_RESPONSE] = g_signal_new ("response",
+						 G_OBJECT_CLASS_TYPE (klass),
+						 G_SIGNAL_RUN_LAST,
+						 0,
+						 NULL, NULL,
+						 NULL,
+						 G_TYPE_NONE, 1,
+						 G_TYPE_INT);
 }
 
 GtkWidget *
