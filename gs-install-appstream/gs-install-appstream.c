@@ -24,8 +24,10 @@
 
 #include <errno.h>
 #include <locale.h>
+#include <pwd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <xmlb.h>
 #include <glib/gi18n.h>
@@ -41,6 +43,7 @@ gs_install_appstream_move_file (GFile *file, GError **error)
 	g_autofree gchar *cachefn = gs_external_appstream_utils_get_file_cache_path (basename);
 	g_autoptr(GFile) cachefn_file = g_file_new_for_path (cachefn);
 	g_autoptr(GFile) cachedir_file = g_file_get_parent (cachefn_file);
+	GStatBuf stat_buf = { 0 };
 
 	/* Try to cleanup the old cache directory, but do not panic, when it fails */
 	if (g_unlink (legacy_cachefn) == -1) {
@@ -58,11 +61,40 @@ gs_install_appstream_move_file (GFile *file, GError **error)
 
 	/* do the move, overwriting existing files and setting the permissions
 	 * of the current process (so that should be -rw-r--r--) */
-	return g_file_move (file, cachefn_file,
-			    G_FILE_COPY_OVERWRITE |
-			    G_FILE_COPY_NOFOLLOW_SYMLINKS |
-			    G_FILE_COPY_TARGET_DEFAULT_PERMS,
-			    NULL, NULL, NULL, error);
+	if (!g_file_move (file, cachefn_file,
+			  G_FILE_COPY_OVERWRITE |
+			  G_FILE_COPY_NOFOLLOW_SYMLINKS |
+			  G_FILE_COPY_TARGET_DEFAULT_PERMS,
+			  NULL, NULL, NULL, error))
+		return FALSE;
+
+	/* verify it is "-rw-r--r--" and the root owns the file */
+	if (g_stat (cachefn, &stat_buf)  == 0) {
+		struct passwd *pwd;
+		mode_t expected_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+		if ((stat_buf.st_mode & expected_mode) != expected_mode &&
+		     g_chmod (cachefn, expected_mode) == -1) {
+			int errn = errno;
+			g_debug ("Failed to chmod '%s': %s", cachefn, g_strerror (errn));
+		}
+
+		/* the file should be owned by the root */
+		pwd = getpwnam ("root");
+		if (pwd != NULL) {
+			if (chown (cachefn, pwd->pw_uid, pwd->pw_gid) == -1) {
+				int errn = errno;
+				g_debug ("Failed to chown on '%s': %s", cachefn, g_strerror (errn));
+			}
+		} else {
+			int errn = errno;
+			g_debug ("Failed to get root info: %s", g_strerror (errn));
+		}
+	} else {
+		int errn = errno;
+		g_debug ("Failed to stat '%s': %s", cachefn, g_strerror (errn));
+	}
+
+	return TRUE;
 }
 
 static gboolean
