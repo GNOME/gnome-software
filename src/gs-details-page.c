@@ -90,7 +90,7 @@ struct _GsDetailsPage
 	GSettings		*settings;
 	GsOdrsProvider		*odrs_provider;  /* (nullable) (owned), NULL if reviews are disabled */
 	GAppInfoMonitor		*app_info_monitor; /* (owned) */
-	GHashTable		*packaging_format_preference; /* gchar * ~> gint */
+	gchar		       **packaging_format_preference; /* (owned) */
 	GtkWidget		*app_reviews_dialog;
 	GtkCssProvider		*origin_css_provider; /* (nullable) (owned) */
 	gboolean		 origin_by_packaging_format; /* when TRUE, change the 'app' to the most preferred
@@ -599,23 +599,58 @@ app_origin_equal (GsApp *a,
 }
 
 static gint
+gs_details_page_get_app_packaging_format_preference_index (GsDetailsPage *self,
+							   GsApp *app)
+{
+	const gchar *packaging_format;
+	guint packaging_format_len;
+
+	/* Index 0 means unspecified packaging format in the preference array */
+	if (self->packaging_format_preference == NULL)
+		return 0;
+
+	packaging_format = gs_app_get_packaging_format_raw (app);
+	if (packaging_format == NULL)
+		return 0;
+
+	packaging_format_len = strlen (packaging_format);
+
+	/* The preference can be defined either as the packaging format
+	   on its own, like "rpm", or with an origin name, like "flatpak:flathub".
+	   The packaging format can be empty too, then is prefered the origin,
+	   like: ":system" prefers any "system" origin.*/
+	for (guint i = 0; self->packaging_format_preference[i]; i++) {
+		const gchar *preference = self->packaging_format_preference[i];
+		if (preference[0] == ':') {
+			const gchar *origin = gs_app_get_origin (app);
+			if (origin != NULL &&
+			    g_ascii_strcasecmp (origin, preference + 1) == 0)
+				return (gint) i + 1;
+		} else if (g_ascii_strncasecmp (preference, packaging_format, packaging_format_len) == 0) {
+			if (preference[packaging_format_len] == '\0')
+				return (gint) i + 1;
+			if (preference[packaging_format_len] == ':') {
+				const gchar *origin = gs_app_get_origin (app);
+				if (origin != NULL &&
+				    g_ascii_strcasecmp (origin, preference + packaging_format_len + 1) == 0)
+					return (gint) i + 1;
+			}
+		}
+	}
+
+	return 0;
+}
+
+static gint
 sort_by_packaging_format_preference (GsApp *app1,
 				     GsApp *app2,
 				     gpointer user_data)
 {
-	GHashTable *preference = user_data;
-	const gchar *packaging_format_raw1 = gs_app_get_packaging_format_raw (app1);
-	const gchar *packaging_format_raw2 = gs_app_get_packaging_format_raw (app2);
+	GsDetailsPage *self = user_data;
 	gint index1, index2;
 
-	if (g_strcmp0 (packaging_format_raw1, packaging_format_raw2) == 0)
-		return 0;
-
-	if (packaging_format_raw1 == NULL || packaging_format_raw2 == NULL)
-		return packaging_format_raw1 == NULL ? -1 : 1;
-
-	index1 = GPOINTER_TO_INT (g_hash_table_lookup (preference, packaging_format_raw1));
-	index2 = GPOINTER_TO_INT (g_hash_table_lookup (preference, packaging_format_raw2));
+	index1 = gs_details_page_get_app_packaging_format_preference_index (self, app1);
+	index2 = gs_details_page_get_app_packaging_format_preference_index (self, app2);
 
 	if (index1 == index2)
 		return 0;
@@ -715,11 +750,14 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	/* Do not allow change of the app by the packaging format when it's installed */
 	origin_by_packaging_format = origin_by_packaging_format &&
-		self->app != NULL && gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED;
+		self->app != NULL &&
+		gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED &&
+		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE &&
+		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE_LIVE;
 
 	/* Sort the alternates by the user's packaging preferences */
-	if (g_hash_table_size (self->packaging_format_preference) > 0)
-		gs_app_list_sort (list, sort_by_packaging_format_preference, self->packaging_format_preference);
+	if (self->packaging_format_preference != NULL)
+		gs_app_list_sort (list, sort_by_packaging_format_preference, self);
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
@@ -746,8 +784,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
 
 		if (origin_by_packaging_format) {
-			const gchar *packaging_format = gs_app_get_packaging_format_raw (app);
-			gint index = GPOINTER_TO_INT (g_hash_table_lookup (self->packaging_format_preference, packaging_format));
+			gint index = gs_details_page_get_app_packaging_format_preference_index (self, app);
 			if (index > 0 && (index < origin_row_by_packaging_format_index || origin_row_by_packaging_format_index == 0)) {
 				origin_row_by_packaging_format_index = index;
 				origin_row_by_packaging_format = row;
@@ -1921,19 +1958,15 @@ gs_details_page_read_packaging_format_preference (GsDetailsPage *self)
 {
 	g_auto(GStrv) preference = NULL;
 
-	if (self->packaging_format_preference == NULL)
-		return;
-
-	g_hash_table_remove_all (self->packaging_format_preference);
+	g_clear_pointer (&self->packaging_format_preference, g_strfreev);
 
 	preference = g_settings_get_strv (self->settings, "packaging-format-preference");
-	if (preference == NULL || preference[0] == NULL)
+	/* Ignore empty arrays or arrays with a single empty string item */
+	if (preference == NULL || preference[0] == NULL ||
+	    (preference[0][0] == '\0' && preference[1] == NULL))
 		return;
 
-	for (gsize ii = 0; preference[ii] != NULL; ii++) {
-		/* Using 'ii + 1' to easily distinguish between "not found" and "the first" index */
-		g_hash_table_insert (self->packaging_format_preference, g_strdup (preference[ii]), GINT_TO_POINTER (ii + 1));
-	}
+	self->packaging_format_preference = g_steal_pointer (&preference);
 }
 
 static void
@@ -2265,30 +2298,6 @@ gs_details_page_setup (GsPage *page,
 	return TRUE;
 }
 
-static guint
-gs_details_page_strcase_hash (gconstpointer key)
-{
-	const gchar *ptr;
-	guint hsh = 0, gg;
-
-	for (ptr = (const gchar *) key; *ptr != '\0'; ptr++) {
-		hsh = (hsh << 4) + g_ascii_toupper (*ptr);
-		if ((gg = hsh & 0xf0000000)) {
-			hsh = hsh ^ (gg >> 24);
-			hsh = hsh ^ gg;
-		}
-	}
-
-	return hsh;
-}
-
-static gboolean
-gs_details_page_strcase_equal (gconstpointer key1,
-			       gconstpointer key2)
-{
-	return g_ascii_strcasecmp ((const gchar *) key1, (const gchar *) key2) == 0;
-}
-
 static void
 gs_details_page_get_property (GObject    *object,
                               guint       prop_id,
@@ -2361,10 +2370,8 @@ gs_details_page_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 		g_clear_object (&self->app);
 	}
-	if (self->packaging_format_preference) {
-		g_hash_table_unref (self->packaging_format_preference);
-		self->packaging_format_preference = NULL;
-	}
+
+	g_clear_pointer (&self->packaging_format_preference, g_strfreev);
 	g_clear_object (&self->origin_css_provider);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app_reviews_dialog);
@@ -2575,7 +2582,6 @@ gs_details_page_init (GsDetailsPage *self)
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->packaging_format_preference = g_hash_table_new_full (gs_details_page_strcase_hash, gs_details_page_strcase_equal, g_free, NULL);
 	self->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect_swapped (self->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
