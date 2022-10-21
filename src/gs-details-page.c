@@ -2570,7 +2570,7 @@ narrow_to_halign (GBinding *binding, const GValue *from_value, GValue *to_value,
 	if (g_value_get_boolean (from_value))
 		g_value_set_enum (to_value, GTK_ALIGN_START);
 	else
-		g_value_set_enum (to_value, GTK_ALIGN_FILL);
+		g_value_set_enum (to_value, GTK_ALIGN_END);
 
 	return TRUE;
 }
