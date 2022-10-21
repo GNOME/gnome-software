@@ -143,6 +143,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		return;
 	}
 
+	gtk_widget_set_sensitive (priv->button, TRUE);
+
 	/* label */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_UNAVAILABLE:
@@ -182,6 +184,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			 * that allows the app to be easily updated live */
 			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Update"));
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "software-update-available-symbolic");
+			gtk_widget_set_sensitive (priv->button, !gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily removed */
@@ -486,6 +489,10 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* hide buttons in the update list, unless the app is live updatable */
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_UPDATABLE_LIVE:
+		gtk_widget_set_visible (priv->button_box,
+					!priv->show_update ||
+					!gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
+		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button_box, TRUE);
 		break;
@@ -521,6 +528,16 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 				g_string_append (warning, "\n");
 			/* Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name. */
 			g_string_append_printf (warning, _("Renamed from %s"), renamed_from);
+		}
+
+		if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
+			const gchar *problems;
+			problems = gs_app_get_metadata_item (priv->app, "GnomeSoftware::problems");
+			if (problems != NULL && *problems != '\0') {
+				if (warning->len > 0)
+					g_string_append_c (warning, '\n');
+				g_string_append (warning, problems);
+			}
 		}
 
 		if (warning->len > 0) {

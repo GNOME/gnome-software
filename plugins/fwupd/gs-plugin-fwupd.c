@@ -259,6 +259,9 @@ setup_connect_cb (GObject      *source_object,
 
 	/* send our implemented feature set */
 	fwupd_client_set_feature_flags_async (self->client,
+#if FWUPD_CHECK_VERSION(1, 8, 1)
+					      FWUPD_FEATURE_FLAG_SHOW_PROBLEMS |
+#endif
 					      FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					      FWUPD_FEATURE_FLAG_DETACH_ACTION,
 					      cancellable, setup_features_cb,
@@ -330,6 +333,7 @@ static GsApp *
 gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 {
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
+	GsPluginFwupd *self = GS_PLUGIN_FWUPD (plugin);
 	GsApp *app;
 	g_autofree gchar *id = NULL;
 	g_autoptr(GIcon) icon = NULL;
@@ -362,7 +366,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	/* create icon */
 	icon = g_themed_icon_new ("system-component-firmware");
 	gs_app_add_icon (app, icon);
-	gs_fwupd_app_set_from_device (app, dev);
+	gs_fwupd_app_set_from_device (app, self->client, dev);
 	gs_fwupd_app_set_from_release (app, rel);
 
 	if (fwupd_release_get_appstream_id (rel) != NULL)
