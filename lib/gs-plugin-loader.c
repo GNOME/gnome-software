@@ -359,10 +359,17 @@ gs_plugin_loader_claim_error (GsPluginLoader *plugin_loader,
 
 	/* invalid */
 	if (error_copy->domain != GS_PLUGIN_ERROR) {
-		g_warning ("not GsPlugin error %s:%i: %s",
-			   g_quark_to_string (error_copy->domain),
-			   error_copy->code,
-			   error_copy->message);
+		if (g_strcmp0 (BUILD_TYPE, "debug") == 0) {
+			g_warning ("not GsPlugin error %s:%i: %s",
+				   g_quark_to_string (error_copy->domain),
+				   error_copy->code,
+				   error_copy->message);
+		} else {
+			g_debug ("not GsPlugin error %s:%i: %s",
+				 g_quark_to_string (error_copy->domain),
+				 error_copy->code,
+				 error_copy->message);
+		}
 		error_copy->domain = GS_PLUGIN_ERROR;
 		error_copy->code = GS_PLUGIN_ERROR_FAILED;
 	}

@@ -2087,10 +2087,17 @@ gs_shell_rescan_events (GsShell *shell)
 			    !g_error_matches (error,
 					      G_IO_ERROR,
 					      G_IO_ERROR_CANCELLED)) {
-				g_warning ("not handling error %s for action %s: %s",
-					   gs_plugin_error_to_string (error->code),
-					   gs_plugin_action_to_string (action),
-					   error->message);
+				if (g_strcmp0 (BUILD_TYPE, "debug") == 0) {
+					g_warning ("not handling error %s for action %s: %s",
+						   gs_plugin_error_to_string (error->code),
+						   gs_plugin_action_to_string (action),
+						   error->message);
+				} else {
+					g_debug ("not handling error %s for action %s: %s",
+						 gs_plugin_error_to_string (error->code),
+						 gs_plugin_action_to_string (action),
+						 error->message);
+				}
 			}
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
 			return;
