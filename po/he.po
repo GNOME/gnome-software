@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-09-05 14:40+0000\n"
-"PO-Revision-Date: 2022-09-11 06:51+0300\n"
+"POT-Creation-Date: 2022-10-21 17:04+0000\n"
+"PO-Revision-Date: 2022-10-23 19:53+0300\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: Hebrew <>\n"
 "Language: he\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==2 ? 1 : n>10 && n%10==0 ? "
 "2 : 3)\n"
-"X-Generator: Gtranslator 40.0\n"
+"X-Generator: Gtranslator 42.0\n"
 
 #: data/metainfo/org.gnome.Software.metainfo.xml.in:7 src/gs-shell.ui:21
 #: src/org.gnome.Software.desktop.in:3
@@ -70,7 +70,7 @@ msgstr "דף עדכונים"
 msgid "The update details"
 msgstr "פרטי עדכון"
 
-#: data/metainfo/org.gnome.Software.metainfo.xml.in:2018
+#: data/metainfo/org.gnome.Software.metainfo.xml.in:2076
 #: src/gs-application.c:256
 msgid "The GNOME Project"
 msgstr "מיזם GNOME"
@@ -303,32 +303,32 @@ msgid "A string storing the gnome-online-account id used to login"
 msgstr "A string storing the gnome-online-account id used to login"
 
 #. TRANSLATORS: tool that is used when moving profiles system-wide
-#: gs-install-appstream/gs-install-appstream.c:143
+#: gs-install-appstream/gs-install-appstream.c:185
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "מתקין כלל מערכתי ל־AppStream כחלק מתכנה של GNOME"
 
-#: gs-install-appstream/gs-install-appstream.c:145
+#: gs-install-appstream/gs-install-appstream.c:187
 msgid "Failed to parse command line arguments"
 msgstr "Failed to parse command line arguments"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: gs-install-appstream/gs-install-appstream.c:152
+#: gs-install-appstream/gs-install-appstream.c:194
 msgid "You need to specify exactly one filename"
 msgstr "עליך לציין שם קובץ אחד בלבד"
 
 #. TRANSLATORS: only able to install files as root
-#: gs-install-appstream/gs-install-appstream.c:159
+#: gs-install-appstream/gs-install-appstream.c:201
 msgid "This program can only be used by the root user"
 msgstr "תכנה זו יכולה לפעול אך ורק באמצעות משתמש מנהל"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:167
+#: gs-install-appstream/gs-install-appstream.c:209
 #, c-format
 msgid "Failed to validate content type: %s"
 msgstr "תיקוף סוג התוכן נכשל: %s"
 
 #. TRANSLATORS: error details
-#: gs-install-appstream/gs-install-appstream.c:178
+#: gs-install-appstream/gs-install-appstream.c:220
 #, c-format
 msgid "Failed to move: %s"
 msgstr "העברה נכשלה: %s"
@@ -756,7 +756,7 @@ msgstr "דירוג גיל מומלץ"
 msgid "How to contribute missing information"
 msgstr "איך לתרום מידע חסר"
 
-#: lib/gs-app.c:6175
+#: lib/gs-app.c:6178
 msgid "Local file"
 msgstr "קובץ מקומי"
 
@@ -765,12 +765,12 @@ msgstr "קובץ מקומי"
 #. Example string: "Local file (RPM)"
 #. Translators: The first placeholder is an app runtime
 #. * name, the second is its version number.
-#: lib/gs-app.c:6194 src/gs-safety-context-dialog.c:439
+#: lib/gs-app.c:6197 src/gs-safety-context-dialog.c:439
 #, c-format
 msgid "%s (%s)"
 msgstr "‏%s ‏(%s)"
 
-#: lib/gs-app.c:6271
+#: lib/gs-app.c:6274
 msgid "Package"
 msgstr "חבילה"
 
@@ -1037,11 +1037,12 @@ msgid "translator-credits"
 msgstr ""
 "Elad Alfassa <elad@fedoraproject.org>\n"
 "ירון שהרבני <sh.yaron@gmail.com>\n"
-"יוסף אור בוצ׳קו <yoseforb@gmail.com>"
+"יוסף אור בוצ׳קו <yoseforb@gmail.com>\n"
+"מיזם תרגום GNOME לעברית https://l10n.gnome.org/teams/he/"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:277 src/gs-shell.c:2149
+#: src/gs-application.c:277 src/gs-shell.c:2156
 msgid "About Software"
 msgstr "על אודות תכנה"
 
@@ -2161,7 +2162,7 @@ msgid "Additional Packages Required"
 msgstr "נדרשות חבילות נוספות"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:332
+#: src/gs-dbus-helper.c:338
 msgid "Find in Software"
 msgstr "חיפוש בין התכניות"
 
@@ -2211,12 +2212,12 @@ msgstr "מתבצעת הסרה…"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:860 src/gs-details-page.c:886
+#: src/gs-details-page.c:870 src/gs-details-page.c:896
 #: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "ה_תקנה"
 
-#: src/gs-details-page.c:876
+#: src/gs-details-page.c:886
 msgid "_Restart"
 msgstr "הפעלה מ_חדש"
 
@@ -2224,22 +2225,22 @@ msgstr "הפעלה מ_חדש"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:900
+#: src/gs-details-page.c:910
 msgid "_Install…"
 msgstr "ה_תקנה…"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1187
 #, c-format
 msgid "Other Apps by %s"
 msgstr "יישומים נוספים מאת %s"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1560
+#: src/gs-details-page.c:1570
 msgid "You need internet access to write a review"
 msgstr "נדרשת גישה לרשת אל מנת לכתוב ביקורת"
 
-#: src/gs-details-page.c:1711 src/gs-details-page.c:1727
+#: src/gs-details-page.c:1734 src/gs-details-page.c:1750
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "לא ניתן למצוא את „%s”"
@@ -2362,17 +2363,17 @@ msgid "_Help"
 msgstr "ע_זרה"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:908
+#: src/gs-details-page.ui:907
 msgid "_Write Review"
 msgstr "_כתיבת ביקורת"
 
 #. Translators: Button opening a dialog showing all reviews for an app.
-#: src/gs-details-page.ui:945
+#: src/gs-details-page.ui:944
 msgid "All Reviews"
 msgstr "כל הביקורות"
 
 #. TRANSLATORS: status text when downloading
-#: lib/gs-external-appstream-utils.c:216
+#: lib/gs-external-appstream-utils.c:272
 msgid "Downloading extra metadata files…"
 msgstr "קובצי נתוני העל הנוספים מתקבלים…"
 
@@ -3011,7 +3012,7 @@ msgstr "קטגוריות אחרות"
 msgid "No Application Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
-#: lib/gs-plugin-loader.c:2825
+#: lib/gs-plugin-loader.c:2829
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "לא ידועה"
@@ -3686,7 +3687,7 @@ msgstr "לא סופקו צילומי מסך"
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
 #: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
-#: src/gs-screenshot-image.c:622
+#: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
 msgstr "לא נמצא צילום מסך"
 
@@ -3697,24 +3698,24 @@ msgstr "טעינת התמונה נכשלה"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:650
+#: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
 msgstr "גודל צילום מסך לא נמצא"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:732
+#: src/gs-screenshot-image.c:733
 msgid "Could not create cache"
 msgstr "לא ניתן ליצור מטמון"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:746
+#: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
 msgstr "צילום מסך לא תקף"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:796
+#: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
 msgstr "אין צילום מסך"
 
@@ -4165,58 +4166,58 @@ msgstr "לא ניתן להסיר את %s"
 msgid "Unable to launch %s: %s is not installed"
 msgstr "לא ניתן להפעיל את %s: ‏%s לא מותקן"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1839 src/gs-shell.c:1887 src/gs-shell.c:1925
-#: src/gs-shell.c:1968
-msgid "Not enough disk space — free up some space and try again"
-msgstr "אין מספיק מקום פנוי בכונן - יש לפנות קצת מקום ולנסות שוב"
-
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1850 src/gs-shell.c:1898 src/gs-shell.c:1936
-#: src/gs-shell.c:1989
+#: src/gs-shell.c:1841 src/gs-shell.c:1857 src/gs-shell.c:1905
+#: src/gs-shell.c:1943 src/gs-shell.c:1996
 msgid "Sorry, something went wrong"
 msgstr "משהו לא עבד, עמך הסליחה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1881
+#: src/gs-shell.c:1846 src/gs-shell.c:1894 src/gs-shell.c:1932
+#: src/gs-shell.c:1975
+msgid "Not enough disk space — free up some space and try again"
+msgstr "אין מספיק מקום פנוי בכונן - יש לפנות קצת מקום ולנסות שוב"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1888
 msgid "Failed to install file: not supported"
 msgstr "התקנת הקובץ נכשלה: לא נתמך"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1884
+#: src/gs-shell.c:1891
 msgid "Failed to install file: authentication failed"
 msgstr "התקנת הקובץ נכשלה: כשל באימות"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1926
 msgid "Failed to install: not supported"
 msgstr "התקנה נכשלה: אין תמיכה"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1922
+#: src/gs-shell.c:1929
 msgid "Failed to install: authentication failed"
 msgstr "ההתקנה נכשלה: כשל באימות"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1963
+#: src/gs-shell.c:1970
 #, c-format
 msgid "Unable to contact %s"
 msgstr "לא ניתן ליצור קשר עם %s"
 
 #. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
-#: src/gs-shell.c:1973
+#: src/gs-shell.c:1980
 msgid "Software needs to be restarted to use new plugins."
 msgstr "יש להפעיל מחדש את מרכז התכנה כדי להשתמש בתוספים חדשים."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1977
+#: src/gs-shell.c:1984
 msgid "AC power is required"
 msgstr "יש לחבר לחשמל"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1980
+#: src/gs-shell.c:1987
 msgid "The battery level is too low"
 msgstr "הסוללה כמעט ריקה"
 
@@ -4360,8 +4361,6 @@ msgid "Installed on %s"
 msgstr "מותקן על %s"
 
 #: src/gs-update-dialog.ui:77
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Updates Installed"
 msgstr "לא הותקנו עדכונים"
 
@@ -4853,7 +4852,7 @@ msgid "Downloading upgrade information…"
 msgstr "פרטי השדרוג מתקבלים…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:404
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:405
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4996,7 +4995,7 @@ msgstr "גישה למערכת הקבצים אל %s"
 msgid "Getting flatpak metadata for %s…"
 msgstr "מקבל מידע Flatpak עבור %s…"
 
-#: plugins/flatpak/gs-flatpak.c:3579
+#: plugins/flatpak/gs-flatpak.c:3580
 #, c-format
 msgid "Failed to refine addon ‘%s’: %s"
 msgstr "כוונון התוסף ‚%s’ נכשל: %s"
@@ -5009,17 +5008,17 @@ msgstr "התקנת משתמש"
 msgid "System Installation"
 msgstr "התקנת מערכת"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1037
+#: plugins/flatpak/gs-plugin-flatpak.c:1038
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "‫הוספה להתקנה של התוסף ‚%s’ נכשלה: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1051
+#: plugins/flatpak/gs-plugin-flatpak.c:1052
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‫הוספה להסרה של התוסף ‚%s’ נכשלה: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1317
+#: plugins/flatpak/gs-plugin-flatpak.c:1318
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
