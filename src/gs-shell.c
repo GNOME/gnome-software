@@ -1271,10 +1271,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	GsPluginAction action = gs_plugin_event_get_action (event);
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
-
-	/* ignore any errors from background downloads */
-	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return TRUE;
+	gboolean can_ignore_error = TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (origin != NULL) {
@@ -1341,7 +1338,12 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 			g_string_append (str, _("Unable to get list of updates"));
 		}
 		more_info = error->message;
+		can_ignore_error = FALSE;
 	}
+
+	/* ignore any errors from background downloads */
+	if (can_ignore_error && !gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+		return TRUE;
 
 	if (str->len == 0)
 		return FALSE;
@@ -1479,10 +1481,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
-
-	/* ignore any errors from background downloads */
-	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return TRUE;
+	gboolean can_ignore_error = TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (app != NULL && origin != NULL) {
@@ -1616,7 +1615,12 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			g_string_append_printf (str, _("Unable to install updates"));
 		}
 		more_info = error->message;
+		can_ignore_error = FALSE;
 	}
+
+	/* ignore any errors from background downloads */
+	if (can_ignore_error && !gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+		return TRUE;
 
 	if (str->len == 0)
 		return FALSE;
