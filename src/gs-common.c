@@ -167,6 +167,20 @@ close_requested_cb (GtkDialog *dialog,
 	return GDK_EVENT_PROPAGATE;
 }
 
+static gboolean
+gs_common_app_is_from_official_repository (GsApp *app,
+					   GSettings *settings)
+{
+	g_auto(GStrv) official_repos = NULL;
+	const gchar *origin = gs_app_get_origin (app);
+
+	if (origin == NULL)
+		return FALSE;
+	official_repos = g_settings_get_strv (settings, "official-repos");
+	return official_repos &&
+	       gs_utils_strv_fnmatch ((gchar **) official_repos, origin);
+}
+
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
@@ -214,10 +228,16 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	title = g_string_new ("");
 	if (already_enabled) {
 		g_string_append_printf (title, "<b>%s</b>",
+					gs_common_app_is_from_official_repository (app, settings) ?
+					/* TRANSLATORS: window title */
+					_("Install Software?") :
 					/* TRANSLATORS: window title */
 					_("Install Third-Party Software?"));
 	} else {
 		g_string_append_printf (title, "<b>%s</b>",
+					gs_common_app_is_from_official_repository (app, settings) ?
+					/* TRANSLATORS: window title */
+					_("Enable Software Repository?") :
 					/* TRANSLATORS: window title */
 					_("Enable Third-Party Software Repository?"));
 	}
