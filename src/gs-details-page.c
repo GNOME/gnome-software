@@ -715,7 +715,10 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	/* Do not allow change of the app by the packaging format when it's installed */
 	origin_by_packaging_format = origin_by_packaging_format &&
-		self->app != NULL && gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED;
+		self->app != NULL &&
+		gs_app_get_state (self->app) != GS_APP_STATE_INSTALLED &&
+		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE &&
+		gs_app_get_state (self->app) != GS_APP_STATE_UPDATABLE_LIVE;
 
 	/* Sort the alternates by the user's packaging preferences */
 	if (g_hash_table_size (self->packaging_format_preference) > 0)
