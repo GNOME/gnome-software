@@ -2098,6 +2098,8 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 		    (app_state == GS_APP_STATE_UNAVAILABLE &&
 		    repo_state == GS_APP_STATE_INSTALLED)) &&
 		    g_strcmp0 (gs_app_get_origin (app), repo_id) == 0) {
+			/* First reset the state, because move from 'available' to 'unavailable' is not correct */
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app, repo_state == GS_APP_STATE_INSTALLED ? GS_APP_STATE_AVAILABLE : GS_APP_STATE_UNAVAILABLE);
 		}
 	}
