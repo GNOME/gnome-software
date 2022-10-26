@@ -1264,7 +1264,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return FALSE;
+		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (origin != NULL) {
@@ -1484,7 +1484,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 
 	/* ignore any errors from background downloads */
 	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-		return FALSE;
+		return TRUE;
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_DOWNLOAD_FAILED)) {
 		if (app != NULL && origin != NULL) {
@@ -1786,7 +1786,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
@@ -1852,7 +1852,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1900,7 +1900,7 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1938,7 +1938,7 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -1991,7 +1991,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	} else {
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
+			return TRUE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		gs_shell_append_detailed_error (shell, str, error);
@@ -2077,9 +2077,27 @@ gs_shell_rescan_events (GsShell *shell)
 	/* find the first active event and show it */
 	event = gs_plugin_loader_get_event_default (shell->plugin_loader);
 	if (event != NULL) {
+		GsPluginAction action = gs_plugin_event_get_action (event);
+		const GError *error = gs_plugin_event_get_error (event);
+		if (error != NULL &&
+		    !g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
+		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			if (error->domain == GS_PLUGIN_ERROR) {
+				g_debug ("%sinteractive action '%s' failed with error '%s': %s",
+					 gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
+					 gs_plugin_action_to_string (action),
+					 gs_plugin_error_to_string (error->code),
+					 error->message);
+			} else {
+				g_debug ("%sinteractive action '%s' failed with error '%s::%d': %s",
+					 gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
+					 gs_plugin_action_to_string (action),
+					 g_quark_to_string (error->domain),
+					 error->code,
+					 error->message);
+			}
+		}
 		if (!gs_shell_show_event (shell, event)) {
-			GsPluginAction action = gs_plugin_event_get_action (event);
-			const GError *error = gs_plugin_event_get_error (event);
 			if (error != NULL &&
 			    !g_error_matches (error,
 					      GS_PLUGIN_ERROR,
@@ -2087,17 +2105,24 @@ gs_shell_rescan_events (GsShell *shell)
 			    !g_error_matches (error,
 					      G_IO_ERROR,
 					      G_IO_ERROR_CANCELLED)) {
-				if (g_strcmp0 (BUILD_TYPE, "debug") == 0) {
-					g_warning ("not handling error %s for action %s: %s",
-						   gs_plugin_error_to_string (error->code),
-						   gs_plugin_action_to_string (action),
-						   error->message);
+				g_autofree gchar *msg = NULL;
+				g_autofree gchar *error_ident = NULL;
+				if (error->domain == GS_PLUGIN_ERROR) {
+					error_ident = g_strdup (gs_plugin_error_to_string (error->code));
 				} else {
-					g_debug ("not handling error %s for action %s: %s",
-						 gs_plugin_error_to_string (error->code),
-						 gs_plugin_action_to_string (action),
-						 error->message);
+					error_ident = g_strdup_printf ("%s::%d",
+									g_quark_to_string (error->domain),
+									error->code);
 				}
+				msg = g_strdup_printf ("not handling %sinteractive error '%s' for action '%s': %s",
+						       gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE) ? "" : "non-",
+						       error_ident,
+						       gs_plugin_action_to_string (action),
+						       error->message);
+				if (g_strcmp0 (BUILD_TYPE, "debug") == 0)
+					g_warning ("%s", msg);
+				else
+					g_debug ("%s", msg);
 			}
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
 			return;
