@@ -2508,6 +2508,12 @@ what_provides_decompose (GsAppQueryProvidesType  provides_type,
 {
 	g_autoptr(GPtrArray) array = g_ptr_array_new ();
 
+	/* The provides_tag possibly already contains the prefix, thus use it as is */
+	if (provides_type != GS_APP_QUERY_PROVIDES_UNKNOWN &&
+	    g_str_has_suffix (provides_tag, ")") &&
+	    strchr (provides_tag, '(') != NULL)
+		provides_type = GS_APP_QUERY_PROVIDES_PACKAGE_NAME;
+
 	/* Wrap the @provides_tag with the appropriate Fedora prefix */
 	switch (provides_type) {
 	case GS_APP_QUERY_PROVIDES_PACKAGE_NAME:
