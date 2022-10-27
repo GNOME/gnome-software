@@ -1858,23 +1858,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-static DnfPackage *
-find_package_by_name (DnfSack     *sack,
-                      const char  *pkgname)
-{
-	g_autoptr(GPtrArray) pkgs = NULL;
-	hy_autoquery HyQuery query = hy_query_create (sack);
-
-	hy_query_filter (query, HY_PKG_NAME, HY_EQ, pkgname);
-	hy_query_filter_latest_per_arch (query, TRUE);
-
-	pkgs = hy_query_run (query);
-	if (pkgs->len == 0)
-		return NULL;
-
-	return g_object_ref (pkgs->pdata[pkgs->len-1]);
-}
-
 static gboolean
 gs_rpm_ostree_has_launchable (GsApp *app)
 {
@@ -1935,53 +1918,6 @@ resolve_installed_packages_app (GsPlugin *plugin,
 			gs_app_set_origin (app, "rpm-ostree");
 		if (gs_app_get_name (app) == NULL)
 			gs_app_set_name (app, GS_APP_QUALITY_LOWEST, rpm_ostree_package_get_name (pkg));
-		return TRUE /* found */;
-	}
-
-	return FALSE /* not found */;
-}
-
-static gboolean
-resolve_available_packages_app (GsPlugin *plugin,
-                                DnfSack *sack,
-                                GsApp *app)
-{
-	g_autoptr(DnfPackage) pkg = NULL;
-
-	pkg = find_package_by_name (sack, gs_app_get_source_default (app));
-	if (pkg != NULL) {
-		gs_app_set_version (app, dnf_package_get_evr (pkg));
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-
-		/* anything not part of the base system can be removed */
-		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
-
-		/* set origin */
-		if (gs_app_get_origin (app) == NULL) {
-			const gchar *reponame = dnf_package_get_reponame (pkg);
-			gs_app_set_origin (app, reponame);
-		}
-
-		/* set more metadata for packages that don't have appstream data */
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, dnf_package_get_name (pkg));
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, dnf_package_get_summary (pkg));
-
-		/* set hide-from-search quirk for available apps we don't want to show; results for non-installed desktop apps
-		 * are intentionally hidden (as recommended by Matthias Clasen) by a special quirk because app layering
-		 * should be intended for power users and not a common practice on Fedora Silverblue */
-		if (!gs_app_is_installed (app)) {
-			switch (gs_app_get_kind (app)) {
-			case AS_COMPONENT_KIND_DESKTOP_APP:
-			case AS_COMPONENT_KIND_WEB_APP:
-			case AS_COMPONENT_KIND_CONSOLE_APP:
-				gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
-				break;
-			default:
-				break;
-			}
-		}
-
 		return TRUE /* found */;
 	}
 
@@ -2055,12 +1991,12 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_autoptr(GHashTable) packages = NULL;
 	g_autoptr(GHashTable) layered_packages = NULL;
 	g_autoptr(GHashTable) layered_local_packages = NULL;
+	g_autoptr(GHashTable) lookup_apps = NULL; /* name ~> GsApp */
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(GVariant) default_deployment = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	g_autoptr(DnfContext) dnf_context = NULL;
 	g_autoptr(OstreeRepo) ot_repo = NULL;
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
@@ -2068,13 +2004,10 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 
 	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_dnf_context_locked (self, &os_proxy, &sysroot_proxy, &dnf_context, cancellable, error))
+	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	ot_repo = g_object_ref (self->ot_repo);
-
-	if (!dnf_context)
-		return FALSE;
 
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
@@ -2119,9 +2052,10 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		g_hash_table_add (layered_local_packages, layered_local_packages_strv[ii]);
 	}
 
+	lookup_apps = g_hash_table_new (g_str_hash, g_str_equal);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		gboolean found;
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
@@ -2147,17 +2081,75 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		if (gs_app_get_source_default (app) == NULL)
 			continue;
 
-		/* first try to resolve from installed packages */
-		found = resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app);
+		/* first try to resolve from installed packages and
+		   if we didn't find anything, try resolving from available packages */
+		if (!resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app))
+			g_hash_table_insert (lookup_apps, (gpointer) gs_app_get_source_default (app), app);
+	}
 
-		/* if we didn't find anything, try resolving from available packages */
-		if (!found && dnf_context != NULL)
-			found = resolve_available_packages_app (plugin, dnf_context_get_sack (dnf_context), app);
+	if (g_hash_table_size (lookup_apps) > 0) {
+		g_autofree gpointer *names = NULL;
+		g_autoptr(GError) local_error = NULL;
+		g_autoptr(GVariant) var_packages = NULL;
 
-		/* if we still didn't find anything then it's likely a package
-		 * that is still in appstream data, but removed from the repos */
-		if (!found)
-			g_debug ("failed to resolve %s", gs_app_get_unique_id (app));
+		names = g_hash_table_get_keys_as_array (lookup_apps, NULL);
+		if (gs_rpmostree_os_call_get_packages_sync (os_proxy, (const gchar * const *) names, &var_packages, cancellable, &local_error)) {
+			gsize n_children = g_variant_n_children (var_packages);
+			for (gsize i = 0; i < n_children; i++) {
+				g_autoptr(GVariant) value = g_variant_get_child_value (var_packages, i);
+				g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
+				GsApp *app;
+				const gchar *key = NULL;
+				const gchar *evr = NULL;
+				const gchar *reponame = NULL;
+				const gchar *name = NULL;
+				const gchar *summary = NULL;
+
+				if (!g_variant_dict_lookup (dict, "key", "&s", &key) ||
+				    !g_variant_dict_lookup (dict, "evr", "&s", &evr) ||
+				    !g_variant_dict_lookup (dict, "reponame", "&s", &reponame) ||
+				    !g_variant_dict_lookup (dict, "name", "&s", &name) ||
+				    !g_variant_dict_lookup (dict, "summary", "&s", &summary)) {
+					continue;
+				}
+
+				app = g_hash_table_lookup (lookup_apps, key);
+				if (app == NULL)
+					continue;
+
+				gs_app_set_version (app, evr);
+				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+					gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+
+				/* anything not part of the base system can be removed */
+				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+
+				/* set origin */
+				if (gs_app_get_origin (app) == NULL)
+					gs_app_set_origin (app, reponame);
+
+				/* set more metadata for packages that don't have appstream data */
+				gs_app_set_name (app, GS_APP_QUALITY_LOWEST, name);
+				gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, summary);
+
+				/* set hide-from-search quirk for available apps we don't want to show; results for non-installed desktop apps
+				 * are intentionally hidden (as recommended by Matthias Clasen) by a special quirk because app layering
+				 * should be intended for power users and not a common practice on Fedora Silverblue */
+				if (!gs_app_is_installed (app)) {
+					switch (gs_app_get_kind (app)) {
+					case AS_COMPONENT_KIND_DESKTOP_APP:
+					case AS_COMPONENT_KIND_WEB_APP:
+					case AS_COMPONENT_KIND_CONSOLE_APP:
+						gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		} else {
+			g_debug ("Failed to get packages: %s", local_error->message);
+		}
 	}
 
 	return TRUE;
