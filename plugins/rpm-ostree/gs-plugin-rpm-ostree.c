@@ -15,7 +15,6 @@
 #include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
-#include <libdnf/libdnf.h>
 #include <ostree.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlib.h>
@@ -32,7 +31,7 @@
  *
  * The plugin has a worker thread which all operations are delegated to, as
  * while the rpm-ostreed API is asynchronous over D-Bus, the plugin also needs
- * to use lower level libostree and libdnf APIs which are entirely synchronous.
+ * to use lower level libostree APIs which are entirely synchronous.
  * Message passing to the worker thread is by gs_worker_thread_queue().
  */
 
@@ -60,7 +59,6 @@ struct _GsPluginRpmOstree {
 	GsRPMOSTreeSysroot	*sysroot_proxy;
 	OstreeRepo		*ot_repo;
 	OstreeSysroot		*ot_sysroot;
-	DnfContext		*dnf_context;
 	gboolean		 update_triggered;
 	guint			 inactive_timeout_id;
 };
@@ -80,7 +78,6 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 	g_clear_object (&self->sysroot_proxy);
 	g_clear_object (&self->ot_sysroot);
 	g_clear_object (&self->ot_repo);
-	g_clear_object (&self->dnf_context);
 	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->dispose (object);
@@ -193,7 +190,6 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 		g_clear_object (&self->sysroot_proxy);
 		g_clear_object (&self->ot_sysroot);
 		g_clear_object (&self->ot_repo);
-		g_clear_object (&self->dnf_context);
 		self->inactive_timeout_id = 0;
 
 		g_clear_pointer (&locker, g_mutex_locker_free);
@@ -940,79 +936,6 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 	                                                    NULL,
 	                                                    cancellable,
 	                                                    error);
-}
-
-#define RPMOSTREE_CORE_CACHEDIR "/var/cache/rpm-ostree/"
-#define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
-#define RPMOSTREE_DIR_CACHE_SOLV "solv"
-
-static DnfContext *
-gs_rpmostree_create_bare_dnf_context (GCancellable *cancellable,
-				      GError **error)
-{
-	g_autoptr(DnfContext) context = dnf_context_new ();
-
-	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
-	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
-	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
-	dnf_context_set_cache_age (context, G_MAXUINT);
-	dnf_context_set_enable_filelists (context, FALSE);
-
-	if (!dnf_context_setup (context, cancellable, error)) {
-		gs_rpmostree_error_convert (error);
-		return NULL;
-	}
-
-	return g_steal_pointer (&context);
-}
-
-static gboolean
-gs_rpmostree_ref_dnf_context_locked (GsPluginRpmOstree *self,
-				     GsRPMOSTreeOS **out_os_proxy,
-				     GsRPMOSTreeSysroot **out_sysroot_proxy,
-				     DnfContext **out_dnf_context,
-				     GCancellable *cancellable,
-				     GError **error)
-{
-	g_autoptr(DnfContext) context = NULL;
-	g_autoptr(DnfState) state = NULL;
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-
-	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
-
-	if (self->dnf_context != NULL) {
-		if (out_os_proxy)
-			*out_os_proxy = g_steal_pointer (&os_proxy);
-		if (out_sysroot_proxy)
-			*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
-		if (out_dnf_context)
-			*out_dnf_context = g_object_ref (self->dnf_context);
-		return TRUE;
-	}
-
-	context = gs_rpmostree_create_bare_dnf_context (cancellable, error);
-	if (!context)
-		return FALSE;
-
-	state = dnf_state_new ();
-
-	if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
-		gs_rpmostree_error_convert (error);
-		return FALSE;
-	}
-
-	g_set_object (&self->dnf_context, context);
-
-	if (out_os_proxy)
-		*out_os_proxy = g_steal_pointer (&os_proxy);
-	if (out_sysroot_proxy)
-		*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
-	if (out_dnf_context)
-		*out_dnf_context = g_object_ref (self->dnf_context);
-
-	return TRUE;
 }
 
 static void refresh_metadata_thread_cb (GTask        *task,
