@@ -233,7 +233,6 @@ if get_option('malcontent')
 endif
 
 if get_option('rpm_ostree')
-  libdnf = dependency('libdnf')
   ostree = dependency('ostree-1')
   rpm = dependency('rpm')
   rpm_ostree = dependency('rpm-ostree-1', version : '>= 2019.3')

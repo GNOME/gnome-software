@@ -19,5 +19,5 @@ shared_module(
   install_dir: plugin_dir,
   install_rpath: join_paths(rpm_ostree.get_variable('libdir'), 'rpm-ostree'),
   c_args : cargs,
-  dependencies : [ plugin_libs, libdnf, ostree, rpm, rpm_ostree ],
+  dependencies : [ plugin_libs, ostree, rpm, rpm_ostree ],
 )
