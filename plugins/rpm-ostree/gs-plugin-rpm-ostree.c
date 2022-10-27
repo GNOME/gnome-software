@@ -1875,21 +1875,6 @@ find_package_by_name (DnfSack     *sack,
 	return g_object_ref (pkgs->pdata[pkgs->len-1]);
 }
 
-static GPtrArray *
-find_packages_by_provides (DnfSack *sack,
-                           gchar **search)
-{
-	g_autoptr(GPtrArray) pkgs = NULL;
-	hy_autoquery HyQuery query = hy_query_create (sack);
-
-	hy_query_filter_provides_in (query, search);
-	hy_query_filter_latest_per_arch (query, TRUE);
-
-	pkgs = hy_query_run (query);
-
-	return g_steal_pointer (&pkgs);
-}
-
 static gboolean
 gs_rpm_ostree_has_launchable (GsApp *app)
 {
@@ -2587,10 +2572,13 @@ list_apps_thread_cb (GTask        *task,
 	const gchar *provides_tag = NULL;
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
-	g_autoptr(DnfContext) dnf_context = NULL;
 	g_auto(GStrv) provides = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GVariant) packages = NULL;
+	gsize n_children;
+	gboolean done;
 
 	assert_in_worker (self);
 
@@ -2606,23 +2594,50 @@ list_apps_thread_cb (GTask        *task,
 		return;
 	}
 
-	/* Prepare a dnf context */
-	locker = g_mutex_locker_new (&self->mutex);
-
-	if (!gs_rpmostree_ref_dnf_context_locked (self, NULL, NULL, &dnf_context, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
+	    !gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	g_clear_pointer (&locker, g_mutex_locker_free);
-
 	provides = what_provides_decompose (provides_type, provides_tag);
-	pkglist = find_packages_by_provides (dnf_context_get_sack (dnf_context), provides);
-	for (guint i = 0; i < pkglist->len; i++) {
-		DnfPackage *pkg = g_ptr_array_index (pkglist, i);
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_what_provides_sync (os_proxy, (const gchar * const *) provides, &packages, cancellable, &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+					gs_rpmostree_error_convert (&local_error);
+					g_task_return_error (task, g_steal_pointer (&local_error));
+					return;
+				}
+				done = FALSE;
+				continue;
+			}
+			gs_rpmostree_error_convert (&local_error);
+			/*  Ignore error when the corresponding D-Bus method does not exist */
+			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+				g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+				return;
+			}
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	}
+	n_children = g_variant_n_children (packages);
+	for (gsize i = 0; i < n_children; i++) {
+		g_autoptr(GVariant) value = g_variant_get_child_value (packages, i);
+		g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
 		g_autoptr(GsApp) app = NULL;
+		const gchar *name = NULL;
+		const gchar *nevra = NULL;
 
-		app = gs_plugin_cache_lookup (GS_PLUGIN (self), dnf_package_get_nevra (pkg));
+		if (!g_variant_dict_lookup (dict, "nevra", "&s", &nevra) ||
+		    !g_variant_dict_lookup (dict, "name", "&s", &name))
+			continue;
+
+		app = gs_plugin_cache_lookup (GS_PLUGIN (self), nevra);
 		if (app != NULL) {
 			gs_app_list_add (list, app);
 			continue;
@@ -2637,9 +2652,9 @@ list_apps_thread_cb (GTask        *task,
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-		gs_app_add_source (app, dnf_package_get_name (pkg));
+		gs_app_add_source (app, name);
 
-		gs_plugin_cache_add (GS_PLUGIN (self), dnf_package_get_nevra (pkg), app);
+		gs_plugin_cache_add (GS_PLUGIN (self), nevra, app);
 		gs_app_list_add (list, app);
 	}
 
