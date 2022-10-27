@@ -424,6 +424,12 @@ install_resources (GsExtrasPageMode   mode,
 		                  "&s", &startup_id);
 	}
 
+	/* Make sure non-NULL values are used */
+	if (desktop_id == NULL)
+		desktop_id = "";
+	if (startup_id == NULL)
+		startup_id = "";
+
 	mode_string = gs_extras_page_mode_to_string (mode);
 	g_action_group_activate_action (G_ACTION_GROUP (app), "install-resources",
 	                                g_variant_new ("(s^assss)", mode_string, resources, startup_id, desktop_id, ident ? ident : ""));

@@ -83,13 +83,14 @@ static void
 gs_vendor_init (GsVendor *vendor)
 {
 #ifdef HAVE_PACKAGEKIT
+	g_autoptr(GError) local_error = NULL;
 	const gchar *fn = "/etc/PackageKit/Vendor.conf";
 	gboolean ret;
 
 	vendor->file = g_key_file_new ();
-	ret = g_key_file_load_from_file (vendor->file, fn, G_KEY_FILE_NONE, NULL);
-	if (!ret)
-		g_warning ("%s file not found", fn);
+	ret = g_key_file_load_from_file (vendor->file, fn, G_KEY_FILE_NONE, &local_error);
+	if (!ret && local_error && !g_error_matches (local_error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+		g_warning ("Failed to read '%s': %s", fn, local_error->message);
 #endif
 }
 
