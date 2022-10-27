@@ -2660,40 +2660,71 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(DnfContext) dnf_context = NULL;
-	GPtrArray *repos;
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GVariant) repos = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gsize n_children;
+	gboolean done;
 
-	dnf_context = gs_rpmostree_create_bare_dnf_context (cancellable, error);
-	if (!dnf_context)
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+		return FALSE;
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 		return FALSE;
 
-	repos = dnf_context_get_repos (dnf_context);
-	if (repos == NULL)
-		return TRUE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_list_repos_sync (os_proxy, &repos, cancellable, &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			gs_rpmostree_error_convert (&local_error);
+			/*  Ignore error when the corresponding D-Bus method does not exist */
+			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED))
+				return TRUE;
+			g_propagate_error (error, g_steal_pointer (&local_error));
+			return FALSE;
+		}
+	}
 
-	for (guint i = 0; i < repos->len; i++) {
-		DnfRepo *repo = g_ptr_array_index (repos, i);
-		g_autofree gchar *description = NULL;
+	n_children = g_variant_n_children (repos);
+	for (gsize i = 0; i < n_children; i++) {
+		g_autoptr(GVariant) value = g_variant_get_child_value (repos, i);
+		g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
 		g_autoptr(GsApp) app = NULL;
-		gboolean enabled;
+		const gchar *id = NULL;
+		const gchar *description = NULL;
+		gboolean is_enabled = FALSE;
+		gboolean is_devel = FALSE;
+		gboolean is_source = FALSE;
 
-		/* hide these from the user */
-		if (dnf_repo_is_devel (repo) || dnf_repo_is_source (repo))
+		if (!g_variant_dict_lookup (dict, "id", "&s", &id))
 			continue;
+		if (g_variant_dict_lookup (dict, "is-devel", "b", &is_devel) && is_devel)
+			continue;
+		/* hide these from the user */
+		if (g_variant_dict_lookup (dict, "is-source", "b", &is_source) && is_source)
+			continue;
+		if (!g_variant_dict_lookup (dict, "description", "&s", &description))
+			continue;
+		if (!g_variant_dict_lookup (dict, "is-enabled", "b", &is_enabled))
+			is_enabled = FALSE;
 
-		app = gs_app_new (dnf_repo_get_id (repo));
+		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, plugin);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-
-		enabled = (dnf_repo_get_enabled (repo) & DNF_REPO_ENABLED_PACKAGES) > 0;
-		gs_app_set_state (app, enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-
-		description = dnf_repo_get_description (repo);
+		gs_app_set_state (app, is_enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
-
 		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
 		gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
 
