@@ -138,6 +138,8 @@ gs_rpmostree_error_convert (GError **perror)
 			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 		} else if (g_str_has_prefix (remote_error, "org.projectatomic.rpmostreed.Error")) {
 			error->code = GS_PLUGIN_ERROR_FAILED;
+		} else if (gs_utils_error_convert_gdbus (perror)) {
+			return;
 		} else {
 			g_warning ("can't reliably fixup remote error %s", remote_error);
 			error->code = GS_PLUGIN_ERROR_FAILED;
