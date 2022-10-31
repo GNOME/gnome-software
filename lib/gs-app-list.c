@@ -861,19 +861,15 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 		}
 
 		/* better? */
-		if (flags != GS_APP_LIST_FILTER_FLAG_NONE) {
-			if (gs_app_list_filter_app_is_better (app, found, flags)) {
-				for (guint j = 0; j < keys->len; j++) {
-					const gchar *key = g_ptr_array_index (keys, j);
-					g_hash_table_insert (hash, g_strdup (key), app);
-				}
-				g_hash_table_remove (kept_apps, found);
-				g_hash_table_add (kept_apps, app);
-				continue;
+		if (flags != GS_APP_LIST_FILTER_FLAG_NONE &&
+		    gs_app_list_filter_app_is_better (app, found, flags)) {
+			for (guint j = 0; j < keys->len; j++) {
+				const gchar *key = g_ptr_array_index (keys, j);
+				g_hash_table_insert (hash, g_strdup (key), app);
 			}
-			continue;
+			g_hash_table_remove (kept_apps, found);
+			g_hash_table_add (kept_apps, app);
 		}
-		continue;
 	}
 
 	/* deep copy to a temp list and clear the current one */
