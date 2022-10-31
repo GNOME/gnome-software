@@ -249,6 +249,14 @@ about_activated (GSimpleAction *action,
 		NULL
 	};
 
+	const gchar *designers[] = {
+		"Allan Day",
+		"Jakub Steiner",
+		"William Jon McCann",
+		"Tobias Bernard",
+		NULL
+	};
+
 #if ADW_CHECK_VERSION(1,2,0)
 	adw_show_about_window (app->main_window,
 			       "application-name", g_get_application_name (),
@@ -256,8 +264,10 @@ about_activated (GSimpleAction *action,
 			       "developer-name", _("The GNOME Project"),
 			       "version", get_version(),
 			       "website", "https://wiki.gnome.org/Apps/Software",
+			       "support-url", "https://discourse.gnome.org/tag/gnome-software",
 			       "issue-url", "https://gitlab.gnome.org/GNOME/gnome-software/-/issues/new",
 			       "developers", developers,
+			       "designers", designers,
 			       "copyright", _("Copyright \xc2\xa9 2016–2022 GNOME Software contributors"),
 			       "license-type", GTK_LICENSE_GPL_2_0,
 			       "translator-credits", _("translator-credits"),
