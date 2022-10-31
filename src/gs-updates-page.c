@@ -74,6 +74,7 @@ struct _GsUpdatesPage
 	GtkWidget		*upgrade_banner;
 	GtkWidget		*infobar_end_of_life;
 	GtkWidget		*label_end_of_life;
+	GtkWidget		*up_to_date_image;
 
 	GtkSizeGroup		*sizegroup_name;
 	GtkSizeGroup		*sizegroup_button_label;
@@ -1401,6 +1402,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, infobar_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, up_to_date_image);
 }
 
 static void
@@ -1457,6 +1459,10 @@ gs_updates_page_set_is_narrow (GsUpdatesPage *self, gboolean is_narrow)
 		return;
 
 	self->is_narrow = is_narrow;
+	if (self->is_narrow)
+		gtk_image_set_pixel_size (GTK_IMAGE (self->up_to_date_image), 280);
+	else
+		gtk_image_set_pixel_size (GTK_IMAGE (self->up_to_date_image), 300);
 	g_object_notify_by_pspec (G_OBJECT (self), obj_props[PROP_IS_NARROW]);
 }
 
