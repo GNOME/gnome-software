@@ -458,7 +458,7 @@ g_odrs_provider_set_message_request_body (SoupMessage *message,
 	g_return_if_fail (SOUP_IS_MESSAGE (message));
 	g_return_if_fail (data != NULL);
 
-	input_stream = g_memory_input_stream_new_from_data (data, length, NULL);
+	input_stream = g_memory_input_stream_new_from_data (g_memdup2 (data, length), length, g_free);
 	md = message_data_new (input_stream, length);
 
 	g_signal_connect_data (message, "restarted",
