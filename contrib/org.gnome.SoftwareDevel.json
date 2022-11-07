@@ -119,19 +119,6 @@
             ]
         },
         {
-            "name": "polkit",
-            "buildsystem": "meson",
-            "config-opts": [
-                "-Djs_engine=mozjs"
-            ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://gitlab.freedesktop.org/polkit/polkit.git"
-                }
-            ]
-        },
-        {
             "name": "libfuse",
             "buildsystem": "simple",
             "build-commands": [
@@ -177,12 +164,29 @@
         },
         {
             "name": "flatpak",
-            "buildsystem": "autotools",
+            "buildsystem": "meson",
+            "config-opts": [
+                "-Dsystem_helper=disabled",
+		"-Dgtkdoc=disabled",
+		"-Dinstalled_tests=false",
+		"-Dtests=false"
+            ],
             "sources": [
                 {
                     "type": "git",
                     "url": "https://github.com/flatpak/flatpak.git",
                     "branch": "main"
+                }
+            ]
+        },
+        {
+            "name": "libglib-testing",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/pwithnall/libglib-testing.git",
+                    "tag": "0.1.1"
                 }
             ]
         },
@@ -194,6 +198,7 @@
                 "--libdir=/app/lib",
                 "-Dpackagekit=false",
                 "-Dpackagekit_autoremove=false",
+                "-Dpolkit=false",
                 "-Dsoup2=true",
                 "-Dfwupd=false",
                 "-Dflatpak=true",
