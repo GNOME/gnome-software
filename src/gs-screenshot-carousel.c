@@ -152,6 +152,7 @@ gs_screenshot_carousel_load_screenshots (GsScreenshotCarousel *self, GsApp *app,
 		 * thumbnails otherwise */
 		if (!is_online &&
 		    !gs_screenshot_image_is_showing (GS_SCREENSHOT_IMAGE (ssimg))) {
+			g_object_ref_sink (ssimg);
 			g_object_unref (ssimg);
 			continue;
 		}
