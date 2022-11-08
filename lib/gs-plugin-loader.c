@@ -3301,8 +3301,19 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_utils_set_online_updates_timestamp (plugin_loader->settings);
 
 	/* remove from pending list */
-	if (add_to_pending_array)
+	if (add_to_pending_array) {
+		g_autoptr(GsAppList) addons = NULL;
+
 		gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
+
+		/* unstage addons */
+		addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
+		for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
+			if (gs_app_get_to_be_installed (addon))
+				gs_app_set_to_be_installed (addon, FALSE);
+		}
+	}
 
 	/* some functions are really required for proper operation */
 	switch (action) {
@@ -3328,17 +3339,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				 gs_plugin_action_to_string (action));
 		}
 		break;
-	}
-
-	/* unstage addons */
-	if (add_to_pending_array) {
-		g_autoptr(GsAppList) addons = gs_app_dup_addons (gs_plugin_job_get_app (helper->plugin_job));
-
-		for (guint i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
-			GsApp *addon = gs_app_list_index (addons, i);
-			if (gs_app_get_to_be_installed (addon))
-				gs_app_set_to_be_installed (addon, FALSE);
-		}
 	}
 
 	/* filter to reduce to a sane set */
