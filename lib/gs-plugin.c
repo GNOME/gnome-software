@@ -2075,6 +2075,7 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 	GsPluginPrivate *priv;
 	GHashTableIter iter;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GsPlugin) repo_plugin = NULL;
 	gpointer value;
 	const gchar *repo_id;
 	GsAppState repo_state;
@@ -2085,6 +2086,7 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 	priv = gs_plugin_get_instance_private (plugin);
 	repo_id = gs_app_get_id (repository);
 	repo_state = gs_app_get_state (repository);
+	repo_plugin = gs_app_dup_management_plugin (repository);
 
 	locker = g_mutex_locker_new (&priv->cache_mutex);
 
@@ -2092,12 +2094,20 @@ gs_plugin_update_cache_state_for_repository (GsPlugin *plugin,
 	while (g_hash_table_iter_next (&iter, NULL, &value)) {
 		GsApp *app = value;
 		GsAppState app_state = gs_app_get_state (app);
+		g_autoptr(GsPlugin) app_plugin = gs_app_dup_management_plugin (app);
+
+		if (app_plugin != repo_plugin ||
+		    gs_app_get_scope (app) != gs_app_get_scope (repository) ||
+		    gs_app_get_bundle_kind (app) != gs_app_get_bundle_kind (repository))
+			continue;
 
 		if (((app_state == GS_APP_STATE_AVAILABLE &&
 		    repo_state != GS_APP_STATE_INSTALLED) ||
 		    (app_state == GS_APP_STATE_UNAVAILABLE &&
 		    repo_state == GS_APP_STATE_INSTALLED)) &&
 		    g_strcmp0 (gs_app_get_origin (app), repo_id) == 0) {
+			/* First reset the state, because move from 'available' to 'unavailable' is not correct */
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app, repo_state == GS_APP_STATE_INSTALLED ? GS_APP_STATE_AVAILABLE : GS_APP_STATE_UNAVAILABLE);
 		}
 	}
