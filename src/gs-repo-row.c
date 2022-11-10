@@ -311,6 +311,7 @@ gs_repo_row_init (GsRepoRow *self)
 						    G_CALLBACK (disable_switch_clicked_cb), self);
 	image = gtk_image_new_from_icon_name ("user-trash-symbolic");
 	gtk_button_set_child (GTK_BUTTON (priv->remove_button), image);
+	gtk_widget_set_tooltip_text(priv->remove_button, _("Remove"));
 	g_signal_connect (priv->remove_button, "clicked",
 		G_CALLBACK (gs_repo_row_remove_button_clicked_cb), self);
 }
