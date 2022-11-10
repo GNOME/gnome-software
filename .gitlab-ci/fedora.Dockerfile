@@ -31,7 +31,6 @@ RUN dnf -y install \
     lmdb-devel \
     appstream-devel \
     libcurl-devel \
-    libdnf-devel \
     libepoxy-devel \
     libglib-testing-devel \
     libgudev-devel \

@@ -15,7 +15,6 @@
 #include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
-#include <libdnf/libdnf.h>
 #include <ostree.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlib.h>
@@ -32,7 +31,7 @@
  *
  * The plugin has a worker thread which all operations are delegated to, as
  * while the rpm-ostreed API is asynchronous over D-Bus, the plugin also needs
- * to use lower level libostree and libdnf APIs which are entirely synchronous.
+ * to use lower level libostree APIs which are entirely synchronous.
  * Message passing to the worker thread is by gs_worker_thread_queue().
  */
 
@@ -60,7 +59,6 @@ struct _GsPluginRpmOstree {
 	GsRPMOSTreeSysroot	*sysroot_proxy;
 	OstreeRepo		*ot_repo;
 	OstreeSysroot		*ot_sysroot;
-	DnfContext		*dnf_context;
 	gboolean		 update_triggered;
 	guint			 inactive_timeout_id;
 };
@@ -80,7 +78,6 @@ gs_plugin_rpm_ostree_dispose (GObject *object)
 	g_clear_object (&self->sysroot_proxy);
 	g_clear_object (&self->ot_sysroot);
 	g_clear_object (&self->ot_repo);
-	g_clear_object (&self->dnf_context);
 	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_rpm_ostree_parent_class)->dispose (object);
@@ -138,6 +135,8 @@ gs_rpmostree_error_convert (GError **perror)
 			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 		} else if (g_str_has_prefix (remote_error, "org.projectatomic.rpmostreed.Error")) {
 			error->code = GS_PLUGIN_ERROR_FAILED;
+		} else if (gs_utils_error_convert_gdbus (perror)) {
+			return;
 		} else {
 			g_warning ("can't reliably fixup remote error %s", remote_error);
 			error->code = GS_PLUGIN_ERROR_FAILED;
@@ -191,7 +190,6 @@ gs_rpmostree_inactive_timeout_cb (gpointer user_data)
 		g_clear_object (&self->sysroot_proxy);
 		g_clear_object (&self->ot_sysroot);
 		g_clear_object (&self->ot_repo);
-		g_clear_object (&self->dnf_context);
 		self->inactive_timeout_id = 0;
 
 		g_clear_pointer (&locker, g_mutex_locker_free);
@@ -938,79 +936,6 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 	                                                    NULL,
 	                                                    cancellable,
 	                                                    error);
-}
-
-#define RPMOSTREE_CORE_CACHEDIR "/var/cache/rpm-ostree/"
-#define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
-#define RPMOSTREE_DIR_CACHE_SOLV "solv"
-
-static DnfContext *
-gs_rpmostree_create_bare_dnf_context (GCancellable *cancellable,
-				      GError **error)
-{
-	g_autoptr(DnfContext) context = dnf_context_new ();
-
-	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
-	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
-	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
-	dnf_context_set_cache_age (context, G_MAXUINT);
-	dnf_context_set_enable_filelists (context, FALSE);
-
-	if (!dnf_context_setup (context, cancellable, error)) {
-		gs_rpmostree_error_convert (error);
-		return NULL;
-	}
-
-	return g_steal_pointer (&context);
-}
-
-static gboolean
-gs_rpmostree_ref_dnf_context_locked (GsPluginRpmOstree *self,
-				     GsRPMOSTreeOS **out_os_proxy,
-				     GsRPMOSTreeSysroot **out_sysroot_proxy,
-				     DnfContext **out_dnf_context,
-				     GCancellable *cancellable,
-				     GError **error)
-{
-	g_autoptr(DnfContext) context = NULL;
-	g_autoptr(DnfState) state = NULL;
-	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
-	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-
-	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
-		return FALSE;
-
-	if (self->dnf_context != NULL) {
-		if (out_os_proxy)
-			*out_os_proxy = g_steal_pointer (&os_proxy);
-		if (out_sysroot_proxy)
-			*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
-		if (out_dnf_context)
-			*out_dnf_context = g_object_ref (self->dnf_context);
-		return TRUE;
-	}
-
-	context = gs_rpmostree_create_bare_dnf_context (cancellable, error);
-	if (!context)
-		return FALSE;
-
-	state = dnf_state_new ();
-
-	if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
-		gs_rpmostree_error_convert (error);
-		return FALSE;
-	}
-
-	g_set_object (&self->dnf_context, context);
-
-	if (out_os_proxy)
-		*out_os_proxy = g_steal_pointer (&os_proxy);
-	if (out_sysroot_proxy)
-		*out_sysroot_proxy = g_steal_pointer (&sysroot_proxy);
-	if (out_dnf_context)
-		*out_dnf_context = g_object_ref (self->dnf_context);
-
-	return TRUE;
 }
 
 static void refresh_metadata_thread_cb (GTask        *task,
@@ -1856,38 +1781,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-static DnfPackage *
-find_package_by_name (DnfSack     *sack,
-                      const char  *pkgname)
-{
-	g_autoptr(GPtrArray) pkgs = NULL;
-	hy_autoquery HyQuery query = hy_query_create (sack);
-
-	hy_query_filter (query, HY_PKG_NAME, HY_EQ, pkgname);
-	hy_query_filter_latest_per_arch (query, TRUE);
-
-	pkgs = hy_query_run (query);
-	if (pkgs->len == 0)
-		return NULL;
-
-	return g_object_ref (pkgs->pdata[pkgs->len-1]);
-}
-
-static GPtrArray *
-find_packages_by_provides (DnfSack *sack,
-                           gchar **search)
-{
-	g_autoptr(GPtrArray) pkgs = NULL;
-	hy_autoquery HyQuery query = hy_query_create (sack);
-
-	hy_query_filter_provides_in (query, search);
-	hy_query_filter_latest_per_arch (query, TRUE);
-
-	pkgs = hy_query_run (query);
-
-	return g_steal_pointer (&pkgs);
-}
-
 static gboolean
 gs_rpm_ostree_has_launchable (GsApp *app)
 {
@@ -1948,53 +1841,6 @@ resolve_installed_packages_app (GsPlugin *plugin,
 			gs_app_set_origin (app, "rpm-ostree");
 		if (gs_app_get_name (app) == NULL)
 			gs_app_set_name (app, GS_APP_QUALITY_LOWEST, rpm_ostree_package_get_name (pkg));
-		return TRUE /* found */;
-	}
-
-	return FALSE /* not found */;
-}
-
-static gboolean
-resolve_available_packages_app (GsPlugin *plugin,
-                                DnfSack *sack,
-                                GsApp *app)
-{
-	g_autoptr(DnfPackage) pkg = NULL;
-
-	pkg = find_package_by_name (sack, gs_app_get_source_default (app));
-	if (pkg != NULL) {
-		gs_app_set_version (app, dnf_package_get_evr (pkg));
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-
-		/* anything not part of the base system can be removed */
-		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
-
-		/* set origin */
-		if (gs_app_get_origin (app) == NULL) {
-			const gchar *reponame = dnf_package_get_reponame (pkg);
-			gs_app_set_origin (app, reponame);
-		}
-
-		/* set more metadata for packages that don't have appstream data */
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, dnf_package_get_name (pkg));
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, dnf_package_get_summary (pkg));
-
-		/* set hide-from-search quirk for available apps we don't want to show; results for non-installed desktop apps
-		 * are intentionally hidden (as recommended by Matthias Clasen) by a special quirk because app layering
-		 * should be intended for power users and not a common practice on Fedora Silverblue */
-		if (!gs_app_is_installed (app)) {
-			switch (gs_app_get_kind (app)) {
-			case AS_COMPONENT_KIND_DESKTOP_APP:
-			case AS_COMPONENT_KIND_WEB_APP:
-			case AS_COMPONENT_KIND_CONSOLE_APP:
-				gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
-				break;
-			default:
-				break;
-			}
-		}
-
 		return TRUE /* found */;
 	}
 
@@ -2068,12 +1914,12 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 	g_autoptr(GHashTable) packages = NULL;
 	g_autoptr(GHashTable) layered_packages = NULL;
 	g_autoptr(GHashTable) layered_local_packages = NULL;
+	g_autoptr(GHashTable) lookup_apps = NULL; /* name ~> GsApp */
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(GVariant) default_deployment = NULL;
 	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
 	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
-	g_autoptr(DnfContext) dnf_context = NULL;
 	g_autoptr(OstreeRepo) ot_repo = NULL;
 	g_auto(GStrv) layered_packages_strv = NULL;
 	g_auto(GStrv) layered_local_packages_strv = NULL;
@@ -2081,13 +1927,10 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 
 	locker = g_mutex_locker_new (&self->mutex);
 
-	if (!gs_rpmostree_ref_dnf_context_locked (self, &os_proxy, &sysroot_proxy, &dnf_context, cancellable, error))
+	if (!gs_rpmostree_ref_proxies_locked (self, &os_proxy, &sysroot_proxy, cancellable, error))
 		return FALSE;
 
 	ot_repo = g_object_ref (self->ot_repo);
-
-	if (!dnf_context)
-		return FALSE;
 
 	g_clear_pointer (&locker, g_mutex_locker_free);
 
@@ -2132,9 +1975,10 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		g_hash_table_add (layered_local_packages, layered_local_packages_strv[ii]);
 	}
 
+	lookup_apps = g_hash_table_new (g_str_hash, g_str_equal);
+
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		gboolean found;
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
@@ -2160,17 +2004,75 @@ gs_rpm_ostree_refine_apps (GsPlugin *plugin,
 		if (gs_app_get_source_default (app) == NULL)
 			continue;
 
-		/* first try to resolve from installed packages */
-		found = resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app);
+		/* first try to resolve from installed packages and
+		   if we didn't find anything, try resolving from available packages */
+		if (!resolve_installed_packages_app (plugin, packages, layered_packages, layered_local_packages, app))
+			g_hash_table_insert (lookup_apps, (gpointer) gs_app_get_source_default (app), app);
+	}
 
-		/* if we didn't find anything, try resolving from available packages */
-		if (!found && dnf_context != NULL)
-			found = resolve_available_packages_app (plugin, dnf_context_get_sack (dnf_context), app);
+	if (g_hash_table_size (lookup_apps) > 0) {
+		g_autofree gpointer *names = NULL;
+		g_autoptr(GError) local_error = NULL;
+		g_autoptr(GVariant) var_packages = NULL;
 
-		/* if we still didn't find anything then it's likely a package
-		 * that is still in appstream data, but removed from the repos */
-		if (!found)
-			g_debug ("failed to resolve %s", gs_app_get_unique_id (app));
+		names = g_hash_table_get_keys_as_array (lookup_apps, NULL);
+		if (gs_rpmostree_os_call_get_packages_sync (os_proxy, (const gchar * const *) names, &var_packages, cancellable, &local_error)) {
+			gsize n_children = g_variant_n_children (var_packages);
+			for (gsize i = 0; i < n_children; i++) {
+				g_autoptr(GVariant) value = g_variant_get_child_value (var_packages, i);
+				g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
+				GsApp *app;
+				const gchar *key = NULL;
+				const gchar *evr = NULL;
+				const gchar *reponame = NULL;
+				const gchar *name = NULL;
+				const gchar *summary = NULL;
+
+				if (!g_variant_dict_lookup (dict, "key", "&s", &key) ||
+				    !g_variant_dict_lookup (dict, "evr", "&s", &evr) ||
+				    !g_variant_dict_lookup (dict, "reponame", "&s", &reponame) ||
+				    !g_variant_dict_lookup (dict, "name", "&s", &name) ||
+				    !g_variant_dict_lookup (dict, "summary", "&s", &summary)) {
+					continue;
+				}
+
+				app = g_hash_table_lookup (lookup_apps, key);
+				if (app == NULL)
+					continue;
+
+				gs_app_set_version (app, evr);
+				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+					gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+
+				/* anything not part of the base system can be removed */
+				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+
+				/* set origin */
+				if (gs_app_get_origin (app) == NULL)
+					gs_app_set_origin (app, reponame);
+
+				/* set more metadata for packages that don't have appstream data */
+				gs_app_set_name (app, GS_APP_QUALITY_LOWEST, name);
+				gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, summary);
+
+				/* set hide-from-search quirk for available apps we don't want to show; results for non-installed desktop apps
+				 * are intentionally hidden (as recommended by Matthias Clasen) by a special quirk because app layering
+				 * should be intended for power users and not a common practice on Fedora Silverblue */
+				if (!gs_app_is_installed (app)) {
+					switch (gs_app_get_kind (app)) {
+					case AS_COMPONENT_KIND_DESKTOP_APP:
+					case AS_COMPONENT_KIND_WEB_APP:
+					case AS_COMPONENT_KIND_CONSOLE_APP:
+						gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		} else {
+			g_debug ("Failed to get packages: %s", local_error->message);
+		}
 	}
 
 	return TRUE;
@@ -2585,10 +2487,13 @@ list_apps_thread_cb (GTask        *task,
 	const gchar *provides_tag = NULL;
 	GsAppQueryProvidesType provides_type = GS_APP_QUERY_PROVIDES_UNKNOWN;
 	g_autoptr(GError) local_error = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
-	g_autoptr(DnfContext) dnf_context = NULL;
 	g_auto(GStrv) provides = NULL;
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GVariant) packages = NULL;
+	gsize n_children;
+	gboolean done;
 
 	assert_in_worker (self);
 
@@ -2604,23 +2509,50 @@ list_apps_thread_cb (GTask        *task,
 		return;
 	}
 
-	/* Prepare a dnf context */
-	locker = g_mutex_locker_new (&self->mutex);
-
-	if (!gs_rpmostree_ref_dnf_context_locked (self, NULL, NULL, &dnf_context, cancellable, &local_error)) {
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, &local_error) ||
+	    !gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
 		g_task_return_error (task, g_steal_pointer (&local_error));
 		return;
 	}
 
-	g_clear_pointer (&locker, g_mutex_locker_free);
-
 	provides = what_provides_decompose (provides_type, provides_tag);
-	pkglist = find_packages_by_provides (dnf_context_get_sack (dnf_context), provides);
-	for (guint i = 0; i < pkglist->len; i++) {
-		DnfPackage *pkg = g_ptr_array_index (pkglist, i);
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_what_provides_sync (os_proxy, (const gchar * const *) provides, &packages, cancellable, &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, &local_error)) {
+					gs_rpmostree_error_convert (&local_error);
+					g_task_return_error (task, g_steal_pointer (&local_error));
+					return;
+				}
+				done = FALSE;
+				continue;
+			}
+			gs_rpmostree_error_convert (&local_error);
+			/*  Ignore error when the corresponding D-Bus method does not exist */
+			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+				g_task_return_pointer (task, g_steal_pointer (&list), g_object_unref);
+				return;
+			}
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+	}
+	n_children = g_variant_n_children (packages);
+	for (gsize i = 0; i < n_children; i++) {
+		g_autoptr(GVariant) value = g_variant_get_child_value (packages, i);
+		g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
 		g_autoptr(GsApp) app = NULL;
+		const gchar *name = NULL;
+		const gchar *nevra = NULL;
 
-		app = gs_plugin_cache_lookup (GS_PLUGIN (self), dnf_package_get_nevra (pkg));
+		if (!g_variant_dict_lookup (dict, "nevra", "&s", &nevra) ||
+		    !g_variant_dict_lookup (dict, "name", "&s", &name))
+			continue;
+
+		app = gs_plugin_cache_lookup (GS_PLUGIN (self), nevra);
 		if (app != NULL) {
 			gs_app_list_add (list, app);
 			continue;
@@ -2635,9 +2567,9 @@ list_apps_thread_cb (GTask        *task,
 		gs_app_set_kind (app, AS_COMPONENT_KIND_GENERIC);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_set_scope (app, AS_COMPONENT_SCOPE_SYSTEM);
-		gs_app_add_source (app, dnf_package_get_name (pkg));
+		gs_app_add_source (app, name);
 
-		gs_plugin_cache_add (GS_PLUGIN (self), dnf_package_get_nevra (pkg), app);
+		gs_plugin_cache_add (GS_PLUGIN (self), nevra, app);
 		gs_app_list_add (list, app);
 	}
 
@@ -2658,40 +2590,71 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(DnfContext) dnf_context = NULL;
-	GPtrArray *repos;
+	GsPluginRpmOstree *self = GS_PLUGIN_RPM_OSTREE (plugin);
+	g_autoptr(GsRPMOSTreeSysroot) sysroot_proxy = NULL;
+	g_autoptr(GsRPMOSTreeOS) os_proxy = NULL;
+	g_autoptr(GVariant) repos = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gsize n_children;
+	gboolean done;
 
-	dnf_context = gs_rpmostree_create_bare_dnf_context (cancellable, error);
-	if (!dnf_context)
+	if (!gs_rpmostree_ref_proxies (self, &os_proxy, &sysroot_proxy, cancellable, error))
+		return FALSE;
+	if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 		return FALSE;
 
-	repos = dnf_context_get_repos (dnf_context);
-	if (repos == NULL)
-		return TRUE;
+	done = FALSE;
+	while (!done) {
+		done = TRUE;
+		if (!gs_rpmostree_os_call_list_repos_sync (os_proxy, &repos, cancellable, &local_error)) {
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_BUSY)) {
+				g_clear_error (&local_error);
+				if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error)) {
+					return FALSE;
+				}
+				done = FALSE;
+				continue;
+			}
+			gs_rpmostree_error_convert (&local_error);
+			/*  Ignore error when the corresponding D-Bus method does not exist */
+			if (g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED))
+				return TRUE;
+			g_propagate_error (error, g_steal_pointer (&local_error));
+			return FALSE;
+		}
+	}
 
-	for (guint i = 0; i < repos->len; i++) {
-		DnfRepo *repo = g_ptr_array_index (repos, i);
-		g_autofree gchar *description = NULL;
+	n_children = g_variant_n_children (repos);
+	for (gsize i = 0; i < n_children; i++) {
+		g_autoptr(GVariant) value = g_variant_get_child_value (repos, i);
+		g_autoptr(GVariantDict) dict = g_variant_dict_new (value);
 		g_autoptr(GsApp) app = NULL;
-		gboolean enabled;
+		const gchar *id = NULL;
+		const gchar *description = NULL;
+		gboolean is_enabled = FALSE;
+		gboolean is_devel = FALSE;
+		gboolean is_source = FALSE;
 
-		/* hide these from the user */
-		if (dnf_repo_is_devel (repo) || dnf_repo_is_source (repo))
+		if (!g_variant_dict_lookup (dict, "id", "&s", &id))
 			continue;
+		if (g_variant_dict_lookup (dict, "is-devel", "b", &is_devel) && is_devel)
+			continue;
+		/* hide these from the user */
+		if (g_variant_dict_lookup (dict, "is-source", "b", &is_source) && is_source)
+			continue;
+		if (!g_variant_dict_lookup (dict, "description", "&s", &description))
+			continue;
+		if (!g_variant_dict_lookup (dict, "is-enabled", "b", &is_enabled))
+			is_enabled = FALSE;
 
-		app = gs_app_new (dnf_repo_get_id (repo));
+		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, plugin);
 		gs_app_set_kind (app, AS_COMPONENT_KIND_REPOSITORY);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-
-		enabled = (dnf_repo_get_enabled (repo) & DNF_REPO_ENABLED_PACKAGES) > 0;
-		gs_app_set_state (app, enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
-
-		description = dnf_repo_get_description (repo);
+		gs_app_set_state (app, is_enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
-
 		gs_app_set_metadata (app, "GnomeSoftware::SortKey", "200");
 		gs_app_set_origin_ui (app, _("Operating System (OSTree)"));
 
