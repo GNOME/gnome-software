@@ -902,33 +902,44 @@ check_directory_for_desktop_file (GsPlugin *plugin,
 {
 	g_autofree gchar *filename = NULL;
 	g_autoptr(GKeyFile) key_file = NULL;
+	gboolean found, any_found = FALSE;
 
 	filename = g_build_filename (data_dir, "applications", desktop_id, NULL);
 	key_file = g_key_file_new ();
 
-	if (g_key_file_load_from_file (key_file, filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL) &&
-	    cb (plugin, app, filename, key_file)) {
+	found = g_key_file_load_from_file (key_file, filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
+	if (found && cb (plugin, app, filename, key_file)) {
 		g_autoptr(GDesktopAppInfo) appinfo = NULL;
+		g_debug ("Found '%s' for app '%s' and picked it", filename, desktop_id);
 		appinfo = g_desktop_app_info_new_from_keyfile (key_file);
 		if (appinfo != NULL)
 			return g_steal_pointer (&appinfo);
 		g_debug ("Failed to load '%s' as a GDesktopAppInfo", filename);
 		return NULL;
+	} else if (found) {
+		g_debug ("Found '%s' for app '%s', but did not pick it", filename, desktop_id);
+		any_found = TRUE;
 	}
 
 	if (!g_str_has_suffix (desktop_id, ".desktop")) {
 		g_autofree gchar *desktop_filename = g_strconcat (filename, ".desktop", NULL);
-		if (g_key_file_load_from_file (key_file, desktop_filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL) &&
-		    cb (plugin, app, desktop_filename, key_file)) {
+		found = g_key_file_load_from_file (key_file, desktop_filename, G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
+		if (found && cb (plugin, app, desktop_filename, key_file)) {
 			g_autoptr(GDesktopAppInfo) appinfo = NULL;
+			g_debug ("Found '%s' for app '%s' and picked it", desktop_filename, desktop_id);
 			appinfo = g_desktop_app_info_new_from_keyfile (key_file);
 			if (appinfo != NULL)
 				return g_steal_pointer (&appinfo);
 			g_debug ("Failed to load '%s' as a GDesktopAppInfo", desktop_filename);
 			return NULL;
+		} else if (found) {
+			g_debug ("Found '%s' for app '%s', but did not pick it", desktop_filename, desktop_id);
+			any_found = TRUE;
 		}
 	}
 
+	if (!any_found)
+		g_debug ("Did not find any appropriate .desktop file for '%s' in '%s/applications/'", desktop_id, data_dir);
 	return NULL;
 }
 
