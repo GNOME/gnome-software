@@ -328,4 +328,7 @@ gboolean	gs_plugin_ask_untrusted			(GsPlugin	*plugin,
 							 const gchar	*details,
 							 const gchar	*accept_label);
 
+GDBusConnection	*gs_plugin_get_session_bus_connection	(GsPlugin	*self);
+GDBusConnection	*gs_plugin_get_system_bus_connection	(GsPlugin	*self);
+
 G_END_DECLS

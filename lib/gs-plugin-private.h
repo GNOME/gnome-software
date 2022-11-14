@@ -51,7 +51,4 @@ gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
 void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
 
-GDBusConnection	*gs_plugin_get_session_bus_connection	(GsPlugin	*self);
-GDBusConnection	*gs_plugin_get_system_bus_connection	(GsPlugin	*self);
-
 G_END_DECLS
