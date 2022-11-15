@@ -1029,12 +1029,20 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 
 	{
 		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GSettings) settings = NULL;
 		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+		gboolean download_only;
 
 		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 			return FALSE;
+
+		settings = g_settings_new ("org.gnome.software");
+		/* in rpm-ostree, when automatic updates are on, the download_only is off,
+		   to immediately install the updates, not only download them, thus the next
+		   machine restart applies the update. */
+		download_only = !g_settings_get_boolean (settings, "download-updates");
 
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
@@ -1042,7 +1050,7 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 		options = make_rpmostree_options_variant (FALSE,  /* reboot */
 		                                          FALSE,  /* allow-downgrade */
 		                                          FALSE,  /* cache-only */
-		                                          TRUE,   /* download-only */
+		                                          download_only,   /* download-only */
 		                                          FALSE,  /* skip-purge */
 		                                          FALSE,  /* no-pull-base */
 		                                          FALSE,  /* dry-run */
