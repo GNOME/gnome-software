@@ -97,7 +97,7 @@ review_button_clicked_cb (GsReviewRow        *row,
 		return;
 	}
 
-	refresh_reviews (self);
+	gs_review_row_refresh (row);
 }
 
 static GSList * /* (transfer container) */
