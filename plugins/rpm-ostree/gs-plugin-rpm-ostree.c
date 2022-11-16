@@ -811,26 +811,31 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	return g_steal_pointer (&app);
 }
 
+typedef enum {
+	RPMOSTREE_OPTION_NONE		 = 0,
+	RPMOSTREE_OPTION_REBOOT		 = (1 << 0),
+	RPMOSTREE_OPTION_ALLOW_DOWNGRADE = (1 << 1),
+	RPMOSTREE_OPTION_CACHE_ONLY	 = (1 << 2),
+	RPMOSTREE_OPTION_DOWNLOAD_ONLY	 = (1 << 3),
+	RPMOSTREE_OPTION_SKIP_PURGE	 = (1 << 4),
+	RPMOSTREE_OPTION_NO_PULL_BASE	 = (1 << 5),
+	RPMOSTREE_OPTION_DRY_RUN	 = (1 << 6),
+	RPMOSTREE_OPTION_NO_OVERRIDES	 = (1 << 7)
+} RpmOstreeOptions;
+
 static GVariant *
-make_rpmostree_options_variant (gboolean reboot,
-                                gboolean allow_downgrade,
-                                gboolean cache_only,
-                                gboolean download_only,
-                                gboolean skip_purge,
-                                gboolean no_pull_base,
-                                gboolean dry_run,
-                                gboolean no_overrides)
+make_rpmostree_options_variant (RpmOstreeOptions options)
 {
 	GVariantDict dict;
 	g_variant_dict_init (&dict, NULL);
-	g_variant_dict_insert (&dict, "reboot", "b", reboot);
-	g_variant_dict_insert (&dict, "allow-downgrade", "b", allow_downgrade);
-	g_variant_dict_insert (&dict, "cache-only", "b", cache_only);
-	g_variant_dict_insert (&dict, "download-only", "b", download_only);
-	g_variant_dict_insert (&dict, "skip-purge", "b", skip_purge);
-	g_variant_dict_insert (&dict, "no-pull-base", "b", no_pull_base);
-	g_variant_dict_insert (&dict, "dry-run", "b", dry_run);
-	g_variant_dict_insert (&dict, "no-overrides", "b", no_overrides);
+	g_variant_dict_insert (&dict, "reboot", "b", (options & RPMOSTREE_OPTION_REBOOT) != 0);
+	g_variant_dict_insert (&dict, "allow-downgrade", "b", (options & RPMOSTREE_OPTION_ALLOW_DOWNGRADE) != 0);
+	g_variant_dict_insert (&dict, "cache-only", "b", (options & RPMOSTREE_OPTION_CACHE_ONLY) != 0);
+	g_variant_dict_insert (&dict, "download-only", "b", (options & RPMOSTREE_OPTION_DOWNLOAD_ONLY) != 0);
+	g_variant_dict_insert (&dict, "skip-purge", "b", (options & RPMOSTREE_OPTION_SKIP_PURGE) != 0);
+	g_variant_dict_insert (&dict, "no-pull-base", "b", (options & RPMOSTREE_OPTION_NO_PULL_BASE) != 0);
+	g_variant_dict_insert (&dict, "dry-run", "b", (options & RPMOSTREE_OPTION_DRY_RUN) != 0);
+	g_variant_dict_insert (&dict, "no-overrides", "b", (options & RPMOSTREE_OPTION_NO_OVERRIDES) != 0);
 	return g_variant_ref_sink (g_variant_dict_end (&dict));
 }
 
@@ -1029,24 +1034,25 @@ gs_plugin_rpm_ostree_refresh_metadata_in_worker (GsPluginRpmOstree *self,
 
 	{
 		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GSettings) settings = NULL;
 		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+		gboolean download_only;
 
 		if (!gs_rpmostree_wait_for_ongoing_transaction_end (sysroot_proxy, cancellable, error))
 			return FALSE;
 
+		settings = g_settings_new ("org.gnome.software");
+		/* in rpm-ostree, when automatic updates are on, the download_only is off,
+		   to immediately install the updates, not only download them, thus the next
+		   machine restart applies the update. */
+		download_only = !g_settings_get_boolean (settings, "download-updates");
+
 		tp->app = g_object_ref (progress_app);
 		tp->plugin = g_object_ref (plugin);
 
-		options = make_rpmostree_options_variant (FALSE,  /* reboot */
-		                                          FALSE,  /* allow-downgrade */
-		                                          FALSE,  /* cache-only */
-		                                          TRUE,   /* download-only */
-		                                          FALSE,  /* skip-purge */
-		                                          FALSE,  /* no-pull-base */
-		                                          FALSE,  /* dry-run */
-		                                          FALSE); /* no-overrides */
+		options = make_rpmostree_options_variant (download_only ? RPMOSTREE_OPTION_DOWNLOAD_ONLY : RPMOSTREE_OPTION_NONE);
 		done = FALSE;
 		while (!done) {
 			done = TRUE;
@@ -1320,14 +1326,7 @@ trigger_rpmostree_update (GsPluginRpmOstree *self,
 		return FALSE;
 
 	/* trigger the update */
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          FALSE,  /* allow-downgrade */
-	                                          TRUE,   /* cache-only */
-	                                          FALSE,  /* download-only */
-	                                          FALSE,  /* skip-purge */
-	                                          FALSE,  /* no-pull-base */
-	                                          FALSE,  /* dry-run */
-	                                          FALSE); /* no-overrides */
+	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_CACHE_ONLY);
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
@@ -1432,15 +1431,8 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	                               gs_app_get_version (app));
 
 	/* trigger the upgrade */
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          TRUE,   /* allow-downgrade */
-	                                          TRUE,   /* cache-only */
-	                                          FALSE,  /* download-only */
-	                                          FALSE,  /* skip-purge */
-	                                          FALSE,  /* no-pull-base */
-	                                          FALSE,  /* dry-run */
-	                                          FALSE); /* no-overrides */
-
+	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_ALLOW_DOWNGRADE |
+	                                          RPMOSTREE_OPTION_CACHE_ONLY);
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
@@ -1633,15 +1625,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          FALSE,  /* allow-downgrade */
-	                                          FALSE,   /* cache-only */
-	                                          FALSE,  /* download-only */
-	                                          FALSE,  /* skip-purge */
-	                                          TRUE,  /* no-pull-base */
-	                                          FALSE,  /* dry-run */
-	                                          FALSE); /* no-overrides */
-
+	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_NO_PULL_BASE);
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
@@ -1724,15 +1708,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	tp->app = g_object_ref (app);
 
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          FALSE,  /* allow-downgrade */
-	                                          TRUE,   /* cache-only */
-	                                          FALSE,  /* download-only */
-	                                          FALSE,  /* skip-purge */
-	                                          TRUE,  /* no-pull-base */
-	                                          FALSE,  /* dry-run */
-	                                          FALSE); /* no-overrides */
-
+	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_CACHE_ONLY |
+						  RPMOSTREE_OPTION_NO_PULL_BASE);
 	done = FALSE;
 	while (!done) {
 		done = TRUE;
@@ -2166,15 +2143,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
 	                               gs_app_get_version (app));
 
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          TRUE,   /* allow-downgrade */
-	                                          FALSE,  /* cache-only */
-	                                          TRUE,   /* download-only */
-	                                          FALSE,  /* skip-purge */
-	                                          FALSE,  /* no-pull-base */
-	                                          FALSE,  /* dry-run */
-	                                          FALSE); /* no-overrides */
-
+	options = make_rpmostree_options_variant (RPMOSTREE_OPTION_ALLOW_DOWNGRADE |
+	                                          RPMOSTREE_OPTION_DOWNLOAD_ONLY);
 	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
