@@ -1240,8 +1240,8 @@ static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	g_autoptr(GsAppList) addons = NULL;
+	g_autoptr(GSource) source = NULL;
 	guint i;
-	guint id;
 
 	/* queue the app itself */
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
@@ -1251,8 +1251,12 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
-	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
+
+	source = g_idle_source_new ();
+	g_source_set_callback (source, emit_pending_apps_idle, g_object_ref (plugin_loader), NULL);
+	g_source_set_name (source, "[gnome-software] emit_pending_apps_idle");
+	g_source_attach (source, NULL);
+
 	save_install_queue (plugin_loader);
 
 	/* recursively queue any addons */
@@ -1270,18 +1274,22 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_autoptr(GsAppList) addons = NULL;
 	gboolean ret;
 	guint i;
-	guint id;
 
 	g_mutex_lock (&plugin_loader->pending_apps_mutex);
 	ret = plugin_loader->pending_apps != NULL && gs_app_list_remove (plugin_loader->pending_apps, app);
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
+		g_autoptr(GSource) source = NULL;
+
 		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL)
 			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 
-		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
+		source = g_idle_source_new ();
+		g_source_set_callback (source, emit_pending_apps_idle, g_object_ref (plugin_loader), NULL);
+		g_source_set_name (source, "[gnome-software] emit_pending_apps_idle");
+		g_source_attach (source, NULL);
+
 		save_install_queue (plugin_loader);
 
 		/* recursively remove any queued addons */
