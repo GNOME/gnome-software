@@ -97,13 +97,29 @@ review_button_clicked_cb (GsReviewRow        *row,
 		return;
 	}
 
-	refresh_reviews (self);
+	gs_review_row_refresh (row);
+}
+
+static GSList * /* (transfer container) */
+gather_listbox_rows (GtkWidget *listbox)
+{
+	GSList *rows = NULL;
+	GtkWidget *widget;
+
+	widget = gtk_widget_get_first_child (listbox);
+	while (widget) {
+		rows = g_slist_prepend (rows, widget);
+		widget = gtk_widget_get_next_sibling (widget);
+	}
+
+	return g_slist_reverse (rows);
 }
 
 static void
 populate_reviews (GsAppReviewsDialog *self)
 {
 	GPtrArray *reviews;
+	GSList *rows, *link;
 	gboolean show_reviews = FALSE;
 	guint64 possible_actions = 0;
 	guint i;
@@ -158,18 +174,32 @@ populate_reviews (GsAppReviewsDialog *self)
 	}
 
 	/* add all the reviews */
-	gs_widget_remove_all (self->listbox, (GsRemoveFunc) gtk_list_box_remove);
+	rows = gather_listbox_rows (self->listbox);
 	g_ptr_array_sort (reviews, (GCompareFunc) sort_reviews);
-	for (i = 0; i < reviews->len; i++) {
+	for (i = 0, link = rows; i < reviews->len; i++, link = g_slist_next (link)) {
 		AsReview *review = g_ptr_array_index (reviews, i);
-		GtkWidget *row = gs_review_row_new (review);
+		GtkWidget *row = NULL;
 		guint64 actions;
 
-		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
-		gtk_list_box_append (GTK_LIST_BOX (self->listbox), row);
+		/* Try to merge with existing rows, to preserve cursor (focused) row
+		   and window scroll position. */
+		if (link != NULL) {
+			GtkWidget *existing_row = link->data;
+			if (gs_review_row_get_review (GS_REVIEW_ROW (existing_row)) == review)
+				row = existing_row;
+			else
+				gtk_list_box_remove (GTK_LIST_BOX (self->listbox), existing_row);
+		}
 
-		g_signal_connect (row, "button-clicked",
-				  G_CALLBACK (review_button_clicked_cb), self);
+		if (row == NULL) {
+			row = gs_review_row_new (review);
+			gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
+			gtk_list_box_append (GTK_LIST_BOX (self->listbox), row);
+
+			g_signal_connect (row, "button-clicked",
+					  G_CALLBACK (review_button_clicked_cb), self);
+		}
+
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF)
 			actions = possible_actions & (1 << GS_REVIEW_ACTION_REMOVE);
 		else
@@ -178,6 +208,14 @@ populate_reviews (GsAppReviewsDialog *self)
 		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
 						     GS_IS_PLUGIN_LOADER (self->plugin_loader) && gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
+
+	while (link != NULL) {
+		GtkWidget *existing_row = link->data;
+		gtk_list_box_remove (GTK_LIST_BOX (self->listbox), existing_row);
+		link = g_slist_next (link);
+	}
+
+	g_slist_free (rows);
 
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "reviews");
 }
