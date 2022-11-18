@@ -544,6 +544,24 @@ on_transaction_progress (GDBusProxy *proxy,
 			}
 			gs_plugin_status_update (tp->plugin, tp->app, plugin_status);
 		}
+	} else if (g_strcmp0 (signal_name, "DownloadProgress") == 0) {
+		guint32 percentage = 0;
+		guint32 fetched, requested;
+		g_autofree gchar *params = g_variant_print (parameters, TRUE);
+
+		/* "content" arg */
+		g_variant_get_child (parameters, 4, "(uu)", &fetched, &requested);
+		if (requested > 0) {
+			gdouble percentage_dbl = ((gdouble) fetched) * 100.0 / requested;
+			percentage = (guint32) percentage_dbl;
+		}
+		g_debug ("%s: %s", signal_name, params);
+
+		if (tp->app != NULL)
+			gs_app_set_progress (tp->app, (guint) percentage);
+
+		if (tp->app != NULL && tp->plugin != NULL)
+			gs_plugin_status_update (tp->plugin, tp->app, GS_PLUGIN_STATUS_DOWNLOADING);
 	} else if (g_strcmp0 (signal_name, "Finished") == 0) {
 		if (tp->error == NULL) {
 			g_autofree gchar *error_message = NULL;
@@ -558,6 +576,9 @@ on_transaction_progress (GDBusProxy *proxy,
 		}
 
 		transaction_progress_end (tp);
+	} else {
+		g_autofree gchar *params = g_variant_print (parameters, TRUE);
+		g_debug ("Ignoring '%s' signal with params: %s", signal_name, params);
 	}
 }
 
