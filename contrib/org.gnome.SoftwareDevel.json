@@ -120,17 +120,15 @@
         },
         {
             "name": "libfuse",
-            "buildsystem": "simple",
-            "build-commands": [
-                "./makeconf.sh",
-                "./configure --disable-util --disable-example --prefix=/",
-                "make install DESTDIR=/app"
+            "buildsystem": "meson",
+            "config-opts": [
+                "-Dutils=false",
+                "-Dexamples=false"
             ],
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/libfuse/libfuse.git",
-                    "branch": "fuse_2_9_bugfix"
+                    "url": "https://github.com/libfuse/libfuse.git"
                 }
             ]
         },
