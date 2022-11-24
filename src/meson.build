@@ -301,6 +301,7 @@ if get_option('tests')
       gsettings_desktop_schemas,
       gtk,
       json_glib,
+      libadwaita,
       libgnomesoftware_dep,
       libm,
       libsoup,
