@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-11-10 08:39+0000\n"
-"PO-Revision-Date: 2022-11-13 01:38+0300\n"
+"POT-Creation-Date: 2022-11-18 12:25+0000\n"
+"PO-Revision-Date: 2022-11-19 16:36+0300\n"
 "Last-Translator: Aleksandr Melman <Alexmelman88@gmail.com>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -56,7 +56,7 @@ msgid ""
 "also allows you to update your system using an offline update."
 msgstr ""
 "Центр приложений предоставляет рекомендуемые и популярные приложения с "
-"описанием и несколькими картинками к ним. Приложения можно находить, "
+"описанием и несколькими снимками экрана к ним. Приложения можно находить, "
 "просматривая по категориям, либо с помощью функции поиска. Также центр "
 "приложений позволяет обновлять систему с помощью отложенных обновлений."
 
@@ -214,7 +214,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:71
 msgid "The age in seconds to verify the upstream screenshot is still valid"
-msgstr "Время в секундах для проверки корректности исходного скриншота"
+msgstr "Время в секундах для проверки корректности исходного снимка экрана"
 
 #: data/org.gnome.software.gschema.xml:72
 msgid ""
@@ -236,7 +236,7 @@ msgstr "Минимальное значение кармы для отзывов
 
 #: data/org.gnome.software.gschema.xml:86
 msgid "Reviews with karma less than this number will not be shown."
-msgstr "Рецензии с кармой, меньше этого числа, будут скрываться."
+msgstr "Отзывы с кармой меньше этого числа не будут показаны."
 
 #: data/org.gnome.software.gschema.xml:90
 msgid "A list of official repositories that should not be considered 3rd party"
@@ -260,7 +260,7 @@ msgstr "Используемый URL лицензии, когда приложе
 #: data/org.gnome.software.gschema.xml:106
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Установить пакет программ для всех пользователей в системе, когда это "
+"Установить набор приложений для всех пользователей в системе, когда это "
 "возможно"
 
 #: data/org.gnome.software.gschema.xml:110
@@ -322,8 +322,8 @@ msgstr ""
 "Приоритетный порядок предпочтительных форматов пакета, при этом более важные "
 "форматы перечислены первыми. Пустой массив означает порядок по умолчанию. "
 "Пропущенные форматы считаются перечисленными последними. Примеры форматов "
-"упаковки: deb, flatpak, rpm, snap. Форматы могут быть дополнительно указаны "
-"с именем источника, разделенным двоеточием, например, 'flatpak:flathub'."
+"пакета: deb, flatpak, rpm, snap. Форматы могут быть дополнительно указаны с "
+"именем источника, разделенным двоеточием, например, 'flatpak:flathub'."
 
 #: data/org.gnome.software.gschema.xml:146
 msgid "A string storing the gnome-online-account id used to login"
@@ -348,7 +348,7 @@ msgstr "Необходимо указать только одно имя фай�
 #. TRANSLATORS: only able to install files as root
 #: gs-install-appstream/gs-install-appstream.c:201
 msgid "This program can only be used by the root user"
-msgstr "Эта программа может быть использована только администратором"
+msgstr "Это приложение может быть использовано только администратором"
 
 #. TRANSLATORS: error details
 #: gs-install-appstream/gs-install-appstream.c:209
@@ -781,7 +781,7 @@ msgstr "«%s» подходит для %s"
 
 #. Translators: This is the title of the dialog which contains information about the suitability of an app for different ages.
 #. this one’s not a placeholder
-#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:211
+#: src/gs-age-rating-context-dialog.ui:5 src/gs-app-context-bar.ui:217
 msgid "Age Rating"
 msgstr "Возрастной рейтинг"
 
@@ -851,19 +851,19 @@ msgstr "Может общаться по сети"
 
 #: src/gs-app-details-page.c:69
 msgid "System Services"
-msgstr "Системные сервисы"
+msgstr "Системные службы"
 
 #: src/gs-app-details-page.c:69
 msgid "Can access D-Bus services on the system bus"
-msgstr "Имеет доступ к сервисам D-Bus на системной шине"
+msgstr "Имеет доступ к службам D-Bus на системной шине"
 
 #: src/gs-app-details-page.c:70
 msgid "Session Services"
-msgstr "Сервисы сеанса"
+msgstr "Службы сеанса"
 
 #: src/gs-app-details-page.c:70
 msgid "Can access D-Bus services on the session bus"
-msgstr "Имеет доступ к сервисам D-Bus на шине сеанса"
+msgstr "Имеет доступ к службам D-Bus на шине сеанса"
 
 #: src/gs-app-details-page.c:71
 msgid "Devices"
@@ -871,7 +871,7 @@ msgstr "Устройства"
 
 #: src/gs-app-details-page.c:71
 msgid "Can access system device files"
-msgstr "Имеет доступ к файлам системного устройства"
+msgstr "Имеет доступ к системным файлам устройства"
 
 #: src/gs-app-details-page.c:72 src/gs-app-details-page.c:73
 msgid "Home folder"
@@ -975,7 +975,7 @@ msgstr "Для этого релиза нет подробностей"
 # fix даты
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:63
+#: src/gs-app-version-history-row.c:94 src/gs-review-row.c:66
 msgid "%e %B %Y"
 msgstr "%e %b., %Y"
 
@@ -1089,7 +1089,7 @@ msgstr "О Центрe приложений GNOME"
 #. TRANSLATORS: well, we seem to think so, anyway
 #: src/gs-application.c:290
 msgid "A nice way to manage the software on your system."
-msgstr "Удобная программа управления программным обеспечением в системе."
+msgstr "Хороший способ управления программным обеспечением в вашей системе."
 
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:478
@@ -1165,19 +1165,19 @@ msgstr "Имеет доступ к сети"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:300
 msgid "Uses system services"
-msgstr "Использует системные сервисы"
+msgstr "Использует системные службы"
 
 #. Translators: This indicates an app uses D-Bus session services.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:307
 msgid "Uses session services"
-msgstr "Использует сеансовые службы"
+msgstr "Использует службы сеанса"
 
 #. Translators: This indicates an app can access arbitrary hardware devices.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:314
 msgid "Can access hardware devices"
-msgstr "Может получить доступ к аппаратным устройствам"
+msgstr "Может получить доступ к устройствам"
 
 #. Translators: This indicates an app can read/write to the user’s home or the entire filesystem.
 #. * It’s used in a context tile, so should be short.
@@ -1239,13 +1239,13 @@ msgstr "Проверено вашим дистрибутивом"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:413 src/gs-safety-context-dialog.c:143
 msgid "Provided by a third party"
-msgstr "Упаковано третьими лицами"
+msgstr "Предоставлено третьими лицами"
 
 #. Translators: This indicates an app is not licensed under a free software license.
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:425
 msgid "Proprietary code"
-msgstr "Собственный код"
+msgstr "Проприетарный код"
 
 #. Translators: This indicates an app’s source code is freely available, so can be audited for security.
 #. * It’s used in a context tile, so should be short.
@@ -1263,7 +1263,7 @@ msgstr "Разработчик приложения проверен"
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:447
 msgid "Software no longer supported"
-msgstr "Программа больше не поддерживается"
+msgstr "ПО больше не поддерживается"
 
 #. Translators: This string is used to join various other translated
 #. * strings into an inline list of reasons why an app has been marked as
@@ -1314,7 +1314,7 @@ msgstr "Работает только на небольших экранах"
 #: src/gs-app-context-bar.c:606 src/gs-app-context-bar.c:656
 #: src/gs-app-context-bar.c:661 src/gs-hardware-support-context-dialog.c:583
 msgid "Desktop Only"
-msgstr "Только для настольных компьютеров"
+msgstr "Только для ПК"
 
 #: src/gs-app-context-bar.c:567
 msgid "Only works on a large screen"
@@ -1344,11 +1344,11 @@ msgstr "Требуется мышь"
 
 #: src/gs-app-context-bar.c:618
 msgid "Gamepad Needed"
-msgstr "Требуется игровой манипулятор"
+msgstr "Требуется игровой контроллер"
 
 #: src/gs-app-context-bar.c:619
 msgid "Requires a gamepad to play"
-msgstr "Для игры требуется игровой манипулятор"
+msgstr "Для игры требуется игровой контроллер"
 
 #. Translators: This is used in a context tile to indicate that
 #. * an app works on phones, tablets *and* desktops. It should be
@@ -1359,7 +1359,7 @@ msgstr "Подстраивающийся"
 
 #: src/gs-app-context-bar.c:644
 msgid "Works on phones, tablets and desktops"
-msgstr "Работает на телефонах, планшетах и компьютерах"
+msgstr "Работает на телефонах, планшетах и ПК"
 
 #: src/gs-app-context-bar.c:657
 msgid "Probably requires a keyboard or mouse"
@@ -1367,7 +1367,7 @@ msgstr "Возможно требуется мышь или клавиатура
 
 #: src/gs-app-context-bar.c:662
 msgid "Works on desktops and laptops"
-msgstr "Работает на компьютерах и ноутбуках"
+msgstr "Работает на ПК и ноутбуках"
 
 #. Translators: This indicates that the content rating for an
 #. * app says it can be used by all ages of people, as it contains
@@ -1927,7 +1927,7 @@ msgstr "Языковые пакеты"
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:308
 msgid "Localization"
-msgstr "Локализации"
+msgstr "Локализация"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -2312,7 +2312,7 @@ msgid ""
 "English."
 msgstr ""
 "Это программное обеспечение недоступно на вашем языке и будет отображаться "
-"на английском языке США."
+"на английском языке."
 
 #: src/gs-details-page.ui:83
 msgid "Help _Translate"
@@ -2383,7 +2383,7 @@ msgstr ""
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:653
 msgid "Software Repository Identified"
-msgstr "Идентифицирован репозиторий программного обеспечения"
+msgstr "Определен репозиторий программного обеспечения"
 
 #: src/gs-details-page.ui:654
 msgid ""
@@ -2408,12 +2408,12 @@ msgid ""
 "This software doesn’t provide any links to a website, code repository or "
 "issue tracker."
 msgstr ""
-"Это программное обеспечение не предоставляет никаких ссылок на веб-сайт, "
+"Это программное обеспечение не предоставляет никаких ссылок на сайт, "
 "репозиторий кода или трекер проблем."
 
 #: src/gs-details-page.ui:757
 msgid "Project _Website"
-msgstr "Веб-сайт _проекта"
+msgstr "Сайт _проекта"
 
 #: src/gs-details-page.ui:774
 msgid "_Donate"
@@ -2493,7 +2493,7 @@ msgstr "%s не найден"
 #. TRANSLATORS: hyperlink title
 #: src/gs-extras-page.c:347
 msgid "on the website"
-msgstr "на веб-сайте"
+msgstr "на сайте"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -2654,7 +2654,7 @@ msgstr "Не удалось получить результаты поиска: 
 #: src/gs-extras-page.c:874
 #, c-format
 msgid "%s file format"
-msgstr "формат файла %s"
+msgstr "Формат файла %s"
 
 #: src/gs-extras-page.c:1254
 msgid "Unable to Find Requested Software"
@@ -2835,19 +2835,19 @@ msgstr "Невозможно использовать с сенсорным эк
 
 #: src/gs-hardware-support-context-dialog.c:699
 msgid "Gamepad Required"
-msgstr "Требуется геймпад"
+msgstr "Требуется игровой контроллер"
 
 #: src/gs-hardware-support-context-dialog.c:700
 msgid "Requires a gamepad"
-msgstr "Требуется геймпад"
+msgstr "Требуется игровой контроллер"
 
 #: src/gs-hardware-support-context-dialog.c:702
 msgid "Gamepad Support"
-msgstr "Поддержка геймпада"
+msgstr "Поддержка игрового контроллера"
 
 #: src/gs-hardware-support-context-dialog.c:703
 msgid "Supports gamepads"
-msgstr "Поддерживает геймпады"
+msgstr "Поддерживает игровые контроллеры"
 
 #. Translators: It’s unknown whether this app is supported on
 #. * the current hardware. The placeholder is the app name.
@@ -3014,7 +3014,7 @@ msgstr ""
 
 #: src/gs-metered-data-dialog.ui:17
 msgid "Open Network _Settings"
-msgstr "Параметры _Сети"
+msgstr "Открыть _настройки сети"
 
 #: src/gs-moderate-page.ui:6
 msgid "Moderate page"
@@ -3110,7 +3110,7 @@ msgstr "Другие категории"
 msgid "No Application Data Found"
 msgstr "Файлы приложения не найдены"
 
-#: lib/gs-plugin-loader.c:2836
+#: lib/gs-plugin-loader.c:2844
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Неизвестный"
@@ -3387,7 +3387,7 @@ msgstr "Обожаю"
 #. TRANSLATORS: the review can't just be copied and pasted
 #: src/gs-review-dialog.c:118
 msgid "Please take more time writing the review"
-msgstr "Уделите рецензированию больше времени"
+msgstr "Пожалуйста, уделите больше времени написанию отзыва"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:122
@@ -3474,19 +3474,19 @@ msgid "out of 5 stars"
 msgstr "из 5 звезд"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-review-row.c:56
+#: src/gs-review-row.c:59
 msgctxt "Reviewer name"
 msgid "Unknown"
 msgstr "Неизвестный"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:220
+#: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Вы не можете публиковать отзывы из-за оскорбительного и грубого поведения."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:225
+#: src/gs-review-row.c:228
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -3495,13 +3495,13 @@ msgstr "Ваш отзыв будет скрыт до тех пор, пока е�
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:239
+#: src/gs-review-row.c:242
 msgid "Report Review?"
 msgstr "Отправить отзыв?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:243
+#: src/gs-review-row.c:246
 msgid "Report"
 msgstr "Отправить"
 
@@ -3708,7 +3708,7 @@ msgid ""
 "The source code is not public, so it cannot be independently audited and "
 "might be unsafe"
 msgstr ""
-"Исходный код не является публичным, поэтому не может быть подвергнут "
+"Исходный код не является открытым, поэтому не может быть подвергнут "
 "независимому аудиту и может быть небезопасным"
 
 #. Translators: This refers to permissions (for example, from flatpak) which an app requests from the user.
@@ -3721,7 +3721,7 @@ msgid ""
 "The source code is public and can be independently audited, which makes the "
 "app more likely to be safe"
 msgstr ""
-"Исходный код является публичным и может быть подвергнут независимому аудиту, "
+"Исходный код является открытым и может быть подвергнут независимому аудиту, "
 "что повышает вероятность того, что приложение безопасно"
 
 #. Translators: This indicates an app was written and released by a developer who has been verified.
@@ -3795,23 +3795,23 @@ msgstr "Устаревшая версия SDK"
 #. Translators: This is the accessible description for a button to go to the previous screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:46
 msgid "Previous Screenshot"
-msgstr "Предыдущий снимок"
+msgstr "Предыдущий снимок экрана"
 
 #. Translators: This is the accessible description for a button to go to the next screenshot in the screenshot carousel.
 #: src/gs-screenshot-carousel.ui:74
 msgid "Next Screenshot"
-msgstr "Следующий снимок"
+msgstr "Следующий снимок экрана"
 
 #: src/gs-screenshot-carousel.ui:127
 msgid "No screenshot provided"
-msgstr "Картинка недоступна"
+msgstr "Снимок экрана не предоставлен"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
 #: src/gs-screenshot-image.c:362 src/gs-screenshot-image.c:419
 #: src/gs-screenshot-image.c:623
 msgid "Screenshot not found"
-msgstr "Картинка не найдена"
+msgstr "Снимок экрана не найден"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
 #: src/gs-screenshot-image.c:438
@@ -3822,7 +3822,7 @@ msgstr "Не удалось загрузить изображение"
 #. * the generator did not create or the parser did not add
 #: src/gs-screenshot-image.c:651
 msgid "Screenshot size not found"
-msgstr "Размер картинки не найден"
+msgstr "Размер снимка экрана не найден"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
@@ -3834,16 +3834,16 @@ msgstr "Не удалось создать кэш"
 #. * that was not a valid URL
 #: src/gs-screenshot-image.c:747
 msgid "Screenshot not valid"
-msgstr "Картинка некорректна"
+msgstr "Снимок экрана недействителен"
 
 #. TRANSLATORS: this is when networking is not available
 #: src/gs-screenshot-image.c:797
 msgid "Screenshot not available"
-msgstr "Картинка недоступна"
+msgstr "Снимок экрана недоступен"
 
 #: src/gs-screenshot-image.ui:6
 msgid "Screenshot"
-msgstr "Картинка"
+msgstr "Снимок экрана"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
@@ -4020,7 +4020,7 @@ msgstr "Не удалось установить %s: требуется подк
 #: src/gs-shell.c:1447
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
-msgstr "Не удалось установить %s: низкий уровень заряда батарей"
+msgstr "Не удалось установить %s: низкий уровень заряда батареи"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -4139,14 +4139,14 @@ msgstr "Не удалось установить обновления: треб�
 #: src/gs-shell.c:1596
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
-msgstr "Не удалось обновить %s: низкий уровень заряда батарей"
+msgstr "Не удалось обновить %s: низкий уровень заряда батареи"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1602
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
-msgstr "Не удалось установить обновления: низкий уровень заряда батарей"
+msgstr "Не удалось установить обновления: низкий уровень заряда батареи"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -4226,7 +4226,7 @@ msgstr "Не удалось обновить до %s: требуется под�
 #: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
-msgstr "Не удалось обновить до %s: низкий уровень заряда батарей"
+msgstr "Не удалось обновить до %s: низкий уровень заряда батареи"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -4268,7 +4268,7 @@ msgstr "Не удалось удалить %s: требуется подключ
 #: src/gs-shell.c:1766
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
-msgstr "Не удалось удалить %s: низкий уровень заряда батарей"
+msgstr "Не удалось удалить %s: низкий уровень заряда батареи"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -4339,7 +4339,7 @@ msgstr "Требуется подключение к электросети"
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1969
 msgid "The battery level is too low"
-msgstr "Слишком низкий уровень заряда батарей"
+msgstr "Слишком низкий уровень заряда батареи"
 
 #: src/gs-shell.ui:7
 msgid "_Software Repositories"
@@ -4359,7 +4359,7 @@ msgstr "Изучить диск"
 #. * control-center network panel
 #: src/gs-shell.ui:108 src/gs-updates-page.c:885
 msgid "Network Settings"
-msgstr "Параметры сети"
+msgstr "Настройки сети"
 
 #. button in the info bar
 #: src/gs-shell.ui:118
@@ -4802,7 +4802,7 @@ msgstr "Актуально"
 
 #: src/gs-updates-page.ui:242
 msgid "Use Mobile Data?"
-msgstr "Использовать мобильную связь?"
+msgstr "Использовать мобильные данные?"
 
 #: src/gs-updates-page.ui:243
 msgid ""
@@ -4826,7 +4826,7 @@ msgstr "Чтобы проверить обновления, подключите
 
 #: src/gs-updates-page.ui:266
 msgid "_Network Settings"
-msgstr "_Параметры сети"
+msgstr "_Настройки сети"
 
 #: src/gs-updates-page.ui:295
 msgid "Error"
@@ -4939,19 +4939,19 @@ msgid ""
 "Software;App;Store;"
 msgstr ""
 "Обновления;Источники;Репозитории;Параметры;Установить;Удалить;Программа;"
-"Приложение;Магазин;"
+"Приложение;Магазин;ПО;"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:67
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2975
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2929
 msgid "System Updates"
 msgstr "Обновления системы"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "System Updates" string
 #: plugins/core/gs-plugin-generic-updates.c:72
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2980
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2934
 msgid ""
 "General system updates, such as security or bug fixes, and performance "
 "improvements."
@@ -4972,7 +4972,7 @@ msgstr "Обновление %s с новыми функциями и испра
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:970
 msgid "EOS update service could not fetch and apply the update."
-msgstr "Сервис обновлений EOS не смог получить и применить обновления."
+msgstr "Служба обновлений EOS не смогла получить и применить обновления."
 
 # Приложению требуется … - Неактуально по английскому тексту
 #: plugins/epiphany/gs-plugin-epiphany.c:499
@@ -5007,7 +5007,7 @@ msgstr "Поддержка Flatpak"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
 msgid "Flatpak is a framework for desktop applications on Linux"
-msgstr "Flatpak — это платформа для настольных приложений, запускаемых в Linux"
+msgstr "Flatpak — это платформа для приложений, запускаемых в Linux"
 
 #. Reference: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#idm45858571325264
 #: plugins/flatpak/gs-flatpak.c:313
@@ -5316,7 +5316,7 @@ msgstr "Обновление сенсорной панели %s"
 #: plugins/fwupd/gs-fwupd-app.c:286
 #, c-format
 msgid "%s Mouse Update"
-msgstr "Обновление манипулятора %s"
+msgstr "Обновление мыши %s"
 
 #. TRANSLATORS: Keyboard refers to an input device for typing
 #: plugins/fwupd/gs-fwupd-app.c:290
@@ -5418,7 +5418,7 @@ msgstr ""
 msgid "Packages"
 msgstr "Пакеты"
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2696
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2650
 msgid "Operating System (OSTree)"
 msgstr "Операционная система (OSTree)"
 
@@ -5435,12 +5435,12 @@ msgstr "Поддержка Snap"
 msgid "A snap is a universal Linux package"
 msgstr "Snap — универсальный формат пакетов для Linux"
 
+#~ msgid "_Continue"
+#~ msgstr "_Продолжить"
+
 #, c-format
 #~ msgid "%s…"
 #~ msgstr "%s…"
-
-#~ msgid "_Continue"
-#~ msgstr "_Продолжить"
 
 #~ msgid "GNOME Web"
 #~ msgstr "Веб-браузер GNOME"
