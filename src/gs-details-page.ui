@@ -594,10 +594,30 @@
                                 <property name="margin-start">12</property>
                                 <property name="margin-end">12</property>
                                 <child>
-                                  <object class="GsInfoBar" id="infobar_details_app_repo">
-                                    <property name="margin_top">20</property>
-                                    <property name="title" translatable="yes">Software Repository Included</property>
-                                    <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
+                                  <object class="GtkBox" id="infobar_details_app_repo">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">Software Repository Included</property>
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="info"/>
+                                      <class name="infobox"/>
+                                    </style>
                                   </object>
                                 </child>
                               </object>
@@ -612,10 +632,30 @@
                                 <property name="margin-start">12</property>
                                 <property name="margin-end">12</property>
                                 <child>
-                                  <object class="GsInfoBar" id="infobar_details_app_norepo">
-                                    <property name="margin_top">20</property>
-                                    <property name="title" translatable="yes">No Software Repository Included</property>
-                                    <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
+                                  <object class="GtkBox" id="infobar_details_app_norepo">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">No Software Repository Included</property>
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="info"/>
+                                      <class name="infobox"/>
+                                    </style>
                                   </object>
                                 </child>
                               </object>
@@ -630,10 +670,23 @@
                                 <property name="margin-start">12</property>
                                 <property name="margin-end">12</property>
                                 <child>
-                                  <object class="GsInfoBar" id="infobar_details_package_baseos">
-                                    <property name="message_type">warning</property>
-                                    <property name="margin_top">20</property>
-                                    <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
+                                  <object class="GtkBox" id="infobar_details_package_baseos">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="infobox"/>
+                                      <class name="warning"/>
+                                    </style>
                                   </object>
                                 </child>
                               </object>
@@ -648,11 +701,37 @@
                                 <property name="margin-start">12</property>
                                 <property name="margin-end">12</property>
                                 <child>
-                                  <object class="GsInfoBar" id="infobar_details_repo">
-                                    <property name="margin_top">20</property>
-                                    <property name="title" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Repository Identified</property>
-                                    <property name="body" translatable="yes">Adding this software repository will give you access to additional software and upgrades.</property>
-                                    <property name="warning" translatable="yes">Only use software repositories that you trust.</property>
+                                  <object class="GtkBox" id="infobar_details_repo">
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Repository Identified</property>"
+                                        <property name="wrap">True</property>
+                                        <style>
+                                          <class name="heading"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">Adding this software repository will give you access to additional software and upgrades.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="justify">center</property>
+                                        <property name="label" translatable="yes">Only use software repositories that you trust.</property>
+                                        <property name="wrap">True</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="card"/>
+                                      <class name="info"/>
+                                      <class name="infobox"/>
+                                    </style>
                                   </object>
                                 </child>
                               </object>

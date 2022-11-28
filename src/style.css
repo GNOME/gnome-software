@@ -192,6 +192,21 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	border-width: 1px;
 }
 
+.card.info {
+	background-color: mix(@accent_bg_color, @window_bg_color, .7);
+	color: @window_fg_color;
+}
+
+.card.warning {
+	background-color: mix(@warning_bg_color, @window_bg_color, .7);
+	color: @window_fg_color;
+}
+
+.infobox {
+	border-spacing: 6px;
+	padding: 12px;
+}
+
 @keyframes install-progress-unknown-move {
 	0% { background-position: 0%; }
 	50% { background-position: 100%; }
