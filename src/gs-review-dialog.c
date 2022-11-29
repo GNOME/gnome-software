@@ -93,8 +93,9 @@ gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
 		 *		A really awesome application */
 		msg = _("Love it");
 	} else {
-		/* just reserve space */
-		msg = "";
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		No star has been clicked yet */
+		msg = _("Select a Star to Leave a Rating");
 	}
 	gtk_label_set_label (GTK_LABEL (dialog->label_rating_desc), msg);
 }
@@ -160,6 +161,8 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
 	gtk_widget_init_template (GTK_WIDGET (dialog));
+
+	gs_review_dialog_update_review_comment (dialog);
 
 	/* require the user to spend at least 30 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,

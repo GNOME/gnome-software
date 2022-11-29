@@ -19,6 +19,10 @@ screenshot-carousel button,
 	margin: 12px;
 }
 
+.smaller {
+	font-size: smaller;
+}
+
 .screenshot-image-main .image1, .screenshot-image-main .image2 {
 	margin-top: 6px;
 	margin-bottom: 12px;
@@ -30,8 +34,19 @@ screenshot-carousel button,
 	font-size: 105%;
 }
 
-.review-textbox {
-	padding: 6px;
+.review-row > box {
+	margin: 6px 12px;
+	border-spacing: 3px;
+}
+
+.review-row textview {
+	background: none;
+}
+
+.review-row .edit-icon {
+	min-width: 24px;
+	min-height: 24px;
+	padding: 5px;
 }
 
 .origin-rounded-box {
