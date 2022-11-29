@@ -606,7 +606,7 @@ proxy_new_cb (GObject      *source_object,
 	/* prepare EOS upgrade app + sync initial state */
 
 	/* use stock icon */
-	ic = g_themed_icon_new ("system-component-addon");
+	ic = g_themed_icon_new ("system-component-os-updates");
 
 	/* Check for a background image in the standard location. */
 	background_filename = gs_utils_get_upgrade_background (NULL);
