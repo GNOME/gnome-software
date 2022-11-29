@@ -432,12 +432,17 @@ sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
 	}
 	case EOS_UPDATER_STATE_UPDATE_READY: {
 		app_set_state (plugin, app, GS_APP_STATE_UPDATABLE);
+
+		/* Nothing further to download. */
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+
 		break;
 	}
 	case EOS_UPDATER_STATE_APPLYING_UPDATE: {
 		/* set as 'installing' because if it is applying the update, we
 		 * want to show the progress bar */
 		app_set_state (plugin, app, GS_APP_STATE_INSTALLING);
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
 		/* set up the fake progress to inform the user that something
 		 * is still being done (we don't get progress reports from
@@ -454,6 +459,7 @@ sync_state_from_updater_unlocked (GsPluginEosUpdater *self)
 	}
 	case EOS_UPDATER_STATE_UPDATE_APPLIED: {
 		app_set_state (plugin, app, GS_APP_STATE_UPDATABLE);
+		gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
 		break;
 	}
@@ -1010,6 +1016,9 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 			/* if there's an update ready to deployed, and it was started by
 			 * the user, we should proceed to applying the upgrade */
 			gs_app_set_progress (app, max_progress_for_update);
+
+			/* Nothing further to download. */
+			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
 
 			if (!gs_eos_updater_call_apply_sync (self->updater_proxy,
 							     cancellable, error)) {
