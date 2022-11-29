@@ -46,7 +46,6 @@ gnome_software_sources = [
   'gs-feature-tile.c',
   'gs-featured-carousel.c',
   'gs-hardware-support-context-dialog.c',
-  'gs-info-bar.c',
   'gs-info-window.c',
   'gs-installed-page.c',
   'gs-language.c',

@@ -168,28 +168,19 @@ clamp.large .category-tile:not(.category-tile-iconless) {
 	font-size: 16pt;  /* 80% of .title-1 */
 }
 
-.application-details-infobar.info {
-	background-color: shade(@theme_bg_color, 0.9);
-	color: @theme_fg_color;
-	border-color: darker(shade(@theme_bg_color, 0.9));
-	border-style: solid;
-	border-width: 1px;
+.card.info {
+	background-color: mix(@accent_bg_color, @window_bg_color, .7);
+	color: @window_fg_color;
 }
 
-.application-details-infobar {
-	background-color: shade(@theme_bg_color, 0.9);
-	color: @theme_fg_color;
-	border-color: darker(shade(@theme_bg_color, 0.9));
-	border-style: solid;
-	border-width: 1px;
+.card.warning {
+	background-color: mix(@warning_bg_color, @window_bg_color, .7);
+	color: @window_fg_color;
 }
 
-.application-details-infobar.warning {
-	background-color: #fcaf3e;
-	color: #2e3436;
-	border-color: darker(#fcaf3e);
-	border-style: solid;
-	border-width: 1px;
+.infobox {
+	border-spacing: 6px;
+	padding: 12px;
 }
 
 @keyframes install-progress-unknown-move {
