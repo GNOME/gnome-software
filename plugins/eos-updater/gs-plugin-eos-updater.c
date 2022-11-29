@@ -902,11 +902,11 @@ cancelled_cb (GCancellable *ui_cancellable,
 
 /* Called in a #GTask worker thread, and it needs to hold `self->mutex` due to
  * synchronising on state with the main thread. */
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin,
-				GsApp *app,
-			        GCancellable *cancellable,
-				GError **error)
+static gboolean
+gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
+                                            GsApp         *app,
+                                            GCancellable  *cancellable,
+                                            GError       **error)
 {
 	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
 	gulong cancelled_id = 0;
@@ -1117,6 +1117,15 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin,
+				GsApp *app,
+			        GCancellable *cancellable,
+				GError **error)
+{
+	return gs_plugin_eos_updater_app_upgrade_download (plugin, app, cancellable, error);
 }
 
 static void
