@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2022-10-21 17:04+0000\n"
+"POT-Creation-Date: 2022-11-23 16:17+0000\n"
 "Last-Translator: Нанба Наала <naala-nanba@rambler.ru>\n"
 "Language-Team: Abkhazian <daniel.abzakh@gmail.com>\n"
 "Language: ab\n"
@@ -69,21 +69,196 @@ msgstr ""
 msgid "Installing an appstream file into a system location"
 msgstr ""
 
+#: data/org.gnome.software.gschema.xml:5
+msgid "A list of compatible projects"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:6
+msgid ""
+"This is a list of compatible projects we should show such as GNOME, KDE and "
+"XFCE."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:10
+msgid "Whether to manage updates and upgrades in GNOME Software"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:11
+msgid ""
+"If disabled, GNOME Software will hide the updates panel, not perform any "
+"automatic updates actions or prompt for upgrades."
+msgstr ""
+
 #: data/org.gnome.software.gschema.xml:15
 msgid "Automatically download and install updates"
 msgstr "Арҿыцрақәа автоматикла рҭагалареи  рықәыргылареи"
+
+#: data/org.gnome.software.gschema.xml:16
+msgid ""
+"If enabled, GNOME Software automatically downloads software updates in the "
+"background, also installing ones that do not require a reboot."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:20
+msgid "Notify the user about software updated in the background"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:21
+msgid ""
+"If enabled, GNOME Software notifies the user about updates that happened "
+"whilst the user was idle."
+msgstr ""
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
 msgstr "Автоматикла аҿыцрақәа рҭагалара алимиттә еимадараан"
 
+#: data/org.gnome.software.gschema.xml:26
+msgid ""
+"If enabled, GNOME Software automatically refreshes in the background even "
+"when using a metered connection (eventually downloading some metadata, "
+"checking for updates, etc., which may incur in costs for the user)."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:30
+msgid "Whether it’s the very first run of GNOME Software"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:34
+msgid "Show star ratings next to applications"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:38
+msgid "Filter applications based on the default branch set for the remote"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:42
+msgid "Non-free applications show a warning dialog before install"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:43
+msgid ""
+"When non-free applications are installed a warning dialog can be shown. This "
+"controls if that dialog is suppressed."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:47
+msgid "The last update check timestamp"
+msgstr "Ацыхәтәантәи арҿыцра иазку адырраҭара аамҭалатәи адырга"
+
 #: data/org.gnome.software.gschema.xml:51
 msgid "The last upgrade notification timestamp"
 msgstr "Ацыхәтәантәи арҿыцра иазку адырраҭара аамҭалатәи адырга"
 
+#: data/org.gnome.software.gschema.xml:55
+msgid "The last update notification timestamp"
+msgstr "Ацыхәтәантәи арҿыцра иазку адырраҭара аамҭалатәи адырга"
+
+#: data/org.gnome.software.gschema.xml:59
+msgid "The timestamp of the first security update, cleared after update"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:63
+msgid "The last update timestamp"
+msgstr "Ацыхәтәантәи арҿыцра иазку адырраҭара аамҭалатәи адырга"
+
+#: data/org.gnome.software.gschema.xml:67
+msgid "The last timestamp when the system was online and got any updates"
+msgstr ""
+
 #: data/org.gnome.software.gschema.xml:71
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr "Иҭыҵуа аскриншот аиашашьа агәаҭаразы аамҭа аҭагылазаашьа секундала"
+
+#: data/org.gnome.software.gschema.xml:72
+msgid ""
+"Choosing a larger value will mean less round-trips to the remote server but "
+"updates to the screenshots may take longer to show to the user. A value of 0 "
+"means to never check the server if the image already exists in the cache."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:81
+msgid "The server to use for application reviews"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:85
+msgid "The minimum karma score for reviews"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:86
+msgid "Reviews with karma less than this number will not be shown."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:90
+msgid "A list of official repositories that should not be considered 3rd party"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:94
+msgid "A list of required repositories that cannot be disabled or removed"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:98
+msgid "A list of official repositories that should be considered free software"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:102
+msgid ""
+"The licence URL to use when an application should be considered free software"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:106
+msgid "Install bundled applications for all users on the system where possible"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:110
+msgid "Allow access to the Software Repositories dialog"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:114
+msgid "Offer upgrades for pre-releases"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:118
+msgid "Show some UI elements informing the user that an app is non-free"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:122
+msgid "Show the installed size for apps in the list of installed applications"
+msgstr ""
+
+#. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
+#: data/org.gnome.software.gschema.xml:126
+msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:127
+msgid "The URI that explains nonfree and proprietary software"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:131
+msgid ""
+"A list of URLs pointing to appstream files that will be downloaded into an "
+"swcatalog folder"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:135
+msgid ""
+"Install the AppStream files to a system-wide location for all users. If "
+"false, files are installed in non-standard $XDG_DATA_HOME/swcatalog/xml "
+"directory"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:139
+msgid ""
+"Priority order of packaging formats to prefer, with more important formats "
+"listed first. An empty array means the default order. Omitted formats are "
+"assumed to be listed last. Example packaging formats are: deb, flatpak, rpm, "
+"snap."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:146
+msgid "A string storing the gnome-online-account id used to login"
+msgstr ""
 
 #. TRANSLATORS: tool that is used when moving profiles system-wide
 #: gs-install-appstream/gs-install-appstream.c:185
@@ -646,7 +821,7 @@ msgstr ""
 
 #: src/gs-app-details-page.c:79
 msgid "Settings"
-msgstr ""
+msgstr "Архиарақәа"
 
 #: src/gs-app-details-page.c:79
 msgid "Can view and change any settings"
@@ -896,7 +1071,7 @@ msgstr ""
 #. * It’s used in a context tile, so should be short.
 #: src/gs-app-context-bar.c:293
 msgid "Has network access"
-msgstr ""
+msgstr "Аҳа ахь анеира азин амоуп"
 
 #. Translators: This indicates an app uses D-Bus system services.
 #. * It’s used in a context tile, so should be short.
@@ -1605,7 +1780,7 @@ msgstr ""
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:287
 msgid "Work"
-msgstr ""
+msgstr "Аусура"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:289
@@ -1640,7 +1815,7 @@ msgstr ""
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:302
 msgid "Fonts"
-msgstr ""
+msgstr "Ашрифтқәа"
 
 #. Translators: this is a menu category
 #: lib/gs-desktop-data.c:304
@@ -1762,7 +1937,7 @@ msgstr ""
 
 #: src/gs-common.c:509 src/gs-safety-context-dialog.ui:72
 msgid "Details"
-msgstr ""
+msgstr "Аԥкаарақәа"
 
 #. Translators: an accept button label, in a Cancel/Accept dialog
 #: src/gs-common.c:600
@@ -1963,12 +2138,12 @@ msgstr ""
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:870 src/gs-details-page.c:896
+#: src/gs-details-page.c:873 src/gs-details-page.c:899
 #: src/gs-details-page.ui:228 plugins/packagekit/gs-packagekit-task.c:150
 msgid "_Install"
 msgstr "_Ашьақәыргылара"
 
-#: src/gs-details-page.c:886
+#: src/gs-details-page.c:889
 msgid "_Restart"
 msgstr "_Ханатә алагара"
 
@@ -1976,22 +2151,22 @@ msgstr "_Ханатә алагара"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:910
+#: src/gs-details-page.c:913
 msgid "_Install…"
 msgstr "_Ашьақәыргылара"
 
 #. Translators: the '%s' is replaced with a developer name or a project group
-#: src/gs-details-page.c:1187
+#: src/gs-details-page.c:1190
 #, c-format
 msgid "Other Apps by %s"
 msgstr ""
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1570
+#: src/gs-details-page.c:1573
 msgid "You need internet access to write a review"
 msgstr ""
 
-#: src/gs-details-page.c:1734 src/gs-details-page.c:1750
+#: src/gs-details-page.c:1737 src/gs-details-page.c:1753
 #, c-format
 msgid "Unable to find “%s”"
 msgstr ""
@@ -2665,7 +2840,7 @@ msgstr ""
 #. Translators: It's an origin scope, 'User' or 'System' installation
 #: src/gs-origin-popover-row.ui:138
 msgid "User"
-msgstr ""
+msgstr "Ахархәаҩ"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
@@ -2736,7 +2911,7 @@ msgstr ""
 msgid "No Application Data Found"
 msgstr ""
 
-#: lib/gs-plugin-loader.c:2829
+#: lib/gs-plugin-loader.c:2837
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr ""
@@ -3109,7 +3284,7 @@ msgstr "Ааи"
 
 #: src/gs-review-row.ui:108
 msgid "No"
-msgstr ""
+msgstr "Мап"
 
 #. Translators: Button text for indifference, only used when moderating
 #: src/gs-review-row.ui:116
@@ -3954,7 +4129,7 @@ msgstr "Аҧшаара"
 
 #: src/gs-shell.ui:204
 msgid "Primary Menu"
-msgstr ""
+msgstr "Ихадоу амениу"
 
 #: src/gs-shell.ui:274
 msgid "Find Out _More"
@@ -3972,7 +4147,7 @@ msgstr ""
 #. * possible.
 #: src/gs-storage-context-dialog.c:95
 msgid "None"
-msgstr ""
+msgstr "Мап"
 
 #: src/gs-storage-context-dialog.c:139
 msgid "Application Data"
@@ -4018,7 +4193,7 @@ msgstr ""
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:5
 msgid "Storage"
-msgstr ""
+msgstr "Аҵәахырҭа"
 
 #. Translators: Please do not translate the markup or link href
 #: src/gs-storage-context-dialog.ui:69
@@ -4181,7 +4356,7 @@ msgstr ""
 
 #: src/gs-update-monitor.c:1140
 msgid "Show Details"
-msgstr ""
+msgstr "Аԥкаарақәа рырбара"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
 #: src/gs-update-monitor.c:1162
@@ -4896,7 +5071,7 @@ msgstr ""
 msgid "Packages"
 msgstr ""
 
-#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2690
+#: plugins/rpm-ostree/gs-plugin-rpm-ostree.c:2696
 msgid "Operating System (OSTree)"
 msgstr ""
 
@@ -4912,848 +5087,3 @@ msgstr "Адкылара Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#, fuzzy
