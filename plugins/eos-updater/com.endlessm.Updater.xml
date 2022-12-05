@@ -1,6 +1,8 @@
 <!DOCTYPE node PUBLIC
 '-//freedesktop//DTD D-BUS Object Introspection 1.0//EN'
 'http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd'>
+<!-- Copyright 2018, 2019 Endless Mobile, Inc.
+     SPDX-License-Identifier: LGPL-2.1-or-later -->
 <node>
   <!--
     com.endlessm.Updater:
@@ -184,6 +186,14 @@
     <property name="Version" type="s" access="read"/>
 
     <!--
+      UpdateIsUserVisible:
+      If the update contains significant user visible changes which should be
+      notified to the user in advance of the update being applied, this is
+      `True`. Otherwise, or if no update is available, this is `False`.
+    -->
+    <property name="UpdateIsUserVisible" type="b" access="read"/>
+
+    <!--
       DownloadSize:
 
       Size (in bytes) of the update when downloaded, or `-1` if an update is
@@ -230,7 +240,7 @@
       ErrorCode:
 
       Error code of the current error, or `0` if no error has been reported.
-      This is in an unspecified error doman, and hence is useless.
+      This is in an unspecified error domain, and hence is useless.
 
       Deprecated: Use `ErrorName` instead.
     -->

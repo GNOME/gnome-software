@@ -1,3 +1,25 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# Copyright © 2019 Endless Mobile, Inc.
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA  02110-1301  USA
+
 '''eos-updater mock template
 
 This creates a mock eos-updater interface (com.endlessm.Updater), with several
@@ -24,16 +46,8 @@ supports.
 
 Usage:
    python3 -m dbusmock \
-       --template ./plugins/eos-updater/tests/mock-eos-updater.py
+       --template ./eos-updater/tests/eos_updater.py
 '''
-
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the Free
-# Software Foundation; either version 2.1 of the License, or (at your option)
-# any later version.  See http://www.gnu.org/copyleft/lgpl.html for the full
-# text of the license.
-#
-# The LGPL 2.1+ has been chosen as that’s the license eos-updater is under.
 
 from enum import IntEnum
 from gi.repository import GLib
@@ -45,7 +59,7 @@ from dbusmock import MOCK_IFACE
 
 
 __author__ = 'Philip Withnall'
-__email__ = 'withnall@endlessm.com'
+__email__ = 'pwithnall@endlessos.org'
 __copyright__ = '© 2019 Endless Mobile Inc.'
 __license__ = 'LGPL 2.1+'
 
@@ -84,6 +98,8 @@ def load(mock, parameters):
             'UpdateLabel': dbus.String(parameters.get('UpdateLabel', '')),
             'UpdateMessage': dbus.String(parameters.get('UpdateMessage', '')),
             'Version': dbus.String(parameters.get('Version', '')),
+            'UpdateIsUserVisible':
+                dbus.Boolean(parameters.get('UpdateIsUserVisible', False)),
             'DownloadSize': dbus.Int64(parameters.get('DownloadSize', 0)),
             'DownloadedBytes':
                 dbus.Int64(parameters.get('DownloadedBytes', 0)),
@@ -174,7 +190,9 @@ def Poll(self):
     self.__change_state(self, UpdaterState.POLLING)
 
     if self.__poll_action == 'early-error':
+        # Simulate some network polling activity
         time.sleep(0.5)
+
         self.__set_error(self, self.__poll_error_name,
                          self.__poll_error_message)
     else:
@@ -201,7 +219,9 @@ def FetchFull(self, options=None):
     self.__change_state(self, UpdaterState.FETCHING)
 
     if self.__fetch_action == 'early-error':
+        # Simulate some network fetching activity
         time.sleep(0.5)
+
         self.__set_error(self, self.__fetch_error_name,
                          self.__fetch_error_message)
     else:
@@ -217,7 +237,9 @@ def Apply(self):
     self.__change_state(self, UpdaterState.APPLYING_UPDATE)
 
     if self.__apply_action == 'early-error':
+        # Simulate some disk applying activity
         time.sleep(0.5)
+
         self.__set_error(self, self.__apply_error_name,
                          self.__apply_error_message)
     else:
@@ -234,7 +256,9 @@ def Cancel(self):
         UpdaterState.APPLYING_UPDATE,
     ]))
 
+    # Simulate some work to cancel whatever’s happening
     time.sleep(1)
+
     self.__set_error(self, 'com.endlessm.Updater.Error.Cancelled',
                      'Update was cancelled')
 
@@ -264,6 +288,7 @@ def SetPollAction(self, action, update_properties, error_name, error_message):
             'UpdateMessage':
                 dbus.String('Some release notes.', variant_level=1),
             'Version': dbus.String('3.7.0', variant_level=1),
+            'UpdateIsUserVisible': dbus.Boolean(False),
             'DownloadSize': dbus.Int64(1000000000, variant_level=1),
             'UnpackedSize': dbus.Int64(1500000000, variant_level=1),
             'FullDownloadSize': dbus.Int64(1000000000 * 0.8, variant_level=1),
@@ -291,6 +316,7 @@ def FinishPoll(self):
             'UpdateLabel',
             'UpdateMessage',
             'Version',
+            'UpdateIsUserVisible',
             'FullDownloadSize',
             'FullUnpackedSize',
             'DownloadSize',
