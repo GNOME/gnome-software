@@ -633,7 +633,7 @@ proxy_new_cb (GObject      *source_object,
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GError) local_error = NULL;
-	const gchar *os_name;
+	const gchar *os_name, *os_logo;
 
 	locker = g_mutex_locker_new (&self->mutex);
 
@@ -668,9 +668,6 @@ proxy_new_cb (GObject      *source_object,
 
 	/* prepare EOS upgrade app + sync initial state */
 
-	/* use stock icon */
-	ic = g_themed_icon_new ("system-component-os-updates");
-
 	/* Check for a background image in the standard location. */
 	background_filename = gs_utils_get_upgrade_background (NULL);
 
@@ -683,9 +680,11 @@ proxy_new_cb (GObject      *source_object,
 		g_warning ("Failed to get OS release information: %s", local_error->message);
 		/* Just a fallback, do not localize */
 		os_name = "Endless OS";
+		os_logo = NULL;
 		g_clear_error (&local_error);
 	} else {
 		os_name = gs_os_release_get_name (os_release);
+		os_logo = gs_os_release_get_logo (os_release);
 	}
 
 	g_object_get (G_OBJECT (self->updater_proxy),
@@ -706,6 +705,9 @@ proxy_new_cb (GObject      *source_object,
 		/* Translators: The '%s' is replaced with the OS name, like "Endless OS" */
 		summary = g_strdup_printf (_("%s update with new features and fixes."), os_name);
 	}
+
+	/* use stock icon */
+	ic = g_themed_icon_new ((os_logo != NULL) ? os_logo : "system-component-os-updates");
 
 	/* create the OS upgrade */
 	app = gs_app_new ("com.endlessm.EOS.upgrade");

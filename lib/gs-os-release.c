@@ -36,6 +36,7 @@ struct _GsOsRelease
 	gchar			*cpe_name;
 	gchar			*distro_codename;
 	gchar			*home_url;
+	gchar			*logo;
 };
 
 static void gs_os_release_initable_iface_init (GInitableIface *iface);
@@ -121,6 +122,10 @@ gs_os_release_initable_init (GInitable *initable,
 		}
 		if (g_strcmp0 (lines[i], "HOME_URL") == 0) {
 			os_release->home_url = g_strdup (tmp);
+			continue;
+		}
+		if (g_strcmp0 (lines[i], "LOGO") == 0) {
+			os_release->logo = g_strdup (tmp);
 			continue;
 		}
 	}
@@ -282,6 +287,23 @@ gs_os_release_get_home_url (GsOsRelease *os_release)
 	return os_release->home_url;
 }
 
+/**
+ * gs_os_release_get_logo:
+ * @os_release: A #GsOsRelease
+ *
+ * Gets the logo icon name from the os-release parser.
+ *
+ * Returns: a string, or %NULL
+ *
+ * Since: 44
+ **/
+const gchar *
+gs_os_release_get_logo (GsOsRelease *os_release)
+{
+	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
+	return os_release->logo;
+}
+
 static void
 gs_os_release_finalize (GObject *object)
 {
@@ -295,6 +317,8 @@ gs_os_release_finalize (GObject *object)
 	g_free (os_release->cpe_name);
 	g_free (os_release->distro_codename);
 	g_free (os_release->home_url);
+	g_free (os_release->logo);
+
 	G_OBJECT_CLASS (gs_os_release_parent_class)->finalize (object);
 }
 
