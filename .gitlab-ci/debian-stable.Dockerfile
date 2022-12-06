@@ -19,6 +19,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     itstool \
     lcov \
     libaccountsservice-dev \
+    libadwaita-1-dev \
     libappstream-dev \
     libcairo2-dev \
     libcairo-gobject2 \
