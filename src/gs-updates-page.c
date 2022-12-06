@@ -778,27 +778,24 @@ gs_updates_page_show_network_settings (GsUpdatesPage *self)
 }
 
 static void
-gs_updates_page_refresh_confirm_cb (GtkDialog *dialog,
-                                    GtkResponseType response_type,
-                                    GsUpdatesPage *self)
+gs_updates_page_refresh_settings_cb (AdwMessageDialog *dialog,
+                                     const gchar *response,
+                                     GsUpdatesPage *self)
 {
-	/* unmap the dialog */
-	gtk_window_destroy (GTK_WINDOW (dialog));
-
-	switch (response_type) {
-	case GTK_RESPONSE_REJECT:
+	if (g_strcmp0 (response, "settings") == 0) {
 		/* open the control center */
 		gs_updates_page_show_network_settings (self);
-		break;
-	case GTK_RESPONSE_ACCEPT:
+	}
+}
+
+static void
+gs_updates_page_refresh_check_cb (AdwMessageDialog *dialog,
+                                  const gchar *response,
+                                  GsUpdatesPage *self)
+{
+	if (g_strcmp0 (response, "check") == 0) {
 		self->has_agreed_to_mobile_data = TRUE;
 		gs_updates_page_get_new_updates (self);
-		break;
-	case GTK_RESPONSE_CANCEL:
-	case GTK_RESPONSE_DELETE_EVENT:
-		break;
-	default:
-		g_assert_not_reached ();
 	}
 }
 
@@ -843,49 +840,35 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 			gs_updates_page_get_new_updates (self);
 			return;
 		}
-		dialog = gtk_message_dialog_new (parent_window,
-						 GTK_DIALOG_MODAL |
-						 GTK_DIALOG_USE_HEADER_BAR |
-						 GTK_DIALOG_DESTROY_WITH_PARENT,
-						 GTK_MESSAGE_ERROR,
-						 GTK_BUTTONS_CANCEL,
+		dialog = adw_message_dialog_new (parent_window,
 						 /* TRANSLATORS: this is to explain that downloading updates may cost money */
-						 _("Charges May Apply"));
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-							  /* TRANSLATORS: we need network
-							   * to do the updates check */
-							  _("Checking for updates while using mobile broadband could cause you to incur charges."));
-		gtk_dialog_add_button (GTK_DIALOG (dialog),
-				       /* TRANSLATORS: this is a link to the
-					* control-center network panel */
-				       _("Check _Anyway"),
-				       GTK_RESPONSE_ACCEPT);
+						 _("Charges May Apply"),
+						 /* TRANSLATORS: we need network to do the updates check */
+						 _("Checking for updates while using mobile broadband could cause you to incur charges."));
+		adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
+						  "cancel",  _("_Cancel"),
+						  /* TRANSLATORS: this is a link to the control-center network panel */
+						  "check",  _("Check _Anyway"),
+						  NULL);
 		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
+				  G_CALLBACK (gs_updates_page_refresh_check_cb),
 				  self);
 		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 
 	/* no network connection */
 	} else {
-		dialog = gtk_message_dialog_new (parent_window,
-						 GTK_DIALOG_MODAL |
-						 GTK_DIALOG_USE_HEADER_BAR |
-						 GTK_DIALOG_DESTROY_WITH_PARENT,
-						 GTK_MESSAGE_ERROR,
-						 GTK_BUTTONS_CANCEL,
+		dialog = adw_message_dialog_new (parent_window,
 						 /* TRANSLATORS: can't do updates check */
-						 _("No Network"));
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-							  /* TRANSLATORS: we need network
-							   * to do the updates check */
-							  _("Internet access is required to check for updates."));
-		gtk_dialog_add_button (GTK_DIALOG (dialog),
-				       /* TRANSLATORS: this is a link to the
-					* control-center network panel */
-				       _("Network Settings"),
-				       GTK_RESPONSE_REJECT);
+						 _("No Network"),
+						 /* TRANSLATORS: we need network to do the updates check */
+						 _("Internet access is required to check for updates."));
+		adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
+						  "cancel",  _("_Cancel"),
+						  /* TRANSLATORS: this is a link to the control-center network panel */
+						  "settings",  _("Network _Settings"),
+						  NULL);
 		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
+				  G_CALLBACK (gs_updates_page_refresh_settings_cb),
 				  self);
 		gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (dialog));
 	}
