@@ -395,10 +395,6 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 
 	dialog = gs_basic_auth_dialog_new (GTK_WINDOW (shell), remote, realm, callback, callback_data);
 	gs_shell_modal_dialog_present (shell, GTK_WINDOW (dialog));
-
-	/* just destroy */
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_window_destroy), dialog);
 }
 
 static gboolean

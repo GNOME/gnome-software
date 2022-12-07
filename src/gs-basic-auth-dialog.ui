@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="GsBasicAuthDialog" parent="GtkDialog">
-    <property name="can_focus">False</property>
-    <property name="margin-top">5</property>
-    <property name="margin-bottom">5</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="resizable">False</property>
+  <template class="GsBasicAuthDialog" parent="GtkWindow">
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
     <property name="title" translatable="yes">Login Required</property>
-    <property name="use_header_bar">1</property>
-    <child internal-child="headerbar">
+    <child type="titlebar">
       <object class="GtkHeaderBar">
-        <property name="can_focus">False</property>
-        <property name="show_close_button">False</property>
+        <property name="show_title_buttons">False</property>
         <child>
           <object class="GtkButton" id="cancel_button">
             <property name="label" translatable="yes">_Cancel</property>
-            <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="use_action_appearance">False</property>
             <property name="use_underline">True</property>
             <property name="valign">center</property>
             <signal name="clicked" handler="cancel_button_clicked_cb" object="GsBasicAuthDialog" swapped="yes"/>
@@ -30,13 +19,10 @@
             </style>
           </object>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkButton" id="login_button">
             <property name="label" translatable="yes">_Login</property>
-            <property name="can_focus">True</property>
-            <property name="has_default">True</property>
             <property name="receives_default">True</property>
-            <property name="use_action_appearance">False</property>
             <property name="use_underline">True</property>
             <property name="valign">center</property>
             <signal name="clicked" handler="login_button_clicked_cb" object="GsBasicAuthDialog" swapped="yes"/>
@@ -48,132 +34,50 @@
         </child>
       </object>
     </child>
-    <child internal-child="vbox">
+    <child>
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="margin_bottom">12</property>
+        <property name="margin_end">12</property>
+        <property name="margin_start">12</property>
+        <property name="margin_top">12</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
         <child>
-          <object class="GtkGrid">
-            <property name="can_focus">False</property>
+          <object class="GtkLabel" id="description_label">
+            <property name="wrap">True</property>
+            <property name="wrap_mode">word-char</property>
+            <property name="max_width_chars">55</property>
+            <property name="xalign">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="user_entry">
             <property name="hexpand">True</property>
-            <property name="row_spacing">8</property>
-            <property name="column_spacing">6</property>
-            <property name="margin-top">20</property>
-            <property name="margin-bottom">20</property>
-            <property name="margin-start">20</property>
-            <property name="margin-end">40</property>
-            <child>
-              <object class="GtkLabel" id="description_label">
-                <property name="can_focus">False</property>
-                <property name="wrap">True</property>
-                <property name="wrap_mode">word-char</property>
-                <property name="margin_bottom">20</property>
-                <property name="max_width_chars">55</property>
-                <property name="xalign">0</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
-                  <property name="column-span">2</property>
-                  <property name="row-span">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="user_label">
-                <property name="can_focus">False</property>
-                <property name="xalign">1</property>
-                <property name="label" translatable="yes">_User</property>
-                <property name="use_underline">True</property>
-                <property name="mnemonic_widget">user_entry</property>
-                <property name="margin_start">20</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">3</property>
-                  <property name="column-span">1</property>
-                  <property name="row-span">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="password_label">
-                <property name="can_focus">False</property>
-                <property name="xalign">1</property>
-                <property name="label" translatable="yes">_Password</property>
-                <property name="use_underline">True</property>
-                <property name="mnemonic_widget">password_entry</property>
-                <property name="margin_start">20</property>
-                <style>
-                  <class name="dim-label"/>
-                </style>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">4</property>
-                  <property name="column-span">1</property>
-                  <property name="row-span">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="user_entry">
-                <property name="can_focus">True</property>
-                <property name="has_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="invisible_char">●</property>
-                <property name="activates_default">True</property>
-                <property name="invisible_char_set">True</property>
-                <property name="input_purpose">password</property>
-                <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
-                <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">3</property>
-                  <property name="column-span">1</property>
-                  <property name="row-span">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="password_entry">
-                <property name="can_focus">True</property>
-                <property name="hexpand">True</property>
-                <property name="visibility">False</property>
-                <property name="invisible_char">●</property>
-                <property name="activates_default">True</property>
-                <property name="invisible_char_set">True</property>
-                <property name="input_purpose">password</property>
-                <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
-                <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">4</property>
-                  <property name="column-span">1</property>
-                  <property name="row-span">1</property>
-                </layout>
-              </object>
-            </child>
+            <property name="invisible_char">●</property>
+            <property name="activates_default">True</property>
+            <property name="invisible_char_set">True</property>
+            <property name="input_purpose">password</property>
+            <property name="placeholder_text" translatable="yes" comments="Translators: Placeholder text for a login entry.">User</property>
+            <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+            <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="password_entry">
+            <property name="hexpand">True</property>
+            <property name="visibility">False</property>
+            <property name="invisible_char">●</property>
+            <property name="activates_default">True</property>
+            <property name="invisible_char_set">True</property>
+            <property name="input_purpose">password</property>
+            <property name="placeholder_text" translatable="yes" comments="Translators: Placeholder text for a login entry.">Password</property>
+            <signal name="changed" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
+            <signal name="activate" handler="dialog_validate" object="GsBasicAuthDialog" swapped="yes"/>
           </object>
         </child>
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup">
-    <widgets>
-      <widget name="user_label"/>
-      <widget name="password_label"/>
-    </widgets>
-  </object>
-  <object class="GtkSizeGroup">
-    <widgets>
-      <widget name="user_entry"/>
-      <widget name="password_entry"/>
-    </widgets>
-  </object>
   <object class="GtkSizeGroup">
     <property name="mode">horizontal</property>
     <widgets>
