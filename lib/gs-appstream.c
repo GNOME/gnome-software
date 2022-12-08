@@ -1360,7 +1360,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		if (xb_node_query_text (component, "icon[@width='128']", NULL) != NULL)
 			gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
 
-		/* was this application released recently */
+		/* was this app released recently */
 		if (gs_appstream_is_recent_release (component))
 			gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 
@@ -1675,7 +1675,7 @@ gs_appstream_count_component_for_groups (XbSilo      *silo,
 }
 
 /* we're not actually adding categories here, we're just setting the number of
- * applications available in each category */
+ * apps available in each category */
 gboolean
 gs_appstream_refine_category_sizes (XbSilo        *silo,
                                     GPtrArray     *list,

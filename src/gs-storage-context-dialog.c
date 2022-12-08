@@ -84,7 +84,7 @@ add_size_row (GtkListBox   *list_box,
 
 	if (size_type != GS_SIZE_TYPE_VALID)
 		/* Translators: This is shown in a bubble if the storage
-		 * size of an application is not known. The bubble is small,
+		 * size of an app is not known. The bubble is small,
 		 * so the string should be as short as possible. */
 		size_bytes_str = g_strdup (_("?"));
 	else if (size_bytes == 0)
@@ -136,14 +136,14 @@ update_sizes_list (GsStorageContextDialog *self)
 
 		add_size_row (self->sizes_list, self->lozenge_size_group,
 			      size_installed_type, size_installed_bytes,
-			      _("Application Data"),
-			      _("Data needed for the application to run"));
+			      _("App Data"),
+			      _("Data needed for the app to run"));
 
 		if (size_user_data_type == GS_SIZE_TYPE_VALID) {
 			add_size_row (self->sizes_list, self->lozenge_size_group,
 				      size_user_data_type, size_user_data_bytes,
 				      _("User Data"),
-				      _("Data created by you in the application"));
+				      _("Data created by you in the app"));
 			title_size_bytes += size_user_data_bytes;
 		}
 
@@ -169,13 +169,13 @@ update_sizes_list (GsStorageContextDialog *self)
 		add_size_row (self->sizes_list, self->lozenge_size_group,
 			      size_download_type, size_download_bytes,
 			      gs_app_get_name (self->app),
-			      _("The application itself"));
+			      _("The app itself"));
 
 		if (size_download_dependencies_type == GS_SIZE_TYPE_VALID) {
 			add_size_row (self->sizes_list, self->lozenge_size_group,
 				      size_download_dependencies_type, size_download_dependencies_bytes,
 				      _("Required Dependencies"),
-				      _("Shared system components required by this application"));
+				      _("Shared system components required by this app"));
 			title_size_bytes += size_download_dependencies_bytes;
 		}
 

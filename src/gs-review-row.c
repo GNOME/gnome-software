@@ -279,7 +279,7 @@ gs_review_row_set_actions (GsReviewRow *review_row, guint64 actions)
  * gs_review_row_new:
  * @review: The review to show
  *
- * Create a widget suitable for showing an application review.
+ * Create a widget suitable for showing an app review.
  *
  * Return value: A new @GsReviewRow.
  **/

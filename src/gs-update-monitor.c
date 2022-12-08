@@ -334,7 +334,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 			    _filter_by_app_kind,
 			    GUINT_TO_POINTER(AS_COMPONENT_KIND_DESKTOP_APP));
 	gs_app_list_sort (list_apps, _sort_by_rating_cb, NULL);
-	/* FIXME: add the applications that are currently active that use one
+	/* FIXME: add the apps that are currently active that use one
 	 * of the updated runtimes */
 	if (gs_app_list_length (list_apps) == 0) {
 		g_debug ("no desktop apps in updated list, ignoring");
@@ -352,14 +352,14 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	if (gs_app_list_length (list_apps) > 0) {
 		if (need_restart_cnt > 0) {
 			/* TRANSLATORS: apps were auto-updated and restart is required */
-			title = g_strdup_printf (ngettext ("%u Application Updated — Restart Required",
-			                                   "%u Applications Updated — Restart Required",
+			title = g_strdup_printf (ngettext ("%u App Updated — Restart Required",
+			                                   "%u Apps Updated — Restart Required",
 			                                   gs_app_list_length (list_apps)),
 			                         gs_app_list_length (list_apps));
 		} else {
 			/* TRANSLATORS: apps were auto-updated */
-			title = g_strdup_printf (ngettext ("%u Application Updated",
-			                                   "%u Applications Updated",
+			title = g_strdup_printf (ngettext ("%u App Updated",
+			                                   "%u Apps Updated",
 			                                   gs_app_list_length (list_apps)),
 			                         gs_app_list_length (list_apps));
 		}
@@ -368,26 +368,26 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	/* 1 app updated */
 	if (gs_app_list_length (list_apps) == 1) {
 		GsApp *app = gs_app_list_index (list_apps, 0);
-		/* TRANSLATORS: %1 is an application name, e.g. Firefox */
+		/* TRANSLATORS: %1 is an app name, e.g. Firefox */
 		g_string_append_printf (body, _("%s has been updated."), gs_app_get_name (app));
 		if (need_restart_cnt > 0) {
 			/* TRANSLATORS: the app needs restarting */
-			g_string_append_printf (body, " %s", _("Please restart the application."));
+			g_string_append_printf (body, " %s", _("Please restart the app."));
 		}
 
 	/* 2 apps updated */
 	} else if (gs_app_list_length (list_apps) == 2) {
 		GsApp *app1 = gs_app_list_index (list_apps, 0);
 		GsApp *app2 = gs_app_list_index (list_apps, 1);
-		/* TRANSLATORS: %1 and %2 are both application names, e.g. Firefox */
+		/* TRANSLATORS: %1 and %2 are both app names, e.g. Firefox */
 		g_string_append_printf (body, _("%s and %s have been updated."),
 					gs_app_get_name (app1),
 					gs_app_get_name (app2));
 		if (need_restart_cnt > 0) {
 			g_string_append (body, " ");
-			/* TRANSLATORS: at least one application needs restarting */
-			g_string_append_printf (body, ngettext ("%u application requires a restart.",
-								"%u applications require a restart.",
+			/* TRANSLATORS: at least one app needs restarting */
+			g_string_append_printf (body, ngettext ("%u app requires a restart.",
+								"%u apps require a restart.",
 								need_restart_cnt),
 						need_restart_cnt);
 		}
@@ -397,16 +397,16 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 		GsApp *app1 = gs_app_list_index (list_apps, 0);
 		GsApp *app2 = gs_app_list_index (list_apps, 1);
 		GsApp *app3 = gs_app_list_index (list_apps, 2);
-		/* TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox */
+		/* TRANSLATORS: %1, %2 and %3 are all app names, e.g. Firefox */
 		g_string_append_printf (body, _("Includes %s, %s and %s."),
 					gs_app_get_name (app1),
 					gs_app_get_name (app2),
 					gs_app_get_name (app3));
 		if (need_restart_cnt > 0) {
 			g_string_append (body, " ");
-			/* TRANSLATORS: at least one application needs restarting */
-			g_string_append_printf (body, ngettext ("%u application requires a restart.",
-								"%u applications require a restart.",
+			/* TRANSLATORS: at least one app needs restarting */
+			g_string_append_printf (body, ngettext ("%u app requires a restart.",
+								"%u apps require a restart.",
 								need_restart_cnt),
 						need_restart_cnt);
 		}
@@ -1181,7 +1181,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		notification = g_notification_new (title);
 		g_notification_set_body (notification, message);
 		/* TRANSLATORS: Button to look at the updates that were installed.
-		 * Note that it has nothing to do with the application reviews, the
+		 * Note that it has nothing to do with the app reviews, the
 		 * users can't express their opinions here. In some languages
 		 * "Review (evaluate) something" is a different translation than
 		 * "Review (browse) something." */

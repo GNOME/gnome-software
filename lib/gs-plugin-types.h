@@ -272,19 +272,19 @@ typedef enum {
 /**
  * GsPluginAction:
  * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
- * @GS_PLUGIN_ACTION_INSTALL:			Install an application
- * @GS_PLUGIN_ACTION_REMOVE:			Remove an application
- * @GS_PLUGIN_ACTION_UPDATE:			Update an application
+ * @GS_PLUGIN_ACTION_INSTALL:			Install an app
+ * @GS_PLUGIN_ACTION_REMOVE:			Remove an app
+ * @GS_PLUGIN_ACTION_UPDATE:			Update an app
  * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
  * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
- * @GS_PLUGIN_ACTION_LAUNCH:			Launch an application
+ * @GS_PLUGIN_ACTION_LAUNCH:			Launch an app
  * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
  * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
  * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
- * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
- * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
+ * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an app
+ * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an app
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
- * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
+ * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an app
  * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
  * @GS_PLUGIN_ACTION_INSTALL_REPO:		Install a repository (Since: 41)
  * @GS_PLUGIN_ACTION_REMOVE_REPO:		Remove a repository (Since: 41)

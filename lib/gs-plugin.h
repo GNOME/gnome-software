@@ -48,7 +48,7 @@ G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
  *   apps to refine are provided in a list, and the flags specify what data to
  *   look up and add. Refining certain kinds of data can be very expensive (for
  *   example, requiring network requests), which is why it’s not all loaded by
- *   default. By refining multiple applications at once, data requests can be
+ *   default. By refining multiple apps at once, data requests can be
  *   batched by the plugin where possible. (Since: 43)
  * @refine_finish: (nullable): Finish method for @refine_async. Must be
  *   implemented if @refine_async is implemented. (Since: 43)

@@ -288,7 +288,7 @@ notify_search_resources (GsExtrasPageMode   mode,
 
 	if (app_name == NULL) {
 		/* TRANSLATORS: this is a what we use in notifications if the app's name is unknown */
-		app_name = _("An application");
+		app_name = _("An app");
 	}
 
 	switch (mode) {

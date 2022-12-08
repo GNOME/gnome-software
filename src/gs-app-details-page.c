@@ -13,7 +13,7 @@
  * @title: GsAppDetailsPage
  * @include: gnome-software.h
  * @stability: Stable
- * @short_description: A small page showing an application's details
+ * @short_description: A small page showing an app's details
  *
  * This is a page from #GsUpdateDialog.
  */

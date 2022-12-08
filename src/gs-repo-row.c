@@ -155,10 +155,10 @@ get_repo_installed_text (GsApp *repo)
 	}
 
 	if (cnt_addon == 0) {
-		/* TRANSLATORS: This string is used to construct the 'X applications
+		/* TRANSLATORS: This string is used to construct the 'X apps
 		   installed' sentence, describing a software repository. */
-		return g_strdup_printf (ngettext ("%u application installed",
-		                                  "%u applications installed",
+		return g_strdup_printf (ngettext ("%u app installed",
+		                                  "%u apps installed",
 		                                  cnt_apps), cnt_apps);
 	}
 	if (cnt_apps == 0) {
@@ -169,22 +169,22 @@ get_repo_installed_text (GsApp *repo)
 		                                  cnt_addon), cnt_addon);
 	}
 
-	/* TRANSLATORS: This string is used to construct the 'X applications
+	/* TRANSLATORS: This string is used to construct the 'X apps
 	   and y add-ons installed' sentence, describing a software repository.
-	   The correct form here depends on the number of applications. */
-	apps_text = g_strdup_printf (ngettext ("%u application",
-	                                       "%u applications",
+	   The correct form here depends on the number of apps. */
+	apps_text = g_strdup_printf (ngettext ("%u app",
+	                                       "%u apps",
 	                                       cnt_apps), cnt_apps);
-	/* TRANSLATORS: This string is used to construct the 'X applications
+	/* TRANSLATORS: This string is used to construct the 'X apps
 	   and y add-ons installed' sentence, describing a software repository.
 	   The correct form here depends on the number of add-ons. */
 	addons_text = g_strdup_printf (ngettext ("%u add-on",
 	                                         "%u add-ons",
 	                                         cnt_addon), cnt_addon);
-	/* TRANSLATORS: This string is used to construct the 'X applications
+	/* TRANSLATORS: This string is used to construct the 'X apps
 	   and y add-ons installed' sentence, describing a software repository.
 	   The correct form here depends on the total number of
-	   applications and add-ons. */
+	   apps and add-ons. */
 	return g_strdup_printf (ngettext ("%s and %s installed",
 	                                  "%s and %s installed",
 	                                  cnt_apps + cnt_addon),
@@ -238,7 +238,7 @@ gs_repo_row_set_repo (GsRepoRow *self, GsApp *repo)
 	if (tmp != NULL && *tmp != '\0') {
 		gchar *cnt;
 
-		/* Translators: The first '%s' is replaced with a text like '10 applications installed',
+		/* Translators: The first '%s' is replaced with a text like '10 apps installed',
 		      the second '%s' is replaced with installation kind, like in case of Flatpak 'User Installation'. */
 		cnt = g_strdup_printf (C_("repo-row", "%s • %s"), comment, tmp);
 		g_clear_pointer (&comment, g_free);

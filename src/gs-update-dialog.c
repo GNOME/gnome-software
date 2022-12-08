@@ -114,7 +114,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	/* set the header title using any one of the applications */
+	/* set the header title using any one of the apps */
 	install_date = gs_app_get_install_date (gs_app_list_index (list, 0));
 	if (install_date > 0) {
 		g_autoptr(GDateTime) date = NULL;
