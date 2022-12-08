@@ -295,8 +295,12 @@ flowboxchild {
 	padding: 0px;
 }
 
-star-image {
+star-image > image.starred {
 	color: @yellow_5;
+}
+
+star-image > image.non-starred {
+	opacity: 0.2;
 }
 
 .dimmer-label {

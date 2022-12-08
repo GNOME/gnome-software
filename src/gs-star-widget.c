@@ -130,7 +130,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 
 		/* create image */
 		im = gs_star_image_new ();
-		gtk_widget_set_size_request (im, (gint) priv->icon_size, (gint) priv->icon_size);
+		gs_star_image_set_pixel_size (GS_STAR_IMAGE (im), (gint) priv->icon_size);
 
 		priv->images[i] = im;
 

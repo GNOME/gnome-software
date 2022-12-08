@@ -10,17 +10,24 @@
  * @stability: Unstable
  * @short_description: Draw a star image, which can be partially filled
  *
- * Depending on the #GsStarImage:fraction property, the star image can be
- * drawn as filled only partially or fully or not at all. This is accomplished
- * by using a `color` style property for the filled part. The unfilled part of
- * the star currently uses a hardcoded colour.
- * The `background` style property controls the area outside the star.
+ * Depending on the #GsStarImage:fraction property, the starred image can be
+ * drawn as filled only partially or fully or not at all, with the non-starred
+ * image taking the rest of the space up.
+ *
+ * ## CSS nodes
+ *
+ * ```
+ * star-image
+ * ├── image.starred
+ * ╰── image.non-starred
+ * ```
  *
  * Since: 41
  */
 
 #include "config.h"
 
+#include "gs-common.h"
 #include "gs-star-image.h"
 
 #include <adwaita.h>
@@ -29,83 +36,22 @@ struct _GsStarImage
 {
 	GtkWidget parent_instance;
 
+	GtkWidget *starred;
+	GtkWidget *non_starred;
 	gdouble fraction;
+	gdouble pixel_size;
 };
 
 G_DEFINE_TYPE (GsStarImage, gs_star_image, GTK_TYPE_WIDGET)
 
 enum {
-	PROP_FRACTION = 1
+	PROP_FRACTION = 1,
+	PROP_PIXEL_SIZE,
 };
 
-static void
-gs_star_image_outline_star (cairo_t *cr,
-			    gint x,
-			    gint y,
-			    gint radius,
-			    gint *out_min_x,
-			    gint *out_max_x)
-{
-	/* Coordinates of the vertices of the star,
-	 * where (0, 0) is the centre of the star.
-	 * These range from -1 to +1 in both dimensions,
-	 * and will be scaled to @radius when drawn. */
-	const struct _points {
-		gdouble x, y;
-	} small_points[] = {
-		{  0.000000, -1.000000 },
-		{ -1.000035, -0.424931 },
-		{ -0.668055,  0.850680 },
-		{  0.668055,  0.850680 },
-		{  1.000035, -0.424931 }
-	}, large_points[] = {
-		{  0.000000, -1.000000 },
-		{ -1.000035, -0.325033 },
-		{ -0.618249,  0.850948 },
-		{  0.618249,  0.850948 },
-		{  1.000035, -0.325033 }
-	}, *points;
-	gint ii, nn = G_N_ELEMENTS (small_points), xx, yy;
-
-	/* Safety check */
-	G_STATIC_ASSERT (G_N_ELEMENTS (small_points) == G_N_ELEMENTS (large_points));
-
-	if (radius <= 0)
-		return;
-
-	/* An arbitrary number, since which the math-precise star looks fine,
-	 * while it looks odd for lower sizes. */
-	if (radius * 2 > 20)
-		points = large_points;
-	else
-		points = small_points;
-
-	cairo_translate (cr, radius, radius);
-
-	xx = points[0].x * radius;
-	yy = points[0].y * radius;
-
-	if (out_min_x)
-		*out_min_x = xx;
-
-	if (out_max_x)
-		*out_max_x = xx;
-
-	cairo_move_to (cr, xx, yy);
-
-	for (ii = 2; ii <= 2 * nn; ii += 2) {
-		xx = points[ii % nn].x * radius;
-		yy = points[ii % nn].y * radius;
-
-		if (out_min_x && *out_min_x > xx)
-			*out_min_x = xx;
-
-		if (out_max_x && *out_max_x < xx)
-			*out_max_x = xx;
-
-		cairo_line_to (cr, xx, yy);
-	}
-}
+/* Floating points are imprecise, we can't use `<= 0.0` and `>= 1.0` */
+#define FRACTION_IS_MIN(f) (f < 0.01)
+#define FRACTION_IS_MAX(f) (f > 0.99)
 
 static void
 gs_star_image_get_property (GObject *object,
@@ -116,6 +62,9 @@ gs_star_image_get_property (GObject *object,
 	switch (param_id) {
 	case PROP_FRACTION:
 		g_value_set_double (value, gs_star_image_get_fraction (GS_STAR_IMAGE (object)));
+		break;
+	case PROP_PIXEL_SIZE:
+		g_value_set_int (value, gs_star_image_get_pixel_size (GS_STAR_IMAGE (object)));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -133,6 +82,9 @@ gs_star_image_set_property (GObject *object,
 	case PROP_FRACTION:
 		gs_star_image_set_fraction (GS_STAR_IMAGE (object), g_value_get_double (value));
 		break;
+	case PROP_PIXEL_SIZE:
+		gs_star_image_set_pixel_size (GS_STAR_IMAGE (object), g_value_get_int (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
@@ -140,57 +92,45 @@ gs_star_image_set_property (GObject *object,
 }
 
 static void
+gs_star_image_dispose (GObject *object)
+{
+	gs_widget_remove_all (GTK_WIDGET (object), NULL);
+
+	G_OBJECT_CLASS (gs_star_image_parent_class)->dispose (object);
+}
+
+static void
 gs_star_image_snapshot (GtkWidget   *widget,
                         GtkSnapshot *snapshot)
 {
-	GtkAllocation allocation;
-	cairo_t *cr;
-	gdouble fraction;
-	gint radius;
+	GsStarImage *self = GS_STAR_IMAGE (widget);
 
-	fraction = gs_star_image_get_fraction (GS_STAR_IMAGE (widget));
+	if (FRACTION_IS_MIN (self->fraction)) {
+		gtk_widget_snapshot_child (widget, self->non_starred, snapshot);
+	} else if (FRACTION_IS_MAX (self->fraction)) {
+		gtk_widget_snapshot_child (widget, self->starred, snapshot);
+	} else {
+		int width, height;
+		int starred_width;
 
-	gtk_widget_get_allocation (widget, &allocation);
+		width = gtk_widget_get_width (widget);
+		height = gtk_widget_get_height (widget);
+		starred_width = width * self->fraction;
 
-	radius = MIN (allocation.width, allocation.height) / 2;
-
-	cr = gtk_snapshot_append_cairo (snapshot,
-					&GRAPHENE_RECT_INIT (0, 0,
-							     gtk_widget_get_width (widget),
-							     gtk_widget_get_height (widget)));
-
-	if (radius > 0) {
-		GtkStyleContext *style_context;
-		GdkRGBA star_bg = { 1, 1, 1, 1 };
-		GdkRGBA star_fg;
-		gint min_x = -radius, max_x = radius;
-
-		style_context = gtk_widget_get_style_context (widget);
-		gtk_style_context_get_color (style_context, &star_fg);
-
-		gtk_style_context_lookup_color (style_context, "card_fg_color", &star_bg);
-		if (adw_style_manager_get_high_contrast (adw_style_manager_get_default ()))
-			star_bg.alpha *= 0.4;
+		if (gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL)
+			gtk_snapshot_push_clip (snapshot, &GRAPHENE_RECT_INIT(width - starred_width, 0, starred_width, height));
 		else
-			star_bg.alpha *= 0.2;
+			gtk_snapshot_push_clip (snapshot, &GRAPHENE_RECT_INIT(0, 0, starred_width, height));
+		gtk_widget_snapshot_child (widget, self->starred, snapshot);
+		gtk_snapshot_pop (snapshot);
 
-		cairo_save (cr);
-		gs_star_image_outline_star (cr, allocation.x, allocation.y, radius, &min_x, &max_x);
-		cairo_clip (cr);
-		gdk_cairo_set_source_rgba (cr, &star_bg);
-		cairo_rectangle (cr, -radius, -radius, 2 * radius, 2 * radius);
-		cairo_fill (cr);
-
-		gdk_cairo_set_source_rgba (cr, &star_fg);
-		if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
-			cairo_rectangle (cr, max_x - (max_x - min_x) * fraction, -radius, (max_x - min_x) * fraction, 2 * radius);
+		if (gtk_widget_get_direction (GTK_WIDGET (self)) == GTK_TEXT_DIR_RTL)
+			gtk_snapshot_push_clip (snapshot, &GRAPHENE_RECT_INIT(0, 0, width - starred_width, height));
 		else
-			cairo_rectangle (cr, min_x, -radius, (max_x - min_x) * fraction, 2 * radius);
-		cairo_fill (cr);
-		cairo_restore (cr);
+			gtk_snapshot_push_clip (snapshot, &GRAPHENE_RECT_INIT(starred_width, 0, width - starred_width, height));
+		gtk_widget_snapshot_child (widget, self->non_starred, snapshot);
+		gtk_snapshot_pop (snapshot);
 	}
-
-	cairo_destroy (cr);
 }
 
 static void
@@ -202,6 +142,7 @@ gs_star_image_class_init (GsStarImageClass *klass)
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->get_property = gs_star_image_get_property;
 	object_class->set_property = gs_star_image_set_property;
+	object_class->dispose = gs_star_image_dispose;
 
 	widget_class = GTK_WIDGET_CLASS (klass);
 	widget_class->snapshot = gs_star_image_snapshot;
@@ -212,15 +153,31 @@ gs_star_image_class_init (GsStarImageClass *klass)
 							      0.0, 1.0, 1.0,
 							      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY));
 
+	g_object_class_install_property (object_class,
+					 PROP_PIXEL_SIZE,
+					 g_param_spec_int ("pixel-size", NULL, NULL,
+							   -1, G_MAXINT, -1,
+							   G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY));
+
+	gtk_widget_class_set_accessible_role (widget_class, GTK_ACCESSIBLE_ROLE_METER);
 	gtk_widget_class_set_css_name (widget_class, "star-image");
+	gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
 gs_star_image_init (GsStarImage *self)
 {
-	self->fraction = 1.0;
+	self->starred = gtk_image_new_from_icon_name ("starred-symbolic");
+	gtk_widget_set_child_visible (self->starred, TRUE);
+	gtk_widget_set_parent (self->starred, GTK_WIDGET (self));
+	gtk_widget_add_css_class (self->starred, "starred");
 
-	gtk_widget_set_size_request (GTK_WIDGET (self), 16, 16);
+	self->non_starred = gtk_image_new_from_icon_name ("starred-symbolic");
+	gtk_widget_set_child_visible (self->non_starred, FALSE);
+	gtk_widget_set_parent (self->non_starred, GTK_WIDGET (self));
+	gtk_widget_add_css_class (self->non_starred, "non-starred");
+
+	self->fraction = 1.0;
 }
 
 GtkWidget *
@@ -240,6 +197,9 @@ gs_star_image_set_fraction (GsStarImage *self,
 
 	self->fraction = fraction;
 
+	gtk_widget_set_child_visible (self->starred, !FRACTION_IS_MIN (self->fraction));
+	gtk_widget_set_child_visible (self->non_starred, !FRACTION_IS_MAX (self->fraction));
+
 	g_object_notify (G_OBJECT (self), "fraction");
 
 	gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -251,4 +211,32 @@ gs_star_image_get_fraction (GsStarImage *self)
 	g_return_val_if_fail (GS_IS_STAR_IMAGE (self), -1.0);
 
 	return self->fraction;
+}
+
+void
+gs_star_image_set_pixel_size (GsStarImage *self,
+			      gint pixel_size)
+{
+	g_return_if_fail (GS_IS_STAR_IMAGE (self));
+	g_return_if_fail (pixel_size >= -1);
+
+	if (self->pixel_size == pixel_size)
+		return;
+
+	self->pixel_size = pixel_size;
+
+	gtk_image_set_pixel_size (GTK_IMAGE (self->starred), pixel_size);
+	gtk_image_set_pixel_size (GTK_IMAGE (self->non_starred), pixel_size);
+
+	g_object_notify (G_OBJECT (self), "pixel-size");
+
+	gtk_widget_queue_resize (GTK_WIDGET (self));
+}
+
+gint
+gs_star_image_get_pixel_size (GsStarImage *self)
+{
+	g_return_val_if_fail (GS_IS_STAR_IMAGE (self), -1);
+
+	return self->pixel_size;
 }
