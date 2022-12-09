@@ -220,7 +220,7 @@ should_notify_about_pending_updates (GsUpdateMonitor *monitor,
 				*out_title = _("Critical Software Update Ready to Install");
 				*out_body = _("An important software update is ready to be installed.");
 				res = TRUE;
-			} else {
+			} else if (!should_download) {
 				*out_title = _("Critical Software Updates Available to Download");
 				*out_body = _("Important: critical software updates are waiting.");
 				res = TRUE;
