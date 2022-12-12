@@ -11,8 +11,12 @@ review-bar,
 	color: alpha(@theme_fg_color, .8);
 }
 
-star-image {
+star-image > image.starred {
 	color: inherit;
+}
+
+star-image > image.non-starred {
+	opacity: 0.4;
 }
 
 .origin-rounded-box {
