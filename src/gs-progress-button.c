@@ -10,6 +10,7 @@
 #include "config.h"
 
 #include "gs-app.h"
+#include "gs-common.h"
 #include "gs-progress-button.h"
 
 struct _GsProgressButton
@@ -44,17 +45,15 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 	const gchar *css;
 
 	if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-		css = ".install-progress {\n"
-		      "  background-size: 25%;\n"
-		      "  animation: install-progress-unknown-move infinite linear 2s;\n"
-		      "}\n";
+		css = "  background-size: 25%;\n"
+		      "  animation: install-progress-unknown-move infinite linear 2s;";
 	} else {
 		percentage = MIN (percentage, 100); /* No need to clamp an unsigned to 0, it produces errors. */
-		g_assert ((gsize) g_snprintf (tmp, sizeof (tmp), ".install-progress { background-size: %u%%; }", percentage) < sizeof (tmp));
+		g_assert ((gsize) g_snprintf (tmp, sizeof (tmp), "background-size: %u%%;", percentage) < sizeof (tmp));
 		css = tmp;
 	}
 
-	gtk_css_provider_load_from_data (button->css_provider, css, -1);
+	gs_utils_widget_set_css (GTK_WIDGET (button), &button->css_provider, css);
 }
 
 void
@@ -295,11 +294,6 @@ static void
 gs_progress_button_init (GsProgressButton *button)
 {
 	gtk_widget_init_template (GTK_WIDGET (button));
-
-	button->css_provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider (gtk_widget_get_style_context (GTK_WIDGET (button)),
-					GTK_STYLE_PROVIDER (button->css_provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void
