@@ -889,30 +889,12 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 }
 
 static void
-gs_screenshot_image_snapshot (GtkWidget   *widget,
-                              GtkSnapshot *snapshot)
-{
-	GtkStyleContext *context;
-
-	context = gtk_widget_get_style_context (widget);
-	gtk_snapshot_render_frame (snapshot,
-				   context,
-				   0.0, 0.0,
-				   gtk_widget_get_width (widget),
-				   gtk_widget_get_height (widget));
-
-	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->snapshot (widget, snapshot);
-}
-
-static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_screenshot_image_dispose;
-
-	widget_class->snapshot = gs_screenshot_image_snapshot;
 
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");
