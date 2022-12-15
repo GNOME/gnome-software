@@ -409,14 +409,11 @@ gs_utils_set_key_colors_in_css (const gchar *css,
  * @widget: a widget
  * @provider: (inout) (transfer full) (not optional) (nullable): pointer to a
  *    #GtkCssProvider to use
- * @class_name: class name to use, without the leading `.`
  * @css: (nullable): CSS to set on the widget, or %NULL to clear custom CSS
  *
- * Set custom CSS on the given @widget instance. This doesn’t affect any other
- * instances of the same widget. The @class_name must be a static string to be
- * used as a name for the @css. It doesn’t need to vary with @widget, but
- * multiple values of @class_name can be used with the same @widget to control
- * several independent snippets of custom CSS.
+ * Set custom CSS on the given @widget instance. This uses the widget's name
+ * property to identify it. If the widget is unnamed, which means its name is
+ * %NULL, the empty string, or its type name, it will receive a unique name.
  *
  * @provider must be a pointer to a #GtkCssProvider pointer, typically within
  * your widget’s private data struct. This function will return a
@@ -425,29 +422,41 @@ gs_utils_set_key_colors_in_css (const gchar *css,
  * @provider. If @css is %NULL, this function will destroy the @provider.
  */
 void
-gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gchar *class_name, const gchar *css)
+gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gchar *css)
 {
-	GtkStyleContext *context;
+	GdkDisplay *display;
+	const gchar *widget_name;
 	g_autoptr(GString) str = NULL;
 
 	g_return_if_fail (GTK_IS_WIDGET (widget));
 	g_return_if_fail (provider != NULL);
 	g_return_if_fail (provider == NULL || *provider == NULL || GTK_IS_STYLE_PROVIDER (*provider));
-	g_return_if_fail (class_name != NULL);
 
-	context = gtk_widget_get_style_context (widget);
+	display = gtk_widget_get_display (widget);
 
-	/* remove custom class if NULL */
+	/* remove custom CSS if NULL */
 	if (css == NULL) {
 		if (*provider != NULL)
-			gtk_style_context_remove_provider (context, GTK_STYLE_PROVIDER (*provider));
+			gtk_style_context_remove_provider_for_display (display, GTK_STYLE_PROVIDER (*provider));
 		g_clear_object (provider);
-		gtk_widget_remove_css_class (widget, class_name);
 		return;
 	}
 
+	widget_name = gtk_widget_get_name (widget);
+
+	/* give the widget a unique name if NULL */
+	if (widget_name == NULL ||
+	    *widget_name == '\0' ||
+	    g_strcmp0 (widget_name, G_OBJECT_TYPE_NAME (widget)) == 0) {
+		gchar tmp[26];  /* "widget-0x", up to 16 hex digits, and '\0'. */
+		g_assert ((gsize) g_snprintf (tmp, sizeof (tmp), "widget-%p", widget) < sizeof (tmp));
+		gtk_widget_set_name (widget, (const gchar *) tmp);
+		widget_name = gtk_widget_get_name (widget);
+	}
+
+	/* prepare the CSS code */
 	str = g_string_sized_new (1024);
-	g_string_append_printf (str, ".%s {\n", class_name);
+	g_string_append_printf (str, "#%s {\n", widget_name);
 	g_string_append_printf (str, "%s\n", css);
 	g_string_append (str, "}");
 
@@ -458,13 +467,10 @@ gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gch
 				  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
 	}
 
-	/* set the custom CSS class */
-	gtk_widget_add_css_class (widget, class_name);
-
 	/* set up custom provider and store on the widget */
 	gtk_css_provider_load_from_data (*provider, str->str, -1);
-	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (*provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider_for_display (display, GTK_STYLE_PROVIDER (*provider),
+						    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void

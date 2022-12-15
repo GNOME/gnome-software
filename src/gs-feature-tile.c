@@ -371,11 +371,11 @@ gs_feature_tile_refresh (GsAppTile *self)
 		g_autofree gchar *modified_markup = gs_utils_set_key_colors_in_css (markup, app);
 		if (modified_markup != NULL)
 			gs_css_parse (css, modified_markup, NULL);
-		gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile",
+		gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider,
 					 gs_css_get_markup_for_id (css, "tile"));
-		gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name",
+		gs_utils_widget_set_css (tile->title, &tile->title_provider,
 					 gs_css_get_markup_for_id (css, "name"));
-		gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle",
+		gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider,
 					 gs_css_get_markup_for_id (css, "summary"));
 		tile->markup_cache = markup;
 	} else if (markup == NULL) {
@@ -525,9 +525,9 @@ gs_feature_tile_refresh (GsAppTile *self)
 						       chosen_rgba.blue * 255.f);
 			}
 
-			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile", css);
-			gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name", NULL);
-			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle", NULL);
+			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, css);
+			gs_utils_widget_set_css (tile->title, &tile->title_provider, NULL);
+			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, NULL);
 
 			tile->key_colors_cache = key_colors;
 		}

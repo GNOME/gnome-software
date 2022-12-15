@@ -289,7 +289,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 	if (packaging_base_css_color != NULL)
 		css = g_strdup_printf ("color: @%s;\n", packaging_base_css_color);
 
-	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, "packaging-color", css);
+	gs_utils_widget_set_css (self->origin_packaging_image, &self->origin_css_provider, css);
 }
 
 static void

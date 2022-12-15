@@ -33,7 +33,6 @@ gchar		*gs_utils_set_key_colors_in_css	(const gchar	*css,
 						 GsApp		*app);
 void		 gs_utils_widget_set_css	(GtkWidget	*widget,
 						 GtkCssProvider	**provider,
-						 const gchar	*class_name,
 						 const gchar	*css);
 const gchar	*gs_utils_get_error_value	(const GError	*error);
 void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
