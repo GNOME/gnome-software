@@ -313,6 +313,34 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			 * device that stays in the USB port so the wireless peripheral works */
 			return g_strdup_printf (_("%s USB Receiver Update"), name);
 		}
+		if (g_strcmp0 (cat, "X-Drive") == 0) {
+			/* TRANSLATORS: drive refers to a storage device, e.g. SATA disk */
+			return g_strdup_printf (_("%s Drive Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-FlashDrive") == 0) {
+			/* TRANSLATORS: flash refers to solid state storage, e.g. UFS or eMMC */
+			return g_strdup_printf (_("%s Flash Drive Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-SolidStateDrive") == 0) {
+			/* TRANSLATORS: SSD refers to a Solid State Drive, e.g. non-rotating
+			 * SATA or NVMe disk */
+			return g_strdup_printf (_("%s SSD Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Gpu") == 0) {
+			/* TRANSLATORS: GPU refers to a Graphics Processing Unit, e.g.
+			 * the "video card" */
+			return g_strdup_printf (_("%s GPU Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-Dock") == 0) {
+			/* TRANSLATORS: Dock refers to the port replicator hardware laptops are
+			 * cradled in, or lowered onto */
+			return g_strdup_printf (_("%s Dock Update"), name);
+		}
+		if (g_strcmp0 (cat, "X-UsbDock") == 0) {
+			/* TRANSLATORS: Dock refers to the port replicator device connected
+			 * by plugging in a USB cable -- which may or may not also provide power */
+			return g_strdup_printf (_("%s USB Dock Update"), name);
+		}
 	}
 
 	/* default fallback */
