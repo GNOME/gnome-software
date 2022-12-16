@@ -112,7 +112,7 @@ button_clicked_cb (GtkButton *button,
 	GsAppTranslationDialog *self = GS_APP_TRANSLATION_DIALOG (user_data);
 	const gchar *url = get_url_for_app (self->app);
 
-	gtk_show_uri (GTK_WINDOW (self), url, GDK_CURRENT_TIME);
+	gs_show_uri (GTK_WINDOW (self), url);
 }
 
 static void
