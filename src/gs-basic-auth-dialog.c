@@ -16,7 +16,7 @@
 
 struct _GsBasicAuthDialog
 {
-	GtkDialog		 parent_instance;
+	GtkWindow		 parent_instance;
 
 	GsBasicAuthCallback	 callback;
 	gpointer		 callback_data;
@@ -28,7 +28,7 @@ struct _GsBasicAuthDialog
 	GtkEntry		*password_entry;
 };
 
-G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsBasicAuthDialog, gs_basic_auth_dialog, GTK_TYPE_WINDOW)
 
 static void
 cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
@@ -36,7 +36,7 @@ cancel_button_clicked_cb (GsBasicAuthDialog *dialog)
 	/* abort the basic auth request */
 	dialog->callback (NULL, NULL, dialog->callback_data);
 
-	gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+	gtk_window_close (GTK_WINDOW (dialog));
 }
 
 static void
@@ -51,7 +51,7 @@ login_button_clicked_cb (GsBasicAuthDialog *dialog)
 	/* submit the user/password to basic auth */
 	dialog->callback (user, password, dialog->callback_data);
 
-	gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+	gtk_window_close (GTK_WINDOW (dialog));
 }
 
 static void
@@ -84,6 +84,16 @@ update_description (GsBasicAuthDialog *dialog, const gchar *remote, const gchar 
 	gtk_label_set_text (dialog->description_label, description);
 }
 
+static gboolean
+close_cb (GtkWidget *widget, GVariant *args, gpointer user_data)
+{
+  GsBasicAuthDialog *dialog = GS_BASIC_AUTH_DIALOG (widget);
+
+  cancel_button_clicked_cb (dialog);
+
+  return GDK_EVENT_STOP;
+}
+
 static void
 gs_basic_auth_dialog_init (GsBasicAuthDialog *dialog)
 {
@@ -105,6 +115,8 @@ gs_basic_auth_dialog_class_init (GsBasicAuthDialogClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, dialog_validate);
 	gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, login_button_clicked_cb);
+
+	gtk_widget_class_add_binding (widget_class, GDK_KEY_Escape, 0, close_cb, NULL);
 }
 
 GtkWidget *
@@ -117,9 +129,7 @@ gs_basic_auth_dialog_new (GtkWindow *parent,
 	GsBasicAuthDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_BASIC_AUTH_DIALOG,
-	                       "use-header-bar", TRUE,
 	                       "transient-for", parent,
-	                       "modal", TRUE,
 	                       NULL);
 	dialog->callback = callback;
 	dialog->callback_data = callback_data;
