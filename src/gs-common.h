@@ -71,5 +71,7 @@ gboolean	gs_utils_split_time_difference	(gint64 unix_time_seconds,
 						 gint *out_years_ago);
 gchar		*gs_utils_format_size		(guint64 size_bytes,
 						 gboolean *out_is_markup);
+void		 gs_show_uri			(GtkWindow *parent,
+						 const char *uri);
 
 G_END_DECLS

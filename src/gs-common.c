@@ -1339,3 +1339,29 @@ gs_utils_format_size (guint64 size_bytes,
 	return g_format_size (size_bytes);
 #endif /* HAVE_G_FORMAT_SIZE_ONLY_VALUE */
 }
+
+/**
+ * gs_show_uri:
+ * @parent: (nullable): parent window
+ * @uri: the uri to show
+ *
+ * This function launches the default application for showing
+ * a given uri, or shows an error dialog if that fails.
+ *
+ * Since: 44
+ **/
+void
+gs_show_uri (GtkWindow *parent,
+	     const char *uri)
+{
+#if GTK_CHECK_VERSION(4, 9, 3)
+	g_autoptr (GFile) file = NULL;
+	g_autoptr (GtkFileLauncher) launcher = NULL;
+
+	file = g_file_new_for_uri (uri);
+	launcher = gtk_file_launcher_new ();
+	gtk_file_launcher_launch (launcher, parent, file, NULL, NULL, NULL);
+#else
+	gtk_show_uri (parent, uri, GDK_CURRENT_TIME);
+#endif
+}

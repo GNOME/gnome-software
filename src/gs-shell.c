@@ -2446,7 +2446,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 void
 gs_shell_show_uri (GsShell *shell, const gchar *url)
 {
-	gtk_show_uri (GTK_WINDOW (shell), url, GDK_CURRENT_TIME);
+	gs_show_uri (GTK_WINDOW (shell), url);
 }
 
 /**
