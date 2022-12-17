@@ -366,7 +366,7 @@ gs_plugin_func (void)
 	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/repo-security/*/*");
 	g_object_unref (list);
 
-	/* prefer installed applications */
+	/* prefer installed apps */
 	list = gs_app_list_new ();
 	app = gs_app_new ("e");
 	gs_app_set_state (app, GS_APP_STATE_INSTALLED);

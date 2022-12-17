@@ -340,7 +340,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
 	/* TRANSLATORS: this is a prompt message, and
-	 * '%s' is an application summary, e.g. 'GNOME Clocks' */
+	 * '%s' is an app summary, e.g. 'GNOME Clocks' */
 	heading = g_strdup_printf (_("Prepare %s"), gs_app_get_name (helper->app));
 	escaped = g_markup_escape_text (as_screenshot_get_caption (ss), -1);
 	dialog = adw_message_dialog_new (GTK_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (helper->page), GTK_TYPE_WINDOW)),
@@ -385,7 +385,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPageHelper *helper;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	/* non-firmware applications do not have to be prepared */
+	/* non-firmware apps do not have to be prepared */
 	helper = g_slice_new0 (GsPageHelper);
 	helper->action = GS_PLUGIN_ACTION_UPDATE;
 	helper->app = g_object_ref (app);
@@ -497,14 +497,14 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					   "the %s repository?"),
 					 gs_app_get_name (app));
 		/* TRANSLATORS: longer dialog text */
-		message = g_strdup_printf (_("All applications from %s will be "
+		message = g_strdup_printf (_("All apps from %s will be "
 					     "uninstalled, and you will have to "
 					     "re-install the repository to use them again."),
 					   gs_app_get_name (app));
 		break;
 	default:
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
-		 * application summary, e.g. 'GNOME Clocks' */
+		 * app summary, e.g. 'GNOME Clocks' */
 		title = g_strdup_printf (_("Are you sure you want to uninstall %s?"),
 					 gs_app_get_name (app));
 		/* TRANSLATORS: longer dialog text */
@@ -520,7 +520,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	adw_message_dialog_set_body_use_markup (ADW_MESSAGE_DIALOG (dialog), TRUE);
 	adw_message_dialog_add_responses (ADW_MESSAGE_DIALOG (dialog),
 					  "cancel",  _("_Cancel"),
-					  /* TRANSLATORS: this is button text to remove the application */
+					  /* TRANSLATORS: this is button text to remove the app */
 					  "uninstall",  _("_Uninstall"),
 					  NULL);
 	adw_message_dialog_set_response_appearance (ADW_MESSAGE_DIALOG (dialog),

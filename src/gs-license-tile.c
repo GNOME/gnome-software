@@ -219,7 +219,7 @@ gs_license_tile_class_init (GsLicenseTileClass *klass)
 	/**
 	 * GsLicenseTile:app: (nullable)
 	 *
-	 * Application to display license information for.
+	 * App to display license information for.
 	 *
 	 * If this is %NULL, the state of the widget is undefined.
 	 *

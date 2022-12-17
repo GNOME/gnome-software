@@ -204,7 +204,7 @@ gs_category_get_name (GsCategory *category)
 
 	/* special case, we don't want translations in the plugins */
 	if (g_strcmp0 (category_id, "other") == 0) {
-		/* TRANSLATORS: this is where all applications that don't
+		/* TRANSLATORS: this is where all apps that don't
 		 * fit in other groups are put */
 		return _("Other");
 	}

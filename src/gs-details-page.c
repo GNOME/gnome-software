@@ -903,7 +903,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (self->button_install, TRUE);
-		/* TRANSLATORS: button text in the header when an application
+		/* TRANSLATORS: button text in the header when an app
 		 * can be installed */
 		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
 		break;
@@ -2810,7 +2810,7 @@ gs_details_page_metainfo_thread (GTask *task,
 		nodes = xb_silo_query (silo, "application", 0, NULL);
 	if (nodes == NULL) {
 		g_task_return_new_error (task, G_IO_ERROR, G_IO_ERROR_FAILED, "%s",
-			"Passed-in file doesn't have a 'component' (nor 'application') top-level element");
+			"Passed-in file doesn't have a 'component' (nor 'app') top-level element");
 		return;
 	}
 

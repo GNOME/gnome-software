@@ -263,7 +263,7 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 	} else {
 		guint idx;
 		/* TRANSLATORS: asking the user to choose an app from a list */
-		g_print ("%s\n", _("Choose an application:"));
+		g_print ("%s\n", _("Choose an app:"));
 		for (guint i = 0; i < gs_app_list_length (list_filtered); i++) {
 			GsApp *app_tmp = gs_app_list_index (list_filtered, i);
 			g_print ("%u.\t%s\n",

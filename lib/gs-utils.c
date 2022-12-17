@@ -236,7 +236,7 @@ gs_utils_get_cache_filename (const gchar *kind,
  *
  * This provides an identifier that can be used to identify a specific
  * user on a machine, allowing them to cast only one vote or perform
- * one review on each application.
+ * one review on each app.
  *
  * There is no known way to calculate the machine ID or username from
  * the machine hash and there should be no privacy issue.

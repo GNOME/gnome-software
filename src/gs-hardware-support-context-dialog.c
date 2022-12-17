@@ -455,7 +455,7 @@ gs_hardware_support_context_dialog_get_display_support (GdkMonitor     *monitor,
 	for (guint i = 0; relations != NULL && i < relations->len; i++) {
 		AsRelation *relation = AS_RELATION (g_ptr_array_index (relations, i));
 
-		/* All lengths here are in logical/application pixels,
+		/* All lengths here are in logical/app pixels,
 		 * not device pixels. */
 		if (as_relation_get_item_kind (relation) == AS_RELATION_ITEM_KIND_DISPLAY_LENGTH) {
 			AsRelationCompare comparator = as_relation_get_compare (relation);

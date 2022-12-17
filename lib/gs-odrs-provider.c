@@ -929,7 +929,7 @@ set_reviews_on_app (GsOdrsProvider *self,
 	for (guint i = 0; i < reviews->len; i++) {
 		AsReview *review = g_ptr_array_index (reviews, i);
 
-		/* save this on the application object so we can use it for
+		/* save this on the app object so we can use it for
 		 * submitting a new review */
 		if (i == 0) {
 			gs_app_set_metadata (app, "ODRS::user_skey",
@@ -1073,8 +1073,8 @@ gs_odrs_provider_create_app_dummy (const gchar *id)
 	str = g_string_new (id);
 	as_gstring_replace (str, ".desktop", "");
 	g_string_prepend (str, "No description is available for ");
-	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown Application");
-	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "Application not found");
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown App");
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "App not found");
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, str->str);
 	return app;
 }
@@ -1914,7 +1914,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	g_autoptr(GError) local_error = NULL;
 
 	/* create the GET data *with* the machine hash so we can later
-	 * review the application ourselves */
+	 * review the app ourselves */
 	uri = g_strdup_printf ("%s/moderate/%s/%s",
 			       self->review_server,
 			       self->user_hash,
@@ -1974,7 +1974,7 @@ gs_odrs_provider_add_unvoted_reviews (GsOdrsProvider  *self,
 	if (reviews == NULL)
 		return FALSE;
 
-	/* look at all the reviews; faking application objects */
+	/* look at all the reviews; faking app objects */
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 				      g_free, g_object_unref);
 	for (i = 0; i < reviews->len; i++) {

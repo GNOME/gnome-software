@@ -238,7 +238,7 @@ gs_search_page_get_app_sort_key (GsApp *app)
 		break;
 	}
 
-	/* sort missing codecs before applications */
+	/* sort missing codecs before apps */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_UNAVAILABLE:
 		g_string_append (key, "9:");

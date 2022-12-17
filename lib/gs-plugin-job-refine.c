@@ -285,7 +285,7 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	data->flags = flags;
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) refine_internal_data_free);
 
-	/* try to adopt each application with a plugin */
+	/* try to adopt each app with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
 	data->n_pending_ops = 0;

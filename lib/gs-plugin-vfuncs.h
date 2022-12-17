@@ -53,11 +53,11 @@ GType		 gs_plugin_query_type			(void);
  * Called when an #GsApp has not been claimed (i.e. a management plugin has not
  * been set).
  *
- * A claimed application means other plugins will not try to perform actions
- * such as install, remove or update. Most applications are claimed when they
+ * A claimed app means other plugins will not try to perform actions
+ * such as install, remove or update. Most apps are claimed when they
  * are created.
  *
- * If a plugin can adopt this application then it should call
+ * If a plugin can adopt this app then it should call
  * gs_app_set_management_plugin() on @app.
  **/
 void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
@@ -130,7 +130,7 @@ gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Launch the specified application using a plugin-specific method.
+ * Launch the specified app using a plugin-specific method.
  * This is normally setting some environment or launching a specific binary.
  *
  * Plugins can simply use gs_plugin_app_launch() if no plugin-specific
@@ -166,7 +166,7 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Install the application.
+ * Install the app.
  *
  * Plugins are expected to send progress notifications to the UI using
  * gs_app_set_progress() using the passed in @app.
@@ -195,7 +195,7 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Remove the application.
+ * Remove the app.
  *
  * Plugins are expected to send progress notifications to the UI using
  * gs_app_set_progress() using the passed in @app.
@@ -224,7 +224,7 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Update the application live.
+ * Update the app live.
  *
  * Plugins are expected to send progress notifications to the UI using
  * gs_app_set_progress() using the passed in @app.
@@ -239,9 +239,9 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %GS_APP_STATE_INSTALLED or %GS_APP_STATE_UNKNOWN if not known.
  *
- * If %GS_APP_QUIRK_IS_PROXY is set on the application then the actual #GsApp
- * set in @app will be the related application of the parent. Plugins do not
- * need to manually iterate on the related list of applications.
+ * If %GS_APP_QUIRK_IS_PROXY is set on the app then the actual #GsApp
+ * set in @app will be the related app of the parent. Plugins do not
+ * need to manually iterate on the related list of apps.
  *
  * Returns: %TRUE for success or if not relevant
  **/
@@ -257,7 +257,7 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Downloads the application and any dependencies ready to be installed or
+ * Downloads the app and any dependencies ready to be installed or
  * updated.
  *
  * Plugins are expected to schedule downloads using the system download
@@ -291,7 +291,7 @@ gboolean	 gs_plugin_download_app			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Downloads a list of applications ready to be installed or updated.
+ * Downloads a list of apps ready to be installed or updated.
  *
  * Plugins are expected to schedule downloads using the system download
  * scheduler if appropriate (if the download is not guaranteed to be under a few
@@ -353,7 +353,7 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
  * match the mimetype of @file and that a single #GsApp will be in the returned
  * list. If no plugins can handle the file, the list will be empty.
  *
- * For example, the PackageKit plugin can turn a .rpm file into a application
+ * For example, the PackageKit plugin can turn a .rpm file into a app
  * of kind %AS_COMPONENT_KIND_UNKNOWN but that in some cases it will be further refined
  * into a %AS_COMPONENT_KIND_DESKTOP_APP (with all the extra metadata) by the appstream
  * plugin.
@@ -399,7 +399,7 @@ gboolean	 gs_plugin_url_to_app			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Updates a list of applications, typically scheduling them for offline update.
+ * Updates a list of apps, typically scheduling them for offline update.
  *
  * Returns: %TRUE for success or if not relevant
  **/

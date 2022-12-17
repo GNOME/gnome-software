@@ -151,12 +151,12 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily installed */
+			 * allows the app to be easily installed */
 			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Visit Website"));
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily installed.
+			 * allows the app to be easily installed.
 			 * The ellipsis indicates that further steps are required */
 			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install…"));
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
@@ -165,7 +165,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
-		 * allows to cancel a queued install of the application */
+		 * allows to cancel a queued install of the app */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Cancel"));
 		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "edit-delete-symbolic");
 		break;
@@ -173,7 +173,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be easily installed */
+		 * allows the app to be easily installed */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Install"));
 		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "list-add-symbolic");
 		break;
@@ -187,7 +187,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_widget_set_sensitive (priv->button, !gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_USER_ACTION));
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily removed */
+			 * allows the app to be easily removed */
 			gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
 			gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "app-remove-symbolic");
 		}
@@ -197,21 +197,21 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		if (!gs_app_has_quirk (priv->app, GS_APP_QUIRK_COMPULSORY))
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be easily removed */
+		 * allows the app to be easily removed */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstall"));
 		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), "app-remove-symbolic");
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
-		 * shows the status of an application being installed */
+		 * shows the status of an app being installed */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Installing"));
 		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		break;
 	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
-		 * shows the status of an application being erased */
+		 * shows the status of an app being erased */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (priv->button), _("Uninstalling"));
 		gs_progress_button_set_icon_name (GS_PROGRESS_BUTTON (priv->button), NULL);
 		break;

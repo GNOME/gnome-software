@@ -293,7 +293,7 @@ gs_installed_page_notify_state_changed_cb (GsApp *app,
 
 	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
 
-	/* Filter which applications can be shown in the installed page */
+	/* Filter which apps can be shown in the installed page */
 	if (state != GS_APP_STATE_INSTALLING &&
 	    state != GS_APP_STATE_INSTALLED &&
 	    state != GS_APP_STATE_REMOVING &&
@@ -334,7 +334,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 {
 	GtkWidget *app_row;
 
-	/* only show if is an actual application */
+	/* only show if is an actual app */
 	if (!gs_installed_page_is_actual_app (app))
 		return;
 
@@ -557,11 +557,11 @@ gs_installed_page_switch_to (GsPage *page)
  *
  * Get a sort key to achive this:
  *
- * 1. state:installing applications
- * 2. state: applications queued for installing
- * 3. state:removing applications
- * 4. kind:normal applications
- * 5. kind:system applications
+ * 1. state:installing apps
+ * 2. state: apps queued for installing
+ * 3. state:removing apps
+ * 4. kind:normal apps
+ * 5. kind:system apps
  *
  * Within each of these groups, they are sorted by the install date and then
  * by name.

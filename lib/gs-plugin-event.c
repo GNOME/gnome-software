@@ -58,7 +58,7 @@ static GParamSpec *props[PROP_ERROR + 1] = { NULL, };
  * gs_plugin_event_get_app:
  * @event: A #GsPluginEvent
  *
- * Gets an application that created the event.
+ * Gets an app that created the event.
  *
  * Returns: (transfer none): a #GsApp, or %NULL if unset
  *

@@ -13,10 +13,10 @@
  * @short_description: A plugin job to refresh metadata
  *
  * #GsPluginJobRefreshMetadata is a #GsPluginJob representing an operation to
- * refresh metadata inside plugins and about applications.
+ * refresh metadata inside plugins and about apps.
  *
- * For example, the metadata could be the list of applications available, or
- * the list of updates, or a new set of popular applications to highlight.
+ * For example, the metadata could be the list of apps available, or
+ * the list of updates, or a new set of popular apps to highlight.
  *
  * The maximum cache age should be set using
  * #GsPluginJobRefreshMetadata:cache-age-secs. If this is not a low value, this
@@ -513,7 +513,7 @@ gs_plugin_job_refresh_metadata_init (GsPluginJobRefreshMetadata *self)
  * @flags: flags to affect the refresh
  *
  * Create a new #GsPluginJobRefreshMetadata for refreshing metadata about
- * available applications.
+ * available apps.
  *
  * Caches will be refreshed if they are older than @cache_age_secs.
  *

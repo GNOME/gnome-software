@@ -64,17 +64,17 @@ gs_app_notify_installed (GsApp *app)
 
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_DESKTOP_APP:
-		/* TRANSLATORS: this is the summary of a notification that an application
+		/* TRANSLATORS: this is the summary of a notification that an app
 		 * has been successfully installed */
 		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
-			/* TRANSLATORS: an application has been installed, but
+			/* TRANSLATORS: an app has been installed, but
 			 * needs a reboot to complete the installation */
 			body = _("A restart is required for the changes to take effect.");
 		} else {
-			/* TRANSLATORS: this is the body of a notification that an application
+			/* TRANSLATORS: this is the body of a notification that an app
 			 * has been successfully installed */
-			body = _("Application is ready to be used.");
+			body = _("App is ready to be used.");
 		}
 		break;
 	default:
@@ -91,7 +91,7 @@ gs_app_notify_installed (GsApp *app)
 			* has been successfully installed */
 			summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
-				/* TRANSLATORS: an application has been installed, but
+				/* TRANSLATORS: an app has been installed, but
 				* needs a reboot to complete the installation */
 				body = _("A restart is required for the changes to take effect.");
 			}
@@ -107,7 +107,7 @@ gs_app_notify_installed (GsApp *app)
 		g_notification_add_button_with_target (n, _("Restart"),
 						       "app.reboot", NULL);
 	} else if (gs_app_get_kind (app) == AS_COMPONENT_KIND_DESKTOP_APP) {
-		/* TRANSLATORS: this is button that opens the newly installed application */
+		/* TRANSLATORS: this is button that opens the newly installed app */
 		g_autoptr(GsPlugin) plugin = gs_app_dup_management_plugin (app);
 		const gchar *plugin_name = (plugin != NULL) ? gs_plugin_get_name (plugin) : "";
 		g_notification_add_button_with_target (n, _("Launch"),
@@ -244,7 +244,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	if (hint & GS_APP_LICENSE_NONFREE) {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
-					 * 1. Application name, e.g. "Firefox"
+					 * 1. App name, e.g. "Firefox"
 					 * 2. Software repository name, e.g. fedora-optional
 					 */
 					_("%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">"
@@ -255,7 +255,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	} else {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
-					 * 1. Application name, e.g. "Firefox"
+					 * 1. App name, e.g. "Firefox"
 					 * 2. Software repository name, e.g. fedora-optional */
 					_("%s is provided by “%s”."),
 					gs_app_get_name (app),
@@ -758,7 +758,7 @@ gs_utils_build_unique_id_kind (AsComponentKind kind, const gchar *id)
  * @list: A #GsAppList
  * @app: A #GsApp
  *
- * Finds out if any application in the list would match a given application,
+ * Finds out if any app in the list would match a given app,
  * where the match is valid for a matching D-Bus bus name,
  * the label in the UI or the same icon.
  *
@@ -822,8 +822,8 @@ gs_utils_reboot_notify (GsAppList *list,
 
 	if (is_install) {
 		if (app_name) {
-			/* TRANSLATORS: The '%s' is replaced with the application name */
-			tmp = g_strdup_printf ("An application “%s” has been installed", app_name);
+			/* TRANSLATORS: The '%s' is replaced with the app name */
+			tmp = g_strdup_printf ("An app “%s” has been installed", app_name);
 			title = tmp;
 		} else {
 			/* TRANSLATORS: we've just live-updated some apps */
@@ -832,13 +832,13 @@ gs_utils_reboot_notify (GsAppList *list,
 					  gs_app_list_length (list));
 		}
 	} else if (app_name) {
-		/* TRANSLATORS: The '%s' is replaced with the application name */
-		tmp = g_strdup_printf ("An application “%s” has been removed", app_name);
+		/* TRANSLATORS: The '%s' is replaced with the app name */
+		tmp = g_strdup_printf ("An app “%s” has been removed", app_name);
 		title = tmp;
 	} else {
 		/* TRANSLATORS: we've just removed some apps */
-		title = ngettext ("An application has been removed",
-				  "Applications have been removed",
+		title = ngettext ("An app has been removed",
+				  "Apps have been removed",
 				  gs_app_list_length (list));
 	}
 

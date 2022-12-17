@@ -77,7 +77,7 @@ typedef enum {
 
 static GParamSpec *obj_props[PROP_APP + 1] = { NULL, };
 
-/* Certain tiles only make sense for applications which the user can run, and
+/* Certain tiles only make sense for apps which the user can run, and
  * not for (say) fonts.
  *
  * Update the visibility of the tile’s parent box to hide it if both tiles
@@ -157,7 +157,7 @@ update_storage_tile (GsAppContextBar *self)
 		size_user_data_str = g_format_size (size_user_data);
 		size_cache_data_str = g_format_size (size_cache_data);
 
-		/* Translators: The disk usage of an application when installed.
+		/* Translators: The disk usage of an app when installed.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Installed Size");
 
@@ -182,7 +182,7 @@ update_storage_tile (GsAppContextBar *self)
 		size_bytes = app_download_size_bytes;
 		size_type = app_download_size_type;
 
-		/* Translators: The download size of an application.
+		/* Translators: The download size of an app.
 		 * This is displayed in a context tile, so the string should be short. */
 		title = _("Download Size");
 
@@ -400,14 +400,14 @@ update_safety_tile (GsAppContextBar *self)
 	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PROVENANCE))
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_SAFE,
-				      /* Translators: This indicates that an application has been packaged
+				      /* Translators: This indicates that an app has been packaged
 				       * by the user’s distribution and is safe.
 				       * It’s used in a context tile, so should be short. */
 				      _("Reviewed by your distribution"));
 	else if (perm_flags == GS_APP_PERMISSIONS_FLAGS_UNKNOWN)
 		add_to_safety_rating (&chosen_rating, descriptions,
 				      SAFETY_POTENTIALLY_UNSAFE,
-				      /* Translators: This indicates that an application has been packaged
+				      /* Translators: This indicates that an app has been packaged
 				       * by someone other than the user’s distribution, so might not be safe.
 				       * It’s used in a context tile, so should be short. */
 				      _("Provided by a third party"));
@@ -517,7 +517,7 @@ update_hardware_support_tile (GsAppContextBar *self)
 
 	g_assert (self->app != NULL);
 
-	/* Don’t show the hardware support tile for non-desktop applications. */
+	/* Don’t show the hardware support tile for non-desktop apps. */
 	if (!show_tile_for_non_applications (self, HARDWARE_SUPPORT_TILE))
 		return;
 
@@ -739,7 +739,7 @@ update_age_rating_tile (GsAppContextBar *self)
 
 	g_assert (self->app != NULL);
 
-	/* Don’t show the age rating tile for non-desktop applications. */
+	/* Don’t show the age rating tile for non-desktop apps. */
 	if (!show_tile_for_non_applications (self, AGE_RATING_TILE))
 		return;
 

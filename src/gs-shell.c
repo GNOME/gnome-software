@@ -1368,14 +1368,14 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the application name (e.g. "GIMP") and
+			 * where the first %s is the app name (e.g. "GIMP") and
 			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"  */
 			g_string_append_printf (str, _("Unable to install %s as "
 						       "download failed from %s"),
 					       str_app, str_origin);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to install %s "
 						       "as download failed"),
 						str_app);
@@ -1385,7 +1385,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the application name (e.g. "GIMP")
+			 * where the first %s is the app name (e.g. "GIMP")
 			 * and the second %s is the name of the runtime, e.g.
 			 * "GNOME SDK [flatpak.gnome.org]" */
 			g_string_append_printf (str, _("Unable to install %s as "
@@ -1393,7 +1393,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       str_app, str_origin);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to install %s "
 						       "as not supported"),
 						str_app);
@@ -1405,10 +1405,10 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_INVALID_FORMAT)) {
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to install: the application has an invalid format"));
+		g_string_append (str, _("Unable to install: the app has an invalid format"));
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "not enough disk space"),
 					str_app);
@@ -1420,26 +1420,26 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "authentication was invalid"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "you do not have permission to "
 					       "install software"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "Dell XPS 13") */
+		 * where the %s is the app name (e.g. "Dell XPS 13") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "AC power is required"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "Dell XPS 13") */
+		 * where the %s is the app name (e.g. "Dell XPS 13") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "The battery level is too low"),
 					str_app);
@@ -1448,7 +1448,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		/* Do nothing. */
 	} else {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s"), str_app);
 		more_info = error->message;
 	}
@@ -1494,7 +1494,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		} else if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s as download failed"),
 						str_app);
 		} else if (origin != NULL) {
@@ -1519,7 +1519,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "not enough disk space"),
 						str_app);
@@ -1533,7 +1533,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "authentication was required"),
 						str_app);
@@ -1546,7 +1546,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "authentication was invalid"),
 						str_app);
@@ -1559,7 +1559,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "you do not have permission to "
 						       "update software"),
@@ -1574,13 +1574,13 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "AC power is required"),
 						str_app);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
 			g_string_append_printf (str, _("Unable to install updates: "
 						       "AC power is required"));
 		}
@@ -1588,13 +1588,13 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
 			g_string_append_printf (str, _("Unable to update %s: "
 						       "The battery level is too low"),
 						str_app);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			 * where the %s is the app name (e.g. "Dell XPS 13") */
 			g_string_append_printf (str, _("Unable to install updates: "
 						       "The battery level is too low"));
 		}
@@ -1605,7 +1605,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s"), str_app);
 		} else {
 			/* TRANSLATORS: failure text for the in-app notification */
@@ -1736,29 +1736,29 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was invalid"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SECURITY)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: you do not have"
 					       " permission to remove software"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: "
 					       "AC power is required"),
 					str_app);
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW)) {
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: "
 					       "The battery level is too low"),
 					str_app);
@@ -1770,7 +1770,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return TRUE;
 		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
+		 * where the %s is the app name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
 		more_info = error->message;
 	}
@@ -1803,7 +1803,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			str_app = gs_shell_get_title_from_app (app);
 			str_origin = gs_shell_get_title_from_origin (origin);
 			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the first %s is the application name (e.g. "GIMP")
+			 * where the first %s is the app name (e.g. "GIMP")
 			 * and the second %s is the name of the runtime, e.g.
 			 * "GNOME SDK [flatpak.gnome.org]" */
 			g_string_append_printf (str, _("Unable to launch %s: %s is not installed"),
@@ -1954,7 +1954,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_RESTART_REQUIRED)) {
-		/* TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'. */
+		/* TRANSLATORS: failure text for the in-app notification, where the 'Software' means this app, aka 'GNOME Software'. */
 		g_string_append (str, _("Software needs to be restarted to use new plugins."));
 		buttons |= GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED;
 	} else if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AC_POWER_REQUIRED)) {

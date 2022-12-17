@@ -63,10 +63,10 @@ update_labels (GsAppTranslationDialog *self)
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *description = NULL;
 
-	/* Translators: The placeholder is an application name */
+	/* Translators: The placeholder is an app name */
 	title = g_strdup_printf (_("Help Translate %s"), gs_app_get_name (self->app));
 
-	/* Translators: The placeholder is an application name */
+	/* Translators: The placeholder is an app name */
 	description = g_strdup_printf (_("%s is designed, developed, and translated by an "
 					 "international community of volunteers."
 					 "\n\n"

@@ -342,7 +342,7 @@ gs_screenshot_carousel_init (GsScreenshotCarousel *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* Disable scrolling through the carousel, as it’s typically used
-	 * in application pages which are themselves scrollable. */
+	 * in app pages which are themselves scrollable. */
 	adw_carousel_set_allow_scroll_wheel (ADW_CAROUSEL (self->carousel), FALSE);
 
 	/* setup networking */

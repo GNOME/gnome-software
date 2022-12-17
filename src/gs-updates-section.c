@@ -314,7 +314,7 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for upgrading all
-		 * online-updatable applications */
+		 * online-updatable apps */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("Update All"));
 	} else {
 		gtk_widget_hide (GTK_WIDGET (self->button_stack));
@@ -348,12 +348,12 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 		goto out;
 	}
 
-	/* trigger reboot if any application was not updatable live */
+	/* trigger reboot if any app was not updatable live */
 	if (helper->do_reboot) {
 		gs_utils_invoke_reboot_async (NULL, _reboot_failed_cb, self);
 
 	/* when we are not doing an offline update, show a notification
-	 * if any application requires a reboot */
+	 * if any app requires a reboot */
 	} else if (helper->do_reboot_notification) {
 		gs_utils_reboot_notify (self->list, TRUE);
 	}
@@ -457,7 +457,7 @@ _setup_section_header (GsUpdatesSection *self)
 	case GS_UPDATES_SECTION_KIND_ONLINE:
 		/* TRANSLATORS: This is the header for online runtime and
 		 * app updates, typically flatpaks or snaps */
-		gtk_label_set_label (GTK_LABEL (self->title), _("Application Updates"));
+		gtk_label_set_label (GTK_LABEL (self->title), _("App Updates"));
 		break;
 	case GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE:
 		/* TRANSLATORS: This is the header for device firmware that can

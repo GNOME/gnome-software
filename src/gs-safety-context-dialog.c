@@ -129,7 +129,7 @@ update_permissions_list (GsSafetyContextDialog *self)
 	if (permissions != NULL)
 		perm_flags = gs_app_permissions_get_flags (permissions);
 
-	/* Handle unknown permissions. This means the application isn’t
+	/* Handle unknown permissions. This means the app isn’t
 	 * sandboxed, so we can only really base decisions on whether it was
 	 * packaged by an organisation we trust or not.
 	 *
@@ -141,10 +141,10 @@ update_permissions_list (GsSafetyContextDialog *self)
 				    GS_CONTEXT_DIALOG_ROW_IMPORTANCE_WARNING,
 				    "channel-insecure-symbolic",
 				    _("Provided by a third party"),
-				    _("Check that you trust the vendor, as the application isn’t sandboxed"),
+				    _("Check that you trust the vendor, as the app isn’t sandboxed"),
 				    "channel-secure-symbolic",
 				    _("Reviewed by your distribution"),
-				    _("Application isn’t sandboxed but the distribution has checked that it is not malicious"));
+				    _("App isn’t sandboxed but the distribution has checked that it is not malicious"));
 	} else {
 		const GPtrArray *filesystem_read, *filesystem_full;
 
