@@ -93,7 +93,6 @@ gs_category_tile_get_category (GsCategoryTile *tile)
 static void
 gs_category_tile_refresh (GsCategoryTile *tile)
 {
-	GtkStyleContext *context;
 	const gchar *icon_name = gs_category_get_icon_name (tile->category);
 
 	/* set labels */
@@ -104,11 +103,10 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 	gtk_widget_set_visible (tile->image, icon_name != NULL);
 
 	/* Update the icon class. */
-	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
 	if (icon_name != NULL)
-		gtk_style_context_remove_class (context, "category-tile-iconless");
+		gtk_widget_remove_css_class (GTK_WIDGET (tile), "category-tile-iconless");
 	else
-		gtk_style_context_add_class (context, "category-tile-iconless");
+		gtk_widget_add_css_class (GTK_WIDGET (tile), "category-tile-iconless");
 
 	/* The label should be left-aligned for iconless categories and centred otherwise. */
 	gtk_widget_set_halign (GTK_WIDGET (tile->box),
@@ -127,17 +125,13 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 void
 gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 {
-	GtkStyleContext *context;
-
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
-
-	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
 
 	/* Remove the old category ID. */
 	if (tile->category != NULL) {
 		g_autofree gchar *class_name = g_strdup_printf ("category-%s", gs_category_get_id (tile->category));
-		gtk_style_context_remove_class (context, class_name);
+		gtk_widget_remove_css_class (GTK_WIDGET (tile), class_name);
 	}
 
 	if (g_set_object (&tile->category, cat)) {
@@ -145,7 +139,7 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 
 		/* Add the new category’s ID as a CSS class, to get
 		 * category-specific styling. */
-		gtk_style_context_add_class (context, class_name);
+		gtk_widget_add_css_class (GTK_WIDGET (tile), class_name);
 
 		gs_category_tile_refresh (tile);
 		g_object_notify_by_pspec (G_OBJECT (tile), obj_props[PROP_CATEGORY]);

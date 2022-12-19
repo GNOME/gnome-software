@@ -148,7 +148,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 			w = im;
 		}
 		gtk_widget_set_sensitive (w, priv->interactive);
-		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
+		gtk_widget_add_css_class (w, "star");
 		gtk_widget_set_visible (w, TRUE);
 		gtk_box_append (GTK_BOX (priv->box1), w);
 	}

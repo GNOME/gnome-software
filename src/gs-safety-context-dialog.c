@@ -112,7 +112,6 @@ update_permissions_list (GsSafetyContextDialog *self)
 	g_autoptr(GPtrArray) descriptions = g_ptr_array_new_with_free_func (NULL);
 	g_autoptr(GsAppPermissions) permissions = NULL;
 	GsAppPermissionsFlags perm_flags = GS_APP_PERMISSIONS_FLAGS_UNKNOWN;
-	GtkStyleContext *context;
 	GsContextDialogRowImportance chosen_rating;
 
 	/* Treat everything as safe to begin with, and downgrade its safety
@@ -397,13 +396,11 @@ update_permissions_list (GsSafetyContextDialog *self)
 	gs_lozenge_set_icon_name (GS_LOZENGE (self->lozenge), icon_name);
 	gtk_label_set_text (self->title, title);
 
-	context = gtk_widget_get_style_context (self->lozenge);
+	gtk_widget_remove_css_class (self->lozenge, "green");
+	gtk_widget_remove_css_class (self->lozenge, "yellow");
+	gtk_widget_remove_css_class (self->lozenge, "red");
 
-	gtk_style_context_remove_class (context, "green");
-	gtk_style_context_remove_class (context, "yellow");
-	gtk_style_context_remove_class (context, "red");
-
-	gtk_style_context_add_class (context, css_class);
+	gtk_widget_add_css_class (self->lozenge, css_class);
 }
 
 static void
@@ -428,7 +425,6 @@ update_sdk (GsSafetyContextDialog *self)
 	runtime = gs_app_get_runtime (self->app);
 
 	if (runtime != NULL) {
-		GtkStyleContext *context;
 		g_autofree gchar *label = NULL;
 		const gchar *version = gs_app_get_version_ui (runtime);
 		gboolean is_eol = gs_app_get_metadata_item (runtime, "GnomeSoftware::EolReason") != NULL;
@@ -445,14 +441,12 @@ update_sdk (GsSafetyContextDialog *self)
 
 		gtk_label_set_label (self->sdk_label, label);
 
-		context = gtk_widget_get_style_context (GTK_WIDGET (self->sdk_label));
-
 		if (is_eol) {
-			gtk_style_context_add_class (context, "eol-red");
-			gtk_style_context_remove_class (context, "dim-label");
+			gtk_widget_add_css_class (GTK_WIDGET (self->sdk_label), "eol-red");
+			gtk_widget_remove_css_class (GTK_WIDGET (self->sdk_label), "dim-label");
 		} else {
-			gtk_style_context_add_class (context, "dim-label");
-			gtk_style_context_remove_class (context, "eol-red");
+			gtk_widget_add_css_class (GTK_WIDGET (self->sdk_label), "dim-label");
+			gtk_widget_remove_css_class (GTK_WIDGET (self->sdk_label), "eol-red");
 		}
 
 		gtk_widget_set_visible (GTK_WIDGET (self->sdk_eol_image), is_eol);

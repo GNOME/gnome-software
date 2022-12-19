@@ -900,7 +900,6 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	const gchar *locale;
 	AsContentRatingSystem system;
 	g_autoptr(AsContentRating) content_rating = NULL;
-	GtkStyleContext *context;
 	const gchar *css_age_classes[] = {
 		"details-rating-18",
 		"details-rating-15",
@@ -968,13 +967,11 @@ gs_age_rating_context_dialog_update_lozenge (GsApp     *app,
 	/* Update the UI. */
 	gs_lozenge_set_text (lozenge, age_text);
 
-	context = gtk_widget_get_style_context (GTK_WIDGET (lozenge));
-
 	for (gsize i = 0; i < G_N_ELEMENTS (css_age_classes); i++)
-		gtk_style_context_remove_class (context, css_age_classes[i]);
-	gtk_style_context_remove_class (context, "grey");
+		gtk_widget_remove_css_class (GTK_WIDGET (lozenge), css_age_classes[i]);
+	gtk_widget_remove_css_class (GTK_WIDGET (lozenge), "grey");
 
-	gtk_style_context_add_class (context, css_class);
+	gtk_widget_add_css_class (GTK_WIDGET (lozenge), css_class);
 }
 
 static void

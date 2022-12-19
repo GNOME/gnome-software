@@ -311,7 +311,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 	GsApp *app = gs_app_tile_get_app (self);
 	const gchar *markup = NULL;
 	g_autofree gchar *name = NULL;
-	GtkStyleContext *context;
 	g_autoptr(GIcon) icon = NULL;
 	guint icon_size;
 
@@ -321,11 +320,10 @@ gs_feature_tile_refresh (GsAppTile *self)
 	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 
 	/* Set the narrow mode. */
-	context = gtk_widget_get_style_context (GTK_WIDGET (self));
 	if (tile->narrow_mode)
-		gtk_style_context_add_class (context, "narrow");
+		gtk_widget_add_css_class (GTK_WIDGET (self), "narrow");
 	else
-		gtk_style_context_remove_class (context, "narrow");
+		gtk_widget_remove_css_class (GTK_WIDGET (self), "narrow");
 
 	/* Update the icon. Try a 160px version if not in narrow mode, and it’s
 	 * available; otherwise use 128px. */
@@ -373,11 +371,11 @@ gs_feature_tile_refresh (GsAppTile *self)
 		g_autofree gchar *modified_markup = gs_utils_set_key_colors_in_css (markup, app);
 		if (modified_markup != NULL)
 			gs_css_parse (css, modified_markup, NULL);
-		gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile",
+		gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider,
 					 gs_css_get_markup_for_id (css, "tile"));
-		gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name",
+		gs_utils_widget_set_css (tile->title, &tile->title_provider,
 					 gs_css_get_markup_for_id (css, "name"));
-		gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle",
+		gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider,
 					 gs_css_get_markup_for_id (css, "summary"));
 		tile->markup_cache = markup;
 	} else if (markup == NULL) {
@@ -399,11 +397,16 @@ gs_feature_tile_refresh (GsAppTile *self)
 		if (key_colors != tile->key_colors_cache) {
 			g_autoptr(GArray) colors = NULL;
 			GdkRGBA fg_rgba;
+#if !GTK_CHECK_VERSION(4, 9, 2)
 			gboolean fg_rgba_valid;
+#endif
 			GsHSBC fg_hsbc;
 			const GsHSBC *chosen_hsbc;
 			GsHSBC chosen_hsbc_modified;
 			gboolean use_chosen_hsbc = FALSE;
+#if !GTK_CHECK_VERSION(4, 9, 2)
+			GtkStyleContext *context;
+#endif
 
 			/* Look up the foreground colour for the feature tile,
 			 * which is the colour of the text. This should always
@@ -417,8 +420,13 @@ gs_feature_tile_refresh (GsAppTile *self)
 			 * @min_abs_contrast contrast with the foreground, so
 			 * that the text is legible.
 			 */
+#if GTK_CHECK_VERSION(4, 9, 2)
+			gtk_widget_get_color (GTK_WIDGET (self), &fg_rgba);
+#else
+			context = gtk_widget_get_style_context (GTK_WIDGET (self));
 			fg_rgba_valid = gtk_style_context_lookup_color (context, "theme_fg_color", &fg_rgba);
 			g_assert (fg_rgba_valid);
+#endif
 
 			gtk_rgb_to_hsv (fg_rgba.red, fg_rgba.green, fg_rgba.blue,
 					&fg_hsbc.hue, &fg_hsbc.saturation, &fg_hsbc.brightness);
@@ -517,9 +525,9 @@ gs_feature_tile_refresh (GsAppTile *self)
 						       chosen_rgba.blue * 255.f);
 			}
 
-			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, "feature-tile", css);
-			gs_utils_widget_set_css (tile->title, &tile->title_provider, "feature-tile-name", NULL);
-			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, "feature-tile-subtitle", NULL);
+			gs_utils_widget_set_css (GTK_WIDGET (tile), &tile->tile_provider, css);
+			gs_utils_widget_set_css (tile->title, &tile->title_provider, NULL);
+			gs_utils_widget_set_css (tile->subtitle, &tile->subtitle_provider, NULL);
 
 			tile->key_colors_cache = key_colors;
 		}

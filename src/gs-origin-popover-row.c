@@ -127,7 +127,7 @@ refresh_ui (GsOriginPopoverRow *row)
 	if (packaging_base_css_color != NULL)
 		css = g_strdup_printf ("   color: @%s;\n", packaging_base_css_color);
 
-	gs_utils_widget_set_css (priv->packaging_box, &priv->css_provider, "packaging-color", css);
+	gs_utils_widget_set_css (priv->packaging_box, &priv->css_provider, css);
 }
 
 static void

@@ -235,7 +235,6 @@ gs_description_box_finalize (GObject *object)
 static void
 gs_description_box_init (GsDescriptionBox *box)
 {
-	GtkStyleContext *style_context;
 	GtkWidget *widget;
 
 	box->is_collapsed = TRUE;
@@ -243,8 +242,7 @@ gs_description_box_init (GsDescriptionBox *box)
 	box->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 24);
 	gtk_widget_set_parent (GTK_WIDGET (box->box), GTK_WIDGET (box));
 
-	style_context = gtk_widget_get_style_context (GTK_WIDGET (box));
-	gtk_style_context_add_class (style_context, "application-details-description");
+	gtk_widget_add_css_class (GTK_WIDGET (box), "application-details-description");
 
 	widget = gtk_label_new ("");
 	g_object_set (G_OBJECT (widget),
@@ -261,8 +259,7 @@ gs_description_box_init (GsDescriptionBox *box)
 
 	gtk_box_append (GTK_BOX (box->box), widget);
 
-	style_context = gtk_widget_get_style_context (widget);
-	gtk_style_context_add_class (style_context, "label");
+	gtk_widget_add_css_class (GTK_WIDGET (box), "label");
 
 	box->label = GTK_LABEL (widget);
 
@@ -278,9 +275,8 @@ gs_description_box_init (GsDescriptionBox *box)
 
 	gtk_box_append (GTK_BOX (box->box), widget);
 
-	style_context = gtk_widget_get_style_context (widget);
-	gtk_style_context_add_class (style_context, "button");
-	gtk_style_context_add_class (style_context, "circular");
+	gtk_widget_add_css_class (widget, "button");
+	gtk_widget_add_css_class (widget, "circular");
 
 	box->button = GTK_BUTTON (widget);
 

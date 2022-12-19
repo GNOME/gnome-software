@@ -10,6 +10,7 @@
 #include "config.h"
 
 #include "gs-app.h"
+#include "gs-common.h"
 #include "gs-progress-button.h"
 
 struct _GsProgressButton
@@ -44,29 +45,24 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 	const gchar *css;
 
 	if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-		css = ".install-progress {\n"
-		      "  background-size: 25%;\n"
-		      "  animation: install-progress-unknown-move infinite linear 2s;\n"
-		      "}\n";
+		css = "  background-size: 25%;\n"
+		      "  animation: install-progress-unknown-move infinite linear 2s;";
 	} else {
 		percentage = MIN (percentage, 100); /* No need to clamp an unsigned to 0, it produces errors. */
-		g_assert ((gsize) g_snprintf (tmp, sizeof (tmp), ".install-progress { background-size: %u%%; }", percentage) < sizeof (tmp));
+		g_assert ((gsize) g_snprintf (tmp, sizeof (tmp), "background-size: %u%%;", percentage) < sizeof (tmp));
 		css = tmp;
 	}
 
-	gtk_css_provider_load_from_data (button->css_provider, css, -1);
+	gs_utils_widget_set_css (GTK_WIDGET (button), &button->css_provider, css);
 }
 
 void
 gs_progress_button_set_show_progress (GsProgressButton *button, gboolean show_progress)
 {
-	GtkStyleContext *context;
-
-	context = gtk_widget_get_style_context (GTK_WIDGET (button));
 	if (show_progress)
-		gtk_style_context_add_class (context, "install-progress");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "install-progress");
 	else
-		gtk_style_context_remove_class (context, "install-progress");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "install-progress");
 }
 
 /**
@@ -188,8 +184,6 @@ gs_progress_button_get_show_icon (GsProgressButton *button)
 void
 gs_progress_button_set_show_icon (GsProgressButton *button, gboolean show_icon)
 {
-	GtkStyleContext *style;
-
 	g_return_if_fail (GS_IS_PROGRESS_BUTTON (button));
 
 	show_icon = !!show_icon;
@@ -199,15 +193,14 @@ gs_progress_button_set_show_icon (GsProgressButton *button, gboolean show_icon)
 
 	button->show_icon = show_icon;
 
-	style = gtk_widget_get_style_context (GTK_WIDGET (button));
 	if (show_icon) {
 		gtk_stack_set_visible_child (GTK_STACK (button->stack), button->image);
-		gtk_style_context_remove_class (style, "text-button");
-		gtk_style_context_add_class (style, "image-button");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "text-button");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "image-button");
 	} else {
 		gtk_stack_set_visible_child (GTK_STACK (button->stack), button->label);
-		gtk_style_context_remove_class (style, "image-button");
-		gtk_style_context_add_class (style, "text-button");
+		gtk_widget_remove_css_class (GTK_WIDGET (button), "image-button");
+		gtk_widget_add_css_class (GTK_WIDGET (button), "text-button");
 	}
 
 	g_object_notify_by_pspec (G_OBJECT (button), obj_props[PROP_SHOW_ICON]);
@@ -301,11 +294,6 @@ static void
 gs_progress_button_init (GsProgressButton *button)
 {
 	gtk_widget_init_template (GTK_WIDGET (button));
-
-	button->css_provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider (gtk_widget_get_style_context (GTK_WIDGET (button)),
-					GTK_STYLE_PROVIDER (button->css_provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void

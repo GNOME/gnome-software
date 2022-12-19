@@ -134,7 +134,6 @@ static void
 gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-	GtkStyleContext *context;
 
 	/* disabled */
 	if (!priv->show_buttons) {
@@ -242,23 +241,22 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	}
 
 	/* colorful */
-	context = gtk_widget_get_style_context (priv->button);
 	if (!priv->colorful) {
-		gtk_style_context_remove_class (context, "destructive-action");
+		gtk_widget_remove_css_class (priv->button, "destructive-action");
 	} else {
 		switch (gs_app_get_state (priv->app)) {
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_INSTALLED:
-			gtk_style_context_add_class (context, "destructive-action");
+			gtk_widget_add_css_class (priv->button, "destructive-action");
 			break;
 		case GS_APP_STATE_UPDATABLE_LIVE:
 			if (priv->show_update)
-				gtk_style_context_remove_class (context, "destructive-action");
+				gtk_widget_remove_css_class (priv->button, "destructive-action");
 			else
-				gtk_style_context_add_class (context, "destructive-action");
+				gtk_widget_add_css_class (priv->button, "destructive-action");
 			break;
 		default:
-			gtk_style_context_remove_class (context, "destructive-action");
+			gtk_widget_remove_css_class (priv->button, "destructive-action");
 			break;
 		}
 	}
@@ -281,7 +279,6 @@ static void
 gs_app_row_actually_refresh (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-	GtkStyleContext *context;
 	GString *str = NULL;
 	const gchar *tmp;
 	gboolean missing_search_result;
@@ -447,11 +444,10 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 					 "system-component-application");
 	gtk_image_set_from_gicon (GTK_IMAGE (priv->image), icon);
 
-	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)
-		gtk_style_context_add_class (context, "dimmer-label");
+		gtk_widget_add_css_class (priv->image, "dimmer-label");
 	else
-		gtk_style_context_remove_class (context, "dimmer-label");
+		gtk_widget_remove_css_class (priv->image, "dimmer-label");
 
 	/* pending label */
 	switch (gs_app_get_state (priv->app)) {

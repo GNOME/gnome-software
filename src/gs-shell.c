@@ -2548,7 +2548,6 @@ allocation_changed_cb (gpointer user_data)
 	GsShell *shell = GS_SHELL (user_data);
 	GtkAllocation allocation;
 	gboolean is_narrow;
-	GtkStyleContext *context;
 
 	gtk_widget_get_allocation (GTK_WIDGET (shell), &allocation);
 
@@ -2566,12 +2565,10 @@ allocation_changed_cb (gpointer user_data)
 
 	shell->allocation_changed_cb_id = 0;
 
-	context = gtk_widget_get_style_context (GTK_WIDGET (shell));
-
 	if (is_narrow)
-		gtk_style_context_add_class (context, "narrow");
+		gtk_widget_add_css_class (GTK_WIDGET (shell), "narrow");
 	else
-		gtk_style_context_remove_class (context, "narrow");
+		gtk_widget_remove_css_class (GTK_WIDGET (shell), "narrow");
 
 	return G_SOURCE_REMOVE;
 }

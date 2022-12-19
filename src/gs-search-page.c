@@ -171,7 +171,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 
 	/* too many results */
 	if (gs_app_list_has_flag (list, GS_APP_LIST_FLAG_IS_TRUNCATED)) {
-		GtkStyleContext *context;
 		GtkWidget *w = gtk_label_new (NULL);
 		g_autofree gchar *str = NULL;
 
@@ -186,8 +185,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gtk_widget_set_margin_top (w, 20);
 		gtk_widget_set_margin_start (w, 20);
 		gtk_widget_set_margin_end (w, 20);
-		context = gtk_widget_get_style_context (w);
-		gtk_style_context_add_class (context, "dim-label");
+		gtk_widget_add_css_class (w, "dim-label");
 		gtk_list_box_append (GTK_LIST_BOX (self->list_box_search), w);
 		gtk_widget_show (w);
 	} else {

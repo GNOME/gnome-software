@@ -120,20 +120,17 @@ gs_context_dialog_row_set_property (GObject      *object,
 		gs_lozenge_set_text (self->lozenge, g_value_get_string (value));
 		break;
 	case PROP_IMPORTANCE: {
-		GtkStyleContext *context;
 		const gchar *css_class;
 
 		self->importance = g_value_get_enum (value);
 		css_class = css_class_for_importance (self->importance);
 
-		context = gtk_widget_get_style_context (GTK_WIDGET (self->lozenge));
+		gtk_widget_remove_css_class (GTK_WIDGET (self->lozenge), "green");
+		gtk_widget_remove_css_class (GTK_WIDGET (self->lozenge), "yellow");
+		gtk_widget_remove_css_class (GTK_WIDGET (self->lozenge), "red");
+		gtk_widget_remove_css_class (GTK_WIDGET (self->lozenge), "grey");
 
-		gtk_style_context_remove_class (context, "green");
-		gtk_style_context_remove_class (context, "yellow");
-		gtk_style_context_remove_class (context, "red");
-		gtk_style_context_remove_class (context, "grey");
-
-		gtk_style_context_add_class (context, css_class);
+		gtk_widget_add_css_class (GTK_WIDGET (self->lozenge), css_class);
 		break;
 	}
 	default:
