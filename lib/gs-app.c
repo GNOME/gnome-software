@@ -2558,7 +2558,8 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
  * gs_app_set_url:
  * @app: a #GsApp
  * @kind: a #AsUrlKind, e.g. %AS_URL_KIND_HOMEPAGE
- * @url: a web URL, e.g. "http://www.hughsie.com/"
+ * @url: (nullable): a web URL, e.g. "http://www.hughsie.com/", or %NULL to
+ *   unset the URL of this @kind
  *
  * Sets a web address of a specific type.
  *
@@ -2569,18 +2570,26 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
+	gboolean changed;
+
 	g_return_if_fail (GS_IS_APP (app));
+
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	if (priv->urls == NULL)
 		priv->urls = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						    NULL, g_free);
 
-	g_hash_table_insert (priv->urls,
-			     GINT_TO_POINTER (kind),
-			     g_strdup (url));
+	if (url != NULL)
+		changed = g_hash_table_insert (priv->urls,
+					       GINT_TO_POINTER (kind),
+					       g_strdup (url));
+	else
+		changed = g_hash_table_remove (priv->urls,
+					       GINT_TO_POINTER (kind));
 
-	gs_app_queue_notify (app, obj_props[PROP_URLS]);
+	if (changed)
+		gs_app_queue_notify (app, obj_props[PROP_URLS]);
 }
 
 /**

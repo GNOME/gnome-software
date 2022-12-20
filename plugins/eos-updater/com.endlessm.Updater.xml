@@ -187,11 +187,20 @@
 
     <!--
       UpdateIsUserVisible:
+
       If the update contains significant user visible changes which should be
       notified to the user in advance of the update being applied, this is
       `True`. Otherwise, or if no update is available, this is `False`.
     -->
     <property name="UpdateIsUserVisible" type="b" access="read"/>
+
+    <!--
+      ReleaseNotesUri:
+
+      URI of a page containing release notes or news for the update being
+      applied, or the empty string if it’s not set or if no update is available.
+    -->
+    <property name="ReleaseNotesUri" type="s" access="read"/>
 
     <!--
       DownloadSize:
