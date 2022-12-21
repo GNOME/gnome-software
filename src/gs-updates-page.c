@@ -72,7 +72,7 @@ struct _GsUpdatesPage
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
 	GtkWidget		*upgrade_banner;
-	GtkWidget		*infobar_end_of_life;
+	GtkWidget		*banner_end_of_life;
 	GtkWidget		*label_end_of_life;
 	GtkWidget		*up_to_date_image;
 
@@ -539,8 +539,8 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 	g_autoptr(GsPageHelper) helper = user_data;
 	GsUpdatesPage *self = helper->self;
 	GsApp *app = helper->app;
+	g_autofree char *str = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* get result */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
@@ -552,32 +552,25 @@ gs_updates_page_refine_system_finished_cb (GObject *source_object,
 
 	/* show or hide the end of life notification */
 	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE) {
-		gtk_info_bar_set_revealed (GTK_INFO_BAR (self->infobar_end_of_life), FALSE);
+		adw_banner_set_revealed (ADW_BANNER (self->banner_end_of_life), FALSE);
 		return;
 	}
 
 	/* construct a sufficiently scary message */
-	if (gs_app_get_name (app) != NULL && gs_app_get_version (app) != NULL) {
+	if (gs_app_get_name (app) != NULL) {
 		/* TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 		 * and the second %s is the distro version, e.g. '25' */
-		g_string_append_printf (str, _("%s %s is no longer supported."),
-					gs_app_get_name (app),
-					gs_app_get_version (app));
+		str = g_strdup_printf (_("%s %s has stopped receiving critical software updates"),
+				       gs_app_get_name (app),
+				       gs_app_get_version (app));
 	} else {
-		g_string_append (str, _("Your operating system is no longer supported."));
+		/* TRANSLATORS: This message is meant to tell users that they need to upgrade
+		* or else their distro will not get important updates. */
+		str = _("Your operating system has stopped receiving critical software updates");
 	}
-	g_string_append (str, " ");
 
-	/* TRANSLATORS: EOL distros do not get important updates */
-	g_string_append (str, _("This means that it does not receive security updates."));
-	g_string_append (str, " ");
-
-	/* TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26 */
-	g_string_append (str, _("It is recommended that you upgrade to a more recent version."));
-
-	gtk_label_set_label (GTK_LABEL (self->label_end_of_life), str->str);
-	gtk_info_bar_set_revealed (GTK_INFO_BAR (self->infobar_end_of_life), TRUE);
-
+	adw_banner_set_title (ADW_BANNER (self->banner_end_of_life), str);
+	adw_banner_set_revealed (ADW_BANNER (self->banner_end_of_life), TRUE);
 }
 
 static void
@@ -1386,8 +1379,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, infobar_end_of_life);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, banner_end_of_life);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, up_to_date_image);
 }
 
