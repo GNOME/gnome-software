@@ -309,7 +309,7 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for installing all
 		 * offline updates */
-		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("Restart & Update"));
+		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("Restart & Update…"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
