@@ -252,47 +252,10 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="GtkInfoBar" id="metered_updates_bar">
-                                        <property name="message-type">GTK_MESSAGE_INFO</property>
-                                        <property name="show-close-button">False</property>
-                                        <property name="revealed">False</property>
-                                        <signal name="response" handler="gs_shell_metered_updates_bar_response_cb"/>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="orientation">vertical</property>
-                                            <property name="spacing">6</property>
-                                            <property name="margin_top">6</property>
-                                            <property name="margin_start">6</property>
-                                            <property name="margin_bottom">6</property>
-                                            <child>
-                                              <object class="GtkLabel">
-                                                <property name="can_focus">False</property>
-                                                <property name="label" translatable="yes">Automatic Updates Paused</property>
-                                                <property name="vexpand">True</property>
-                                                <property name="xalign">0.0</property>
-                                                <property name="wrap">True</property>
-                                                <attributes>
-                                                  <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
-                                                </attributes>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                        <child type="action">
-                                          <object class="GtkBox">
-                                            <property name="margin_end">6</property>
-                                            <child>
-                                              <object class="GtkButton" id="metered_updates_button">
-                                                <property name="can_focus">True</property>
-                                                <property name="use_underline">True</property>
-                                                <property name="label" translatable="yes">Find Out _More</property>
-                                              </object>
-                                            </child>
-                                          </object>
-                                        </child>
-                                        <action-widgets>
-                                          <action-widget response="GTK_RESPONSE_OK">metered_updates_button</action-widget>
-                                        </action-widgets>
+                                      <object class="AdwBanner" id="metered_updates_banner">
+                                        <property name="title" translatable="yes">Metered network ‒ automatic updates paused</property>
+                                        <property name="button-label" translatable="yes">Find Out _More</property>
+                                        <signal name="button-clicked" handler="gs_shell_metered_updates_banner_clicked_cb" swapped="yes"/>
                                       </object>
                                     </child>
                                     <child>
