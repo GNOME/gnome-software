@@ -52,46 +52,23 @@
           <object class="GtkStackPage">
             <property name="name">ready</property>
             <property name="child">
-              <object class="GtkScrolledWindow" id="scrolledwindow_details">
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">automatic</property>
-                <property name="vscrollbar_policy">automatic</property>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkViewport" id="viewport1">
-                    <property name="scroll-to-focus">True</property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkInfoBar" id="translation_infobar">
-                            <property name="revealed">False</property>
-                            <property name="show-close-button">False</property>
-                            <signal name="response" handler="gs_details_page_translation_infobar_response_cb"/>
-                            <child>
-                              <object class="GtkCenterBox">
-                                <property name="orientation">horizontal</property>
-                                <property name="hexpand">True</property>
-                                <child type="center">
-                                  <object class="GtkLabel" id="translation_infobar_label">
-                                    <property name="hexpand">True</property>
-                                    <property name="label" translatable="yes">This software is not available in your language and will appear in US English.</property>
-                                    <property name="wrap">True</property>
-                                  </object>
-                                </child>
-                                <child type="end">
-                                  <object class="GtkButton" id="translation_infobar_button">
-                                    <property name="label" translatable="yes">Help _Translate</property>
-                                    <property name="use-underline">True</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <action-widgets>
-                              <action-widget response="GTK_RESPONSE_OK">translation_infobar_button</action-widget>
-                            </action-widgets>
-                          </object>
-                        </child>
+                  <object class="AdwBanner" id="translation_banner">
+                    <property name="button-label" translatable="yes">Help _Translate</property>
+                    <signal name="button-clicked" handler="gs_details_page_translation_banner_clicked_cb" swapped="yes"/>
+                  </object>
+                </child>
 
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledwindow_details">
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">automatic</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <child>
+                      <object class="GtkViewport" id="viewport1">
+                        <property name="scroll-to-focus">True</property>
                         <child>
                           <object class="GtkBox" id="box_details">
                             <property name="orientation">vertical</property>
