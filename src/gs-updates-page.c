@@ -294,7 +294,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "media-playback-stop-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Stop Refreshing"));
+		gtk_widget_set_tooltip_text(self->button_refresh, _("Stop"));
 		gtk_widget_show (self->button_refresh);
 		break;
 	case GS_UPDATES_PAGE_STATE_STARTUP:
@@ -303,7 +303,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		break;
 	case GS_UPDATES_PAGE_STATE_IDLE:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Refresh"));
+		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
 		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_widget_show (self->button_refresh);
 		} else {
@@ -315,7 +315,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		break;
 	case GS_UPDATES_PAGE_STATE_FAILED:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
-		gtk_widget_set_tooltip_text(self->button_refresh, _("Refresh"));
+		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
 		gtk_widget_show (self->button_refresh);
 		break;
 	default:
