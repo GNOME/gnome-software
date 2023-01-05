@@ -119,6 +119,42 @@ typedef enum {
 
 static GParamSpec *props[PROP_LICENSE_TYPE + 1] = { NULL, };
 
+static gchar **
+gs_app_query_sanitize_keywords (const gchar * const *terms)
+{
+	g_autoptr(GStrvBuilder) keywords = NULL;
+	gboolean any_added = FALSE;
+
+	if (terms == NULL || terms[0] == NULL)
+		return NULL;
+
+	keywords = g_strv_builder_new ();
+
+	/* If the caller already split the terms, then use it as is */
+	if (terms[1] != NULL) {
+		g_strv_builder_addv (keywords, (const gchar **) terms);
+		any_added = TRUE;
+	} else {
+		g_autofree gchar *term = g_strdup (terms[0]);
+		g_strstrip (term);
+		if (strchr (term, ' ')) {
+			g_auto(GStrv) split = g_strsplit (term, " ", -1);
+			for (guint i = 0; split[i] != NULL; i++) {
+				gchar *word = g_strstrip (split[i]);
+				if (*word != '\0') {
+					g_strv_builder_add (keywords, word);
+					any_added = TRUE;
+				}
+			}
+		} else if (*term != '\0') {
+			g_strv_builder_add (keywords, term);
+			any_added = TRUE;
+		}
+	}
+
+	return any_added ? g_strv_builder_end (keywords) : NULL;
+}
+
 static void
 gs_app_query_constructed (GObject *object)
 {
@@ -322,12 +358,7 @@ gs_app_query_set_property (GObject      *object,
 	case PROP_KEYWORDS:
 		/* Construct only. */
 		g_assert (self->keywords == NULL);
-		self->keywords = g_value_dup_boxed (value);
-
-		/* Squash empty arrays to %NULL. */
-		if (self->keywords != NULL && self->keywords[0] == NULL)
-			g_clear_pointer (&self->keywords, g_strfreev);
-
+		self->keywords = gs_app_query_sanitize_keywords (g_value_get_boxed (value));
 		break;
 	case PROP_ALTERNATE_OF:
 		/* Construct only. */
