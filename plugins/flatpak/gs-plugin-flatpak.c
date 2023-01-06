@@ -40,6 +40,15 @@
 
 #include "gs-plugin-flatpak.h"
 
+/* Timeout for pure of unused refs:
+ * - A timer checks every 2h
+ * - If the plugin is enabled, and unused refs have not yet been
+ *   removed (successfully or not) in the last 24h, then `flatpak-purge-timestamp`
+ *   is updated and a purge operation is started
+ * - Timeout callbacks are ignored until another 24h has passed
+ */
+#define PURGE_TIMEOUT_SECONDS (60 * 60 * 2)
+
 struct _GsPluginFlatpak
 {
 	GsPlugin		 parent;
@@ -49,6 +58,9 @@ struct _GsPluginFlatpak
 	GPtrArray		*installations;  /* (element-type GsFlatpak) (owned); may be NULL before setup or after shutdown */
 	gboolean		 has_system_helper;
 	const gchar		*destdir_for_tests;
+
+	GCancellable		*purge_cancellable;
+	guint			 purge_timeout_id;
 };
 
 G_DEFINE_TYPE (GsPluginFlatpak, gs_plugin_flatpak, GS_TYPE_PLUGIN)
@@ -75,7 +87,11 @@ gs_plugin_flatpak_dispose (GObject *object)
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (object);
 
+	g_cancellable_cancel (self->purge_cancellable);
+	g_assert (self->purge_timeout_id == 0);
+
 	g_clear_pointer (&self->installations, g_ptr_array_unref);
+	g_clear_object (&self->purge_cancellable);
 	g_clear_object (&self->worker);
 
 	G_OBJECT_CLASS (gs_plugin_flatpak_parent_class)->dispose (object);
@@ -103,6 +119,71 @@ gs_plugin_flatpak_init (GsPluginFlatpak *self)
 
 	/* used for self tests */
 	self->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
+}
+
+/* Run in @worker. */
+static void
+gs_plugin_flatpak_purge_thread_cb (GTask        *task,
+				   gpointer      source_object,
+				   gpointer      task_data,
+				   GCancellable *cancellable)
+{
+	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (source_object);
+	GPtrArray *flatpaks = task_data;
+
+	assert_in_worker (self);
+
+	for (guint i = 0; i < flatpaks->len; i++) {
+		g_autoptr(GError) local_error = NULL;
+		GsFlatpak *flatpak = g_ptr_array_index (flatpaks, i);
+
+		if (!gs_flatpak_purge_sync (flatpak, cancellable, &local_error)) {
+			gs_flatpak_error_convert (&local_error);
+			g_debug ("Failed to purge unused refs at '%s': %s",
+				 gs_flatpak_get_id (flatpak), local_error->message);
+		}
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_flatpak_purge_timeout_cb (gpointer user_data)
+{
+	GsPluginFlatpak *self = user_data;
+	if (gs_plugin_get_enabled (GS_PLUGIN (self))) {
+		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+		gint64 current_time = g_get_real_time () / G_USEC_PER_SEC;
+		if ((current_time / (60 * 60 * 24)) != (g_settings_get_int64 (settings, "flatpak-purge-timestamp") / (60 * 60 * 24))) {
+			g_autoptr(GPtrArray) flatpaks = g_ptr_array_new_with_free_func (g_object_unref);
+			g_settings_set_int64 (settings, "flatpak-purge-timestamp", current_time);
+			g_cancellable_cancel (self->purge_cancellable);
+			g_clear_object (&self->purge_cancellable);
+			self->purge_cancellable = g_cancellable_new ();
+			for (guint i = 0; i < self->installations->len; i++) {
+				GsFlatpak *flatpak = g_ptr_array_index (self->installations, i);
+				if (gs_flatpak_get_busy (flatpak)) {
+					g_debug ("Skipping '%s' in this round, it's busy right now", gs_flatpak_get_id (flatpak));
+					continue;
+				}
+				g_ptr_array_add (flatpaks, g_object_ref (flatpak));
+			}
+			if (flatpaks->len > 0) {
+				g_autoptr(GTask) task = NULL;
+
+				task = g_task_new (self, self->purge_cancellable, NULL, NULL);
+				g_task_set_source_tag (task, gs_plugin_flatpak_purge_timeout_cb);
+				g_task_set_task_data (task, g_steal_pointer (&flatpaks), (GDestroyNotify) g_ptr_array_unref);
+
+				gs_worker_thread_queue (self->worker, G_PRIORITY_LOW,
+						        gs_plugin_flatpak_purge_thread_cb, g_steal_pointer (&task));
+			}
+		}
+	} else {
+		self->purge_timeout_id = 0;
+		return G_SOURCE_REMOVE;
+	}
+	return G_SOURCE_CONTINUE;
 }
 
 static gboolean
@@ -194,6 +275,11 @@ gs_plugin_flatpak_setup_async (GsPlugin            *plugin,
 	/* Queue a job to find and set up the installations. */
 	gs_worker_thread_queue (self->worker, G_PRIORITY_DEFAULT,
 				setup_thread_cb, g_steal_pointer (&task));
+
+	if (!self->purge_timeout_id)
+		self->purge_timeout_id = g_timeout_add_seconds (PURGE_TIMEOUT_SECONDS,
+								gs_plugin_flatpak_purge_timeout_cb,
+								self);
 }
 
 /* Run in @worker. */
@@ -324,6 +410,9 @@ gs_plugin_flatpak_shutdown_async (GsPlugin            *plugin,
 {
 	GsPluginFlatpak *self = GS_PLUGIN_FLATPAK (plugin);
 	g_autoptr(GTask) task = NULL;
+
+	g_clear_handle_id (&self->purge_timeout_id, g_source_remove);
+	g_cancellable_cancel (self->purge_cancellable);
 
 	task = g_task_new (self, cancellable, callback, user_data);
 	g_task_set_source_tag (task, gs_plugin_flatpak_shutdown_async);

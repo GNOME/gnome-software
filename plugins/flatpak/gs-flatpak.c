@@ -35,6 +35,7 @@
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
+#include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
 
 struct _GsFlatpak {
@@ -4621,4 +4622,62 @@ gs_flatpak_get_busy (GsFlatpak *self)
 {
 	g_return_val_if_fail (GS_IS_FLATPAK (self), FALSE);
 	return g_atomic_int_get (&self->busy) > 0;
+}
+
+gboolean
+gs_flatpak_purge_sync (GsFlatpak    *self,
+		       GCancellable *cancellable,
+		       GError      **error)
+{
+	FlatpakInstallation *installation;
+	g_autoptr(GPtrArray) unused_refs = NULL;
+
+	installation = gs_flatpak_get_installation (self, FALSE);
+	if (installation == NULL) {
+		g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+				     "Non-interactive installation not found");
+		return FALSE;
+	}
+
+	unused_refs = flatpak_installation_list_unused_refs (installation, NULL, cancellable, error);
+	if (unused_refs == NULL)
+		return FALSE;
+
+	g_debug ("Installation '%s' has %u unused refs", gs_flatpak_get_id (self), unused_refs->len);
+
+	if (unused_refs->len > 0) {
+		g_autoptr(FlatpakTransaction) transaction = NULL;
+		transaction = gs_flatpak_transaction_new (installation, cancellable, error);
+		if (transaction == NULL) {
+			g_prefix_error_literal (error, "failed to build transaction: ");
+			return FALSE;
+		}
+		flatpak_transaction_set_no_interaction (transaction, TRUE);
+		flatpak_transaction_set_no_pull (transaction, TRUE);
+
+		/* use system installations as dependency sources for user installations */
+		flatpak_transaction_add_default_dependency_sources (transaction);
+
+		for (guint i = 0; i < unused_refs->len; i++) {
+			g_autoptr(GsApp) app = NULL;
+			FlatpakRef *ref = g_ptr_array_index (unused_refs, i);
+			const gchar *ref_str = flatpak_ref_format_ref_cached (ref);
+			app = gs_flatpak_ref_to_app (self, ref_str, FALSE, cancellable, error);
+			if (app == NULL) {
+				g_prefix_error (error, "failed to create app from ref '%s': ", ref_str);
+				return FALSE;
+			}
+			gs_flatpak_transaction_add_app (transaction, app);
+			if (!flatpak_transaction_add_uninstall (transaction, ref_str, error)) {
+				g_prefix_error (error, "failed to add ref to transaction: ");
+				return FALSE;
+			}
+			g_debug ("Going to uninstall '%s'", ref_str);
+		}
+
+		return gs_flatpak_transaction_run (transaction, cancellable, error);
+	} else {
+		/* Nothing to uninstall. */
+		return TRUE;
+	}
 }
