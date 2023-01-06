@@ -33,6 +33,10 @@
 #include <gio/gio.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <glib/gstdio.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <libsoup/soup.h>
 
 #include "gs-remote-icon.h"
@@ -330,6 +334,7 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	const gchar *uri;
 	g_autofree gchar *cache_filename = NULL;
 	g_autoptr(GdkPixbuf) cached_pixbuf = NULL;
+	GStatBuf stat_buf;
 
 	g_return_val_if_fail (GS_IS_REMOTE_ICON (self), FALSE);
 	g_return_val_if_fail (SOUP_IS_SESSION (soup_session), FALSE);
@@ -344,8 +349,10 @@ gs_remote_icon_ensure_cached (GsRemoteIcon  *self,
 	if (cache_filename == NULL)
 		return FALSE;
 
-	/* Already in cache? */
-	if (g_file_test (cache_filename, G_FILE_TEST_IS_REGULAR)) {
+	/* Already in cache and not older than 30 days */
+	if (g_stat (cache_filename, &stat_buf) != -1 &&
+	    S_ISREG (stat_buf.st_mode) &&
+	    (g_get_real_time () / G_USEC_PER_SEC) - stat_buf.st_mtim.tv_sec < (60 * 60 * 24 * 30)) {
 		gint width = 0, height = 0;
 		/* Ensure the downloaded image dimensions are stored on the icon */
 		if (!g_object_get_data (G_OBJECT (self), "width") &&
