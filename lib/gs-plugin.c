@@ -1092,7 +1092,7 @@ gs_plugin_reload_cb (gpointer user_data)
 void
 gs_plugin_reload (GsPlugin *plugin)
 {
-	g_debug ("emitting ::reload in idle");
+	g_debug ("emitting %s::reload in idle", gs_plugin_get_name (plugin));
 	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, gs_plugin_reload_cb,
 			 weak_ref_new (plugin), (GDestroyNotify) weak_ref_free);
 }
