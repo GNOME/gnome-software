@@ -1530,6 +1530,9 @@ gs_appstream_do_search (GsPlugin *plugin,
 				}
 			}
 		}
+
+		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+			return FALSE;
 	}
 	g_debug ("search took %fms", g_timer_elapsed (timer, NULL) * 1000);
 	return TRUE;
