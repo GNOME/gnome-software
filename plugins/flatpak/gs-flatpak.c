@@ -68,7 +68,8 @@ G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 static void
 gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 {
-	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN) {
+	if (gs_app_get_scope (app) == AS_COMPONENT_SCOPE_UNKNOWN &&
+	    (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0) {
 		gboolean is_user = flatpak_installation_get_is_user (self->installation_noninteractive);
 		gs_app_set_scope (app, is_user ? AS_COMPONENT_SCOPE_USER : AS_COMPONENT_SCOPE_SYSTEM);
 	}
