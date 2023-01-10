@@ -1689,6 +1689,7 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
+	GsApp *runtime;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	flatpak_tmp = gs_plugin_flatpak_create_temporary (self, cancellable, error);
@@ -1716,6 +1717,10 @@ gs_plugin_flatpak_file_to_app_bundle (GsPluginFlatpak  *self,
 
 	/* force this to be 'any' scope for installation */
 	gs_app_set_scope (app, AS_COMPONENT_SCOPE_UNKNOWN);
+
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL)
+		gs_app_set_scope (runtime, AS_COMPONENT_SCOPE_UNKNOWN);
 
 	/* this is new */
 	return g_steal_pointer (&app);
