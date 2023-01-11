@@ -9,31 +9,7 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkInfoBar" id="infobar_end_of_life">
-            <property name="revealed">False</property>
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Operating System Updates Unavailable</property>
-                    <property name="xalign">0</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_end_of_life">
-                    <property name="label">Your operating system is no longer supported. This means that it does not receive security updates. It is recommended that you upgrade to a more recent version.</property>
-                    <property name="wrap">True</property>
-                    <property name="xalign">0</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
+          <object class="AdwBanner" id="banner_end_of_life"/>
         </child>
         <child>
           <object class="GtkStack" id="stack_updates">

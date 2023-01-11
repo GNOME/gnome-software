@@ -92,7 +92,7 @@ struct _GsShell
 
 	GtkWidget		*main_header;
 	GtkWidget		*details_header;
-	GtkWidget		*metered_updates_bar;
+	GtkWidget		*metered_updates_banner;
 	GtkWidget		*search_button;
 	GtkWidget		*entry_search;
 	GtkWidget		*search_bar;
@@ -240,19 +240,15 @@ gs_shell_refresh_auto_updates_ui (GsShell *shell)
 	automatic_updates_paused = gs_plugin_loader_get_network_metered (shell->plugin_loader);
 #endif
 
-	gtk_info_bar_set_revealed (GTK_INFO_BAR (shell->metered_updates_bar),
-				   gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING &&
-				   automatic_updates_enabled &&
-				   automatic_updates_paused);
-	gtk_info_bar_set_default_response (GTK_INFO_BAR (shell->metered_updates_bar), GTK_RESPONSE_OK);
+	adw_banner_set_revealed (ADW_BANNER (shell->metered_updates_banner),
+				 gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING &&
+				 automatic_updates_enabled &&
+				 automatic_updates_paused);
 }
 
 static void
-gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
-					  gint        response_id,
-					  gpointer    user_data)
+gs_shell_metered_updates_banner_clicked_cb (GsShell *shell)
 {
-	GsShell *shell = GS_SHELL (user_data);
 	GtkWidget *dialog;
 
 	dialog = gs_metered_data_dialog_new (GTK_WINDOW (shell));
@@ -2652,7 +2648,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_loading);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_sub);
-	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
 	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
@@ -2698,7 +2694,7 @@ gs_shell_class_init (GsShellClass *klass)
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_restart_required_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_events_more_info_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_shell_plugin_event_dismissed_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_bar_response_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_shell_metered_updates_banner_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, stack_notify_visible_child_cb);
 	gtk_widget_class_bind_template_callback (widget_class, initial_refresh_done);
 	gtk_widget_class_bind_template_callback (widget_class, overlay_get_child_position_cb);

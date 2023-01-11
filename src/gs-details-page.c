@@ -153,8 +153,7 @@ struct _GsDetailsPage
 	GtkWidget		*origin_packaging_label;
 	GtkWidget		*box_license;
 	GsLicenseTile		*license_tile;
-	GtkInfoBar		*translation_infobar;
-	GtkButton		*translation_infobar_button;
+	AdwBanner               *translation_banner;
 	GtkWidget		*developer_apps_heading;
 	GtkWidget		*box_developer_apps;
 	gchar			*last_developer_name;
@@ -535,11 +534,8 @@ gs_details_page_license_tile_get_involved_activated_cb (GsLicenseTile *license_t
 }
 
 static void
-gs_details_page_translation_infobar_response_cb (GtkInfoBar *infobar,
-                                                 int         response,
-                                                 gpointer    user_data)
+gs_details_page_translation_banner_clicked_cb (GsDetailsPage *self)
 {
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	GtkWindow *window;
 
 	window = GTK_WINDOW (gs_app_translation_dialog_new (self->app));
@@ -1155,11 +1151,14 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
+		/* Translators: %s is the user-visible app name */
+		adw_banner_set_title (self->translation_banner, g_strdup_printf (_("%s will appear in US English"), tmp));
 	} else {
 		gtk_widget_set_visible (self->application_details_title, FALSE);
 	}
 	tmp = gs_app_get_summary (self->app);
 	if (tmp != NULL && tmp[0] != '\0') {
+		adw_banner_set_title (self->translation_banner, _("This app will appear in US English"));
 		gtk_label_set_label (GTK_LABEL (self->application_details_summary), tmp);
 		gtk_widget_set_visible (self->application_details_summary, TRUE);
 	} else {
@@ -1172,12 +1171,16 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* Set up the translation infobar. Assume that translations can be
 	 * contributed to if an app is FOSS and it has provided a link for
 	 * contributing translations. */
-	gtk_widget_set_visible (GTK_WIDGET (self->translation_infobar_button),
-				gs_app_translation_dialog_app_has_url (self->app) &&
-				gs_app_get_license_is_free (self->app));
-	gtk_info_bar_set_revealed (self->translation_infobar,
-				   gs_app_get_has_translations (self->app) &&
-				   !gs_app_has_kudo (self->app, GS_APP_KUDO_MY_LANGUAGE));
+	if (gs_app_translation_dialog_app_has_url (self->app) && gs_app_get_license_is_free (self->app)) {
+		adw_banner_set_button_label (self->translation_banner,
+					     _("Help _Translate"));
+	} else {
+ 		adw_banner_set_button_label (self->translation_banner, NULL);
+	}
+
+	adw_banner_set_revealed (self->translation_banner,
+				 gs_app_get_has_translations (self->app) &&
+				 !gs_app_has_kudo (self->app, GS_APP_KUDO_MY_LANGUAGE));
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
@@ -2544,14 +2547,13 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, origin_packaging_label);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_license);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, license_tile);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_infobar_button);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, translation_banner);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, developer_apps_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_developer_apps);
 
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_link_row_activated_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_license_tile_get_involved_activated_cb);
-	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_infobar_response_cb);
+	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_translation_banner_clicked_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_star_pressed_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_install_button_cb);
 	gtk_widget_class_bind_template_callback (widget_class, gs_details_page_app_update_button_cb);
@@ -2916,3 +2918,4 @@ gs_details_page_set_vscroll_position (GsDetailsPage *self,
 	if (value >= 0.0)
 		gtk_adjustment_set_value (adj, value);
 }
+
