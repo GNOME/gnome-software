@@ -143,6 +143,10 @@ gs_updates_page_invalidate (GsUpdatesPage *self)
 static GsUpdatesSectionKind
 _get_app_section (GsApp *app)
 {
+	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_OPERATING_SYSTEM &&
+	    gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
+		return GS_UPDATES_SECTION_KIND_OFFLINE;
+
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE ||
 	    gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
 		if (gs_app_get_kind (app) == AS_COMPONENT_KIND_FIRMWARE)
