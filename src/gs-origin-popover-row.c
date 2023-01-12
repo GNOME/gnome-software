@@ -112,7 +112,7 @@ refresh_ui (GsOriginPopoverRow *row)
 		AsComponentScope scope = gs_app_get_scope (priv->app);
 		gtk_widget_set_visible (priv->user_scope_box, scope == AS_COMPONENT_SCOPE_USER);
 	} else {
-		gtk_widget_hide (priv->user_scope_box);
+		gtk_widget_set_visible (priv->user_scope_box, FALSE);
 	}
 
 	packaging_base_css_color = gs_app_get_metadata_item (priv->app, "GnomeSoftware::PackagingBaseCssColor");

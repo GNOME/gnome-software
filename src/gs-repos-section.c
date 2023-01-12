@@ -174,7 +174,7 @@ gs_repos_section_add_repo (GsReposSection *self,
 	                  G_CALLBACK (repo_switch_clicked_cb), self);
 
 	gtk_list_box_prepend (self->list, row);
-	gtk_widget_show (row);
+	gtk_widget_set_visible (row, TRUE);
 }
 
 const gchar *

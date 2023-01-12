@@ -285,7 +285,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	default:
 		gtk_spinner_stop (GTK_SPINNER (self->spinner_updates));
 		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
-		gtk_widget_hide (self->header_spinner_start);
+		gtk_widget_set_visible (self->header_spinner_start, FALSE);
 		break;
 	}
 
@@ -295,17 +295,17 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "media-playback-stop-symbolic");
 		gtk_widget_set_tooltip_text(self->button_refresh, _("Stop"));
-		gtk_widget_show (self->button_refresh);
+		gtk_widget_set_visible (self->button_refresh, TRUE);
 		break;
 	case GS_UPDATES_PAGE_STATE_STARTUP:
 	case GS_UPDATES_PAGE_STATE_MANAGED:
-		gtk_widget_hide (self->button_refresh);
+		gtk_widget_set_visible (self->button_refresh, FALSE);
 		break;
 	case GS_UPDATES_PAGE_STATE_IDLE:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
 		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
 		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
-			gtk_widget_show (self->button_refresh);
+			gtk_widget_set_visible (self->button_refresh, TRUE);
 		} else {
 			if (gs_plugin_loader_get_network_metered (self->plugin_loader) &&
 			    !self->has_agreed_to_mobile_data)
@@ -316,7 +316,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	case GS_UPDATES_PAGE_STATE_FAILED:
 		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
 		gtk_widget_set_tooltip_text(self->button_refresh, _("Check for Updates"));
-		gtk_widget_show (self->button_refresh);
+		gtk_widget_set_visible (self->button_refresh, TRUE);
 		break;
 	default:
 		g_assert_not_reached ();

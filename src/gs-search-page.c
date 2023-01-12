@@ -166,7 +166,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 					    self->sizegroup_name,
 					    self->sizegroup_button_label,
 					    self->sizegroup_button_image);
-		gtk_widget_show (app_row);
+		gtk_widget_set_visible (app_row, TRUE);
 	}
 
 	/* too many results */
@@ -187,7 +187,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gtk_widget_set_margin_end (w, 20);
 		gtk_widget_add_css_class (w, "dim-label");
 		gtk_list_box_append (GTK_LIST_BOX (self->list_box_search), w);
-		gtk_widget_show (w);
+		gtk_widget_set_visible (w, TRUE);
 	} else {
 		/* reset to default */
 		self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;

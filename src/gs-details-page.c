@@ -267,7 +267,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 
 	if (self->app == NULL ||
 	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_DETAILS) {
-		gtk_widget_hide (self->origin_box);
+		gtk_widget_set_visible (self->origin_box, FALSE);
 		return;
 	}
 
@@ -275,7 +275,7 @@ gs_details_page_update_origin_button (GsDetailsPage *self,
 	gtk_label_set_text (GTK_LABEL (self->origin_packaging_label), origin_ui != NULL ? origin_ui : "");
 
 	gtk_widget_set_sensitive (self->origin_box, sensitive);
-	gtk_widget_show (self->origin_box);
+	gtk_widget_set_visible (self->origin_box, TRUE);
 
 	packaging_icon = gs_app_get_metadata_item (self->app, "GnomeSoftware::PackagingIcon");
 	if (packaging_icon == NULL)
@@ -304,7 +304,7 @@ gs_details_page_switch_to (GsPage *page)
 	}
 
 	/* hide the alternates for now until the query is complete */
-	gtk_widget_hide (self->origin_box);
+	gtk_widget_set_visible (self->origin_box, FALSE);
 
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
@@ -683,7 +683,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	/* Did we switch away from the page in the meantime? */
 	if (!gs_page_is_active (GS_PAGE (self))) {
-		gtk_widget_hide (self->origin_box);
+		gtk_widget_set_visible (self->origin_box, FALSE);
 		return;
 	}
 
@@ -694,7 +694,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) &&
 		    !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get alternates: %s", error->message);
-		gtk_widget_hide (self->origin_box);
+		gtk_widget_set_visible (self->origin_box, FALSE);
 		return;
 	}
 
@@ -733,7 +733,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	if (self->app_local_file != NULL) {
 		if (gs_app_get_state (self->app_local_file) != GS_APP_STATE_INSTALLED) {
 			GtkWidget *row = gs_origin_popover_row_new (self->app_local_file);
-			gtk_widget_show (row);
+			gtk_widget_set_visible (row, TRUE);
 			gtk_list_box_append (GTK_LIST_BOX (self->origin_popover_list_box), row);
 			first_row = row;
 			select_row = row;
@@ -758,7 +758,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GtkWidget *row = gs_origin_popover_row_new (app);
-		gtk_widget_show (row);
+		gtk_widget_set_visible (row, TRUE);
 		n_rows++;
 		if (first_row == NULL)
 			first_row = row;
@@ -817,7 +817,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	if (select_row != NULL)
 		gs_details_page_update_origin_button (self, TRUE);
 	else
-		gtk_widget_hide (self->origin_box);
+		gtk_widget_set_visible (self->origin_box, FALSE);
 
 	if (instance_changed) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;

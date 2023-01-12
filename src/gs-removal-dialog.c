@@ -73,8 +73,8 @@ add_app (GtkListBox *listbox, GsApp *app)
 	                        g_free);
 
 	gtk_list_box_prepend (listbox, box);
-	gtk_widget_show (widget);
-	gtk_widget_show (box);
+	gtk_widget_set_visible (widget, TRUE);
+	gtk_widget_set_visible (box, TRUE);
 
 	row = gtk_widget_get_parent (box);
 	gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);

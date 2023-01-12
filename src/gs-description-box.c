@@ -50,7 +50,7 @@ gs_description_box_update_content (GsDescriptionBox *box)
 	const gchar *text;
 
 	if (!box->text || !*(box->text)) {
-		gtk_widget_hide (GTK_WIDGET (box));
+		gtk_widget_set_visible (GTK_WIDGET (box), FALSE);
 		box->needs_recalc = TRUE;
 		return;
 	}

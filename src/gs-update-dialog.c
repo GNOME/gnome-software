@@ -219,7 +219,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	g_signal_connect (page, "back-clicked",
 			  G_CALLBACK (back_clicked_cb), dialog);
 
-	gtk_widget_show (page);
+	gtk_widget_set_visible (page, TRUE);
 
 	adw_leaflet_append (ADW_LEAFLET (dialog->leaflet), page);
 	adw_leaflet_set_visible_child (ADW_LEAFLET (dialog->leaflet), page);

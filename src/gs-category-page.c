@@ -101,7 +101,7 @@ gs_category_page_add_placeholders (GsCategoryPage *self,
 		gtk_widget_remove_css_class (tile, "activatable");
 	}
 
-	gtk_widget_show (GTK_WIDGET (flow_box));
+	gtk_widget_set_visible (GTK_WIDGET (flow_box), TRUE);
 }
 
 typedef struct {
@@ -407,9 +407,9 @@ gs_category_page_load_category (GsCategoryPage *self)
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->category_detail_box),
 						   MIN (30, gs_category_get_size (self->subcategory)));
 		gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->recently_updated_flow_box), MAX_RECENTLY_UPDATED_APPS);
-		gtk_widget_show (self->top_carousel);
-		gtk_widget_show (self->category_detail_box);
-		gtk_widget_show (self->recently_updated_flow_box);
+		gtk_widget_set_visible (self->top_carousel, TRUE);
+		gtk_widget_set_visible (self->category_detail_box, TRUE);
+		gtk_widget_set_visible (self->recently_updated_flow_box, TRUE);
 
 		if (gs_plugin_loader_get_enabled (self->plugin_loader, "epiphany"))
 			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->web_apps_flow_box), 12);
@@ -418,11 +418,11 @@ gs_category_page_load_category (GsCategoryPage *self)
 			/* set up the placeholders as having the featured category is a good
 			 * indicator that there will be featured apps */
 			gs_category_page_add_placeholders (self, GTK_FLOW_BOX (self->featured_flow_box), 6);
-			gtk_widget_show (self->featured_flow_box);
+			gtk_widget_set_visible (self->featured_flow_box, TRUE);
 		} else {
 			gs_widget_remove_all (self->featured_flow_box, (GsRemoveFunc) gtk_flow_box_remove);
-			gtk_widget_hide (self->featured_flow_box);
-			gtk_widget_hide (self->top_carousel);
+			gtk_widget_set_visible (self->featured_flow_box, FALSE);
+			gtk_widget_set_visible (self->top_carousel, FALSE);
 		}
 	}
 

@@ -652,7 +652,7 @@ gs_utils_show_error_dialog_simple (GtkWindow *parent,
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (copy_error_text_clicked_cb), text_view);
 
-	gtk_widget_show (window);
+	gtk_widget_set_visible (window, TRUE);
 #endif /* TESTDATADIR */
 }
 

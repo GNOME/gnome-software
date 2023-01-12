@@ -176,7 +176,7 @@ gs_shell_activate (GsShell *shell)
 		return;
 	}
 
-	gtk_widget_show (GTK_WIDGET (shell));
+	gtk_widget_set_visible (GTK_WIDGET (shell), TRUE);
 	gtk_window_present (GTK_WINDOW (shell));
 }
 
@@ -497,10 +497,10 @@ stack_notify_visible_child_cb (GObject    *object,
 	case GS_SHELL_MODE_OVERVIEW:
 	case GS_SHELL_MODE_INSTALLED:
 	case GS_SHELL_MODE_SEARCH:
-		gtk_widget_show (shell->search_button);
+		gtk_widget_set_visible (shell->search_button, TRUE);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gtk_widget_hide (shell->search_button);
+		gtk_widget_set_visible (shell->search_button, FALSE);
 		break;
 	default:
 		/* We don't care about changing the visibility of the search
@@ -1078,7 +1078,7 @@ main_window_closed_cb (GtkWidget *dialog, gpointer user_data)
 #endif  /* HAVE_MOGWAI */
 
 	gs_shell_clean_back_entry_stack (shell);
-	gtk_widget_hide (dialog);
+	gtk_widget_set_visible (dialog, FALSE);
 
 #ifdef __GLIBC__
 	/* Free unused memory with GNU extension of malloc.h */

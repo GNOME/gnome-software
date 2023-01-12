@@ -321,12 +321,12 @@ gs_lozenge_set_icon_name (GsLozenge *self,
 	self->icon_name = g_strdup (value);
 
 	if (self->icon_name == NULL) {
-		gtk_widget_hide (self->image);
-		gtk_widget_show (self->label);
+		gtk_widget_set_visible (self->image, FALSE);
+		gtk_widget_set_visible (self->label, TRUE);
 	} else {
 		gtk_image_set_from_icon_name (GTK_IMAGE (self->image), self->icon_name);
-		gtk_widget_hide (self->label);
-		gtk_widget_show (self->image);
+		gtk_widget_set_visible (self->label, FALSE);
+		gtk_widget_set_visible (self->image, TRUE);
 	}
 
 	/* Clean up the other properties before notifying of the changed property name */
@@ -399,12 +399,12 @@ gs_lozenge_set_text (GsLozenge *self,
 	self->text = g_strdup (value);
 
 	if (self->text == NULL) {
-		gtk_widget_hide (self->label);
-		gtk_widget_show (self->image);
+		gtk_widget_set_visible (self->label, FALSE);
+		gtk_widget_set_visible (self->image, TRUE);
 	} else {
 		gtk_label_set_text (GTK_LABEL (self->label), self->text);
-		gtk_widget_hide (self->image);
-		gtk_widget_show (self->label);
+		gtk_widget_set_visible (self->image, FALSE);
+		gtk_widget_set_visible (self->label, TRUE);
 	}
 
 	/* Clean up the other properties before notifying of the changed property name */
@@ -446,12 +446,12 @@ gs_lozenge_set_markup (GsLozenge *self,
 	self->markup = g_strdup (value);
 
 	if (self->markup == NULL) {
-		gtk_widget_hide (self->label);
-		gtk_widget_show (self->image);
+		gtk_widget_set_visible (self->label, FALSE);
+		gtk_widget_set_visible (self->image, TRUE);
 	} else {
 		gtk_label_set_markup (GTK_LABEL (self->label), self->markup);
-		gtk_widget_hide (self->image);
-		gtk_widget_show (self->label);
+		gtk_widget_set_visible (self->image, FALSE);
+		gtk_widget_set_visible (self->label, TRUE);
 	}
 
 	/* Clean up the other properties before notifying of the changed property name */
