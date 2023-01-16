@@ -799,7 +799,7 @@ tile_clicked_cb (GtkWidget *widget,
 			g_assert_not_reached ();
 
 		gtk_window_set_transient_for (dialog, GTK_WINDOW (root));
-		gtk_widget_show (GTK_WIDGET (dialog));
+		gtk_widget_set_visible (GTK_WIDGET (dialog), TRUE);
 	}
 }
 

@@ -381,7 +381,7 @@ add_repo (GsReposDialog *dialog,
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
 		g_hash_table_insert (dialog->sections, g_steal_pointer (&origin_ui), section);
-		gtk_widget_show (section);
+		gtk_widget_set_visible (section, TRUE);
 	}
 
 	gs_repos_section_add_repo (GS_REPOS_SECTION (section), repo);
@@ -486,7 +486,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_switch_set_active (GTK_SWITCH (widget), dialog->third_party_enabled);
 		g_signal_connect_object (widget, "notify::active",
 					 G_CALLBACK (fedora_third_party_repos_switch_notify_cb), dialog, 0);
-		gtk_widget_show (widget);
+		gtk_widget_set_visible (widget, TRUE);
 
 		row = adw_action_row_new ();
 #if ADW_CHECK_VERSION(1,2,0)
@@ -496,7 +496,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		adw_action_row_set_subtitle (ADW_ACTION_ROW (row), _("Turn on new repositories when they are added."));
 		adw_action_row_set_activatable_widget (ADW_ACTION_ROW (row), widget);
 		adw_action_row_add_suffix (ADW_ACTION_ROW (row), widget);
-		gtk_widget_show (row);
+		gtk_widget_set_visible (row, TRUE);
 
 		anchor = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                        "https://docs.fedoraproject.org/en-US/workstation-working-group/third-party-repos/",
@@ -516,7 +516,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 		adw_preferences_group_set_description (ADW_PREFERENCES_GROUP (widget), hint);
 
-		gtk_widget_show (widget);
+		gtk_widget_set_visible (widget, TRUE);
 		adw_preferences_group_add (ADW_PREFERENCES_GROUP (widget), row);
 		adw_preferences_page_add (ADW_PREFERENCES_PAGE (dialog->content_page),
 					  ADW_PREFERENCES_GROUP (widget));
@@ -529,7 +529,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gs_repos_section_set_sort_key (section, "900");
 		g_signal_connect_object (section, "switch-clicked",
 					 G_CALLBACK (repo_section_switch_clicked_cb), dialog, 0);
-		gtk_widget_show (GTK_WIDGET (section));
+		gtk_widget_set_visible (GTK_WIDGET (section), TRUE);
 
 		for (GSList *link = other_repos; link; link = g_slist_next (link)) {
 			GsApp *repo = link->data;

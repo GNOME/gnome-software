@@ -244,7 +244,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 		 * focusable and activatable, which is annoying and confusing.
 		 */
 		gtk_widget_set_can_focus (child, FALSE);
-		gtk_widget_show (child);
+		gtk_widget_set_visible (child, TRUE);
 		gtk_flow_box_child_set_child (GTK_FLOW_BOX_CHILD (child), tile);
 		gtk_flow_box_insert (GTK_FLOW_BOX (self->box_recent), child, -1);
 	}

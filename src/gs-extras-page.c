@@ -325,7 +325,7 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 				    self->sizegroup_name,
 				    self->sizegroup_button_label,
 				    self->sizegroup_button_image);
-	gtk_widget_show (app_row);
+	gtk_widget_set_visible (app_row, TRUE);
 }
 
 static GsApp *

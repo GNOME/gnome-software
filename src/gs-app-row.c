@@ -325,7 +325,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 				    /* TRANSLATORS: during the update the device
 				     * will restart into a special update-only mode */
 				    _("Device cannot be used during update."));
-		gtk_widget_show (priv->label_warning);
+		gtk_widget_set_visible (priv->label_warning, TRUE);
 	}
 
 	/* where did this app come from */
@@ -372,9 +372,9 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			version_current = tmp;
 			gtk_label_set_label (GTK_LABEL (priv->version_current_label),
 			                     version_current);
-			gtk_widget_show (priv->version_current_label);
+			gtk_widget_set_visible (priv->version_current_label, TRUE);
 		} else {
-			gtk_widget_hide (priv->version_current_label);
+			gtk_widget_set_visible (priv->version_current_label, FALSE);
 		}
 
 		/* update version */
@@ -384,18 +384,16 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			version_update = tmp;
 			gtk_label_set_label (GTK_LABEL (priv->version_update_label),
 			                     version_update);
-			gtk_widget_show (priv->version_update_label);
+			gtk_widget_set_visible (priv->version_update_label, TRUE);
 		} else {
-			gtk_widget_hide (priv->version_update_label);
+			gtk_widget_set_visible (priv->version_update_label, FALSE);
 		}
 
 		/* have both: show arrow */
-		if (version_current != NULL && version_update != NULL &&
-		    g_strcmp0 (version_current, version_update) != 0) {
-			gtk_widget_show (priv->version_arrow_label);
-		} else {
-			gtk_widget_hide (priv->version_arrow_label);
-		}
+		gtk_widget_set_visible (priv->version_arrow_label,
+					(version_current != NULL &&
+					 version_update != NULL &&
+					 g_strcmp0 (version_current, version_update) != 0));
 
 		/* ensure the arrow is the right way round for the text direction,
 		 * as arrows are not bidi-mirrored automatically
@@ -412,18 +410,16 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		}
 
 		/* show the box if we have either of the versions */
-		if (version_current != NULL || version_update != NULL)
-			gtk_widget_show (priv->version_box);
-		else
-			gtk_widget_hide (priv->version_box);
+		gtk_widget_set_visible (priv->version_box,
+					(version_current != NULL || version_update != NULL));
 
-		gtk_widget_hide (priv->star);
+		gtk_widget_set_visible (priv->star, FALSE);
 	} else {
-		gtk_widget_hide (priv->version_box);
+		gtk_widget_set_visible (priv->version_box, FALSE);
 		if (missing_search_result || gs_app_get_rating (priv->app) <= 0 || !priv->show_rating) {
-			gtk_widget_hide (priv->star);
+			gtk_widget_set_visible (priv->star, FALSE);
 		} else {
-			gtk_widget_show (priv->star);
+			gtk_widget_set_visible (priv->star, TRUE);
 			gtk_widget_set_sensitive (priv->star, FALSE);
 			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
 						   gs_app_get_rating (priv->app));
@@ -432,9 +428,9 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	if (priv->show_update && gs_app_get_special_kind (priv->app) == GS_APP_SPECIAL_KIND_OS_UPDATE) {
 		gtk_label_set_label (GTK_LABEL (priv->system_updates_label), gs_app_get_summary (priv->app));
-		gtk_widget_show (priv->system_updates_label);
+		gtk_widget_set_visible (priv->system_updates_label, TRUE);
 	} else {
-		gtk_widget_hide (priv->system_updates_label);
+		gtk_widget_set_visible (priv->system_updates_label, FALSE);
 	}
 
 	/* pixbuf */
@@ -505,9 +501,9 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		g_autofree gchar *sizestr = NULL;
 		sizestr = g_format_size (size_installed_bytes);
 		gtk_label_set_label (GTK_LABEL (priv->label_app_size), sizestr);
-		gtk_widget_show (priv->label_app_size);
+		gtk_widget_set_visible (priv->label_app_size, TRUE);
 	} else {
-		gtk_widget_hide (priv->label_app_size);
+		gtk_widget_set_visible (priv->label_app_size, FALSE);
 	}
 
 	/* add warning */
@@ -538,7 +534,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 		if (warning->len > 0) {
 			gtk_label_set_text (GTK_LABEL (priv->label_warning), warning->str);
-			gtk_widget_show (priv->label_warning);
+			gtk_widget_set_visible (priv->label_warning, TRUE);
 		}
 	}
 
@@ -554,7 +550,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 static void
 finish_unreveal (GsAppRow *app_row)
 {
-	gtk_widget_hide (GTK_WIDGET (app_row));
+	gtk_widget_set_visible (GTK_WIDGET (app_row), FALSE);
 
 	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
 }
@@ -627,7 +623,7 @@ gs_app_row_unreveal (GsAppRow *app_row)
 
 	revealer = gtk_revealer_new ();
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
-	gtk_widget_show (revealer);
+	gtk_widget_set_visible (revealer, TRUE);
 
 	g_object_ref (child);
 	gtk_list_box_row_set_child (GTK_LIST_BOX_ROW (app_row), revealer);

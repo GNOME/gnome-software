@@ -103,7 +103,7 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 	gtk_list_box_remove (GTK_LIST_BOX (self->listbox), GTK_WIDGET (row));
 
 	if (!gs_app_list_length (self->list))
-		gtk_widget_hide (widget);
+		gtk_widget_set_visible (widget, FALSE);
 }
 
 static void
@@ -147,7 +147,7 @@ gs_updates_section_add_app (GsUpdatesSection *self, GsApp *app)
 	g_object_bind_property (G_OBJECT (self), "is-narrow",
 				app_row, "is-narrow",
 				G_BINDING_SYNC_CREATE);
-	gtk_widget_show (GTK_WIDGET (self));
+	gtk_widget_set_visible (GTK_WIDGET (self), TRUE);
 }
 
 void
@@ -157,7 +157,7 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 	while ((child = gtk_widget_get_first_child (self->listbox)) != NULL)
 		gtk_list_box_remove (GTK_LIST_BOX (self->listbox), child);
 	gs_app_list_remove_all (self->list);
-	gtk_widget_hide (GTK_WIDGET (self));
+	gtk_widget_set_visible (GTK_WIDGET (self), FALSE);
 }
 
 typedef struct {
@@ -295,7 +295,7 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_widget_set_sensitive (self->button_cancel,
 					  !g_cancellable_is_cancelled (self->cancellable));
 		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "cancel");
-		gtk_widget_show (GTK_WIDGET (self->button_stack));
+		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		return;
 	}
 
@@ -306,18 +306,18 @@ _update_buttons (GsUpdatesSection *self)
 		else
 			gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "download");
 
-		gtk_widget_show (GTK_WIDGET (self->button_stack));
+		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		/* TRANSLATORS: This is the button for installing all
 		 * offline updates */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("Restart & Update…"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		gtk_stack_set_visible_child_name (GTK_STACK (self->button_stack), "update");
-		gtk_widget_show (GTK_WIDGET (self->button_stack));
+		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), TRUE);
 		/* TRANSLATORS: This is the button for upgrading all
 		 * online-updatable apps */
 		gs_progress_button_set_label (GS_PROGRESS_BUTTON (self->button_update), _("Update All"));
 	} else {
-		gtk_widget_hide (GTK_WIDGET (self->button_stack));
+		gtk_widget_set_visible (GTK_WIDGET (self->button_stack), FALSE);
 	}
 
 }

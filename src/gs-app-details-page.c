@@ -210,10 +210,10 @@ set_updates_description_ui (GsAppDetailsPage *page, GsApp *app)
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		g_autoptr(GsAppPermissions) permissions = gs_app_dup_update_permissions (app);
-		gtk_widget_show (page->permissions_section);
+		gtk_widget_set_visible (page->permissions_section, TRUE);
 		populate_permissions_section (page, permissions);
 	} else {
-		gtk_widget_hide (page->permissions_section);
+		gtk_widget_set_visible (page->permissions_section, FALSE);
 	}
 }
 

@@ -181,7 +181,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 					(GDestroyNotify) g_object_unref);
 		gtk_list_box_append (GTK_LIST_BOX (self->list_box_install), row);
 	}
-	gtk_widget_show (app_row);
+	gtk_widget_set_visible (app_row, TRUE);
 }
 
 static void

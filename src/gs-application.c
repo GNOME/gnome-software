@@ -394,7 +394,7 @@ quit_activated (GSimpleAction *action,
 		windows = gtk_application_get_windows (GTK_APPLICATION (app));
 		if (windows) {
 			window = windows->data;
-			gtk_widget_hide (window);
+			gtk_widget_set_visible (window, FALSE);
 		}
 
 		return;
