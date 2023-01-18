@@ -45,6 +45,7 @@
                 <property name="name">update</property>
                 <property name="child">
                   <object class="GsProgressButton" id="button_update">
+                    <property name="use-underline">True</property>
                     <signal name="clicked" handler="_button_update_all_clicked_cb" swapped="yes"/>
                     <style>
                       <class name="suggested-action"/>
