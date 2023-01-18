@@ -126,7 +126,8 @@
                             <child>
                               <object class="GtkButton" id="button_events_restart_required">
                                 <property name="visible">False</property>
-                                <property name="label" translatable="yes" comments="button in the info bar">Restart Now…</property>
+                                <property name="label" translatable="yes" comments="button in the info bar">_Restart Now…</property>
+                                <property name="use-underline">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="valign">center</property>
@@ -268,7 +269,8 @@
                                         <child>
                                           <object class="AdwViewStackPage">
                                             <property name="name">overview</property>
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">Explore</property>
+                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show all available software.">_Explore</property>
+                                            <property name="use-underline">True</property>
                                             <property name="icon-name">explore-symbolic</property>
                                             <property name="child">
                                               <object class="GsOverviewPage" id="overview_page">
@@ -281,7 +283,8 @@
                                             <property name="name">installed</property>
                                             <!-- FIXME: Add mnemonics support when it’s supported in GTK (same for the other pages).
                                                  See https://gitlab.gnome.org/GNOME/gtk/-/issues/3134 -->
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed." context="List of installed apps">Installed</property>
+                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only software which is already installed." context="List of installed apps">_Installed</property>
+                                            <property name="use-underline">True</property>
                                             <property name="icon-name">app-installed-symbolic</property>
                                             <property name="child">
                                               <object class="GsInstalledPage" id="installed_page">
@@ -302,7 +305,8 @@
                                         <child>
                                           <object class="AdwViewStackPage">
                                             <property name="name">updates</property>
-                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install." context="Header bar button for list of apps to be updated">Updates</property>
+                                            <property name="title" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install." context="Header bar button for list of apps to be updated">_Updates</property>
+                                            <property name="use-underline">True</property>
                                             <property name="icon-name">emblem-synchronizing-symbolic</property>
                                             <property name="badge-number" bind-source="updates_page" bind-property="counter" bind-flags="sync-create"/>
                                             <property name="child">
