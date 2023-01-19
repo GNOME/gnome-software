@@ -296,7 +296,7 @@ gs_plugin_custom_list_apps_async (GsPlugin              *plugin,
   gs_app_add_category (app, "Game");
   gs_app_add_category (app, "ActionGame");
   gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
-  gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+ and LGPL-2.1+");
+  gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0-or-later and LGPL-2.1-or-later");
 
   /* use a stock icon */
   icon = g_themed_icon_new ("input-gaming");
@@ -574,7 +574,7 @@ gs_plugin_example_refine_async (GsPlugin *plugin,
 
     /* FIXME, not just hardcoded! */
     if (g_strcmp0 (gs_app_get_id (app, "chiron.desktop") == 0))
-      gs_app_set_license (app, "GPL-2.0 and LGPL-2.0+");
+      gs_app_set_license (app, "GPL-2.0 and LGPL-2.1-or-later");
   }
 
   g_task_return_boolean (task, TRUE);
