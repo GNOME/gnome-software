@@ -4,7 +4,7 @@
  * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
  * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  */
 
 #pragma once

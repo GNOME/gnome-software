@@ -3,7 +3,7 @@
  *
  * Copyright (C) Adrien Plazas <adrien.plazas@puri.sm>
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include "config.h"
