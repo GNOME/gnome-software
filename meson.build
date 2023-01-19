@@ -1,6 +1,6 @@
 project('gnome-software', 'c',
   version : '44.beta',
-  license : 'GPL-2.0+',
+  license : 'GPL-2.0-or-later',
   default_options : ['warning_level=1', 'c_std=c11'],
   meson_version : '>=0.58.0'
 )

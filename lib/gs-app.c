@@ -2731,7 +2731,7 @@ gs_app_get_license_is_free (GsApp *app)
  * gs_app_set_license:
  * @app: a #GsApp
  * @quality: a #GsAppQuality, e.g. %GS_APP_QUALITY_NORMAL
- * @license: a SPDX license string, e.g. "GPL-3.0 AND LGPL-2.0+"
+ * @license: a SPDX license string, e.g. "GPL-3.0 AND LGPL-2.0-or-later"
  *
  * Sets the project licenses used in the application.
  *
