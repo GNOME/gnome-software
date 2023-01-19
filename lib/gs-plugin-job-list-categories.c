@@ -42,6 +42,7 @@
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-types.h"
+#include "gs-profiler.h"
 #include "gs-utils.h"
 
 struct _GsPluginJobListCategories
@@ -58,6 +59,10 @@ struct _GsPluginJobListCategories
 
 	/* Results. */
 	GPtrArray *result_list;  /* (element-type GsCategory) (owned) (nullable) */
+
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec;
+#endif
 };
 
 G_DEFINE_TYPE (GsPluginJobListCategories, gs_plugin_job_list_categories, GS_TYPE_PLUGIN_JOB)
@@ -157,6 +162,10 @@ gs_plugin_job_list_categories_run_async (GsPluginJob         *job,
 	self->n_pending_ops = 1;
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
+#ifdef HAVE_SYSPROF
+	self->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
@@ -189,6 +198,16 @@ plugin_refine_categories_cb (GObject      *source_object,
 	GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 	g_autoptr(GTask) task = G_TASK (user_data);
 	g_autoptr(GError) local_error = NULL;
+#ifdef HAVE_SYSPROF
+	GsPluginJobListCategories *self = g_task_get_source_object (task);
+#endif
+
+	GS_PROFILER_ADD_MARK_TAKE (PluginJobListCategories,
+				   self->begin_time_nsec,
+				   g_strdup_printf ("%s:%s",
+						    G_OBJECT_TYPE_NAME (self),
+						    gs_plugin_get_name (plugin)),
+				   NULL);
 
 	if (!plugin_class->refine_categories_finish (plugin, result, &local_error)) {
 		finish_op (task, g_steal_pointer (&local_error));
@@ -263,6 +282,14 @@ finish_op (GTask  *task,
 	/* success */
 	self->result_list = g_ptr_array_ref (category_list);
 	g_task_return_boolean (task, TRUE);
+
+#ifdef HAVE_SYSPROF
+	sysprof_collector_mark (self->begin_time_nsec,
+				SYSPROF_CAPTURE_CURRENT_TIME - self->begin_time_nsec,
+				"gnome-software",
+				G_OBJECT_TYPE_NAME (self),
+				NULL);
+#endif
 }
 
 static gboolean

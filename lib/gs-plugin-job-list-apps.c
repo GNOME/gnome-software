@@ -46,6 +46,7 @@
 #include "gs-plugin-job-refine.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin-types.h"
+#include "gs-profiler.h"
 #include "gs-utils.h"
 
 struct _GsPluginJobListApps
@@ -63,6 +64,10 @@ struct _GsPluginJobListApps
 
 	/* Results. */
 	GsAppList *result_list;  /* (owned) (nullable) */
+
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec;
+#endif
 };
 
 G_DEFINE_TYPE (GsPluginJobListApps, gs_plugin_job_list_apps, GS_TYPE_PLUGIN_JOB)
@@ -218,6 +223,10 @@ gs_plugin_job_list_apps_run_async (GsPluginJob         *job,
 	self->merged_list = gs_app_list_new ();
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
+#ifdef HAVE_SYSPROF
+	self->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
 	for (guint i = 0; i < plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugins, i);
 		GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
@@ -264,6 +273,13 @@ plugin_list_apps_cb (GObject      *source_object,
 	 * that. */
 	if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED))
 		g_clear_error (&local_error);
+
+	GS_PROFILER_ADD_MARK_TAKE (PluginJobListApps,
+				   self->begin_time_nsec,
+				   g_strdup_printf ("%s:%s",
+						    G_OBJECT_TYPE_NAME (self),
+						    gs_plugin_get_name (plugin)),
+				   NULL);
 
 	finish_op (task, g_steal_pointer (&local_error));
 }
@@ -409,6 +425,14 @@ finish_task (GTask     *task,
 	/* success */
 	g_set_object (&self->result_list, merged_list);
 	g_task_return_boolean (task, TRUE);
+
+#ifdef HAVE_SYSPROF
+	sysprof_collector_mark (self->begin_time_nsec,
+				SYSPROF_CAPTURE_CURRENT_TIME - self->begin_time_nsec,
+				"gnome-software",
+				G_OBJECT_TYPE_NAME (self),
+				NULL);
+#endif
 }
 
 static gboolean

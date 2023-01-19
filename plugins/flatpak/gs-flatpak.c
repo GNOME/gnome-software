@@ -3625,6 +3625,8 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
+	GS_PROFILER_BEGIN_SCOPED (FlatpakRefineWildcard, "Flatpak (refine wildcard)", NULL);
+
 	/* not enough info to find */
 	id = gs_app_get_id (app);
 	if (id == NULL)
@@ -3632,6 +3634,8 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 
 	if (!ensure_flatpak_silo_with_locker (self, &locker, interactive, cancellable, error))
 		return FALSE;
+
+	GS_PROFILER_BEGIN (FlatpakRefineWildcardQuerySilo, "Flatpak (query silo)", NULL);
 
 	/* find all apps when matching any prefixes */
 	xpath = g_strdup_printf ("components/component/id[text()='%s']/..", id);
@@ -3643,20 +3647,37 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		return FALSE;
 	}
 
+	GS_PROFILER_END (FlatpakRefineWildcardQuerySilo);
+
 	gs_flatpak_ensure_remote_title (self, interactive, cancellable);
 
+	GS_PROFILER_BEGIN (FlatpakRefineWildcardGenerateApps, "Flatpak (create app)", NULL);
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		g_autoptr(GsApp) new = NULL;
+
+		GS_PROFILER_BEGIN (FlatpakRefineWildcardCreateAppstreamApp, "Flatpak (create Appstream app)", NULL);
 		new = gs_appstream_create_app (self->plugin, self->silo, component, error);
+		GS_PROFILER_END (FlatpakRefineWildcardCreateAppstreamApp);
+
 		if (new == NULL)
 			return FALSE;
 		gs_flatpak_claim_app (self, new);
+
+		GS_PROFILER_BEGIN (FlatpakRefineWildcardRefineNewApp, "Flatpak (refine new app)", NULL);
 		if (!gs_flatpak_refine_app_unlocked (self, new, refine_flags, interactive, &locker, cancellable, error))
 			return FALSE;
+		GS_PROFILER_END (FlatpakRefineWildcardRefineNewApp);
+
+		GS_PROFILER_BEGIN (FlatpakRefineWildcardSubsumeMetadata, "Flatpak (subsume metadata)", NULL);
 		gs_app_subsume_metadata (new, app);
+		GS_PROFILER_END (FlatpakRefineWildcardSubsumeMetadata);
+
 		gs_app_list_add (list, new);
 	}
+	GS_PROFILER_END (FlatpakRefineWildcardGenerateApps);
+
+	GS_PROFILER_END_SCOPED (FlatpakRefineWildcard);
 
 	/* success */
 	return TRUE;

@@ -79,10 +79,6 @@ struct _GsPluginLoader
 	GsCategoryManager	*category_manager;
 	GsOdrsProvider		*odrs_provider;  /* (owned) (nullable) */
 
-#ifdef HAVE_SYSPROF
-	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
-#endif
-
 	GDBusConnection		*session_bus_connection;  /* (owned); (not nullable) after setup */
 	GDBusConnection		*system_bus_connection;  /* (owned); (not nullable) after setup */
 };
@@ -575,9 +571,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	gpointer func = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
+	g_autofree gchar *sysprof_name = NULL;
+	g_autofree gchar *sysprof_message = NULL;
+
+	sysprof_name = g_strconcat ("vfunc:", gs_plugin_action_to_string (action), NULL);
+	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+
+	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
 
 	/* load the possible symbol */
 	func = gs_plugin_get_symbol (plugin, helper->function_name);
@@ -700,23 +700,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	        add_app_to_install_queue (plugin_loader, app);
 	}
 
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		g_autofree gchar *sysprof_name = NULL;
-		g_autofree gchar *sysprof_message = NULL;
-
-		sysprof_name = g_strconcat ("vfunc:", gs_plugin_action_to_string (action), NULL);
-		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
-						 "gnome-software",
-						 sysprof_name,
-						 sysprof_message);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_END (PluginLoader);
 
 	/* check the plugin didn't take too long */
 	if (g_timer_elapsed (timer, NULL) > 1.0f) {
@@ -792,9 +776,15 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GError **error)
 {
 	GsPluginLoader *plugin_loader = helper->plugin_loader;
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
+	g_autofree gchar *sysprof_name = NULL;
+	g_autofree gchar *sysprof_message = NULL;
+
+	sysprof_name = g_strconcat ("run-results:",
+				    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)),
+				    NULL);
+	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+
+	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
 
 	/* Refining is done separately as it’s a special action */
 	g_assert (!GS_IS_PLUGIN_JOB_REFINE (helper->plugin_job));
@@ -814,25 +804,7 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		g_autofree gchar *sysprof_name = NULL;
-		g_autofree gchar *sysprof_message = NULL;
-
-		sysprof_name = g_strconcat ("run-results:",
-					    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)),
-					    NULL);
-		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
-						 "gnome-software",
-						 sysprof_name,
-						 sysprof_message);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_END (PluginLoader);
 
 	return TRUE;
 }
@@ -2292,10 +2264,7 @@ plugin_setup_cb (GObject      *source_object,
 	GsPlugin *plugin = GS_PLUGIN (source_object);
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
-#ifdef HAVE_SYSPROF
-	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
 	SetupData *data = g_task_get_task_data (task);
-#endif /* HAVE_SYSPROF */
 
 	g_assert (GS_PLUGIN_GET_CLASS (plugin)->setup_finish != NULL);
 
@@ -2306,18 +2275,9 @@ plugin_setup_cb (GObject      *source_object,
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
 
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 data->plugins_begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - data->plugins_begin_time_nsec,
-						 "gnome-software",
-						 "setup-plugin",
-						 NULL);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_ADD_MARK (PluginLoader,
+			      data->plugins_begin_time_nsec,
+			      "setup-plugin", NULL);
 
 	/* Indicate this plugin has finished setting up. */
 	finish_setup_op (task);
@@ -2351,18 +2311,7 @@ finish_setup_op (GTask *task)
 	 * queue apps, which requires @setup_complete to be %TRUE. */
 	notify_setup_complete (plugin_loader);
 
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 data->setup_begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - data->setup_begin_time_nsec,
-						 "gnome-software",
-						 "setup",
-						 NULL);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_ADD_MARK (PluginLoader, data->setup_begin_time_nsec, "setup", NULL);
 
 	/* Refine the install queue. */
 	if (gs_app_list_length (install_queue) > 0) {
@@ -2592,10 +2541,6 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
 	g_clear_object (&plugin_loader->pending_apps_cancellable);
 
-#ifdef HAVE_SYSPROF
-	g_clear_pointer (&plugin_loader->sysprof_writer, sysprof_capture_writer_unref);
-#endif
-
 	g_clear_object (&plugin_loader->session_bus_connection);
 	g_clear_object (&plugin_loader->system_bus_connection);
 
@@ -2787,10 +2732,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	const guint64 odrs_review_max_cache_age_secs = 237000;  /* 1 week */
 	const guint odrs_review_n_results_max = 20;
 	const gchar *locale;
-
-#ifdef HAVE_SYSPROF
-	plugin_loader->sysprof_writer = sysprof_capture_writer_new_from_env (0);
-#endif  /* HAVE_SYSPROF */
 
 	plugin_loader->setup_complete_cancellable = g_cancellable_new ();
 	plugin_loader->scale = 1;
@@ -3229,10 +3170,14 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	gboolean add_to_pending_array = FALSE;
 	g_autoptr(GMainContext) context = g_main_context_new ();
 	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+	g_autofree gchar *sysprof_name = NULL;
+	g_autofree gchar *sysprof_message = NULL;
 	g_autofree gchar *job_debug = NULL;
-#ifdef HAVE_SYSPROF
-	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
-#endif
+
+	sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
+	sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+
+	GS_PROFILER_BEGIN (PluginLoader, sysprof_name, sysprof_message);
 
 	/* these change the pending count on the installed panel */
 	switch (action) {
@@ -3509,20 +3454,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper->plugin_job, list);
 
-#ifdef HAVE_SYSPROF
-	if (plugin_loader->sysprof_writer != NULL) {
-		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
-		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
-						 "gnome-software",
-						 sysprof_name,
-						 sysprof_message);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_END (PluginLoader);
 
 	/* show elapsed time */
 	job_debug = gs_plugin_job_to_string (helper->plugin_job);
@@ -3594,23 +3526,11 @@ run_job_cb (GObject      *source_object,
 	GsPluginJobClass *job_class;
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	g_autoptr(GError) local_error = NULL;
-#ifdef HAVE_SYSPROF
-	GsPluginLoader *plugin_loader = g_task_get_source_object (task);
-	gint64 begin_time_nsec = GPOINTER_TO_SIZE (g_task_get_task_data (task));
 
-	if (plugin_loader->sysprof_writer != NULL) {
-		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", G_OBJECT_TYPE_NAME (plugin_job), NULL);
-		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (plugin_job);
-		sysprof_capture_writer_add_mark (plugin_loader->sysprof_writer,
-						 begin_time_nsec,
-						 sched_getcpu (),
-						 getpid (),
-						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
-						 "gnome-software",
-						 sysprof_name,
-						 sysprof_message);
-	}
-#endif  /* HAVE_SYSPROF */
+	GS_PROFILER_ADD_MARK_TAKE (PluginLoader,
+				   GPOINTER_TO_SIZE (g_task_get_task_data (task)),
+				   g_strdup_printf ("process-thread:%s", G_OBJECT_TYPE_NAME (plugin_job)),
+				   gs_plugin_job_to_string (plugin_job));
 
 	/* FIXME: This will eventually go away when
 	 * gs_plugin_loader_job_process_finish() is removed. */

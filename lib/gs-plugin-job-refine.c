@@ -89,6 +89,7 @@
 #include "gs-enums.h"
 #include "gs-plugin-job-private.h"
 #include "gs-plugin-job-refine.h"
+#include "gs-profiler.h"
 #include "gs-utils.h"
 
 struct _GsPluginJobRefine
@@ -101,6 +102,10 @@ struct _GsPluginJobRefine
 
 	/* Output data. */
 	GsAppList *result_list;  /* (owned) (nullable) */
+
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec;
+#endif
 };
 
 G_DEFINE_TYPE (GsPluginJobRefine, gs_plugin_job_refine, GS_TYPE_PLUGIN_JOB)
@@ -240,6 +245,10 @@ typedef struct {
 	guint n_pending_recursions;
 	guint next_plugin_index;
 
+#ifdef HAVE_SYSPROF
+	gint64 plugin_begin_time_nsec;
+#endif
+
 	/* Output data. */
 	GError *error;  /* (nullable) (owned) */
 } RefineInternalData;
@@ -283,6 +292,9 @@ run_refine_internal_async (GsPluginJobRefine   *self,
 	data->plugin_loader = g_object_ref (plugin_loader);
 	data->list = g_object_ref (list);
 	data->flags = flags;
+#ifdef HAVE_SYSPROF
+	data->plugin_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) refine_internal_data_free);
 
 	/* try to adopt each app with a plugin */
@@ -338,6 +350,17 @@ plugin_refine_cb (GObject      *source_object,
 	g_autoptr(GTask) task = g_steal_pointer (&user_data);
 	GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 	g_autoptr(GError) local_error = NULL;
+#ifdef HAVE_SYSPROF
+	GsPluginJobRefine *self = g_task_get_source_object (task);
+	RefineInternalData *data = g_task_get_task_data (task);
+#endif
+
+	GS_PROFILER_ADD_MARK_TAKE (PluginJobRefine,
+				   data->plugin_begin_time_nsec,
+				   g_strdup_printf ("%s:%s",
+						    G_OBJECT_TYPE_NAME (self),
+						    gs_plugin_get_name (plugin)),
+				   NULL);
 
 	if (!plugin_class->refine_finish (plugin, result, &local_error)) {
 		finish_refine_internal_op (task, g_steal_pointer (&local_error));
@@ -386,6 +409,10 @@ finish_refine_internal_op (GTask  *task,
 
 	g_assert (data->n_pending_ops > 0);
 	data->n_pending_ops--;
+
+#ifdef HAVE_SYSPROF
+	data->plugin_begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	plugins = gs_plugin_loader_get_plugins (plugin_loader);
 
@@ -645,6 +672,10 @@ gs_plugin_job_refine_run_async (GsPluginJob         *job,
 		g_object_freeze_notify (G_OBJECT (app));
 	}
 
+#ifdef HAVE_SYSPROF
+	self->begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
+
 	/* Start refining the apps. */
 	run_refine_internal_async (self, plugin_loader, result_list,
 				   self->flags, cancellable,
@@ -742,6 +773,11 @@ gs_plugin_job_refine_run_finish (GsPluginJob   *self,
                                  GAsyncResult  *result,
                                  GError       **error)
 {
+	GS_PROFILER_ADD_MARK (PluginJobRefine,
+			      GS_PLUGIN_JOB_REFINE (self)->begin_time_nsec,
+			      G_OBJECT_TYPE_NAME (self),
+			      NULL);
+
 	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
