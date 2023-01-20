@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2015-2018 Canonical Ltd
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <config.h>

@@ -3,7 +3,7 @@
  *
  * Copyright © 2020 Endless Mobile, Inc.
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #pragma once

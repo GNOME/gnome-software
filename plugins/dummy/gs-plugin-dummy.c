@@ -4,7 +4,7 @@
  * Copyright (C) 2011-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2015-2016 Kalev Lember <klember@redhat.com>
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <config.h>
@@ -586,7 +586,7 @@ refine_app (GsPluginDummy        *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 		    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0)
-			gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, "GPL-2.0+");
+			gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, "GPL-2.0-or-later");
 	}
 
 	/* homepage */

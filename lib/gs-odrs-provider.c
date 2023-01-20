@@ -5,7 +5,7 @@
  * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
  * Copyright (C) 2021 Endless OS Foundation LLC
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 /*

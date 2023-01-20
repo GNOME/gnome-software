@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2020 Red Hat <www.redhat.com>
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #pragma once

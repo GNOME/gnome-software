@@ -5,7 +5,7 @@
  * Copyright (C) 2016 Matthias Klumpp <mak@debian.org>
  * Copyright (C) 2018 Kalev Lember <klember@redhat.com>
  *
- * SPDX-License-Identifier: GPL-2.0+
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <config.h>
