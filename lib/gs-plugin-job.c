@@ -24,8 +24,6 @@ typedef struct
 	guint			 max_results;
 	GsPlugin		*plugin;
 	GsPluginAction		 action;
-	GsAppListSortFunc	 sort_func;
-	gpointer		 sort_func_data;
 	gchar			*search;
 	GsApp			*app;
 	GsAppList		*list;
@@ -219,25 +217,6 @@ gs_plugin_job_get_action (GsPluginJob *self)
 	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), GS_PLUGIN_ACTION_UNKNOWN);
 	return priv->action;
-}
-
-void
-gs_plugin_job_set_sort_func (GsPluginJob *self, GsAppListSortFunc sort_func, gpointer user_data)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	priv->sort_func = sort_func;
-	priv->sort_func_data = user_data;
-}
-
-GsAppListSortFunc
-gs_plugin_job_get_sort_func (GsPluginJob *self, gpointer *user_data_out)
-{
-	GsPluginJobPrivate *priv = gs_plugin_job_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	if (user_data_out != NULL)
-		*user_data_out = priv->sort_func_data;
-	return priv->sort_func;
 }
 
 void
