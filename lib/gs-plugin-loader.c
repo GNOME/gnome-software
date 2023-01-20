@@ -76,6 +76,7 @@ struct _GsPluginLoader
 	gulong			 network_available_notify_handler;
 	gulong			 network_metered_notify_handler;
 
+	GsJobManager		*job_manager;  /* (owned) (not nullable) */
 	GsCategoryManager	*category_manager;
 	GsOdrsProvider		*odrs_provider;  /* (owned) (nullable) */
 
@@ -2511,6 +2512,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->network_monitor);
 	g_clear_object (&plugin_loader->settings);
 	g_clear_object (&plugin_loader->pending_apps);
+	g_clear_object (&plugin_loader->job_manager);
 	g_clear_object (&plugin_loader->category_manager);
 	g_clear_object (&plugin_loader->odrs_provider);
 	g_clear_object (&plugin_loader->setup_complete_cancellable);
@@ -2726,6 +2728,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							     (GEqualFunc) as_utils_data_id_equal,
 							     g_free,
 							     (GDestroyNotify) g_object_unref);
+
+	/* get the job manager */
+	plugin_loader->job_manager = gs_job_manager_new ();
 
 	/* get the category manager */
 	plugin_loader->category_manager = gs_category_manager_new ();
@@ -3174,6 +3179,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			}
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3258,6 +3264,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				     "no plugin could handle %s",
 				     gs_plugin_action_to_string (action));
 			g_task_return_error (task, error);
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 		break;
@@ -3319,6 +3326,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3367,6 +3375,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		if (new_list == NULL) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, g_steal_pointer (&error));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 
@@ -3406,6 +3415,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			if (!gs_plugin_job_get_propagate_error (helper->plugin_job))
 				gs_plugin_loader_claim_job_error (plugin_loader, NULL, helper->plugin_job, error_local);
 			g_task_return_error (task, g_steal_pointer (&error_local));
+			gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 			return;
 		}
 		if (gs_app_list_length (list) > 1) {
@@ -3428,6 +3438,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+	gs_job_manager_remove_job (plugin_loader->job_manager, helper->plugin_job);
 }
 
 static void
@@ -3634,6 +3645,8 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						(GDestroyNotify) cancellable_data_free);
 		}
 	}
+
+	gs_job_manager_add_job (plugin_loader->job_manager, plugin_job);
 
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	g_task_set_name (task, task_name);
@@ -4029,6 +4042,23 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 	if (!g_thread_pool_set_max_threads (plugin_loader->queued_ops_pool, max_ops, &error))
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
+}
+
+/**
+ * gs_plugin_loader_get_job_manager:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the job manager singleton.
+ *
+ * Returns: (transfer none): a job manager
+ * Since: 44
+ */
+GsJobManager *
+gs_plugin_loader_get_job_manager (GsPluginLoader *plugin_loader)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+
+	return plugin_loader->job_manager;
 }
 
 /**
