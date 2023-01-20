@@ -26,8 +26,6 @@ void			 gs_plugin_job_remove_refine_flags	(GsPluginJob	*self,
 gboolean		 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 gboolean		 gs_plugin_job_get_propagate_error	(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
-GsAppListSortFunc	 gs_plugin_job_get_sort_func		(GsPluginJob	*self,
-								 gpointer	*user_data_out);
 const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 GsAppList		*gs_plugin_job_get_list			(GsPluginJob	*self);

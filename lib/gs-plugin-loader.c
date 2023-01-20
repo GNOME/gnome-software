@@ -717,29 +717,10 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 }
 
 static void
-gs_plugin_loader_job_sorted_truncation_again (GsPluginJob *plugin_job,
-					      GsAppList *list)
-{
-	GsAppListSortFunc sort_func;
-	gpointer sort_func_data;
-
-	/* not valid */
-	if (list == NULL)
-		return;
-
-	/* unset */
-	sort_func = gs_plugin_job_get_sort_func (plugin_job, &sort_func_data);
-	if (sort_func == NULL)
-		return;
-	gs_app_list_sort (list, sort_func, sort_func_data);
-}
-
-static void
 gs_plugin_loader_job_sorted_truncation (GsPluginJob *plugin_job,
 					GsAppList *list)
 {
-	GsAppListSortFunc sort_func;
-	gpointer sort_func_data;
+	GsPluginAction action = gs_plugin_job_get_action (plugin_job);
 	guint max_results;
 
 	/* not valid */
@@ -758,15 +739,9 @@ gs_plugin_loader_job_sorted_truncation (GsPluginJob *plugin_job,
 	/* nothing set */
 	g_debug ("truncating results to %u from %u",
 		 max_results, gs_app_list_length (list));
-	sort_func = gs_plugin_job_get_sort_func (plugin_job, &sort_func_data);
-	if (sort_func == NULL) {
-		GsPluginAction action = gs_plugin_job_get_action (plugin_job);
-		g_debug ("no ->sort_func() set for %s, using random!",
-			 gs_plugin_action_to_string (action));
-		gs_app_list_randomize (list);
-	} else {
-		gs_app_list_sort (list, sort_func, sort_func_data);
-	}
+
+	g_debug ("randomising %s", gs_plugin_action_to_string (action));
+	gs_app_list_randomize (list);
 	gs_app_list_truncate (list, max_results);
 }
 
@@ -3450,9 +3425,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	dedupe_flags = gs_plugin_job_get_dedupe_flags (helper->plugin_job);
 	if (dedupe_flags != GS_APP_LIST_FILTER_FLAG_NONE)
 		gs_app_list_filter_duplicates (list, dedupe_flags);
-
-	/* sort these again as the refine may have added useful metadata */
-	gs_plugin_loader_job_sorted_truncation_again (helper->plugin_job, list);
 
 	GS_PROFILER_END (PluginLoader);
 
