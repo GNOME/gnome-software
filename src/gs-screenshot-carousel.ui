@@ -100,7 +100,7 @@
             <property name="child">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
+                <property name="spacing">12</property>
                 <!-- Arbitrary size chosen to tile together at 16:9;
                      see https://blogs.gnome.org/hughsie/2014/07/02/blurry-screenshots-in-gnome-software/ -->
                 <property name="height_request">423</property>
@@ -113,10 +113,13 @@
                 </style>
                 <child>
                   <object class="GtkImage">
-                    <property name="pixel_size">64</property>
-                    <property name="icon_name">camera-photo-symbolic</property>
+                    <property name="pixel_size">96</property>
+                    <property name="icon_name">image-missing-symbolic</property>
                     <property name="valign">end</property>
                     <property name="vexpand">True</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -124,7 +127,11 @@
                     <property name="halign">center</property>
                     <property name="valign">start</property>
                     <property name="vexpand">True</property>
-                    <property name="label" translatable="yes">No screenshot provided</property>
+                    <property name="label" translatable="yes" comments="Translators: Shortened form of “no screenshots available” when showing an app’s details.">No Screenshot</property>
+                    <style>
+                      <class name="title-2"/>
+                      <class name="dim-label"/>
+                    </style>
                   </object>
                 </child>
               </object>
