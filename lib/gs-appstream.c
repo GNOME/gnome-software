@@ -118,7 +118,7 @@ gs_appstream_format_description_text (XbNode *node)
 }
 
 static gchar *
-gs_appstream_format_description (XbNode *root, GError **error)
+gs_appstream_format_description (XbNode *root)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -708,7 +708,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 		g_autoptr(XbNode) n = NULL;
 		g_autofree gchar *desc = NULL;
 		n = xb_node_query_first (release, "description", NULL);
-		desc = gs_appstream_format_description (n, NULL);
+		desc = gs_appstream_format_description (n);
 		gs_app_set_update_details_markup (app, desc);
 
 	/* get the descriptions with a version prefix */
@@ -726,7 +726,7 @@ gs_appstream_refine_app_updates (GsApp *app,
 				continue;
 
 			n = xb_node_query_first (release, "description", NULL);
-			desc = gs_appstream_format_description (n, NULL);
+			desc = gs_appstream_format_description (n);
 			g_string_append_printf (update_desc,
 						"Version %s:\n%s\n\n",
 						xb_node_get_attr (release, "version"),
@@ -789,7 +789,7 @@ gs_appstream_refine_add_version_history (GsApp *app, XbNode *component, GError *
 		/* include updates with or without a description */
 		description_node = xb_node_query_first (release_node, "description", NULL);
 		if (description_node != NULL)
-			description = gs_appstream_format_description (description_node, NULL);
+			description = gs_appstream_format_description (description_node);
 
 		release = as_release_new ();
 		as_release_set_version (release, version);
@@ -1193,7 +1193,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		g_autofree gchar *description = NULL;
 		g_autoptr(XbNode) n = xb_node_query_first (component, "description", NULL);
 		if (n != NULL)
-			description = gs_appstream_format_description (n, NULL);
+			description = gs_appstream_format_description (n);
 		if (description != NULL)
 			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, description);
 	}
