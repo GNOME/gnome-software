@@ -46,6 +46,13 @@ enum {
 	PROP_LAST
 };
 
+typedef enum {
+	SIGNAL_COMPLETED,
+	SIGNAL_LAST
+} GsPluginJobSignal;
+
+static guint signals[SIGNAL_LAST] = { 0 };
+
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginJob, gs_plugin_job, G_TYPE_OBJECT)
 
 gchar *
@@ -465,6 +472,19 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				      FALSE,
 				      G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_PROPAGATE_ERROR, pspec);
+
+	/**
+	 * GsPluginJob::completed:
+	 *
+	 * Emitted when the job is completed, but before it is finalized.
+	 *
+	 * Since: 44
+	 */
+	signals[SIGNAL_COMPLETED] =
+		g_signal_new ("completed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 0);
 }
 
 static void

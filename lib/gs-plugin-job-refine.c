@@ -800,6 +800,7 @@ finish_run (GTask     *task,
 	/* success */
 	g_set_object (&self->result_list, result_list);
 	g_task_return_boolean (task, TRUE);
+	g_signal_emit_by_name (G_OBJECT (self), "completed");
 }
 
 static gboolean

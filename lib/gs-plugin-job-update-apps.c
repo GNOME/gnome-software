@@ -404,6 +404,7 @@ finish_op (GTask  *task,
 	/* Get the results of the parallel ops. */
 	if (self->saved_error != NULL) {
 		g_task_return_error (task, g_steal_pointer (&self->saved_error));
+		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		return;
 	}
 
@@ -417,6 +418,7 @@ finish_op (GTask  *task,
 
 	/* success */
 	g_task_return_boolean (task, TRUE);
+	g_signal_emit_by_name (G_OBJECT (self), "completed");
 
 	GS_PROFILER_ADD_MARK (PluginJobUpdateApps,
 			      self->begin_time_nsec,

@@ -331,6 +331,7 @@ finish_op (GTask  *task,
 
 	if (self->saved_error != NULL) {
 		g_task_return_error (task, g_steal_pointer (&self->saved_error));
+		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		return;
 	}
 
@@ -369,6 +370,7 @@ refine_cb (GObject      *source_object,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GTask) task = G_TASK (user_data);
+	GsPluginJobListApps *self = g_task_get_source_object (task);
 	g_autoptr(GsAppList) new_list = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -376,6 +378,7 @@ refine_cb (GObject      *source_object,
 	if (new_list == NULL) {
 		gs_utils_error_convert_gio (&local_error);
 		g_task_return_error (task, g_steal_pointer (&local_error));
+		g_signal_emit_by_name (G_OBJECT (self), "completed");
 		return;
 	}
 
@@ -453,6 +456,7 @@ finish_task (GTask     *task,
 	/* success */
 	g_set_object (&self->result_list, merged_list);
 	g_task_return_boolean (task, TRUE);
+	g_signal_emit_by_name (G_OBJECT (self), "completed");
 
 #ifdef HAVE_SYSPROF
 	sysprof_collector_mark (self->begin_time_nsec,
