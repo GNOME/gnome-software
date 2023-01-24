@@ -855,10 +855,12 @@ gs_plugin_fwupd_refresh_metadata_finish (GsPlugin      *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_install (GsPluginFwupd  *self,
-                         GsApp          *app,
-                         GCancellable   *cancellable,
-                         GError        **error)
+gs_plugin_fwupd_install (GsPluginFwupd                       *self,
+                         GsApp                               *app,
+                         GsPluginAppNeedsUserActionCallback   app_needs_user_action_callback,
+                         gpointer                             app_needs_user_action_data,
+                         GCancellable                        *cancellable,
+                         GError                             **error)
 {
 	const gchar *device_id;
 	FwupdInstallFlags install_flags = 0;
@@ -953,6 +955,12 @@ gs_plugin_fwupd_install (GsPluginFwupd  *self,
 
 			/* require the dialog */
 			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
+
+			if (app_needs_user_action_callback != NULL)
+				app_needs_user_action_callback (GS_PLUGIN (self),
+								app,
+								ss,
+								app_needs_user_action_data);
 		}
 	}
 
@@ -1051,8 +1059,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* source -> remote, handled by dedicated function */
 	g_return_val_if_fail (gs_app_get_kind (app) != AS_COMPONENT_KIND_REPOSITORY, FALSE);
 
-	/* firmware */
-	return gs_plugin_fwupd_install (self, app, cancellable, error);
+	/* FIXME: Connect #GsPluginAppNeedsUserActionCallback when this function
+	 * is ported to the new #GsPluginJob subclasses. */
+	return gs_plugin_fwupd_install (self, app, NULL, NULL, cancellable, error);
 }
 
 static void
@@ -1158,7 +1167,10 @@ gs_plugin_fwupd_update_apps_async (GsPlugin                           *plugin,
 
 			/* update means install */
 			/* FIXME: Make this call async */
-			if (!gs_plugin_fwupd_install (self, app, cancellable, &local_error)) {
+			if (!gs_plugin_fwupd_install (self, app,
+						      app_needs_user_action_callback,
+						      app_needs_user_action_data,
+						      cancellable, &local_error)) {
 				gs_plugin_fwupd_error_convert (&local_error);
 				g_task_return_error (task, g_steal_pointer (&local_error));
 				return;
