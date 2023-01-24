@@ -28,9 +28,8 @@
 
 typedef struct {
 	GWeakRef plugin_weakref; /* GsPlugin * */
-	GsPluginAction action;
+	GsPackagekitTaskQuestionType question_type;
 	GsPackagekitHelper *helper;
-
 } GsPackagekitTaskPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPackagekitTask, gs_packagekit_task, PK_TYPE_TASK)
@@ -143,18 +142,18 @@ gs_packagekit_task_untrusted_question (PkTask *task,
 	const gchar *details;
 	const gchar *accept_label;
 
-	switch (priv->action) {
-	case GS_PLUGIN_ACTION_INSTALL:
+	switch (priv->question_type) {
+	case GS_PACKAGEKIT_TASK_QUESTION_TYPE_INSTALL:
 		title = _("Install Unsigned Software?");
 		msg = _("Software that is to be installed is not signed. It will not be possible to verify the origin of updates to this software, or whether updates have been tampered with.");
 		accept_label = _("_Install");
 		break;
-	case GS_PLUGIN_ACTION_DOWNLOAD:
+	case GS_PACKAGEKIT_TASK_QUESTION_TYPE_DOWNLOAD:
 		title = _("Download Unsigned Software?");
 		msg = _("Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been tampered with.");
 		accept_label = _("_Download");
 		break;
-	case GS_PLUGIN_ACTION_UPDATE:
+	case GS_PACKAGEKIT_TASK_QUESTION_TYPE_UPDATE:
 		title = _("Update Unsigned Software?");
 		msg = _("Unsigned updates are available. Without a signature, it is not possible to verify the origin of the update, or whether it has been tampered with. Software updates will be disabled until unsigned updates are either removed or updated.");
 		accept_label = _("_Update");
@@ -224,14 +223,14 @@ gs_packagekit_task_new (GsPlugin *plugin)
 
 void
 gs_packagekit_task_setup (GsPackagekitTask *task,
-			  GsPluginAction action,
+			  GsPackagekitTaskQuestionType question_type,
 			  gboolean interactive)
 {
 	GsPackagekitTaskPrivate *priv = gs_packagekit_task_get_instance_private (task);
 
 	g_return_if_fail (GS_IS_PACKAGEKIT_TASK (task));
 
-	priv->action = action;
+	priv->question_type = question_type;
 
 	/* The :interactive and :background properties have slightly different
 	 * purposes:
@@ -245,14 +244,14 @@ gs_packagekit_task_setup (GsPackagekitTask *task,
 	pk_client_set_background (PK_CLIENT (task), !interactive);
 }
 
-GsPluginAction
-gs_packagekit_task_get_action (GsPackagekitTask *task)
+GsPackagekitTaskQuestionType
+gs_packagekit_task_get_question_type (GsPackagekitTask *task)
 {
 	GsPackagekitTaskPrivate *priv = gs_packagekit_task_get_instance_private (task);
 
-	g_return_val_if_fail (GS_IS_PACKAGEKIT_TASK (task), GS_PLUGIN_ACTION_UNKNOWN);
+	g_return_val_if_fail (GS_IS_PACKAGEKIT_TASK (task), GS_PACKAGEKIT_TASK_QUESTION_TYPE_NONE);
 
-	return priv->action;
+	return priv->question_type;
 }
 
 void
