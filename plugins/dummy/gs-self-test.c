@@ -625,6 +625,8 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsDummyTestHelper) helper1 = gs_dummy_test_helper_new ();
 	g_autoptr(GsDummyTestHelper) helper2 = gs_dummy_test_helper_new ();
 	g_autoptr(GsDummyTestHelper) helper3 = gs_dummy_test_helper_new ();
+	GPtrArray *pending_jobs;  /* (element-type GsPluginJob) */
+	GsJobManager *job_manager;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -698,7 +700,12 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app2), ==, GS_APP_STATE_QUEUED_FOR_INSTALL);
 	g_assert_cmpint (gs_app_get_pending_action (app2), ==, GS_PLUGIN_ACTION_INSTALL);
 	g_assert_cmpint (gs_app_get_state (app3), ==, GS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpint (gs_app_get_pending_action (app3), ==, GS_PLUGIN_ACTION_UPDATE);
+
+	job_manager = gs_plugin_loader_get_job_manager (plugin_loader);
+	pending_jobs = gs_job_manager_get_pending_jobs_for_app (job_manager, app3);
+	g_assert_nonnull (pending_jobs);
+	g_assert_cmpuint (pending_jobs->len, ==, 1);
+	g_assert_true (GS_IS_PLUGIN_JOB_UPDATE_APPS (g_ptr_array_index (pending_jobs, 0)));
 
 	/* wait for the 2nd installation to finish, it means the 1st should have been
 	 * finished too */
