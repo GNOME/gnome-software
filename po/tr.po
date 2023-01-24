@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-01-18 23:38+0000\n"
-"PO-Revision-Date: 2023-01-22 22:11+0300\n"
+"POT-Creation-Date: 2023-01-24 22:45+0000\n"
+"PO-Revision-Date: 2023-01-25 02:42+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
 "Language: tr\n"
@@ -3055,7 +3055,7 @@ msgstr "Diğer Kategoriler"
 msgid "No App Data Found"
 msgstr "Uygulama Verisi Bulunamadı"
 
-#: lib/gs-plugin-loader.c:2844
+#: lib/gs-plugin-loader.c:2760
 msgctxt "Distribution name"
 msgid "Unknown"
 msgstr "Bilinmeyen"
@@ -3352,12 +3352,12 @@ msgstr "Açıklama çok uzun"
 
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
-msgid "Post Review"
-msgstr "İnceleme Gönder"
+msgid "Write a Review"
+msgstr "İnceleme Yaz"
 
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:26
-msgid "_Post"
+msgid "_Send"
 msgstr "_Gönder"
 
 #: src/gs-review-dialog.ui:71
@@ -3718,9 +3718,10 @@ msgstr "Önceki Ekran Görüntüsü"
 msgid "Next Screenshot"
 msgstr "Sonraki Ekran Görüntüsü"
 
-#: src/gs-screenshot-carousel.ui:127
-msgid "No screenshot provided"
-msgstr "Ekran görüntüsü sağlanmadı"
+#. Translators: Shortened form of “no screenshots available” when showing an app’s details.
+#: src/gs-screenshot-carousel.ui:130
+msgid "No Screenshot"
+msgstr "Ekran Görüntüsü Yok"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -5066,17 +5067,17 @@ msgstr "Kullanıcı Kurulumu"
 msgid "System Installation"
 msgstr "Sistem Kurulumu"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1127
+#: plugins/flatpak/gs-plugin-flatpak.c:1135
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kurulum eklenemedi: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1141
+#: plugins/flatpak/gs-plugin-flatpak.c:1149
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr "‘%s’ eklentisi için kaldırma eklenemedi: %s"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1407
+#: plugins/flatpak/gs-plugin-flatpak.c:1415
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5398,3 +5399,12 @@ msgstr "Snap Desteği"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap, bir evrensel Linux paketidir"
+
+#~ msgid "Post Review"
+#~ msgstr "İnceleme Gönder"
+
+#~ msgid "_Post"
+#~ msgstr "_Gönder"
+
+#~ msgid "No screenshot provided"
+#~ msgstr "Ekran görüntüsü sağlanmadı"
