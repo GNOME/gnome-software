@@ -3114,9 +3114,6 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-	if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_UPDATE)
-		gs_utils_set_online_updates_timestamp (plugin_loader->settings);
-
 	return TRUE;
 }
 
@@ -3224,9 +3221,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			return;
 		}
 	}
-
-	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
-		gs_utils_set_online_updates_timestamp (plugin_loader->settings);
 
 	/* remove from pending list */
 	if (add_to_pending_array) {

@@ -1163,23 +1163,6 @@ gs_utils_get_memory_total (void)
 }
 
 /**
- * gs_utils_set_online_updates_timestamp:
- *
- * Sets the value of online-updates-timestamp to current epoch. "online-updates-timestamp" represents
- * the last time the system was online and got any updates.
- **/
-void
-gs_utils_set_online_updates_timestamp (GSettings *settings)
-{
-	g_autoptr(GDateTime) now = NULL;
-
-	g_return_if_fail (settings != NULL);
-
-	now = g_date_time_new_now_local ();
-	g_settings_set (settings, "online-updates-timestamp", "x", g_date_time_to_unix (now));
-}
-
-/**
  * gs_utils_unique_id_compat_convert:
  * @data_id: (nullable): A string that may be a unique component ID
  *
