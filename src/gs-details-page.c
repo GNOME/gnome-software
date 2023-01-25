@@ -1375,13 +1375,9 @@ addons_list_row_activated_cb (GtkListBox *list_box,
 			      GtkListBoxRow *row,
 			      GsDetailsPage *self)
 {
-	gboolean selected;
-
 	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
 
-	/* This would be racy if multithreaded but we're in the main thread */
-	selected = gs_app_addon_row_get_selected (GS_APP_ADDON_ROW (row));
-	gs_app_addon_row_set_selected (GS_APP_ADDON_ROW (row), !selected);
+	gs_app_addon_row_activate (GS_APP_ADDON_ROW (row));
 }
 
 static void
@@ -1438,7 +1434,7 @@ featured_review_list_row_activated_cb (GtkListBox *list_box,
 	gs_shell_modal_dialog_present (self->shell, GTK_WINDOW (self->app_reviews_dialog));
 }
 
-static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
+static void gs_details_page_addon_install_cb (GsAppAddonRow *row, gpointer user_data);
 static void gs_details_page_addon_remove_cb (GsAppAddonRow *row, gpointer user_data);
 
 static void
@@ -1464,8 +1460,8 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 
 		row = gs_app_addon_row_new (addon);
 
-		g_signal_connect (row, "notify::selected",
-				  G_CALLBACK (gs_details_page_addon_selected_cb),
+		g_signal_connect (row, "install-button-clicked",
+				  G_CALLBACK (gs_details_page_addon_install_cb),
 				  self);
 		g_signal_connect (row, "remove-button-clicked",
 				  G_CALLBACK (gs_details_page_addon_remove_cb),
@@ -2077,8 +2073,6 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	GtkWidget *child;
-
 	switch (gs_app_get_state (self->app)) {
 	case GS_APP_STATE_PENDING_INSTALL:
 	case GS_APP_STATE_PENDING_REMOVE:
@@ -2087,19 +2081,6 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 		return;
 	default:
 		break;
-	}
-
-	/* Mark ticked addons to be installed together with the app */
-	for (child = gtk_widget_get_first_child (self->list_box_addons);
-	     child != NULL;
-	     child = gtk_widget_get_next_sibling (child)) {
-		GsAppAddonRow *row = GS_APP_ADDON_ROW (child);
-		if (gs_app_addon_row_get_selected (row)) {
-			GsApp *addon = gs_app_addon_row_get_addon (row);
-
-			if (gs_app_get_state (addon) == GS_APP_STATE_AVAILABLE)
-				gs_app_set_to_be_installed (addon, TRUE);
-		}
 	}
 
 	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
@@ -2121,34 +2102,14 @@ gs_details_page_app_update_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
-gs_details_page_addon_selected_cb (GsAppAddonRow *row,
-                                   GParamSpec *pspec,
-                                   GsDetailsPage *self)
+gs_details_page_addon_install_cb (GsAppAddonRow *row,
+				  gpointer user_data)
 {
 	GsApp *addon;
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	addon = gs_app_addon_row_get_addon (row);
-
-	/* If the main app is already installed, ticking the addon checkbox
-	 * triggers an immediate install. Otherwise we'll install the addon
-	 * together with the main app. */
-	switch (gs_app_get_state (self->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_addon_row_get_selected (row)) {
-			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
-			gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL,
-					     self->app_cancellable);
-		} else {
-			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
-			gs_page_remove_app (GS_PAGE (self), addon, self->app_cancellable);
-			gs_details_page_refresh_all (self);
-		}
-		break;
-	default:
-		break;
-	}
+	gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL, NULL);
 }
 
 static void

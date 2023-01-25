@@ -22,16 +22,12 @@ struct _GsAppAddonRow
 	GtkWidget	*name_label;
 	GtkWidget	*description_label;
 	GtkWidget	*label;
+	GtkWidget	*buttons_stack;
 	GtkWidget	*button_install;
 	GtkWidget	*button_remove;
 };
 
 G_DEFINE_TYPE (GsAppAddonRow, gs_app_addon_row, GTK_TYPE_LIST_BOX_ROW)
-
-enum {
-	PROP_ZERO,
-	PROP_SELECTED
-};
 
 enum {
 	SIGNAL_INSTALL_BUTTON_CLICKED,
@@ -80,6 +76,7 @@ void
 gs_app_addon_row_refresh (GsAppAddonRow *row)
 {
 	g_autoptr(GString) str = NULL;
+	gboolean show_install = FALSE, show_remove = FALSE;
 
 	if (row->app == NULL)
 		return;
@@ -127,40 +124,45 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	/* update the checkbox, remove button, and activatable state */
 	switch (gs_app_get_state (row->app)) {
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (row->button_install, FALSE);
-		gtk_widget_set_visible (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
+		show_install = FALSE;
+		show_remove = !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY);
 		gtk_widget_set_sensitive (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (row->button_install, TRUE);
-		gtk_widget_set_visible (row->button_remove, FALSE);
+		show_install = TRUE;
+		show_remove = FALSE;
 		gtk_widget_set_sensitive (row->button_install, TRUE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_UPDATABLE_LIVE:
 	case GS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (row->button_install, FALSE);
-		gtk_widget_set_visible (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
+		show_install = FALSE;
+		show_remove = !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY);
 		gtk_widget_set_sensitive (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
-		gtk_widget_set_visible (row->button_install, FALSE);
-		gtk_widget_set_visible (row->button_remove, TRUE);
+		show_install = FALSE;
+		show_remove = TRUE;
 		gtk_widget_set_sensitive (row->button_remove, FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	default:
-		gtk_widget_set_visible (row->button_install, TRUE);
-		gtk_widget_set_visible (row->button_remove, FALSE);
+		show_install = TRUE;
+		show_remove = FALSE;
 		gtk_widget_set_sensitive (row->button_install, FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	}
+
+	g_assert (!(show_install && show_remove));
+
+	gtk_widget_set_visible (row->buttons_stack, show_install || show_remove);
+	gtk_stack_set_visible_child (GTK_STACK (row->buttons_stack), show_install ? row->button_install : row->button_remove);
 }
 
 GsApp *
@@ -214,49 +216,12 @@ gs_app_addon_row_dispose (GObject *object)
 }
 
 static void
-gs_app_addon_row_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
-{
-	GsAppAddonRow *row = GS_APP_ADDON_ROW (object);
-
-	switch (prop_id) {
-	case PROP_SELECTED:
-		gs_app_addon_row_set_selected (row, g_value_get_boolean (value));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-gs_app_addon_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	GsAppAddonRow *row = GS_APP_ADDON_ROW (object);
-
-	switch (prop_id) {
-	case PROP_SELECTED:
-		g_value_set_boolean (value, gs_app_addon_row_get_selected (row));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
 gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_app_addon_row_dispose;
-	object_class->set_property = gs_app_addon_row_set_property;
-	object_class->get_property = gs_app_addon_row_get_property;
-
-	pspec = g_param_spec_boolean ("selected", NULL, NULL,
-				      FALSE, G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
 	signals [SIGNAL_INSTALL_BUTTON_CLICKED] =
 		g_signal_new ("install-button-clicked",
@@ -275,6 +240,7 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, name_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, description_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, label);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, buttons_stack);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, button_remove);
 }
@@ -291,14 +257,18 @@ gs_app_addon_row_init (GsAppAddonRow *row)
 }
 
 void
-gs_app_addon_row_set_selected (GsAppAddonRow *row, gboolean selected)
+gs_app_addon_row_activate (GsAppAddonRow *row)
 {
-}
+	GtkWidget *button;
 
-gboolean
-gs_app_addon_row_get_selected (GsAppAddonRow *row)
-{
-	return FALSE;
+	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
+
+	if (!gtk_widget_get_visible (row->buttons_stack))
+		return;
+
+	button = gtk_stack_get_visible_child (GTK_STACK (row->buttons_stack));
+	if (gtk_widget_get_sensitive (button))
+		gtk_widget_activate (button);
 }
 
 GtkWidget *
