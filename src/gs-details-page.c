@@ -1441,9 +1441,15 @@ static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
 {
 	g_autoptr(GsAppList) addons = NULL;
+	gboolean sensitive;
 	guint i, rows = 0;
 
 	gs_widget_remove_all (self->list_box_addons, (GsRemoveFunc) gtk_list_box_remove);
+
+	/* Make addons installable only if the app itself is installed */
+	sensitive = gs_app_get_state (self->app) == GS_APP_STATE_INSTALLED ||
+		    gs_app_get_state (self->app) == GS_APP_STATE_UPDATABLE ||
+		    gs_app_get_state (self->app) == GS_APP_STATE_UPDATABLE_LIVE;
 
 	addons = gs_app_dup_addons (self->app);
 	for (i = 0; addons != NULL && i < gs_app_list_length (addons); i++) {
@@ -1459,6 +1465,8 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 			continue;
 
 		row = gs_app_addon_row_new (addon);
+
+		gtk_widget_set_sensitive (row, sensitive);
 
 		g_signal_connect (row, "install-button-clicked",
 				  G_CALLBACK (gs_details_page_addon_install_cb),
