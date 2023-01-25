@@ -102,12 +102,6 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Pending remove"));
 		break;
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_UPDATABLE_LIVE:
-	case GS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (row->label, TRUE);
-		gtk_label_set_label (GTK_LABEL (row->label), C_("Single app", "Installed"));
-		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Installing"));
