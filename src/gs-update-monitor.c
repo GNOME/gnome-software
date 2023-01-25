@@ -70,6 +70,7 @@ G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
 typedef struct {
 	GsUpdateMonitor		*monitor;
+	gint64			 check_timestamp;	/* "check-timestamp" to set, or 0 to not set it */
 } DownloadUpdatesData;
 
 static void
@@ -551,6 +552,10 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 		return;
 	}
 
+	/* Update the check-timestamp, when this call is part of the auto-update */
+	if (download_updates_data->check_timestamp > 0)
+		g_settings_set (monitor->settings, "check-timestamp", "x", download_updates_data->check_timestamp);
+
 	/* no updates */
 	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no updates; withdrawing updates-available notification");
@@ -762,7 +767,8 @@ get_upgrades_finished_cb (GObject *object,
 }
 
 static void
-get_updates (GsUpdateMonitor *monitor)
+get_updates (GsUpdateMonitor *monitor,
+	     gint64 check_timestamp)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(DownloadUpdatesData) download_updates_data = NULL;
@@ -775,6 +781,7 @@ get_updates (GsUpdateMonitor *monitor)
 
 	download_updates_data = g_slice_new0 (DownloadUpdatesData);
 	download_updates_data->monitor = g_object_ref (monitor);
+	download_updates_data->check_timestamp = check_timestamp;
 
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
@@ -792,7 +799,7 @@ get_updates (GsUpdateMonitor *monitor)
 void
 gs_update_monitor_autoupdate (GsUpdateMonitor *monitor)
 {
-	get_updates (monitor);
+	get_updates (monitor, 0);
 }
 
 static void
@@ -847,10 +854,7 @@ refresh_cache_finished_cb (GObject *object,
 
 	/* update the last checked timestamp */
 	now = g_date_time_new_now_local ();
-	g_settings_set (monitor->settings, "check-timestamp", "x",
-	                g_date_time_to_unix (now));
-
-	get_updates (monitor);
+	get_updates (monitor, g_date_time_to_unix (now));
 }
 
 typedef enum {
@@ -1031,7 +1035,7 @@ check_updates (GsUpdateMonitor *monitor)
 		now_secs = g_get_real_time () / G_USEC_PER_SEC;
 		if ((now_secs - monitor->last_get_updates) >= SECONDS_IN_A_DAY) {
 			monitor->last_get_updates = now_secs;
-			get_updates (monitor);
+			get_updates (monitor, 0);
 		}
 		return;
 	}
