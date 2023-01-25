@@ -22,8 +22,8 @@ struct _GsAppAddonRow
 	GtkWidget	*name_label;
 	GtkWidget	*description_label;
 	GtkWidget	*label;
+	GtkWidget	*button_install;
 	GtkWidget	*button_remove;
-	GtkWidget	*checkbox;
 };
 
 G_DEFINE_TYPE (GsAppAddonRow, gs_app_addon_row, GTK_TYPE_LIST_BOX_ROW)
@@ -34,6 +34,7 @@ enum {
 };
 
 enum {
+	SIGNAL_INSTALL_BUTTON_CLICKED,
 	SIGNAL_REMOVE_BUTTON_CLICKED,
 	SIGNAL_LAST
 };
@@ -41,9 +42,9 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
-checkbox_toggled (GtkWidget *widget, GsAppAddonRow *row)
+app_addon_install_button_cb (GtkWidget *widget, GsAppAddonRow *row)
 {
-	g_object_notify (G_OBJECT (row), "selected");
+	g_signal_emit (row, signals[SIGNAL_INSTALL_BUTTON_CLICKED], 0);
 }
 
 static void
@@ -124,49 +125,42 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	}
 
 	/* update the checkbox, remove button, and activatable state */
-	g_signal_handlers_block_by_func (row->checkbox, checkbox_toggled, row);
-	g_signal_handlers_block_by_func (row->checkbox, app_addon_remove_button_cb, row);
 	switch (gs_app_get_state (row->app)) {
 	case GS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_sensitive (row->checkbox, TRUE);
-		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), TRUE);
+		gtk_widget_set_visible (row->button_install, FALSE);
+		gtk_widget_set_visible (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
+		gtk_widget_set_sensitive (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (row->checkbox, TRUE);
-		gtk_widget_set_sensitive (row->checkbox, TRUE);
-		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), FALSE);
+		gtk_widget_set_visible (row->button_install, TRUE);
 		gtk_widget_set_visible (row->button_remove, FALSE);
+		gtk_widget_set_sensitive (row->button_install, TRUE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), TRUE);
 		break;
 	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_UPDATABLE_LIVE:
 	case GS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (row->checkbox, FALSE);
+		gtk_widget_set_visible (row->button_install, FALSE);
 		gtk_widget_set_visible (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
 		gtk_widget_set_sensitive (row->button_remove, !gs_app_has_quirk (row->app, GS_APP_QUIRK_COMPULSORY));
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	case GS_APP_STATE_INSTALLING:
-		gtk_widget_set_sensitive (row->checkbox, FALSE);
-		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), TRUE);
-		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
-		break;
 	case GS_APP_STATE_REMOVING:
-		gtk_widget_set_visible (row->checkbox, FALSE);
+		gtk_widget_set_visible (row->button_install, FALSE);
 		gtk_widget_set_visible (row->button_remove, TRUE);
 		gtk_widget_set_sensitive (row->button_remove, FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	default:
-		gtk_widget_set_sensitive (row->checkbox, FALSE);
-		gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), FALSE);
+		gtk_widget_set_visible (row->button_install, TRUE);
+		gtk_widget_set_visible (row->button_remove, FALSE);
+		gtk_widget_set_sensitive (row->button_install, FALSE);
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 		break;
 	}
-	g_signal_handlers_unblock_by_func (row->checkbox, checkbox_toggled, row);
-	g_signal_handlers_unblock_by_func (row->checkbox, app_addon_remove_button_cb, row);
 }
 
 GsApp *
@@ -264,6 +258,12 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 				      FALSE, G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
+	signals [SIGNAL_INSTALL_BUTTON_CLICKED] =
+		g_signal_new ("install-button-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
 	signals [SIGNAL_REMOVE_BUTTON_CLICKED] =
 		g_signal_new ("remove-button-clicked",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
@@ -275,7 +275,7 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, name_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, description_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, label);
-	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, checkbox);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, button_remove);
 }
 
@@ -284,8 +284,8 @@ gs_app_addon_row_init (GsAppAddonRow *row)
 {
 	gtk_widget_init_template (GTK_WIDGET (row));
 
-	g_signal_connect (row->checkbox, "toggled",
-			  G_CALLBACK (checkbox_toggled), row);
+	g_signal_connect (row->button_install, "clicked",
+			  G_CALLBACK (app_addon_install_button_cb), row);
 	g_signal_connect (row->button_remove, "clicked",
 			  G_CALLBACK (app_addon_remove_button_cb), row);
 }
@@ -293,13 +293,12 @@ gs_app_addon_row_init (GsAppAddonRow *row)
 void
 gs_app_addon_row_set_selected (GsAppAddonRow *row, gboolean selected)
 {
-	gtk_check_button_set_active (GTK_CHECK_BUTTON (row->checkbox), selected);
 }
 
 gboolean
 gs_app_addon_row_get_selected (GsAppAddonRow *row)
 {
-	return gtk_check_button_get_active (GTK_CHECK_BUTTON (row->checkbox));
+	return FALSE;
 }
 
 GtkWidget *
