@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2023-01-18 23:38+0000\n"
-"PO-Revision-Date: 2023-01-20 16:50+0100\n"
+"POT-Creation-Date: 2023-01-24 22:45+0000\n"
+"PO-Revision-Date: 2023-01-25 07:55+0100\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: Georgian <(nothing)>\n"
 "Language: ka\n"
@@ -2071,7 +2071,7 @@ msgstr "%s %s"
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:291
 msgid "An app"
-msgstr ""
+msgstr "აპი"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
 #: src/gs-dbus-helper.c:297
@@ -2228,7 +2228,7 @@ msgstr "აპის დეტალების ჩატვირთვა…"
 #. TRANSLATORS: A label for a button to execute the selected app.
 #: src/gs-details-page.ui:226
 msgid "_Open"
-msgstr ""
+msgstr "_გახსნა"
 
 #: src/gs-details-page.ui:242 plugins/packagekit/gs-packagekit-task.c:160
 msgid "_Update"
@@ -2951,15 +2951,15 @@ msgstr "სხვა კატეგორიები"
 msgid "No App Data Found"
 msgstr ""
 
-#: lib/gs-plugin-loader.c:2844
+#: lib/gs-plugin-loader.c:2760
 msgctxt "Distribution name"
 msgid "Unknown"
-msgstr ""
+msgstr "უცნობი"
 
 #. TRANSLATORS: button text
 #: src/gs-page.c:87
 msgid "_OK"
-msgstr ""
+msgstr "_დიახ"
 
 #: src/gs-page.c:260
 msgid "User declined installation"
@@ -3242,13 +3242,13 @@ msgstr "აღწერა ძალიან გრძელია"
 
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
-msgid "Post Review"
-msgstr "მიმოხილვის დაწერა"
+msgid "Write a Review"
+msgstr "შეფასების დაწერა"
 
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:26
-msgid "_Post"
-msgstr "_დაპოსტვა"
+msgid "_Send"
+msgstr "_გაგზავნა"
 
 #: src/gs-review-dialog.ui:71
 msgid ""
@@ -3594,9 +3594,10 @@ msgstr "წინა ეკრანის ანაბეჭდი"
 msgid "Next Screenshot"
 msgstr "შემდეგი ეკრანის ანაბეჭდი"
 
-#: src/gs-screenshot-carousel.ui:127
-msgid "No screenshot provided"
-msgstr "ეკრანის ანაბეჭდი მოწოდებული არაა"
+#. Translators: Shortened form of “no screenshots available” when showing an app’s details.
+#: src/gs-screenshot-carousel.ui:130
+msgid "No Screenshot"
+msgstr "ეკრანის ანაბეჭდის გარეშე"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -4160,7 +4161,7 @@ msgstr "მეტი ინფორმაცია"
 
 #: src/gs-shell.ui:200 src/gs-shell.ui:202
 msgid "Search"
-msgstr ""
+msgstr "ძებნა"
 
 #: src/gs-shell.ui:216 src/gs-shell.ui:218
 msgid "Main Menu"
@@ -4242,7 +4243,7 @@ msgstr ""
 #: src/gs-storage-context-dialog.c:188
 msgctxt "Download size"
 msgid "Unknown"
-msgstr ""
+msgstr "უცნობი"
 
 #. Translators: This is the title of the dialog which contains information about the storage or download size needed for an app
 #: src/gs-storage-context-dialog.ui:5
@@ -4915,17 +4916,17 @@ msgstr "მომხმარებლისთვის დაყენებ�
 msgid "System Installation"
 msgstr "სისტემაში დაყენება"
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1127
+#: plugins/flatpak/gs-plugin-flatpak.c:1135
 #, c-format
 msgid "Failed to add to install for addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1141
+#: plugins/flatpak/gs-plugin-flatpak.c:1149
 #, c-format
 msgid "Failed to add to uninstall for addon ‘%s’: %s"
 msgstr ""
 
-#: plugins/flatpak/gs-plugin-flatpak.c:1407
+#: plugins/flatpak/gs-plugin-flatpak.c:1415
 #, c-format
 msgid ""
 "Remote “%s” doesn't allow install of “%s”, possibly due to its filter. "
@@ -5227,6 +5228,15 @@ msgstr "Snap -ის მხარდაჭერა"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap ლინუქსის უნივერსალური პაკეტია"
+
+#~ msgid "Post Review"
+#~ msgstr "მიმოხილვის დაწერა"
+
+#~ msgid "_Post"
+#~ msgstr "_დაპოსტვა"
+
+#~ msgid "No screenshot provided"
+#~ msgstr "ეკრანის ანაბეჭდი მოწოდებული არაა"
 
 #~ msgid "_User"
 #~ msgstr "_მომხმარებელი"
