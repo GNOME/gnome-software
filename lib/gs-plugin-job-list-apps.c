@@ -288,11 +288,15 @@ plugin_list_apps_cb (GObject      *source_object,
 	if (plugin_apps != NULL)
 		gs_app_list_add_list (self->merged_list, plugin_apps);
 
-	/* Since #GsAppQuery supports a number of different query parameters,
-	 * not all plugins will support all of them. Ignore errors related to
-	 * that. */
-	if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED))
+	/* Only log errors from plugins. No need to discard everything when one plugin fails. */
+	if (local_error != NULL &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("plugin '%s' failed to list apps: %s",
+			 gs_plugin_get_name (plugin),
+			 local_error->message);
 		g_clear_error (&local_error);
+	}
 
 	GS_PROFILER_ADD_MARK_TAKE (PluginJobListApps,
 				   self->begin_time_nsec,
