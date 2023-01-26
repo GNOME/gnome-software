@@ -981,30 +981,125 @@ gs_plugin_add_updates (GsPlugin      *plugin,
 	return TRUE;
 }
 
-/* Must be called with self->mutex already locked. */
-static gboolean
-wait_for_state_change_unlocked (GsPluginEosUpdater  *self,
-                                GCancellable        *cancellable,
-                                GError             **error)
+typedef struct {
+	EosUpdaterState old_state;
+	gulong notify_id;
+	gulong cancelled_id;
+} WaitForStateChangeData;
+
+static void
+wait_for_state_change_data_free (WaitForStateChangeData *data)
 {
+	/* These two should have been cleared already */
+	g_assert (data->notify_id == 0);
+	g_assert (data->cancelled_id == 0);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (WaitForStateChangeData, wait_for_state_change_data_free);
+
+static void wait_for_state_change_cb (GTask *task);
+static void wait_for_state_change_notify_cb (GObject    *object,
+                                             GParamSpec *pspec,
+                                             gpointer    user_data);
+static void wait_for_state_change_cancelled_cb (GCancellable *cancellable,
+                                                gpointer      user_data);
+
+static void
+object_unref_closure (gpointer  data,
+                      GClosure *closure)
+{
+	GObject *obj = G_OBJECT (data);
+	g_object_unref (obj);
+}
+
+/* Must be called with self->mutex already locked. */
+static void
+wait_for_state_change_unlocked_async (GsEosUpdater        *updater_proxy,
+                                      GCancellable        *cancellable,
+                                      GAsyncReadyCallback  callback,
+                                      gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(WaitForStateChangeData) data_owned = NULL;
+	WaitForStateChangeData *data;
+
+	task = g_task_new (updater_proxy, cancellable, callback, user_data);
+	g_task_set_source_tag (task, wait_for_state_change_unlocked_async);
+
+	/* Store the initial state to compare against later. */
+	data = data_owned = g_new0 (WaitForStateChangeData, 1);
+	data->old_state = gs_eos_updater_get_state (updater_proxy);
+	g_debug ("%s: Old state ‘%s’", G_STRFUNC, eos_updater_state_to_str (data->old_state));
+
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) wait_for_state_change_data_free);
+
+	/* Listen for state changes. Connect late in the emission process so
+	 * that the callback is invoked after the main updater_state_changed(),
+	 * because that updates a load of internal state which the function
+	 * calling this one might need. */
+	data->notify_id = g_signal_connect_data (updater_proxy, "notify::state",
+						 G_CALLBACK (wait_for_state_change_notify_cb),
+						 g_object_ref (task), object_unref_closure,
+						 G_CONNECT_AFTER);
+	data->cancelled_id = g_cancellable_connect (cancellable,
+						    G_CALLBACK (wait_for_state_change_cancelled_cb),
+						    g_object_ref (task), g_object_unref);
+}
+
+static void
+wait_for_state_change_cb (GTask *task_unowned)
+{
+	g_autoptr(GTask) task = g_object_ref (task_unowned);
+	WaitForStateChangeData *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsEosUpdater *updater_proxy = g_task_get_source_object (task);
 	EosUpdaterState old_state, new_state;
 
-	old_state = new_state = gs_eos_updater_get_state (self->updater_proxy);
-	g_debug ("%s: Old state ‘%s’", G_STRFUNC, eos_updater_state_to_str (old_state));
+	old_state = GPOINTER_TO_INT (g_task_get_task_data (task));
+	new_state = gs_eos_updater_get_state (updater_proxy);
 
-	while (new_state == old_state &&
-	       !g_cancellable_is_cancelled (cancellable)) {
-		g_cond_wait (&self->state_change_cond, &self->mutex);
-		new_state = gs_eos_updater_get_state (self->updater_proxy);
-	}
+	if (new_state == old_state &&
+	    !g_cancellable_is_cancelled (cancellable))
+		return;
 
-	if (!g_cancellable_set_error_if_cancelled (cancellable, error)) {
-		g_debug ("%s: New state ‘%s’", G_STRFUNC, eos_updater_state_to_str (new_state));
-		return TRUE;
-	} else {
+	/* State has changed, or the wait has been cancelled. Disconnect, and
+	 * return. */
+	g_clear_signal_handler (&data->notify_id, updater_proxy);
+	g_cancellable_disconnect (cancellable, data->cancelled_id);
+	data->cancelled_id = 0;
+
+	if (g_task_return_error_if_cancelled (task)) {
 		g_debug ("%s: Cancelled", G_STRFUNC);
-		return FALSE;
+	} else {
+		g_debug ("%s: New state ‘%s’", G_STRFUNC, eos_updater_state_to_str (new_state));
+		g_task_return_boolean (task, TRUE);
 	}
+}
+
+static void
+wait_for_state_change_notify_cb (GObject    *object,
+                                 GParamSpec *pspec,
+                                 gpointer    user_data)
+{
+	GTask *task = G_TASK (user_data);
+	wait_for_state_change_cb (task);
+}
+
+static void
+wait_for_state_change_cancelled_cb (GCancellable *cancellable,
+                                    gpointer      user_data)
+{
+	GTask *task = G_TASK (user_data);
+	wait_for_state_change_cb (task);
+}
+
+static gboolean
+wait_for_state_change_unlocked_finish (GsEosUpdater  *updater_proxy,
+                                       GAsyncResult  *result,
+                                       GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 /* Could be executed in any thread. No need to hold `self->mutex` since we don’t
@@ -1024,52 +1119,158 @@ cancelled_cb (GCancellable *ui_cancellable,
 	g_cond_broadcast (&self->state_change_cond);
 }
 
-/* Called in a #GTask worker thread, and it needs to hold `self->mutex` due to
- * synchronising on state with the main thread. */
-static gboolean
-gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
-                                            GsApp         *app,
-                                            GCancellable  *cancellable,
-                                            GError       **error)
+/* State tracking for a single call to a D-Bus method on the updater proxy.
+ *
+ * This is designed so that multiple different async calls can all end up back
+ * in download_iterate_state_machine_cb(), which then advances the updater’s
+ * state machine.
+ *
+ * Given that different async calls have different `*_finish()` functions, a
+ * pointer to the finish function is needed: `finish_func()`. This is called
+ * to get the results of each async call. */
+typedef struct {
+	/* Input arguments. */
+	GsApp *app;  /* (not nullable) (owned) */
+	GCancellable *cancellable;  /* (nullable) (not owned) */
+	gulong cancelled_id;
+	gboolean interactive;
+
+	/* State. */
+	gboolean done;
+	gboolean allow_restart;
+
+	/* Completion callback. */
+	gboolean (*finish_func) (GsEosUpdater  *updater_proxy,
+	                         GAsyncResult  *result,
+	                         GError       **error);  /* (nullable) */
+} UpgradeDownloadState;
+
+static void
+upgrade_download_state_free (UpgradeDownloadState *data)
 {
-	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
-	gulong cancelled_id = 0;
+	g_clear_object (&data->app);
+
+	if (data->cancellable != NULL && data->cancelled_id != 0) {
+		g_debug ("Disconnecting cancellable %p", data->cancellable);
+		g_cancellable_disconnect (data->cancellable, data->cancelled_id);
+		data->cancellable = NULL;
+		data->cancelled_id = 0;
+	}
+
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (UpgradeDownloadState, upgrade_download_state_free)
+
+static void download_iterate_state_machine_cb (GObject      *source_object,
+                                               GAsyncResult *result,
+                                               gpointer      user_data);
+
+/* Called in a #GTask worker thread or in the main thread, and it needs to hold
+ * `self->mutex` due to synchronising on state with the main thread. */
+static void
+gs_plugin_eos_updater_app_upgrade_download_async (GsPluginEosUpdater  *self,
+                                                  GsApp               *app,
+                                                  gboolean             interactive,
+                                                  GCancellable        *cancellable,
+                                                  GAsyncReadyCallback  callback,
+                                                  gpointer             user_data)
+{
+	g_autoptr(GTask) task = NULL;
+	g_autoptr(UpgradeDownloadState) data_owned = NULL;
+	UpgradeDownloadState *data;
 	EosUpdaterState state;
-	gboolean done, allow_restart;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
 
+	task = g_task_new (self, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_app_upgrade_download_async);
+
 	/* only process this app if was created by this plugin */
-	if (!gs_app_has_management_plugin (app, plugin))
-		return TRUE;
+	if (!gs_app_has_management_plugin (app, GS_PLUGIN (self))) {
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	/* if the OS upgrade has been disabled */
 	if (self->updater_proxy == NULL) {
-		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
-			     "The OS upgrade has been disabled in the EOS plugin");
-		return FALSE;
+		g_task_return_new_error (task, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+					 "The OS upgrade has been disabled in the EOS plugin");
+		return;
 	}
 
 	g_assert (app == self->os_upgrade);
 
+	/* Set up some state. */
+	data = data_owned = g_new0 (UpgradeDownloadState, 1);
+	data->app = g_object_ref (app);
+	data->interactive = interactive;
+	g_task_set_task_data (task, g_steal_pointer (&data_owned), (GDestroyNotify) upgrade_download_state_free);
+
 	/* Set up cancellation. */
 	g_debug ("Chaining cancellation from %p to %p", cancellable, self->cancellable);
 	if (cancellable != NULL) {
-		cancelled_id = g_cancellable_connect (cancellable,
-						      G_CALLBACK (cancelled_cb),
-						      plugin, NULL);
+		data->cancellable = cancellable;  /* ref is held by @task */
+		data->cancelled_id = g_cancellable_connect (cancellable,
+							    G_CALLBACK (cancelled_cb),
+							    self, NULL);
 	}
 
 	/* Step through the state machine until we are finished downloading and
-	 * applying the update, or until an error occurs. All of the D-Bus calls
-	 * here will block until the method call is complete. */
+	 * applying the update, or until an error occurs.
+	 *
+	 * Each step is a call to download_iterate_state_machine_cb(). The first
+	 * call is below, and subsequent calls come from async function
+	 * completions.
+	 *
+	 * `data->done` is %TRUE once we reach the `UPDATE_APPLIED` state.
+	 *
+	 * `data->allow_restart` indicates whether the state machine can be
+	 * restarted to clear an error condition, or whether the error should be
+	 * propagated (because the machine has already been restarted). This
+	 * prevents infinite loops. */
 	state = gs_eos_updater_get_state (self->updater_proxy);
 
-	done = FALSE;
-	allow_restart = (state == EOS_UPDATER_STATE_NONE ||
-			 state == EOS_UPDATER_STATE_READY ||
-			 state == EOS_UPDATER_STATE_ERROR);
+	data->done = FALSE;
+	data->allow_restart = (state == EOS_UPDATER_STATE_NONE ||
+			       state == EOS_UPDATER_STATE_READY ||
+			       state == EOS_UPDATER_STATE_ERROR);
 
-	while (!done && !g_cancellable_is_cancelled (cancellable)) {
+	download_iterate_state_machine_cb (G_OBJECT (self->updater_proxy), NULL, g_steal_pointer (&task));
+}
+
+static void
+download_iterate_state_machine_cb (GObject      *source_object,
+                                   GAsyncResult *result,
+                                   gpointer      user_data)
+{
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	GsPluginEosUpdater *self = g_task_get_source_object (task);
+	UpgradeDownloadState *data = g_task_get_task_data (task);
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	EosUpdaterState state;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&self->mutex);
+
+	/* Call the finish function from the asynchronous method call which has
+	 * just completed and brought us back into
+	 * download_iterate_state_machine_cb().
+	 *
+	 * This may be %NULL if the state machine is just being started. */
+	if (data->finish_func != NULL) {
+		g_autoptr(GError) local_error = NULL;
+
+		if (!data->finish_func (self->updater_proxy, result, &local_error)) {
+			gs_eos_updater_error_convert (&local_error);
+			g_task_return_error (task, g_steal_pointer (&local_error));
+			return;
+		}
+
+		data->finish_func = NULL;
+	} else {
+		g_assert (result == NULL);
+	}
+
+	/* Iterate the state machine one step. */
+	while (!data->done && !g_cancellable_is_cancelled (cancellable)) {
 		state = gs_eos_updater_get_state (self->updater_proxy);
 		g_debug ("%s: State ‘%s’", G_STRFUNC, eos_updater_state_to_str (state));
 
@@ -1082,14 +1283,16 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 			 * before giving up, so we don’t end up in an endless
 			 * loop (say, if eos-updater always died 50% of the way
 			 * through a download). */
-			if (allow_restart) {
-				allow_restart = FALSE;
+			if (data->allow_restart) {
+				data->allow_restart = FALSE;
 				g_debug ("Restarting OS upgrade from none/ready state");
-				if (!gs_eos_updater_call_poll_sync (self->updater_proxy,
-								    cancellable, error)) {
-					gs_eos_updater_error_convert (error);
-					return FALSE;
-				}
+
+				data->finish_func = gs_eos_updater_call_poll_finish;
+				gs_eos_updater_call_poll (self->updater_proxy,
+							  cancellable,
+							  download_iterate_state_machine_cb,
+							  g_steal_pointer (&task));
+				return;
 			} else {
 				/* Display an error to the user. */
 				g_autoptr(GError) error_local = NULL;
@@ -1100,15 +1303,17 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 						     _("EOS update service could not fetch and apply the update."));
 				gs_eos_updater_error_convert (&error_local);
 
-				event = gs_plugin_event_new ("app", app,
+				event = gs_plugin_event_new ("app", data->app,
 							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", error_local,
 							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_report_event (plugin, event);
+				if (data->interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
 
 				/* Error out. */
-				done = TRUE;
+				data->done = TRUE;
 			}
 
 			break;
@@ -1123,14 +1328,13 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 			 * polling before), we should readily call fetch */
 			g_variant_dict_insert (&options_dict, "force", "b", TRUE);
 
-			if (!gs_eos_updater_call_fetch_full_sync (self->updater_proxy,
-								  g_variant_dict_end (&options_dict),
-								  cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-
-			break;
+			data->finish_func = gs_eos_updater_call_fetch_full_finish;
+			gs_eos_updater_call_fetch_full (self->updater_proxy,
+							g_variant_dict_end (&options_dict),
+							cancellable,
+							download_iterate_state_machine_cb,
+							g_steal_pointer (&task));
+			return;
 		}
 		case EOS_UPDATER_STATE_FETCHING: {
 			/* Nothing to do here. */
@@ -1139,18 +1343,17 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 		case EOS_UPDATER_STATE_UPDATE_READY: {
 			/* if there's an update ready to deployed, and it was started by
 			 * the user, we should proceed to applying the upgrade */
-			gs_app_set_progress (app, max_progress_for_update);
+			gs_app_set_progress (data->app, max_progress_for_update);
 
 			/* Nothing further to download. */
-			gs_app_set_size_download (app, GS_SIZE_TYPE_VALID, 0);
+			gs_app_set_size_download (data->app, GS_SIZE_TYPE_VALID, 0);
 
-			if (!gs_eos_updater_call_apply_sync (self->updater_proxy,
-							     cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-
-			break;
+			data->finish_func = gs_eos_updater_call_apply_finish;
+			gs_eos_updater_call_apply (self->updater_proxy,
+						   cancellable,
+						   download_iterate_state_machine_cb,
+						   g_steal_pointer (&task));
+			return;
 		}
 		case EOS_UPDATER_STATE_APPLYING_UPDATE: {
 			/* Nothing to do here. */
@@ -1158,7 +1361,7 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 		}
 		case EOS_UPDATER_STATE_UPDATE_APPLIED: {
 			/* Done! */
-			done = TRUE;
+			data->done = TRUE;
 			break;
 		}
 		case EOS_UPDATER_STATE_ERROR: {
@@ -1177,32 +1380,32 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 
 				gs_eos_updater_error_convert (&error_local);
 
-				event = gs_plugin_event_new ("app", app,
+				event = gs_plugin_event_new ("app", data->app,
 							     "action", GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 							     "error", error_local,
 							     NULL);
 				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-				gs_plugin_report_event (plugin, event);
+				if (data->interactive)
+					gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+				gs_plugin_report_event (GS_PLUGIN (self), event);
 			}
 
 			/* Unconditionally call Poll() to get the updater out
 			 * of the error state and to allow the update to be
 			 * displayed in the UI again and retried. Exit the
-			 * state change loop immediately, though, to prevent
-			 * possible endless loops between the Poll/Error
-			 * states. */
-			allow_restart = FALSE;
+			 * state change loop immediately by setting data->done,
+			 * though, to prevent possible endless loops between the
+			 * Poll/Error states. */
+			data->allow_restart = FALSE;
+			data->done = TRUE;
 			g_debug ("Restarting OS upgrade on error");
-			if (!gs_eos_updater_call_poll_sync (self->updater_proxy,
-							    cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
 
-			/* Error out. */
-			done = TRUE;
-
-			break;
+			data->finish_func = gs_eos_updater_call_poll_finish;
+			gs_eos_updater_call_poll (self->updater_proxy,
+						  cancellable,
+						  download_iterate_state_machine_cb,
+						  g_steal_pointer (&task));
+			return;
 		}
 		default:
 			g_warning ("Encountered unknown eos-updater state: %u", state);
@@ -1210,16 +1413,11 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 		}
 
 		/* Block on the next state change. */
-		if (!done &&
-		    !wait_for_state_change_unlocked (self, cancellable, error)) {
-			gs_eos_updater_error_convert (error);
-			return FALSE;
+		if (!data->done) {
+			data->finish_func = wait_for_state_change_unlocked_finish;
+			wait_for_state_change_unlocked_async (self->updater_proxy, cancellable, download_iterate_state_machine_cb, g_steal_pointer (&task));
+			return;
 		}
-	}
-
-	if (cancellable != NULL && cancelled_id != 0) {
-		g_debug ("Disconnecting cancellable %p", cancellable);
-		g_cancellable_disconnect (cancellable, cancelled_id);
 	}
 
 	/* Process the final state. */
@@ -1232,15 +1430,31 @@ gs_plugin_eos_updater_app_upgrade_download (GsPlugin      *plugin,
 		error_message = gs_eos_updater_get_error_message (self->updater_proxy);
 		error_local = g_dbus_error_new_for_dbus_error (error_name, error_message);
 		gs_eos_updater_error_convert (&error_local);
-		g_propagate_error (error, g_steal_pointer (&error_local));
 
-		return FALSE;
-	} else if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-		gs_eos_updater_error_convert (error);
-		return FALSE;
+		g_task_return_error (task, g_steal_pointer (&error_local));
+	} else if (!g_task_return_error_if_cancelled (task)) {
+		g_task_return_boolean (task, TRUE);
 	}
+}
 
-	return TRUE;
+static gboolean
+gs_plugin_eos_updater_app_upgrade_download_finish (GsPluginEosUpdater  *self,
+                                                   GAsyncResult        *result,
+                                                   GError             **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
+}
+
+static void
+async_result_cb (GObject      *source_object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+
+	g_assert (result_out != NULL && *result_out == NULL);
+	*result_out = g_object_ref (result);
+	g_main_context_wakeup (NULL);
 }
 
 /* This is called in a #GTask worker thread.
@@ -1253,20 +1467,92 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 			        GCancellable *cancellable,
 				GError **error)
 {
-	return gs_plugin_eos_updater_app_upgrade_download (plugin, app, cancellable, error);
+	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
+	gboolean interactive = gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GMainContextPusher) pusher = g_main_context_pusher_new (context);
+	g_autoptr(GAsyncResult) result = NULL;
+
+	/* FIXME: This should eventually be moved to the new plugin API. For now,
+	 * since this old function runs in a worker thread, run in a loop until
+	 * the async download completes. */
+	gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, cancellable, async_result_cb, &result);
+	while (result == NULL)
+		g_main_context_iteration (context, TRUE);
+	return gs_plugin_eos_updater_app_upgrade_download_finish (self, result, error);
 }
 
-/* This is called in a #GTask worker thread.
+static void upgrade_download_cb (GObject      *source_object,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
+/* Called in the main thread.
  *
  * It’s used to download the update if it’s been listed in the UI as a minor
  * update. The download process is the same. */
-gboolean
-gs_plugin_download_app (GsPlugin      *plugin,
-                        GsApp         *app,
-                        GCancellable  *cancellable,
-                        GError       **error)
+static void
+gs_plugin_eos_updater_update_apps_async (GsPlugin                           *plugin,
+                                         GsAppList                          *apps,
+                                         GsPluginUpdateAppsFlags             flags,
+                                         GsPluginProgressCallback            progress_callback,
+                                         gpointer                            progress_user_data,
+                                         GsPluginAppNeedsUserActionCallback  app_needs_user_action_callback,
+                                         gpointer                            app_needs_user_action_data,
+                                         GCancellable                       *cancellable,
+                                         GAsyncReadyCallback                 callback,
+                                         gpointer                            user_data)
 {
-	return gs_plugin_eos_updater_app_upgrade_download (plugin, app, cancellable, error);
+	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (plugin);
+	g_autoptr(GTask) task = NULL;
+	GsApp *app;
+	gboolean interactive = (flags & GS_PLUGIN_UPDATE_APPS_FLAGS_INTERACTIVE);
+	g_autoptr(GError) local_error = NULL;
+
+	task = g_task_new (plugin, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_eos_updater_update_apps_async);
+
+	g_debug ("%s", G_STRFUNC);
+
+	/* check if the OS upgrade has been disabled */
+	if (self->updater_proxy == NULL) {
+		g_debug ("%s: Updater disabled", G_STRFUNC);
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
+
+	g_assert (gs_app_list_length (apps) == 1);
+	app = gs_app_list_index (apps, 0);
+
+	if (!(flags & GS_PLUGIN_UPDATE_APPS_FLAGS_NO_DOWNLOAD)) {
+		/* Download the update.
+		 * FIXME: Progress reporting */
+		gs_plugin_eos_updater_app_upgrade_download_async (self, app, interactive, cancellable, upgrade_download_cb, g_steal_pointer (&task));
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
+static void
+upgrade_download_cb (GObject      *source_object,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	GsPluginEosUpdater *self = GS_PLUGIN_EOS_UPDATER (source_object);
+	g_autoptr(GTask) task = g_steal_pointer (&user_data);
+	g_autoptr(GError) local_error = NULL;
+
+	if (!gs_plugin_eos_updater_app_upgrade_download_finish (self, result, &local_error))
+		g_task_return_error (task, g_steal_pointer (&local_error));
+	else
+		g_task_return_boolean (task, TRUE);
+}
+
+static gboolean
+gs_plugin_eos_updater_update_apps_finish (GsPlugin      *plugin,
+                                          GAsyncResult  *result,
+                                          GError       **error)
+{
+	return g_task_propagate_boolean (G_TASK (result), error);
 }
 
 static void
@@ -1284,6 +1570,8 @@ gs_plugin_eos_updater_class_init (GsPluginEosUpdaterClass *klass)
 	plugin_class->refresh_metadata_finish = gs_plugin_eos_updater_refresh_metadata_finish;
 	plugin_class->list_distro_upgrades_async = gs_plugin_eos_updater_list_distro_upgrades_async;
 	plugin_class->list_distro_upgrades_finish = gs_plugin_eos_updater_list_distro_upgrades_finish;
+	plugin_class->update_apps_async = gs_plugin_eos_updater_update_apps_async;
+	plugin_class->update_apps_finish = gs_plugin_eos_updater_update_apps_finish;
 }
 
 GType
