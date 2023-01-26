@@ -214,9 +214,13 @@ plugin_refine_categories_cb (GObject      *source_object,
 						    gs_plugin_get_name (plugin)),
 				   NULL);
 
-	if (!plugin_class->refine_categories_finish (plugin, result, &local_error)) {
-		finish_op (task, g_steal_pointer (&local_error));
-		return;
+	if (!plugin_class->refine_categories_finish (plugin, result, &local_error) &&
+	    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+	    !g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("plugin '%s' failed to refine categories: %s",
+			 gs_plugin_get_name (plugin),
+			 local_error->message);
+		g_clear_error (&local_error);
 	}
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
