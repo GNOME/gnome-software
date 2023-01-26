@@ -740,14 +740,48 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 	/* run each plugin */
 	for (guint i = 0; i < plugin_loader->plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (plugin_loader->plugins, i);
+		g_autoptr(GError) local_error = NULL;
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
 		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
 						  GS_PLUGIN_REFINE_FLAGS_NONE,
-						  cancellable, error)) {
-			return FALSE;
+						  cancellable, &local_error)) {
+			gboolean mask_error;
+
+			if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED) ||
+			    g_error_matches (local_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				gs_utils_error_convert_gio (error);
+				return FALSE;
+			} else if (g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED)) {
+				g_clear_error (&local_error);
+				continue;
+			}
+
+			/* Let some actions forgive plugin errors, in case other plugins can handle it,
+			   when one plugin fails. */
+			switch (gs_plugin_job_get_action (helper->plugin_job)) {
+			case GS_PLUGIN_ACTION_GET_UPDATES:
+			case GS_PLUGIN_ACTION_GET_SOURCES:
+			case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
+			case GS_PLUGIN_ACTION_GET_LANGPACKS:
+				mask_error = TRUE;
+				break;
+			default:
+				mask_error = GS_IS_PLUGIN_JOB_UPDATE_APPS (helper->plugin_job);
+				break;
+			}
+			if (mask_error) {
+				g_debug ("plugin '%s' failed to call '%s': %s",
+					 gs_plugin_get_name (plugin),
+					 helper->function_name,
+					 local_error->message);
+			} else {
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				return FALSE;
+			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
